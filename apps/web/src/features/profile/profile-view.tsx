@@ -2,10 +2,9 @@
 
 import { useQuery } from "@tanstack/react-query";
 import {
-  Check,
   Gift,
   Layers3,
-  LoaderCircle,
+  SearchX,
   Ticket,
   Trophy,
   WalletCards,
@@ -22,11 +21,17 @@ import {
 
 import { raffleAbi, raffleLensAbi } from "@raffle-fun/sdk";
 
-import { RaffleCard } from "@/components/raffle-card";
+import { PrizeArt } from "@/components/prize-art";
+import { RaffleCard, RaffleCardSkeleton } from "@/components/raffle-card";
 import { WalletButton } from "@/components/wallet-button";
+import { isDemoMode } from "@/lib/demo";
+import { toIndexedRaffle } from "@/lib/sandbox/adapter";
+import { ticketsOwnedBy } from "@/lib/sandbox/engine";
+import { useSandbox } from "@/lib/sandbox/store";
 import { shortAddress } from "@/lib/format";
 import { protocolDeployment } from "@/lib/protocol";
 import { fetchProfileRaffles, isSubgraphConfigured } from "@/lib/subgraph";
+import type { IndexedRaffle } from "@/lib/subgraph";
 
 type LiveClaim = {
   readonly raffle: Address;
@@ -36,6 +41,11 @@ type LiveClaim = {
   readonly canClaimPrize: boolean;
 };
 
+type ProfileData = {
+  readonly sponsored: readonly IndexedRaffle[];
+  readonly positions: readonly IndexedRaffle[];
+};
+
 export function ProfileView({
   profileAddress,
 }: {
@@ -43,17 +53,36 @@ export function ProfileView({
 }) {
   const valid = isAddress(profileAddress);
   const profile = valid ? (profileAddress as Address) : undefined;
+  const demo = isDemoMode();
   const configured = isSubgraphConfigured();
   const { address } = useAccount();
   const publicClient = usePublicClient();
   const wallet = useWalletClient();
   const [claimStatus, setClaimStatus] = useState("");
 
-  const profileQuery = useQuery({
+  const { sandbox } = useSandbox();
+  const remoteQuery = useQuery<ProfileData>({
     queryKey: ["profile", profile?.toLowerCase()],
-    queryFn: () => fetchProfileRaffles(profile!),
-    enabled: configured && profile !== undefined,
+    queryFn: async () => fetchProfileRaffles(profile!),
+    enabled: !demo && configured && profile !== undefined,
   });
+
+  const sandboxProfile = useMemo<ProfileData | undefined>(() => {
+    if (!demo || sandbox === undefined || profile === undefined) return undefined;
+    const key = profile.toLowerCase();
+    return {
+      sponsored: sandbox.raffles
+        .filter((raffle) => raffle.sponsor.toLowerCase() === key)
+        .map(toIndexedRaffle),
+      positions: sandbox.raffles
+        .filter((raffle) => ticketsOwnedBy(raffle, profile) > 0)
+        .map(toIndexedRaffle),
+    };
+  }, [demo, profile, sandbox]);
+
+  const profileQuery = demo
+    ? { data: sandboxProfile, isPending: sandboxProfile === undefined, isError: false }
+    : remoteQuery;
 
   const raffles = useMemo(() => {
     const all = [
@@ -149,29 +178,19 @@ export function ProfileView({
       );
       try {
         for (const call of batchCalls) {
+          const isQuoteClaim =
+            call.data.slice(0, 10) ===
+            encodeFunctionData({
+              abi: raffleAbi,
+              functionName: "claimQuoteFor",
+              args: [profile],
+            }).slice(0, 10);
           const { request } = await publicClient.simulateContract({
             account: address,
             address: call.to,
             abi: raffleAbi,
-            dataSuffix: undefined,
-            functionName:
-              call.data.slice(0, 10) ===
-              encodeFunctionData({
-                abi: raffleAbi,
-                functionName: "claimQuoteFor",
-                args: [profile],
-              }).slice(0, 10)
-                ? "claimQuoteFor"
-                : "claimPrize",
-            args:
-              call.data.slice(0, 10) ===
-              encodeFunctionData({
-                abi: raffleAbi,
-                functionName: "claimQuoteFor",
-                args: [profile],
-              }).slice(0, 10)
-                ? [profile]
-                : [profile],
+            functionName: isQuoteClaim ? "claimQuoteFor" : "claimPrize",
+            args: [profile],
           } as Parameters<typeof publicClient.simulateContract>[0]);
           const hash = await wallet.data.writeContract(request);
           await publicClient.waitForTransactionReceipt({ hash });
@@ -195,40 +214,50 @@ export function ProfileView({
     );
   }
 
+  const loading = (demo || configured) && profileQuery.isPending;
+  const connectedSandbox =
+    demo && profile?.toLowerCase() === sandbox?.player.toLowerCase();
+
   return (
     <div className="page-shell py-14 md:py-20">
-      <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-        <div>
-          <p className="eyebrow">Onchain identity</p>
-          <h1 className="mt-3 text-5xl font-bold md:text-7xl">
-            {shortAddress(profile)}
-          </h1>
-          <p className="mt-4 max-w-xl text-sm leading-6 text-[#56506a]">
-            Sponsored raffles and ticket positions come from the index.
-            Claimability is independently refreshed from the protocol lens.
-          </p>
+      <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
+        <div className="flex items-center gap-5">
+          <PrizeArt
+            className="size-20 shrink-0 rounded-3xl md:size-24"
+            seed={profile}
+          />
+          <div>
+            <p className="eyebrow">
+              {connectedProfile || connectedSandbox
+                ? "Your account"
+                : "Onchain identity"}
+            </p>
+            <h1 className="numeric mt-2 text-4xl md:text-5xl">
+              {shortAddress(profile)}
+            </h1>
+          </div>
         </div>
-        {!connectedProfile ? (
+        {!connectedProfile && !connectedSandbox ? (
           <div className="w-full max-w-xs">
-            <WalletButton />
+            <WalletButton full />
           </div>
         ) : null}
       </div>
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Summary
-          icon={<Layers3 aria-hidden />}
+          icon={<Layers3 aria-hidden size={19} />}
           label="Sponsored"
           value={(profileQuery.data?.sponsored.length ?? 0).toString()}
         />
         <Summary
-          icon={<Ticket aria-hidden />}
+          icon={<Ticket aria-hidden size={19} />}
           label="Open positions"
           value={(profileQuery.data?.positions.length ?? 0).toString()}
         />
         <Summary
-          icon={<WalletCards aria-hidden />}
-          label="Live quote claims"
+          icon={<WalletCards aria-hidden size={19} />}
+          label="Payouts to claim"
           value={
             claimableQuoteCount === 0
               ? "0"
@@ -236,17 +265,17 @@ export function ProfileView({
           }
         />
         <Summary
-          icon={<Trophy aria-hidden />}
-          label="Live prize claims"
+          icon={<Trophy aria-hidden size={19} />}
+          label="Prizes to claim"
           value={claimablePrizes.toString()}
         />
       </div>
 
       {connectedProfile && batchCalls.length > 0 ? (
-        <div className="ticket-card mt-6 flex flex-col items-start justify-between gap-4 p-5 sm:flex-row sm:items-center">
+        <div className="card mt-6 flex flex-col items-start justify-between gap-4 border-[var(--pink)] p-5 sm:flex-row sm:items-center">
           <div>
-            <p className="font-black">Claims are ready</p>
-            <p className="mt-1 text-xs text-[#56506a]">
+            <p className="font-extrabold">Claims are ready</p>
+            <p className="mt-1 text-xs leading-5 text-[var(--ink-soft)]">
               A compatible wallet submits them as one batch; the fallback
               confirms each claim in order.
             </p>
@@ -264,13 +293,15 @@ export function ProfileView({
         </div>
       ) : null}
 
-      {profileQuery.isPending && configured ? (
+      {loading ? (
         <div
-          className="mt-10 flex items-center gap-2 text-sm font-bold"
+          className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
           role="status"
         >
-          <LoaderCircle aria-hidden className="animate-spin" size={18} />{" "}
-          Loading indexed positions…
+          <span className="sr-only">Loading positions</span>
+          {[0, 1, 2].map((value) => (
+            <RaffleCardSkeleton key={value} />
+          ))}
         </div>
       ) : null}
 
@@ -281,17 +312,17 @@ export function ProfileView({
         />
       ) : null}
 
-      {!profileQuery.isPending &&
-      !profileQuery.isError &&
-      raffles.length === 0 ? (
+      {!loading && !profileQuery.isError && raffles.length === 0 ? (
         <ProfileEmpty
           title={
-            configured ? "No indexed activity" : "Profile index not connected"
+            demo || configured
+              ? "Nothing here yet"
+              : "Profile index not connected"
           }
           text={
-            configured
-              ? "This account has no sponsored raffles or current ticket positions in the selected index."
-              : "Configure a real subgraph endpoint to discover positions. No sample history is shown."
+            demo || configured
+              ? "This account has not sponsored a raffle or bought a ticket yet."
+              : "Configure a subgraph endpoint to discover positions. No sample history is shown."
           }
         />
       ) : null}
@@ -299,8 +330,8 @@ export function ProfileView({
       {profileQuery.data?.sponsored.length ? (
         <section className="mt-14">
           <p className="eyebrow">Created by this account</p>
-          <h2 className="mt-2 text-4xl font-bold">Sponsored raffles</h2>
-          <div className="mt-7 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <h2 className="mt-2 text-3xl md:text-4xl">Sponsored raffles</h2>
+          <div className="mt-7 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {profileQuery.data.sponsored.map((raffle) => (
               <RaffleCard key={raffle.id} raffle={raffle} />
             ))}
@@ -311,8 +342,8 @@ export function ProfileView({
       {profileQuery.data?.positions.length ? (
         <section className="mt-14">
           <p className="eyebrow">Tickets currently held</p>
-          <h2 className="mt-2 text-4xl font-bold">Positions & wins</h2>
-          <div className="mt-7 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <h2 className="mt-2 text-3xl md:text-4xl">Positions & wins</h2>
+          <div className="mt-7 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {profileQuery.data.positions.map((raffle) => (
               <RaffleCard key={raffle.id} raffle={raffle} />
             ))}
@@ -333,12 +364,12 @@ function Summary({
   readonly value: string;
 }) {
   return (
-    <div className="ticket-card p-5">
-      <span className="grid size-10 place-items-center rounded-xl bg-[#ffdc55]">
+    <div className="card p-5">
+      <span className="grid size-10 place-items-center rounded-xl bg-[var(--yellow-wash)] text-[var(--amber-ink)]">
         {icon}
       </span>
-      <p className="eyebrow mt-5">{label}</p>
-      <p className="numeric mt-2 text-2xl font-black">{value}</p>
+      <p className="eyebrow mt-4">{label}</p>
+      <p className="numeric mt-1.5 text-2xl font-extrabold">{value}</p>
     </div>
   );
 }
@@ -351,15 +382,17 @@ function ProfileEmpty({
   readonly text: string;
 }) {
   return (
-    <div className="ticket-card mt-10 p-10 text-center">
-      <Check aria-hidden className="mx-auto text-[#56506a]" />
-      <h2 className="mt-4 text-2xl font-bold">{title}</h2>
-      <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-[#56506a]">
-        {text}
-      </p>
-      <Link className="btn btn-ghost mt-5" href="/">
-        Discover raffles
-      </Link>
+    <div className="card mt-10 grid place-items-center px-6 py-16 text-center">
+      <div className="max-w-md">
+        <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-[var(--paper-sunk)] text-[var(--ink-soft)]">
+          <SearchX aria-hidden size={22} />
+        </span>
+        <h2 className="mt-5 text-2xl">{title}</h2>
+        <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">{text}</p>
+        <Link className="btn btn-outline mt-6" href="/">
+          Discover raffles
+        </Link>
+      </div>
     </div>
   );
 }

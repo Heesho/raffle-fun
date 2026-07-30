@@ -10,7 +10,7 @@ import { webEnv } from "./env";
 
 export const configuredChainId = isSupportedChainId(webEnv.NEXT_PUBLIC_CHAIN_ID)
   ? webEnv.NEXT_PUBLIC_CHAIN_ID
-  : 84_532;
+  : 1;
 
 export const configuredChain = getSupportedChain(
   configuredChainId as SupportedChainId,

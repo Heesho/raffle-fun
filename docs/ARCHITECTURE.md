@@ -8,7 +8,7 @@ create storage claims. Discovery infrastructure can fail without changing settle
 
 ```mermaid
 flowchart TB
-  subgraph Chain["Base / Base Sepolia"]
+  subgraph Chain["Ethereum / Base"]
     F["RaffleFactory\nregistry + creation config"]
     I["Locked Raffle implementation"]
     C1["Raffle clone 1"]

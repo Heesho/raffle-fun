@@ -10,6 +10,14 @@ export interface IndexedRaffle {
   readonly quoteTokenVerified: boolean;
   readonly prizeToken: string;
   readonly prizeTokenId: string;
+  /** Display-only, resolved off-chain. Absent for indexed raffles. */
+  readonly prizeCollection?: string;
+  /** Display-only, resolved off-chain. Absent for indexed raffles. */
+  readonly prizeName?: string;
+  /** Display-only, resolved off-chain. Absent for indexed raffles. */
+  readonly prizeImage?: string;
+  /** Display-only. Renders small pixel-art token images without smoothing. */
+  readonly prizePixelated?: boolean;
   readonly metadataURI: string;
   readonly ticketPrice: string;
   readonly minimumTickets: string;

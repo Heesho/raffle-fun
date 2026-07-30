@@ -21,19 +21,19 @@ export default function DocsPage() {
     <div className="page-shell py-14 md:py-20">
       <div className="max-w-4xl">
         <p className="eyebrow">Mechanics & risks</p>
-        <h1 className="mt-3 text-5xl font-bold leading-[0.96] md:text-8xl">
+        <h1 className="mt-3 text-[clamp(2.5rem,7vw,4.5rem)]">
           Read the rules <br />
           before you play.
         </h1>
-        <p className="mt-6 max-w-2xl text-lg leading-8 text-[#56506a]">
-          raffles is a fixed-outcome protocol, not a promise about the value,
+        <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--ink-soft)]">
+          raffle.fun is a fixed-outcome protocol, not a promise about the value,
           authenticity, or legality of any prize. This is the complete mechanic
           in plain language.
         </p>
       </div>
 
       <nav
-        className="ticket-card mt-10 flex flex-wrap gap-2 p-4 text-sm font-bold"
+        className="card mt-10 flex flex-wrap gap-2 p-3 text-sm font-bold"
         aria-label="Documentation sections"
       >
         {[
@@ -44,7 +44,7 @@ export default function DocsPage() {
           ["#trust", "Trust & risks"],
         ].map(([href, label]) => (
           <a
-            className="rounded-full px-4 py-2 hover:bg-[#ffdc55]"
+            className="rounded-full px-4 py-2 text-[var(--ink-soft)] transition-colors hover:bg-[var(--yellow-wash)] hover:text-[var(--ink)]"
             href={href}
             key={href}
           >
@@ -83,7 +83,7 @@ export default function DocsPage() {
         </div>
         <div className="mt-5 grid gap-5 md:grid-cols-2">
           <Outcome
-            className="bg-[#ffdc55]"
+            className="bg-[var(--yellow-wash)]"
             label="total tickets ≥ minimum"
             title="Threshold met"
             items={[
@@ -93,7 +93,7 @@ export default function DocsPage() {
             ]}
           />
           <Outcome
-            className="bg-[#7fc8ff]"
+            className="bg-[var(--sky-wash)]"
             label="total tickets < minimum"
             title="Cash fallback"
             items={[
@@ -103,13 +103,14 @@ export default function DocsPage() {
             ]}
           />
         </div>
-        <div className="ticket-card mt-5 p-6">
-          <h3 className="text-2xl font-bold">If nobody buys a ticket</h3>
-          <p className="mt-3 text-sm leading-6 text-[#56506a]">
+        <div className="card mt-5 p-6">
+          <h3 className="text-2xl">If nobody buys a ticket</h3>
+          <p className="mt-3 text-sm leading-6 text-[var(--ink-soft)]">
             Anyone can close the raffle after its end without requesting
             randomness. The sponsor reclaims the NFT and no quote-token payouts
-            are created. A sponsor may also cancel before any sale; cancellation
-            becomes impossible after ticket 1 is sold.
+            are created. A sponsor may also cancel at any point while zero
+            tickets have sold. Once ticket 1 is sold the prize is locked: it can
+            only reach the winner or return to the sponsor through settlement.
           </p>
         </div>
       </section>
@@ -120,8 +121,8 @@ export default function DocsPage() {
           title="The ticket price is all you pay."
           text="Fees are deducted from the advertised gross amount, never added at checkout. Integer rounding always follows the contract and every remainder stays with the sponsor side of the cash split."
         />
-        <div className="ticket-card mt-8 overflow-hidden">
-          <div className="grid gap-1 bg-[#1726a3] p-6 text-white sm:grid-cols-4">
+        <div className="card mt-8 overflow-hidden">
+          <div className="grid gap-1 bg-[var(--ink)] p-6 text-white sm:grid-cols-4">
             <Formula label="Gross" value="price × quantity" />
             <Formula label="Protocol" value="floor(gross × 5%)" />
             <Formula label="Provider" value="floor(gross × 5%)" />
@@ -152,7 +153,7 @@ export default function DocsPage() {
             />
           </div>
         </div>
-        <p className="mt-5 rounded-2xl border border-black/15 bg-white/55 p-5 text-sm leading-6">
+        <p className="mt-5 rounded-2xl card p-5 text-sm leading-6">
           <strong>No provider?</strong> Only the 5% protocol fee applies, so 95%
           of each gross purchase enters the net pot. A nonzero provider must be
           currently allowlisted by the factory; an invalid referral is rejected
@@ -183,7 +184,7 @@ export default function DocsPage() {
             text="Recipients choose a nonzero destination at claim time. A failed transfer rolls back and can be retried."
           />
         </div>
-        <p className="mt-5 text-sm leading-6 text-[#56506a]">
+        <p className="mt-5 text-sm leading-6 text-[var(--ink-soft)]">
           Oracle delivery is not instantaneous. If a callback fails, Pyth retry
           or replay tooling must deliver the same sequence; the raffle cannot
           request a replacement result. This preserves uniqueness but creates an
@@ -197,7 +198,7 @@ export default function DocsPage() {
           title="Transferable before and after the pending draw."
           text="Tickets move like normal ERC721s while a raffle is active. Transfers freeze only while randomness is pending, preventing ownership changes between request and winner snapshot. After resolution, tickets may move again as souvenirs."
         />
-        <div className="ticket-card mt-8 grid gap-5 p-6 sm:grid-cols-3">
+        <div className="card mt-8 grid gap-5 p-6 sm:grid-cols-3">
           <Fact
             title="Odds"
             text="Your balance ÷ all sold tickets. Every ticket ID from 1 through totalTickets is eligible."
@@ -220,12 +221,12 @@ export default function DocsPage() {
           text="Existing raffle clones are non-upgradeable. Factory administration affects future creation, payment-token discovery labels, and provider configuration—not an active raffle’s fixed economics."
         />
         <div className="mt-8 grid gap-5 lg:grid-cols-2">
-          <div className="ticket-card p-7">
+          <div className="card p-7">
             <div className="flex items-center gap-3">
-              <ShieldCheck aria-hidden className="text-emerald-700" />
-              <h3 className="text-2xl font-bold">Factory owner can</h3>
+              <ShieldCheck aria-hidden className="text-[var(--grass)]" />
+              <h3 className="text-2xl">Factory owner can</h3>
             </div>
-            <ul className="mt-5 list-disc space-y-2 pl-5 text-sm leading-6 text-[#56506a]">
+            <ul className="mt-5 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--ink-soft)]">
               <li>Change the treasury captured by newly created raffles</li>
               <li>Verify or unverify payment tokens for official discovery</li>
               <li>Allow or remove providers</li>
@@ -233,12 +234,12 @@ export default function DocsPage() {
               <li>Transfer two-step factory ownership</li>
             </ul>
           </div>
-          <div className="ticket-card p-7">
+          <div className="card p-7">
             <div className="flex items-center gap-3">
-              <LockKeyhole aria-hidden className="text-violet-700" />
-              <h3 className="text-2xl font-bold">Factory owner cannot</h3>
+              <LockKeyhole aria-hidden className="text-[var(--sky)]" />
+              <h3 className="text-2xl">Factory owner cannot</h3>
             </div>
-            <ul className="mt-5 list-disc space-y-2 pl-5 text-sm leading-6 text-[#56506a]">
+            <ul className="mt-5 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--ink-soft)]">
               <li>Change existing economics, fees, timing, or threshold</li>
               <li>
                 Choose a winner, request another result, or upgrade a clone
@@ -248,11 +249,11 @@ export default function DocsPage() {
             </ul>
           </div>
         </div>
-        <div className="mt-5 rounded-2xl border border-amber-900/20 bg-amber-100 p-6">
-          <h3 className="flex items-center gap-2 text-xl font-black text-amber-950">
+        <div className="mt-5 rounded-2xl bg-[var(--amber-wash)] p-6">
+          <h3 className="flex items-center gap-2 text-xl font-extrabold text-[var(--amber-ink)]">
             <AlertTriangle aria-hidden /> Important risks
           </h3>
-          <ul className="mt-4 list-disc space-y-2 pl-5 text-sm leading-6 text-amber-950/80">
+          <ul className="mt-4 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--amber-ink)]">
             <li>
               The protocol is unaudited. Tests and analysis are not an
               independent audit.
@@ -296,8 +297,8 @@ function DocHeading({
   return (
     <div className="max-w-3xl">
       <p className="eyebrow">{eyebrow}</p>
-      <h2 className="mt-3 text-4xl font-bold md:text-6xl">{title}</h2>
-      <p className="mt-5 text-base leading-7 text-[#56506a]">{text}</p>
+      <h2 className="mt-3 text-4xl md:text-5xl">{title}</h2>
+      <p className="mt-5 text-base leading-7 text-[var(--ink-soft)]">{text}</p>
     </div>
   );
 }
@@ -314,15 +315,17 @@ function Step({
   readonly text: string;
 }) {
   return (
-    <div className="ticket-card h-full p-6">
+    <div className="card h-full p-6">
       <div className="flex items-center justify-between">
-        <span className="grid size-11 place-items-center rounded-xl bg-[#ffdc55]">
+        <span className="grid size-11 place-items-center rounded-xl bg-[var(--yellow-wash)]">
           {icon}
         </span>
-        <span className="text-xs font-black text-[#56506a]">{number}</span>
+        <span className="text-xs font-extrabold text-[var(--ink-soft)]">
+          {number}
+        </span>
       </div>
-      <h3 className="mt-5 text-2xl font-bold">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-[#56506a]">{text}</p>
+      <h3 className="mt-5 text-2xl">{title}</h3>
+      <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">{text}</p>
     </div>
   );
 }
@@ -339,9 +342,9 @@ function Outcome({
   readonly items: readonly string[];
 }) {
   return (
-    <div className={`rounded-2xl border border-black p-7 ${className}`}>
+    <div className={`rounded-3xl p-7 ${className}`}>
       <p className="eyebrow">{label}</p>
-      <h3 className="mt-2 text-3xl font-bold">{title}</h3>
+      <h3 className="mt-2 text-3xl">{title}</h3>
       <ul className="mt-5 list-disc space-y-2 pl-5 text-sm leading-6">
         {items.map((item) => (
           <li key={item}>{item}</li>
@@ -361,7 +364,7 @@ function Formula({
   return (
     <div className="border-white/10 p-3 sm:border-r last:border-r-0">
       <p className="text-xs font-bold text-white/45">{label}</p>
-      <p className="numeric mt-2 text-sm font-black">{value}</p>
+      <p className="numeric mt-2 text-sm font-extrabold">{value}</p>
     </div>
   );
 }
@@ -375,12 +378,12 @@ function Example({
 }) {
   return (
     <div>
-      <h3 className="text-2xl font-bold">{title}</h3>
-      <dl className="mt-4 divide-y divide-black/10 rounded-xl border border-black/10">
+      <h3 className="text-2xl">{title}</h3>
+      <dl className="mt-4 divide-y divide-[var(--line)] rounded-2xl border border-[var(--line)]">
         {rows.map(([label, value]) => (
           <div className="flex justify-between gap-4 p-3 text-sm" key={label}>
-            <dt className="text-[#56506a]">{label}</dt>
-            <dd className="numeric font-black">{value}</dd>
+            <dt className="text-[var(--ink-soft)]">{label}</dt>
+            <dd className="numeric font-extrabold">{value}</dd>
           </div>
         ))}
       </dl>
@@ -398,12 +401,12 @@ function RiskCard({
   readonly text: string;
 }) {
   return (
-    <div className="ticket-card p-6">
-      <span className="grid size-11 place-items-center rounded-xl bg-[#7fc8ff]">
+    <div className="card p-6">
+      <span className="grid size-11 place-items-center rounded-xl bg-[var(--sky-wash)]">
         {icon}
       </span>
-      <h3 className="mt-5 text-2xl font-bold">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-[#56506a]">{text}</p>
+      <h3 className="mt-5 text-2xl">{title}</h3>
+      <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">{text}</p>
     </div>
   );
 }
@@ -417,8 +420,8 @@ function Fact({
 }) {
   return (
     <div>
-      <h3 className="font-black">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-[#56506a]">{text}</p>
+      <h3 className="font-extrabold">{title}</h3>
+      <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">{text}</p>
     </div>
   );
 }

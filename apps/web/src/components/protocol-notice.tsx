@@ -1,21 +1,25 @@
 import { AlertTriangle } from "lucide-react";
 
-import { configuredChain, protocolIsConfigured } from "@/lib/protocol";
 import { webEnvErrors } from "@/lib/env";
 
+/**
+ * Only a genuine misconfiguration is worth interrupting the page for.
+ *
+ * "No deployment registered on this network" is an expected state while the
+ * protocol is pre-launch, so it is reported in the footer and inline on the
+ * surfaces that actually need a signer, not as a persistent site-wide banner.
+ */
 export function ProtocolNotice() {
-  if (protocolIsConfigured && webEnvErrors.length === 0) return null;
+  if (webEnvErrors.length === 0) return null;
 
   return (
     <div
-      className="border-b border-amber-900/20 bg-amber-100 px-4 py-2 text-center text-xs font-semibold text-amber-950"
+      className="bg-[var(--danger-wash)] px-4 py-2 text-center text-xs font-bold text-[var(--danger)]"
       role="status"
     >
       <span className="inline-flex items-center gap-2">
         <AlertTriangle aria-hidden size={14} />
-        {webEnvErrors.length > 0
-          ? `Configuration error: ${webEnvErrors.join("; ")}`
-          : `No verified raffles deployment is registered for ${configuredChain.name}. Browsing remains available; transactions are disabled.`}
+        Configuration error: {webEnvErrors.join("; ")}
       </span>
     </div>
   );

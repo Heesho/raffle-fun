@@ -1,80 +1,100 @@
 "use client";
 
-import { ArrowUpRight, Clock3, Gem, ShieldAlert, Ticket } from "lucide-react";
+import { Flame, ShieldAlert, Trophy } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 
-import { StatusPill } from "@/components/status-pill";
+import { CountUp } from "@/components/count-up";
+import { PrizeArt } from "@/components/prize-art";
+import { StatusPill, type StatusTone } from "@/components/status-pill";
+import { ThresholdBar } from "@/components/threshold-bar";
+import { useCountdown } from "@/hooks/use-countdown";
+import { useNow } from "@/hooks/use-now";
 import { useTokenMetadata } from "@/hooks/use-token-metadata";
-import {
-  formatCountdown,
-  formatTokenAmount,
-  percentOf,
-  shortAddress,
-} from "@/lib/format";
+import { cashToWinner, ticketsToThreshold } from "@/lib/economics";
+import { formatTokenAmount, shortAddress } from "@/lib/format";
 import type { IndexedRaffle } from "@/lib/subgraph";
 
-function stateTone(
-  state: string,
-): "active" | "resolved" | "warning" | "neutral" {
-  if (state === "ACTIVE") return "active";
-  if (state === "RESOLVED") return "resolved";
-  if (state === "DRAW_REQUESTED") return "warning";
-  return "neutral";
-}
+const stateTones: Record<string, StatusTone> = {
+  ACTIVE: "active",
+  DRAW_REQUESTED: "warning",
+  RESOLVED: "resolved",
+  CANCELLED: "neutral",
+};
+
+const ctaLabels: Record<string, string> = {
+  ACTIVE: "Buy tickets",
+  DRAW_REQUESTED: "Watch the draw",
+  RESOLVED: "See the result",
+  CANCELLED: "View raffle",
+};
+
+/** Under an hour left reads as urgent. */
+const URGENT_SECONDS = 3_600;
 
 export function RaffleCard({ raffle }: { readonly raffle: IndexedRaffle }) {
   const total = BigInt(raffle.totalTickets);
   const minimum = BigInt(raffle.minimumTickets);
-  const progress = percentOf(total, minimum);
+  const thresholdMet = total >= minimum;
+  const remaining = ticketsToThreshold(total, minimum);
+  const pot = cashToWinner(BigInt(raffle.netPot));
   const address = raffle.id as `0x${string}`;
-  const quoteToken = raffle.quoteToken as `0x${string}`;
-  const tokenMetadata = useTokenMetadata(quoteToken);
+  const tokenMetadata = useTokenMetadata(raffle.quoteToken as `0x${string}`);
+  const countdown = useCountdown(BigInt(raffle.endTime));
+  const isActive = raffle.state === "ACTIVE";
+  const stateLabel = raffle.state.replaceAll("_", " ").toLowerCase();
+  const flashing = useChangeFlash(raffle.totalTickets);
+  const now = useNow();
+  const urgent =
+    isActive &&
+    now !== undefined &&
+    Number(raffle.endTime) - now < URGENT_SECONDS;
 
   return (
-    <article className="ticket-card overflow-hidden">
-      <div className="relative grid aspect-[16/10] place-items-center overflow-hidden bg-[#1726a3] text-white">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(215,255,95,.42),transparent_36%),radial-gradient(circle_at_70%_80%,rgba(255,114,92,.34),transparent_32%)]" />
-        <div className="relative grid size-24 rotate-6 place-items-center rounded-[2rem] border border-white/30 bg-white/10 shadow-2xl backdrop-blur">
-          <Gem aria-hidden size={42} strokeWidth={1.5} />
-        </div>
-        <div className="absolute left-4 top-4">
-          <StatusPill tone={stateTone(raffle.state)}>
-            {raffle.state.replaceAll("_", " ").toLowerCase()}
+    <article
+      className={`card card-link flex flex-col overflow-hidden ${flashing ? "flash" : ""}`}
+    >
+      <div className="relative">
+        <PrizeArt
+          className="aspect-[4/3] w-full"
+          imageUrl={raffle.prizeImage}
+          pixelated={raffle.prizePixelated}
+          seed={`${raffle.prizeToken}-${raffle.prizeTokenId}`}
+        />
+        <div className="absolute left-3 top-3 flex flex-wrap gap-2">
+          <StatusPill
+            pulse={isActive}
+            tone={stateTones[raffle.state] ?? "neutral"}
+          >
+            {stateLabel}
           </StatusPill>
+          {urgent ? (
+            <span className="chip bg-[var(--pink)] text-white">
+              <Flame aria-hidden size={13} /> Ending soon
+            </span>
+          ) : null}
         </div>
         {!raffle.quoteTokenVerified ? (
-          <p className="absolute right-4 top-4 flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-black text-amber-950">
+          <span className="chip absolute right-3 top-3 bg-[var(--amber-wash)] text-[var(--amber-ink)]">
             <ShieldAlert aria-hidden size={13} /> Unverified token
-          </p>
+          </span>
         ) : null}
-        <p className="absolute bottom-4 right-4 rounded-full bg-black/35 px-3 py-1 text-xs font-bold backdrop-blur">
-          Token #{raffle.prizeTokenId}
-        </p>
       </div>
 
-      <div className="perforated p-5 pb-6">
+      <div className="flex flex-1 flex-col p-5">
         <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="eyebrow">Prize contract</p>
-            <h3 className="mt-1 text-2xl font-bold">
-              {shortAddress(raffle.prizeToken as `0x${string}`)}
+          <div className="min-w-0">
+            <p className="eyebrow truncate">
+              {raffle.prizeCollection ??
+                shortAddress(raffle.prizeToken as `0x${string}`)}
+            </p>
+            <h3 className="mt-1 truncate text-xl font-extrabold">
+              {raffle.prizeName ?? `Token #${raffle.prizeTokenId}`}
             </h3>
           </div>
-          <Link
-            aria-label={`Open raffle ${raffle.factoryId}`}
-            className="grid size-10 shrink-0 place-items-center rounded-full border border-black hover:bg-[#ffdc55]"
-            href={`/raffle/${address}`}
-          >
-            <ArrowUpRight aria-hidden size={18} />
-          </Link>
-        </div>
-
-        <div className="mt-5 grid grid-cols-2 gap-3">
-          <div className="rounded-xl bg-black/[0.045] p-3">
-            <p className="flex items-center gap-1.5 text-xs font-bold text-[#56506a]">
-              <Ticket aria-hidden size={14} /> Ticket
-            </p>
-            <p className="numeric mt-1 text-sm font-black">
+          <div className="shrink-0 text-right">
+            <p className="eyebrow">Ticket</p>
+            <p className="numeric mt-1 text-xl font-extrabold text-[var(--pink)]">
               {formatTokenAmount(
                 BigInt(raffle.ticketPrice),
                 tokenMetadata.decimals,
@@ -82,33 +102,119 @@ export function RaffleCard({ raffle }: { readonly raffle: IndexedRaffle }) {
               )}
             </p>
           </div>
-          <div className="rounded-xl bg-black/[0.045] p-3">
-            <p className="flex items-center gap-1.5 text-xs font-bold text-[#56506a]">
-              <Clock3 aria-hidden size={14} /> Time left
+        </div>
+
+        <div className="mt-5">
+          <ThresholdBar minimum={minimum} total={total} />
+          <div className="mt-2.5 flex items-center justify-between gap-3 text-xs font-bold">
+            <span className="text-[var(--ink-soft)]">
+              <CountUp value={Number(raffle.totalTickets)} /> /{" "}
+              {minimum.toString()} tickets
+            </span>
+            <span
+              className="numeric"
+              style={{
+                color: urgent ? "var(--pink)" : "var(--ink-soft)",
+              }}
+            >
+              {isActive
+                ? countdown === ""
+                  ? "—"
+                  : `${countdown} left`
+                : raffle.outcome === "NONE"
+                  ? stateLabel
+                  : raffle.outcome.replaceAll("_", " ").toLowerCase()}
+            </span>
+          </div>
+        </div>
+
+        {/* What the winner takes home right now, and the flip point. */}
+        <div className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-2xl bg-[var(--line)]">
+          <div className="bg-[var(--paper-sunk)] p-3">
+            <p className="text-[0.68rem] font-extrabold uppercase tracking-wider text-[var(--ink-faint)]">
+              Cash pot
             </p>
-            <p className="numeric mt-1 text-sm font-black">
-              {raffle.state === "ACTIVE"
-                ? formatCountdown(BigInt(raffle.endTime))
-                : raffle.outcome.replaceAll("_", " ").toLowerCase()}
+            <p className="numeric mt-1 truncate text-sm font-extrabold">
+              {formatTokenAmount(
+                pot,
+                tokenMetadata.decimals,
+                tokenMetadata.symbol,
+              )}
+            </p>
+          </div>
+          <div
+            className="p-3"
+            style={{
+              background: thresholdMet
+                ? "var(--grass-wash)"
+                : "var(--paper-sunk)",
+            }}
+          >
+            <p className="text-[0.68rem] font-extrabold uppercase tracking-wider text-[var(--ink-faint)]">
+              NFT branch
+            </p>
+            <p
+              className="numeric mt-1 flex items-center gap-1 truncate text-sm font-extrabold"
+              style={{ color: thresholdMet ? "#0d6b45" : undefined }}
+            >
+              {thresholdMet ? (
+                <>
+                  <Trophy aria-hidden size={13} /> Unlocked
+                </>
+              ) : (
+                `${remaining.toString()} to go`
+              )}
             </p>
           </div>
         </div>
 
-        <div className="mt-5">
-          <div className="mb-2 flex items-end justify-between gap-3">
-            <p className="text-xs font-bold text-[#56506a]">NFT threshold</p>
-            <p className="numeric text-xs font-black">
-              {total.toString()} / {minimum.toString()} tickets
-            </p>
-          </div>
-          <div className="h-2 overflow-hidden rounded-full bg-black/10">
-            <div
-              className="h-full rounded-full bg-[#ef2ab2]"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
+        {isActive ? (
+          <p className="mt-3 text-center text-xs font-bold text-[var(--ink-faint)]">
+            One ticket ≈{" "}
+            <span className="numeric text-[var(--ink)]">
+              1 in {(total + 1n).toString()}
+            </span>{" "}
+            odds
+          </p>
+        ) : null}
+
+        <Link
+          className={`btn mt-4 w-full ${isActive ? "btn-primary" : "btn-outline"}`}
+          href={`/raffle/${address}`}
+        >
+          {ctaLabels[raffle.state] ?? "View raffle"}
+        </Link>
       </div>
     </article>
+  );
+}
+
+/** True for a moment after `value` changes, to highlight a live update. */
+function useChangeFlash(value: string): boolean {
+  const [flashing, setFlashing] = useState(false);
+  const previous = useRef(value);
+
+  useEffect(() => {
+    if (previous.current === value) return;
+    previous.current = value;
+    setFlashing(true);
+    const timer = setTimeout(() => setFlashing(false), 900);
+    return () => clearTimeout(timer);
+  }, [value]);
+
+  return flashing;
+}
+
+export function RaffleCardSkeleton() {
+  return (
+    <div className="card overflow-hidden" aria-hidden>
+      <div className="skeleton aspect-[4/3] w-full" />
+      <div className="p-5">
+        <div className="skeleton h-4 w-24 rounded-full" />
+        <div className="skeleton mt-3 h-6 w-40 rounded-full" />
+        <div className="skeleton mt-6 h-2.5 w-full rounded-full" />
+        <div className="skeleton mt-6 h-11 w-full rounded-full" />
+      </div>
+    </div>
   );
 }

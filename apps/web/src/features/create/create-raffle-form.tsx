@@ -6,6 +6,7 @@ import {
   CircleDollarSign,
   ExternalLink,
   ImageOff,
+  Info,
   LoaderCircle,
   ShieldCheck,
 } from "lucide-react";
@@ -38,7 +39,11 @@ import {
 } from "@raffle-fun/sdk";
 
 import { WalletButton } from "@/components/wallet-button";
-import { explorerTransactionUrl, protocolDeployment } from "@/lib/protocol";
+import {
+  configuredChain,
+  explorerTransactionUrl,
+  protocolDeployment,
+} from "@/lib/protocol";
 import { fetchSafeNftMetadata, type SafeNftMetadata } from "@/lib/nft-metadata";
 
 const formSchema = z.object({
@@ -57,6 +62,8 @@ const formSchema = z.object({
   endTime: z.string().min(1, "Choose an end time."),
   metadataURI: z.string().max(2_048, "Metadata URI is too long."),
 });
+
+type FormField = keyof z.infer<typeof formSchema>;
 
 type ProgressState =
   | { readonly kind: "idle" }
@@ -90,6 +97,10 @@ export function CreateRaffleForm() {
     endTime: initialDate(24 * 7),
     metadataURI: "",
   });
+  // Validation is only surfaced once a field has been visited or the sponsor
+  // has tried to submit. Showing every rule up front reads as failure.
+  const [touched, setTouched] = useState<ReadonlySet<FormField>>(new Set());
+  const [attempted, setAttempted] = useState(false);
   const [metadata, setMetadata] = useState<SafeNftMetadata>();
   const [metadataState, setMetadataState] = useState<
     "idle" | "loading" | "error"
@@ -98,11 +109,13 @@ export function CreateRaffleForm() {
   const [progress, setProgress] = useState<ProgressState>({ kind: "idle" });
   const [approved, setApproved] = useState(false);
 
+  const deployed = protocolDeployment !== undefined;
+
   const quoteTokenCountQuery = useReadContract({
     address: protocolDeployment?.raffleFactory,
     abi: raffleFactoryAbi,
     functionName: "verifiedQuoteTokenCount",
-    query: { enabled: protocolDeployment !== undefined, staleTime: 30_000 },
+    query: { enabled: deployed, staleTime: 30_000 },
   });
   const quoteTokenCount = Number(quoteTokenCountQuery.data ?? 0n);
   const quoteTokenAddressQuery = useReadContracts({
@@ -211,6 +224,22 @@ export function CreateRaffleForm() {
     [form, selectedQuoteToken],
   );
 
+  const issues = useMemo(() => {
+    const map = new Map<string, string>();
+    if (!parsed.success) {
+      for (const issue of parsed.error.issues) {
+        const key = String(issue.path[0] ?? "");
+        if (!map.has(key)) map.set(key, issue.message);
+      }
+    }
+    return map;
+  }, [parsed]);
+
+  function errorFor(field: FormField): string | undefined {
+    if (!attempted && !touched.has(field)) return undefined;
+    return issues.get(field);
+  }
+
   const target = useMemo(() => {
     if (!parsed.success) return undefined;
     return {
@@ -219,12 +248,16 @@ export function CreateRaffleForm() {
     };
   }, [parsed]);
 
-  function update(key: keyof typeof form, value: string) {
+  function update(key: FormField, value: string) {
     setForm((current) => ({ ...current, [key]: value }));
     if (key === "prizeToken" || key === "prizeTokenId") {
       setApproved(false);
       setMetadata(undefined);
     }
+  }
+
+  function markTouched(key: FormField) {
+    setTouched((current) => new Set(current).add(key));
   }
 
   async function loadMetadata() {
@@ -268,6 +301,7 @@ export function CreateRaffleForm() {
   }
 
   async function approvePrize() {
+    setAttempted(true);
     if (
       publicClient === undefined ||
       wallet.data === undefined ||
@@ -316,6 +350,7 @@ export function CreateRaffleForm() {
   }
 
   async function submitRaffle() {
+    setAttempted(true);
     if (
       !parsed.success ||
       publicClient === undefined ||
@@ -441,29 +476,63 @@ export function CreateRaffleForm() {
     chainId === protocolDeployment?.chainId &&
     parsed.success;
 
+  const impliedTarget = (() => {
+    if (selectedQuoteToken === undefined) return undefined;
+    if (!/^\d+(\.\d+)?$/.test(form.ticketPrice)) return undefined;
+    if (!/^[1-9]\d*$/.test(form.minimumTickets)) return undefined;
+    try {
+      return formatQuoteAmount(
+        parseQuoteAmount(form.ticketPrice, selectedQuoteToken.decimals) *
+          BigInt(form.minimumTickets),
+        selectedQuoteToken.decimals,
+      );
+    } catch {
+      return undefined;
+    }
+  })();
+
   return (
-    <div className="grid gap-8 lg:grid-cols-[1fr_23rem]">
+    <div className="grid gap-8 lg:grid-cols-[1fr_22rem]">
       <div className="space-y-5">
-        <FormSection number="1" title="Connect and choose a prize">
+        {!deployed ? (
+          <div className="card flex gap-3 border-[var(--line-strong)] bg-[var(--yellow-wash)] p-5 text-sm leading-6 text-[var(--amber-ink)]">
+            <Info aria-hidden className="mt-0.5 shrink-0" size={18} />
+            <p>
+              <strong>No deployment on {configuredChain.name} yet.</strong> You
+              can walk through the whole flow, but creating a raffle stays
+              disabled until a verified factory is registered for this network.
+            </p>
+          </div>
+        ) : null}
+
+        <FormSection
+          done={target !== undefined}
+          number="1"
+          title="Connect and choose a prize"
+        >
           <div className="mb-5 max-w-xs">
-            <WalletButton />
+            <WalletButton full />
           </div>
           <div className="grid gap-4 sm:grid-cols-[1fr_10rem]">
             <Field
+              error={errorFor("prizeToken")}
               label="ERC721 contract"
+              onBlur={() => markTouched("prizeToken")}
               onChange={(value) => update("prizeToken", value)}
               placeholder="0x…"
               value={form.prizeToken}
             />
             <Field
+              error={errorFor("prizeTokenId")}
               label="Token ID"
+              onBlur={() => markTouched("prizeTokenId")}
               onChange={(value) => update("prizeTokenId", value)}
               placeholder="42"
               value={form.prizeTokenId}
             />
           </div>
           <button
-            className="btn btn-ghost mt-4"
+            className="btn btn-outline mt-4"
             disabled={metadataState === "loading" || target === undefined}
             onClick={loadMetadata}
             type="button"
@@ -476,13 +545,13 @@ export function CreateRaffleForm() {
             Verify ownership & metadata
           </button>
           {metadataError ? (
-            <p className="mt-3 text-sm font-semibold text-red-700" role="alert">
+            <p className="field-error" role="alert">
               {metadataError}
             </p>
           ) : null}
           {metadata ? (
-            <div className="mt-5 flex gap-4 rounded-2xl border border-black/10 bg-white/50 p-4">
-              <div className="relative grid size-24 shrink-0 place-items-center overflow-hidden rounded-xl bg-[#1726a3] text-white">
+            <div className="mt-5 flex gap-4 rounded-2xl bg-[var(--paper-sunk)] p-4">
+              <div className="relative grid size-24 shrink-0 place-items-center overflow-hidden rounded-2xl bg-[var(--ink)] text-white">
                 {metadata.imageUrl ? (
                   <Image
                     alt=""
@@ -497,8 +566,8 @@ export function CreateRaffleForm() {
                 )}
               </div>
               <div>
-                <p className="font-black">{metadata.name}</p>
-                <p className="mt-1 line-clamp-3 text-sm leading-5 text-[#56506a]">
+                <p className="font-extrabold">{metadata.name}</p>
+                <p className="mt-1 line-clamp-3 text-sm leading-5 text-[var(--ink-soft)]">
                   {metadata.description}
                 </p>
               </div>
@@ -506,19 +575,28 @@ export function CreateRaffleForm() {
           ) : null}
         </FormSection>
 
-        <FormSection number="2" title="Set the ticket economics">
+        <FormSection
+          done={
+            selectedQuoteToken !== undefined &&
+            issues.get("ticketPrice") === undefined
+          }
+          number="2"
+          title="Set the ticket economics"
+        >
           <label className="mb-4 block">
-            <span className="mb-2 block text-xs font-extrabold text-[#56506a]">
-              Payment token
-            </span>
+            <span className="field-label">Payment token</span>
             <select
-              className="input"
+              className="select"
               disabled={quoteTokens.length === 0}
               onChange={(event) => update("quoteToken", event.target.value)}
               value={selectedQuoteToken?.address ?? ""}
             >
               {quoteTokens.length === 0 ? (
-                <option value="">No verified tokens available</option>
+                <option value="">
+                  {deployed
+                    ? "No verified tokens available yet"
+                    : "Available after deployment"}
+                </option>
               ) : null}
               {quoteTokens.map((token) => (
                 <option key={token.address} value={token.address}>
@@ -527,42 +605,50 @@ export function CreateRaffleForm() {
                 </option>
               ))}
             </select>
-            <span className="mt-2 block text-xs leading-5 text-[#56506a]">
+            <span className="field-hint">
               The protocol accepts any contract-backed ERC-20. This official
-              creation flow offers only tokens currently verified for discovery.
+              flow offers only tokens currently verified for discovery.
             </span>
           </label>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field
+              error={errorFor("ticketPrice")}
               label={`Gross ticket price (${selectedQuoteToken?.symbol ?? "token"})`}
+              onBlur={() => markTouched("ticketPrice")}
               onChange={(value) => update("ticketPrice", value)}
               placeholder="1.00"
               value={form.ticketPrice}
             />
             <Field
+              error={errorFor("minimumTickets")}
               label="Minimum tickets"
+              onBlur={() => markTouched("minimumTickets")}
               onChange={(value) => update("minimumTickets", value)}
               placeholder="100"
               value={form.minimumTickets}
             />
           </div>
-          <p className="mt-4 text-sm leading-6 text-[#56506a]">
+          <p className="field-hint">
             Exactly the minimum counts as met. There is no cap: a high threshold
-            simply makes the NFT branch less likely and does not change the
+            simply makes the NFT branch less likely and never changes the
             fallback split.
           </p>
         </FormSection>
 
-        <FormSection number="3" title="Choose the sale window">
+        <FormSection done number="3" title="Choose the sale window">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field
+              error={errorFor("startTime")}
               label="Starts"
+              onBlur={() => markTouched("startTime")}
               onChange={(value) => update("startTime", value)}
               type="datetime-local"
               value={form.startTime}
             />
             <Field
+              error={errorFor("endTime")}
               label="Ends"
+              onBlur={() => markTouched("endTime")}
               onChange={(value) => update("endTime", value)}
               type="datetime-local"
               value={form.endTime}
@@ -570,7 +656,9 @@ export function CreateRaffleForm() {
           </div>
           <div className="mt-4">
             <Field
-              label="Optional raffle metadata URI"
+              error={errorFor("metadataURI")}
+              label="Raffle metadata URI (optional)"
+              onBlur={() => markTouched("metadataURI")}
               onChange={(value) => update("metadataURI", value)}
               placeholder="ipfs://…"
               value={form.metadataURI}
@@ -579,18 +667,19 @@ export function CreateRaffleForm() {
         </FormSection>
 
         <FormSection number="4" title="Approve and create">
-          {!parsed.success ? (
-            <ul className="mb-5 list-disc space-y-1 pl-5 text-sm text-red-700">
-              {parsed.error.issues.map((issue) => (
-                <li key={`${issue.path.join(".")}-${issue.message}`}>
-                  {issue.message}
-                </li>
+          {attempted && !parsed.success ? (
+            <ul
+              className="mb-5 space-y-1.5 rounded-2xl bg-[var(--danger-wash)] p-4 text-sm font-bold text-[var(--danger)]"
+              role="alert"
+            >
+              {[...issues.values()].map((message) => (
+                <li key={message}>{message}</li>
               ))}
             </ul>
           ) : null}
           <div className="flex flex-wrap gap-3">
             <button
-              className="btn btn-ghost"
+              className="btn btn-outline"
               disabled={!canWrite || progress.kind === "pending"}
               onClick={approvePrize}
               type="button"
@@ -609,10 +698,10 @@ export function CreateRaffleForm() {
           </div>
           {progress.kind !== "idle" ? (
             <div
-              className={`mt-5 rounded-xl border p-4 text-sm ${
+              className={`mt-5 rounded-2xl p-4 text-sm ${
                 progress.kind === "error"
-                  ? "border-red-900/20 bg-red-50 text-red-800"
-                  : "border-black/10 bg-white/55"
+                  ? "bg-[var(--danger-wash)] text-[var(--danger)]"
+                  : "bg-[var(--paper-sunk)]"
               }`}
               role={progress.kind === "error" ? "alert" : "status"}
             >
@@ -626,13 +715,15 @@ export function CreateRaffleForm() {
                   {progress.message}
                 </p>
               ) : null}
-              {progress.kind === "error" ? progress.message : null}
+              {progress.kind === "error" ? (
+                <p className="font-bold">{progress.message}</p>
+              ) : null}
               {progress.kind === "success" ? (
                 <div>
-                  <p className="flex items-center gap-2 font-black text-emerald-800">
+                  <p className="flex items-center gap-2 font-extrabold text-[#0d6b45]">
                     <Check aria-hidden size={17} /> Transaction confirmed
                   </p>
-                  <div className="mt-3 flex flex-wrap gap-3">
+                  <div className="mt-3 flex flex-wrap gap-4">
                     <a
                       className="font-bold underline"
                       href={explorerTransactionUrl(progress.hash)}
@@ -658,65 +749,52 @@ export function CreateRaffleForm() {
         </FormSection>
       </div>
 
-      <aside className="lg:sticky lg:top-6 lg:self-start">
-        <div className="ticket-card overflow-hidden">
-          <div className="bg-[#1726a3] p-6 text-white">
-            <p className="eyebrow !text-[#7fc8ff]">Review economics</p>
-            <h2 className="mt-2 text-3xl font-bold">
-              One threshold, no ambiguity.
-            </h2>
+      <aside className="lg:sticky lg:top-24 lg:self-start">
+        <div className="card overflow-hidden">
+          <div className="bg-[var(--ink)] p-6 text-white">
+            <p className="eyebrow !text-[var(--sky)]">Review economics</p>
+            <h2 className="mt-2 text-2xl">One threshold, no ambiguity.</h2>
           </div>
           <div className="space-y-4 p-6">
             <OutcomeCard
-              color="bg-[#ffdc55]"
+              tint="var(--yellow-wash)"
               label="Threshold met"
               text="The winning ticket holder claims the NFT. You claim the full net pot."
             />
             <OutcomeCard
-              color="bg-[#7fc8ff]"
+              tint="var(--sky-wash)"
               label="Threshold missed"
               text="You reclaim the NFT plus 20% of the net pot. The winner claims 80%."
             />
-            <div className="border-t border-dashed border-black/25 pt-5 text-sm">
-              <p className="flex items-center justify-between">
-                <span>Protocol fee</span>
-                <strong>5% of gross</strong>
-              </p>
-              <p className="mt-2 flex items-center justify-between">
-                <span>Optional provider</span>
-                <strong>+5% of gross</strong>
-              </p>
-              <p className="mt-4 flex items-start gap-2 rounded-xl bg-amber-100 p-3 text-xs leading-5">
-                <CircleDollarSign
-                  aria-hidden
-                  className="mt-0.5 shrink-0"
-                  size={16}
-                />
+            <div className="perforation !my-5" />
+            <dl className="space-y-2 text-sm">
+              <div className="flex items-center justify-between">
+                <dt className="text-[var(--ink-soft)]">Protocol fee</dt>
+                <dd className="font-extrabold">5% of gross</dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt className="text-[var(--ink-soft)]">Optional provider</dt>
+                <dd className="font-extrabold">+5% of gross</dd>
+              </div>
+            </dl>
+            <p className="flex items-start gap-2 rounded-2xl bg-[var(--paper-sunk)] p-3 text-xs leading-5 text-[var(--ink-soft)]">
+              <CircleDollarSign
+                aria-hidden
+                className="mt-0.5 shrink-0"
+                size={16}
+              />
+              <span>
                 At {form.ticketPrice || "—"}{" "}
                 {selectedQuoteToken?.symbol ?? "tokens"} ×{" "}
                 {form.minimumTickets || "0"} tickets, the implied gross
                 threshold target is{" "}
-                {form.ticketPrice &&
-                /^\d+(\.\d+)?$/.test(form.ticketPrice) &&
-                /^[1-9]\d*$/.test(form.minimumTickets) &&
-                selectedQuoteToken !== undefined
-                  ? (() => {
-                      try {
-                        return formatQuoteAmount(
-                          parseQuoteAmount(
-                            form.ticketPrice,
-                            selectedQuoteToken.decimals,
-                          ) * BigInt(form.minimumTickets || "0"),
-                          selectedQuoteToken.decimals,
-                        );
-                      } catch {
-                        return "—";
-                      }
-                    })()
-                  : "—"}{" "}
-                {selectedQuoteToken?.symbol ?? "tokens"}.
-              </p>
-            </div>
+                <strong className="numeric">
+                  {impliedTarget ?? "—"}{" "}
+                  {selectedQuoteToken?.symbol ?? "tokens"}
+                </strong>
+                .
+              </span>
+            </p>
           </div>
         </div>
       </aside>
@@ -727,19 +805,27 @@ export function CreateRaffleForm() {
 function FormSection({
   number,
   title,
+  done = false,
   children,
 }: {
   readonly number: string;
   readonly title: string;
+  readonly done?: boolean;
   readonly children: React.ReactNode;
 }) {
   return (
-    <section className="ticket-card p-6 md:p-8">
+    <section className="card p-6 md:p-7">
       <div className="mb-6 flex items-center gap-3">
-        <span className="grid size-9 place-items-center rounded-full border border-black bg-[#ffdc55] text-sm font-black">
-          {number}
+        <span
+          className={`grid size-8 shrink-0 place-items-center rounded-full text-sm font-extrabold ${
+            done
+              ? "bg-[var(--grass)] text-white"
+              : "bg-[var(--yellow)] text-[var(--ink)]"
+          }`}
+        >
+          {done ? <Check aria-hidden size={16} /> : number}
         </span>
-        <h2 className="text-2xl font-bold">{title}</h2>
+        <h2 className="text-xl md:text-2xl">{title}</h2>
       </div>
       {children}
     </section>
@@ -750,44 +836,49 @@ function Field({
   label,
   value,
   onChange,
+  onBlur,
   placeholder,
+  error,
   type = "text",
 }: {
   readonly label: string;
   readonly value: string;
   readonly onChange: (value: string) => void;
+  readonly onBlur?: () => void;
   readonly placeholder?: string;
+  readonly error?: string;
   readonly type?: string;
 }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-xs font-extrabold text-[#56506a]">
-        {label}
-      </span>
+      <span className="field-label">{label}</span>
       <input
+        aria-invalid={error !== undefined}
         className="input numeric"
+        onBlur={onBlur}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         type={type}
         value={value}
       />
+      {error ? <span className="field-error">{error}</span> : null}
     </label>
   );
 }
 
 function OutcomeCard({
-  color,
+  tint,
   label,
   text,
 }: {
-  readonly color: string;
+  readonly tint: string;
   readonly label: string;
   readonly text: string;
 }) {
   return (
-    <div className={`rounded-2xl border border-black/15 p-4 ${color}`}>
-      <p className="font-black">{label}</p>
-      <p className="mt-1 text-xs leading-5 text-black/65">{text}</p>
+    <div className="rounded-2xl p-4" style={{ background: tint }}>
+      <p className="font-extrabold">{label}</p>
+      <p className="mt-1 text-xs leading-5 text-[var(--ink-soft)]">{text}</p>
     </div>
   );
 }

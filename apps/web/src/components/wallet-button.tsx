@@ -1,25 +1,46 @@
 "use client";
 
-import { ChevronDown, LogOut, Wallet } from "lucide-react";
+import { ChevronDown, LogOut, User, Wallet } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAccount, useConnect, useDisconnect, useSwitchChain } from "wagmi";
 
 import { configuredChain, configuredChainId } from "@/lib/protocol";
 import { shortAddress } from "@/lib/format";
 
-export function WalletButton() {
+export function WalletButton({ full = false }: { readonly full?: boolean }) {
   const [expanded, setExpanded] = useState(false);
+  const container = useRef<HTMLDivElement>(null);
   const { address, chainId, isConnected } = useAccount();
   const { connectors, connect, isPending } = useConnect();
   const { disconnect } = useDisconnect();
   const { switchChain, isPending: isSwitching } = useSwitchChain();
 
+  useEffect(() => {
+    if (!expanded) return;
+    function onPointerDown(event: MouseEvent) {
+      if (!container.current?.contains(event.target as Node)) {
+        setExpanded(false);
+      }
+    }
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setExpanded(false);
+    }
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [expanded]);
+
+  const width = full ? "w-full" : "";
+
   if (!isConnected || address === undefined) {
     const connector = connectors[0];
     return (
       <button
-        className="btn btn-dark w-full"
+        className={`btn btn-ink ${width}`}
         disabled={connector === undefined || isPending}
         onClick={() => connector && connect({ connector })}
         type="button"
@@ -33,7 +54,7 @@ export function WalletButton() {
   if (chainId !== configuredChainId) {
     return (
       <button
-        className="btn btn-primary w-full"
+        className={`btn btn-primary ${width}`}
         disabled={isSwitching}
         onClick={() => switchChain({ chainId: configuredChainId })}
         type="button"
@@ -44,29 +65,42 @@ export function WalletButton() {
   }
 
   return (
-    <div className="relative">
+    <div className={`relative ${width}`} ref={container}>
       <button
         aria-expanded={expanded}
-        className="btn btn-ghost w-full bg-white/70"
+        aria-haspopup="menu"
+        className={`btn btn-outline ${width}`}
         onClick={() => setExpanded((value) => !value)}
         type="button"
       >
-        <span className="status-dot text-emerald-500" />
-        {shortAddress(address)}
-        <ChevronDown aria-hidden size={15} />
+        <span className="size-2 rounded-full bg-[var(--grass)]" />
+        <span className="numeric">{shortAddress(address)}</span>
+        <ChevronDown
+          aria-hidden
+          className={`transition-transform ${expanded ? "rotate-180" : ""}`}
+          size={15}
+        />
       </button>
       {expanded ? (
-        <div className="absolute right-0 top-[calc(100%+0.5rem)] z-50 min-w-52 rounded-2xl border border-black/15 bg-[#fffdf7] p-2 shadow-xl">
+        <div
+          className="card absolute right-0 top-[calc(100%+0.5rem)] z-50 min-w-56 p-1.5 shadow-[var(--shadow-lift)]"
+          role="menu"
+        >
           <Link
-            className="block rounded-xl px-3 py-2 text-sm font-bold hover:bg-black/5"
+            className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-bold hover:bg-[var(--paper-sunk)]"
             href={`/profile/${address}`}
             onClick={() => setExpanded(false)}
+            role="menuitem"
           >
-            View profile
+            <User aria-hidden size={16} /> View profile
           </Link>
           <button
-            className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-bold text-red-700 hover:bg-red-50"
-            onClick={() => disconnect()}
+            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-bold text-[var(--danger)] hover:bg-[var(--danger-wash)]"
+            onClick={() => {
+              setExpanded(false);
+              disconnect();
+            }}
+            role="menuitem"
             type="button"
           >
             <LogOut aria-hidden size={16} />
