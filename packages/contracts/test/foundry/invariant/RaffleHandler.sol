@@ -57,14 +57,14 @@ contract RaffleHandler is Test, IERC721Receiver {
         lastObservedState = raffle_.state();
     }
 
-    function buy(uint256 quantitySeed, bool withProvider) external {
+    function buy(uint256 quantitySeed) external {
         if (!raffle.isOpen()) return;
         uint256 sold = raffle.totalTickets();
         if (sold >= MAX_HANDLER_TICKETS) return;
         uint256 remaining = MAX_HANDLER_TICKETS - sold;
         uint256 quantity = bound(quantitySeed, 1, remaining < 10 ? remaining : 10);
         uint256 grossBefore = raffle.grossSales();
-        try raffle.buyTickets(address(this), quantity, withProvider ? address(this) : address(0)) {
+        try raffle.buyTickets(address(this), quantity) {
             ghostGrossPaid += raffle.grossSales() - grossBefore;
         } catch { }
         _observe();

@@ -104,7 +104,7 @@ export function RaffleCard({ raffle }: { readonly raffle: IndexedRaffle }) {
           <div className="h-2 overflow-hidden rounded-full bg-black/10">
             <div
               className="h-full rounded-full bg-[#ef2ab2]"
-              style={{ width: `${progress}%` }}
+              style={{ width: `${Math.min(progress, 100)}%` }}
             />
           </div>
         </div>

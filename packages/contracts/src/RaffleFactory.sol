@@ -21,11 +21,9 @@ contract RaffleFactory is IRaffleFactory, Ownable2Step, ReentrancyGuard {
 
     /// @notice Denominator used for all basis-point calculations.
     uint256 public constant BPS = RaffleConstants.BPS;
-    /// @notice Protocol fee charged against gross ticket payments.
+    /// @notice Protocol fee allocated once against aggregate gross sales at resolution.
     uint256 public constant PROTOCOL_FEE_BPS = RaffleConstants.PROTOCOL_FEE_BPS;
-    /// @notice Optional provider fee charged against gross ticket payments.
-    uint256 public constant PROVIDER_FEE_BPS = RaffleConstants.PROVIDER_FEE_BPS;
-    /// @notice Winner share of the net pot in the cash-fallback branch.
+    /// @notice Winner share of the distributable pot in the cash-fallback branch.
     uint256 public constant CASH_WINNER_BPS = RaffleConstants.CASH_WINNER_BPS;
     /// @notice Bounded ticket quantity minted by one purchase.
     uint256 public constant MAX_TICKETS_PER_PURCHASE = RaffleConstants.MAX_TICKETS_PER_PURCHASE;
@@ -54,9 +52,6 @@ contract RaffleFactory is IRaffleFactory, Ownable2Step, ReentrancyGuard {
     mapping(address raffle => bool registered) public override isRaffle;
     /// @inheritdoc IRaffleFactory
     mapping(address quoteToken => bool verified) public override isVerifiedQuoteToken;
-    /// @inheritdoc IRaffleFactory
-    mapping(address provider => bool allowed) public override isProvider;
-
     address[] private _verifiedQuoteTokens;
     mapping(address quoteToken => bool known) private _knownVerifiedQuoteToken;
 
@@ -168,16 +163,6 @@ contract RaffleFactory is IRaffleFactory, Ownable2Step, ReentrancyGuard {
         address previousTreasury = protocolTreasury;
         protocolTreasury = newTreasury;
         emit ProtocolTreasuryUpdated(previousTreasury, newTreasury);
-    }
-
-    /// @notice Updates whether a nonzero provider may be supplied to current and future purchases.
-    /// @param provider Provider account.
-    /// @param allowed New allowlist status.
-    function setProvider(address provider, bool allowed) external onlyOwner {
-        if (provider == address(0)) revert ZeroAddress();
-        bool previousAllowed = isProvider[provider];
-        isProvider[provider] = allowed;
-        emit ProviderUpdated(provider, previousAllowed, allowed);
     }
 
     /// @notice Updates a quote token's official discovery verification without gating raffle creation.

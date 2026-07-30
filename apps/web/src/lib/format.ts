@@ -37,5 +37,5 @@ export function formatCountdown(timestamp: bigint, now = Date.now()): string {
 
 export function percentOf(value: bigint, total: bigint): number {
   if (total <= 0n) return 0;
-  return Math.min(100, Number((value * 10_000n) / total) / 100);
+  return Number((value * 10_000n) / total) / 100;
 }

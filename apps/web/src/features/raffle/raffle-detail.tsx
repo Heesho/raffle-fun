@@ -35,6 +35,7 @@ import {
 import {
   buyTickets,
   calculatePurchaseAmounts,
+  calculateResolutionAmounts,
   claimPrize,
   claimQuote,
   closeNoSales,
@@ -86,7 +87,7 @@ type LiveRaffleView = {
   readonly endTime: bigint;
   readonly totalTickets: bigint;
   readonly grossSales: bigint;
-  readonly netPot: bigint;
+  readonly unsettledPot: bigint;
   readonly winningTicketId: bigint;
   readonly winner: Address;
   readonly accountTicketBalance: bigint;
@@ -114,10 +115,8 @@ const quantityPattern = /^(?:[1-9]|[1-9]\d|100)$/;
 
 export function RaffleDetail({
   raffleAddress,
-  referrer,
 }: {
   readonly raffleAddress: string;
-  readonly referrer?: string;
 }) {
   const validRaffle = isAddress(raffleAddress);
   const raffle = validRaffle ? (raffleAddress as Address) : undefined;
@@ -132,15 +131,6 @@ export function RaffleDetail({
     useState(false);
   const [progress, setProgress] = useState<ActionProgress>({ kind: "idle" });
 
-  const referrerAddress =
-    referrer !== undefined && isAddress(referrer) && referrer !== zeroAddress
-      ? (referrer as Address)
-      : undefined;
-  const invalidReferrer =
-    referrer !== undefined &&
-    referrer !== "" &&
-    (!isAddress(referrer) || referrer === zeroAddress);
-
   const viewQuery = useReadContract({
     address: protocolDeployment?.raffleLens,
     abi: raffleLensAbi,
@@ -152,17 +142,6 @@ export function RaffleDetail({
     query: {
       enabled: protocolDeployment !== undefined && raffle !== undefined,
       refetchInterval: 12_000,
-    },
-  });
-
-  const providerQuery = useReadContract({
-    address: protocolDeployment?.raffleFactory,
-    abi: raffleFactoryAbi,
-    functionName: "isProvider",
-    args: referrerAddress === undefined ? undefined : [referrerAddress],
-    query: {
-      enabled:
-        protocolDeployment !== undefined && referrerAddress !== undefined,
     },
   });
 
@@ -181,8 +160,6 @@ export function RaffleDetail({
   const quoteTokenVerificationKnown =
     typeof quoteTokenVerificationQuery.data === "boolean";
   const quoteTokenVerified = quoteTokenVerificationQuery.data === true;
-  const providerApproved =
-    referrerAddress === undefined || providerQuery.data === true;
   const parsedQuantity = quantityPattern.test(quantity)
     ? BigInt(quantity)
     : undefined;
@@ -191,9 +168,8 @@ export function RaffleDetail({
     return calculatePurchaseAmounts({
       ticketPrice: view.ticketPrice,
       quantity: parsedQuantity,
-      hasProvider: referrerAddress !== undefined,
     });
-  }, [parsedQuantity, referrerAddress, view]);
+  }, [parsedQuantity, view]);
 
   async function readLiveView(): Promise<LiveRaffleView> {
     if (
@@ -267,16 +243,6 @@ export function RaffleDetail({
       });
       return;
     }
-    if (invalidReferrer || !providerApproved) {
-      setProgress({
-        kind: "error",
-        text: invalidReferrer
-          ? "The ref parameter is not a valid nonzero address."
-          : "This referrer is not currently allowlisted onchain.",
-      });
-      return;
-    }
-
     setProgress({
       kind: "pending",
       text: "Checking live raffle and allowance…",
@@ -294,18 +260,6 @@ export function RaffleDetail({
       if (to === undefined || to === zeroAddress) {
         throw new Error("Enter a valid nonzero ticket recipient.");
       }
-      const provider = referrerAddress ?? zeroAddress;
-      if (referrerAddress !== undefined) {
-        const stillAllowed = await context.publicClient.readContract({
-          address: protocolDeployment!.raffleFactory,
-          abi: raffleFactoryAbi,
-          functionName: "isProvider",
-          args: [referrerAddress],
-        });
-        if (!stillAllowed)
-          throw new Error("The referrer is no longer allowlisted.");
-      }
-
       const allowance = await context.publicClient.readContract({
         address: live.quoteToken,
         abi: erc20Abi,
@@ -328,7 +282,7 @@ export function RaffleDetail({
             data: encodeFunctionData({
               abi: raffleAbi,
               functionName: "buyTickets",
-              args: [to, parsedQuantity, provider],
+              args: [to, parsedQuantity],
             }),
           },
         ] as const;
@@ -377,13 +331,7 @@ export function RaffleDetail({
         );
       }
       setProgress({ kind: "pending", text: "Simulating ticket purchase…" });
-      const hash = await buyTickets(
-        context,
-        raffle,
-        to,
-        parsedQuantity,
-        referrerAddress ?? zeroAddress,
-      );
+      const hash = await buyTickets(context, raffle, to, parsedQuantity);
       await finish(hash);
     } catch (error) {
       setProgress({
@@ -490,7 +438,17 @@ export function RaffleDetail({
   const progressPercent = percentOf(view.totalTickets, view.minimumTickets);
   const thresholdMet = view.totalTickets >= view.minimumTickets;
   const thresholdTarget = view.ticketPrice * view.minimumTickets;
-  const hasProvider = referrerAddress !== undefined;
+  const currentSettlement = calculateResolutionAmounts(
+    view.state === RaffleState.Resolved ? view.grossSales : view.unsettledPot,
+    thresholdMet,
+  );
+  const projectedSettlement =
+    purchaseAmounts === undefined || parsedQuantity === undefined
+      ? undefined
+      : calculateResolutionAmounts(
+          view.unsettledPot + purchaseAmounts.grossAmount,
+          view.totalTickets + parsedQuantity >= view.minimumTickets,
+        );
 
   return (
     <div className="page-shell py-12 md:py-18">
@@ -622,7 +580,7 @@ export function RaffleDetail({
             <div className="mt-5 h-4 overflow-hidden rounded-full bg-black/10">
               <div
                 className="h-full rounded-full bg-[#ef2ab2]"
-                style={{ width: `${progressPercent}%` }}
+                style={{ width: `${Math.min(progressPercent, 100)}%` }}
               />
             </div>
             <div className="mt-5 grid gap-3 text-sm sm:grid-cols-3">
@@ -643,17 +601,18 @@ export function RaffleDetail({
                 )}
               />
               <Stat
-                label="Current net pot"
+                label="Distributable after 5%"
                 value={formatTokenAmount(
-                  view.netPot,
+                  currentSettlement.distributablePot,
                   tokenMetadata.decimals,
                   tokenMetadata.symbol,
                 )}
               />
             </div>
             <p className="mt-5 text-xs leading-5 text-[#56506a]">
-              The progress bar indicates the branch if sales ended at this
-              count. It is not a guarantee while ticket sales remain open.
+              The threshold selects the settlement branch; it does not cap
+              sales. Tickets remain available until the fixed closing time, so
+              the sponsor can exceed the target and existing odds can change.
             </p>
           </section>
 
@@ -670,14 +629,14 @@ export function RaffleDetail({
                 icon={<Trophy aria-hidden />}
                 label="At or above threshold"
                 title="Winner claims the NFT"
-                text="The sponsor claims the full net pot. Protocol and any provider claims remain payable."
+                text="A 5% protocol fee is allocated at resolution. The sponsor claims the remaining 95% of aggregate gross sales."
               />
               <OutcomePanel
                 active={!thresholdMet && view.outcome === RaffleOutcome.None}
                 icon={<CircleDollarSign aria-hidden />}
                 label="Below threshold"
                 title="Winner claims 80% cash"
-                text="The sponsor reclaims the NFT and receives the remaining 20% of the net pot."
+                text="The sponsor reclaims the NFT and receives the remaining 20% of the distributable pot."
               />
             </div>
             {view.outcome !== RaffleOutcome.None ? (
@@ -756,7 +715,7 @@ export function RaffleDetail({
                 />
               </label>
             </div>
-            {purchaseAmounts ? (
+            {purchaseAmounts && projectedSettlement ? (
               <dl className="mt-5 space-y-2 border-y border-dashed border-black/25 py-4 text-xs">
                 <Split
                   label="Total paid"
@@ -768,25 +727,25 @@ export function RaffleDetail({
                   strong
                 />
                 <Split
-                  label="Protocol · 5%"
+                  label="Gross pot after purchase"
                   value={formatTokenAmount(
-                    purchaseAmounts.protocolFee,
+                    view.unsettledPot + purchaseAmounts.grossAmount,
                     tokenMetadata.decimals,
                     tokenMetadata.symbol,
                   )}
                 />
                 <Split
-                  label={hasProvider ? "Provider · 5%" : "Provider · none"}
+                  label="Projected settlement fee · 5%"
                   value={formatTokenAmount(
-                    purchaseAmounts.providerFee,
+                    projectedSettlement.protocolFee,
                     tokenMetadata.decimals,
                     tokenMetadata.symbol,
                   )}
                 />
                 <Split
-                  label="Added to net pot"
+                  label="Projected distributable pot"
                   value={formatTokenAmount(
-                    purchaseAmounts.netContribution,
+                    projectedSettlement.distributablePot,
                     tokenMetadata.decimals,
                     tokenMetadata.symbol,
                   )}
@@ -794,26 +753,10 @@ export function RaffleDetail({
                 />
               </dl>
             ) : null}
-            {referrer !== undefined ? (
-              <p
-                className={`mt-4 rounded-xl p-3 text-xs leading-5 ${
-                  invalidReferrer || !providerApproved
-                    ? "bg-red-50 text-red-800"
-                    : "bg-emerald-50 text-emerald-900"
-                }`}
-              >
-                {invalidReferrer
-                  ? "Invalid ref parameter. It will not be substituted or used."
-                  : providerApproved
-                    ? `Allowlisted provider: ${shortAddress(referrerAddress!)}. A disclosed 5% fee applies.`
-                    : "The requested provider is not allowlisted. Purchase is disabled."}
-              </p>
-            ) : (
-              <p className="mt-4 rounded-xl bg-[#ffdc55]/55 p-3 text-xs leading-5">
-                No provider fee: 95% of gross contributes to the net pot after
-                the 5% protocol fee.
-              </p>
-            )}
+            <p className="mt-4 rounded-xl bg-[#ffdc55]/55 p-3 text-xs leading-5">
+              Purchases add their full amount to the gross pot. One 5% protocol
+              fee is calculated from aggregate sales when the raffle resolves.
+            </p>
             <div className="mt-5">
               {!isConnected ? (
                 <WalletButton />
@@ -823,8 +766,6 @@ export function RaffleDetail({
                   disabled={
                     !view.canBuy ||
                     progress.kind === "pending" ||
-                    invalidReferrer ||
-                    !providerApproved ||
                     !quoteTokenVerificationKnown ||
                     (!quoteTokenVerified && !acceptedUnverifiedTokenRisk)
                   }

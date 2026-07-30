@@ -34,9 +34,8 @@ type QuoteTokenStats @entity(immutable: false) {
   verified: Boolean!
   raffleCount: BigInt!
   grossVolume: BigInt!
-  netPotVolume: BigInt!
+  settledVolume: BigInt!
   protocolFees: BigInt!
-  providerFees: BigInt!
   quoteClaimed: BigInt!
   raffles: [Raffle!]! @derivedFrom(field: "quoteTokenStats")
   accounts: [AccountTokenStats!]! @derivedFrom(field: "quoteToken")
@@ -61,9 +60,8 @@ type Raffle @entity(immutable: false) {
   outcome: RaffleOutcome!
   totalTickets: BigInt!
   grossSales: BigInt!
-  netPot: BigInt!
+  unsettledPot: BigInt!
   totalProtocolFees: BigInt!
-  totalProviderFees: BigInt!
   quoteClaimed: BigInt!
   entropySequenceNumber: BigInt
   winningTicketId: BigInt
@@ -101,7 +99,6 @@ type AccountTokenStats @entity(immutable: false) {
   account: Account!
   quoteToken: QuoteTokenStats!
   grossSpent: BigInt!
-  providerFeesEarned: BigInt!
   quoteClaimed: BigInt!
 }
 
@@ -113,7 +110,6 @@ type RaffleAccount @entity(immutable: false) {
   ticketsCurrentlyOwned: BigInt!
   grossSpent: BigInt!
   quoteClaimed: BigInt!
-  providerFeesEarned: BigInt!
   won: Boolean!
 }
 
@@ -132,14 +128,10 @@ type Purchase @entity(immutable: true) {
   raffle: Raffle!
   buyer: Account!
   recipient: Account!
-  provider: Account
   quantity: BigInt!
   firstTicketId: BigInt!
   lastTicketId: BigInt!
   grossAmount: BigInt!
-  protocolFee: BigInt!
-  providerFee: BigInt!
-  netContribution: BigInt!
   transactionHash: Bytes!
   blockNumber: BigInt!
   timestamp: BigInt!
@@ -167,6 +159,8 @@ type Resolution @entity(immutable: true) {
   winner: Account!
   outcome: RaffleOutcome!
   prizeClaimant: Account!
+  protocolFee: BigInt!
+  distributablePot: BigInt!
   winnerCashAmount: BigInt!
   sponsorCashAmount: BigInt!
   transactionHash: Bytes!
@@ -219,9 +213,8 @@ type ProtocolDayData @entity(immutable: false) {
   dayStart: BigInt!
   tickets: BigInt!
   grossVolume: BigInt!
-  netContributions: BigInt!
+  settledVolume: BigInt!
   protocolFees: BigInt!
-  providerFees: BigInt!
   resolutions: BigInt!
 }
 
@@ -231,5 +224,4 @@ type RaffleDayData @entity(immutable: false) {
   dayStart: BigInt!
   tickets: BigInt!
   grossVolume: BigInt!
-  netContributions: BigInt!
 }

@@ -19,7 +19,7 @@ export interface IndexedRaffle {
   readonly outcome: string;
   readonly totalTickets: string;
   readonly grossSales: string;
-  readonly netPot: string;
+  readonly unsettledPot: string;
   readonly winner: string | null;
 }
 
@@ -60,7 +60,7 @@ const rafflesQuery = gql`
       outcome
       totalTickets
       grossSales
-      netPot
+      unsettledPot
       winner
     }
   }
@@ -92,7 +92,7 @@ const profileQuery = gql`
       outcome
       totalTickets
       grossSales
-      netPot
+      unsettledPot
       winner
     }
     positions: raffleAccounts(
@@ -118,7 +118,7 @@ const profileQuery = gql`
         outcome
         totalTickets
         grossSales
-        netPot
+        unsettledPot
         winner
       }
     }

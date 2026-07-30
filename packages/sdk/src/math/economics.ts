@@ -1,16 +1,14 @@
 export const BPS = 10_000n;
 export const PROTOCOL_FEE_BPS = 500n;
-export const PROVIDER_FEE_BPS = 500n;
 export const CASH_WINNER_BPS = 8_000n;
 
 export interface PurchaseAmounts {
   readonly grossAmount: bigint;
-  readonly protocolFee: bigint;
-  readonly providerFee: bigint;
-  readonly netContribution: bigint;
 }
 
 export interface ResolutionAmounts {
+  readonly protocolFee: bigint;
+  readonly distributablePot: bigint;
   readonly winnerCashAmount: bigint;
   readonly sponsorCashAmount: bigint;
 }
@@ -18,39 +16,38 @@ export interface ResolutionAmounts {
 export function calculatePurchaseAmounts({
   ticketPrice,
   quantity,
-  hasProvider,
 }: {
   readonly ticketPrice: bigint;
   readonly quantity: bigint;
-  readonly hasProvider: boolean;
 }): PurchaseAmounts {
   if (ticketPrice <= 0n) throw new RangeError("ticketPrice must be positive");
   if (quantity <= 0n) throw new RangeError("quantity must be positive");
 
-  const grossAmount = ticketPrice * quantity;
-  const protocolFee = (grossAmount * PROTOCOL_FEE_BPS) / BPS;
-  const providerFee = hasProvider ? (grossAmount * PROVIDER_FEE_BPS) / BPS : 0n;
-  return {
-    grossAmount,
-    protocolFee,
-    providerFee,
-    netContribution: grossAmount - protocolFee - providerFee,
-  };
+  return { grossAmount: ticketPrice * quantity };
 }
 
 export function calculateResolutionAmounts(
-  netPot: bigint,
+  grossPot: bigint,
   thresholdMet: boolean,
 ): ResolutionAmounts {
-  if (netPot < 0n) throw new RangeError("netPot must not be negative");
+  if (grossPot < 0n) throw new RangeError("grossPot must not be negative");
+  const protocolFee = (grossPot * PROTOCOL_FEE_BPS) / BPS;
+  const distributablePot = grossPot - protocolFee;
   if (thresholdMet) {
-    return { winnerCashAmount: 0n, sponsorCashAmount: netPot };
+    return {
+      protocolFee,
+      distributablePot,
+      winnerCashAmount: 0n,
+      sponsorCashAmount: distributablePot,
+    };
   }
 
-  const winnerCashAmount = (netPot * CASH_WINNER_BPS) / BPS;
+  const winnerCashAmount = (distributablePot * CASH_WINNER_BPS) / BPS;
   return {
+    protocolFee,
+    distributablePot,
     winnerCashAmount,
-    sponsorCashAmount: netPot - winnerCashAmount,
+    sponsorCashAmount: distributablePot - winnerCashAmount,
   };
 }
 

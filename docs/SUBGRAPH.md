@@ -73,5 +73,5 @@ Postgres, and Graph Node endpoints from the documented script.
 
 The index supplies lists, search, profiles, per-token aggregates, and activity. It may
 lag, reorganize, or fail. A transaction client must reread factory/raffle state
-onchain, validate the chain, selected quote token, and provider, fetch current Entropy
-fee, and simulate the call.
+onchain, validate the chain and selected quote token, fetch the current Entropy fee,
+and simulate the call.

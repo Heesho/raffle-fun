@@ -23,7 +23,7 @@ interface IRaffleLens {
     /// @param endTime Exclusive end timestamp.
     /// @param totalTickets Tickets sold.
     /// @param grossSales Historical gross sales.
-    /// @param netPot Unallocated pre-resolution pot.
+    /// @param unsettledPot Aggregate gross sales awaiting resolution.
     /// @param winningTicketId Resolved winning ticket.
     /// @param winner Snapshotted resolved winner.
     /// @param accountTicketBalance Tickets currently owned by the requested account.
@@ -51,7 +51,7 @@ interface IRaffleLens {
         uint256 endTime;
         uint256 totalTickets;
         uint256 grossSales;
-        uint256 netPot;
+        uint256 unsettledPot;
         uint256 winningTicketId;
         address winner;
         uint256 accountTicketBalance;

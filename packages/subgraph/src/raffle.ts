@@ -29,9 +29,9 @@ import {
   getOrCreateAccountTokenStats,
   getOrCreateProtocol,
   getOrCreateRaffleAccount,
-  incrementResolutionDay,
   ticketId,
-  updateDayData,
+  updatePurchaseDayData,
+  updateResolutionDayData,
 } from "./helpers";
 
 const ZERO_ADDRESS = Address.zero();
@@ -54,34 +54,10 @@ export function handleTicketsPurchased(event: TicketsPurchased): void {
   purchase.raffle = raffle.id;
   purchase.buyer = buyer.id;
   purchase.recipient = recipient.id;
-  if (event.params.provider != ZERO_ADDRESS) {
-    const provider = getOrCreateAccount(event.params.provider);
-    const quoteToken = QuoteTokenStats.load(raffle.quoteTokenStats);
-    if (quoteToken != null) {
-      const providerTokenStats = getOrCreateAccountTokenStats(
-        quoteToken,
-        event.params.provider,
-      );
-      providerTokenStats.providerFeesEarned =
-        providerTokenStats.providerFeesEarned.plus(event.params.providerFee);
-      providerTokenStats.save();
-    }
-    const providerParticipation = getOrCreateRaffleAccount(
-      raffle,
-      event.params.provider,
-    );
-    providerParticipation.providerFeesEarned =
-      providerParticipation.providerFeesEarned.plus(event.params.providerFee);
-    providerParticipation.save();
-    purchase.provider = provider.id;
-  }
   purchase.quantity = event.params.quantity;
   purchase.firstTicketId = event.params.firstTicketId;
   purchase.lastTicketId = event.params.lastTicketId;
   purchase.grossAmount = event.params.grossAmount;
-  purchase.protocolFee = event.params.protocolFee;
-  purchase.providerFee = event.params.providerFee;
-  purchase.netContribution = event.params.netContribution;
   purchase.transactionHash = event.transaction.hash;
   purchase.blockNumber = event.block.number;
   purchase.timestamp = event.block.timestamp;
@@ -90,13 +66,7 @@ export function handleTicketsPurchased(event: TicketsPurchased): void {
 
   raffle.totalTickets = raffle.totalTickets.plus(event.params.quantity);
   raffle.grossSales = raffle.grossSales.plus(event.params.grossAmount);
-  raffle.netPot = raffle.netPot.plus(event.params.netContribution);
-  raffle.totalProtocolFees = raffle.totalProtocolFees.plus(
-    event.params.protocolFee,
-  );
-  raffle.totalProviderFees = raffle.totalProviderFees.plus(
-    event.params.providerFee,
-  );
+  raffle.unsettledPot = raffle.unsettledPot.plus(event.params.grossAmount);
   raffle.save();
 
   buyer.ticketsBought = buyer.ticketsBought.plus(event.params.quantity);
@@ -133,15 +103,6 @@ export function handleTicketsPurchased(event: TicketsPurchased): void {
     quoteToken.grossVolume = quoteToken.grossVolume.plus(
       event.params.grossAmount,
     );
-    quoteToken.netPotVolume = quoteToken.netPotVolume.plus(
-      event.params.netContribution,
-    );
-    quoteToken.protocolFees = quoteToken.protocolFees.plus(
-      event.params.protocolFee,
-    );
-    quoteToken.providerFees = quoteToken.providerFees.plus(
-      event.params.providerFee,
-    );
     quoteToken.save();
   }
 
@@ -155,14 +116,11 @@ export function handleTicketsPurchased(event: TicketsPurchased): void {
     current = current.plus(BigInt.fromI32(1));
   }
 
-  updateDayData(
+  updatePurchaseDayData(
     raffle,
     event,
     event.params.quantity,
     event.params.grossAmount,
-    event.params.netContribution,
-    event.params.protocolFee,
-    event.params.providerFee,
   );
 }
 
@@ -261,7 +219,10 @@ export function handleRaffleResolved(event: RaffleResolved): void {
   raffle.winningTicketId = event.params.winningTicketId;
   raffle.winner = winner.id;
   raffle.prizeClaimant = claimant.id;
-  raffle.netPot = BigInt.zero();
+  raffle.unsettledPot = BigInt.zero();
+  raffle.totalProtocolFees = raffle.totalProtocolFees.plus(
+    event.params.protocolFee,
+  );
   raffle.resolvedTxHash = event.transaction.hash;
   raffle.resolvedBlock = event.block.number;
   raffle.resolvedTimestamp = event.block.timestamp;
@@ -291,6 +252,10 @@ export function handleRaffleResolved(event: RaffleResolved): void {
   resolution.winner = winner.id;
   resolution.outcome = outcome;
   resolution.prizeClaimant = claimant.id;
+  resolution.protocolFee = event.params.protocolFee;
+  resolution.distributablePot = event.params.winnerCashAmount.plus(
+    event.params.sponsorCashAmount,
+  );
   resolution.winnerCashAmount = event.params.winnerCashAmount;
   resolution.sponsorCashAmount = event.params.sponsorCashAmount;
   resolution.transactionHash = event.transaction.hash;
@@ -314,7 +279,23 @@ export function handleRaffleResolved(event: RaffleResolved): void {
     }
     protocol.save();
   }
-  incrementResolutionDay(raffle, event);
+  const quoteToken = QuoteTokenStats.load(raffle.quoteTokenStats);
+  const distributablePot = event.params.winnerCashAmount.plus(
+    event.params.sponsorCashAmount,
+  );
+  if (quoteToken != null) {
+    quoteToken.protocolFees = quoteToken.protocolFees.plus(
+      event.params.protocolFee,
+    );
+    quoteToken.settledVolume = quoteToken.settledVolume.plus(distributablePot);
+    quoteToken.save();
+  }
+  updateResolutionDayData(
+    raffle,
+    event,
+    event.params.protocolFee,
+    distributablePot,
+  );
 }
 
 export function handleQuoteClaimed(event: QuoteClaimedEvent): void {
@@ -412,5 +393,5 @@ export function handleNoSalesClosed(event: NoSalesClosed): void {
   protocol.activeCount = protocol.activeCount.minus(BigInt.fromI32(1));
   protocol.resolvedCount = protocol.resolvedCount.plus(BigInt.fromI32(1));
   protocol.save();
-  incrementResolutionDay(raffle, event);
+  updateResolutionDayData(raffle, event, BigInt.zero(), BigInt.zero());
 }

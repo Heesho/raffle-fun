@@ -10,11 +10,9 @@ export const metadata: Metadata = {
 
 export default async function RafflePage({
   params,
-  searchParams,
 }: {
   readonly params: Promise<{ address: string }>;
-  readonly searchParams: Promise<{ ref?: string }>;
 }) {
-  const [{ address }, { ref }] = await Promise.all([params, searchParams]);
-  return <RaffleDetail raffleAddress={address} referrer={ref} />;
+  const { address } = await params;
+  return <RaffleDetail raffleAddress={address} />;
 }

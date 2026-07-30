@@ -75,7 +75,7 @@ contract RaffleLens is IRaffleLens {
             endTime: raffle.endTime(),
             totalTickets: raffle.totalTickets(),
             grossSales: raffle.grossSales(),
-            netPot: raffle.netPot(),
+            unsettledPot: raffle.unsettledPot(),
             winningTicketId: raffle.winningTicketId(),
             winner: raffle.winner(),
             accountTicketBalance: account == address(0) ? 0 : IERC721(raffleAddress).balanceOf(account),

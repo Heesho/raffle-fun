@@ -15,7 +15,7 @@ describe("web formatting", () => {
   });
 
   it("bounds progress at 100 percent", () => {
-    expect(percentOf(120n, 100n)).toBe(100);
+    expect(percentOf(120n, 100n)).toBe(120);
     expect(percentOf(1n, 0n)).toBe(0);
   });
 

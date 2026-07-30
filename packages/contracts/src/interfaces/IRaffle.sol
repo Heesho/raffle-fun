@@ -28,7 +28,7 @@ interface IRaffle {
     }
 
     /// @notice Complete one-time clone configuration supplied by the factory.
-    /// @param factory Canonical factory and provider registry.
+    /// @param factory Canonical factory registry.
     /// @param sponsor Prize depositor and sponsor payout recipient.
     /// @param protocolTreasury Treasury captured when the raffle is created.
     /// @param quoteToken ERC20 used for ticket payments and payouts.
@@ -79,8 +79,6 @@ interface IRaffle {
     error InvalidRecipient();
     /// @notice Raised when purchase quantity is outside the documented bounded range.
     error InvalidQuantity(uint256 quantity, uint256 maximum);
-    /// @notice Raised when a nonzero provider is not currently factory-allowlisted.
-    error ProviderNotAllowed(address provider);
     /// @notice Raised when multiplication would overflow the accepted ERC20 amount range.
     error GrossAmountOverflow();
     /// @notice Raised when a quote token does not deliver the exact requested transfer amount.
@@ -117,25 +115,17 @@ interface IRaffle {
     /// @notice Emitted once per bounded multi-ticket purchase.
     /// @param buyer Account paying the quote token.
     /// @param recipient Account receiving ticket NFTs.
-    /// @param provider Optional allowlisted provider.
     /// @param quantity Number of sequential tickets minted.
     /// @param firstTicketId First minted ticket ID.
     /// @param lastTicketId Last minted ticket ID.
     /// @param grossAmount Advertised total paid by the buyer.
-    /// @param protocolFee Protocol fee allocated for pull payment.
-    /// @param providerFee Optional provider fee allocated for pull payment.
-    /// @param netContribution Amount added to the outcome pot.
     event TicketsPurchased(
         address indexed buyer,
         address indexed recipient,
-        address indexed provider,
         uint256 quantity,
         uint256 firstTicketId,
         uint256 lastTicketId,
-        uint256 grossAmount,
-        uint256 protocolFee,
-        uint256 providerFee,
-        uint256 netContribution
+        uint256 grossAmount
     );
 
     /// @notice Emitted when the sponsor terminally cancels before any ticket sale.
@@ -167,6 +157,7 @@ interface IRaffle {
     /// @param winner Owner snapshotted during the callback.
     /// @param outcome Selected economic branch.
     /// @param prizeClaimant Account authorized to claim the prize.
+    /// @param protocolFee Aggregate protocol fee allocated from gross sales.
     /// @param winnerCashAmount Cash-fallback amount allocated to the winner.
     /// @param sponsorCashAmount Amount allocated to the sponsor.
     event RaffleResolved(
@@ -175,6 +166,7 @@ interface IRaffle {
         address indexed winner,
         RaffleOutcome outcome,
         address prizeClaimant,
+        uint256 protocolFee,
         uint256 winnerCashAmount,
         uint256 sponsorCashAmount
     );
@@ -205,10 +197,9 @@ interface IRaffle {
     /// @notice Purchases sequential ticket NFTs using the gross advertised price.
     /// @param recipient Ticket recipient, which may differ from the buyer.
     /// @param quantity Bounded ticket quantity.
-    /// @param provider Optional currently allowlisted provider.
     /// @return firstTicketId First newly minted ticket.
     /// @return lastTicketId Last newly minted ticket.
-    function buyTickets(address recipient, uint256 quantity, address provider)
+    function buyTickets(address recipient, uint256 quantity)
         external
         returns (uint256 firstTicketId, uint256 lastTicketId);
 
@@ -258,7 +249,7 @@ interface IRaffle {
     function canRequestDraw() external view returns (bool available);
 
     /// @notice Returns quote-token liabilities still held by the raffle.
-    /// @return amount Net pot plus all quote claims.
+    /// @return amount Unsettled gross pot plus all quote claims.
     function accountedQuoteBalance() external view returns (uint256 amount);
 
     /// @notice Returns direct quote-token donations above all accounted liabilities.
@@ -298,8 +289,8 @@ interface IRaffle {
     function totalTickets() external view returns (uint256);
     /// @notice Historical gross quote-token sales.
     function grossSales() external view returns (uint256);
-    /// @notice Unallocated quote-token amount awaiting resolution.
-    function netPot() external view returns (uint256);
+    /// @notice Aggregate gross quote-token amount awaiting resolution.
+    function unsettledPot() external view returns (uint256);
     /// @notice Aggregate outstanding quote-token claims.
     function totalClaimableQuote() external view returns (uint256);
     /// @notice Accepted Entropy sequence number.

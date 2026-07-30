@@ -6,10 +6,8 @@ pragma solidity 0.8.28;
 library RaffleConstants {
     /// @notice Denominator used for all basis-point calculations.
     uint256 internal constant BPS = 10_000;
-    /// @notice Protocol fee charged against gross ticket payments.
+    /// @notice Protocol fee allocated once against aggregate gross sales at resolution.
     uint256 internal constant PROTOCOL_FEE_BPS = 500;
-    /// @notice Optional allowlisted-provider fee charged against gross ticket payments.
-    uint256 internal constant PROVIDER_FEE_BPS = 500;
     /// @notice Cash-fallback share allocated to the snapshotted winning account.
     uint256 internal constant CASH_WINNER_BPS = 8000;
     /// @notice Maximum number of ERC721 tickets minted in one purchase transaction.

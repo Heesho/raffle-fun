@@ -25,8 +25,9 @@ export default function HomePage() {
             </h1>
             <p className="mt-7 max-w-2xl text-base leading-7 text-white/65 md:text-lg">
               One NFT prize. Equal-chance ERC721 tickets. A minimum threshold
-              that determines whether the winner gets the NFT or 80% of the net
-              pot. Every payout is fixed in code before the first sale.
+              that determines whether the winner gets the NFT or 80% of the
+              distributable pot. Every payout is fixed in code before the first
+              sale.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a className="btn btn-primary" href="#raffles-heading">
@@ -74,7 +75,7 @@ export default function HomePage() {
                   <p className="eyebrow">Threshold met</p>
                   <p className="mt-3 text-lg font-black">Winner gets the NFT</p>
                   <p className="mt-2 text-sm leading-5 text-black/65">
-                    Sponsor claims the entire net ticket pot.
+                    Sponsor claims the distributable pot after the 5% fee.
                   </p>
                 </div>
                 <div className="rounded-2xl border border-black/15 bg-[#7fc8ff] p-5">
@@ -83,7 +84,7 @@ export default function HomePage() {
                     Winner gets 80% cash
                   </p>
                   <p className="mt-2 text-sm leading-5 text-black/65">
-                    Sponsor reclaims the NFT and 20% of the net pot.
+                    Sponsor reclaims the NFT and 20% of the distributable pot.
                   </p>
                 </div>
               </div>
@@ -93,7 +94,7 @@ export default function HomePage() {
                   Ticket price is the total paid
                 </p>
                 <p className="text-xs font-bold text-black/50">
-                  5% protocol · +5% provider
+                  One 5% fee at resolution
                 </p>
               </div>
             </div>

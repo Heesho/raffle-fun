@@ -45,14 +45,13 @@ export async function buyTickets(
   raffle: Address,
   recipient: Address,
   quantity: bigint,
-  provider: Address,
 ): Promise<Hash> {
   const { request } = await context.publicClient.simulateContract({
     account: context.account,
     address: raffle,
     abi: raffleAbi,
     functionName: "buyTickets",
-    args: [recipient, quantity, provider],
+    args: [recipient, quantity],
   });
   return context.walletClient.writeContract(request);
 }

@@ -58,14 +58,13 @@ describe("Raffle Fun integration", () => {
       network: "hardhatBase",
     });
     const publicClient = await viem.getPublicClient();
-    const [owner, sponsor, buyer, buyerTwo, treasury, provider, requester] =
+    const [owner, sponsor, buyer, buyerTwo, treasury, requester] =
       await viem.getWalletClients();
     assert.ok(owner);
     assert.ok(sponsor);
     assert.ok(buyer);
     assert.ok(buyerTwo);
     assert.ok(treasury);
-    assert.ok(provider);
     assert.ok(requester);
 
     const quote = await viem.deployContract("MockERC20");
@@ -83,10 +82,6 @@ describe("Raffle Fun integration", () => {
     ]);
     const lens = await viem.deployContract("RaffleLens", [factory.address]);
 
-    await wait(
-      publicClient,
-      factory.write.setProvider([provider.account.address, true]),
-    );
     await wait(publicClient, prize.write.mint([sponsor.account.address, 1n]));
 
     const sponsorPrize = await viem.getContractAt("MockERC721", prize.address, {
@@ -150,11 +145,7 @@ describe("Raffle Fun integration", () => {
     await wait(publicClient, buyerQuote.write.approve([predicted, 2_000_000n]));
     await wait(
       publicClient,
-      buyerRaffle.write.buyTickets([
-        buyer.account.address,
-        2n,
-        provider.account.address,
-      ]),
+      buyerRaffle.write.buyTickets([buyer.account.address, 2n]),
     );
     await wait(
       publicClient,
@@ -166,6 +157,11 @@ describe("Raffle Fun integration", () => {
     );
 
     assert.equal(await raffle.read.totalTickets(), 2n);
+    assert.equal(await raffle.read.unsettledPot(), 2_000_000n);
+    assert.equal(
+      await raffle.read.claimableQuote([treasury.account.address]),
+      0n,
+    );
     assertAddressEqual(
       await raffle.read.ownerOf([2n]),
       buyerTwo.account.address,
@@ -193,6 +189,10 @@ describe("Raffle Fun integration", () => {
     assert.equal(await raffle.read.outcome(), 2);
     assert.equal(await raffle.read.winningTicketId(), 2n);
     assertAddressEqual(await raffle.read.winner(), buyerTwo.account.address);
+    assert.equal(
+      await raffle.read.claimableQuote([treasury.account.address]),
+      100_000n,
+    );
 
     const winnerRaffle = await viem.getContractAt("Raffle", predicted, {
       client: { wallet: buyerTwo },
@@ -207,7 +207,7 @@ describe("Raffle Fun integration", () => {
     const winnerBalanceAfter = await unverifiedQuote.read.balanceOf([
       buyerTwo.account.address,
     ]);
-    assert.equal(winnerBalanceAfter - winnerBalanceBefore, 1_440_000n);
+    assert.equal(winnerBalanceAfter - winnerBalanceBefore, 1_520_000n);
 
     const sponsorRaffle = await viem.getContractAt("Raffle", predicted, {
       client: { wallet: sponsor },

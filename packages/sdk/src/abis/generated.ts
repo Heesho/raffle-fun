@@ -259,17 +259,6 @@ export const raffleAbi = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "provider",
-        type: "address",
-      },
-    ],
-    name: "ProviderNotAllowed",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
         internalType: "uint256",
         name: "endTime",
         type: "uint256",
@@ -687,6 +676,12 @@ export const raffleAbi = [
       {
         indexed: false,
         internalType: "uint256",
+        name: "protocolFee",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
         name: "winnerCashAmount",
         type: "uint256",
       },
@@ -716,12 +711,6 @@ export const raffleAbi = [
         type: "address",
       },
       {
-        indexed: true,
-        internalType: "address",
-        name: "provider",
-        type: "address",
-      },
-      {
         indexed: false,
         internalType: "uint256",
         name: "quantity",
@@ -743,24 +732,6 @@ export const raffleAbi = [
         indexed: false,
         internalType: "uint256",
         name: "grossAmount",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "protocolFee",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "providerFee",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "netContribution",
         type: "uint256",
       },
     ],
@@ -889,11 +860,6 @@ export const raffleAbi = [
         internalType: "uint256",
         name: "quantity",
         type: "uint256",
-      },
-      {
-        internalType: "address",
-        name: "provider",
-        type: "address",
       },
     ],
     name: "buyTickets",
@@ -1323,19 +1289,6 @@ export const raffleAbi = [
         internalType: "string",
         name: "",
         type: "string",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "netPot",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -1779,6 +1732,19 @@ export const raffleAbi = [
   },
   {
     inputs: [],
+    name: "unsettledPot",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "winner",
     outputs: [
       {
@@ -2103,31 +2069,6 @@ export const raffleFactoryAbi = [
       {
         indexed: true,
         internalType: "address",
-        name: "provider",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "bool",
-        name: "previousAllowed",
-        type: "bool",
-      },
-      {
-        indexed: false,
-        internalType: "bool",
-        name: "newAllowed",
-        type: "bool",
-      },
-    ],
-    name: "ProviderUpdated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
         name: "quoteToken",
         type: "address",
       },
@@ -2293,19 +2234,6 @@ export const raffleFactoryAbi = [
   },
   {
     inputs: [],
-    name: "PROVIDER_FEE_BPS",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "acceptOwnership",
     outputs: [],
     stateMutability: "nonpayable",
@@ -2425,25 +2353,6 @@ export const raffleFactoryAbi = [
         internalType: "uint256",
         name: "raffleId",
         type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "provider",
-        type: "address",
-      },
-    ],
-    name: "isProvider",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "allowed",
-        type: "bool",
       },
     ],
     stateMutability: "view",
@@ -2639,24 +2548,6 @@ export const raffleFactoryAbi = [
       },
     ],
     name: "setProtocolTreasury",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "provider",
-        type: "address",
-      },
-      {
-        internalType: "bool",
-        name: "allowed",
-        type: "bool",
-      },
-    ],
-    name: "setProvider",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -2901,7 +2792,7 @@ export const raffleLensAbi = [
           },
           {
             internalType: "uint256",
-            name: "netPot",
+            name: "unsettledPot",
             type: "uint256",
           },
           {
@@ -3062,7 +2953,7 @@ export const raffleLensAbi = [
           },
           {
             internalType: "uint256",
-            name: "netPot",
+            name: "unsettledPot",
             type: "uint256",
           },
           {

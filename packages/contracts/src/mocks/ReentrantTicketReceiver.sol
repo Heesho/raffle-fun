@@ -37,7 +37,7 @@ contract ReentrantTicketReceiver is IERC721Receiver {
 
     /// @notice Purchases one ticket owned by this receiver.
     function buyTicket() external {
-        raffle.buyTickets(address(this), 1, address(0));
+        raffle.buyTickets(address(this), 1);
     }
 
     /// @notice Executes the receiver's authorized prize claim.
@@ -55,7 +55,7 @@ contract ReentrantTicketReceiver is IERC721Receiver {
     {
         if (msg.sender == address(raffle) && attackMint) {
             attackMint = false;
-            try raffle.buyTickets(address(this), 1, address(0)) {
+            try raffle.buyTickets(address(this), 1) {
                 reentryBlocked = false;
             } catch {
                 reentryBlocked = true;

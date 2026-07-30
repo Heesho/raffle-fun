@@ -2,7 +2,7 @@
 pragma solidity 0.8.28;
 
 /// @title IRaffleFactory
-/// @notice External interface for raffle creation, registry reads, and provider authorization.
+/// @notice External interface for raffle creation and canonical registry reads.
 interface IRaffleFactory {
     /// @notice Parameters that define immutable economics and timing for a new raffle.
     /// @param prizeToken ERC721 collection containing the escrowed prize.
@@ -84,12 +84,6 @@ interface IRaffleFactory {
     /// @param newTreasury Replacement treasury.
     event ProtocolTreasuryUpdated(address indexed previousTreasury, address indexed newTreasury);
 
-    /// @notice Emitted when provider purchase eligibility changes.
-    /// @param provider Provider account.
-    /// @param previousAllowed Previous eligibility.
-    /// @param newAllowed New eligibility.
-    event ProviderUpdated(address indexed provider, bool previousAllowed, bool newAllowed);
-
     /// @notice Emitted when a quote token's discovery verification changes.
     /// @param quoteToken ERC20 whose verification changed.
     /// @param previousVerified Previous verification status.
@@ -132,11 +126,6 @@ interface IRaffleFactory {
     /// @notice Returns a known verification-registry token by stable index.
     /// @param index Zero-based registry index.
     function verifiedQuoteTokenAt(uint256 index) external view returns (address quoteToken);
-
-    /// @notice Returns whether a provider may currently be supplied to purchases.
-    /// @param provider Provider account.
-    /// @return allowed Current allowlist status.
-    function isProvider(address provider) external view returns (bool allowed);
 
     /// @notice Returns whether an address is a canonical clone from this factory.
     /// @param raffle Candidate clone address.

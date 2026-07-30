@@ -13,7 +13,6 @@ import { IEntropyConsumer } from "@pythnetwork/entropy-sdk-solidity/IEntropyCons
 import { IEntropyV2 } from "@pythnetwork/entropy-sdk-solidity/IEntropyV2.sol";
 
 import { IRaffle } from "./interfaces/IRaffle.sol";
-import { IRaffleFactory } from "./interfaces/IRaffleFactory.sol";
 import { RaffleConstants } from "./libraries/RaffleConstants.sol";
 
 /// @title Raffle
@@ -57,7 +56,7 @@ contract Raffle is IRaffle, Initializable, ERC721Upgradeable, ReentrancyGuard, I
     /// @inheritdoc IRaffle
     uint256 public override grossSales;
     /// @inheritdoc IRaffle
-    uint256 public override netPot;
+    uint256 public override unsettledPot;
     /// @inheritdoc IRaffle
     uint256 public override totalClaimableQuote;
 
@@ -122,7 +121,7 @@ contract Raffle is IRaffle, Initializable, ERC721Upgradeable, ReentrancyGuard, I
     }
 
     /// @inheritdoc IRaffle
-    function buyTickets(address recipient, uint256 quantity, address provider)
+    function buyTickets(address recipient, uint256 quantity)
         external
         override
         nonReentrant
@@ -135,16 +134,9 @@ contract Raffle is IRaffle, Initializable, ERC721Upgradeable, ReentrancyGuard, I
         if (quantity == 0 || quantity > MAX_TICKETS_PER_PURCHASE) {
             revert InvalidQuantity(quantity, MAX_TICKETS_PER_PURCHASE);
         }
-        if (provider != address(0) && !IRaffleFactory(factory).isProvider(provider)) {
-            revert ProviderNotAllowed(provider);
-        }
         if (ticketPrice > type(uint256).max / quantity) revert GrossAmountOverflow();
 
         uint256 grossAmount = ticketPrice * quantity;
-        uint256 protocolFee = Math.mulDiv(grossAmount, RaffleConstants.PROTOCOL_FEE_BPS, RaffleConstants.BPS);
-        uint256 providerFeeBps = provider == address(0) ? 0 : RaffleConstants.PROVIDER_FEE_BPS;
-        uint256 providerFee = Math.mulDiv(grossAmount, providerFeeBps, RaffleConstants.BPS);
-        uint256 netContribution = grossAmount - protocolFee - providerFee;
 
         uint256 balanceBefore = quoteToken.balanceOf(address(this));
         quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount);
@@ -153,9 +145,7 @@ contract Raffle is IRaffle, Initializable, ERC721Upgradeable, ReentrancyGuard, I
         if (receivedAmount != grossAmount) revert UnsupportedQuoteToken(grossAmount, receivedAmount);
 
         grossSales += grossAmount;
-        netPot += netContribution;
-        _creditQuote(protocolTreasury, protocolFee);
-        if (providerFee != 0) _creditQuote(provider, providerFee);
+        unsettledPot += grossAmount;
 
         firstTicketId = totalTickets + 1;
         lastTicketId = totalTickets + quantity;
@@ -165,18 +155,7 @@ contract Raffle is IRaffle, Initializable, ERC721Upgradeable, ReentrancyGuard, I
             _safeMint(recipient, ticketId);
         }
 
-        emit TicketsPurchased(
-            msg.sender,
-            recipient,
-            provider,
-            quantity,
-            firstTicketId,
-            lastTicketId,
-            grossAmount,
-            protocolFee,
-            providerFee,
-            netContribution
-        );
+        emit TicketsPurchased(msg.sender, recipient, quantity, firstTicketId, lastTicketId, grossAmount);
     }
 
     /// @inheritdoc IRaffle
@@ -279,7 +258,7 @@ contract Raffle is IRaffle, Initializable, ERC721Upgradeable, ReentrancyGuard, I
 
     /// @inheritdoc IRaffle
     function accountedQuoteBalance() public view override returns (uint256 amount) {
-        amount = netPot + totalClaimableQuote;
+        amount = unsettledPot + totalClaimableQuote;
     }
 
     /// @inheritdoc IRaffle
@@ -338,31 +317,41 @@ contract Raffle is IRaffle, Initializable, ERC721Upgradeable, ReentrancyGuard, I
 
         uint256 resolvedTicketId = (uint256(randomNumber) % totalTickets) + 1;
         address resolvedWinner = ownerOf(resolvedTicketId);
-        uint256 pot = netPot;
+        uint256 grossPot = unsettledPot;
+        uint256 protocolFee = Math.mulDiv(grossPot, RaffleConstants.PROTOCOL_FEE_BPS, RaffleConstants.BPS);
+        uint256 distributablePot = grossPot - protocolFee;
         uint256 winnerCashAmount = 0;
         uint256 sponsorCashAmount = 0;
 
         winningTicketId = resolvedTicketId;
         winner = resolvedWinner;
-        netPot = 0;
+        unsettledPot = 0;
+        _creditQuote(protocolTreasury, protocolFee);
 
         if (isThresholdMet()) {
             outcome = RaffleOutcome.NftAwarded;
             prizeClaimant = resolvedWinner;
-            sponsorCashAmount = pot;
+            sponsorCashAmount = distributablePot;
             _creditQuote(sponsor, sponsorCashAmount);
         } else {
             outcome = RaffleOutcome.CashFallback;
             prizeClaimant = sponsor;
-            winnerCashAmount = Math.mulDiv(pot, RaffleConstants.CASH_WINNER_BPS, RaffleConstants.BPS);
-            sponsorCashAmount = pot - winnerCashAmount;
+            winnerCashAmount = Math.mulDiv(distributablePot, RaffleConstants.CASH_WINNER_BPS, RaffleConstants.BPS);
+            sponsorCashAmount = distributablePot - winnerCashAmount;
             _creditQuote(resolvedWinner, winnerCashAmount);
             _creditQuote(sponsor, sponsorCashAmount);
         }
 
         state = RaffleState.Resolved;
         emit RaffleResolved(
-            sequence, resolvedTicketId, resolvedWinner, outcome, prizeClaimant, winnerCashAmount, sponsorCashAmount
+            sequence,
+            resolvedTicketId,
+            resolvedWinner,
+            outcome,
+            prizeClaimant,
+            protocolFee,
+            winnerCashAmount,
+            sponsorCashAmount
         );
     }
 

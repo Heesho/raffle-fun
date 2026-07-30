@@ -42,8 +42,8 @@ registers the clone and emits `RaffleCreated` before transferring the prize, ena
 same-transaction dynamic indexing. If escrow fails, the complete transaction—including
 registration and event—reverts.
 
-The owner uses `Ownable2Step`. Creation pause, provider allowlist, quote-token
-verification, and future treasury changes cannot mutate existing clones. The
+The owner uses `Ownable2Step`. Creation pause, quote-token verification, and future
+treasury changes cannot mutate existing clones. The
 verification registry is bounded to 32 unique tokens and retains stable enumeration
 indices. Verification is a discovery/reputation signal only: removing it hides a
 token from official public listings but never blocks creation or interaction.
@@ -66,13 +66,15 @@ token ID, sponsor, factory operator, and `AwaitingPrize` state.
 The quote-token invariant is:
 
 ```text
-contract balance >= netPot + totalClaimableQuote
+contract balance >= unsettledPot + totalClaimableQuote
 ```
 
 Purchases verify exact balance delta, rejecting transfer-tax/rebasing behavior during
-the pull. Direct donations are observable surplus and never implicit settlement.
-Allocation sets `netPot` to zero while increasing claims by exactly the same amount.
-Claims clear storage and reduce `totalClaimableQuote` before external transfer.
+the pull, then add the full gross payment to `unsettledPot`. Direct donations are
+observable surplus and never implicit settlement. Resolution calculates the 5%
+protocol fee from the aggregate unsettled pot, sets `unsettledPot` to zero, and
+creates protocol/winner/sponsor claims totaling that exact pot. Claims clear storage
+and reduce `totalClaimableQuote` before external transfer.
 
 ## Read and indexing boundaries
 

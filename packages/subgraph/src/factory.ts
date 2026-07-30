@@ -50,9 +50,8 @@ export function handleRaffleCreated(event: RaffleCreated): void {
   raffle.outcome = "NONE";
   raffle.totalTickets = BigInt.zero();
   raffle.grossSales = BigInt.zero();
-  raffle.netPot = BigInt.zero();
+  raffle.unsettledPot = BigInt.zero();
   raffle.totalProtocolFees = BigInt.zero();
-  raffle.totalProviderFees = BigInt.zero();
   raffle.quoteClaimed = BigInt.zero();
   raffle.prizeClaimed = false;
   raffle.createdTxHash = event.transaction.hash;

@@ -11,15 +11,15 @@ stateDiagram-v2
   DrawRequested --> Resolved: matching Entropy sequence
 ```
 
-| State               | Purchases | Ticket transfers  | Draw                          | Claims                      |
-| ------------------- | --------- | ----------------- | ----------------------------- | --------------------------- |
-| AwaitingPrize       | no        | no minted supply  | no                            | no                          |
-| Active before start | no        | yes               | no                            | accrued fees can be claimed |
-| Active sale window  | yes       | yes               | no                            | accrued fees can be claimed |
-| Active after end    | no        | yes until request | one request or no-sales close | accrued fees                |
-| DrawRequested       | no        | frozen            | no second request             | accrued fees/native refund  |
-| Resolved            | no        | yes as souvenirs  | no                            | assigned quote/prize/native |
-| Cancelled           | no        | no sold tickets   | no                            | sponsor prize/native        |
+| State               | Purchases | Ticket transfers  | Draw                          | Claims                          |
+| ------------------- | --------- | ----------------- | ----------------------------- | ------------------------------- |
+| AwaitingPrize       | no        | no minted supply  | no                            | no                              |
+| Active before start | no        | yes               | no                            | no quote claims                 |
+| Active sale window  | yes       | yes               | no                            | no quote claims                 |
+| Active after end    | no        | yes until request | one request or no-sales close | no quote claims                 |
+| DrawRequested       | no        | frozen            | no second request             | native refund only              |
+| Resolved            | no        | yes as souvenirs  | no                            | assigned quote / prize / native |
+| Cancelled           | no        | no sold tickets   | no                            | sponsor prize / native          |
 
 ## Time boundaries
 

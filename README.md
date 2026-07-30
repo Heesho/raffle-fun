@@ -37,12 +37,10 @@ the sponsor reclaims the prize.
 - **Buyer:** pays gross ticket cost; tickets may be minted to another recipient.
 - **Ticket holder:** owns transferable odds before the draw request. The holder of the
   winning ticket at callback time is snapshotted as winner.
-- **Provider:** optional factory-allowlisted referrer receiving 5% of a referred gross
-  purchase.
-- **Protocol treasury:** receives the fixed 5% protocol fee.
-- **Factory owner:** administers new creation, provider eligibility, quote-token
-  verification labels, and future treasury capture; it has no custody or settlement
-  power over existing raffles.
+- **Protocol treasury:** receives the fixed 5% protocol fee when a raffle resolves.
+- **Factory owner:** administers new creation, quote-token verification labels, and
+  future treasury capture; it has no custody or settlement power over existing
+  raffles.
 - **Pyth Entropy:** supplies and replays the one requested random sequence.
 
 ## Outcomes
@@ -52,16 +50,16 @@ the sponsor reclaims the prize.
 `totalTickets >= minimumTickets`, including exact equality:
 
 - winner claims the NFT;
-- sponsor claims the complete net pot;
-- accrued protocol and provider fees remain claimable.
+- the protocol receives 5% of the gross pot;
+- sponsor claims the remaining 95% distributable pot.
 
 ### Cash fallback
 
 `totalTickets < minimumTickets`:
 
-- winner claims `floor(netPot × 80%)`;
-- sponsor claims the remainder and reclaims the NFT;
-- fees remain claimable.
+- the protocol receives 5% of the gross pot;
+- winner claims `floor(distributablePot × 80%)`;
+- sponsor claims the remainder and reclaims the NFT.
 
 ### No sales
 
@@ -74,29 +72,29 @@ removes that cancellation power.
 All values use raw quote-token units and OpenZeppelin `Math.mulDiv`:
 
 ```text
-gross             = ticketPrice × quantity
-protocol fee      = floor(gross × 500 / 10,000)
-provider fee      = validProvider ? floor(gross × 500 / 10,000) : 0
-net contribution  = gross − protocol fee − provider fee
-cash winner       = floor(netPot × 8,000 / 10,000)
-sponsor cash      = netPot − cash winner
+purchase gross    = ticketPrice × quantity
+gross pot         = sum of all purchase gross amounts
+protocol fee      = floor(grossPot × 500 / 10,000)
+distributable pot = grossPot − protocol fee
+cash winner       = floor(distributablePot × 8,000 / 10,000)
+sponsor cash      = distributablePot − cash winner
 ```
 
-The displayed ticket price is the total paid. Fees are deducted, never added. A zero
-provider means only the 5% protocol fee, contributing 95% to the net pot. A nonzero
-provider must be currently allowlisted or the purchase reverts.
+The displayed ticket price is the total paid. Purchases add their entire gross amount
+to the unsettled pot. The single protocol fee is calculated once from the aggregate
+pot at resolution, so fee rounding cannot be influenced by splitting purchases.
 
 ### Worked examples
 
-With a valid provider and a gross price of 1 USDC:
+With a gross price of 1 USDC:
 
-| Scenario               |  Gross | Protocol | Provider |    Net | Winner     | Sponsor          |
-| ---------------------- | -----: | -------: | -------: | -----: | ---------- | ---------------- |
-| 120 sold / 100 minimum | 120.00 |     6.00 |     6.00 | 108.00 | NFT        | 108.00 USDC      |
-| 80 sold / 100 minimum  |  80.00 |     4.00 |     4.00 |  72.00 | 57.60 USDC | NFT + 14.40 USDC |
+| Scenario               |  Gross | Protocol | Distributable | Winner     | Sponsor          |
+| ---------------------- | -----: | -------: | ------------: | ---------- | ---------------- |
+| 120 sold / 100 minimum | 120.00 |     6.00 |        114.00 | NFT        | 114.00 USDC      |
+| 80 sold / 100 minimum  |  80.00 |     4.00 |         76.00 | 60.80 USDC | NFT + 15.20 USDC |
 
-Without a provider, 120 one-USDC tickets create a 6 USDC protocol claim and a 114 USDC
-net pot.
+The minimum is an outcome threshold, not a sales cap. The first example therefore
+continues selling through the fixed closing time after ticket 100.
 
 ## Odds and transfers
 
@@ -163,7 +161,7 @@ flowchart LR
 
 | Contract        | Purpose                                                                                   | Custody/admin                               |
 | --------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------- |
-| `RaffleFactory` | Immutable implementation reference, clone registry, provider allowlist, creation controls | Ownable2Step; never custodies raffle assets |
+| `RaffleFactory` | Immutable implementation reference, clone registry, token verification, creation controls | Ownable2Step; never custodies raffle assets |
 | `Raffle`        | Prize escrow, ticket ERC721, accounting, Entropy consumer, pull claims                    | No admin, rescue, or upgrade path           |
 | `RaffleLens`    | Bounded live views for registered clones                                                  | Stateless and read-only                     |
 
@@ -192,11 +190,11 @@ sequenceDiagram
   participant Q as Quote token
   participant R as Raffle
   B->>Q: approve raffle (or wallet batch)
-  B->>R: buyTickets(recipient, quantity, provider)
-  R->>R: validate live state and provider
+  B->>R: buyTickets(recipient, quantity)
+  R->>R: validate live state and sale window
   R->>Q: safeTransferFrom gross once
   R->>R: verify exact balance delta
-  R->>R: credit fees and net; mint sequential tickets
+  R->>R: add gross to unsettled pot; mint sequential tickets
   R-->>B: TicketsPurchased + ERC721 Transfer events
 ```
 
@@ -363,7 +361,6 @@ const contracts = getProtocolContracts(baseSepolia.id); // throws if undeployed
 const amounts = calculatePurchaseAmounts({
   ticketPrice: 1_000_000n,
   quantity: 2n,
-  hasProvider: false,
 });
 
 await buyTickets(
@@ -371,7 +368,6 @@ await buyTickets(
   raffleAddress,
   account,
   2n,
-  "0x0000000000000000000000000000000000000000",
 ); // helper simulates before writing
 ```
 
@@ -389,7 +385,6 @@ The factory owner can:
 
 - change the treasury captured by **new** raffles;
 - mark or unmark up to 32 quote tokens as verified for official discovery;
-- allow/remove providers;
 - pause **new creation**;
 - transfer two-step factory ownership.
 
@@ -397,7 +392,7 @@ The factory owner cannot:
 
 - change an existing raffle's price, threshold, window, fees, or split;
 - cancel after a sale, select/replace a winner, or request a second result;
-- seize a prize, net pot, fee, refund, or user claim;
+- seize a prize, unsettled pot, fee, refund, or user claim;
 - upgrade a clone or pause an existing raffle/claim.
 
 ## Trust assumptions, known risks, and non-goals

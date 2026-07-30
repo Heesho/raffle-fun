@@ -71,7 +71,7 @@ export default function DocsPage() {
             icon={<Ticket />}
             number="2"
             title="Tickets sold"
-            text="Gross price is pulled once. Fees and net contribution are accounted exactly."
+            text="Each purchase adds its full gross amount to the unsettled pot. Sales remain open until the fixed end time."
           />
           <ArrowDown className="mx-auto md:-rotate-90" aria-hidden />
           <Step
@@ -88,8 +88,8 @@ export default function DocsPage() {
             title="Threshold met"
             items={[
               "Winning ticket holder claims the NFT",
-              "Sponsor claims the full net pot",
-              "Protocol and provider fees remain claimable",
+              "Protocol receives 5% of aggregate gross sales",
+              "Sponsor claims the remaining 95%",
             ]}
           />
           <Outcome
@@ -97,7 +97,7 @@ export default function DocsPage() {
             label="total tickets < minimum"
             title="Cash fallback"
             items={[
-              "Winner claims 80% of the net pot",
+              "Winner claims 80% of the distributable pot",
               "Sponsor claims 20% and reclaims the NFT",
               "There are no ticket refunds",
             ]}
@@ -118,24 +118,22 @@ export default function DocsPage() {
         <DocHeading
           eyebrow="Exact economics"
           title="The ticket price is all you pay."
-          text="Fees are deducted from the advertised gross amount, never added at checkout. Integer rounding always follows the contract and every remainder stays with the sponsor side of the cash split."
+          text="One 5% fee is calculated from aggregate gross sales when the raffle resolves. It is deducted from the pot, never added at checkout. Every rounding remainder stays with the sponsor side of the cash split."
         />
         <div className="ticket-card mt-8 overflow-hidden">
-          <div className="grid gap-1 bg-[#1726a3] p-6 text-white sm:grid-cols-4">
-            <Formula label="Gross" value="price × quantity" />
-            <Formula label="Protocol" value="floor(gross × 5%)" />
-            <Formula label="Provider" value="floor(gross × 5%)" />
-            <Formula label="Net" value="gross − both fees" />
+          <div className="grid gap-1 bg-[#1726a3] p-6 text-white sm:grid-cols-3">
+            <Formula label="Gross pot" value="all ticket revenue" />
+            <Formula label="Protocol" value="floor(gross pot × 5%)" />
+            <Formula label="Distributable" value="gross pot − protocol" />
           </div>
           <div className="grid gap-6 p-6 lg:grid-cols-2">
             <Example
               rows={[
                 ["Gross sales", "120.00 USDC"],
                 ["Protocol fee", "6.00 USDC"],
-                ["Provider fee", "6.00 USDC"],
-                ["Net pot", "108.00 USDC"],
+                ["Distributable pot", "114.00 USDC"],
                 ["Winner", "NFT"],
-                ["Sponsor", "108.00 USDC"],
+                ["Sponsor", "114.00 USDC"],
               ]}
               title="Threshold met: 120 / 100"
             />
@@ -143,20 +141,18 @@ export default function DocsPage() {
               rows={[
                 ["Gross sales", "80.00 USDC"],
                 ["Protocol fee", "4.00 USDC"],
-                ["Provider fee", "4.00 USDC"],
-                ["Net pot", "72.00 USDC"],
-                ["Winner", "57.60 USDC"],
-                ["Sponsor", "NFT + 14.40 USDC"],
+                ["Distributable pot", "76.00 USDC"],
+                ["Winner", "60.80 USDC"],
+                ["Sponsor", "NFT + 15.20 USDC"],
               ]}
               title="Threshold missed: 80 / 100"
             />
           </div>
         </div>
         <p className="mt-5 rounded-2xl border border-black/15 bg-white/55 p-5 text-sm leading-6">
-          <strong>No provider?</strong> Only the 5% protocol fee applies, so 95%
-          of each gross purchase enters the net pot. A nonzero provider must be
-          currently allowlisted by the factory; an invalid referral is rejected
-          rather than silently replaced.
+          The fee is not allocated during individual purchases. Resolution
+          calculates it once from the complete gross pot, then creates the
+          treasury, winner, and sponsor pull claims.
         </p>
       </section>
 
@@ -210,6 +206,10 @@ export default function DocsPage() {
             title="High threshold"
             text="It cannot make the raffle insolvent. It only changes which settlement branch is more likely."
           />
+          <Fact
+            title="No sales cap"
+            text="Meeting the minimum does not close sales. Tickets remain available until the published end time, and the sponsor may earn above the target."
+          />
         </div>
       </section>
 
@@ -217,7 +217,7 @@ export default function DocsPage() {
         <DocHeading
           eyebrow="Trust model"
           title="Know what code can—and cannot—protect."
-          text="Existing raffle clones are non-upgradeable. Factory administration affects future creation, payment-token discovery labels, and provider configuration—not an active raffle’s fixed economics."
+          text="Existing raffle clones are non-upgradeable. Factory administration affects future creation and payment-token discovery labels—not an active raffle’s fixed economics."
         />
         <div className="mt-8 grid gap-5 lg:grid-cols-2">
           <div className="ticket-card p-7">
@@ -228,7 +228,6 @@ export default function DocsPage() {
             <ul className="mt-5 list-disc space-y-2 pl-5 text-sm leading-6 text-[#56506a]">
               <li>Change the treasury captured by newly created raffles</li>
               <li>Verify or unverify payment tokens for official discovery</li>
-              <li>Allow or remove providers</li>
               <li>Pause creation of new raffles</li>
               <li>Transfer two-step factory ownership</li>
             </ul>
@@ -243,7 +242,7 @@ export default function DocsPage() {
               <li>
                 Choose a winner, request another result, or upgrade a clone
               </li>
-              <li>Seize the prize, net pot, provider fees, or user claims</li>
+              <li>Seize the prize, settlement pot, or user claims</li>
               <li>Pause an existing raffle or its claims</li>
             </ul>
           </div>

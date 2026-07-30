@@ -36,8 +36,6 @@ contract RaffleInvariantTest is StdInvariant, Test {
         RaffleFactory factory = new RaffleFactory(
             address(implementation), _quoteTokens(address(quote)), address(entropy), treasury, 300_000, address(this)
         );
-        factory.setProvider(address(handler), true);
-
         prize.mint(address(handler), 1);
         vm.prank(address(handler));
         prize.setApprovalForAll(address(factory), true);
@@ -105,7 +103,7 @@ contract RaffleInvariantTest is StdInvariant, Test {
     }
 
     function invariantAccountedQuoteAlwaysReconcilesAndIsSolvent() public view {
-        assertEq(raffle.accountedQuoteBalance(), raffle.netPot() + raffle.totalClaimableQuote());
+        assertEq(raffle.accountedQuoteBalance(), raffle.unsettledPot() + raffle.totalClaimableQuote());
         assertGe(quote.balanceOf(address(raffle)), raffle.accountedQuoteBalance());
         assertLe(raffle.totalClaimableQuote(), raffle.grossSales());
     }

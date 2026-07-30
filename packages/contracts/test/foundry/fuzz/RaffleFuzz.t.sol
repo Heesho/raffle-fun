@@ -16,14 +16,12 @@ import { MockEntropyV2 } from "../../../src/mocks/MockEntropyV2.sol";
 contract RaffleFuzzTest is Test {
     uint256 internal constant BPS = 10_000;
     uint256 internal constant PROTOCOL_FEE_BPS = 500;
-    uint256 internal constant PROVIDER_FEE_BPS = 500;
     uint256 internal constant CASH_WINNER_BPS = 8000;
 
     address internal sponsor = makeAddr("sponsor");
     address internal buyer = makeAddr("buyer");
     address internal recipient = makeAddr("recipient");
     address internal treasury = makeAddr("treasury");
-    address internal provider = makeAddr("provider");
     address internal requester = makeAddr("requester");
 
     MockERC20 internal quote;
@@ -42,15 +40,12 @@ contract RaffleFuzzTest is Test {
         factory = new RaffleFactory(
             address(implementation), _quoteTokens(address(quote)), address(entropy), treasury, 300_000, address(this)
         );
-        factory.setProvider(provider, true);
         vm.prank(sponsor);
         prize.setApprovalForAll(address(factory), true);
         vm.deal(requester, 100 ether);
     }
 
-    function testFuzzPurchaseAccountingReconciles(uint128 ticketPriceSeed, uint256 quantitySeed, bool useProvider)
-        public
-    {
+    function testFuzzPurchaseAccountingReconciles(uint128 ticketPriceSeed, uint256 quantitySeed) public {
         uint256 ticketPrice = bound(uint256(ticketPriceSeed), 1, 1e24);
         uint256 quantity = bound(quantitySeed, 1, 100);
         Raffle raffle = _create(ticketPrice, type(uint256).max);
@@ -58,14 +53,11 @@ contract RaffleFuzzTest is Test {
         _fundAndApprove(raffle, gross);
 
         vm.prank(buyer);
-        raffle.buyTickets(recipient, quantity, useProvider ? provider : address(0));
+        raffle.buyTickets(recipient, quantity);
 
-        uint256 protocolFee = Math.mulDiv(gross, PROTOCOL_FEE_BPS, BPS);
-        uint256 providerFee = useProvider ? Math.mulDiv(gross, PROVIDER_FEE_BPS, BPS) : 0;
         assertEq(raffle.grossSales(), gross);
-        assertEq(raffle.claimableQuote(treasury), protocolFee);
-        assertEq(raffle.claimableQuote(provider), providerFee);
-        assertEq(raffle.netPot(), gross - protocolFee - providerFee);
+        assertEq(raffle.claimableQuote(treasury), 0);
+        assertEq(raffle.unsettledPot(), gross);
         assertEq(raffle.accountedQuoteBalance(), gross);
         assertEq(quote.balanceOf(address(raffle)), gross);
     }
@@ -75,7 +67,7 @@ contract RaffleFuzzTest is Test {
         Raffle raffle = _create(1e6, ticketCount);
         _fundAndApprove(raffle, ticketCount * 1e6);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, ticketCount, address(0));
+        raffle.buyTickets(buyer, ticketCount);
 
         _resolve(raffle, randomNumber);
 
@@ -91,7 +83,7 @@ contract RaffleFuzzTest is Test {
         Raffle raffle = _create(1e6, ticketCount);
         _fundAndApprove(raffle, ticketCount * 1e6);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, ticketCount, address(0));
+        raffle.buyTickets(buyer, ticketCount);
 
         _resolve(raffle, bytes32(ticketCount - 1));
         assertEq(raffle.winningTicketId(), ticketCount);
@@ -103,7 +95,7 @@ contract RaffleFuzzTest is Test {
         Raffle raffle = _create(1e6, threshold);
         _fundAndApprove(raffle, ticketCount * 1e6);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, ticketCount, provider);
+        raffle.buyTickets(buyer, ticketCount);
 
         _resolve(raffle, bytes32(0));
 
@@ -112,22 +104,22 @@ contract RaffleFuzzTest is Test {
         assertEq(uint256(raffle.outcome()), uint256(expected));
     }
 
-    function testFuzzCashFallbackRoundingAssignsRemainderToSponsor(uint128 ticketPriceSeed, bool useProvider) public {
+    function testFuzzCashFallbackRoundingAssignsRemainderToSponsor(uint128 ticketPriceSeed) public {
         uint256 ticketPrice = bound(uint256(ticketPriceSeed), 1, 1e24);
         Raffle raffle = _create(ticketPrice, 2);
         _fundAndApprove(raffle, ticketPrice);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 1, useProvider ? provider : address(0));
+        raffle.buyTickets(buyer, 1);
 
         uint256 protocolFee = Math.mulDiv(ticketPrice, PROTOCOL_FEE_BPS, BPS);
-        uint256 providerFee = useProvider ? Math.mulDiv(ticketPrice, PROVIDER_FEE_BPS, BPS) : 0;
-        uint256 net = ticketPrice - protocolFee - providerFee;
+        uint256 net = ticketPrice - protocolFee;
         uint256 winnerAmount = Math.mulDiv(net, CASH_WINNER_BPS, BPS);
         uint256 sponsorAmount = net - winnerAmount;
         _resolve(raffle, bytes32(0));
 
         assertEq(raffle.claimableQuote(buyer), winnerAmount);
         assertEq(raffle.claimableQuote(sponsor), sponsorAmount);
+        assertEq(raffle.claimableQuote(treasury), protocolFee);
         assertEq(winnerAmount + sponsorAmount, net);
     }
 
@@ -141,7 +133,7 @@ contract RaffleFuzzTest is Test {
         Raffle raffle = _create(1e6, ticketCount + 1);
         _fundAndApprove(raffle, ticketCount * 1e6);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, ticketCount, address(0));
+        raffle.buyTickets(buyer, ticketCount);
 
         vm.prank(buyer);
         raffle.transferFrom(buyer, recipient, transferTicket);
@@ -157,10 +149,10 @@ contract RaffleFuzzTest is Test {
         Raffle raffle = _create(1e6, 2);
         _fundAndApprove(raffle, 1e6);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 1, provider);
+        raffle.buyTickets(buyer, 1);
         _resolve(raffle, bytes32(0));
 
-        address[4] memory accounts = [treasury, provider, buyer, sponsor];
+        address[3] memory accounts = [treasury, buyer, sponsor];
         if (reverseOrder) {
             for (uint256 i = accounts.length; i != 0; --i) {
                 if (raffle.claimableQuote(accounts[i - 1]) != 0) raffle.claimQuoteFor(accounts[i - 1]);

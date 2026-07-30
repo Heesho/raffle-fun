@@ -59,9 +59,8 @@ export function getOrCreateQuoteTokenStats(
     stats.verified = false;
     stats.raffleCount = BigInt.zero();
     stats.grossVolume = BigInt.zero();
-    stats.netPotVolume = BigInt.zero();
+    stats.settledVolume = BigInt.zero();
     stats.protocolFees = BigInt.zero();
-    stats.providerFees = BigInt.zero();
     stats.quoteClaimed = BigInt.zero();
     stats.save();
   }
@@ -79,7 +78,6 @@ export function getOrCreateAccountTokenStats(
     stats.account = account;
     stats.quoteToken = quoteToken.id;
     stats.grossSpent = BigInt.zero();
-    stats.providerFeesEarned = BigInt.zero();
     stats.quoteClaimed = BigInt.zero();
     stats.save();
   }
@@ -100,7 +98,6 @@ export function getOrCreateRaffleAccount(
     participation.ticketsCurrentlyOwned = BigInt.zero();
     participation.grossSpent = BigInt.zero();
     participation.quoteClaimed = BigInt.zero();
-    participation.providerFeesEarned = BigInt.zero();
     participation.won = false;
     participation.save();
   }
@@ -115,14 +112,11 @@ export function ticketId(raffle: Bytes, tokenId: BigInt): string {
   return raffle.toHexString() + "-" + tokenId.toString();
 }
 
-export function updateDayData(
+export function updatePurchaseDayData(
   raffle: Raffle,
   event: ethereum.Event,
   tickets: BigInt,
   gross: BigInt,
-  net: BigInt,
-  protocolFee: BigInt,
-  providerFee: BigInt,
 ): void {
   const day = event.block.timestamp.div(SECONDS_PER_DAY);
   const dayStart = day.times(SECONDS_PER_DAY);
@@ -136,16 +130,12 @@ export function updateDayData(
     protocolDay.dayStart = dayStart;
     protocolDay.tickets = BigInt.zero();
     protocolDay.grossVolume = BigInt.zero();
-    protocolDay.netContributions = BigInt.zero();
+    protocolDay.settledVolume = BigInt.zero();
     protocolDay.protocolFees = BigInt.zero();
-    protocolDay.providerFees = BigInt.zero();
     protocolDay.resolutions = BigInt.zero();
   }
   protocolDay.tickets = protocolDay.tickets.plus(tickets);
   protocolDay.grossVolume = protocolDay.grossVolume.plus(gross);
-  protocolDay.netContributions = protocolDay.netContributions.plus(net);
-  protocolDay.protocolFees = protocolDay.protocolFees.plus(protocolFee);
-  protocolDay.providerFees = protocolDay.providerFees.plus(providerFee);
   protocolDay.save();
 
   const raffleDayId = raffle.id.toHexString() + "-" + day.toString();
@@ -156,34 +146,28 @@ export function updateDayData(
     raffleDay.dayStart = dayStart;
     raffleDay.tickets = BigInt.zero();
     raffleDay.grossVolume = BigInt.zero();
-    raffleDay.netContributions = BigInt.zero();
   }
   raffleDay.tickets = raffleDay.tickets.plus(tickets);
   raffleDay.grossVolume = raffleDay.grossVolume.plus(gross);
-  raffleDay.netContributions = raffleDay.netContributions.plus(net);
   raffleDay.save();
 }
 
-export function incrementResolutionDay(
+export function updateResolutionDayData(
   raffle: Raffle,
   event: ethereum.Event,
+  protocolFee: BigInt,
+  distributablePot: BigInt,
 ): void {
   const day = event.block.timestamp.div(SECONDS_PER_DAY);
   const id = raffle.quoteTokenStats + "-" + day.toString();
   let data = ProtocolDayData.load(id);
   if (data == null) {
-    updateDayData(
-      raffle,
-      event,
-      BigInt.zero(),
-      BigInt.zero(),
-      BigInt.zero(),
-      BigInt.zero(),
-      BigInt.zero(),
-    );
+    updatePurchaseDayData(raffle, event, BigInt.zero(), BigInt.zero());
     data = ProtocolDayData.load(id);
   }
   if (data != null) {
+    data.protocolFees = data.protocolFees.plus(protocolFee);
+    data.settledVolume = data.settledVolume.plus(distributablePot);
     data.resolutions = data.resolutions.plus(BigInt.fromI32(1));
     data.save();
   }

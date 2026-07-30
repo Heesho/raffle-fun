@@ -38,7 +38,6 @@ contract RaffleTest is Test, IERC721Receiver {
     address internal buyer = makeAddr("buyer");
     address internal buyerTwo = makeAddr("buyerTwo");
     address internal treasury = makeAddr("treasury");
-    address internal provider = makeAddr("provider");
     address internal outsider = makeAddr("outsider");
 
     MockERC20 internal quote;
@@ -65,8 +64,6 @@ contract RaffleTest is Test, IERC721Receiver {
             address(this)
         );
         lens = new RaffleLens(address(factory));
-        factory.setProvider(provider, true);
-
         vm.prank(sponsor);
         prize.setApprovalForAll(address(factory), true);
         quote.mint(buyer, 1_000_000 * USDC);
@@ -152,11 +149,6 @@ contract RaffleTest is Test, IERC721Receiver {
         assertEq(factory.protocolTreasury(), buyerTwo);
         vm.expectRevert(IRaffleFactory.ZeroAddress.selector);
         factory.setProtocolTreasury(address(0));
-
-        factory.setProvider(buyerTwo, true);
-        assertTrue(factory.isProvider(buyerTwo));
-        vm.expectRevert(IRaffleFactory.ZeroAddress.selector);
-        factory.setProvider(address(0), true);
 
         MockERC20 secondQuote = new MockERC20();
         factory.setQuoteTokenVerification(address(secondQuote), true);
@@ -255,7 +247,7 @@ contract RaffleTest is Test, IERC721Receiver {
         vm.prank(buyer);
         secondQuote.approve(address(raffle), USDC);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 1, address(0));
+        raffle.buyTickets(buyer, 1);
         assertEq(secondQuote.balanceOf(address(raffle)), USDC);
 
         uint256 unverifiedTokenId = nextPrizeId++;
@@ -310,11 +302,11 @@ contract RaffleTest is Test, IERC721Receiver {
 
         vm.prank(buyer);
         vm.expectRevert(abi.encodeWithSelector(IRaffle.SaleNotStarted.selector, start, block.timestamp));
-        raffle.buyTickets(buyer, 1, address(0));
+        raffle.buyTickets(buyer, 1);
 
         vm.warp(start);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 1, address(0));
+        raffle.buyTickets(buyer, 1);
         assertEq(raffle.ownerOf(1), buyer);
     }
 
@@ -324,17 +316,17 @@ contract RaffleTest is Test, IERC721Receiver {
 
         vm.warp(raffle.endTime() - 1);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 1, address(0));
+        raffle.buyTickets(buyer, 1);
 
         vm.warp(raffle.endTime());
         vm.prank(buyer);
         vm.expectRevert(abi.encodeWithSelector(IRaffle.SaleEnded.selector, raffle.endTime(), block.timestamp));
-        raffle.buyTickets(buyer, 1, address(0));
+        raffle.buyTickets(buyer, 1);
 
         vm.warp(raffle.endTime() + 1);
         vm.prank(buyer);
         vm.expectRevert(abi.encodeWithSelector(IRaffle.SaleEnded.selector, raffle.endTime(), block.timestamp));
-        raffle.buyTickets(buyer, 1, address(0));
+        raffle.buyTickets(buyer, 1);
     }
 
     function testPurchaseValidationAndContiguousTicketIds() public {
@@ -343,15 +335,13 @@ contract RaffleTest is Test, IERC721Receiver {
 
         vm.startPrank(buyer);
         vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidQuantity.selector, 0, 100));
-        raffle.buyTickets(buyer, 0, address(0));
+        raffle.buyTickets(buyer, 0);
         vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidQuantity.selector, 101, 100));
-        raffle.buyTickets(buyer, 101, address(0));
+        raffle.buyTickets(buyer, 101);
         vm.expectRevert(IRaffle.InvalidRecipient.selector);
-        raffle.buyTickets(address(0), 1, address(0));
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.ProviderNotAllowed.selector, outsider));
-        raffle.buyTickets(buyer, 1, outsider);
+        raffle.buyTickets(address(0), 1);
 
-        (uint256 first, uint256 last) = raffle.buyTickets(buyer, 3, address(0));
+        (uint256 first, uint256 last) = raffle.buyTickets(buyer, 3);
         vm.stopPrank();
 
         assertEq(first, 1);
@@ -367,45 +357,37 @@ contract RaffleTest is Test, IERC721Receiver {
 
         vm.prank(buyer);
         vm.expectRevert(IRaffle.GrossAmountOverflow.selector);
-        raffle.buyTickets(buyer, 2, address(0));
+        raffle.buyTickets(buyer, 2);
     }
 
-    function testNoProviderChargesOnlyProtocolFee() public {
+    function testPurchaseAccumulatesGrossWithoutAllocatingFeeBeforeResolution() public {
         Raffle raffle = _createDefaultRaffle(100);
         _approveQuote(buyer, raffle);
 
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 10, address(0));
+        raffle.buyTickets(buyer, 10);
 
         assertEq(raffle.grossSales(), 10 * USDC);
-        assertEq(raffle.claimableQuote(treasury), 500_000);
-        assertEq(raffle.claimableQuote(provider), 0);
-        assertEq(raffle.netPot(), 9_500_000);
+        assertEq(raffle.claimableQuote(treasury), 0);
+        assertEq(raffle.totalClaimableQuote(), 0);
+        assertEq(raffle.unsettledPot(), 10 * USDC);
         assertEq(raffle.accountedQuoteBalance(), 10 * USDC);
         assertEq(quote.balanceOf(address(raffle)), 10 * USDC);
     }
 
-    function testApprovedProviderReceivesExactlyFivePercent() public {
-        Raffle raffle = _createDefaultRaffle(100);
+    function testSettlementFeeUsesAggregateGrossInsteadOfPerPurchaseRounding() public {
+        Raffle raffle = _createRaffle(nextPrizeId++, 10, 2, block.timestamp, block.timestamp + 1 days);
         _approveQuote(buyer, raffle);
 
-        vm.prank(buyer);
-        raffle.buyTickets(buyer, 10, provider);
+        vm.startPrank(buyer);
+        raffle.buyTickets(buyer, 1);
+        raffle.buyTickets(buyer, 1);
+        vm.stopPrank();
+        _resolve(raffle, bytes32(0));
 
-        assertEq(raffle.claimableQuote(treasury), 500_000);
-        assertEq(raffle.claimableQuote(provider), 500_000);
-        assertEq(raffle.netPot(), 9_000_000);
-        assertEq(raffle.accountedQuoteBalance(), 10 * USDC);
-    }
-
-    function testProviderMustRemainCurrentlyAllowlisted() public {
-        Raffle raffle = _createDefaultRaffle(100);
-        _approveQuote(buyer, raffle);
-        factory.setProvider(provider, false);
-
-        vm.prank(buyer);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.ProviderNotAllowed.selector, provider));
-        raffle.buyTickets(buyer, 1, provider);
+        assertEq(raffle.grossSales(), 20);
+        assertEq(raffle.claimableQuote(treasury), 1);
+        assertEq(raffle.claimableQuote(sponsor), 19);
     }
 
     function testExactThresholdUsesNftAwardedOutcomeAndWorkedExample() public {
@@ -413,7 +395,7 @@ contract RaffleTest is Test, IERC721Receiver {
         _approveQuote(buyer, raffle);
 
         vm.startPrank(buyer);
-        raffle.buyTickets(buyer, 100, provider);
+        raffle.buyTickets(buyer, 100);
         vm.stopPrank();
         _resolve(raffle, bytes32(uint256(99)));
 
@@ -422,65 +404,51 @@ contract RaffleTest is Test, IERC721Receiver {
         assertEq(raffle.winner(), buyer);
         assertEq(raffle.prizeClaimant(), buyer);
         assertEq(raffle.claimableQuote(treasury), 5 * USDC);
-        assertEq(raffle.claimableQuote(provider), 5 * USDC);
-        assertEq(raffle.claimableQuote(sponsor), 90 * USDC);
-        assertEq(raffle.netPot(), 0);
+        assertEq(raffle.claimableQuote(sponsor), 95 * USDC);
+        assertEq(raffle.unsettledPot(), 0);
         assertEq(raffle.accountedQuoteBalance(), 100 * USDC);
     }
 
-    function testThresholdMetWorkedExampleAtOneHundredTwentyTickets() public {
+    function testThresholdDoesNotCapSalesBeforeFixedEndTime() public {
         Raffle raffle = _createDefaultRaffle(100);
         _approveQuote(buyer, raffle);
 
         vm.startPrank(buyer);
-        raffle.buyTickets(buyer, 100, provider);
-        raffle.buyTickets(buyer, 20, provider);
+        raffle.buyTickets(buyer, 100);
+        assertTrue(raffle.isThresholdMet());
+        assertTrue(raffle.isOpen());
+        raffle.buyTickets(buyer, 20);
         vm.stopPrank();
         _resolve(raffle, bytes32(0));
 
         assertEq(raffle.grossSales(), 120 * USDC);
+        assertEq(raffle.totalTickets(), 120);
         assertEq(raffle.claimableQuote(treasury), 6 * USDC);
-        assertEq(raffle.claimableQuote(provider), 6 * USDC);
-        assertEq(raffle.claimableQuote(sponsor), 108 * USDC);
+        assertEq(raffle.claimableQuote(sponsor), 114 * USDC);
     }
 
-    function testThresholdMissedWorkedExampleAllocatesExactEightyTwentyNetSplit() public {
+    function testThresholdMissedWorkedExampleAllocatesExactEightyTwentyDistributableSplit() public {
         Raffle raffle = _createDefaultRaffle(100);
         _approveQuote(buyer, raffle);
 
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 80, provider);
+        raffle.buyTickets(buyer, 80);
         _resolve(raffle, bytes32(0));
 
         assertEq(uint256(raffle.outcome()), uint256(IRaffle.RaffleOutcome.CashFallback));
         assertEq(raffle.grossSales(), 80 * USDC);
         assertEq(raffle.claimableQuote(treasury), 4 * USDC);
-        assertEq(raffle.claimableQuote(provider), 4 * USDC);
-        assertEq(raffle.claimableQuote(buyer), 57_600_000);
-        assertEq(raffle.claimableQuote(sponsor), 14_400_000);
-        assertEq(raffle.prizeClaimant(), sponsor);
-        assertEq(raffle.accountedQuoteBalance(), 80 * USDC);
-    }
-
-    function testNoProviderCashFallbackWorkedExample() public {
-        Raffle raffle = _createDefaultRaffle(100);
-        _approveQuote(buyer, raffle);
-
-        vm.prank(buyer);
-        raffle.buyTickets(buyer, 80, address(0));
-        _resolve(raffle, bytes32(0));
-
-        assertEq(raffle.claimableQuote(treasury), 4 * USDC);
-        assertEq(raffle.claimableQuote(provider), 0);
         assertEq(raffle.claimableQuote(buyer), 60_800_000);
         assertEq(raffle.claimableQuote(sponsor), 15_200_000);
+        assertEq(raffle.prizeClaimant(), sponsor);
+        assertEq(raffle.accountedQuoteBalance(), 80 * USDC);
     }
 
     function testOneTicketRaffleAlwaysSelectsTicketOne() public {
         Raffle raffle = _createDefaultRaffle(1);
         _approveQuote(buyer, raffle);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 1, address(0));
+        raffle.buyTickets(buyer, 1);
 
         _resolve(raffle, bytes32(type(uint256).max));
         assertEq(raffle.winningTicketId(), 1);
@@ -491,7 +459,7 @@ contract RaffleTest is Test, IERC721Receiver {
         Raffle raffle = _createDefaultRaffle(10);
         _approveQuote(buyer, raffle);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 10, address(0));
+        raffle.buyTickets(buyer, 10);
 
         _resolve(raffle, bytes32(uint256(9)));
         assertEq(raffle.winningTicketId(), 10);
@@ -501,7 +469,7 @@ contract RaffleTest is Test, IERC721Receiver {
         Raffle raffle = _createDefaultRaffle(100);
         _approveQuote(buyer, raffle);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 1, provider);
+        raffle.buyTickets(buyer, 1);
 
         _resolve(raffle, bytes32(0));
         uint256 measuredGas = entropy.lastCallbackGasUsed();
@@ -556,7 +524,7 @@ contract RaffleTest is Test, IERC721Receiver {
         Raffle soldRaffle = _createDefaultRaffle(100);
         _approveQuote(buyer, soldRaffle);
         vm.prank(buyer);
-        soldRaffle.buyTickets(buyer, 1, address(0));
+        soldRaffle.buyTickets(buyer, 1);
         vm.warp(soldRaffle.endTime());
         vm.expectRevert(abi.encodeWithSelector(IRaffle.TicketsWereSold.selector, 1));
         soldRaffle.closeNoSales();
@@ -566,7 +534,7 @@ contract RaffleTest is Test, IERC721Receiver {
         Raffle raffle = _createDefaultRaffle(100);
         _approveQuote(buyer, raffle);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 1, address(0));
+        raffle.buyTickets(buyer, 1);
 
         vm.prank(sponsor);
         vm.expectRevert(abi.encodeWithSelector(IRaffle.TicketsAlreadySold.selector, 1));
@@ -602,7 +570,7 @@ contract RaffleTest is Test, IERC721Receiver {
         Raffle soldRaffle = _createRaffle(nextPrizeId++, USDC, 100, block.timestamp, block.timestamp + 1 days);
         _approveQuote(buyer, soldRaffle);
         vm.prank(buyer);
-        soldRaffle.buyTickets(buyer, 1, address(0));
+        soldRaffle.buyTickets(buyer, 1);
         vm.warp(soldRaffle.endTime());
 
         vm.prank(outsider);
@@ -620,7 +588,7 @@ contract RaffleTest is Test, IERC721Receiver {
         Raffle raffle = _createDefaultRaffle(1);
         _approveQuote(buyer, raffle);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 1, address(0));
+        raffle.buyTickets(buyer, 1);
         vm.warp(raffle.endTime());
         uint256 fee = raffle.getEntropyFee();
 
@@ -645,7 +613,7 @@ contract RaffleTest is Test, IERC721Receiver {
         Raffle raffle = _createDefaultRaffle(2);
         _approveQuote(buyer, raffle);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 2, address(0));
+        raffle.buyTickets(buyer, 2);
         uint64 sequence = _request(raffle);
 
         entropy.fulfillAs(sequence, sequence + 1, bytes32(uint256(1)));
@@ -663,7 +631,7 @@ contract RaffleTest is Test, IERC721Receiver {
         Raffle raffle = _createDefaultRaffle(1);
         _approveQuote(buyer, raffle);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 1, address(0));
+        raffle.buyTickets(buyer, 1);
         uint64 sequence = _request(raffle);
 
         vm.prank(buyer);
@@ -687,13 +655,13 @@ contract RaffleTest is Test, IERC721Receiver {
         Raffle raffle = _createDefaultRaffle(100);
         _approveQuote(buyer, raffle);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 80, provider);
+        raffle.buyTickets(buyer, 80);
         _resolve(raffle, bytes32(0));
 
         uint256 destinationBefore = quote.balanceOf(buyerTwo);
         vm.prank(buyer);
         uint256 amount = raffle.claimQuote(buyerTwo);
-        assertEq(amount, 57_600_000);
+        assertEq(amount, 60_800_000);
         assertEq(quote.balanceOf(buyerTwo) - destinationBefore, amount);
         assertEq(raffle.claimableQuote(buyer), 0);
 
@@ -701,19 +669,19 @@ contract RaffleTest is Test, IERC721Receiver {
         vm.expectRevert(abi.encodeWithSelector(IRaffle.NoQuoteClaim.selector, buyer));
         raffle.claimQuote(buyer);
 
-        uint256 providerBefore = quote.balanceOf(provider);
+        uint256 treasuryBefore = quote.balanceOf(treasury);
         vm.prank(outsider);
-        raffle.claimQuoteFor(provider);
-        assertEq(quote.balanceOf(provider) - providerBefore, 4 * USDC);
+        raffle.claimQuoteFor(treasury);
+        assertEq(quote.balanceOf(treasury) - treasuryBefore, 4 * USDC);
     }
 
     function testQuoteDestinationTokenMetadataAndDirectNativeFailureBranches() public {
         Raffle raffle = _createDefaultRaffle(100);
         _approveQuote(buyer, raffle);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 1, provider);
+        raffle.buyTickets(buyer, 1);
 
-        vm.prank(provider);
+        vm.prank(outsider);
         vm.expectRevert(IRaffle.ZeroAddress.selector);
         raffle.claimQuote(address(0));
 
@@ -732,7 +700,7 @@ contract RaffleTest is Test, IERC721Receiver {
         Raffle raffle = _createDefaultRaffle(1);
         _approveQuote(buyer, raffle);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 1, address(0));
+        raffle.buyTickets(buyer, 1);
         vm.warp(raffle.endTime());
         uint256 fee = raffle.getEntropyFee();
 
@@ -791,7 +759,7 @@ contract RaffleTest is Test, IERC721Receiver {
         feeToken.approve(raffleAddress, type(uint256).max);
         vm.prank(buyer);
         vm.expectRevert(abi.encodeWithSelector(IRaffle.UnsupportedQuoteToken.selector, USDC, 990_000));
-        Raffle(payable(raffleAddress)).buyTickets(buyer, 1, address(0));
+        Raffle(payable(raffleAddress)).buyTickets(buyer, 1);
     }
 
     function testLensRejectsFakeRaffleAndReturnsLiveActionState() public {
@@ -801,7 +769,7 @@ contract RaffleTest is Test, IERC721Receiver {
         Raffle raffle = _createDefaultRaffle(100);
         _approveQuote(buyer, raffle);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 2, address(0));
+        raffle.buyTickets(buyer, 2);
 
         IRaffleLens.RaffleView memory view_ = lens.getRaffleState(address(raffle), buyer);
         assertEq(view_.factoryId, raffle.raffleId());
@@ -840,9 +808,9 @@ contract RaffleTest is Test, IERC721Receiver {
         _approveQuote(buyer, raffle);
         _approveQuote(buyerTwo, raffle);
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 3, address(0));
+        raffle.buyTickets(buyer, 3);
         vm.prank(buyerTwo);
-        raffle.buyTickets(buyerTwo, 1, address(0));
+        raffle.buyTickets(buyerTwo, 1);
         assertEq(raffle.oddsFor(buyer), 0.75e18);
         assertEq(raffle.oddsFor(buyerTwo), 0.25e18);
     }

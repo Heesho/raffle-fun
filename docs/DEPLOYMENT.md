@@ -56,8 +56,8 @@ files containing a key.
 
 7. Ignition starts `transferOwnership(FACTORY_OWNER)`. Confirm `pendingOwner` exactly
    matches the Safe, then submit `acceptOwnership()` from the Safe.
-8. Configure later quote-token verification or provider changes through reviewed Safe
-   transactions and record each hash. Verification changes official discovery only.
+8. Configure later quote-token verification changes through reviewed Safe transactions
+   and record each hash. Verification changes official discovery only.
 9. Build a candidate deployment record with `verifiedQuoteTokens` as an address array
    and the source commit encoded as exactly the 40 Git SHA hex characters. Validate
    runtime code and write:

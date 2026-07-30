@@ -38,8 +38,9 @@ winningTicketId = uint256(randomNumber) % totalTickets + 1
 winner = ownerOf(winningTicketId) at callback time
 ```
 
-The callback stores winner/outcome/claims, zeroes the unallocated net pot, and marks
-`Resolved`. It calls no ERC20, ERC721, user, or provider contract.
+The callback stores winner/outcome/claims, allocates the protocol fee and distributable
+pot, zeroes the unsettled pot, and marks `Resolved`. It calls no ERC20, ERC721, user,
+or oracle-provider contract.
 
 ## Failure and recovery
 

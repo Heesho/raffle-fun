@@ -3,11 +3,11 @@
 ## Assets and safety properties
 
 - one escrowed prize NFT per raffle;
-- gross quote-token inflow, net pot, fee claims, and resolution claims;
+- gross quote-token inflow, unsettled pot, and resolution claims;
 - uniqueness/unbiasability of the requested random result;
 - winner identity at callback time;
 - availability of terminal and claim paths;
-- integrity of provider attribution and indexed/UI representations.
+- integrity of indexed/UI representations.
 
 Required properties:
 
@@ -19,7 +19,7 @@ Required properties:
 
 ## Actors
 
-- honest or malicious sponsor, buyer, recipient, provider, treasury, and claimant;
+- honest or malicious sponsor, buyer, recipient, treasury, and claimant;
 - malicious ERC20/ERC721 contracts in local tests;
 - factory Safe signers;
 - oracle/provider infrastructure;
@@ -50,7 +50,6 @@ flowchart LR
 | Malicious/rebasing/blocked quote token                       | clone isolation, verification labels, UI warning; residual claim risk remains |
 | Reentrancy on mint, token, prize receiver, or factory escrow | checks-effects-interactions and guards                                        |
 | Arbitrary NFT sent to clone                                  | receiver binds state/token/id/from/operator                                   |
-| Self-referral through arbitrary address                      | factory-managed allowlist                                                     |
 | Last/one ticket excluded                                     | `(random % totalTickets) + 1`                                                 |
 | Winner changes after reveal                                  | transfer freeze pending; owner snapshot in callback                           |
 | Duplicate/wrong callback                                     | sequence/state validation and safe ignore                                     |
@@ -66,8 +65,8 @@ flowchart LR
 ## Admin compromise
 
 A compromised factory owner can redirect the treasury for future raffles, change
-quote-token verification or provider eligibility, pause future creation, or transfer
-ownership. Token verification affects official discovery but cannot block creation or
+quote-token verification, pause future creation, or transfer ownership. Token
+verification affects official discovery but cannot block creation or
 interaction. The owner cannot change a selected token or economics, upgrade, cancel,
 settle, seize, or pause an existing clone. Frontends should surface factory versions
 and owner changes.

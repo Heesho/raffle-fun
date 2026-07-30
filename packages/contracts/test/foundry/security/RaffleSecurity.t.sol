@@ -89,7 +89,7 @@ contract RaffleSecurityTest is Test {
         reentrantQuote.arm(address(raffle));
 
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 1, address(0));
+        raffle.buyTickets(buyer, 1);
 
         assertTrue(reentrantQuote.reentryBlocked());
         assertEq(raffle.totalTickets(), 1);
@@ -105,7 +105,7 @@ contract RaffleSecurityTest is Test {
 
         vm.prank(buyer);
         vm.expectRevert(abi.encodeWithSelector(SafeERC20.SafeERC20FailedOperation.selector, address(falseQuote)));
-        raffle.buyTickets(buyer, 1, address(0));
+        raffle.buyTickets(buyer, 1);
     }
 
     function testForcedNativeCurrencyCannotChangeStateOrCreateRefund() public {

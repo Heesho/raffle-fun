@@ -670,12 +670,12 @@ export function CreateRaffleForm() {
             <OutcomeCard
               color="bg-[#ffdc55]"
               label="Threshold met"
-              text="The winning ticket holder claims the NFT. You claim the full net pot."
+              text="The winning ticket holder claims the NFT. You claim the distributable pot after the 5% settlement fee."
             />
             <OutcomeCard
               color="bg-[#7fc8ff]"
               label="Threshold missed"
-              text="You reclaim the NFT plus 20% of the net pot. The winner claims 80%."
+              text="You reclaim the NFT plus 20% of the distributable pot. The winner claims 80%."
             />
             <div className="border-t border-dashed border-black/25 pt-5 text-sm">
               <p className="flex items-center justify-between">
@@ -683,8 +683,8 @@ export function CreateRaffleForm() {
                 <strong>5% of gross</strong>
               </p>
               <p className="mt-2 flex items-center justify-between">
-                <span>Optional provider</span>
-                <strong>+5% of gross</strong>
+                <span>Fee timing</span>
+                <strong>At resolution</strong>
               </p>
               <p className="mt-4 flex items-start gap-2 rounded-xl bg-amber-100 p-3 text-xs leading-5">
                 <CircleDollarSign
@@ -694,8 +694,8 @@ export function CreateRaffleForm() {
                 />
                 At {form.ticketPrice || "—"}{" "}
                 {selectedQuoteToken?.symbol ?? "tokens"} ×{" "}
-                {form.minimumTickets || "0"} tickets, the implied gross
-                threshold target is{" "}
+                {form.minimumTickets || "0"} tickets, the implied gross minimum
+                target is{" "}
                 {form.ticketPrice &&
                 /^\d+(\.\d+)?$/.test(form.ticketPrice) &&
                 /^[1-9]\d*$/.test(form.minimumTickets) &&
@@ -715,6 +715,10 @@ export function CreateRaffleForm() {
                     })()
                   : "—"}{" "}
                 {selectedQuoteToken?.symbol ?? "tokens"}.
+              </p>
+              <p className="mt-3 text-xs leading-5 text-[#56506a]">
+                The minimum selects the NFT branch but does not stop sales.
+                Tickets remain available until the fixed closing time.
               </p>
             </div>
           </div>

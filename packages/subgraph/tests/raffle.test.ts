@@ -48,9 +48,6 @@ const BUYER = Address.fromString("0x5000000000000000000000000000000000000005");
 const RECIPIENT = Address.fromString(
   "0x6000000000000000000000000000000000000006",
 );
-const PROVIDER = Address.fromString(
-  "0x7000000000000000000000000000000000000007",
-);
 const PRIZE = Address.fromString("0x8000000000000000000000000000000000000008");
 const QUOTE = Address.fromString("0x9000000000000000000000000000000000000009");
 
@@ -118,6 +115,18 @@ describe("Raffle mappings", () => {
     assert.entityCount("Ticket", 2);
     assert.fieldEquals("Raffle", RAFFLE.toHexString(), "totalTickets", "2");
     assert.fieldEquals("Raffle", RAFFLE.toHexString(), "grossSales", "2000000");
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "unsettledPot",
+      "2000000",
+    );
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "totalProtocolFees",
+      "0",
+    );
     assert.fieldEquals("Protocol", FACTORY.toHexString(), "totalTickets", "2");
     assert.fieldEquals(
       "QuoteTokenStats",
@@ -162,6 +171,18 @@ describe("Raffle mappings", () => {
     );
     assert.entityCount("RaffleTransfer", 2);
     assert.entityCount("Resolution", 1);
+    assert.fieldEquals(
+      "Resolution",
+      eventId(createResolutionEvent(2)),
+      "protocolFee",
+      "100000",
+    );
+    assert.fieldEquals(
+      "QuoteTokenStats",
+      FACTORY.toHexString() + "-" + QUOTE.toHexString(),
+      "protocolFees",
+      "100000",
+    );
   });
 
   test("threshold-met resolution records the NFT outcome and winner claimant", () => {
@@ -228,7 +249,7 @@ describe("Raffle mappings", () => {
       "QuoteTokenStats",
       FACTORY.toHexString() + "-" + QUOTE.toHexString(),
       "quoteClaimed",
-      "57600000",
+      "1520000",
     );
     assert.fieldEquals("Raffle", RAFFLE.toHexString(), "prizeClaimed", "true");
     assert.fieldEquals(
@@ -387,16 +408,10 @@ function createPurchaseEvent(): TicketsPurchased {
   event.parameters.push(
     new ethereum.EventParam("recipient", ethereum.Value.fromAddress(RECIPIENT)),
   );
-  event.parameters.push(
-    new ethereum.EventParam("provider", ethereum.Value.fromAddress(PROVIDER)),
-  );
   pushUnsigned(event, "quantity", 2);
   pushUnsigned(event, "firstTicketId", 1);
   pushUnsigned(event, "lastTicketId", 2);
   pushUnsigned(event, "grossAmount", 2_000_000);
-  pushUnsigned(event, "protocolFee", 100_000);
-  pushUnsigned(event, "providerFee", 100_000);
-  pushUnsigned(event, "netContribution", 1_800_000);
   return event;
 }
 
@@ -417,12 +432,9 @@ function createResolutionEvent(outcome: i32): RaffleResolved {
       ethereum.Value.fromAddress(outcome == 1 ? RECIPIENT : SPONSOR),
     ),
   );
-  pushUnsigned(event, "winnerCashAmount", outcome == 1 ? 0 : 57_600_000);
-  pushUnsigned(
-    event,
-    "sponsorCashAmount",
-    outcome == 1 ? 108_000_000 : 14_400_000,
-  );
+  pushUnsigned(event, "protocolFee", 100_000);
+  pushUnsigned(event, "winnerCashAmount", outcome == 1 ? 0 : 1_520_000);
+  pushUnsigned(event, "sponsorCashAmount", outcome == 1 ? 1_900_000 : 380_000);
   return event;
 }
 
@@ -436,7 +448,7 @@ function createQuoteClaimedEvent(): QuoteClaimed {
   event.parameters.push(
     new ethereum.EventParam("to", ethereum.Value.fromAddress(RECIPIENT)),
   );
-  pushUnsigned(event, "amount", 57_600_000);
+  pushUnsigned(event, "amount", 1_520_000);
   return event;
 }
 

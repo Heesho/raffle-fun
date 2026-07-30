@@ -38,7 +38,7 @@ contract ReentrantERC20 is ERC20 {
     function transferFrom(address from, address to, uint256 value) public override returns (bool success) {
         if (attackEnabled && !attacking) {
             attacking = true;
-            (bool nestedSuccess,) = target.call(abi.encodeCall(IRaffle.buyTickets, (address(this), 1, address(0))));
+            (bool nestedSuccess,) = target.call(abi.encodeCall(IRaffle.buyTickets, (address(this), 1)));
             reentryBlocked = !nestedSuccess;
             attacking = false;
             attackEnabled = false;
