@@ -1,33 +1,63 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Search, SlidersHorizontal, Sparkles } from "lucide-react";
+import { Flame, PlugZap, Search, Ticket, X } from "lucide-react";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import { RaffleCard } from "@/components/raffle-card";
+import { CountUp } from "@/components/count-up";
+import { LiveTicker } from "@/components/live-ticker";
+import { RaffleCard, RaffleCardSkeleton } from "@/components/raffle-card";
+import { useNow } from "@/hooks/use-now";
+import { isDemoMode } from "@/lib/demo";
+import { toIndexedRaffle } from "@/lib/sandbox/adapter";
+import { useSandbox } from "@/lib/sandbox/store";
+import { ticketsToThreshold } from "@/lib/economics";
 import { fetchRaffles, isSubgraphConfigured } from "@/lib/subgraph";
+import type { IndexedRaffle } from "@/lib/subgraph";
 
 const filters = [
-  "ALL",
-  "ACTIVE",
-  "DRAW_REQUESTED",
-  "RESOLVED",
-  "CANCELLED",
+  { value: "ALL", label: "All" },
+  { value: "ACTIVE", label: "Live" },
+  { value: "DRAW_REQUESTED", label: "Drawing" },
+  { value: "RESOLVED", label: "Settled" },
+  { value: "CANCELLED", label: "Cancelled" },
 ] as const;
 
+const sorts = [
+  { value: "ENDING", label: "Ending soonest" },
+  { value: "CLOSEST", label: "Closest to the NFT" },
+  { value: "NEWEST", label: "Newest" },
+  { value: "POPULAR", label: "Most tickets sold" },
+] as const;
+
+type Filter = (typeof filters)[number]["value"];
+type Sort = (typeof sorts)[number]["value"];
+
 export function RaffleDirectory() {
-  const [filter, setFilter] = useState<(typeof filters)[number]>("ALL");
+  const [filter, setFilter] = useState<Filter>("ALL");
+  const [sort, setSort] = useState<Sort>("ENDING");
   const [search, setSearch] = useState("");
+  const demo = isDemoMode();
   const configured = isSubgraphConfigured();
-  const query = useQuery({
+
+  const query = useQuery<readonly IndexedRaffle[]>({
     queryKey: ["raffles"],
     queryFn: fetchRaffles,
-    enabled: configured,
+    enabled: !demo && configured,
+    refetchInterval: 15_000,
   });
+
+  const sandboxRaffles = useSandboxRaffles();
+
+  const all = useMemo(() => {
+    const source = demo ? sandboxRaffles : (query.data ?? []);
+    return source.filter((raffle) => raffle.quoteTokenVerified);
+  }, [demo, query.data, sandboxRaffles]);
 
   const raffles = useMemo(() => {
     const value = search.trim().toLowerCase();
-    return (query.data ?? []).filter((raffle) => {
+    const matched = all.filter((raffle) => {
       const matchesState = filter === "ALL" || raffle.state === filter;
       const matchesSearch =
         value === "" ||
@@ -37,63 +67,149 @@ export function RaffleDirectory() {
           raffle.quoteToken,
           raffle.prizeToken,
           raffle.prizeTokenId,
+          raffle.prizeName ?? "",
+          raffle.prizeCollection ?? "",
         ].some((field) => field.toLowerCase().includes(value));
-      return raffle.quoteTokenVerified && matchesState && matchesSearch;
+      return matchesState && matchesSearch;
     });
-  }, [filter, query.data, search]);
+
+    const rank = (raffle: IndexedRaffle) =>
+      raffle.state === "ACTIVE" ? 0 : raffle.state === "DRAW_REQUESTED" ? 1 : 2;
+
+    return [...matched].sort((a, b) => {
+      // Open raffles always lead; a settled one is not "ending soonest".
+      if (rank(a) !== rank(b)) return rank(a) - rank(b);
+      if (sort === "ENDING") return Number(a.endTime) - Number(b.endTime);
+      if (sort === "NEWEST") return Number(b.factoryId) - Number(a.factoryId);
+      if (sort === "POPULAR") {
+        return Number(b.totalTickets) - Number(a.totalTickets);
+      }
+      const left = ticketsToThreshold(
+        BigInt(a.totalTickets),
+        BigInt(a.minimumTickets),
+      );
+      const right = ticketsToThreshold(
+        BigInt(b.totalTickets),
+        BigInt(b.minimumTickets),
+      );
+      return Number(left) - Number(right);
+    });
+  }, [all, filter, search, sort]);
+
+  const counts = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const raffle of all) {
+      map.set(raffle.state, (map.get(raffle.state) ?? 0) + 1);
+    }
+    return map;
+  }, [all]);
+
+  const now = useNow();
+  const stats = useMemo(() => {
+    return {
+      live: all.filter((raffle) => raffle.state === "ACTIVE").length,
+      tickets: all.reduce(
+        (sum, raffle) => sum + Number(raffle.totalTickets),
+        0,
+      ),
+      endingToday:
+        now === undefined
+          ? 0
+          : all.filter(
+              (raffle) =>
+                raffle.state === "ACTIVE" &&
+                Number(raffle.endTime) - now < 86_400,
+            ).length,
+    };
+  }, [all, now]);
+
+  const loading = demo
+    ? sandboxRaffles.length === 0
+    : configured && query.isPending;
+  const unconfigured = !demo && !configured;
 
   return (
-    <section className="page-shell py-16" aria-labelledby="raffles-heading">
-      <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+    <section
+      className="page-shell scroll-mt-24 pb-16 pt-10"
+      aria-labelledby="raffles-heading"
+    >
+      {!loading && all.length > 0 ? (
+        <div className="mb-8">
+          <LiveTicker />
+        </div>
+      ) : null}
+
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="eyebrow">Live protocol</p>
-          <h2
-            id="raffles-heading"
-            className="mt-2 text-4xl font-bold md:text-5xl"
-          >
+          <h2 id="raffles-heading" className="mt-2 text-4xl md:text-5xl">
             Find your ticket
           </h2>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-[#56506a]">
-            Browse active draws, races nearing their threshold, and recently
-            settled outcomes using currently verified payment tokens. Known
-            unverified raffles remain available by direct link.
-          </p>
+          {all.length > 0 ? (
+            <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-bold text-[var(--ink-soft)]">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="relative flex size-2">
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-[var(--grass)] opacity-70" />
+                  <span className="relative inline-flex size-2 rounded-full bg-[var(--grass)]" />
+                </span>
+                <span className="numeric text-[var(--ink)]">{stats.live}</span>{" "}
+                live now
+              </span>
+              <span aria-hidden>·</span>
+              <span>
+                <CountUp className="text-[var(--ink)]" value={stats.tickets} />{" "}
+                tickets sold
+              </span>
+              {stats.endingToday > 0 ? (
+                <>
+                  <span aria-hidden>·</span>
+                  <span className="inline-flex items-center gap-1 text-[var(--pink)]">
+                    <Flame aria-hidden size={14} />
+                    <span className="numeric">{stats.endingToday}</span> ending
+                    today
+                  </span>
+                </>
+              ) : null}
+            </p>
+          ) : null}
         </div>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <label className="relative">
+
+        <div className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto">
+          <label className="relative w-full sm:w-64">
             <span className="sr-only">Search raffles</span>
             <Search
               aria-hidden
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#56506a]"
+              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--ink-faint)]"
               size={17}
             />
             <input
-              className="input min-w-72 !pl-10"
+              className="input !pl-11 !pr-10"
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Address, sponsor, prize, payment token"
+              placeholder="Prize, collection, address"
               type="search"
               value={search}
             />
+            {search !== "" ? (
+              <button
+                aria-label="Clear search"
+                className="absolute right-2.5 top-1/2 grid size-7 -translate-y-1/2 place-items-center rounded-full text-[var(--ink-faint)] hover:bg-[var(--paper-sunk)] hover:text-[var(--ink)]"
+                onClick={() => setSearch("")}
+                type="button"
+              >
+                <X aria-hidden size={15} />
+              </button>
+            ) : null}
           </label>
-          <label className="relative">
-            <span className="sr-only">Filter by state</span>
-            <SlidersHorizontal
-              aria-hidden
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#56506a]"
-              size={17}
-            />
+          <label className="sm:w-52">
+            <span className="sr-only">Sort raffles</span>
             <select
-              className="input !pl-10 !pr-9 font-bold"
-              onChange={(event) =>
-                setFilter(event.target.value as (typeof filters)[number])
-              }
-              value={filter}
+              className="select"
+              onChange={(event) => setSort(event.target.value as Sort)}
+              value={sort}
             >
-              {filters.map((value) => (
-                <option key={value} value={value}>
-                  {value === "ALL"
-                    ? "All states"
-                    : value.replaceAll("_", " ").toLowerCase()}
+              {sorts.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
                 </option>
               ))}
             </select>
@@ -101,63 +217,144 @@ export function RaffleDirectory() {
         </div>
       </div>
 
-      {query.isPending && configured ? (
+      <div
+        className="mt-7 flex flex-wrap gap-2"
+        role="group"
+        aria-label="Filter by raffle state"
+      >
+        {filters.map((option) => {
+          const selected = filter === option.value;
+          const count =
+            option.value === "ALL"
+              ? all.length
+              : (counts.get(option.value) ?? 0);
+          return (
+            <button
+              aria-pressed={selected}
+              className={`chip ${
+                selected
+                  ? "bg-[var(--ink)] text-white"
+                  : "border-[var(--line-strong)] bg-[var(--paper-raised)] text-[var(--ink-soft)] hover:border-[var(--ink)] hover:text-[var(--ink)]"
+              }`}
+              key={option.value}
+              onClick={() => setFilter(option.value)}
+              type="button"
+            >
+              {option.label}
+              <span
+                className={`numeric ${selected ? "text-white/60" : "text-[var(--ink-faint)]"}`}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {loading ? (
         <div
-          className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+          className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
           aria-label="Loading raffles"
+          role="status"
         >
           {[0, 1, 2].map((value) => (
-            <div
-              className="ticket-card h-[31rem] animate-pulse bg-white/55"
-              key={value}
-            />
+            <RaffleCardSkeleton key={value} />
           ))}
         </div>
       ) : null}
 
-      {query.isError ? (
-        <div className="ticket-card mt-10 p-8" role="alert">
-          <p className="font-black">The index could not be reached.</p>
-          <p className="mt-2 text-sm text-[#56506a]">
-            Onchain state remains authoritative. Try again or open a known
-            raffle address directly.
-          </p>
-          <button
-            className="btn btn-ghost mt-5"
-            onClick={() => query.refetch()}
-          >
-            Retry index
-          </button>
-        </div>
+      {!demo && query.isError ? (
+        <EmptyState
+          action={
+            <button className="btn btn-outline" onClick={() => query.refetch()}>
+              Retry index
+            </button>
+          }
+          icon={<PlugZap aria-hidden size={22} />}
+          text="Onchain state remains authoritative. Try again, or open a known raffle address directly."
+          title="The index could not be reached"
+        />
       ) : null}
 
-      {!query.isPending && !query.isError && raffles.length === 0 ? (
-        <div className="ticket-card mt-10 grid min-h-72 place-items-center p-8 text-center">
-          <div>
-            <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-[#ffdc55]">
-              <Sparkles aria-hidden />
-            </span>
-            <h3 className="mt-5 text-2xl font-bold">
-              {configured
-                ? "No raffles match this view"
-                : "The index is not connected yet"}
-            </h3>
-            <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-[#56506a]">
-              {configured
-                ? "Clear the search or choose another lifecycle state."
-                : "Configure a deployed network and its subgraph endpoint to surface real protocol data. No sample activity is substituted."}
-            </p>
-          </div>
-        </div>
+      {unconfigured ? (
+        <EmptyState
+          icon={<PlugZap aria-hidden size={22} />}
+          text="Set NEXT_PUBLIC_SUBGRAPH_URL to index real protocol data, or set NEXT_PUBLIC_DEMO_MODE=on to preview the interface with sample raffles."
+          title="No index is connected"
+        />
+      ) : null}
+
+      {!loading && !query.isError && !unconfigured && raffles.length === 0 ? (
+        <EmptyState
+          action={
+            all.length > 0 ? (
+              <button
+                className="btn btn-outline"
+                onClick={() => {
+                  setFilter("ALL");
+                  setSearch("");
+                }}
+                type="button"
+              >
+                Clear filters
+              </button>
+            ) : (
+              <Link className="btn btn-primary" href="/create">
+                Sponsor the first raffle
+              </Link>
+            )
+          }
+          icon={<Ticket aria-hidden size={22} />}
+          text={
+            all.length > 0
+              ? "Nothing matches this search and state combination yet."
+              : "No raffles have been created on this network so far."
+          }
+          title={all.length > 0 ? "No raffles match" : "No raffles yet"}
+        />
       ) : null}
 
       {raffles.length > 0 ? (
-        <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {raffles.map((raffle) => (
             <RaffleCard key={raffle.id} raffle={raffle} />
           ))}
         </div>
       ) : null}
     </section>
+  );
+}
+
+/** Sandbox raffles, presented in the indexed shape the grid already renders. */
+function useSandboxRaffles(): readonly IndexedRaffle[] {
+  const { sandbox } = useSandbox();
+  return useMemo(
+    () => (sandbox?.raffles ?? []).map(toIndexedRaffle),
+    [sandbox],
+  );
+}
+
+function EmptyState({
+  icon,
+  title,
+  text,
+  action,
+}: {
+  readonly icon: React.ReactNode;
+  readonly title: string;
+  readonly text: string;
+  readonly action?: React.ReactNode;
+}) {
+  return (
+    <div className="card mt-8 grid place-items-center px-6 py-16 text-center">
+      <div className="max-w-md">
+        <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-[var(--yellow-wash)] text-[var(--amber-ink)]">
+          {icon}
+        </span>
+        <h3 className="mt-5 text-2xl">{title}</h3>
+        <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">{text}</p>
+        {action ? <div className="mt-6">{action}</div> : null}
+      </div>
+    </div>
   );
 }

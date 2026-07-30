@@ -1,6 +1,6 @@
-# Raffle Fun
+# raffle.fun
 
-Raffle Fun is a permissionless, single-prize NFT raffle protocol for Base. A sponsor
+raffle.fun is a permissionless, single-prize NFT raffle protocol for Base. A sponsor
 escrows one ERC721, selects any contract-backed ERC20 as the fixed payment token, and
 participants buy equal-chance ERC721 tickets. One Pyth Entropy v2 result selects the
 winning ticket. The minimum-ticket threshold determines whether that winner receives

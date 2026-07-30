@@ -2,18 +2,17 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  ArrowUpRight,
   AlertTriangle,
   Check,
   CircleDollarSign,
-  Clock3,
   Dices,
   ExternalLink,
   Gift,
   LoaderCircle,
-  Ticket,
-  Trophy,
-  Users,
+  Minus,
+  Plus,
+  ShoppingBag,
+  Undo2,
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -36,6 +35,7 @@ import {
   buyTickets,
   calculatePurchaseAmounts,
   calculateResolutionAmounts,
+  cancelBeforeSales,
   claimPrize,
   claimQuote,
   closeNoSales,
@@ -51,24 +51,28 @@ import {
   type ActionContext,
 } from "@raffle-fun/sdk";
 
-import { StatusPill } from "@/components/status-pill";
+import type { StatusTone } from "@/components/status-pill";
 import { WalletButton } from "@/components/wallet-button";
 import { useTokenMetadata } from "@/hooks/use-token-metadata";
-import {
-  formatCountdown,
-  formatDateTime,
-  formatTokenAmount,
-  percentOf,
-  shortAddress,
-} from "@/lib/format";
+import { isDemoMode } from "@/lib/demo";
+import { SandboxPanel } from "@/components/sandbox/sandbox-panel";
+import { SANDBOX_WETH } from "@/lib/sandbox/adapter";
+import { ticketsOwnedBy } from "@/lib/sandbox/engine";
+import { useSandbox, useSandboxRaffle } from "@/lib/sandbox/store";
+import { formatTokenAmount } from "@/lib/format";
 import {
   configuredChain,
   configuredChainId,
-  explorerAddressUrl,
   explorerTransactionUrl,
   protocolDeployment,
 } from "@/lib/protocol";
 import { isSubgraphConfigured } from "@/lib/subgraph";
+
+import {
+  InvalidState,
+  RaffleLayout,
+  type RaffleViewModel,
+} from "./raffle-view";
 
 type LiveRaffleView = {
   readonly factoryId: bigint;
@@ -111,9 +115,109 @@ type ActionProgress =
     }
   | { readonly kind: "error"; readonly text: string };
 
+const MAX_QUANTITY = 100;
 const quantityPattern = /^(?:[1-9]|[1-9]\d|100)$/;
 
+function stateTone(state: RaffleState): StatusTone {
+  if (state === RaffleState.Active) return "active";
+  if (state === RaffleState.Resolved) return "resolved";
+  if (state === RaffleState.DrawRequested) return "warning";
+  return "neutral";
+}
+
 export function RaffleDetail({
+  raffleAddress,
+}: {
+  readonly raffleAddress: string;
+}) {
+  if (isDemoMode()) {
+    return <SandboxRaffleDetail address={raffleAddress} />;
+  }
+  return <LiveRaffleDetail raffleAddress={raffleAddress} />;
+}
+
+/* --------------------------------------------------------------- sandbox */
+
+function SandboxRaffleDetail({ address }: { readonly address: string }) {
+  const raffle = useSandboxRaffle(address);
+  const { sandbox } = useSandbox();
+
+  if (raffle === undefined || sandbox === undefined) {
+    return (
+      <div className="page-shell py-14" role="status">
+        <span className="sr-only">Loading raffle</span>
+        <div className="skeleton h-10 w-72 rounded-full" />
+        <div className="mt-8 grid gap-7 lg:grid-cols-[1fr_23rem]">
+          <div className="skeleton h-[34rem] rounded-3xl" />
+          <div className="skeleton h-96 rounded-3xl" />
+        </div>
+      </div>
+    );
+  }
+
+  const tones: Record<string, StatusTone> = {
+    ACTIVE: "active",
+    DRAW_REQUESTED: "warning",
+    RESOLVED: "resolved",
+    CANCELLED: "neutral",
+  };
+  const outcomeLabels: Record<string, string> = {
+    NFT_AWARDED: "NFT to the winner",
+    CASH_FALLBACK: "80% cash to the winner",
+    NO_SALES: "no sales",
+    CANCELLED_BEFORE_SALE: "cancelled before any sale",
+  };
+
+  const view: RaffleViewModel = {
+    address: raffle.id as Address,
+    factoryId: raffle.factoryId,
+    sponsor: raffle.sponsor as Address,
+    quoteToken: SANDBOX_WETH.address as Address,
+    prizeToken: raffle.prizeToken as Address,
+    prizeTokenId: raffle.prizeTokenId,
+    prizeName: raffle.prizeName,
+    prizeCollection: raffle.prizeCollection,
+    prizeImage: raffle.prizeImage,
+    prizePixelated: raffle.prizePixelated,
+    ticketPrice: raffle.ticketPrice,
+    minimumTickets: BigInt(raffle.minimumTickets),
+    totalTickets: BigInt(raffle.tickets.length),
+    grossSales: raffle.grossSales,
+    unsettledPot: raffle.unsettledPot,
+    startTime: BigInt(Math.floor(raffle.startTime / 1000)),
+    endTime: BigInt(Math.floor(raffle.endTime / 1000)),
+    stateLabel: raffle.state.replaceAll("_", " ").toLowerCase(),
+    stateTone: tones[raffle.state] ?? "neutral",
+    isActive: raffle.state === "ACTIVE",
+    outcomeLabel: outcomeLabels[raffle.outcome],
+    winningTicketId:
+      raffle.winningTicketId === null
+        ? undefined
+        : BigInt(raffle.winningTicketId),
+    accountTicketBalance: BigInt(ticketsOwnedBy(raffle, sandbox.player)),
+  };
+
+  return (
+    <RaffleLayout
+      aside={<SandboxPanel raffle={raffle} />}
+      footnote={
+        <p className="px-2 text-xs leading-5 text-[var(--ink-faint)]">
+          Ticket transfers lock only while randomness is pending. After
+          resolution they move freely, but the snapshotted winner never changes.{" "}
+          <Link className="font-bold underline" href="/docs">
+            Read the full mechanics.
+          </Link>
+        </p>
+      }
+      token={SANDBOX_WETH}
+      view={view}
+    />
+  );
+}
+
+/* ------------------------------------------------------------------ live */
+
+function LiveRaffleDetail({
   raffleAddress,
 }: {
   readonly raffleAddress: string;
@@ -124,7 +228,7 @@ export function RaffleDetail({
   const publicClient = usePublicClient();
   const wallet = useWalletClient();
   const queryClient = useQueryClient();
-  const [quantity, setQuantity] = useState("1");
+  const [quantity, setQuantity] = useState(1);
   const [recipient, setRecipient] = useState("");
   const [claimDestination, setClaimDestination] = useState("");
   const [acceptedUnverifiedTokenRisk, setAcceptedUnverifiedTokenRisk] =
@@ -160,7 +264,7 @@ export function RaffleDetail({
   const quoteTokenVerificationKnown =
     typeof quoteTokenVerificationQuery.data === "boolean";
   const quoteTokenVerified = quoteTokenVerificationQuery.data === true;
-  const parsedQuantity = quantityPattern.test(quantity)
+  const parsedQuantity = quantityPattern.test(String(quantity))
     ? BigInt(quantity)
     : undefined;
   const purchaseAmounts = useMemo(() => {
@@ -342,7 +446,9 @@ export function RaffleDetail({
     }
   }
 
-  async function handleAction(action: "draw" | "close" | "quote" | "prize") {
+  async function handleAction(
+    action: "draw" | "close" | "quote" | "prize" | "cancel",
+  ) {
     if (raffle === undefined) return;
     setProgress({ kind: "pending", text: "Checking current onchain state…" });
     try {
@@ -357,6 +463,13 @@ export function RaffleDetail({
           text: `Simulating draw with ${formatQuoteAmount(live.entropyFee, 18)} ETH oracle fee…`,
         });
         hash = await requestDraw(context, raffle, live.entropyFee);
+      } else if (action === "cancel") {
+        if (live.state !== RaffleState.Active || live.totalTickets !== 0n) {
+          throw new Error(
+            "Cancellation is only possible while zero tickets have been sold.",
+          );
+        }
+        hash = await cancelBeforeSales(context, raffle);
       } else if (action === "close") {
         const block = await context.publicClient.getBlock();
         if (
@@ -421,8 +534,13 @@ export function RaffleDetail({
   }
   if (viewQuery.isPending) {
     return (
-      <div className="page-shell py-20" role="status">
-        <div className="ticket-card h-[36rem] animate-pulse bg-white/60" />
+      <div className="page-shell py-14" role="status">
+        <span className="sr-only">Loading raffle</span>
+        <div className="skeleton h-10 w-72 rounded-full" />
+        <div className="mt-8 grid gap-7 lg:grid-cols-[1fr_23rem]">
+          <div className="skeleton h-[34rem] rounded-3xl" />
+          <div className="skeleton h-96 rounded-3xl" />
+        </div>
       </div>
     );
   }
@@ -435,13 +553,34 @@ export function RaffleDetail({
     );
   }
 
-  const progressPercent = percentOf(view.totalTickets, view.minimumTickets);
-  const thresholdMet = view.totalTickets >= view.minimumTickets;
-  const thresholdTarget = view.ticketPrice * view.minimumTickets;
-  const currentSettlement = calculateResolutionAmounts(
-    view.state === RaffleState.Resolved ? view.grossSales : view.unsettledPot,
-    thresholdMet,
-  );
+  const isSponsor =
+    address !== undefined &&
+    address.toLowerCase() === view.sponsor.toLowerCase();
+  const model: RaffleViewModel = {
+    address: view.raffle,
+    factoryId: view.factoryId.toString(),
+    sponsor: view.sponsor,
+    quoteToken: view.quoteToken,
+    prizeToken: view.prizeToken,
+    prizeTokenId: view.prizeTokenId.toString(),
+    ticketPrice: view.ticketPrice,
+    minimumTickets: view.minimumTickets,
+    totalTickets: view.totalTickets,
+    grossSales: view.grossSales,
+    unsettledPot: view.unsettledPot,
+    startTime: view.startTime,
+    endTime: view.endTime,
+    stateLabel: raffleStateLabels[view.state as RaffleState],
+    stateTone: stateTone(view.state as RaffleState),
+    isActive: view.state === RaffleState.Active,
+    outcomeLabel:
+      view.outcome === RaffleOutcome.None
+        ? undefined
+        : raffleOutcomeLabels[view.outcome as RaffleOutcome],
+    winningTicketId: view.winningTicketId,
+    accountTicketBalance: view.accountTicketBalance,
+  };
+
   const projectedSettlement =
     purchaseAmounts === undefined || parsedQuantity === undefined
       ? undefined
@@ -450,281 +589,84 @@ export function RaffleDetail({
           view.totalTickets + parsedQuantity >= view.minimumTickets,
         );
 
+  const purchaseDisabled =
+    !view.canBuy ||
+    progress.kind === "pending" ||
+    !quoteTokenVerificationKnown ||
+    (!quoteTokenVerified && !acceptedUnverifiedTokenRisk);
+
   return (
-    <div className="page-shell py-12 md:py-18">
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <p className="eyebrow">Raffle #{view.factoryId.toString()}</p>
-          <h1 className="mt-2 text-4xl font-bold md:text-6xl">
-            NFT #{view.prizeTokenId.toString()}
-          </h1>
-        </div>
-        <StatusPill
-          tone={
-            view.state === RaffleState.Active
-              ? "active"
-              : view.state === RaffleState.Resolved
-                ? "resolved"
-                : view.state === RaffleState.DrawRequested
-                  ? "warning"
-                  : "neutral"
-          }
-        >
-          {raffleStateLabels[view.state as RaffleState]}
-        </StatusPill>
-      </div>
-
-      {quoteTokenVerificationQuery.data === false ? (
-        <div className="mb-7 rounded-2xl border border-amber-900/20 bg-amber-100 p-5 text-amber-950">
-          <p className="flex items-center gap-2 font-black">
-            <AlertTriangle aria-hidden size={19} /> Unverified payment token
-          </p>
-          <p className="mt-2 text-sm leading-6 text-amber-950/80">
-            This raffle is canonical, but its ERC-20 is not currently verified
-            for official discovery. It may freeze, rebase, blacklist accounts,
-            or otherwise prevent purchases and claims. Review the token contract
-            before interacting.
-          </p>
-          <label className="mt-4 flex items-start gap-2 text-sm font-bold">
-            <input
-              checked={acceptedUnverifiedTokenRisk}
-              className="mt-1 size-4 accent-[#1726a3]"
-              onChange={(event) =>
-                setAcceptedUnverifiedTokenRisk(event.target.checked)
-              }
-              type="checkbox"
-            />
-            I understand this token is unverified and want to enable ticket
-            purchases.
-          </label>
-        </div>
-      ) : null}
-
-      {quoteTokenVerificationQuery.isError ? (
-        <p
-          className="mb-7 rounded-2xl border border-red-900/20 bg-red-50 p-5 text-sm font-bold text-red-800"
-          role="alert"
-        >
-          Payment-token verification could not be read. Purchases are disabled
-          until the factory check succeeds.
-        </p>
-      ) : null}
-
-      <div className="grid gap-7 lg:grid-cols-[1fr_24rem]">
-        <div className="space-y-7">
-          <section className="ticket-card overflow-hidden">
-            <div className="grid min-h-72 place-items-center bg-[#1726a3] p-10 text-white">
-              <div className="text-center">
-                <span className="mx-auto grid size-28 rotate-6 place-items-center rounded-[2rem] border border-white/30 bg-white/10">
-                  <Gift aria-hidden size={50} strokeWidth={1.4} />
-                </span>
-                <p className="mt-6 text-xs font-bold text-white/55">
-                  ERC721 prize
-                </p>
-                <a
-                  className="mt-2 inline-flex items-center gap-1 text-sm font-black hover:text-[#ffdc55]"
-                  href={explorerAddressUrl(view.prizeToken)}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  {shortAddress(view.prizeToken)}{" "}
-                  <ArrowUpRight aria-hidden size={14} />
-                </a>
-              </div>
-            </div>
-            <div className="grid gap-4 p-6 sm:grid-cols-2 lg:grid-cols-4">
-              <Metric
-                icon={<CircleDollarSign size={17} />}
-                label="Ticket"
-                value={formatTokenAmount(
-                  view.ticketPrice,
-                  tokenMetadata.decimals,
-                  tokenMetadata.symbol,
-                )}
-              />
-              <Metric
-                icon={<Users size={17} />}
-                label="Sold"
-                value={view.totalTickets.toString()}
-              />
-              <Metric
-                icon={<Clock3 size={17} />}
-                label="Time left"
-                value={
-                  view.state === RaffleState.Active
-                    ? formatCountdown(view.endTime)
-                    : "Closed"
-                }
-              />
-              <Metric
-                icon={<Ticket size={17} />}
-                label="Your tickets"
-                value={view.accountTicketBalance.toString()}
-              />
-            </div>
-          </section>
-
-          <section className="ticket-card p-6 md:p-8">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="eyebrow">NFT threshold</p>
-                <h2 className="mt-2 text-3xl font-bold">
-                  {view.totalTickets.toString()} of{" "}
-                  {view.minimumTickets.toString()} tickets
-                </h2>
-              </div>
-              <p className="numeric text-3xl font-black">
-                {progressPercent.toFixed(0)}%
+    <RaffleLayout
+      banner={
+        <>
+          {quoteTokenVerificationQuery.data === false ? (
+            <div className="rounded-3xl bg-[var(--amber-wash)] p-5 text-[var(--amber-ink)]">
+              <p className="flex items-center gap-2 font-extrabold">
+                <AlertTriangle aria-hidden size={18} /> Unverified payment token
               </p>
-            </div>
-            <div className="mt-5 h-4 overflow-hidden rounded-full bg-black/10">
-              <div
-                className="h-full rounded-full bg-[#ef2ab2]"
-                style={{ width: `${Math.min(progressPercent, 100)}%` }}
-              />
-            </div>
-            <div className="mt-5 grid gap-3 text-sm sm:grid-cols-3">
-              <Stat
-                label="Gross target"
-                value={formatTokenAmount(
-                  thresholdTarget,
-                  tokenMetadata.decimals,
-                  tokenMetadata.symbol,
-                )}
-              />
-              <Stat
-                label="Gross sales"
-                value={formatTokenAmount(
-                  view.grossSales,
-                  tokenMetadata.decimals,
-                  tokenMetadata.symbol,
-                )}
-              />
-              <Stat
-                label="Distributable after 5%"
-                value={formatTokenAmount(
-                  currentSettlement.distributablePot,
-                  tokenMetadata.decimals,
-                  tokenMetadata.symbol,
-                )}
-              />
-            </div>
-            <p className="mt-5 text-xs leading-5 text-[#56506a]">
-              The threshold selects the settlement branch; it does not cap
-              sales. Tickets remain available until the fixed closing time, so
-              the sponsor can exceed the target and existing odds can change.
-            </p>
-          </section>
-
-          <section>
-            <div className="mb-4">
-              <p className="eyebrow">Settlement branches</p>
-              <h2 className="mt-2 text-3xl font-bold">
-                What the winner receives
-              </h2>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              <OutcomePanel
-                active={thresholdMet && view.outcome === RaffleOutcome.None}
-                icon={<Trophy aria-hidden />}
-                label="At or above threshold"
-                title="Winner claims the NFT"
-                text="A 5% protocol fee is allocated at resolution. The sponsor claims the remaining 95% of aggregate gross sales."
-              />
-              <OutcomePanel
-                active={!thresholdMet && view.outcome === RaffleOutcome.None}
-                icon={<CircleDollarSign aria-hidden />}
-                label="Below threshold"
-                title="Winner claims 80% cash"
-                text="The sponsor reclaims the NFT and receives the remaining 20% of the distributable pot."
-              />
-            </div>
-            {view.outcome !== RaffleOutcome.None ? (
-              <p className="mt-4 rounded-xl bg-violet-100 p-4 text-sm font-black text-violet-950">
-                Settled outcome:{" "}
-                {raffleOutcomeLabels[view.outcome as RaffleOutcome]}
-                {view.winningTicketId > 0n
-                  ? ` · Ticket #${view.winningTicketId.toString()} won`
-                  : ""}
+              <p className="mt-2 text-sm leading-6">
+                This raffle is canonical, but its ERC-20 is not currently
+                verified for official discovery. It may freeze, rebase,
+                blacklist accounts, or otherwise prevent purchases and claims.
+                Review the token contract before interacting.
               </p>
-            ) : null}
-          </section>
-
-          <section className="ticket-card p-6 md:p-8">
-            <p className="eyebrow">Chain-authoritative details</p>
-            <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-2">
-              <Detail
-                label="Raffle contract"
-                value={shortAddress(view.raffle)}
-                href={explorerAddressUrl(view.raffle)}
-              />
-              <Detail
-                label="Sponsor"
-                value={shortAddress(view.sponsor)}
-                href={explorerAddressUrl(view.sponsor)}
-              />
-              <Detail
-                label="Prize contract"
-                value={shortAddress(view.prizeToken)}
-                href={explorerAddressUrl(view.prizeToken)}
-              />
-              <Detail
-                label="Quote token"
-                value={`${tokenMetadata.symbol} · ${shortAddress(view.quoteToken)}`}
-                href={explorerAddressUrl(view.quoteToken)}
-              />
-              <Detail label="Starts" value={formatDateTime(view.startTime)} />
-              <Detail label="Ends" value={formatDateTime(view.endTime)} />
-            </dl>
-          </section>
-
-          <section className="ticket-card p-6 md:p-8">
-            <p className="eyebrow">Indexed history</p>
-            <h2 className="mt-2 text-3xl font-bold">Activity</h2>
-            <p className="mt-4 text-sm leading-6 text-[#56506a]">
-              {isSubgraphConfigured()
-                ? "The configured index may take a short time to reflect recent confirmations. Live actions above always use direct chain reads."
-                : "No subgraph endpoint is configured, so indexed purchase and claim history is unavailable. Live contract state above remains authoritative."}
+              <label className="mt-4 flex items-start gap-2 text-sm font-bold">
+                <input
+                  checked={acceptedUnverifiedTokenRisk}
+                  className="mt-1 size-4 accent-[var(--pink)]"
+                  onChange={(event) =>
+                    setAcceptedUnverifiedTokenRisk(event.target.checked)
+                  }
+                  type="checkbox"
+                />
+                I understand this token is unverified and want to enable ticket
+                purchases.
+              </label>
+            </div>
+          ) : null}
+          {quoteTokenVerificationQuery.isError ? (
+            <p
+              className="mt-4 rounded-3xl bg-[var(--danger-wash)] p-5 text-sm font-bold text-[var(--danger)]"
+              role="alert"
+            >
+              Payment-token verification could not be read. Purchases are
+              disabled until the factory check succeeds.
             </p>
-          </section>
-        </div>
-
-        <aside className="space-y-5 lg:sticky lg:top-6 lg:self-start">
-          <section className="ticket-card p-6">
+          ) : null}
+        </>
+      }
+      aside={
+        <>
+          <section className="card p-6">
             <p className="eyebrow">Your action</p>
-            <h2 className="mt-2 text-3xl font-bold">Get tickets</h2>
-            <div className="mt-5">
-              <label className="text-xs font-extrabold text-[#56506a]">
-                Quantity (1–100)
-                <input
-                  className="input numeric mt-2"
-                  inputMode="numeric"
-                  onChange={(event) => setQuantity(event.target.value)}
-                  value={quantity}
-                />
-              </label>
-            </div>
-            <div className="mt-4">
-              <label className="text-xs font-extrabold text-[#56506a]">
-                Optional recipient
-                <input
-                  className="input mt-2"
-                  onChange={(event) => setRecipient(event.target.value)}
-                  placeholder={address ?? "0x…"}
-                  value={recipient}
-                />
-              </label>
-            </div>
+            <h2 className="mt-2 text-2xl">Get tickets</h2>
+
+            <QuantityStepper
+              disabled={!view.canBuy}
+              onChange={setQuantity}
+              quantity={quantity}
+            />
+
+            <label className="mt-4 block">
+              <span className="field-label">Send tickets to (optional)</span>
+              <input
+                className="input numeric"
+                onChange={(event) => setRecipient(event.target.value)}
+                placeholder={address ?? "0x…"}
+                value={recipient}
+              />
+            </label>
+
             {purchaseAmounts && projectedSettlement ? (
-              <dl className="mt-5 space-y-2 border-y border-dashed border-black/25 py-4 text-xs">
+              <dl className="mt-5 space-y-2 text-sm">
                 <Split
                   label="Total paid"
+                  strong
                   value={formatTokenAmount(
                     purchaseAmounts.grossAmount,
                     tokenMetadata.decimals,
                     tokenMetadata.symbol,
                   )}
-                  strong
                 />
                 <Split
                   label="Gross pot after purchase"
@@ -749,48 +691,43 @@ export function RaffleDetail({
                     tokenMetadata.decimals,
                     tokenMetadata.symbol,
                   )}
-                  strong
                 />
               </dl>
             ) : null}
-            <p className="mt-4 rounded-xl bg-[#ffdc55]/55 p-3 text-xs leading-5">
-              Purchases add their full amount to the gross pot. One 5% protocol
-              fee is calculated from aggregate sales when the raffle resolves.
+
+            <p className="mt-4 rounded-2xl bg-[var(--yellow-wash)] p-3 text-xs leading-5 text-[var(--ink-soft)]">
+              Purchases add their full amount to the unsettled pot. One 5%
+              protocol fee is calculated from aggregate sales when the raffle
+              resolves.
             </p>
-            <div className="mt-5">
-              {!isConnected ? (
-                <WalletButton />
-              ) : (
-                <button
-                  className="btn btn-primary w-full"
-                  disabled={
-                    !view.canBuy ||
-                    progress.kind === "pending" ||
-                    !quoteTokenVerificationKnown ||
-                    (!quoteTokenVerified && !acceptedUnverifiedTokenRisk)
-                  }
-                  onClick={handleBuy}
-                  type="button"
-                >
-                  Buy tickets <ArrowUpRight aria-hidden size={17} />
-                </button>
-              )}
-            </div>
+
+            <div className="perforation my-5" />
+
+            {!isConnected ? (
+              <WalletButton full />
+            ) : (
+              <button
+                className="btn btn-primary w-full"
+                disabled={purchaseDisabled}
+                onClick={handleBuy}
+                type="button"
+              >
+                <ShoppingBag aria-hidden size={17} /> Buy tickets
+              </button>
+            )}
           </section>
 
-          <section className="ticket-card p-6">
+          <section className="card p-6">
             <p className="eyebrow">Settle or claim</p>
-            <div className="mt-4">
-              <label className="text-xs font-extrabold text-[#56506a]">
-                Optional claim destination
-                <input
-                  className="input mt-2"
-                  onChange={(event) => setClaimDestination(event.target.value)}
-                  placeholder={address ?? "0x…"}
-                  value={claimDestination}
-                />
-              </label>
-            </div>
+            <label className="mt-4 block">
+              <span className="field-label">Claim destination (optional)</span>
+              <input
+                className="input numeric"
+                onChange={(event) => setClaimDestination(event.target.value)}
+                placeholder={address ?? "0x…"}
+                value={claimDestination}
+              />
+            </label>
             <div className="mt-4 grid gap-2">
               <ActionButton
                 disabled={!view.canDraw || progress.kind === "pending"}
@@ -827,187 +764,117 @@ export function RaffleDetail({
             </div>
           </section>
 
-          {progress.kind !== "idle" ? (
-            <section
-              className={`rounded-2xl border p-4 text-sm ${
-                progress.kind === "error"
-                  ? "border-red-900/20 bg-red-50 text-red-800"
-                  : "border-black/10 bg-white/75"
-              }`}
-              role={progress.kind === "error" ? "alert" : "status"}
-            >
-              {progress.kind === "pending" ? (
-                <p className="flex items-center gap-2 font-bold">
-                  <LoaderCircle
-                    aria-hidden
-                    className="animate-spin"
-                    size={17}
-                  />
-                  {progress.text}
-                </p>
-              ) : null}
-              {progress.kind === "error" ? progress.text : null}
-              {progress.kind === "batch" ? (
-                <div>
-                  <p className="font-black">Wallet batch submitted</p>
-                  <p className="mt-1 break-all text-xs text-[#56506a]">
-                    Batch ID: {progress.id}
-                  </p>
-                  <p className="mt-2 text-xs text-[#56506a]">
-                    Your wallet tracks confirmation. Chain and index views will
-                    refresh automatically.
-                  </p>
-                </div>
-              ) : null}
-              {progress.kind === "success" ? (
-                <div>
-                  <p className="flex items-center gap-2 font-black text-emerald-800">
-                    <Check aria-hidden size={17} /> Confirmed onchain
-                  </p>
-                  <a
-                    className="mt-2 inline-flex items-center gap-1 font-bold underline"
-                    href={explorerTransactionUrl(progress.hash)}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    View transaction <ExternalLink aria-hidden size={13} />
-                  </a>
-                  {progress.indexing ? (
-                    <p className="mt-2 text-xs text-[#56506a]">
-                      The index is catching up; the direct chain state above has
-                      already refreshed.
-                    </p>
-                  ) : null}
-                </div>
-              ) : null}
+          {isSponsor ? (
+            <section className="card p-6">
+              <p className="eyebrow">Sponsor controls</p>
+              <h2 className="mt-2 text-xl">Your escrowed prize</h2>
+              <p className="mt-3 text-sm leading-6 text-[var(--ink-soft)]">
+                {view.totalTickets === 0n
+                  ? "No tickets have sold yet, so you can still cancel and reclaim the NFT. The moment ticket #1 sells this option disappears for good."
+                  : `${view.totalTickets.toString()} tickets have sold. The NFT is now locked until the draw settles — it can only go to the winner or back to you through settlement.`}
+              </p>
+              <button
+                className="btn btn-outline mt-4 w-full"
+                disabled={
+                  view.state !== RaffleState.Active ||
+                  view.totalTickets !== 0n ||
+                  progress.kind === "pending"
+                }
+                onClick={() => handleAction("cancel")}
+                type="button"
+              >
+                <Undo2 aria-hidden size={17} /> Cancel & reclaim NFT
+              </button>
             </section>
           ) : null}
 
-          <p className="px-2 text-xs leading-5 text-[#56506a]">
-            Ticket transfers are locked only while randomness is pending. After
-            resolution they may move as souvenirs, but the snapshotted winner
-            does not change.{" "}
-            <Link className="font-bold underline" href="/docs">
-              Read the full mechanics.
-            </Link>
-          </p>
-        </aside>
+          {progress.kind !== "idle" ? (
+            <ProgressPanel progress={progress} />
+          ) : null}
+        </>
+      }
+      footnote={
+        <p className="px-2 text-xs leading-5 text-[var(--ink-faint)]">
+          Ticket transfers lock only while randomness is pending. After
+          resolution they move freely, but the snapshotted winner never changes.{" "}
+          <Link className="font-bold underline" href="/docs">
+            Read the full mechanics.
+          </Link>
+        </p>
+      }
+      token={tokenMetadata}
+      view={model}
+    />
+  );
+}
+
+/* --------------------------------------------------------------- pieces */
+
+function QuantityStepper({
+  quantity,
+  onChange,
+  disabled = false,
+}: {
+  readonly quantity: number;
+  readonly onChange: (value: number) => void;
+  readonly disabled?: boolean;
+}) {
+  function clamp(value: number) {
+    return Math.min(MAX_QUANTITY, Math.max(1, value));
+  }
+
+  return (
+    <div className="mt-5">
+      <span className="field-label" id="quantity-label">
+        Quantity
+      </span>
+      <div className="flex items-center gap-2">
+        <button
+          aria-label="Remove one ticket"
+          className="btn btn-outline !size-12 !min-h-0 shrink-0 !p-0"
+          disabled={disabled || quantity <= 1}
+          onClick={() => onChange(clamp(quantity - 1))}
+          type="button"
+        >
+          <Minus aria-hidden size={18} />
+        </button>
+        <input
+          aria-labelledby="quantity-label"
+          className="input numeric !h-12 text-center !text-lg !font-extrabold"
+          disabled={disabled}
+          inputMode="numeric"
+          max={MAX_QUANTITY}
+          min={1}
+          onChange={(event) => {
+            const next = Number.parseInt(event.target.value, 10);
+            onChange(Number.isNaN(next) ? 1 : clamp(next));
+          }}
+          type="number"
+          value={quantity}
+        />
+        <button
+          aria-label="Add one ticket"
+          className="btn btn-outline !size-12 !min-h-0 shrink-0 !p-0"
+          disabled={disabled || quantity >= MAX_QUANTITY}
+          onClick={() => onChange(clamp(quantity + 1))}
+          type="button"
+        >
+          <Plus aria-hidden size={18} />
+        </button>
       </div>
-    </div>
-  );
-}
-
-function InvalidState({
-  title,
-  detail,
-}: {
-  readonly title: string;
-  readonly detail: string;
-}) {
-  return (
-    <div className="page-shell py-20">
-      <div className="ticket-card mx-auto max-w-2xl p-10 text-center">
-        <h1 className="text-4xl font-bold">{title}</h1>
-        <p className="mt-4 text-sm leading-6 text-[#56506a]">{detail}</p>
-        <Link className="btn btn-dark mt-6" href="/">
-          Back to discover
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-function Metric({
-  icon,
-  label,
-  value,
-}: {
-  readonly icon: React.ReactNode;
-  readonly label: string;
-  readonly value: string;
-}) {
-  return (
-    <div className="rounded-xl bg-black/[0.045] p-4">
-      <p className="flex items-center gap-2 text-xs font-bold text-[#56506a]">
-        {icon} {label}
-      </p>
-      <p className="numeric mt-2 font-black">{value}</p>
-    </div>
-  );
-}
-
-function Stat({
-  label,
-  value,
-}: {
-  readonly label: string;
-  readonly value: string;
-}) {
-  return (
-    <div className="rounded-xl bg-black/[0.045] p-4">
-      <dt className="text-xs font-bold text-[#56506a]">{label}</dt>
-      <dd className="numeric mt-1 font-black">{value}</dd>
-    </div>
-  );
-}
-
-function OutcomePanel({
-  icon,
-  label,
-  title,
-  text,
-  active,
-}: {
-  readonly icon: React.ReactNode;
-  readonly label: string;
-  readonly title: string;
-  readonly text: string;
-  readonly active: boolean;
-}) {
-  return (
-    <div
-      className={`rounded-2xl border p-6 ${
-        active
-          ? "border-black bg-[#ffdc55] shadow-[4px_4px_0_#1726a3]"
-          : "border-black/15 bg-white/55"
-      }`}
-    >
-      <div className="grid size-10 place-items-center rounded-full border border-black bg-white/55">
-        {icon}
-      </div>
-      <p className="eyebrow mt-5">{label}</p>
-      <h3 className="mt-2 text-2xl font-bold">{title}</h3>
-      <p className="mt-3 text-sm leading-6 text-[#56506a]">{text}</p>
-    </div>
-  );
-}
-
-function Detail({
-  label,
-  value,
-  href,
-}: {
-  readonly label: string;
-  readonly value: string;
-  readonly href?: string;
-}) {
-  return (
-    <div>
-      <dt className="text-xs font-bold text-[#56506a]">{label}</dt>
-      <dd className="numeric mt-1 font-black">
-        {href ? (
-          <a
-            className="inline-flex items-center gap-1 hover:underline"
-            href={href}
-            rel="noreferrer"
-            target="_blank"
+      <div className="mt-2 flex gap-1.5">
+        {[5, 10, 25].map((preset) => (
+          <button
+            className="chip bg-[var(--paper-sunk)] text-[var(--ink-soft)] hover:text-[var(--ink)]"
+            disabled={disabled}
+            key={preset}
+            onClick={() => onChange(preset)}
+            type="button"
           >
-            {value} <ExternalLink aria-hidden size={13} />
-          </a>
-        ) : (
-          value
-        )}
-      </dd>
+            {preset}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -1022,11 +889,13 @@ function Split({
   readonly strong?: boolean;
 }) {
   return (
-    <div
-      className={`flex items-center justify-between gap-4 ${strong ? "font-black" : ""}`}
-    >
-      <dt>{label}</dt>
-      <dd className="numeric">{value}</dd>
+    <div className="flex items-center justify-between gap-4">
+      <dt className={strong ? "font-extrabold" : "text-[var(--ink-soft)]"}>
+        {label}
+      </dt>
+      <dd className={`numeric ${strong ? "font-extrabold" : "font-bold"}`}>
+        {value}
+      </dd>
     </div>
   );
 }
@@ -1044,12 +913,68 @@ function ActionButton({
 }) {
   return (
     <button
-      className="flex min-h-12 w-full items-center gap-3 rounded-xl border border-black/15 bg-white/50 px-4 text-left text-sm font-black hover:bg-[#ffdc55] disabled:opacity-40"
+      className="flex min-h-12 w-full items-center gap-3 rounded-2xl border border-[var(--line)] bg-[var(--paper-raised)] px-4 text-left text-sm font-extrabold transition-colors hover:border-[var(--ink)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[var(--line)]"
       disabled={disabled}
       onClick={onClick}
       type="button"
     >
       {icon} {label}
     </button>
+  );
+}
+
+function ProgressPanel({ progress }: { readonly progress: ActionProgress }) {
+  return (
+    <section
+      className={`rounded-3xl p-5 text-sm ${
+        progress.kind === "error"
+          ? "bg-[var(--danger-wash)] text-[var(--danger)]"
+          : "card"
+      }`}
+      role={progress.kind === "error" ? "alert" : "status"}
+    >
+      {progress.kind === "pending" ? (
+        <p className="flex items-center gap-2 font-bold">
+          <LoaderCircle aria-hidden className="animate-spin" size={17} />
+          {progress.text}
+        </p>
+      ) : null}
+      {progress.kind === "error" ? (
+        <p className="font-bold">{progress.text}</p>
+      ) : null}
+      {progress.kind === "batch" ? (
+        <div>
+          <p className="font-extrabold">Wallet batch submitted</p>
+          <p className="numeric mt-1 break-all text-xs text-[var(--ink-soft)]">
+            Batch ID: {progress.id}
+          </p>
+          <p className="mt-2 text-xs leading-5 text-[var(--ink-soft)]">
+            Your wallet tracks confirmation. Chain and index views refresh
+            automatically.
+          </p>
+        </div>
+      ) : null}
+      {progress.kind === "success" ? (
+        <div>
+          <p className="flex items-center gap-2 font-extrabold text-[#0d6b45]">
+            <Check aria-hidden size={17} /> Confirmed onchain
+          </p>
+          <a
+            className="mt-2 inline-flex items-center gap-1 font-bold underline"
+            href={explorerTransactionUrl(progress.hash)}
+            rel="noreferrer"
+            target="_blank"
+          >
+            View transaction <ExternalLink aria-hidden size={13} />
+          </a>
+          {progress.indexing ? (
+            <p className="mt-2 text-xs leading-5 text-[var(--ink-soft)]">
+              The index is catching up; direct chain state above already
+              refreshed.
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+    </section>
   );
 }

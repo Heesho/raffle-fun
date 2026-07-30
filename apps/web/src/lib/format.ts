@@ -30,9 +30,17 @@ export function formatCountdown(timestamp: bigint, now = Date.now()): string {
   if (seconds === 0) return "Closed";
   const days = Math.floor(seconds / 86_400);
   const hours = Math.floor((seconds % 86_400) / 3_600);
-  if (days > 0) return `${days}d ${hours}h`;
   const minutes = Math.floor((seconds % 3_600) / 60);
-  return `${hours}h ${minutes}m`;
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m ${seconds % 60}s`;
+}
+
+/** A compact "starts in" label for raffles whose sale window has not opened. */
+export function formatLead(timestamp: bigint, now = Date.now()): string {
+  const seconds = Math.max(0, Number(timestamp) - Math.floor(now / 1000));
+  if (seconds === 0) return "now";
+  return formatCountdown(timestamp, now);
 }
 
 export function percentOf(value: bigint, total: bigint): number {

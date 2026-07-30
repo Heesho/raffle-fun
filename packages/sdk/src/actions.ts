@@ -84,6 +84,23 @@ export async function closeNoSales(
   return context.walletClient.writeContract(request);
 }
 
+/**
+ * The sponsor's only exit. Reverts once a single ticket has been sold, after
+ * which the escrowed prize can move only through settlement.
+ */
+export async function cancelBeforeSales(
+  context: ActionContext,
+  raffle: Address,
+): Promise<Hash> {
+  const { request } = await context.publicClient.simulateContract({
+    account: context.account,
+    address: raffle,
+    abi: raffleAbi,
+    functionName: "cancelBeforeSales",
+  });
+  return context.walletClient.writeContract(request);
+}
+
 export async function claimQuote(
   context: ActionContext,
   raffle: Address,

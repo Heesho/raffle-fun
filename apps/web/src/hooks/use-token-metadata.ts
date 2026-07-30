@@ -3,23 +3,36 @@
 import { erc20Abi, type Address } from "viem";
 import { useReadContracts } from "wagmi";
 
+import { isDemoMode } from "@/lib/demo";
+import { SANDBOX_WETH } from "@/lib/sandbox/adapter";
+
 export interface TokenMetadata {
   readonly symbol: string;
   readonly decimals: number | undefined;
 }
 
 export function useTokenMetadata(token: Address | undefined): TokenMetadata {
+  const demo =
+    isDemoMode() && token?.toLowerCase() === SANDBOX_WETH.address
+      ? SANDBOX_WETH
+      : undefined;
   const query = useReadContracts({
     allowFailure: true,
     contracts:
-      token === undefined
+      token === undefined || demo !== undefined
         ? []
         : [
             { address: token, abi: erc20Abi, functionName: "symbol" },
             { address: token, abi: erc20Abi, functionName: "decimals" },
           ],
-    query: { enabled: token !== undefined, staleTime: 300_000 },
+    query: {
+      enabled: token !== undefined && demo === undefined,
+      staleTime: 300_000,
+    },
   });
+  if (demo !== undefined) {
+    return { symbol: demo.symbol, decimals: demo.decimals };
+  }
   const symbolResult = query.data?.[0];
   const decimalsResult = query.data?.[1];
   return {

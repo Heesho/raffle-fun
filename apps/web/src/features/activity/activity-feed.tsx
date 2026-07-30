@@ -6,13 +6,16 @@ import {
   CircleDollarSign,
   Dices,
   Gift,
-  LoaderCircle,
+  PlugZap,
   Ticket,
 } from "lucide-react";
 import Link from "next/link";
 import { type Address } from "viem";
 
 import { useTokenMetadata } from "@/hooks/use-token-metadata";
+import { isDemoMode } from "@/lib/demo";
+import { SANDBOX_WETH, toIndexedActivity } from "@/lib/sandbox/adapter";
+import { useSandbox } from "@/lib/sandbox/store";
 import { formatDateTime, formatTokenAmount, shortAddress } from "@/lib/format";
 import { explorerTransactionUrl } from "@/lib/protocol";
 import {
@@ -21,78 +24,102 @@ import {
   type IndexedActivity,
 } from "@/lib/subgraph";
 
-const activityLabels = {
-  PURCHASE: "Tickets purchased",
-  RESOLUTION: "Raffle resolved",
-  QUOTE_CLAIM: "Quote payout claimed",
-  PRIZE_CLAIM: "NFT prize claimed",
+const activityMeta = {
+  PURCHASE: {
+    label: "Tickets purchased",
+    icon: Ticket,
+    tint: "var(--pink-wash)",
+    ink: "var(--pink-strong)",
+  },
+  RESOLUTION: {
+    label: "Raffle resolved",
+    icon: Dices,
+    tint: "var(--sky-wash)",
+    ink: "#1c5fa8",
+  },
+  QUOTE_CLAIM: {
+    label: "Payout claimed",
+    icon: CircleDollarSign,
+    tint: "var(--grass-wash)",
+    ink: "#0d6b45",
+  },
+  PRIZE_CLAIM: {
+    label: "NFT prize claimed",
+    icon: Gift,
+    tint: "var(--yellow-wash)",
+    ink: "var(--amber-ink)",
+  },
 } as const;
 
-function ActivityIcon({ kind }: { readonly kind: IndexedActivity["kind"] }) {
-  const icons = {
-    PURCHASE: Ticket,
-    RESOLUTION: Dices,
-    QUOTE_CLAIM: CircleDollarSign,
-    PRIZE_CLAIM: Gift,
-  };
-  const Icon = icons[kind];
-  return <Icon aria-hidden size={19} />;
-}
-
 export function ActivityFeed() {
+  const demo = isDemoMode();
   const configured = isSubgraphConfigured();
-  const query = useQuery({
+  const { sandbox } = useSandbox();
+  const query = useQuery<readonly IndexedActivity[]>({
     queryKey: ["activity"],
     queryFn: fetchActivity,
-    enabled: configured,
+    enabled: !demo && configured,
     refetchInterval: 20_000,
   });
 
-  if (query.isPending && configured) {
+  const events = demo
+    ? sandbox === undefined
+      ? []
+      : toIndexedActivity(sandbox)
+    : (query.data ?? []);
+
+  if (!demo && !configured) {
     return (
-      <div className="mt-10 flex items-center gap-2 font-bold" role="status">
-        <LoaderCircle aria-hidden className="animate-spin" /> Loading protocol
-        events…
+      <Notice
+        title="No index is connected"
+        text="Set NEXT_PUBLIC_SUBGRAPH_URL to stream real purchases, resolutions, and claims. No sample events are inserted."
+      />
+    );
+  }
+
+  if (!demo && query.isPending) {
+    return (
+      <div className="card mt-10 divide-y divide-[var(--line)]" role="status">
+        <span className="sr-only">Loading protocol events</span>
+        {[0, 1, 2, 3, 4].map((value) => (
+          <div className="flex items-center gap-4 p-5" key={value}>
+            <div className="skeleton size-11 shrink-0 rounded-xl" />
+            <div className="flex-1">
+              <div className="skeleton h-4 w-40 rounded-full" />
+              <div className="skeleton mt-2 h-3 w-64 rounded-full" />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
 
-  if (query.isError) {
+  if (!demo && query.isError) {
     return (
-      <div className="ticket-card mt-10 p-8" role="alert">
-        <h2 className="text-2xl font-bold">The index could not be reached</h2>
-        <p className="mt-2 text-sm text-[#56506a]">
-          Activity is a convenience view; contract state and transaction
-          receipts remain authoritative.
-        </p>
-        <button className="btn btn-ghost mt-5" onClick={() => query.refetch()}>
-          Retry
-        </button>
-      </div>
+      <Notice
+        action={
+          <button className="btn btn-outline" onClick={() => query.refetch()}>
+            Retry
+          </button>
+        }
+        title="The index could not be reached"
+        text="Activity is a convenience view; contract state and transaction receipts remain authoritative."
+      />
     );
   }
 
-  if (!query.data?.length) {
+  if (events.length === 0) {
     return (
-      <div className="ticket-card mt-10 p-10 text-center">
-        <Dices aria-hidden className="mx-auto" />
-        <h2 className="mt-4 text-2xl font-bold">
-          {configured
-            ? "No activity indexed yet"
-            : "Activity index not connected"}
-        </h2>
-        <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-[#56506a]">
-          {configured
-            ? "Real protocol events will appear here after the first raffle interaction."
-            : "Configure a deployed subgraph endpoint to show real purchases, resolutions, and claims. No sample events are inserted."}
-        </p>
-      </div>
+      <Notice
+        title="No activity yet"
+        text="Protocol events appear here as soon as the first raffle is bought, drawn, or claimed."
+      />
     );
   }
 
   return (
-    <ol className="ticket-card mt-10 divide-y divide-black/10 overflow-hidden">
-      {query.data.map((activity) => (
+    <ol className="card mt-10 divide-y divide-[var(--line)] overflow-hidden">
+      {events.map((activity) => (
         <ActivityRow
           activity={activity}
           key={`${activity.kind}-${activity.id}`}
@@ -104,21 +131,39 @@ export function ActivityFeed() {
 
 function ActivityRow({ activity }: { readonly activity: IndexedActivity }) {
   const token = activity.quoteToken as Address | null;
-  const tokenMetadata = useTokenMetadata(token ?? undefined);
+  const onchainMetadata = useTokenMetadata(
+    token?.toLowerCase() === SANDBOX_WETH.address
+      ? undefined
+      : (token ?? undefined),
+  );
+  const tokenMetadata =
+    token?.toLowerCase() === SANDBOX_WETH.address
+      ? SANDBOX_WETH
+      : onchainMetadata;
+  const meta = activityMeta[activity.kind];
+  const Icon = meta.icon;
+
   return (
-    <li className="grid gap-4 p-5 sm:grid-cols-[2.75rem_1fr_auto] sm:items-center">
-      <span className="grid size-11 place-items-center rounded-xl bg-[#ffdc55]">
-        <ActivityIcon kind={activity.kind} />
+    <li className="flex flex-wrap items-center gap-4 p-5 transition-colors hover:bg-[var(--paper-sunk)]">
+      <span
+        aria-hidden
+        className="grid size-11 shrink-0 place-items-center rounded-xl"
+        style={{ background: meta.tint, color: meta.ink }}
+      >
+        <Icon size={19} />
       </span>
-      <div>
-        <p className="font-black">{activityLabels[activity.kind]}</p>
-        <p className="mt-1 text-xs text-[#56506a]">
-          {activity.account
-            ? shortAddress(activity.account as `0x${string}`)
-            : "Protocol"}{" "}
-          ·{" "}
+
+      <div className="min-w-0 flex-1">
+        <p className="font-extrabold">{meta.label}</p>
+        <p className="mt-0.5 truncate text-xs font-semibold text-[var(--ink-soft)]">
+          <span className="numeric">
+            {activity.account
+              ? shortAddress(activity.account as `0x${string}`)
+              : "Protocol"}
+          </span>
+          {" · "}
           <Link
-            className="font-bold hover:underline"
+            className="numeric font-bold hover:text-[var(--pink)] hover:underline"
             href={`/raffle/${activity.raffle}`}
           >
             {shortAddress(activity.raffle as `0x${string}`)}
@@ -132,13 +177,14 @@ function ActivityRow({ activity }: { readonly activity: IndexedActivity }) {
             : ""}
         </p>
       </div>
-      <div className="flex items-center gap-3 sm:text-right">
-        <time className="numeric text-xs font-bold text-[#56506a]">
+
+      <div className="flex items-center gap-3">
+        <time className="numeric text-xs font-bold text-[var(--ink-faint)]">
           {formatDateTime(BigInt(activity.timestamp))}
         </time>
         <a
           aria-label="Open transaction in explorer"
-          className="grid size-9 place-items-center rounded-full border border-black/15 hover:bg-[#ffdc55]"
+          className="grid size-9 place-items-center rounded-full border border-[var(--line-strong)] text-[var(--ink-soft)] transition-colors hover:border-[var(--ink)] hover:text-[var(--ink)]"
           href={explorerTransactionUrl(
             activity.transactionHash as `0x${string}`,
           )}
@@ -149,5 +195,28 @@ function ActivityRow({ activity }: { readonly activity: IndexedActivity }) {
         </a>
       </div>
     </li>
+  );
+}
+
+function Notice({
+  title,
+  text,
+  action,
+}: {
+  readonly title: string;
+  readonly text: string;
+  readonly action?: React.ReactNode;
+}) {
+  return (
+    <div className="card mt-10 grid place-items-center px-6 py-16 text-center">
+      <div className="max-w-md">
+        <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-[var(--sky-wash)] text-[#1c5fa8]">
+          <PlugZap aria-hidden size={22} />
+        </span>
+        <h2 className="mt-5 text-2xl">{title}</h2>
+        <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">{text}</p>
+        {action ? <div className="mt-6">{action}</div> : null}
+      </div>
+    </div>
   );
 }

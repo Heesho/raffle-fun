@@ -21,8 +21,11 @@
     "verificationStatus"
   ],
   "properties": {
-    "chainId": { "type": "integer", "enum": [84532, 8453] },
-    "networkName": { "type": "string", "enum": ["base-sepolia", "base"] },
+    "chainId": { "type": "integer", "enum": [8453, 84532] },
+    "networkName": {
+      "type": "string",
+      "enum": ["base", "base-sepolia"]
+    },
     "deployedAt": { "type": "string", "format": "date-time" },
     "deploymentBlock": { "type": "integer", "minimum": 1 },
     "deployer": { "$ref": "#/$defs/address" },
