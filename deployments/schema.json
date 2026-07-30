@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Raffle Fun deployment record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "chainId",
+    "networkName",
+    "deployedAt",
+    "deploymentBlock",
+    "deployer",
+    "finalFactoryOwner",
+    "verifiedQuoteTokens",
+    "entropy",
+    "raffleImplementation",
+    "raffleFactory",
+    "raffleLens",
+    "protocolTreasury",
+    "callbackGasLimit",
+    "sourceCommit",
+    "verificationStatus"
+  ],
+  "properties": {
+    "chainId": { "type": "integer", "enum": [84532, 8453] },
+    "networkName": { "type": "string", "enum": ["base-sepolia", "base"] },
+    "deployedAt": { "type": "string", "format": "date-time" },
+    "deploymentBlock": { "type": "integer", "minimum": 1 },
+    "deployer": { "$ref": "#/$defs/address" },
+    "finalFactoryOwner": { "$ref": "#/$defs/address" },
+    "verifiedQuoteTokens": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/address" }
+    },
+    "entropy": { "$ref": "#/$defs/address" },
+    "raffleImplementation": { "$ref": "#/$defs/address" },
+    "raffleFactory": { "$ref": "#/$defs/address" },
+    "raffleLens": { "$ref": "#/$defs/address" },
+    "protocolTreasury": { "$ref": "#/$defs/address" },
+    "callbackGasLimit": { "type": "integer", "minimum": 1 },
+    "sourceCommit": { "type": "string", "pattern": "^[a-fA-F0-9]{40}$" },
+    "verificationStatus": {
+      "type": "string",
+      "enum": ["unverified", "partial", "verified"]
+    }
+  },
+  "$defs": {
+    "address": {
+      "type": "string",
+      "pattern": "^0x[a-fA-F0-9]{40}$",
+      "not": { "const": "0x0000000000000000000000000000000000000000" }
+    }
+  }
+}

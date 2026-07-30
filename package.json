@@ -1,0 +1,37 @@
+{
+  "name": "raffle-fun-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13 <23"
+  },
+  "packageManager": "pnpm@11.18.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "contracts:build": "pnpm --filter @raffle-fun/contracts build",
+    "contracts:test:foundry": "pnpm --filter @raffle-fun/contracts test:foundry",
+    "contracts:test:hardhat": "pnpm --filter @raffle-fun/contracts test:hardhat",
+    "contracts:coverage": "pnpm --filter @raffle-fun/contracts coverage",
+    "contracts:gas": "pnpm --filter @raffle-fun/contracts gas",
+    "contracts:slither": "pnpm --filter @raffle-fun/contracts slither",
+    "sdk:sync": "pnpm --filter @raffle-fun/sdk sync",
+    "subgraph:codegen": "pnpm --filter @raffle-fun/subgraph codegen",
+    "subgraph:build": "pnpm --filter @raffle-fun/subgraph build",
+    "subgraph:test": "pnpm --filter @raffle-fun/subgraph test",
+    "deploy:base-sepolia": "pnpm --filter @raffle-fun/contracts deploy:base-sepolia",
+    "verify:base-sepolia": "pnpm --filter @raffle-fun/contracts verify:base-sepolia"
+  },
+  "devDependencies": {
+    "@types/node": "26.1.2",
+    "prettier": "3.9.6",
+    "turbo": "2.10.7",
+    "typescript": "6.0.3"
+  }
+}

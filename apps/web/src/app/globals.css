@@ -1,0 +1,225 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #171717;
+  --ink-soft: #56506a;
+  --night: #1726a3;
+  --paper: #fff9e8;
+  --paper-deep: #edf4ff;
+  --lime: #ffdc55;
+  --mint: #7fc8ff;
+  --coral: #ef2ab2;
+  --line: rgba(23, 23, 23, 0.16);
+  --shadow: 0 22px 70px rgba(23, 38, 163, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--night);
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background:
+    radial-gradient(
+      circle at 15% 0%,
+      rgba(239, 42, 178, 0.11),
+      transparent 30rem
+    ),
+    radial-gradient(
+      circle at 90% 20%,
+      rgba(127, 200, 255, 0.16),
+      transparent 36rem
+    ),
+    var(--paper);
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+.display {
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  letter-spacing: -0.035em;
+}
+
+a,
+button,
+input,
+select,
+textarea {
+  outline-color: var(--coral);
+  outline-offset: 3px;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  color: var(--ink);
+  background: var(--lime);
+}
+
+.page-shell {
+  width: min(1180px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+.ticket-card {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 1.2rem;
+  background: rgba(255, 253, 247, 0.9);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px);
+}
+
+.ticket-card::before,
+.ticket-card::after {
+  position: absolute;
+  top: 56%;
+  z-index: 2;
+  width: 1rem;
+  height: 2rem;
+  content: "";
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+
+.ticket-card::before {
+  left: -1px;
+  border-left: 0;
+  border-radius: 0 1rem 1rem 0;
+}
+
+.ticket-card::after {
+  right: -1px;
+  border-right: 0;
+  border-radius: 1rem 0 0 1rem;
+}
+
+.perforated {
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(23, 23, 23, 0.22) 0,
+    rgba(23, 23, 23, 0.22) 6px,
+    transparent 6px,
+    transparent 13px
+  );
+  background-position: bottom;
+  background-repeat: repeat-x;
+  background-size: auto 1px;
+}
+
+.eyebrow {
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.input {
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.75rem 0.9rem;
+  color: var(--ink);
+  background: #fffdf7;
+  border: 1px solid rgba(23, 23, 23, 0.25);
+  border-radius: 0.8rem;
+}
+
+.input:focus {
+  border-color: var(--coral);
+  box-shadow: 0 0 0 3px rgba(239, 42, 178, 0.17);
+}
+
+.btn {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    background 150ms ease;
+  cursor: pointer;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 0 rgba(23, 38, 163, 0.17);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  color: white;
+  background: var(--coral);
+}
+
+.btn-dark {
+  color: white;
+  background: var(--night);
+}
+
+.btn-ghost {
+  color: var(--ink);
+  background: transparent;
+}
+
+.status-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: currentColor;
+  box-shadow: 0 0 0 4px currentColor;
+  opacity: 0.7;
+}
+
+.numeric {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

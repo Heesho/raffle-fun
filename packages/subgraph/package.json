@@ -1,0 +1,30 @@
+{
+  "name": "@raffle-fun/subgraph",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13 <23"
+  },
+  "scripts": {
+    "codegen": "graph codegen subgraph.yaml",
+    "build": "graph build subgraph.yaml",
+    "test": "graph test",
+    "lint": "graph build subgraph.yaml",
+    "typecheck": "graph build subgraph.yaml",
+    "manifest:base-sepolia": "tsx scripts/generate-manifest.ts 84532",
+    "manifest:base": "tsx scripts/generate-manifest.ts 8453",
+    "deploy:local": "graph create --node http://localhost:8020 raffle-fun && graph deploy --node http://localhost:8020 --ipfs http://localhost:5001 raffle-fun subgraph.yaml",
+    "deploy:studio": "graph deploy raffle-fun subgraph.generated.yaml"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-ts": "0.38.2"
+  },
+  "devDependencies": {
+    "@graphprotocol/graph-cli": "0.98.1",
+    "assemblyscript": "0.19.23",
+    "matchstick-as": "0.6.0",
+    "tsx": "4.23.1",
+    "typescript": "6.0.3"
+  }
+}

@@ -1,0 +1,74 @@
+specVersion: 1.3.0
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: RaffleFactory
+    network: base-sepolia
+    source:
+      abi: RaffleFactory
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Protocol
+        - QuoteTokenStats
+        - Raffle
+        - Account
+      abis:
+        - name: RaffleFactory
+          file: ./abis/RaffleFactory.json
+      eventHandlers:
+        - event: QuoteTokenVerificationUpdated(indexed address,bool,bool)
+          handler: handleQuoteTokenVerificationUpdated
+        - event: RaffleCreated(indexed uint256,indexed address,indexed address,address,uint256,address,address,uint256,uint256,uint256,uint256,string)
+          handler: handleRaffleCreated
+      file: ./src/factory.ts
+templates:
+  - kind: ethereum/contract
+    name: Raffle
+    network: base-sepolia
+    source:
+      abi: Raffle
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - Raffle
+        - Account
+        - RaffleAccount
+        - Ticket
+        - Purchase
+        - DrawRequest
+        - Resolution
+        - QuoteClaim
+        - PrizeClaim
+        - RaffleTransfer
+        - ProtocolDayData
+        - RaffleDayData
+      abis:
+        - name: Raffle
+          file: ./abis/Raffle.json
+      eventHandlers:
+        - event: PrizeDeposited(indexed address,indexed uint256,indexed address)
+          handler: handlePrizeDeposited
+        - event: TicketsPurchased(indexed address,indexed address,indexed address,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
+          handler: handleTicketsPurchased
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+        - event: DrawRequested(indexed uint64,indexed address,uint256,uint256)
+          handler: handleDrawRequested
+        - event: RaffleResolved(indexed uint64,indexed uint256,indexed address,uint8,address,uint256,uint256)
+          handler: handleRaffleResolved
+        - event: QuoteClaimed(indexed address,indexed address,uint256)
+          handler: handleQuoteClaimed
+        - event: PrizeClaimed(indexed address,indexed address,indexed address,uint256)
+          handler: handlePrizeClaimed
+        - event: RaffleCancelled(indexed address)
+          handler: handleRaffleCancelled
+        - event: NoSalesClosed(indexed address)
+          handler: handleNoSalesClosed
+      file: ./src/raffle.ts

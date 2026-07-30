@@ -1,0 +1,45 @@
+{
+  "name": "@raffle-fun/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13 <23"
+  },
+  "scripts": {
+    "build": "hardhat compile && forge build",
+    "compile": "hardhat compile",
+    "test": "pnpm test:foundry && pnpm test:hardhat",
+    "test:foundry": "forge test",
+    "test:hardhat": "hardhat test nodejs",
+    "coverage": "forge coverage --report lcov --no-match-coverage '^(script/|src/mocks/|test/)' && node scripts/check-coverage.mjs",
+    "gas": "forge snapshot --check",
+    "gas:update": "forge snapshot",
+    "fmt": "forge fmt",
+    "fmt:check": "forge fmt --check",
+    "lint": "solhint 'src/**/*.sol' 'test/**/*.sol'",
+    "typecheck": "tsc --noEmit",
+    "slither": "slither . --config-file slither.config.json",
+    "deploy:base-sepolia": "hardhat ignition deploy ignition/modules/RaffleFun.ts --network baseSepolia",
+    "verify:base-sepolia": "hardhat ignition verify chain-84532",
+    "deployment:write": "tsx scripts/write-deployment.ts"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "5.6.1",
+    "@openzeppelin/contracts-upgradeable": "5.6.1",
+    "@pythnetwork/entropy-sdk-solidity": "2.2.1"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ignition": "3.1.8",
+    "@nomicfoundation/hardhat-ignition-viem": "3.1.6",
+    "@nomicfoundation/hardhat-toolbox-viem": "5.0.7",
+    "@types/node": "26.1.2",
+    "dotenv": "17.4.2",
+    "hardhat": "3.11.1",
+    "solhint": "6.2.3",
+    "tsx": "4.23.1",
+    "typescript": "6.0.3",
+    "viem": "2.55.10",
+    "zod": "4.4.3"
+  }
+}

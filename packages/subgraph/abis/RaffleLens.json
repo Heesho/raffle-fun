@@ -1,0 +1,399 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "factory_",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "supplied",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maximum",
+        "type": "uint256"
+      }
+    ],
+    "name": "BatchTooLarge",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "factory",
+        "type": "address"
+      }
+    ],
+    "name": "InvalidFactory",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "raffle",
+        "type": "address"
+      }
+    ],
+    "name": "UnregisteredRaffle",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MAX_BATCH_SIZE",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "factory",
+    "outputs": [
+      {
+        "internalType": "contract IRaffleFactory",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "raffle",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "getRaffleState",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "factoryId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "registered",
+            "type": "bool"
+          },
+          {
+            "internalType": "address",
+            "name": "raffle",
+            "type": "address"
+          },
+          {
+            "internalType": "enum IRaffle.RaffleState",
+            "name": "state",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum IRaffle.RaffleOutcome",
+            "name": "outcome",
+            "type": "uint8"
+          },
+          {
+            "internalType": "address",
+            "name": "sponsor",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "protocolTreasury",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "quoteToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "prizeToken",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "prizeTokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "ticketPrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minimumTickets",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "startTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "endTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalTickets",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "grossSales",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "netPot",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "winningTicketId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "winner",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "accountTicketBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "accountQuoteClaim",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "accountIsPrizeClaimant",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "entropyFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "canBuy",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "canDraw",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "canClaimQuote",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "canClaimPrize",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct IRaffleLens.RaffleView",
+        "name": "raffleView",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "raffles",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "getRaffleStates",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "factoryId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "registered",
+            "type": "bool"
+          },
+          {
+            "internalType": "address",
+            "name": "raffle",
+            "type": "address"
+          },
+          {
+            "internalType": "enum IRaffle.RaffleState",
+            "name": "state",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum IRaffle.RaffleOutcome",
+            "name": "outcome",
+            "type": "uint8"
+          },
+          {
+            "internalType": "address",
+            "name": "sponsor",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "protocolTreasury",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "quoteToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "prizeToken",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "prizeTokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "ticketPrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minimumTickets",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "startTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "endTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalTickets",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "grossSales",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "netPot",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "winningTicketId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "winner",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "accountTicketBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "accountQuoteClaim",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "accountIsPrizeClaimant",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "entropyFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "canBuy",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "canDraw",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "canClaimQuote",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "canClaimPrize",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct IRaffleLens.RaffleView[]",
+        "name": "raffleViews",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

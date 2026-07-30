@@ -1,0 +1,36 @@
+name: Web
+
+on:
+  push:
+    paths:
+      - "apps/web/**"
+      - "packages/config/**"
+      - "packages/sdk/**"
+      - ".github/workflows/web.yml"
+  pull_request:
+    paths:
+      - "apps/web/**"
+      - "packages/config/**"
+      - "packages/sdk/**"
+      - ".github/workflows/web.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.18.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.2
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @raffle-fun/web lint
+      - run: pnpm --filter @raffle-fun/web typecheck
+      - run: pnpm --filter @raffle-fun/web test
+      - run: pnpm --filter @raffle-fun/web build

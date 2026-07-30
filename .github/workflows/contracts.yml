@@ -1,0 +1,58 @@
+name: Contracts
+
+on:
+  push:
+    paths:
+      - "packages/contracts/**"
+      - ".github/workflows/contracts.yml"
+  pull_request:
+    paths:
+      - "packages/contracts/**"
+      - ".github/workflows/contracts.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  foundry:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/contracts
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.2.3
+      - run: forge --version
+      - run: forge fmt --check
+      - run: forge build
+      - run: forge test
+      - run: FOUNDRY_PROFILE=ci forge test --match-path "test/foundry/fuzz/**"
+      - run: FOUNDRY_PROFILE=ci forge test --match-path "test/foundry/invariant/**"
+      - run: forge coverage --report lcov --no-match-coverage '^(script/|src/mocks/|test/)'
+      - run: node scripts/check-coverage.mjs
+      - run: forge snapshot --check
+
+  static-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.18.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.2
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @raffle-fun/contracts lint
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install slither-analyzer
+      - run: pnpm contracts:slither
