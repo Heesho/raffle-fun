@@ -61,7 +61,7 @@ export function SandboxWalletButton({
             SANDBOX_WETH.symbol,
           )}
         </span>
-        <span className="numeric text-[var(--ink-soft)]">
+        <span className="numeric text-[var(--ink-2)]">
           {shortAddress(address)}
         </span>
         <ChevronDown
@@ -73,7 +73,7 @@ export function SandboxWalletButton({
 
       {open ? (
         <div
-          className="card absolute right-0 top-[calc(100%+0.5rem)] z-50 min-w-64 p-1.5 shadow-[var(--shadow-lift)]"
+          className="card absolute right-0 top-[calc(100%+0.5rem)] z-50 min-w-64 p-1.5 shadow-[var(--shadow-lg)]"
           role="menu"
         >
           <div className="px-3 py-2.5">
@@ -85,7 +85,7 @@ export function SandboxWalletButton({
                 SANDBOX_WETH.symbol,
               )}
             </p>
-            <p className="numeric mt-0.5 text-xs font-bold text-[var(--ink-soft)]">
+            <p className="numeric mt-0.5 text-xs font-bold text-[var(--ink-2)]">
               {formatTokenAmount(sandbox.wallet.eth, 18, "ETH")} for gas
             </p>
           </div>
@@ -109,7 +109,7 @@ export function SandboxWalletButton({
             <User aria-hidden size={16} /> View profile
           </Link>
           <button
-            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-bold text-[var(--ink-soft)] hover:bg-[var(--paper-sunk)] hover:text-[var(--ink)]"
+            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-bold text-[var(--ink-2)] hover:bg-[var(--paper-sunk)] hover:text-[var(--ink)]"
             onClick={() => {
               setOpen(false);
               reset();

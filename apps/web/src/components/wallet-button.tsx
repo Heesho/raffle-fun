@@ -83,7 +83,7 @@ export function WalletButton({ full = false }: { readonly full?: boolean }) {
       </button>
       {expanded ? (
         <div
-          className="card absolute right-0 top-[calc(100%+0.5rem)] z-50 min-w-56 p-1.5 shadow-[var(--shadow-lift)]"
+          className="card absolute right-0 top-[calc(100%+0.5rem)] z-50 min-w-56 p-1.5 shadow-[var(--shadow-lg)]"
           role="menu"
         >
           <Link

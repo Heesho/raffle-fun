@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { PageHeader } from "@/components/page-header";
 import { ActivityFeed } from "@/features/activity/activity-feed";
 
 export const metadata: Metadata = {
@@ -9,17 +10,15 @@ export const metadata: Metadata = {
 
 export default function ActivityPage() {
   return (
-    <div className="page-shell py-14 md:py-20">
-      <p className="eyebrow">Onchain tape</p>
-      <h1 className="mt-3 text-[clamp(2.5rem,6vw,4rem)]">
-        Every draw leaves a trail.
-      </h1>
-      <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--ink-soft)]">
-        Purchases, resolutions, and pull-based claims indexed from the selected
-        network. The index may lag; linked receipts and direct contract state
-        are the source of truth.
-      </p>
-      <ActivityFeed />
-    </div>
+    <>
+      <PageHeader
+        eyebrow="Onchain tape"
+        lede="Purchases, resolutions, and pull-based claims indexed from the selected network. The index may lag; linked receipts and direct contract state are the source of truth."
+        title="Every draw leaves a trail."
+      />
+      <div className="page-shell py-12 md:py-16">
+        <ActivityFeed />
+      </div>
+    </>
   );
 }

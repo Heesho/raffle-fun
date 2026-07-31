@@ -1,6 +1,5 @@
-import { Trophy } from "lucide-react";
-
 import { thresholdScale } from "@/lib/economics";
+import { Trophy } from "lucide-react";
 
 /**
  * Progress toward the NFT threshold.
@@ -24,6 +23,7 @@ export function ThresholdBar({
     total,
     minimum,
   );
+
   const large = size === "lg";
 
   return (
@@ -46,7 +46,7 @@ export function ThresholdBar({
           {/* Sales past it, so overshoot is legible rather than invisible. */}
           {overshootPercent > 0 ? (
             <div
-              className="absolute inset-y-0 rounded-r-full bg-[#0d6b45]"
+              className="absolute inset-y-0 rounded-r-full bg-[var(--grass-deep)]"
               style={{
                 left: `${markerPercent}%`,
                 width: `${overshootPercent}%`,
@@ -61,7 +61,7 @@ export function ThresholdBar({
           className="absolute -top-1 bottom-[-0.25rem] w-[3px] -translate-x-1/2 rounded-full"
           style={{
             left: `${markerPercent}%`,
-            background: met ? "#0d6b45" : "var(--ink)",
+            background: met ? "var(--grass-deep)" : "var(--ink)",
           }}
         />
 
@@ -71,7 +71,7 @@ export function ThresholdBar({
             style={{
               left: `${markerPercent}%`,
               background: met ? "var(--grass-wash)" : "var(--paper-sunk)",
-              color: met ? "#0d6b45" : "var(--ink)",
+              color: met ? "var(--grass-deep)" : "var(--ink)",
             }}
           >
             {met ? (

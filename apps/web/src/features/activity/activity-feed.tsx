@@ -29,7 +29,7 @@ const activityMeta = {
     label: "Tickets purchased",
     icon: Ticket,
     tint: "var(--pink-wash)",
-    ink: "var(--pink-strong)",
+    ink: "var(--pink-deep)",
   },
   RESOLUTION: {
     label: "Raffle resolved",
@@ -155,7 +155,7 @@ function ActivityRow({ activity }: { readonly activity: IndexedActivity }) {
 
       <div className="min-w-0 flex-1">
         <p className="font-extrabold">{meta.label}</p>
-        <p className="mt-0.5 truncate text-xs font-semibold text-[var(--ink-soft)]">
+        <p className="mt-0.5 truncate text-xs font-semibold text-[var(--ink-2)]">
           <span className="numeric">
             {activity.account
               ? shortAddress(activity.account as `0x${string}`)
@@ -179,12 +179,12 @@ function ActivityRow({ activity }: { readonly activity: IndexedActivity }) {
       </div>
 
       <div className="flex items-center gap-3">
-        <time className="numeric text-xs font-bold text-[var(--ink-faint)]">
+        <time className="numeric text-xs font-bold text-[var(--ink-3)]">
           {formatDateTime(BigInt(activity.timestamp))}
         </time>
         <a
           aria-label="Open transaction in explorer"
-          className="grid size-9 place-items-center rounded-full border border-[var(--line-strong)] text-[var(--ink-soft)] transition-colors hover:border-[var(--ink)] hover:text-[var(--ink)]"
+          className="grid size-9 place-items-center rounded-full border border-[var(--line-strong)] text-[var(--ink-2)] transition-colors hover:border-[var(--ink)] hover:text-[var(--ink)]"
           href={explorerTransactionUrl(
             activity.transactionHash as `0x${string}`,
           )}
@@ -214,7 +214,7 @@ function Notice({
           <PlugZap aria-hidden size={22} />
         </span>
         <h2 className="mt-5 text-2xl">{title}</h2>
-        <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">{text}</p>
+        <p className="mt-2 text-sm leading-6 text-[var(--ink-2)]">{text}</p>
         {action ? <div className="mt-6">{action}</div> : null}
       </div>
     </div>
