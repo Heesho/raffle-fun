@@ -202,7 +202,7 @@ function SandboxRaffleDetail({ address }: { readonly address: string }) {
     <RaffleLayout
       aside={<SandboxPanel raffle={raffle} />}
       footnote={
-        <p className="px-2 text-xs leading-5 text-[var(--ink-faint)]">
+        <p className="px-2 text-xs leading-5 text-[var(--ink-3)]">
           Ticket transfers lock only while randomness is pending. After
           resolution they move freely, but the snapshotted winner never changes.{" "}
           <Link className="font-bold underline" href="/docs">
@@ -827,7 +827,7 @@ function LiveRaffleDetail({
             <section className="card p-6">
               <p className="eyebrow">Sponsor controls</p>
               <h2 className="mt-2 text-xl">Your escrowed prize</h2>
-              <p className="mt-3 text-sm leading-6 text-[var(--ink-soft)]">
+              <p className="mt-3 text-sm leading-6 text-[var(--ink-2)]">
                 {view.totalTickets === 0n
                   ? "No tickets have sold yet, so you can still cancel and reclaim the NFT. The moment ticket #1 sells this option disappears for good."
                   : `${view.totalTickets.toString()} tickets have sold. The NFT is now locked until the draw settles — it can only go to the winner or back to you through settlement.`}
@@ -853,7 +853,7 @@ function LiveRaffleDetail({
         </>
       }
       footnote={
-        <p className="px-2 text-xs leading-5 text-[var(--ink-faint)]">
+        <p className="px-2 text-xs leading-5 text-[var(--ink-3)]">
           Ticket transfers lock only while randomness is pending. After
           resolution they move freely, but the snapshotted winner never changes.{" "}
           <Link className="font-bold underline" href="/docs">
@@ -924,7 +924,7 @@ function QuantityStepper({
       <div className="mt-2 flex gap-1.5">
         {[5, 10, 25].map((preset) => (
           <button
-            className="chip bg-[var(--paper-sunk)] text-[var(--ink-soft)] hover:text-[var(--ink)]"
+            className="chip bg-[var(--paper-sunk)] text-[var(--ink-2)] hover:text-[var(--ink)]"
             disabled={disabled}
             key={preset}
             onClick={() => onChange(preset)}
@@ -949,7 +949,7 @@ function Split({
 }) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <dt className={strong ? "font-extrabold" : "text-[var(--ink-soft)]"}>
+      <dt className={strong ? "font-extrabold" : "text-[var(--ink-2)]"}>
         {label}
       </dt>
       <dd className={`numeric ${strong ? "font-extrabold" : "font-bold"}`}>
@@ -1004,10 +1004,10 @@ function ProgressPanel({ progress }: { readonly progress: ActionProgress }) {
       {progress.kind === "batch" ? (
         <div>
           <p className="font-extrabold">Wallet batch submitted</p>
-          <p className="numeric mt-1 break-all text-xs text-[var(--ink-soft)]">
+          <p className="numeric mt-1 break-all text-xs text-[var(--ink-2)]">
             Batch ID: {progress.id}
           </p>
-          <p className="mt-2 text-xs leading-5 text-[var(--ink-soft)]">
+          <p className="mt-2 text-xs leading-5 text-[var(--ink-2)]">
             Your wallet tracks confirmation. Chain and index views refresh
             automatically.
           </p>
@@ -1027,7 +1027,7 @@ function ProgressPanel({ progress }: { readonly progress: ActionProgress }) {
             View transaction <ExternalLink aria-hidden size={13} />
           </a>
           {progress.indexing ? (
-            <p className="mt-2 text-xs leading-5 text-[var(--ink-soft)]">
+            <p className="mt-2 text-xs leading-5 text-[var(--ink-2)]">
               The index is catching up; direct chain state above already
               refreshed.
             </p>

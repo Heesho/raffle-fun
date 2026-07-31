@@ -275,7 +275,7 @@ export function ProfileView({
         <div className="card mt-6 flex flex-col items-start justify-between gap-4 border-[var(--pink)] p-5 sm:flex-row sm:items-center">
           <div>
             <p className="font-extrabold">Claims are ready</p>
-            <p className="mt-1 text-xs leading-5 text-[var(--ink-soft)]">
+            <p className="mt-1 text-xs leading-5 text-[var(--ink-2)]">
               A compatible wallet submits them as one batch; the fallback
               confirms each claim in order.
             </p>
@@ -384,11 +384,11 @@ function ProfileEmpty({
   return (
     <div className="card mt-10 grid place-items-center px-6 py-16 text-center">
       <div className="max-w-md">
-        <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-[var(--paper-sunk)] text-[var(--ink-soft)]">
+        <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-[var(--paper-sunk)] text-[var(--ink-2)]">
           <SearchX aria-hidden size={22} />
         </span>
         <h2 className="mt-5 text-2xl">{title}</h2>
-        <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">{text}</p>
+        <p className="mt-2 text-sm leading-6 text-[var(--ink-2)]">{text}</p>
         <Link className="btn btn-outline mt-6" href="/">
           Discover raffles
         </Link>

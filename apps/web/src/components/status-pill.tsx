@@ -2,12 +2,16 @@ import type { ReactNode } from "react";
 
 export type StatusTone = "neutral" | "active" | "warning" | "resolved" | "good";
 
+/**
+ * Status tones sit on a translucent white ground so they stay legible over
+ * prize artwork without each one becoming its own saturated block.
+ */
 const tones: Record<StatusTone, string> = {
-  neutral: "bg-[var(--paper-sunk)] text-[var(--ink-soft)]",
-  active: "bg-[var(--grass-wash)] text-[#0d6b45]",
-  warning: "bg-[var(--amber-wash)] text-[var(--amber-ink)]",
-  resolved: "bg-[var(--sky-wash)] text-[#1c5fa8]",
-  good: "bg-[var(--pink-wash)] text-[var(--pink-strong)]",
+  neutral: "text-[var(--ink-2)]",
+  active: "text-[var(--grass-deep)]",
+  warning: "text-[var(--amber-ink)]",
+  resolved: "text-[var(--sky-ink)]",
+  good: "text-[var(--pink-ink)]",
 };
 
 export function StatusPill({
@@ -20,7 +24,7 @@ export function StatusPill({
   readonly pulse?: boolean;
 }) {
   return (
-    <span className={`chip capitalize ${tones[tone]}`}>
+    <span className={`chip chip-overlay capitalize ${tones[tone]}`}>
       <span className="relative flex size-1.5">
         {pulse ? (
           <span className="absolute inline-flex size-full animate-ping rounded-full bg-current opacity-60" />

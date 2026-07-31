@@ -2,13 +2,16 @@
  * The glossy floating ticket from the brand board.
  *
  * Rendered as inline SVG so it inherits the palette, scales cleanly, and costs
- * nothing to scatter. Decorative only — always aria-hidden.
+ * nothing to place. Decorative only — always aria-hidden.
+ *
+ * Skins are limited to the board's own ticket colours. Placement is deliberate
+ * rather than scattered: a few large props anchored to the edges of a brand
+ * field, not a confetti spray across the reading area.
  */
 const skins = {
   pink: { face: "#ec2fa0", shade: "#c81f86", gloss: "#ff8ed4" },
   yellow: { face: "#ffd84d", shade: "#e8b91f", gloss: "#fff0a8" },
   blue: { face: "#3d8bfd", shade: "#2568d6", gloss: "#9ec6ff" },
-  violet: { face: "#8b5cf6", shade: "#6d3fd6", gloss: "#c8b0ff" },
 } as const;
 
 export type TicketSkin = keyof typeof skins;

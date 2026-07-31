@@ -567,7 +567,7 @@ export function CreateRaffleForm() {
               </div>
               <div>
                 <p className="font-extrabold">{metadata.name}</p>
-                <p className="mt-1 line-clamp-3 text-sm leading-5 text-[var(--ink-soft)]">
+                <p className="mt-1 line-clamp-3 text-sm leading-5 text-[var(--ink-2)]">
                   {metadata.description}
                 </p>
               </div>
@@ -751,7 +751,7 @@ export function CreateRaffleForm() {
 
       <aside className="lg:sticky lg:top-24 lg:self-start">
         <div className="card overflow-hidden">
-          <div className="bg-[var(--ink)] p-6 text-white">
+          <div className="panel-ink p-6">
             <p className="eyebrow !text-[var(--sky)]">Review economics</p>
             <h2 className="mt-2 text-2xl">One threshold, no ambiguity.</h2>
           </div>
@@ -769,15 +769,15 @@ export function CreateRaffleForm() {
             <div className="perforation !my-5" />
             <dl className="space-y-2 text-sm">
               <div className="flex items-center justify-between">
-                <dt className="text-[var(--ink-soft)]">Protocol fee</dt>
+                <dt className="text-[var(--ink-2)]">Protocol fee</dt>
                 <dd className="font-extrabold">5% of gross</dd>
               </div>
               <div className="flex items-center justify-between">
-                <dt className="text-[var(--ink-soft)]">Optional provider</dt>
+                <dt className="text-[var(--ink-2)]">Optional provider</dt>
                 <dd className="font-extrabold">+5% of gross</dd>
               </div>
             </dl>
-            <p className="flex items-start gap-2 rounded-2xl bg-[var(--paper-sunk)] p-3 text-xs leading-5 text-[var(--ink-soft)]">
+            <p className="flex items-start gap-2 rounded-2xl bg-[var(--paper-sunk)] p-3 text-xs leading-5 text-[var(--ink-2)]">
               <CircleDollarSign
                 aria-hidden
                 className="mt-0.5 shrink-0"
@@ -878,7 +878,7 @@ function OutcomeCard({
   return (
     <div className="rounded-2xl p-4" style={{ background: tint }}>
       <p className="font-extrabold">{label}</p>
-      <p className="mt-1 text-xs leading-5 text-[var(--ink-soft)]">{text}</p>
+      <p className="mt-1 text-xs leading-5 text-[var(--ink-2)]">{text}</p>
     </div>
   );
 }

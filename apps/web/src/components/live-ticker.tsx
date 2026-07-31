@@ -16,9 +16,9 @@ import {
 } from "@/lib/subgraph";
 
 /**
- * A scrolling strip of the newest protocol events, styled as the brand board's
- * stacked color pills. It is the clearest signal that something is happening
- * right now, so it sits directly above the raffle grid.
+ * A scrolling strip of the newest protocol events, drawn as the brand board's
+ * stacked notification pills. It is the clearest signal that something is
+ * happening right now, so it sits directly above the raffle grid.
  */
 const kinds = {
   PURCHASE: { label: "bought", icon: Ticket },
@@ -28,16 +28,18 @@ const kinds = {
 } as const;
 
 /**
- * The brand board stacks its notification rows in alternating pink, yellow,
- * blue and indigo, so pills cycle through the palette by position rather than
- * all landing on one hue when the feed is mostly purchases.
+ * The board's own pill pairings, in its own order: yellow on navy, navy on
+ * pink, yellow on blue, pink on navy, yellow on near-black. Pills cycle by
+ * position so a feed that is mostly purchases still reads as a colour stack
+ * rather than one repeated hue. Every pairing is a deliberate one off the
+ * board — none of them are tint-on-tint.
  */
 const palette = [
   { background: "var(--pink)", color: "#ffffff" },
-  { background: "var(--ink)", color: "var(--yellow)" },
-  { background: "var(--yellow)", color: "var(--ink)" },
-  { background: "#3d8bfd", color: "#ffffff" },
-  { background: "#8b5cf6", color: "#ffffff" },
+  { background: "var(--brand-navy)", color: "var(--yellow)" },
+  { background: "var(--yellow)", color: "var(--brand-navy)" },
+  { background: "var(--sky)", color: "var(--brand-navy)" },
+  { background: "var(--brand-black)", color: "var(--yellow)" },
 ] as const;
 
 export function LiveTicker() {
@@ -112,14 +114,14 @@ function TickerPill({
 
   return (
     <Link
-      className={`flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-extrabold transition-transform hover:scale-[1.03] ${
+      className={`flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-[length:var(--text-xs)] font-semibold transition-transform hover:scale-[1.03] ${
         newest ? "pop-in" : ""
       }`}
       href={`/raffle/${event.raffle}`}
       style={{ background: tone.background, color: tone.color }}
     >
-      <Icon aria-hidden size={15} />
-      <span className="numeric opacity-80">
+      <Icon aria-hidden size={13} />
+      <span className="numeric opacity-75">
         {event.account ? shortAddress(event.account as Address) : "Someone"}
       </span>
       <span>{kind.label}</span>

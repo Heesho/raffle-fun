@@ -71,7 +71,7 @@ export function SandboxPanel({ raffle }: { readonly raffle: SandboxRaffle }) {
         <section className="card p-6">
           <p className="eyebrow">Sponsor controls</p>
           <h2 className="mt-2 text-xl">Your escrowed prize</h2>
-          <p className="mt-3 text-sm leading-6 text-[var(--ink-soft)]">
+          <p className="mt-3 text-sm leading-6 text-[var(--ink-2)]">
             {raffle.tickets.length === 0
               ? "No tickets have sold, so you can still cancel and take the NFT back. The moment ticket #1 sells this disappears for good."
               : `${raffle.tickets.length} tickets have sold. The NFT is locked until settlement — it can only reach the winner or come back to you through a claim.`}
@@ -89,7 +89,7 @@ export function SandboxPanel({ raffle }: { readonly raffle: SandboxRaffle }) {
 
       {open ? (
         <button
-          className="btn btn-ghost w-full text-[var(--ink-faint)]"
+          className="btn btn-ghost w-full text-[var(--ink-3)]"
           onClick={() => actions.skipToEnd(raffle.id)}
           type="button"
         >
@@ -178,7 +178,7 @@ function BuyPanel({
         <div className="mt-2 flex gap-1.5">
           {[5, 10, 25].map((preset) => (
             <button
-              className="chip bg-[var(--paper-sunk)] text-[var(--ink-soft)] hover:text-[var(--ink)]"
+              className="chip bg-[var(--paper-sunk)] text-[var(--ink-2)] hover:text-[var(--ink)]"
               key={preset}
               onClick={() => setQuantity(preset)}
               type="button"
@@ -216,7 +216,7 @@ function BuyPanel({
       </button>
 
       {mine > 0 ? (
-        <p className="mt-3 text-center text-xs font-bold text-[var(--ink-soft)]">
+        <p className="mt-3 text-center text-xs font-bold text-[var(--ink-2)]">
           You hold {mine} of {sold} tickets
         </p>
       ) : null}
@@ -256,7 +256,7 @@ function SettlePanel({
       {drawable ? (
         <>
           <h2 className="mt-2 text-2xl">The sale has closed</h2>
-          <p className="mt-3 text-sm leading-6 text-[var(--ink-soft)]">
+          <p className="mt-3 text-sm leading-6 text-[var(--ink-2)]">
             Nothing happens on its own. Someone has to pay the randomness fee
             and ask the oracle for a number — that can be you, even if you hold
             no tickets.
@@ -292,7 +292,7 @@ function SettlePanel({
       {closable ? (
         <>
           <h2 className="mt-2 text-2xl">Closed with no sales</h2>
-          <p className="mt-3 text-sm leading-6 text-[var(--ink-soft)]">
+          <p className="mt-3 text-sm leading-6 text-[var(--ink-2)]">
             Not one ticket sold, so there is no draw to run. Anyone can close it
             and hand the NFT back to the sponsor.
           </p>
@@ -313,7 +313,7 @@ function SettlePanel({
             <LoaderCircle aria-hidden className="animate-spin" size={17} />
             Pyth Entropy is delivering the random number…
           </p>
-          <p className="mt-3 text-sm leading-6 text-[var(--ink-soft)]">
+          <p className="mt-3 text-sm leading-6 text-[var(--ink-2)]">
             The callback picks ticket{" "}
             <span className="numeric font-bold">
               (random % {raffle.tickets.length}) + 1
@@ -384,7 +384,7 @@ function SettlePanel({
             ) : null}
 
             {!isPrizeClaimant && owed === 0n ? (
-              <p className="text-center text-sm text-[var(--ink-soft)]">
+              <p className="text-center text-sm text-[var(--ink-2)]">
                 {mine > 0
                   ? "None of your tickets were drawn this time."
                   : "You held no tickets in this raffle."}
@@ -408,7 +408,7 @@ function Row({
 }) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <dt className={strong ? "font-extrabold" : "text-[var(--ink-soft)]"}>
+      <dt className={strong ? "font-extrabold" : "text-[var(--ink-2)]"}>
         {label}
       </dt>
       <dd className={`numeric ${strong ? "font-extrabold" : "font-bold"}`}>

@@ -142,31 +142,41 @@ export function RaffleDirectory() {
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="eyebrow">Live protocol</p>
-          <h2 id="raffles-heading" className="mt-2 text-4xl md:text-5xl">
+          <h2
+            id="raffles-heading"
+            className="mt-2 text-[length:var(--text-3xl)]"
+          >
             Find your ticket
           </h2>
           {all.length > 0 ? (
-            <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-bold text-[var(--ink-soft)]">
+            <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[length:var(--text-sm)] text-[var(--ink-3)]">
               <span className="inline-flex items-center gap-1.5">
-                <span className="relative flex size-2">
+                <span className="relative flex size-1.5">
                   <span className="absolute inline-flex size-full animate-ping rounded-full bg-[var(--grass)] opacity-70" />
-                  <span className="relative inline-flex size-2 rounded-full bg-[var(--grass)]" />
+                  <span className="relative inline-flex size-1.5 rounded-full bg-[var(--grass)]" />
                 </span>
-                <span className="numeric text-[var(--ink)]">{stats.live}</span>{" "}
+                <span className="numeric font-semibold text-[var(--ink)]">
+                  {stats.live}
+                </span>{" "}
                 live now
               </span>
               <span aria-hidden>·</span>
               <span>
-                <CountUp className="text-[var(--ink)]" value={stats.tickets} />{" "}
+                <CountUp
+                  className="font-semibold text-[var(--ink)]"
+                  value={stats.tickets}
+                />{" "}
                 tickets sold
               </span>
               {stats.endingToday > 0 ? (
                 <>
                   <span aria-hidden>·</span>
-                  <span className="inline-flex items-center gap-1 text-[var(--pink)]">
-                    <Flame aria-hidden size={14} />
-                    <span className="numeric">{stats.endingToday}</span> ending
-                    today
+                  <span className="inline-flex items-center gap-1 text-[var(--pink-ink)]">
+                    <Flame aria-hidden size={13} />
+                    <span className="numeric font-semibold">
+                      {stats.endingToday}
+                    </span>{" "}
+                    ending today
                   </span>
                 </>
               ) : null}
@@ -179,7 +189,7 @@ export function RaffleDirectory() {
             <span className="sr-only">Search raffles</span>
             <Search
               aria-hidden
-              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--ink-faint)]"
+              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--ink-3)]"
               size={17}
             />
             <input
@@ -192,7 +202,7 @@ export function RaffleDirectory() {
             {search !== "" ? (
               <button
                 aria-label="Clear search"
-                className="absolute right-2.5 top-1/2 grid size-7 -translate-y-1/2 place-items-center rounded-full text-[var(--ink-faint)] hover:bg-[var(--paper-sunk)] hover:text-[var(--ink)]"
+                className="absolute right-2.5 top-1/2 grid size-7 -translate-y-1/2 place-items-center rounded-full text-[var(--ink-3)] hover:bg-[var(--paper-sunk)] hover:text-[var(--ink)]"
                 onClick={() => setSearch("")}
                 type="button"
               >
@@ -218,7 +228,7 @@ export function RaffleDirectory() {
       </div>
 
       <div
-        className="mt-7 flex flex-wrap gap-2"
+        className="mt-6 flex flex-wrap gap-1.5"
         role="group"
         aria-label="Filter by raffle state"
       >
@@ -234,7 +244,7 @@ export function RaffleDirectory() {
               className={`chip ${
                 selected
                   ? "bg-[var(--ink)] text-white"
-                  : "border-[var(--line-strong)] bg-[var(--paper-raised)] text-[var(--ink-soft)] hover:border-[var(--ink)] hover:text-[var(--ink)]"
+                  : "border-[var(--line-strong)] bg-[var(--paper-raised)] text-[var(--ink-2)] hover:border-[var(--line-heavy)] hover:bg-[var(--paper-sunk)]"
               }`}
               key={option.value}
               onClick={() => setFilter(option.value)}
@@ -242,7 +252,7 @@ export function RaffleDirectory() {
             >
               {option.label}
               <span
-                className={`numeric ${selected ? "text-white/60" : "text-[var(--ink-faint)]"}`}
+                className={`numeric ${selected ? "text-white/55" : "text-[var(--ink-3)]"}`}
               >
                 {count}
               </span>
@@ -352,7 +362,7 @@ function EmptyState({
           {icon}
         </span>
         <h3 className="mt-5 text-2xl">{title}</h3>
-        <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">{text}</p>
+        <p className="mt-2 text-sm leading-6 text-[var(--ink-2)]">{text}</p>
         {action ? <div className="mt-6">{action}</div> : null}
       </div>
     </div>

@@ -28,15 +28,15 @@ export function SiteHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[var(--line)] bg-[color-mix(in_srgb,var(--paper)_82%,transparent)] backdrop-blur-xl">
-      <div className="page-shell flex min-h-[4.5rem] items-center gap-4">
+    <header className="sticky top-0 z-40 border-b border-[var(--line)] bg-[color-mix(in_srgb,var(--paper)_80%,transparent)] backdrop-blur-xl">
+      <div className="page-shell flex min-h-16 items-center gap-4">
         <Link
           className="flex shrink-0 items-center gap-2.5"
           href="/"
           aria-label="raffle.fun home"
         >
-          <BrandMark size={30} />
-          <Wordmark className="text-xl" />
+          <BrandMark size={26} />
+          <Wordmark className="text-[length:var(--text-lg)]" />
         </Link>
 
         <nav
@@ -48,10 +48,10 @@ export function SiteHeader() {
             return (
               <Link
                 aria-current={current ? "page" : undefined}
-                className={`rounded-full px-4 py-2 text-sm font-bold transition-colors ${
+                className={`rounded-full px-3.5 py-2 text-[length:var(--text-base)] font-medium transition-colors ${
                   current
-                    ? "bg-[var(--pink-wash)] text-[var(--pink-strong)]"
-                    : "text-[var(--ink-soft)] hover:bg-[rgba(27,42,155,0.06)] hover:text-[var(--ink)]"
+                    ? "bg-[var(--brand-pink-pale)] font-semibold text-[var(--pink-ink)]"
+                    : "text-[var(--ink-2)] hover:bg-[rgba(16,20,58,0.05)] hover:text-[var(--ink)]"
                 }`}
                 href={link.href}
                 key={link.href}
@@ -87,10 +87,10 @@ export function SiteHeader() {
             {links.map((link) => (
               <Link
                 aria-current={isCurrent(link.href) ? "page" : undefined}
-                className={`rounded-xl px-3 py-3 font-bold ${
+                className={`rounded-xl px-3 py-3 font-medium ${
                   isCurrent(link.href)
-                    ? "bg-[var(--pink-wash)] text-[var(--pink-strong)]"
-                    : "hover:bg-[rgba(27,42,155,0.06)]"
+                    ? "bg-[var(--brand-pink-pale)] font-semibold text-[var(--pink-ink)]"
+                    : "text-[var(--ink-2)] hover:bg-[rgba(16,20,58,0.05)]"
                 }`}
                 href={link.href}
                 key={link.href}

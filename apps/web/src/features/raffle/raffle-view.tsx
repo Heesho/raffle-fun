@@ -80,31 +80,38 @@ export function RaffleLayout({
     formatTokenAmount(value, token.decimals, token.symbol);
 
   return (
-    <div className="page-shell py-10 md:py-14">
-      <Link
-        className="inline-flex items-center gap-1.5 text-sm font-bold text-[var(--ink-soft)] transition-colors hover:text-[var(--pink)]"
-        href="/"
-      >
-        ← All raffles
-      </Link>
+    <>
+      {/* The title block sits on the deep indigo field so a raffle page opens
+          with the brand, the same way every other page does. */}
+      <section className="panel panel-ink">
+        <div className="page-shell py-8 md:py-10">
+          <Link
+            className="inline-flex items-center gap-1.5 text-[length:var(--text-sm)] font-medium text-white/70 transition-colors hover:text-white"
+            href="/"
+          >
+            ← All raffles
+          </Link>
 
-      <div className="mt-5 flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0">
-          <p className="eyebrow">
-            {view.prizeCollection ?? `Raffle #${view.factoryId}`}
-          </p>
-          <h1 className="mt-2 text-4xl md:text-5xl">
-            {view.prizeName ?? `NFT #${view.prizeTokenId}`}
-          </h1>
+          <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-0">
+              <p className="eyebrow">
+                {view.prizeCollection ?? `Raffle #${view.factoryId}`}
+              </p>
+              <h1 className="mt-2 text-[length:var(--text-4xl)] text-white">
+                {view.prizeName ?? `NFT #${view.prizeTokenId}`}
+              </h1>
+            </div>
+            <StatusPill pulse={view.isActive} tone={view.stateTone}>
+              {view.stateLabel}
+            </StatusPill>
+          </div>
         </div>
-        <StatusPill pulse={view.isActive} tone={view.stateTone}>
-          {view.stateLabel}
-        </StatusPill>
-      </div>
+      </section>
 
-      {banner ? <div className="mt-6">{banner}</div> : null}
+      <div className="page-shell py-10 md:py-12">
+        {banner ? <div className="mb-6">{banner}</div> : null}
 
-      <div className="mt-8 grid gap-7 lg:grid-cols-[1fr_23rem]">
+        <div className="grid gap-7 lg:grid-cols-[1fr_23rem]">
         <div className="space-y-6">
           <section className="card overflow-hidden">
             <PrizeArt
@@ -155,7 +162,7 @@ export function RaffleLayout({
                     ? "The winner takes the NFT"
                     : `The winner takes ${amount(winnerCash)}`}
                 </h2>
-                <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">
+                <p className="mt-2 text-sm leading-6 text-[var(--ink-2)]">
                   {thresholdMet
                     ? `The threshold is met, so the sponsor claims the ${amount(view.netPot)} net pot instead of the NFT.`
                     : `${remaining.toString()} more ticket${remaining === 1n ? "" : "s"} flips the prize from the cash pot to the NFT.`}
@@ -166,18 +173,17 @@ export function RaffleLayout({
             <div className="mt-7">
               <ThresholdBar
                 minimum={view.minimumTickets}
-                showLabel
                 size="lg"
                 total={view.totalTickets}
               />
-              <div className="mt-2.5 flex items-center justify-between text-xs font-bold text-[var(--ink-soft)]">
-                <span className="numeric">
+              <div className="mt-2.5 flex items-center justify-between text-[length:var(--text-xs)]">
+                <span className="numeric font-semibold text-[var(--ink)]">
                   {view.totalTickets.toString()} sold
                 </span>
-                <span className="numeric">
+                <span className="text-[var(--ink-3)]">
                   {thresholdMet
-                    ? `${(view.totalTickets - view.minimumTickets).toString()} past the threshold`
-                    : `${remaining.toString()} to the flip`}
+                    ? `NFT unlocked · ${(view.totalTickets - view.minimumTickets).toString()} past the threshold`
+                    : `NFT at ${view.minimumTickets.toString()} · ${remaining.toString()} to the flip`}
                 </span>
               </div>
             </div>
@@ -188,7 +194,7 @@ export function RaffleLayout({
               <Stat label="Net pot" value={amount(view.netPot)} />
               <Stat label="Gross target" value={amount(thresholdTarget)} />
             </div>
-            <p className="mt-4 text-xs leading-5 text-[var(--ink-faint)]">
+            <p className="mt-4 text-xs leading-5 text-[var(--ink-3)]">
               These figures reflect {amount(view.grossSales)} of gross sales so
               far. They move with every ticket and are not a guarantee while the
               sale is open.
@@ -259,35 +265,32 @@ export function RaffleLayout({
           </section>
         </div>
 
-        <aside
-          className="space-y-5 lg:sticky lg:top-24 lg:self-start"
-          id="raffle-action"
-        >
-          {aside}
-          {footnote}
-        </aside>
-      </div>
-
-      {/* On phones the purchase panel sits far below the fold, so the price and
-          entry point stay pinned. */}
-      {view.isActive ? (
-        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--line)] bg-[color-mix(in_srgb,var(--paper)_92%,transparent)] px-4 py-3 backdrop-blur-xl lg:hidden">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-[0.68rem] font-extrabold uppercase tracking-wider text-[var(--ink-faint)]">
-                Ticket
-              </p>
-              <p className="numeric font-extrabold">
-                {amount(view.ticketPrice)}
-              </p>
-            </div>
-            <a className="btn btn-primary" href="#raffle-action">
-              Buy tickets
-            </a>
-          </div>
+          <aside
+            className="space-y-5 lg:sticky lg:top-24 lg:self-start"
+            id="raffle-action"
+          >
+            {aside}
+            {footnote}
+          </aside>
         </div>
-      ) : null}
-    </div>
+
+        {/* On phones the purchase panel sits far below the fold, so the price
+            and entry point stay pinned. */}
+        {view.isActive ? (
+          <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--line)] bg-[color-mix(in_srgb,var(--paper)_92%,transparent)] px-4 py-3 backdrop-blur-xl lg:hidden">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="eyebrow">Ticket</p>
+                <p className="figure mt-0.5">{amount(view.ticketPrice)}</p>
+              </div>
+              <a className="btn btn-primary" href="#raffle-action">
+                Buy tickets
+              </a>
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </>
   );
 }
 
@@ -302,7 +305,7 @@ function Metric({
 }) {
   return (
     <div className="rounded-2xl bg-[var(--paper-sunk)] p-4">
-      <p className="flex items-center gap-1.5 text-xs font-bold text-[var(--ink-soft)]">
+      <p className="flex items-center gap-1.5 text-xs font-bold text-[var(--ink-2)]">
         {icon} {label}
       </p>
       <p className="numeric mt-1.5 font-extrabold">{value}</p>
@@ -319,7 +322,7 @@ function Stat({
 }) {
   return (
     <div className="rounded-2xl bg-[var(--paper-sunk)] p-4">
-      <dt className="text-xs font-bold text-[var(--ink-soft)]">{label}</dt>
+      <dt className="text-xs font-bold text-[var(--ink-2)]">{label}</dt>
       <dd className="numeric mt-1 font-extrabold">{value}</dd>
     </div>
   );
@@ -356,17 +359,17 @@ function OutcomePanel({
           {icon}
         </span>
         {active ? (
-          <span className="chip bg-white/70 text-[var(--ink-soft)]">
+          <span className="chip bg-white/70 text-[var(--ink-2)]">
             On track
           </span>
         ) : null}
       </div>
       <p className="eyebrow mt-5">{label}</p>
       <h3 className="mt-2 text-xl">{title}</h3>
-      <p className="numeric mt-1 text-sm font-extrabold text-[var(--ink-soft)]">
+      <p className="numeric mt-1 text-sm font-extrabold text-[var(--ink-2)]">
         {headline}
       </p>
-      <p className="mt-2.5 text-sm leading-6 text-[var(--ink-soft)]">{text}</p>
+      <p className="mt-2.5 text-sm leading-6 text-[var(--ink-2)]">{text}</p>
     </div>
   );
 }
@@ -382,7 +385,7 @@ function Detail({
 }) {
   return (
     <div>
-      <dt className="text-xs font-bold text-[var(--ink-soft)]">{label}</dt>
+      <dt className="text-xs font-bold text-[var(--ink-2)]">{label}</dt>
       <dd className="numeric mt-1 font-extrabold">
         {href ? (
           <a
@@ -412,7 +415,7 @@ export function InvalidState({
     <div className="page-shell py-20">
       <div className="card mx-auto max-w-xl p-10 text-center">
         <h1 className="text-3xl">{title}</h1>
-        <p className="mt-4 text-sm leading-6 text-[var(--ink-soft)]">
+        <p className="mt-4 text-sm leading-6 text-[var(--ink-2)]">
           {detail}
         </p>
         <Link className="btn btn-ink mt-7" href="/">

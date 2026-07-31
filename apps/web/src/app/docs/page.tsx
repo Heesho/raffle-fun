@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/page-header";
 import {
   AlertTriangle,
   ArrowDown,
@@ -18,40 +19,39 @@ export const metadata: Metadata = {
 
 export default function DocsPage() {
   return (
-    <div className="page-shell py-14 md:py-20">
-      <div className="max-w-4xl">
-        <p className="eyebrow">Mechanics & risks</p>
-        <h1 className="mt-3 text-[clamp(2.5rem,7vw,4.5rem)]">
-          Read the rules <br />
-          before you play.
-        </h1>
-        <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--ink-soft)]">
-          raffle.fun is a fixed-outcome protocol, not a promise about the value,
-          authenticity, or legality of any prize. This is the complete mechanic
-          in plain language.
-        </p>
-      </div>
-
-      <nav
-        className="card mt-10 flex flex-wrap gap-2 p-3 text-sm font-bold"
-        aria-label="Documentation sections"
-      >
-        {[
-          ["#mechanic", "Mechanic"],
-          ["#economics", "Economics"],
-          ["#randomness", "Randomness"],
-          ["#transfers", "Tickets"],
-          ["#trust", "Trust & risks"],
-        ].map(([href, label]) => (
-          <a
-            className="rounded-full px-4 py-2 text-[var(--ink-soft)] transition-colors hover:bg-[var(--yellow-wash)] hover:text-[var(--ink)]"
-            href={href}
-            key={href}
-          >
-            {label}
-          </a>
-        ))}
-      </nav>
+    <>
+      <PageHeader
+        eyebrow="Mechanics & risks"
+        lede="raffle.fun is a fixed-outcome protocol, not a promise about the value, authenticity, or legality of any prize. This is the complete mechanic in plain language."
+        title={
+          <>
+            Read the rules <br />
+            before you play.
+          </>
+        }
+        tone="brand"
+      />
+      <div className="page-shell py-12 md:py-16">
+        <nav
+          className="card flex flex-wrap gap-1.5 p-2.5 text-[length:var(--text-sm)] font-medium"
+          aria-label="Documentation sections"
+        >
+          {[
+            ["#mechanic", "Mechanic"],
+            ["#economics", "Economics"],
+            ["#randomness", "Randomness"],
+            ["#transfers", "Tickets"],
+            ["#trust", "Trust & risks"],
+          ].map(([href, label]) => (
+            <a
+              className="rounded-full px-3.5 py-2 text-[var(--ink-2)] transition-colors hover:bg-[var(--brand-pink-pale)] hover:text-[var(--pink-ink)]"
+              href={href}
+              key={href}
+            >
+              {label}
+            </a>
+          ))}
+        </nav>
 
       <section className="mt-20 scroll-mt-8" id="mechanic">
         <DocHeading
@@ -105,7 +105,7 @@ export default function DocsPage() {
         </div>
         <div className="card mt-5 p-6">
           <h3 className="text-2xl">If nobody buys a ticket</h3>
-          <p className="mt-3 text-sm leading-6 text-[var(--ink-soft)]">
+          <p className="mt-3 text-sm leading-6 text-[var(--ink-2)]">
             Anyone can close the raffle after its end without requesting
             randomness. The sponsor reclaims the NFT and no quote-token payouts
             are created. A sponsor may also cancel at any point while zero
@@ -184,7 +184,7 @@ export default function DocsPage() {
             text="Recipients choose a nonzero destination at claim time. A failed transfer rolls back and can be retried."
           />
         </div>
-        <p className="mt-5 text-sm leading-6 text-[var(--ink-soft)]">
+        <p className="mt-5 text-sm leading-6 text-[var(--ink-2)]">
           Oracle delivery is not instantaneous. If a callback fails, Pyth retry
           or replay tooling must deliver the same sequence; the raffle cannot
           request a replacement result. This preserves uniqueness but creates an
@@ -226,7 +226,7 @@ export default function DocsPage() {
               <ShieldCheck aria-hidden className="text-[var(--grass)]" />
               <h3 className="text-2xl">Factory owner can</h3>
             </div>
-            <ul className="mt-5 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--ink-soft)]">
+            <ul className="mt-5 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--ink-2)]">
               <li>Change the treasury captured by newly created raffles</li>
               <li>Verify or unverify payment tokens for official discovery</li>
               <li>Allow or remove providers</li>
@@ -239,7 +239,7 @@ export default function DocsPage() {
               <LockKeyhole aria-hidden className="text-[var(--sky)]" />
               <h3 className="text-2xl">Factory owner cannot</h3>
             </div>
-            <ul className="mt-5 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--ink-soft)]">
+            <ul className="mt-5 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--ink-2)]">
               <li>Change existing economics, fees, timing, or threshold</li>
               <li>
                 Choose a winner, request another result, or upgrade a clone
@@ -281,7 +281,8 @@ export default function DocsPage() {
           </ul>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 }
 
@@ -298,7 +299,7 @@ function DocHeading({
     <div className="max-w-3xl">
       <p className="eyebrow">{eyebrow}</p>
       <h2 className="mt-3 text-4xl md:text-5xl">{title}</h2>
-      <p className="mt-5 text-base leading-7 text-[var(--ink-soft)]">{text}</p>
+      <p className="mt-5 text-base leading-7 text-[var(--ink-2)]">{text}</p>
     </div>
   );
 }
@@ -320,12 +321,12 @@ function Step({
         <span className="grid size-11 place-items-center rounded-xl bg-[var(--yellow-wash)]">
           {icon}
         </span>
-        <span className="text-xs font-extrabold text-[var(--ink-soft)]">
+        <span className="text-xs font-extrabold text-[var(--ink-2)]">
           {number}
         </span>
       </div>
       <h3 className="mt-5 text-2xl">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">{text}</p>
+      <p className="mt-2 text-sm leading-6 text-[var(--ink-2)]">{text}</p>
     </div>
   );
 }
@@ -382,7 +383,7 @@ function Example({
       <dl className="mt-4 divide-y divide-[var(--line)] rounded-2xl border border-[var(--line)]">
         {rows.map(([label, value]) => (
           <div className="flex justify-between gap-4 p-3 text-sm" key={label}>
-            <dt className="text-[var(--ink-soft)]">{label}</dt>
+            <dt className="text-[var(--ink-2)]">{label}</dt>
             <dd className="numeric font-extrabold">{value}</dd>
           </div>
         ))}
@@ -406,7 +407,7 @@ function RiskCard({
         {icon}
       </span>
       <h3 className="mt-5 text-2xl">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">{text}</p>
+      <p className="mt-2 text-sm leading-6 text-[var(--ink-2)]">{text}</p>
     </div>
   );
 }
@@ -421,7 +422,7 @@ function Fact({
   return (
     <div>
       <h3 className="font-extrabold">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">{text}</p>
+      <p className="mt-2 text-sm leading-6 text-[var(--ink-2)]">{text}</p>
     </div>
   );
 }

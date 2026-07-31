@@ -27,14 +27,14 @@ const columns = [
 
 export function SiteFooter() {
   return (
-    <footer className="mt-24 bg-[var(--ink)] text-white">
-      <div className="page-shell grid gap-12 py-16 md:grid-cols-[1.5fr_1fr_1fr_1.1fr]">
+    <footer className="panel-ink mt-20">
+      <div className="page-shell grid gap-10 py-14 md:grid-cols-[1.6fr_1fr_1fr_1.2fr]">
         <div>
           <div className="flex items-center gap-2.5">
-            <BrandMark size={28} />
-            <Wordmark className="text-xl text-white" />
+            <BrandMark size={26} />
+            <Wordmark className="text-[length:var(--text-lg)] text-white" />
           </div>
-          <p className="mt-4 max-w-xs text-sm leading-6 text-white/60">
+          <p className="mt-4 max-w-xs text-[length:var(--text-sm)] leading-relaxed text-white/55">
             A fair draw, in plain sight. Fixed economics, transferable tickets,
             verifiable randomness, pull-based claims.
           </p>
@@ -42,12 +42,12 @@ export function SiteFooter() {
 
         {columns.map((column) => (
           <div key={column.title}>
-            <p className="eyebrow !text-white/45">{column.title}</p>
-            <ul className="mt-4 grid gap-2.5 text-sm font-bold">
+            <p className="eyebrow">{column.title}</p>
+            <ul className="mt-4 grid gap-2.5 text-[length:var(--text-sm)]">
               {column.links.map((link) => (
                 <li key={link.href + link.label}>
                   <Link
-                    className="text-white/85 transition-colors hover:text-[var(--yellow)]"
+                    className="text-white/75 transition-colors hover:text-white"
                     href={link.href}
                   >
                     {link.label}
@@ -59,9 +59,11 @@ export function SiteFooter() {
         ))}
 
         <div>
-          <p className="eyebrow !text-white/45">Network</p>
-          <p className="mt-4 text-sm font-bold">{configuredChain.name}</p>
-          <p className="mt-2 text-xs leading-5 text-white/50">
+          <p className="eyebrow">Network</p>
+          <p className="mt-4 text-[length:var(--text-sm)] font-semibold">
+            {configuredChain.name}
+          </p>
+          <p className="mt-2 text-[length:var(--text-xs)] leading-relaxed text-white/50">
             {isDemoMode()
               ? "Interactive preview: balances, draws and prizes on this build are simulated, not onchain."
               : protocolIsConfigured
@@ -71,13 +73,13 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="page-shell flex flex-wrap items-center justify-between gap-4 border-t border-white/10 py-6 text-xs text-white/45">
+      <div className="page-shell flex flex-wrap items-center justify-between gap-4 border-t border-white/10 py-6 text-[length:var(--text-xs)] text-white/45">
         <p>
           Unaudited software. Chance-based systems may require local legal
           review.
         </p>
         <a
-          className="inline-flex items-center gap-1.5 font-bold transition-colors hover:text-white"
+          className="inline-flex items-center gap-1.5 font-medium transition-colors hover:text-white"
           href="https://github.com/Heesho"
           rel="noreferrer"
           target="_blank"
