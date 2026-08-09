@@ -6,25 +6,20 @@ import { IRaffle } from "./IRaffle.sol";
 /**
  * @title raffle.fun Raffle Lens Interface
  * @author Heesho
- * @notice Defines bounded, wallet-oriented reads for canonical raffle.fun clones.
- * @dev Every implementation must authenticate clone addresses through its immutable factory before forwarding reads.
- * @custom:version 1.0.0
+ * @notice Defines bounded wallet-oriented reads for canonical constructor-deployed raffles.
+ * @dev Every read authenticates the raffle through the immutable factory registry before forwarding calls.
+ * @custom:version 2.0.0
  */
 interface IRaffleLens {
-    /**
-     * @notice Chain-authoritative lifecycle, liability, deadline, and account action data for one raffle.
-     * @dev `entropyFeeAvailable` distinguishes a real zero fee from an oracle fee read that currently reverts.
-     */
+    /// @notice Chain-authoritative lifecycle, liabilities, bearer claims, deadlines, and account actions.
     struct RaffleView {
         uint256 factoryId;
         bool registered;
         address raffle;
-        IRaffle.RaffleState state;
-        IRaffle.RaffleOutcome outcome;
+        IRaffle.Status status;
         address sponsor;
         address sponsorPrizeRecoveryRecipient;
         address protocolTreasury;
-        address prizeClaimant;
         address quoteToken;
         address prizeToken;
         uint256 prizeTokenId;
@@ -39,39 +34,39 @@ interface IRaffleLens {
         uint256 totalTickets;
         uint256 grossSales;
         uint256 unsettledPot;
-        uint256 uncreditedRefundLiability;
+        uint256 remainingRefundLiability;
+        uint256 winnerCashLiability;
         uint256 totalClaimableQuote;
-        uint256 totalClaimableNative;
         uint256 accountedQuoteBalance;
-        uint256 accountedNativeBalance;
         uint256 winningTicketId;
-        address winner;
+        address winningTicketOwner;
+        bool winningTicketRedeemed;
+        bool prizeClaimed;
         uint256 accountTicketBalance;
         uint256 accountQuoteClaim;
-        uint256 accountNativeClaim;
-        bool accountIsPrizeClaimant;
+        bool accountOwnsWinningTicket;
+        bool accountIsPrizeRecoveryRecipient;
         uint256 entropyFee;
         bool entropyFeeAvailable;
         bool canBuy;
         bool canDraw;
-        bool canFinalizeUnrequestedDraw;
-        bool canFinalizeTimedOutDraw;
+        bool canEnableRefunds;
+        bool canRedeemWinningTicket;
+        bool canRedeemRefundTickets;
         bool canClaimQuote;
-        bool canClaimNative;
-        bool canClaimPrize;
+        bool canClaimSponsorPrize;
     }
 
-    /// @notice Raised before any forwarded read when an address is not registered by the immutable factory.
+    /// @notice Raised before forwarding any read to an address outside the canonical registry.
     error UnregisteredRaffle(address raffle);
-    /// @notice Raised when an aggregate request exceeds the explicit read bound.
+    /// @notice Raised when a wallet batch exceeds the explicit read bound.
     error BatchTooLarge(uint256 supplied, uint256 maximum);
-    /// @notice Raised when construction is attempted with a zero or code-less factory.
+    /// @notice Raised when the immutable factory dependency is zero or has no code.
     error InvalidFactory(address factory);
 
-    /// @notice Returns wallet-oriented state for one canonical raffle and optional account.
+    /// @notice Aggregates protocol and optional account state for one registered raffle.
     function getRaffleState(address raffle, address account) external view returns (RaffleView memory raffleView);
-
-    /// @notice Returns wallet-oriented state for a bounded list of canonical raffles.
+    /// @notice Aggregates protocol and optional account state for a bounded registered-raffle batch.
     function getRaffleStates(address[] calldata raffles, address account)
         external
         view

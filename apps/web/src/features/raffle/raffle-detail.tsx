@@ -2,7 +2,6 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  AlertTriangle,
   Check,
   CircleDollarSign,
   Dices,
@@ -35,21 +34,17 @@ import {
   buyTickets,
   calculatePurchaseAmounts,
   calculateResolutionAmounts,
-  cancelBeforeSales,
-  creditTicketRefunds,
-  claimPrize,
+  claimSponsorPrize,
   claimQuote,
-  closeNoSales,
-  finalizeTimedOutDraw,
-  finalizeUnrequestedDraw,
+  closeEmptyRaffle,
+  enableRefunds,
   formatQuoteAmount,
   raffleAbi,
-  raffleFactoryAbi,
   raffleLensAbi,
-  RaffleOutcome,
-  raffleOutcomeLabels,
-  RaffleState,
-  raffleStateLabels,
+  redeemRefundTickets,
+  redeemWinningTicket,
+  RaffleStatus,
+  raffleStatusLabels,
   requestDraw,
   type ActionContext,
 } from "@raffle-fun/sdk";
@@ -81,12 +76,10 @@ type LiveRaffleView = {
   readonly factoryId: bigint;
   readonly registered: boolean;
   readonly raffle: Address;
-  readonly state: number;
-  readonly outcome: number;
+  readonly status: number;
   readonly sponsor: Address;
   readonly sponsorPrizeRecoveryRecipient: Address;
   readonly protocolTreasury: Address;
-  readonly prizeClaimant: Address;
   readonly quoteToken: Address;
   readonly prizeToken: Address;
   readonly prizeTokenId: bigint;
@@ -101,26 +94,27 @@ type LiveRaffleView = {
   readonly totalTickets: bigint;
   readonly grossSales: bigint;
   readonly unsettledPot: bigint;
-  readonly uncreditedRefundLiability: bigint;
+  readonly remainingRefundLiability: bigint;
+  readonly winnerCashLiability: bigint;
   readonly totalClaimableQuote: bigint;
-  readonly totalClaimableNative: bigint;
   readonly accountedQuoteBalance: bigint;
-  readonly accountedNativeBalance: bigint;
   readonly winningTicketId: bigint;
-  readonly winner: Address;
+  readonly winningTicketOwner: Address;
+  readonly winningTicketRedeemed: boolean;
+  readonly prizeClaimed: boolean;
   readonly accountTicketBalance: bigint;
   readonly accountQuoteClaim: bigint;
-  readonly accountNativeClaim: bigint;
-  readonly accountIsPrizeClaimant: boolean;
+  readonly accountOwnsWinningTicket: boolean;
+  readonly accountIsPrizeRecoveryRecipient: boolean;
   readonly entropyFee: bigint;
   readonly entropyFeeAvailable: boolean;
   readonly canBuy: boolean;
   readonly canDraw: boolean;
-  readonly canFinalizeUnrequestedDraw: boolean;
-  readonly canFinalizeTimedOutDraw: boolean;
+  readonly canEnableRefunds: boolean;
+  readonly canRedeemWinningTicket: boolean;
+  readonly canRedeemRefundTickets: boolean;
   readonly canClaimQuote: boolean;
-  readonly canClaimNative: boolean;
-  readonly canClaimPrize: boolean;
+  readonly canClaimSponsorPrize: boolean;
 };
 
 type ActionProgress =
@@ -155,15 +149,24 @@ function parseRefundTicketIds(value: string): readonly bigint[] {
   return ticketIds;
 }
 
+function resolveDestination(value: string, fallback: Address): Address {
+  const destination = value.trim() === "" ? fallback : value;
+  if (!isAddress(destination) || destination === zeroAddress) {
+    throw new Error("Enter a valid nonzero destination.");
+  }
+  return destination;
+}
+
 function formatDeadline(timestamp: bigint): string {
   if (timestamp === 0n) return "Not set";
   return new Date(Number(timestamp) * 1_000).toLocaleString();
 }
 
-function stateTone(state: RaffleState): StatusTone {
-  if (state === RaffleState.Active) return "active";
-  if (state === RaffleState.Resolved) return "resolved";
-  if (state === RaffleState.DrawRequested || state === RaffleState.Refunding)
+function stateTone(status: RaffleStatus): StatusTone {
+  if (status === RaffleStatus.Active) return "active";
+  if (status === RaffleStatus.NftWon || status === RaffleStatus.CashWon)
+    return "resolved";
+  if (status === RaffleStatus.Drawing || status === RaffleStatus.Refunding)
     return "warning";
   return "neutral";
 }
@@ -200,15 +203,11 @@ function SandboxRaffleDetail({ address }: { readonly address: string }) {
 
   const tones: Record<string, StatusTone> = {
     ACTIVE: "active",
-    DRAW_REQUESTED: "warning",
-    RESOLVED: "resolved",
-    CANCELLED: "neutral",
-  };
-  const outcomeLabels: Record<string, string> = {
-    NFT_AWARDED: "NFT to the winner",
-    CASH_FALLBACK: "80% cash to the winner",
-    NO_SALES: "no sales",
-    CANCELLED_BEFORE_SALE: "cancelled before any sale",
+    DRAWING: "warning",
+    NFT_WON: "resolved",
+    CASH_WON: "resolved",
+    REFUNDING: "warning",
+    CLOSED: "neutral",
   };
 
   const view: RaffleViewModel = {
@@ -229,10 +228,15 @@ function SandboxRaffleDetail({ address }: { readonly address: string }) {
     unsettledPot: raffle.unsettledPot,
     startTime: BigInt(Math.floor(raffle.startTime / 1000)),
     endTime: BigInt(Math.floor(raffle.endTime / 1000)),
-    stateLabel: raffle.state.replaceAll("_", " ").toLowerCase(),
-    stateTone: tones[raffle.state] ?? "neutral",
-    isActive: raffle.state === "ACTIVE",
-    outcomeLabel: outcomeLabels[raffle.outcome],
+    stateLabel: raffle.status.replaceAll("_", " ").toLowerCase(),
+    stateTone: tones[raffle.status] ?? "neutral",
+    isActive: raffle.status === "ACTIVE",
+    outcomeLabel:
+      raffle.status === "NFT_WON" ||
+      raffle.status === "CASH_WON" ||
+      raffle.status === "CLOSED"
+        ? raffle.status.replaceAll("_", " ").toLowerCase()
+        : undefined,
     winningTicketId:
       raffle.winningTicketId === null
         ? undefined
@@ -245,8 +249,8 @@ function SandboxRaffleDetail({ address }: { readonly address: string }) {
       aside={<SandboxPanel raffle={raffle} />}
       footnote={
         <p className="px-2 text-xs leading-5 text-[var(--ink-3)]">
-          Ticket transfers lock only while randomness is pending. After
-          resolution they move freely, but the snapshotted winner never changes.{" "}
+          Tickets remain transferable during settlement. The current bearer
+          burns a winning or refundable ticket to receive its asset.{" "}
           <Link className="font-bold underline" href="/docs">
             Read the full mechanics.
           </Link>
@@ -275,8 +279,6 @@ function LiveRaffleDetail({
   const [recipient, setRecipient] = useState("");
   const [claimDestination, setClaimDestination] = useState("");
   const [refundTicketIds, setRefundTicketIds] = useState("");
-  const [acceptedUnverifiedTokenRisk, setAcceptedUnverifiedTokenRisk] =
-    useState(false);
   const [progress, setProgress] = useState<ActionProgress>({ kind: "idle" });
 
   const viewQuery = useReadContract({
@@ -294,20 +296,7 @@ function LiveRaffleDetail({
   });
 
   const view = viewQuery.data as LiveRaffleView | undefined;
-  const quoteTokenVerificationQuery = useReadContract({
-    address: protocolDeployment?.raffleFactory,
-    abi: raffleFactoryAbi,
-    functionName: "isVerifiedQuoteToken",
-    args: view === undefined ? undefined : [view.quoteToken],
-    query: {
-      enabled: protocolDeployment !== undefined && view !== undefined,
-      refetchInterval: 30_000,
-    },
-  });
   const tokenMetadata = useTokenMetadata(view?.quoteToken);
-  const quoteTokenVerificationKnown =
-    typeof quoteTokenVerificationQuery.data === "boolean";
-  const quoteTokenVerified = quoteTokenVerificationQuery.data === true;
   const parsedQuantity = quantityPattern.test(String(quantity))
     ? BigInt(quantity)
     : undefined;
@@ -375,20 +364,6 @@ function LiveRaffleDetail({
       purchaseAmounts === undefined
     ) {
       setProgress({ kind: "error", text: "Enter a quantity from 1 to 100." });
-      return;
-    }
-    if (!quoteTokenVerificationKnown) {
-      setProgress({
-        kind: "error",
-        text: "Payment-token verification could not be confirmed onchain.",
-      });
-      return;
-    }
-    if (!quoteTokenVerified && !acceptedUnverifiedTokenRisk) {
-      setProgress({
-        kind: "error",
-        text: "Acknowledge the unverified payment-token risk before buying.",
-      });
       return;
     }
     setProgress({
@@ -492,14 +467,7 @@ function LiveRaffleDetail({
 
   async function handleAction(
     action:
-      | "draw"
-      | "close"
-      | "quote"
-      | "prize"
-      | "cancel"
-      | "fail-unrequested"
-      | "fail-timeout"
-      | "refund",
+      "draw" | "close" | "quote" | "winner" | "sponsor" | "refunds" | "refund",
   ) {
     if (raffle === undefined) return;
     setProgress({ kind: "pending", text: "Checking current onchain state…" });
@@ -517,65 +485,62 @@ function LiveRaffleDetail({
           text: `Simulating draw with ${formatQuoteAmount(live.entropyFee, 18)} ETH oracle fee…`,
         });
         hash = await requestDraw(context, raffle, live.entropyFee);
-      } else if (action === "fail-unrequested") {
-        if (!live.canFinalizeUnrequestedDraw) {
-          throw new Error("The draw-request grace period has not expired.");
+      } else if (action === "refunds") {
+        if (!live.canEnableRefunds) {
+          throw new Error("The applicable oracle deadline has not expired.");
         }
-        hash = await finalizeUnrequestedDraw(context, raffle);
-      } else if (action === "fail-timeout") {
-        if (!live.canFinalizeTimedOutDraw) {
-          throw new Error("The oracle callback timeout has not expired.");
-        }
-        hash = await finalizeTimedOutDraw(context, raffle);
+        hash = await enableRefunds(context, raffle);
       } else if (action === "refund") {
-        if (live.state !== RaffleState.Refunding) {
+        if (!live.canRedeemRefundTickets) {
           throw new Error("This raffle is not refunding.");
         }
         const ticketIds = parseRefundTicketIds(refundTicketIds);
-        hash = await creditTicketRefunds(context, raffle, ticketIds);
-      } else if (action === "cancel") {
-        if (live.state !== RaffleState.Active || live.totalTickets !== 0n) {
-          throw new Error(
-            "Cancellation is only possible while zero tickets have been sold.",
-          );
-        }
-        hash = await cancelBeforeSales(context, raffle);
+        const destination = resolveDestination(
+          claimDestination,
+          context.account,
+        );
+        hash = await redeemRefundTickets(
+          context,
+          raffle,
+          ticketIds,
+          destination,
+        );
       } else if (action === "close") {
         const block = await context.publicClient.getBlock();
-        if (
-          live.state !== RaffleState.Active ||
-          live.totalTickets !== 0n ||
-          block.timestamp < live.endTime
-        ) {
+        if (live.status !== RaffleStatus.Active || live.totalTickets !== 0n) {
           throw new Error("This raffle is not eligible for no-sales closure.");
         }
-        hash = await closeNoSales(context, raffle);
+        if (
+          block.timestamp < live.endTime &&
+          context.account.toLowerCase() !== live.sponsor.toLowerCase()
+        ) {
+          throw new Error("Only the sponsor can close before the sale end.");
+        }
+        hash = await closeEmptyRaffle(context, raffle);
       } else if (action === "quote") {
         if (!live.canClaimQuote)
           throw new Error("No quote-token claim is available.");
-        const destination =
-          claimDestination.trim() === ""
-            ? context.account
-            : isAddress(claimDestination)
-              ? claimDestination
-              : undefined;
-        if (destination === undefined || destination === zeroAddress) {
-          throw new Error("Enter a valid claim destination.");
-        }
+        const destination = resolveDestination(
+          claimDestination,
+          context.account,
+        );
         hash = await claimQuote(context, raffle, destination);
+      } else if (action === "winner") {
+        if (!live.canRedeemWinningTicket)
+          throw new Error("This account does not own the winning ticket.");
+        const destination = resolveDestination(
+          claimDestination,
+          context.account,
+        );
+        hash = await redeemWinningTicket(context, raffle, destination);
       } else {
-        if (!live.canClaimPrize)
-          throw new Error("No prize claim is available.");
-        const destination =
-          claimDestination.trim() === ""
-            ? context.account
-            : isAddress(claimDestination)
-              ? claimDestination
-              : undefined;
-        if (destination === undefined || destination === zeroAddress) {
-          throw new Error("Enter a valid prize destination.");
-        }
-        hash = await claimPrize(context, raffle, destination);
+        if (!live.canClaimSponsorPrize)
+          throw new Error("The sponsor-side NFT recovery is not available.");
+        const destination = resolveDestination(
+          claimDestination,
+          context.account,
+        );
+        hash = await claimSponsorPrize(context, raffle, destination);
       }
       await finish(hash);
     } catch (error) {
@@ -623,9 +588,6 @@ function LiveRaffleDetail({
     );
   }
 
-  const isSponsor =
-    address !== undefined &&
-    address.toLowerCase() === view.sponsor.toLowerCase();
   const model: RaffleViewModel = {
     address: view.raffle,
     factoryId: view.factoryId.toString(),
@@ -640,13 +602,15 @@ function LiveRaffleDetail({
     unsettledPot: view.unsettledPot,
     startTime: view.startTime,
     endTime: view.endTime,
-    stateLabel: raffleStateLabels[view.state as RaffleState],
-    stateTone: stateTone(view.state as RaffleState),
-    isActive: view.state === RaffleState.Active,
+    stateLabel: raffleStatusLabels[view.status as RaffleStatus],
+    stateTone: stateTone(view.status as RaffleStatus),
+    isActive: view.status === RaffleStatus.Active,
     outcomeLabel:
-      view.outcome === RaffleOutcome.None
-        ? undefined
-        : raffleOutcomeLabels[view.outcome as RaffleOutcome],
+      view.status === RaffleStatus.NftWon ||
+      view.status === RaffleStatus.CashWon ||
+      view.status === RaffleStatus.Closed
+        ? raffleStatusLabels[view.status as RaffleStatus]
+        : undefined,
     winningTicketId: view.winningTicketId,
     accountTicketBalance: view.accountTicketBalance,
   };
@@ -659,52 +623,10 @@ function LiveRaffleDetail({
           view.totalTickets + parsedQuantity >= view.minimumTickets,
         );
 
-  const purchaseDisabled =
-    !view.canBuy ||
-    progress.kind === "pending" ||
-    !quoteTokenVerificationKnown ||
-    (!quoteTokenVerified && !acceptedUnverifiedTokenRisk);
+  const purchaseDisabled = !view.canBuy || progress.kind === "pending";
 
   return (
     <RaffleLayout
-      banner={
-        <>
-          {quoteTokenVerificationQuery.data === false ? (
-            <div className="rounded-3xl bg-[var(--amber-wash)] p-5 text-[var(--amber-ink)]">
-              <p className="flex items-center gap-2 font-extrabold">
-                <AlertTriangle aria-hidden size={18} /> Unverified payment token
-              </p>
-              <p className="mt-2 text-sm leading-6">
-                This raffle was created while its ERC-20 was admitted by the
-                production factory, but the token is no longer on the current
-                allowlist. Existing clones are immutable. Issuer pause,
-                blacklist, and upgrade controls can still prevent claims.
-              </p>
-              <label className="mt-4 flex items-start gap-2 text-sm font-bold">
-                <input
-                  checked={acceptedUnverifiedTokenRisk}
-                  className="mt-1 size-4 accent-[var(--pink)]"
-                  onChange={(event) =>
-                    setAcceptedUnverifiedTokenRisk(event.target.checked)
-                  }
-                  type="checkbox"
-                />
-                I understand this token is unverified and want to enable ticket
-                purchases.
-              </label>
-            </div>
-          ) : null}
-          {quoteTokenVerificationQuery.isError ? (
-            <p
-              className="mt-4 rounded-3xl bg-[var(--danger-wash)] p-5 text-sm font-bold text-[var(--danger)]"
-              role="alert"
-            >
-              Payment-token verification could not be read. Purchases are
-              disabled until the factory check succeeds.
-            </p>
-          ) : null}
-        </>
-      }
       aside={
         <>
           <section className="card p-6">
@@ -790,7 +712,9 @@ function LiveRaffleDetail({
           <section className="card p-6">
             <p className="eyebrow">Settle or claim</p>
             <label className="mt-4 block">
-              <span className="field-label">Claim destination (optional)</span>
+              <span className="field-label">
+                Redemption destination (optional)
+              </span>
               <input
                 className="input numeric"
                 onChange={(event) => setClaimDestination(event.target.value)}
@@ -798,10 +722,10 @@ function LiveRaffleDetail({
                 value={claimDestination}
               />
             </label>
-            {view.state === RaffleState.Refunding ? (
+            {view.status === RaffleStatus.Refunding ? (
               <label className="mt-4 block">
                 <span className="field-label">
-                  Ticket IDs to credit (comma-separated, max 100)
+                  Ticket IDs to burn (comma-separated, max 100)
                 </span>
                 <input
                   className="input numeric"
@@ -823,25 +747,14 @@ function LiveRaffleDetail({
                 onClick={() => handleAction("draw")}
               />
               <ActionButton
-                disabled={
-                  !view.canFinalizeUnrequestedDraw ||
-                  progress.kind === "pending"
-                }
+                disabled={!view.canEnableRefunds || progress.kind === "pending"}
                 icon={<Undo2 size={17} />}
-                label="Finalize missing draw · enable refunds"
-                onClick={() => handleAction("fail-unrequested")}
+                label="Enable refunds after oracle deadline"
+                onClick={() => handleAction("refunds")}
               />
               <ActionButton
                 disabled={
-                  !view.canFinalizeTimedOutDraw || progress.kind === "pending"
-                }
-                icon={<Undo2 size={17} />}
-                label="Finalize oracle timeout · enable refunds"
-                onClick={() => handleAction("fail-timeout")}
-              />
-              <ActionButton
-                disabled={
-                  view.state !== RaffleState.Active ||
+                  view.status !== RaffleStatus.Active ||
                   view.totalTickets !== 0n ||
                   progress.kind === "pending"
                 }
@@ -851,12 +764,12 @@ function LiveRaffleDetail({
               />
               <ActionButton
                 disabled={
-                  view.state !== RaffleState.Refunding ||
+                  !view.canRedeemRefundTickets ||
                   refundTicketIds.trim() === "" ||
                   progress.kind === "pending"
                 }
                 icon={<CircleDollarSign size={17} />}
-                label="Credit ticket refunds"
+                label="Burn tickets & redeem refund"
                 onClick={() => handleAction("refund")}
               />
               <ActionButton
@@ -870,10 +783,20 @@ function LiveRaffleDetail({
                 onClick={() => handleAction("quote")}
               />
               <ActionButton
-                disabled={!view.canClaimPrize || progress.kind === "pending"}
+                disabled={
+                  !view.canRedeemWinningTicket || progress.kind === "pending"
+                }
                 icon={<Gift size={17} />}
-                label="Claim NFT prize"
-                onClick={() => handleAction("prize")}
+                label="Burn winning ticket & redeem prize"
+                onClick={() => handleAction("winner")}
+              />
+              <ActionButton
+                disabled={
+                  !view.canClaimSponsorPrize || progress.kind === "pending"
+                }
+                icon={<Gift size={17} />}
+                label="Recover sponsor NFT"
+                onClick={() => handleAction("sponsor")}
               />
             </div>
           </section>
@@ -894,9 +817,17 @@ function LiveRaffleDetail({
                 value={formatDeadline(view.callbackDeadline)}
               />
               <Split
-                label="Uncredited refunds"
+                label="Remaining refunds"
                 value={formatTokenAmount(
-                  view.uncreditedRefundLiability,
+                  view.remainingRefundLiability,
+                  tokenMetadata.decimals,
+                  tokenMetadata.symbol,
+                )}
+              />
+              <Split
+                label="Winning cash"
+                value={formatTokenAmount(
+                  view.winnerCashLiability,
                   tokenMetadata.decimals,
                   tokenMetadata.symbol,
                 )}
@@ -918,15 +849,9 @@ function LiveRaffleDetail({
                   tokenMetadata.symbol,
                 )}
               />
-              <Split
-                label="Accounted native"
-                value={`${formatQuoteAmount(view.accountedNativeBalance, 18)} ETH`}
-              />
             </dl>
             <p className="mt-4 break-all text-xs leading-5 text-[var(--ink-2)]">
               Fixed prize recovery: {view.sponsorPrizeRecoveryRecipient}
-              <br />
-              Current prize claimant: {view.prizeClaimant}
             </p>
             {!view.entropyFeeAvailable && view.canDraw ? (
               <p className="mt-4 rounded-2xl bg-[var(--amber-wash)] p-3 text-xs font-bold text-[var(--amber-ink)]">
@@ -936,30 +861,6 @@ function LiveRaffleDetail({
             ) : null}
           </section>
 
-          {isSponsor ? (
-            <section className="card p-6">
-              <p className="eyebrow">Sponsor controls</p>
-              <h2 className="mt-2 text-xl">Your escrowed prize</h2>
-              <p className="mt-3 text-sm leading-6 text-[var(--ink-2)]">
-                {view.totalTickets === 0n
-                  ? "No tickets have sold yet, so you can still cancel and reclaim the NFT. The moment ticket #1 sells this option disappears for good."
-                  : `${view.totalTickets.toString()} tickets have sold. The NFT follows the verified draw, or returns to the fixed recovery recipient after a three-day request grace period or two-day callback timeout.`}
-              </p>
-              <button
-                className="btn btn-outline mt-4 w-full"
-                disabled={
-                  view.state !== RaffleState.Active ||
-                  view.totalTickets !== 0n ||
-                  progress.kind === "pending"
-                }
-                onClick={() => handleAction("cancel")}
-                type="button"
-              >
-                <Undo2 aria-hidden size={17} /> Cancel & reclaim NFT
-              </button>
-            </section>
-          ) : null}
-
           {progress.kind !== "idle" ? (
             <ProgressPanel progress={progress} />
           ) : null}
@@ -967,8 +868,9 @@ function LiveRaffleDetail({
       }
       footnote={
         <p className="px-2 text-xs leading-5 text-[var(--ink-3)]">
-          Ticket transfers lock only while randomness is pending. After
-          resolution they move freely, but the snapshotted winner never changes.{" "}
+          Tickets remain transferable throughout settlement. The current owner
+          burns the winning ticket for the prize, or burns refundable tickets
+          for their exact USDC refund.{" "}
           <Link className="font-bold underline" href="/docs">
             Read the full mechanics.
           </Link>

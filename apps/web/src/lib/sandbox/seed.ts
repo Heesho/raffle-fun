@@ -37,16 +37,13 @@ function ledger(total: number, mine: number): SandboxTicket[] {
 function raffle(
   partial: Omit<
     SandboxRaffle,
-    | "state"
-    | "outcome"
+    | "status"
     | "grossSales"
     | "unsettledPot"
     | "requestGraceDeadline"
-    | "uncreditedRefundLiability"
-    | "refundCreditedTicketIds"
+    | "remainingRefundLiability"
+    | "winnerCashLiability"
     | "winningTicketId"
-    | "winner"
-    | "prizeClaimant"
     | "prizeClaimed"
     | "claimableQuote"
     | "drawRequestedAt"
@@ -57,16 +54,13 @@ function raffle(
   const gross = partial.ticketPrice * BigInt(partial.tickets.length);
   return {
     ...partial,
-    state: "ACTIVE",
-    outcome: "NONE",
+    status: "ACTIVE",
     grossSales: gross,
     unsettledPot: gross,
     requestGraceDeadline: partial.endTime + DRAW_REQUEST_GRACE_MS,
-    uncreditedRefundLiability: 0n,
-    refundCreditedTicketIds: [],
+    remainingRefundLiability: 0n,
+    winnerCashLiability: 0n,
     winningTicketId: null,
-    winner: null,
-    prizeClaimant: null,
     prizeClaimed: false,
     claimableQuote: {},
     drawRequestedAt: null,

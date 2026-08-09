@@ -9,9 +9,8 @@ export interface DeploymentRecord {
   readonly deploymentBlock: bigint;
   readonly deployer: Address;
   readonly finalFactoryOwner: Address;
-  readonly verifiedQuoteTokens: readonly Address[];
+  readonly quoteToken: Address;
   readonly entropy: Address;
-  readonly raffleImplementation: Address;
   readonly raffleFactory: Address;
   readonly raffleLens: Address;
   readonly protocolTreasury: Address;

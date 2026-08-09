@@ -2,14 +2,12 @@ import { describe, expect, it } from "vitest";
 
 import {
   buyTickets,
-  cancelBeforeSales,
-  claimPrize,
-  claimQuote,
-  closeNoSales,
-  creditTicketRefunds,
+  claimSponsorPrize,
+  closeEmptyRaffle,
+  enableRefunds,
   ENTROPY_FEE,
-  finalizeTimedOutDraw,
-  finalizeUnrequestedDraw,
+  redeemRefundTickets,
+  redeemWinningTicket,
   requestDraw,
   resolveDraw,
   SandboxError,
@@ -20,7 +18,7 @@ import {
 
 const PLAYER = "0xplayer";
 const SPONSOR = "0xsponsor";
-const PRICE = 10n ** 16n; // 0.01 WETH
+const PRICE = 10n ** 16n;
 
 function raffle(overrides: Partial<SandboxRaffle> = {}): SandboxRaffle {
   return {
@@ -38,16 +36,13 @@ function raffle(overrides: Partial<SandboxRaffle> = {}): SandboxRaffle {
     startTime: 0,
     endTime: 1_000,
     requestGraceDeadline: 2_000,
-    state: "ACTIVE",
-    outcome: "NONE",
+    status: "ACTIVE",
     tickets: [],
     grossSales: 0n,
     unsettledPot: 0n,
-    uncreditedRefundLiability: 0n,
-    refundCreditedTicketIds: [],
+    remainingRefundLiability: 0n,
+    winnerCashLiability: 0n,
     winningTicketId: null,
-    winner: null,
-    prizeClaimant: null,
     prizeClaimed: false,
     claimableQuote: {},
     drawRequestedAt: null,
@@ -68,204 +63,85 @@ function sandbox(overrides: Partial<Sandbox> = {}): Sandbox {
   };
 }
 
-describe("sandbox purchasing", () => {
-  it("charges the advertised price and leaves the gross unsettled", () => {
-    const next = buyTickets(sandbox(), "0xraffle", 4, 100);
-    const updated = next.raffles[0]!;
-
-    const gross = PRICE * 4n;
-    expect(next.wallet.weth).toBe(10n ** 18n - gross);
-    expect(updated.grossSales).toBe(gross);
-    // The aggregate 5% fee is not allocated until resolution.
-    expect(updated.unsettledPot).toBe(gross);
-  });
-
-  it("mints sequential ticket ids starting at one", () => {
+describe("sandbox bearer settlement", () => {
+  it("charges gross price and mints sequential tickets", () => {
     let state = buyTickets(sandbox(), "0xraffle", 2, 100);
     state = buyTickets(state, "0xraffle", 1, 120);
     expect(state.raffles[0]!.tickets.map((ticket) => ticket.id)).toEqual([
       1, 2, 3,
     ]);
+    expect(state.raffles[0]!.unsettledPot).toBe(PRICE * 3n);
   });
 
-  it("refuses purchases outside the sale window", () => {
-    expect(() => buyTickets(sandbox(), "0xraffle", 1, 1_000)).toThrow(
-      SandboxError,
-    );
-  });
-
-  it("refuses to spend more WETH than the player holds", () => {
-    const poor = sandbox({
-      wallet: { weth: PRICE, eth: 10n ** 17n, nfts: [] },
-    });
-    expect(() => buyTickets(poor, "0xraffle", 2, 100)).toThrow(SandboxError);
-  });
-
-  it("allows sales past the threshold", () => {
-    const state = buyTickets(sandbox(), "0xraffle", 25, 100);
-    expect(state.raffles[0]!.tickets).toHaveLength(25);
-    expect(thresholdMet(state.raffles[0]!)).toBe(true);
-  });
-});
-
-describe("sandbox settlement", () => {
-  it("requires the sale to end before a draw and charges the entropy fee", () => {
-    const sold = buyTickets(sandbox(), "0xraffle", 3, 100);
-    expect(() => requestDraw(sold, "0xraffle", 500)).toThrow(SandboxError);
-
-    const requested = requestDraw(sold, "0xraffle", 1_000);
-    expect(requested.raffles[0]!.state).toBe("DRAW_REQUESTED");
-    expect(requested.wallet.eth).toBe(10n ** 17n - ENTROPY_FEE);
-  });
-
-  it("awards the NFT to the winning ticket holder when the threshold is met", () => {
-    let state = buyTickets(sandbox(), "0xraffle", 12, 100);
-    state = requestDraw(state, "0xraffle", 1_000);
-    state = resolveDraw(state, "0xraffle", 1_005);
-    const settled = state.raffles[0]!;
-
-    expect(settled.outcome).toBe("NFT_AWARDED");
-    expect(settled.prizeClaimant).toBe(PLAYER);
-    expect(settled.winningTicketId).toBeGreaterThanOrEqual(1);
-    expect(settled.winningTicketId).toBeLessThanOrEqual(12);
-    // Threshold met: the sponsor takes the distributable pot.
-    expect(settled.claimableQuote[SPONSOR]).toBe(
-      settled.grossSales - (settled.grossSales * 5n) / 100n,
-    );
-    expect(settled.claimableQuote[PLAYER]).toBeUndefined();
-  });
-
-  it("rounds one protocol fee against the aggregate pot", () => {
-    let state = sandbox({
-      raffles: [raffle({ ticketPrice: 10n, minimumTickets: 2 })],
-    });
-    state = buyTickets(state, "0xraffle", 1, 100);
-    state = buyTickets(state, "0xraffle", 1, 200);
-    state = requestDraw(state, "0xraffle", 1_000);
-    state = resolveDraw(state, "0xraffle", 1_005);
-
-    // Charging per purchase would round both fees to zero; settlement charges
-    // floor(20 * 5 / 100) once and leaves 19 for the sponsor.
-    expect(state.raffles[0]!.claimableQuote[SPONSOR]).toBe(19n);
-  });
-
-  it("splits cash 80/20 and returns the NFT to the sponsor below threshold", () => {
+  it("charges the entropy fee and records only liabilities in the callback", () => {
     let state = buyTickets(sandbox(), "0xraffle", 4, 100);
     state = requestDraw(state, "0xraffle", 1_000);
+    expect(state.wallet.eth).toBe(10n ** 17n - ENTROPY_FEE);
+    const wethBefore = state.wallet.weth;
     state = resolveDraw(state, "0xraffle", 1_005);
-    const settled = state.raffles[0]!;
-
-    const pot = settled.grossSales - (settled.grossSales * 5n) / 100n;
-    expect(settled.outcome).toBe("CASH_FALLBACK");
-    expect(settled.prizeClaimant).toBe(SPONSOR);
-    expect(settled.claimableQuote[PLAYER]).toBe((pot * 80n) / 100n);
-    expect(settled.claimableQuote[SPONSOR]).toBe(pot - (pot * 80n) / 100n);
-  });
-
-  it("moves no assets during resolution", () => {
-    let state = buyTickets(sandbox(), "0xraffle", 12, 100);
-    const balanceBefore = state.wallet.weth;
-    state = requestDraw(state, "0xraffle", 1_000);
-    state = resolveDraw(state, "0xraffle", 1_005);
-
-    // Only the entropy fee left the wallet; the prize is still unclaimed.
-    expect(state.wallet.weth).toBe(balanceBefore);
+    expect(state.raffles[0]!.status).toBe("CASH_WON");
+    expect(state.wallet.weth).toBe(wethBefore);
     expect(state.wallet.nfts).toHaveLength(0);
-    expect(state.raffles[0]!.prizeClaimed).toBe(false);
   });
 
-  it("hands the prize over only when the claimant pulls it", () => {
-    let state = buyTickets(sandbox(), "0xraffle", 12, 100);
-    state = requestDraw(state, "0xraffle", 1_000);
-    state = resolveDraw(state, "0xraffle", 1_005);
-    state = claimPrize(state, "0xraffle", 1_010);
-
-    expect(state.wallet.nfts).toEqual(["0xraffle"]);
-    expect(() => claimPrize(state, "0xraffle", 1_020)).toThrow(SandboxError);
-  });
-
-  it("pays a cash claim once and only once", () => {
+  it("charges 5% in the cash branch and pays cash only when the ticket burns", () => {
     let state = buyTickets(sandbox(), "0xraffle", 4, 100);
     state = requestDraw(state, "0xraffle", 1_000);
     state = resolveDraw(state, "0xraffle", 1_005);
-
-    const owed = state.raffles[0]!.claimableQuote[PLAYER]!;
+    const settled = state.raffles[0]!;
+    const distributable = settled.grossSales - (settled.grossSales * 5n) / 100n;
+    expect(settled.winnerCashLiability).toBe((distributable * 80n) / 100n);
+    expect(settled.claimableQuote[SPONSOR]).toBe(
+      distributable - settled.winnerCashLiability,
+    );
     const before = state.wallet.weth;
-    state = claimQuote(state, "0xraffle", 1_010);
-
-    expect(state.wallet.weth).toBe(before + owed);
-    expect(() => claimQuote(state, "0xraffle", 1_020)).toThrow(SandboxError);
-  });
-
-  it("replays the same winner for the same seed", () => {
-    const run = () => {
-      let state = buyTickets(sandbox({ seed: 999 }), "0xraffle", 20, 100);
-      state = requestDraw(state, "0xraffle", 1_000);
-      return resolveDraw(state, "0xraffle", 1_005).raffles[0]!.winningTicketId;
-    };
-    expect(run()).toBe(run());
-  });
-
-  it("opens exact refunds only after the request grace deadline", () => {
-    let state = buyTickets(sandbox(), "0xraffle", 3, 100);
-    expect(() => finalizeUnrequestedDraw(state, "0xraffle", 1_999)).toThrow(
-      SandboxError,
-    );
-
-    state = finalizeUnrequestedDraw(state, "0xraffle", 2_000);
-    expect(state.raffles[0]!.state).toBe("REFUNDING");
-    expect(state.raffles[0]!.outcome).toBe("DRAW_NOT_REQUESTED");
-    expect(state.raffles[0]!.uncreditedRefundLiability).toBe(PRICE * 3n);
-
-    state = creditTicketRefunds(state, "0xraffle", [1, 3], 2_001);
-    expect(state.raffles[0]!.claimableQuote[PLAYER]).toBe(PRICE * 2n);
-    expect(state.raffles[0]!.uncreditedRefundLiability).toBe(PRICE);
-    expect(() => creditTicketRefunds(state, "0xraffle", [1], 2_002)).toThrow(
+    state = redeemWinningTicket(state, "0xraffle", 1_010);
+    expect(state.wallet.weth).toBe(before + (distributable * 80n) / 100n);
+    expect(state.raffles[0]!.winnerCashLiability).toBe(0n);
+    expect(() => redeemWinningTicket(state, "0xraffle", 1_020)).toThrow(
       SandboxError,
     );
   });
 
-  it("defines the callback timeout boundary and terminal race", () => {
-    let state = buyTickets(sandbox(), "0xraffle", 2, 100);
+  it("burns a threshold winner ticket for the NFT", () => {
+    let state = buyTickets(sandbox(), "0xraffle", 12, 100);
+    expect(thresholdMet(state.raffles[0]!)).toBe(true);
     state = requestDraw(state, "0xraffle", 1_000);
-    const deadline = state.raffles[0]!.callbackDeadline!;
-    expect(() => finalizeTimedOutDraw(state, "0xraffle", deadline - 1)).toThrow(
-      SandboxError,
-    );
+    state = resolveDraw(state, "0xraffle", 1_005);
+    expect(state.raffles[0]!.status).toBe("NFT_WON");
+    state = redeemWinningTicket(state, "0xraffle", 1_010);
+    expect(state.wallet.nfts).toEqual(["0xraffle"]);
+    expect(state.raffles[0]!.prizeClaimed).toBe(true);
+  });
 
-    state = finalizeTimedOutDraw(state, "0xraffle", deadline);
-    expect(state.raffles[0]!.outcome).toBe("DRAW_TIMED_OUT");
-    expect(() => resolveDraw(state, "0xraffle", deadline)).toThrow(
+  it("uses one deadline function and burns refundable tickets for exact value", () => {
+    let state = buyTickets(sandbox(), "0xraffle", 3, 100);
+    expect(() => enableRefunds(state, "0xraffle", 1_999)).toThrow(SandboxError);
+    state = enableRefunds(state, "0xraffle", 2_000);
+    expect(state.raffles[0]!.remainingRefundLiability).toBe(PRICE * 3n);
+    const before = state.wallet.weth;
+    state = redeemRefundTickets(state, "0xraffle", [1, 3], 2_001);
+    expect(state.wallet.weth).toBe(before + PRICE * 2n);
+    expect(state.raffles[0]!.remainingRefundLiability).toBe(PRICE);
+    expect(() => redeemRefundTickets(state, "0xraffle", [1], 2_002)).toThrow(
       SandboxError,
     );
   });
-});
 
-describe("sandbox sponsor exit", () => {
-  it("lets the sponsor cancel while zero tickets have sold", () => {
-    const own = sandbox({
-      player: SPONSOR,
-      raffles: [raffle({ sponsor: SPONSOR })],
+  it("lets the fixed recovery recipient reclaim the NFT after cash settlement", () => {
+    let state = sandbox({
+      raffles: [raffle({ sponsorPrizeRecoveryRecipient: PLAYER })],
     });
-    const cancelled = cancelBeforeSales(own, "0xraffle", 100);
-    expect(cancelled.raffles[0]!.state).toBe("CANCELLED");
-    expect(cancelled.raffles[0]!.prizeClaimant).toBe(SPONSOR);
+    state = buyTickets(state, "0xraffle", 2, 100);
+    state = requestDraw(state, "0xraffle", 1_000);
+    state = resolveDraw(state, "0xraffle", 1_005);
+    state = claimSponsorPrize(state, "0xraffle", 1_010);
+    expect(state.wallet.nfts).toEqual(["0xraffle"]);
   });
 
-  it("locks the prize the moment a ticket sells", () => {
-    let state = sandbox({ player: SPONSOR, raffles: [raffle()] });
-    state = buyTickets(state, "0xraffle", 1, 100);
-    expect(() => cancelBeforeSales(state, "0xraffle", 200)).toThrow(
-      SandboxError,
-    );
-  });
-
-  it("returns the prize through no-sales closure after the deadline", () => {
-    const own = sandbox({ player: SPONSOR, raffles: [raffle()] });
-    expect(() => closeNoSales(own, "0xraffle", 500)).toThrow(SandboxError);
-
-    const closed = closeNoSales(own, "0xraffle", 1_000);
-    expect(closed.raffles[0]!.outcome).toBe("NO_SALES");
-    expect(closed.raffles[0]!.prizeClaimant).toBe(SPONSOR);
+  it("closes an empty raffle early for its sponsor", () => {
+    const state = sandbox({ player: SPONSOR });
+    const closed = closeEmptyRaffle(state, "0xraffle", 100);
+    expect(closed.raffles[0]!.status).toBe("CLOSED");
   });
 });

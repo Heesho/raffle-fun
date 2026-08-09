@@ -50,17 +50,17 @@ describe("protocol economics", () => {
     expect(resolution.winnerCashAmount + resolution.sponsorCashAmount).toBe(8n);
   });
 
-  it("conserves gross sales exactly across partial failed-draw refunds", () => {
+  it("conserves gross sales exactly across partial ticket-burn refunds", () => {
     expect(
       calculateRefundAmounts({
         ticketPrice: 1_000_000n,
         totalTickets: 80n,
-        creditedTickets: 31n,
+        redeemedTickets: 31n,
       }),
     ).toEqual({
       grossRefundLiability: 80_000_000n,
-      creditedRefunds: 31_000_000n,
-      uncreditedRefundLiability: 49_000_000n,
+      redeemedRefunds: 31_000_000n,
+      remainingRefundLiability: 49_000_000n,
       protocolFee: 0n,
     });
   });

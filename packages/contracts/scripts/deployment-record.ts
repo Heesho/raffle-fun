@@ -19,22 +19,12 @@ export const deploymentRecordSchema = z
     deploymentBlock: z.number().int().positive(),
     deployer: address,
     finalFactoryOwner: address,
-    verifiedQuoteTokens: z
-      .array(address)
-      .min(1)
-      .max(32)
-      .refine(
-        (tokens) =>
-          new Set(tokens.map((token) => token.toLowerCase())).size ===
-          tokens.length,
-        "verified quote tokens must be unique",
-      ),
+    quoteToken: address,
     entropy: address,
-    raffleImplementation: address,
     raffleFactory: address,
     raffleLens: address,
     protocolTreasury: address,
-    callbackGasLimit: z.number().int().positive(),
+    callbackGasLimit: z.number().int().positive().max(4_294_967_295),
     sourceCommit: z.string().regex(/^[a-fA-F0-9]{40}$/),
     verificationStatus: z.union([
       z.literal("unverified"),
@@ -52,9 +42,26 @@ export const deploymentRecordSchema = z
         message: `chain ${record.chainId} must use networkName ${expected}`,
       });
     }
+    const uniqueProtocolAddresses = new Set(
+      [
+        record.quoteToken,
+        record.entropy,
+        record.raffleFactory,
+        record.raffleLens,
+        record.protocolTreasury,
+      ].map((value) => value.toLowerCase()),
+    );
+    if (uniqueProtocolAddresses.size !== 5) {
+      context.addIssue({
+        code: "custom",
+        path: ["raffleFactory"],
+        message: "protocol dependency and treasury addresses must be distinct",
+      });
+    }
   });
 
 export type DeploymentRecordInput = z.input<typeof deploymentRecordSchema>;
+export type DeploymentRecord = z.output<typeof deploymentRecordSchema>;
 
 export async function writeDeploymentRecord(
   candidate: unknown,

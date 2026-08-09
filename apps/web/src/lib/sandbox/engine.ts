@@ -1,19 +1,4 @@
-/**
- * A playable, offline model of the raffle protocol.
- *
- * Every rule here mirrors `packages/contracts/src/Raffle.sol` so the sandbox
- * teaches the real mechanic rather than a convenient approximation:
- *
- *  - the advertised ticket price is the total paid; one fee comes out at settlement
- *  - tickets are sequential ids starting at 1, owned by their recipient
- *  - sales are uncapped and only bounded by `endTime`
- *  - the sponsor may cancel only while zero tickets have sold
- *  - settlement is two steps: request the draw, then the oracle callback
- *  - missed request/callback deadlines enter bounded, ticket-owned refunds
- *  - the callback moves no assets; it credits pull claims
- *
- * All amounts are bigint wei. No wallet, chain, or network is involved.
- */
+/** Offline model of the production bearer-ticket settlement. */
 
 export const PROTOCOL_FEE_PERCENT = 5n;
 export const CASH_WINNER_PERCENT = 80n;
@@ -21,25 +6,15 @@ export const MAX_TICKETS_PER_PURCHASE = 100;
 export const MAX_REFUND_BATCH_SIZE = 100;
 export const DRAW_REQUEST_GRACE_MS = 3 * 24 * 60 * 60 * 1_000;
 export const CALLBACK_TIMEOUT_MS = 2 * 24 * 60 * 60 * 1_000;
+export const ENTROPY_FEE = 1_500_000_000_000_000n;
 
-/** A stand-in for the Pyth Entropy fee, payable in native ETH. */
-export const ENTROPY_FEE = 1_500_000_000_000_000n; // 0.0015 ETH
-
-export type SandboxState =
-  "ACTIVE" | "DRAW_REQUESTED" | "RESOLVED" | "CANCELLED" | "REFUNDING";
-
-export type SandboxOutcome =
-  | "NONE"
-  | "NFT_AWARDED"
-  | "CASH_FALLBACK"
-  | "NO_SALES"
-  | "CANCELLED_BEFORE_SALE"
-  | "DRAW_NOT_REQUESTED"
-  | "DRAW_TIMED_OUT";
+export type SandboxStatus =
+  "ACTIVE" | "DRAWING" | "NFT_WON" | "CASH_WON" | "REFUNDING" | "CLOSED";
 
 export interface SandboxTicket {
   readonly id: number;
   readonly owner: string;
+  readonly burned?: boolean;
 }
 
 export interface SandboxRaffle {
@@ -58,34 +33,23 @@ export interface SandboxRaffle {
   readonly startTime: number;
   readonly endTime: number;
   readonly requestGraceDeadline: number;
-
-  readonly state: SandboxState;
-  readonly outcome: SandboxOutcome;
+  readonly status: SandboxStatus;
   readonly tickets: readonly SandboxTicket[];
   readonly grossSales: bigint;
   readonly unsettledPot: bigint;
-  readonly uncreditedRefundLiability: bigint;
-  readonly refundCreditedTicketIds: readonly number[];
-
+  readonly remainingRefundLiability: bigint;
+  readonly winnerCashLiability: bigint;
   readonly winningTicketId: number | null;
-  readonly winner: string | null;
-  /** Who may pull the ERC-721. Null until the raffle settles. */
-  readonly prizeClaimant: string | null;
   readonly prizeClaimed: boolean;
-  /** Pull-based quote-token claims, keyed by account. */
   readonly claimableQuote: Readonly<Record<string, bigint>>;
-  /** Set when the draw is requested; the callback lands a moment later. */
   readonly drawRequestedAt: number | null;
   readonly drawRequestedBy: string | null;
   readonly callbackDeadline: number | null;
 }
 
 export interface SandboxWallet {
-  /** Fake WETH, the quote token for every sandbox raffle. */
   readonly weth: bigint;
-  /** Fake native ETH, used only for the entropy fee. */
   readonly eth: bigint;
-  /** Prize NFTs the player has successfully pulled. */
   readonly nfts: readonly string[];
 }
 
@@ -106,10 +70,10 @@ export interface SandboxEvent {
     | "RESOLVED"
     | "QUOTE_CLAIM"
     | "PRIZE_CLAIM"
-    | "CANCELLED"
-    | "NO_SALES"
-    | "DRAW_FAILURE"
-    | "REFUND_CREDIT";
+    | "CLOSED"
+    | "REFUNDS_ENABLED"
+    | "REFUND_REDEEMED"
+    | "WINNING_REDEEMED";
   readonly account: string;
   readonly amount: bigint | null;
   readonly at: number;
@@ -122,13 +86,6 @@ function fail(message: string): never {
   throw new SandboxError(message);
 }
 
-/**
- * Deterministic PRNG so a given seed always replays the same draw.
- *
- * The reported value is the state's high bits: a linear congruential
- * generator's low bits have a very short period, so `value % smallNumber`
- * taken from the raw state cycles visibly (1, 2, 1, 2, …).
- */
 export function nextRandom(seed: number): { value: number; seed: number } {
   const next = (Math.imul(seed, 1_664_525) + 1_013_904_223) >>> 0;
   return { value: next >>> 8, seed: next };
@@ -139,53 +96,49 @@ export function thresholdMet(raffle: SandboxRaffle): boolean {
 }
 
 export function ticketsOwnedBy(raffle: SandboxRaffle, account: string): number {
+  const normalized = account.toLowerCase();
   return raffle.tickets.filter(
-    (ticket) => ticket.owner.toLowerCase() === account.toLowerCase(),
+    (ticket) => !ticket.burned && ticket.owner.toLowerCase() === normalized,
   ).length;
 }
 
 export function isOpen(raffle: SandboxRaffle, now: number): boolean {
   return (
-    raffle.state === "ACTIVE" && now >= raffle.startTime && now < raffle.endTime
+    raffle.status === "ACTIVE" &&
+    now >= raffle.startTime &&
+    now < raffle.endTime
   );
 }
 
 export function canRequestDraw(raffle: SandboxRaffle, now: number): boolean {
   return (
-    raffle.state === "ACTIVE" &&
-    now >= raffle.endTime &&
-    now < raffle.requestGraceDeadline &&
-    raffle.tickets.length > 0
-  );
-}
-
-export function canFinalizeUnrequestedDraw(
-  raffle: SandboxRaffle,
-  now: number,
-): boolean {
-  return (
-    raffle.state === "ACTIVE" &&
+    raffle.status === "ACTIVE" &&
     raffle.tickets.length > 0 &&
-    now >= raffle.requestGraceDeadline
+    now >= raffle.endTime &&
+    now < raffle.requestGraceDeadline
   );
 }
 
-export function canFinalizeTimedOutDraw(
-  raffle: SandboxRaffle,
-  now: number,
-): boolean {
+export function canEnableRefunds(raffle: SandboxRaffle, now: number): boolean {
+  if (raffle.tickets.length === 0) return false;
+  if (raffle.status === "ACTIVE") return now >= raffle.requestGraceDeadline;
   return (
-    raffle.state === "DRAW_REQUESTED" &&
+    raffle.status === "DRAWING" &&
     raffle.callbackDeadline !== null &&
     now >= raffle.callbackDeadline
   );
 }
 
-export function canCloseNoSales(raffle: SandboxRaffle, now: number): boolean {
+export function canCloseEmptyRaffle(
+  raffle: SandboxRaffle,
+  account: string,
+  now: number,
+): boolean {
   return (
-    raffle.state === "ACTIVE" &&
-    now >= raffle.endTime &&
-    raffle.tickets.length === 0
+    raffle.status === "ACTIVE" &&
+    raffle.tickets.length === 0 &&
+    (now >= raffle.endTime ||
+      account.toLowerCase() === raffle.sponsor.toLowerCase())
   );
 }
 
@@ -211,8 +164,6 @@ function eventId(raffle: string, kind: string, at: number): string {
   return `${raffle}-${kind}-${at}-${Math.round(Math.random() * 1e6)}`;
 }
 
-/* ------------------------------------------------------------ purchasing */
-
 export function buyTickets(
   sandbox: Sandbox,
   raffleId: string,
@@ -220,37 +171,27 @@ export function buyTickets(
   now: number,
 ): Sandbox {
   const raffle = requireRaffle(sandbox, raffleId);
-  if (!Number.isInteger(quantity) || quantity < 1) {
+  if (!Number.isInteger(quantity) || quantity < 1)
     fail("Choose at least one ticket.");
-  }
-  if (quantity > MAX_TICKETS_PER_PURCHASE) {
-    fail(`A single purchase is capped at ${MAX_TICKETS_PER_PURCHASE} tickets.`);
-  }
-  if (raffle.state !== "ACTIVE") fail("This raffle is no longer selling.");
-  if (now < raffle.startTime) fail("The sale has not started yet.");
-  if (now >= raffle.endTime) fail("The sale has ended.");
-
+  if (quantity > MAX_TICKETS_PER_PURCHASE)
+    fail("A purchase is capped at 100 tickets.");
+  if (!isOpen(raffle, now)) fail("Ticket sales are not open.");
   const gross = raffle.ticketPrice * BigInt(quantity);
-  if (sandbox.wallet.weth < gross) {
+  if (sandbox.wallet.weth < gross)
     fail("Not enough WETH for that many tickets.");
-  }
-
   const firstId = raffle.tickets.length + 1;
-  const minted: SandboxTicket[] = Array.from(
-    { length: quantity },
-    (_, index) => ({ id: firstId + index, owner: sandbox.player }),
-  );
-
-  const updated: SandboxRaffle = {
-    ...raffle,
-    tickets: [...raffle.tickets, ...minted],
-    grossSales: raffle.grossSales + gross,
-    unsettledPot: raffle.unsettledPot + gross,
-  };
-
+  const minted = Array.from({ length: quantity }, (_, index) => ({
+    id: firstId + index,
+    owner: sandbox.player,
+  }));
   return replace(
     sandbox,
-    updated,
+    {
+      ...raffle,
+      tickets: [...raffle.tickets, ...minted],
+      grossSales: raffle.grossSales + gross,
+      unsettledPot: raffle.unsettledPot + gross,
+    },
     {
       id: eventId(raffle.id, "PURCHASE", now),
       raffleId: raffle.id,
@@ -264,39 +205,24 @@ export function buyTickets(
   );
 }
 
-/* ------------------------------------------------------------ settlement */
-
 export function requestDraw(
   sandbox: Sandbox,
   raffleId: string,
   now: number,
 ): Sandbox {
   const raffle = requireRaffle(sandbox, raffleId);
-  if (raffle.state !== "ACTIVE") fail("The draw is not available.");
-  if (now < raffle.endTime) fail("The sale has not ended yet.");
-  if (now >= raffle.requestGraceDeadline) {
-    fail(
-      "The draw-request grace period has expired; finalize refunds instead.",
-    );
-  }
-  if (raffle.tickets.length === 0) {
-    fail("No tickets were sold, so there is nothing to draw.");
-  }
-  if (sandbox.wallet.eth < ENTROPY_FEE) {
-    fail("Not enough ETH to cover the randomness fee.");
-  }
-
-  const updated: SandboxRaffle = {
-    ...raffle,
-    state: "DRAW_REQUESTED",
-    drawRequestedAt: now,
-    drawRequestedBy: sandbox.player,
-    callbackDeadline: now + CALLBACK_TIMEOUT_MS,
-  };
-
+  if (!canRequestDraw(raffle, now)) fail("The draw is not available.");
+  if (sandbox.wallet.eth < ENTROPY_FEE)
+    fail("Not enough ETH for the randomness fee.");
   return replace(
     sandbox,
-    updated,
+    {
+      ...raffle,
+      status: "DRAWING",
+      drawRequestedAt: now,
+      drawRequestedBy: sandbox.player,
+      callbackDeadline: now + CALLBACK_TIMEOUT_MS,
+    },
     {
       id: eventId(raffle.id, "DRAW_REQUESTED", now),
       raffleId: raffle.id,
@@ -304,72 +230,44 @@ export function requestDraw(
       account: sandbox.player,
       amount: ENTROPY_FEE,
       at: now,
-      detail: "randomness requested",
     },
     { ...sandbox.wallet, eth: sandbox.wallet.eth - ENTROPY_FEE },
   );
 }
 
-/**
- * The oracle callback.
- *
- * Selects the winning ticket, snapshots its current owner, picks the economic
- * branch, and credits pull claims. Like the contract, it transfers nothing.
- */
+/** The callback selects a ticket and records liabilities; it transfers nothing. */
 export function resolveDraw(
   sandbox: Sandbox,
   raffleId: string,
   now: number,
 ): Sandbox {
   const raffle = requireRaffle(sandbox, raffleId);
-  if (raffle.state !== "DRAW_REQUESTED") {
-    fail("This raffle has no pending draw.");
-  }
-
+  if (raffle.status !== "DRAWING") fail("This raffle has no pending draw.");
   const { value, seed } = nextRandom(sandbox.seed);
   const winningTicketId = (value % raffle.tickets.length) + 1;
-  const winner = raffle.tickets[winningTicketId - 1]!.owner;
-
-  const grossPot = raffle.unsettledPot;
-  const protocolFee = (grossPot * PROTOCOL_FEE_PERCENT) / 100n;
-  const pot = grossPot - protocolFee;
+  const protocolFee = (raffle.unsettledPot * PROTOCOL_FEE_PERCENT) / 100n;
+  const distributable = raffle.unsettledPot - protocolFee;
   const met = thresholdMet(raffle);
-  const claimable: Record<string, bigint> = { ...raffle.claimableQuote };
-  const credit = (account: string, amount: bigint) => {
-    if (amount <= 0n) return;
-    claimable[account] = (claimable[account] ?? 0n) + amount;
-  };
-
-  let winnerCash = 0n;
-  if (met) {
-    // The winning ticket takes the NFT; the sponsor takes the whole pot.
-    credit(raffle.sponsor, pot);
-  } else {
-    winnerCash = (pot * CASH_WINNER_PERCENT) / 100n;
-    credit(winner, winnerCash);
-    credit(raffle.sponsor, pot - winnerCash);
-  }
-
-  const updated: SandboxRaffle = {
-    ...raffle,
-    state: "RESOLVED",
-    outcome: met ? "NFT_AWARDED" : "CASH_FALLBACK",
-    winningTicketId,
-    winner,
-    prizeClaimant: met ? winner : raffle.sponsorPrizeRecoveryRecipient,
-    unsettledPot: 0n,
-    claimableQuote: claimable,
-  };
-
+  const winnerCash = met ? 0n : (distributable * CASH_WINNER_PERCENT) / 100n;
+  const sponsorCash = distributable - winnerCash;
+  const claimable = { ...raffle.claimableQuote };
+  claimable[raffle.sponsor] = (claimable[raffle.sponsor] ?? 0n) + sponsorCash;
   return replace(
     sandbox,
-    updated,
+    {
+      ...raffle,
+      status: met ? "NFT_WON" : "CASH_WON",
+      winningTicketId,
+      unsettledPot: 0n,
+      winnerCashLiability: winnerCash,
+      claimableQuote: claimable,
+    },
     {
       id: eventId(raffle.id, "RESOLVED", now),
       raffleId: raffle.id,
       kind: "RESOLVED",
-      account: winner,
-      amount: met ? null : winnerCash,
+      account: raffle.tickets[winningTicketId - 1]!.owner,
+      amount: winnerCash === 0n ? null : winnerCash,
       at: now,
       detail: `ticket #${winningTicketId} won`,
     },
@@ -378,182 +276,168 @@ export function resolveDraw(
   );
 }
 
-function finalizeDrawFailure(
-  sandbox: Sandbox,
-  raffle: SandboxRaffle,
-  outcome: "DRAW_NOT_REQUESTED" | "DRAW_TIMED_OUT",
-  now: number,
-): Sandbox {
-  const updated: SandboxRaffle = {
-    ...raffle,
-    state: "REFUNDING",
-    outcome,
-    prizeClaimant: raffle.sponsorPrizeRecoveryRecipient,
-    unsettledPot: 0n,
-    uncreditedRefundLiability: raffle.grossSales,
-  };
-  return replace(sandbox, updated, {
-    id: eventId(raffle.id, "DRAW_FAILURE", now),
-    raffleId: raffle.id,
-    kind: "DRAW_FAILURE",
-    account: sandbox.player,
-    amount: raffle.grossSales,
-    at: now,
-    detail: outcome,
-  });
-}
-
-export function finalizeUnrequestedDraw(
+export function enableRefunds(
   sandbox: Sandbox,
   raffleId: string,
   now: number,
 ): Sandbox {
   const raffle = requireRaffle(sandbox, raffleId);
-  if (!canFinalizeUnrequestedDraw(raffle, now)) {
-    fail("The draw-request grace period has not expired.");
-  }
-  return finalizeDrawFailure(sandbox, raffle, "DRAW_NOT_REQUESTED", now);
+  if (!canEnableRefunds(raffle, now))
+    fail("The oracle deadline has not expired.");
+  return replace(
+    sandbox,
+    {
+      ...raffle,
+      status: "REFUNDING",
+      unsettledPot: 0n,
+      remainingRefundLiability: raffle.grossSales,
+    },
+    {
+      id: eventId(raffle.id, "REFUNDS_ENABLED", now),
+      raffleId: raffle.id,
+      kind: "REFUNDS_ENABLED",
+      account: sandbox.player,
+      amount: raffle.grossSales,
+      at: now,
+    },
+  );
 }
 
-export function finalizeTimedOutDraw(
-  sandbox: Sandbox,
-  raffleId: string,
-  now: number,
-): Sandbox {
-  const raffle = requireRaffle(sandbox, raffleId);
-  if (!canFinalizeTimedOutDraw(raffle, now)) {
-    fail("The oracle callback timeout has not expired.");
-  }
-  return finalizeDrawFailure(sandbox, raffle, "DRAW_TIMED_OUT", now);
-}
-
-export function creditTicketRefunds(
+export function redeemRefundTickets(
   sandbox: Sandbox,
   raffleId: string,
   ticketIds: readonly number[],
   now: number,
 ): Sandbox {
   const raffle = requireRaffle(sandbox, raffleId);
-  if (raffle.state !== "REFUNDING") fail("This raffle is not refunding.");
-  if (ticketIds.length === 0 || ticketIds.length > MAX_REFUND_BATCH_SIZE) {
-    fail(`Credit between 1 and ${MAX_REFUND_BATCH_SIZE} ticket refunds.`);
+  if (raffle.status !== "REFUNDING") fail("This raffle is not refunding.");
+  if (ticketIds.length < 1 || ticketIds.length > MAX_REFUND_BATCH_SIZE) {
+    fail("Redeem between one and 100 ticket refunds.");
   }
-  if (new Set(ticketIds).size !== ticketIds.length) {
-    fail("A ticket appears more than once in this refund batch.");
-  }
-
-  const credited = new Set(raffle.refundCreditedTicketIds);
-  const claimable: Record<string, bigint> = { ...raffle.claimableQuote };
-  for (const ticketId of ticketIds) {
+  if (new Set(ticketIds).size !== ticketIds.length)
+    fail("A ticket appears twice.");
+  const selected = new Set(ticketIds);
+  for (const ticketId of selected) {
     const ticket = raffle.tickets[ticketId - 1];
-    if (ticket === undefined || ticket.id !== ticketId) fail("Unknown ticket.");
-    if (credited.has(ticketId)) fail("A ticket refund was already credited.");
-    credited.add(ticketId);
-    claimable[ticket.owner] =
-      (claimable[ticket.owner] ?? 0n) + raffle.ticketPrice;
+    if (ticket === undefined || ticket.burned)
+      fail("Unknown or already burned ticket.");
+    if (ticket.owner.toLowerCase() !== sandbox.player.toLowerCase()) {
+      fail("Only the current ticket owner can redeem its refund.");
+    }
   }
-
   const amount = raffle.ticketPrice * BigInt(ticketIds.length);
-  const updated: SandboxRaffle = {
-    ...raffle,
-    claimableQuote: claimable,
-    refundCreditedTicketIds: [...credited],
-    uncreditedRefundLiability: raffle.uncreditedRefundLiability - amount,
-  };
-  return replace(sandbox, updated, {
-    id: eventId(raffle.id, "REFUND_CREDIT", now),
-    raffleId: raffle.id,
-    kind: "REFUND_CREDIT",
-    account: sandbox.player,
-    amount,
-    at: now,
-    detail: `${ticketIds.length} ticket refund${ticketIds.length === 1 ? "" : "s"}`,
-  });
-}
-
-export function closeNoSales(
-  sandbox: Sandbox,
-  raffleId: string,
-  now: number,
-): Sandbox {
-  const raffle = requireRaffle(sandbox, raffleId);
-  if (!canCloseNoSales(raffle, now)) {
-    fail("This raffle is not eligible for no-sales closure.");
-  }
-  const updated: SandboxRaffle = {
-    ...raffle,
-    state: "RESOLVED",
-    outcome: "NO_SALES",
-    prizeClaimant: raffle.sponsorPrizeRecoveryRecipient,
-  };
-  return replace(sandbox, updated, {
-    id: eventId(raffle.id, "NO_SALES", now),
-    raffleId: raffle.id,
-    kind: "NO_SALES",
-    account: raffle.sponsor,
-    amount: null,
-    at: now,
-    detail: "closed with no sales",
-  });
-}
-
-export function cancelBeforeSales(
-  sandbox: Sandbox,
-  raffleId: string,
-  now: number,
-): Sandbox {
-  const raffle = requireRaffle(sandbox, raffleId);
-  if (raffle.state !== "ACTIVE") fail("This raffle cannot be cancelled.");
-  if (raffle.sponsor.toLowerCase() !== sandbox.player.toLowerCase()) {
-    fail("Only the sponsor can cancel a raffle.");
-  }
-  if (raffle.tickets.length !== 0) {
-    fail("Tickets have already sold, so the prize is locked until settlement.");
-  }
-  const updated: SandboxRaffle = {
-    ...raffle,
-    state: "CANCELLED",
-    outcome: "CANCELLED_BEFORE_SALE",
-    prizeClaimant: raffle.sponsorPrizeRecoveryRecipient,
-  };
-  return replace(sandbox, updated, {
-    id: eventId(raffle.id, "CANCELLED", now),
-    raffleId: raffle.id,
-    kind: "CANCELLED",
-    account: raffle.sponsor,
-    amount: null,
-    at: now,
-    detail: "cancelled before any sale",
-  });
-}
-
-/* ---------------------------------------------------------------- claims */
-
-export function claimPrize(
-  sandbox: Sandbox,
-  raffleId: string,
-  now: number,
-): Sandbox {
-  const raffle = requireRaffle(sandbox, raffleId);
-  if (
-    raffle.state !== "RESOLVED" &&
-    raffle.state !== "CANCELLED" &&
-    raffle.state !== "REFUNDING"
-  ) {
-    fail("This raffle has not settled yet.");
-  }
-  if (
-    raffle.prizeClaimant === null ||
-    raffle.prizeClaimant.toLowerCase() !== sandbox.player.toLowerCase()
-  ) {
-    fail("The prize belongs to someone else.");
-  }
-  if (raffle.prizeClaimed) fail("The prize has already been claimed.");
-
-  const updated: SandboxRaffle = { ...raffle, prizeClaimed: true };
+  const tickets = raffle.tickets.map((ticket) =>
+    selected.has(ticket.id) ? { ...ticket, burned: true } : ticket,
+  );
   return replace(
     sandbox,
-    updated,
+    {
+      ...raffle,
+      tickets,
+      remainingRefundLiability: raffle.remainingRefundLiability - amount,
+    },
+    {
+      id: eventId(raffle.id, "REFUND_REDEEMED", now),
+      raffleId: raffle.id,
+      kind: "REFUND_REDEEMED",
+      account: sandbox.player,
+      amount,
+      at: now,
+    },
+    { ...sandbox.wallet, weth: sandbox.wallet.weth + amount },
+  );
+}
+
+export function closeEmptyRaffle(
+  sandbox: Sandbox,
+  raffleId: string,
+  now: number,
+): Sandbox {
+  const raffle = requireRaffle(sandbox, raffleId);
+  if (!canCloseEmptyRaffle(raffle, sandbox.player, now)) {
+    fail("This account cannot close the empty raffle yet.");
+  }
+  return replace(
+    sandbox,
+    { ...raffle, status: "CLOSED" },
+    {
+      id: eventId(raffle.id, "CLOSED", now),
+      raffleId: raffle.id,
+      kind: "CLOSED",
+      account: sandbox.player,
+      amount: null,
+      at: now,
+    },
+  );
+}
+
+export function redeemWinningTicket(
+  sandbox: Sandbox,
+  raffleId: string,
+  now: number,
+): Sandbox {
+  const raffle = requireRaffle(sandbox, raffleId);
+  if (raffle.status !== "NFT_WON" && raffle.status !== "CASH_WON") {
+    fail("The winning prize is not available.");
+  }
+  if (raffle.winningTicketId === null) fail("No winning ticket was selected.");
+  const ticket = raffle.tickets[raffle.winningTicketId - 1];
+  if (ticket === undefined || ticket.burned)
+    fail("The winning ticket was already redeemed.");
+  if (ticket.owner.toLowerCase() !== sandbox.player.toLowerCase()) {
+    fail("Only the current winning-ticket owner can redeem.");
+  }
+  const cashAmount = raffle.winnerCashLiability;
+  const tickets = raffle.tickets.map((entry) =>
+    entry.id === ticket.id ? { ...entry, burned: true } : entry,
+  );
+  const nftWon = raffle.status === "NFT_WON";
+  return replace(
+    sandbox,
+    {
+      ...raffle,
+      tickets,
+      winnerCashLiability: 0n,
+      prizeClaimed: nftWon ? true : raffle.prizeClaimed,
+    },
+    {
+      id: eventId(raffle.id, "WINNING_REDEEMED", now),
+      raffleId: raffle.id,
+      kind: "WINNING_REDEEMED",
+      account: sandbox.player,
+      amount: cashAmount === 0n ? null : cashAmount,
+      at: now,
+    },
+    {
+      ...sandbox.wallet,
+      weth: sandbox.wallet.weth + cashAmount,
+      nfts: nftWon ? [...sandbox.wallet.nfts, raffle.id] : sandbox.wallet.nfts,
+    },
+  );
+}
+
+export function claimSponsorPrize(
+  sandbox: Sandbox,
+  raffleId: string,
+  now: number,
+): Sandbox {
+  const raffle = requireRaffle(sandbox, raffleId);
+  if (
+    raffle.sponsorPrizeRecoveryRecipient.toLowerCase() !==
+    sandbox.player.toLowerCase()
+  ) {
+    fail("Only the fixed recovery recipient can claim the NFT.");
+  }
+  if (
+    raffle.status !== "CASH_WON" &&
+    raffle.status !== "REFUNDING" &&
+    raffle.status !== "CLOSED"
+  )
+    fail("Sponsor NFT recovery is not available.");
+  if (raffle.prizeClaimed) fail("The NFT has already been claimed.");
+  return replace(
+    sandbox,
+    { ...raffle, prizeClaimed: true },
     {
       id: eventId(raffle.id, "PRIZE_CLAIM", now),
       raffleId: raffle.id,
@@ -561,7 +445,6 @@ export function claimPrize(
       account: sandbox.player,
       amount: null,
       at: now,
-      detail: raffle.prizeName,
     },
     { ...sandbox.wallet, nfts: [...sandbox.wallet.nfts, raffle.id] },
   );
@@ -575,14 +458,11 @@ export function claimQuote(
   const raffle = requireRaffle(sandbox, raffleId);
   const amount = raffle.claimableQuote[sandbox.player] ?? 0n;
   if (amount <= 0n) fail("There is nothing to claim here.");
-
-  const remaining = { ...raffle.claimableQuote };
-  delete remaining[sandbox.player];
-
-  const updated: SandboxRaffle = { ...raffle, claimableQuote: remaining };
+  const claimableQuote = { ...raffle.claimableQuote };
+  delete claimableQuote[sandbox.player];
   return replace(
     sandbox,
-    updated,
+    { ...raffle, claimableQuote },
     {
       id: eventId(raffle.id, "QUOTE_CLAIM", now),
       raffleId: raffle.id,
@@ -601,51 +481,38 @@ function requireRaffle(sandbox: Sandbox, raffleId: string): SandboxRaffle {
   return raffle;
 }
 
-/* --------------------------------------------------------- ambient buyers */
-
-/**
- * Another participant buys in.
- *
- * Keeps open raffles moving while the player watches, without touching the
- * player's wallet. Returns the sandbox unchanged when nothing is open.
- */
 export function simulateOtherPurchase(
   sandbox: Sandbox,
   buyers: readonly string[],
   now: number,
 ): Sandbox {
-  // The player's own raffle is left alone so the sponsor-cancel path, which
-  // requires zero sales, stays demonstrable for the whole session.
   const open = sandbox.raffles.filter(
     (raffle) =>
       isOpen(raffle, now) &&
       raffle.sponsor.toLowerCase() !== sandbox.player.toLowerCase(),
   );
   if (open.length === 0) return sandbox;
-
   const { value, seed } = nextRandom(sandbox.seed);
   const raffle = open[value % open.length]!;
   const buyer = buyers[Math.floor(value / open.length) % buyers.length]!;
   const quantity = 1 + (Math.floor(value / 97) % 3);
   const gross = raffle.ticketPrice * BigInt(quantity);
   const firstId = raffle.tickets.length + 1;
-
-  const updated: SandboxRaffle = {
-    ...raffle,
-    tickets: [
-      ...raffle.tickets,
-      ...Array.from({ length: quantity }, (_, index) => ({
-        id: firstId + index,
-        owner: buyer,
-      })),
-    ],
-    grossSales: raffle.grossSales + gross,
-    unsettledPot: raffle.unsettledPot + gross,
-  };
-
+  const tickets = [
+    ...raffle.tickets,
+    ...Array.from({ length: quantity }, (_, index) => ({
+      id: firstId + index,
+      owner: buyer,
+    })),
+  ];
   return replace(
     sandbox,
-    updated,
+    {
+      ...raffle,
+      tickets,
+      grossSales: raffle.grossSales + gross,
+      unsettledPot: raffle.unsettledPot + gross,
+    },
     {
       id: eventId(raffle.id, "PURCHASE", now),
       raffleId: raffle.id,
@@ -653,7 +520,6 @@ export function simulateOtherPurchase(
       account: buyer,
       amount: gross,
       at: now,
-      detail: `${quantity} ticket${quantity === 1 ? "" : "s"}`,
     },
     sandbox.wallet,
     seed,

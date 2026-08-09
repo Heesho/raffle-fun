@@ -10,19 +10,18 @@ import { IRaffleLens } from "./interfaces/IRaffleLens.sol";
 /**
  * @title raffle.fun Canonical Raffle Lens
  * @author Heesho
- * @notice Aggregates lifecycle, deadline, liability, and wallet-action reads for factory-registered raffles.
- * @dev The immutable factory registry is checked before forwarding any read. Entropy fee failures are surfaced through
- *      `entropyFeeAvailable` so oracle unavailability cannot hide timeout recovery actions from wallets or monitors.
- * @custom:version 1.0.0
+ * @notice Aggregates bounded wallet reads without holding assets or changing protocol state.
+ * @dev Registry authentication happens before raffle calls. Temporary Entropy fee-read failure is reported explicitly
+ *      instead of making all other state unavailable.
+ * @custom:version 2.0.0
  */
 contract RaffleLens is IRaffleLens {
-    /// @notice Maximum canonical raffles read by one aggregate call.
-    uint256 public constant MAX_BATCH_SIZE = 100;
-
-    /// @notice Immutable factory used for registration checks and identifiers.
+    uint256 public constant MAX_BATCH_SIZE = 64;
     IRaffleFactory public immutable factory;
 
-    /// @notice Binds the lens to one deployed factory version.
+    /**
+     * @notice Creates a read-only lens for one canonical factory registry.
+     */
     constructor(address factory_) {
         if (factory_ == address(0) || factory_.code.length == 0) revert InvalidFactory(factory_);
         factory = IRaffleFactory(factory_);
@@ -30,12 +29,85 @@ contract RaffleLens is IRaffleLens {
 
     /// @inheritdoc IRaffleLens
     function getRaffleState(address raffle, address account)
-        external
+        public
         view
         override
         returns (RaffleView memory raffleView)
     {
-        raffleView = _getRaffleState(raffle, account);
+        if (!factory.isRaffle(raffle)) revert UnregisteredRaffle(raffle);
+        IRaffle target = IRaffle(raffle);
+        IRaffle.Status currentStatus = target.status();
+        uint256 winningTicketId = target.winningTicketId();
+        bool redeemed = target.winningTicketRedeemed();
+        address winningOwner = address(0);
+        if (winningTicketId != 0 && !redeemed) {
+            winningOwner = IERC721(raffle).ownerOf(winningTicketId);
+        }
+
+        uint256 entropyFee = 0;
+        bool entropyFeeAvailable = false;
+        try target.getEntropyFee() returns (uint256 currentFee) {
+            entropyFee = currentFee;
+            entropyFeeAvailable = true;
+        } catch { }
+
+        raffleView.factoryId = factory.idByRaffle(raffle);
+        raffleView.registered = true;
+        raffleView.raffle = raffle;
+        raffleView.status = currentStatus;
+        raffleView.sponsor = target.sponsor();
+        raffleView.sponsorPrizeRecoveryRecipient = target.sponsorPrizeRecoveryRecipient();
+        raffleView.protocolTreasury = target.protocolTreasury();
+        raffleView.quoteToken = address(target.quoteToken());
+        raffleView.prizeToken = address(target.prizeToken());
+        raffleView.prizeTokenId = target.prizeTokenId();
+        raffleView.ticketPrice = target.ticketPrice();
+        raffleView.minimumTickets = target.minimumTickets();
+        raffleView.startTime = target.startTime();
+        raffleView.endTime = target.endTime();
+        raffleView.requestGraceDeadline = target.requestGraceDeadline();
+        raffleView.drawRequestedAt = target.drawRequestedAt();
+        raffleView.callbackDeadline = target.callbackDeadline();
+        raffleView.entropySequenceNumber = target.entropySequenceNumber();
+        raffleView.totalTickets = target.totalTickets();
+        raffleView.grossSales = target.grossSales();
+        raffleView.unsettledPot = target.unsettledPot();
+        raffleView.remainingRefundLiability = target.remainingRefundLiability();
+        raffleView.winnerCashLiability = target.winnerCashLiability();
+        raffleView.totalClaimableQuote = target.totalClaimableQuote();
+        raffleView.accountedQuoteBalance = target.accountedQuoteBalance();
+        raffleView.winningTicketId = winningTicketId;
+        raffleView.winningTicketOwner = winningOwner;
+        raffleView.winningTicketRedeemed = redeemed;
+        raffleView.prizeClaimed = target.prizeClaimed();
+        raffleView.entropyFee = entropyFee;
+        raffleView.entropyFeeAvailable = entropyFeeAvailable;
+        raffleView.canBuy = currentStatus == IRaffle.Status.Active && block.timestamp >= raffleView.startTime
+            && block.timestamp < raffleView.endTime;
+        raffleView.canDraw = currentStatus == IRaffle.Status.Active && block.timestamp >= raffleView.endTime
+            && block.timestamp < raffleView.requestGraceDeadline && raffleView.totalTickets != 0;
+        if (currentStatus == IRaffle.Status.Active) {
+            raffleView.canEnableRefunds =
+                raffleView.totalTickets != 0 && block.timestamp >= raffleView.requestGraceDeadline;
+        } else if (currentStatus == IRaffle.Status.Drawing) {
+            raffleView.canEnableRefunds = block.timestamp >= raffleView.callbackDeadline;
+        }
+
+        if (account != address(0)) {
+            raffleView.accountTicketBalance = IERC721(raffle).balanceOf(account);
+            raffleView.accountQuoteClaim = target.claimableQuote(account);
+            raffleView.accountOwnsWinningTicket = account == winningOwner;
+            raffleView.accountIsPrizeRecoveryRecipient = account == raffleView.sponsorPrizeRecoveryRecipient;
+            raffleView.canRedeemWinningTicket = raffleView.accountOwnsWinningTicket
+                && (currentStatus == IRaffle.Status.NftWon || currentStatus == IRaffle.Status.CashWon);
+            raffleView.canRedeemRefundTickets =
+                currentStatus == IRaffle.Status.Refunding && raffleView.accountTicketBalance != 0;
+            raffleView.canClaimQuote = raffleView.accountQuoteClaim != 0;
+            bool sponsorPrizeAvailable = currentStatus == IRaffle.Status.CashWon
+                || currentStatus == IRaffle.Status.Refunding || currentStatus == IRaffle.Status.Closed;
+            raffleView.canClaimSponsorPrize =
+                raffleView.accountIsPrizeRecoveryRecipient && sponsorPrizeAvailable && !raffleView.prizeClaimed;
+        }
     }
 
     /// @inheritdoc IRaffleLens
@@ -47,74 +119,9 @@ contract RaffleLens is IRaffleLens {
     {
         uint256 length = raffles.length;
         if (length > MAX_BATCH_SIZE) revert BatchTooLarge(length, MAX_BATCH_SIZE);
-
         raffleViews = new RaffleView[](length);
         for (uint256 index; index < length; ++index) {
-            raffleViews[index] = _getRaffleState(raffles[index], account);
-        }
-    }
-
-    /// @dev Registration precedes every forwarded read, and field assignment avoids stack-heavy ABI struct literals.
-    function _getRaffleState(address raffleAddress, address account) internal view returns (RaffleView memory view_) {
-        if (!factory.isRaffle(raffleAddress)) revert UnregisteredRaffle(raffleAddress);
-        IRaffle raffle = IRaffle(raffleAddress);
-
-        IRaffle.RaffleState raffleState = raffle.state();
-        address claimant = raffle.prizeClaimant();
-        uint256 quoteClaim = account == address(0) ? 0 : raffle.claimableQuote(account);
-        uint256 nativeClaim = account == address(0) ? 0 : raffle.claimableNative(account);
-
-        view_.factoryId = factory.idByRaffle(raffleAddress);
-        view_.registered = true;
-        view_.raffle = raffleAddress;
-        view_.state = raffleState;
-        view_.outcome = raffle.outcome();
-        view_.sponsor = raffle.sponsor();
-        view_.sponsorPrizeRecoveryRecipient = raffle.sponsorPrizeRecoveryRecipient();
-        view_.protocolTreasury = raffle.protocolTreasury();
-        view_.prizeClaimant = claimant;
-        view_.quoteToken = address(raffle.quoteToken());
-        view_.prizeToken = address(raffle.prizeToken());
-        view_.prizeTokenId = raffle.prizeTokenId();
-        view_.ticketPrice = raffle.ticketPrice();
-        view_.minimumTickets = raffle.minimumTickets();
-        view_.startTime = raffle.startTime();
-        view_.endTime = raffle.endTime();
-        view_.requestGraceDeadline = raffle.requestGraceDeadline();
-        view_.drawRequestedAt = raffle.drawRequestedAt();
-        view_.callbackDeadline = raffle.callbackDeadline();
-        view_.entropySequenceNumber = raffle.entropySequenceNumber();
-        view_.totalTickets = raffle.totalTickets();
-        view_.grossSales = raffle.grossSales();
-        view_.unsettledPot = raffle.unsettledPot();
-        view_.uncreditedRefundLiability = raffle.uncreditedRefundLiability();
-        view_.totalClaimableQuote = raffle.totalClaimableQuote();
-        view_.totalClaimableNative = raffle.totalClaimableNative();
-        view_.accountedQuoteBalance = raffle.accountedQuoteBalance();
-        view_.accountedNativeBalance = raffle.accountedNativeBalance();
-        view_.winningTicketId = raffle.winningTicketId();
-        view_.winner = raffle.winner();
-        view_.accountTicketBalance = account == address(0) ? 0 : IERC721(raffleAddress).balanceOf(account);
-        view_.accountQuoteClaim = quoteClaim;
-        view_.accountNativeClaim = nativeClaim;
-        view_.accountIsPrizeClaimant = account != address(0) && account == claimant;
-        view_.canBuy = raffle.isOpen();
-        view_.canDraw = raffle.canRequestDraw();
-        view_.canFinalizeUnrequestedDraw = raffle.canFinalizeUnrequestedDraw();
-        view_.canFinalizeTimedOutDraw = raffle.canFinalizeTimedOutDraw();
-        view_.canClaimQuote = quoteClaim != 0;
-        view_.canClaimNative = nativeClaim != 0;
-        view_.canClaimPrize = view_.accountIsPrizeClaimant && !raffle.prizeClaimed()
-            && (
-                raffleState == IRaffle.RaffleState.Resolved || raffleState == IRaffle.RaffleState.Cancelled
-                    || raffleState == IRaffle.RaffleState.Refunding
-            );
-
-        try raffle.getEntropyFee() returns (uint256 fee) {
-            view_.entropyFee = fee;
-            view_.entropyFeeAvailable = true;
-        } catch {
-            view_.entropyFeeAvailable = false;
+            raffleViews[index] = getRaffleState(raffles[index], account);
         }
     }
 }

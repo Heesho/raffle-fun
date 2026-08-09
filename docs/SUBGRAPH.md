@@ -1,38 +1,24 @@
 # Subgraph
 
-Each deployment indexes one factory plus dynamic raffle templates. `RaffleCreated`
-contains the recovery recipient and request grace deadline; the template then observes
-the same-transaction `PrizeDeposited` event.
+The subgraph indexes the factory registry, the one raffle status, bearer ticket
+ownership and burns, the four quote liabilities, purchases, draw requests,
+resolutions, refund enablement, redemptions, and sponsor/treasury claims.
 
-Mutable entities cover protocol/token aggregates, raffles, accounts, tickets, and
-daily data. Immutable histories cover purchases, requests, successful resolutions,
-draw failures, per-ticket refund credits, quote/prize claims, and ticket transfers.
-`Raffle` exposes request/callback timestamps, remaining refund liability, total
-credited refunds, prize claimant, and terminal outcome. `Ticket` records the frozen
-refund owner and credited flag.
+Important entities include `Raffle`, `Ticket`, `Resolution`, `RefundEnable`,
+`RefundRedemption`, `WinningRedemption`, `QuoteClaim`, and `SponsorPrizeClaim`.
+`Raffle.status` uses the same seven values as `IRaffle.Status`; the indexer does not
+recreate a state/outcome split.
 
-Event IDs use transaction hash plus log index and handlers guard duplicate delivery.
-Amounts remain partitioned by quote token. Token admission is indexed for discovery;
-delisting never rewrites existing raffle state.
+The subgraph is a discovery and history layer, never transaction authority. The web
+uses `RaffleLens` to authenticate addresses and refresh current owner, deadlines,
+liabilities, Entropy fee, and available actions before writes.
 
-## Generated sources and verification
+ABIs are generated from canonical Hardhat artifacts:
 
 ```bash
-pnpm contracts:build
-pnpm sdk:sync
-pnpm subgraph:codegen
-pnpm subgraph:build
-pnpm subgraph:test
-pnpm --filter @raffle-fun/sdk sync:check
+pnpm --filter @raffle-fun/contracts compile
+pnpm --filter @raffle-fun/sdk sync
+pnpm --filter @raffle-fun/subgraph codegen
+pnpm --filter @raffle-fun/subgraph build
+pnpm --filter @raffle-fun/subgraph test
 ```
-
-Do not hand-edit generated ABI/binding files. Matchstick covers atomic template
-creation, same-block escrow, purchases/transfers, both normal branches, failed draw,
-bounded ticket refund reconstruction, claims, aggregates, and idempotency.
-
-The checked-in manifest is a build/test template. Production manifest generation must
-read a validated network deployment record; there is no zero-address fallback.
-
-The index may lag, reorganize, or fail. Transaction clients must reread registered
-live state, deadlines, claimant/liability values, current token admission where
-relevant, and the current entropy fee, then simulate before requesting a signature.

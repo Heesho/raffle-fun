@@ -1,31 +1,22 @@
-enum RaffleState {
+enum RaffleStatus {
   AWAITING_PRIZE
   ACTIVE
-  DRAW_REQUESTED
-  RESOLVED
-  CANCELLED
+  DRAWING
+  NFT_WON
+  CASH_WON
   REFUNDING
-}
-
-enum RaffleOutcome {
-  NONE
-  NFT_AWARDED
-  CASH_FALLBACK
-  NO_SALES
-  CANCELLED_BEFORE_SALE
-  DRAW_NOT_REQUESTED
-  DRAW_TIMED_OUT
+  CLOSED
 }
 
 type Protocol @entity(immutable: false) {
   id: Bytes!
   raffleCount: BigInt!
   activeCount: BigInt!
-  resolvedCount: BigInt!
-  cancelledCount: BigInt!
+  drawingCount: BigInt!
+  nftWonCount: BigInt!
+  cashWonCount: BigInt!
   refundingCount: BigInt!
-  nftAwardedCount: BigInt!
-  cashFallbackCount: BigInt!
+  closedCount: BigInt!
   totalTickets: BigInt!
   raffles: [Raffle!]! @derivedFrom(field: "protocol")
   quoteTokens: [QuoteTokenStats!]! @derivedFrom(field: "protocol")
@@ -35,13 +26,13 @@ type QuoteTokenStats @entity(immutable: false) {
   id: String!
   protocol: Protocol!
   token: Bytes!
-  verified: Boolean!
   raffleCount: BigInt!
   grossVolume: BigInt!
   settledVolume: BigInt!
   protocolFees: BigInt!
   quoteClaimed: BigInt!
   refundedVolume: BigInt!
+  winnerCashRedeemed: BigInt!
   raffles: [Raffle!]! @derivedFrom(field: "quoteTokenStats")
   accounts: [AccountTokenStats!]! @derivedFrom(field: "quoteToken")
 }
@@ -65,19 +56,19 @@ type Raffle @entity(immutable: false) {
   requestGraceDeadline: BigInt!
   drawRequestedAt: BigInt
   callbackDeadline: BigInt
-  state: RaffleState!
-  outcome: RaffleOutcome!
+  status: RaffleStatus!
   totalTickets: BigInt!
   grossSales: BigInt!
   unsettledPot: BigInt!
-  uncreditedRefundLiability: BigInt!
-  totalRefundCredited: BigInt!
+  remainingRefundLiability: BigInt!
+  winnerCashLiability: BigInt!
+  totalClaimableQuote: BigInt!
+  totalRefundRedeemed: BigInt!
   totalProtocolFees: BigInt!
   quoteClaimed: BigInt!
   entropySequenceNumber: BigInt
   winningTicketId: BigInt
-  winner: Account
-  prizeClaimant: Account
+  winningTicketRedeemed: Boolean!
   prizeClaimed: Boolean!
   prizeDestination: Bytes
   createdTxHash: Bytes!
@@ -90,8 +81,9 @@ type Raffle @entity(immutable: false) {
   resolvedBlock: BigInt
   resolvedTimestamp: BigInt
   prizeClaimedTxHash: Bytes
-  failure: DrawFailure @derivedFrom(field: "raffle")
-  refunds: [TicketRefund!]! @derivedFrom(field: "raffle")
+  refundEnable: RefundEnable @derivedFrom(field: "raffle")
+  refundRedemptions: [RefundRedemption!]! @derivedFrom(field: "raffle")
+  winningRedemptions: [WinningRedemption!]! @derivedFrom(field: "raffle")
   tickets: [Ticket!]! @derivedFrom(field: "raffle")
   purchases: [Purchase!]! @derivedFrom(field: "raffle")
   participants: [RaffleAccount!]! @derivedFrom(field: "raffle")
@@ -102,7 +94,6 @@ type Account @entity(immutable: false) {
   ticketsBought: BigInt!
   ticketsCurrentlyOwned: BigInt!
   rafflesSponsored: BigInt!
-  rafflesWon: BigInt!
   participations: [RaffleAccount!]! @derivedFrom(field: "account")
   tokenStats: [AccountTokenStats!]! @derivedFrom(field: "account")
 }
@@ -113,6 +104,8 @@ type AccountTokenStats @entity(immutable: false) {
   quoteToken: QuoteTokenStats!
   grossSpent: BigInt!
   quoteClaimed: BigInt!
+  refundsRedeemed: BigInt!
+  winnerCashRedeemed: BigInt!
 }
 
 type RaffleAccount @entity(immutable: false) {
@@ -123,19 +116,19 @@ type RaffleAccount @entity(immutable: false) {
   ticketsCurrentlyOwned: BigInt!
   grossSpent: BigInt!
   quoteClaimed: BigInt!
-  won: Boolean!
+  refundsRedeemed: BigInt!
+  winnerCashRedeemed: BigInt!
 }
 
 type Ticket @entity(immutable: false) {
   id: String!
   raffle: Raffle!
   ticketId: BigInt!
-  currentOwner: Account!
+  currentOwner: Account
   originalRecipient: Account!
   purchase: Purchase
   winning: Boolean!
-  refundCredited: Boolean!
-  refundOwner: Account
+  burned: Boolean!
 }
 
 type Purchase @entity(immutable: true) {
@@ -159,7 +152,7 @@ type DrawRequest @entity(immutable: true) {
   sequenceNumber: BigInt!
   requester: Account!
   fee: BigInt!
-  excessCredited: BigInt!
+  excessReturned: BigInt!
   drawRequestedAt: BigInt!
   callbackDeadline: BigInt!
   transactionHash: Bytes!
@@ -173,11 +166,8 @@ type Resolution @entity(immutable: true) {
   raffle: Raffle!
   sequenceNumber: BigInt!
   winningTicketId: BigInt!
-  winner: Account!
-  outcome: RaffleOutcome!
-  prizeClaimant: Account!
+  result: RaffleStatus!
   protocolFee: BigInt!
-  distributablePot: BigInt!
   winnerCashAmount: BigInt!
   sponsorCashAmount: BigInt!
   transactionHash: Bytes!
@@ -186,26 +176,40 @@ type Resolution @entity(immutable: true) {
   logIndex: BigInt!
 }
 
-type DrawFailure @entity(immutable: true) {
+type RefundEnable @entity(immutable: true) {
   id: String!
   raffle: Raffle!
-  outcome: RaffleOutcome!
   finalizer: Account!
-  prizeClaimant: Account!
-  grossRefundLiability: BigInt!
+  requestWasAccepted: Boolean!
+  remainingRefundLiability: BigInt!
   transactionHash: Bytes!
   blockNumber: BigInt!
   timestamp: BigInt!
   logIndex: BigInt!
 }
 
-type TicketRefund @entity(immutable: true) {
+type RefundRedemption @entity(immutable: true) {
   id: String!
   raffle: Raffle!
-  ticket: Ticket!
   owner: Account!
+  destination: Bytes!
+  quantity: BigInt!
   amount: BigInt!
   remainingRefundLiability: BigInt!
+  transactionHash: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  logIndex: BigInt!
+}
+
+type WinningRedemption @entity(immutable: true) {
+  id: String!
+  raffle: Raffle!
+  ticketId: BigInt!
+  owner: Account!
+  destination: Bytes!
+  result: RaffleStatus!
+  cashAmount: BigInt!
   transactionHash: Bytes!
   blockNumber: BigInt!
   timestamp: BigInt!
@@ -224,10 +228,10 @@ type QuoteClaim @entity(immutable: true) {
   logIndex: BigInt!
 }
 
-type PrizeClaim @entity(immutable: true) {
+type SponsorPrizeClaim @entity(immutable: true) {
   id: String!
   raffle: Raffle!
-  claimant: Account!
+  recipient: Account!
   destination: Bytes!
   prizeToken: Bytes!
   prizeTokenId: BigInt!

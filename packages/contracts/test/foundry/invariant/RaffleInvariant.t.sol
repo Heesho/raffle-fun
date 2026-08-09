@@ -19,130 +19,110 @@ contract RaffleInvariantTest is StdInvariant, Test {
     MockEntropyV2 internal entropy;
     Raffle internal raffle;
     RaffleHandler internal handler;
-
     address internal treasury = makeAddr("treasury");
-    address internal recipientOne = makeAddr("recipientOne");
-    address internal recipientTwo = makeAddr("recipientTwo");
-    address internal recipientThree = makeAddr("recipientThree");
 
     function setUp() public {
         vm.warp(100_000);
         quote = new MockERC20();
         prize = new MockERC721();
         entropy = new MockEntropyV2();
-        handler = new RaffleHandler(quote, entropy, treasury, recipientOne, recipientTwo, recipientThree);
+        handler = new RaffleHandler(quote, entropy, treasury);
 
-        Raffle implementation = new Raffle();
-        RaffleFactory factory = new RaffleFactory(
-            address(implementation), _quoteTokens(address(quote)), address(entropy), treasury, 300_000, address(this)
-        );
+        RaffleFactory factory = new RaffleFactory(address(quote), address(entropy), treasury, 300_000, address(this));
         prize.mint(address(handler), 1);
         vm.prank(address(handler));
         prize.setApprovalForAll(address(factory), true);
         vm.prank(address(handler));
-        address raffleAddress = factory.createRaffle(
-            IRaffleFactory.CreateRaffleParams({
-                prizeToken: address(prize),
-                prizeTokenId: 1,
-                quoteToken: address(quote),
-                sponsorPrizeRecoveryRecipient: address(0),
-                ticketPrice: 1e6,
-                minimumTickets: 250,
-                startTime: block.timestamp,
-                endTime: block.timestamp + 7 days,
-                metadataURI: "ipfs://invariant"
-            })
+        raffle = Raffle(
+            payable(
+                factory.createRaffle(
+                    IRaffleFactory.CreateRaffleParams({
+                        prizeToken: address(prize),
+                        prizeTokenId: 1,
+                        sponsorPrizeRecoveryRecipient: address(0),
+                        ticketPrice: 1e6,
+                        minimumTickets: 50,
+                        startTime: block.timestamp,
+                        endTime: block.timestamp + 7 days,
+                        metadataURI: "ipfs://invariant"
+                    })
+                )
+            )
         );
-        raffle = Raffle(payable(raffleAddress));
         quote.mint(address(handler), 1_000_000 * 1e6);
         handler.configure(raffle);
-
         targetContract(address(handler));
     }
 
-    function invariantStateTransitionsNeverMoveBackward() public view {
-        assertFalse(handler.stateWentBackward());
+    function invariantStatusTransitionsNeverMoveBackward() public view {
+        assertFalse(handler.statusWentBackward());
     }
 
-    function invariantAtMostOneRequestAndResolutionExist() public view {
+    function invariantAtMostOneRequestAndTerminalChoiceExist() public view {
         assertLe(handler.ghostRequestCount(), 1);
         assertLe(handler.ghostResolutionCount(), 1);
-        assertLe(handler.ghostFailureCount(), 1);
-        assertLe(handler.ghostResolutionCount() + handler.ghostFailureCount(), 1);
+        assertLe(handler.ghostRefundEnableCount(), 1);
+        assertLe(handler.ghostResolutionCount() + handler.ghostRefundEnableCount(), 1);
         if (raffle.entropySequenceNumber() != 0) assertEq(handler.ghostRequestCount(), 1);
     }
 
-    function invariantResolvedWinnerIsAlwaysARealSoldTicket() public view {
-        if (raffle.state() == IRaffle.RaffleState.Resolved && raffle.totalTickets() != 0) {
-            assertGe(raffle.winningTicketId(), 1);
-            assertLe(raffle.winningTicketId(), raffle.totalTickets());
-            assertNotEq(raffle.winner(), address(0));
-        }
-    }
-
-    function invariantEverySoldTicketHasANonzeroOwner() public view {
-        uint256 sold = raffle.totalTickets();
-        for (uint256 ticketId = 1; ticketId <= sold; ++ticketId) {
-            assertNotEq(raffle.ownerOf(ticketId), address(0));
-        }
-    }
-
-    function invariantPrizeLeavesEscrowAtMostOnceAndOnlyAfterAClaimPathExists() public view {
-        assertLe(handler.ghostPrizeClaims(), 1);
-        if (!raffle.prizeClaimed()) {
-            assertEq(prize.ownerOf(raffle.prizeTokenId()), address(raffle));
-        } else {
-            assertTrue(
-                raffle.state() == IRaffle.RaffleState.Resolved || raffle.state() == IRaffle.RaffleState.Cancelled
-                    || raffle.state() == IRaffle.RaffleState.Refunding
-            );
-            assertNotEq(raffle.prizeClaimant(), address(0));
-            assertNotEq(prize.ownerOf(raffle.prizeTokenId()), address(raffle));
-        }
+    function invariantResolvedWinningTicketIsAlwaysInSoldRange() public view {
+        IRaffle.Status current = raffle.status();
+        if (current != IRaffle.Status.NftWon && current != IRaffle.Status.CashWon) return;
+        assertGe(raffle.winningTicketId(), 1);
+        assertLe(raffle.winningTicketId(), raffle.totalTickets());
     }
 
     function invariantQuotePaidInEqualsPaidOutPlusContractBalance() public view {
         assertEq(raffle.grossSales(), handler.ghostGrossPaid());
-        assertEq(raffle.grossSales(), quote.balanceOf(address(raffle)) + handler.ghostQuoteClaimed());
+        assertEq(raffle.grossSales(), quote.balanceOf(address(raffle)) + handler.ghostQuotePaidOut());
     }
 
-    function invariantAccountedQuoteAlwaysReconcilesAndIsSolvent() public view {
+    function invariantAccountedQuoteIsExactlyTheFourLiabilitiesAndSolvent() public view {
         assertEq(
             raffle.accountedQuoteBalance(),
-            raffle.unsettledPot() + raffle.uncreditedRefundLiability() + raffle.totalClaimableQuote()
+            raffle.unsettledPot() + raffle.remainingRefundLiability() + raffle.winnerCashLiability()
+                + raffle.totalClaimableQuote()
         );
         assertGe(quote.balanceOf(address(raffle)), raffle.accountedQuoteBalance());
-        assertLe(raffle.totalClaimableQuote(), raffle.grossSales());
+        assertLe(raffle.accountedQuoteBalance(), raffle.grossSales());
     }
 
-    function invariantRefundingConservesGrossAndNeverCreditsProtocolFee() public view {
-        if (raffle.state() != IRaffle.RaffleState.Refunding) return;
+    function invariantRefundingNeverChargesProtocolFee() public view {
+        if (raffle.status() != IRaffle.Status.Refunding) return;
         assertEq(raffle.unsettledPot(), 0);
+        assertEq(raffle.winnerCashLiability(), 0);
         assertEq(raffle.claimableQuote(treasury), 0);
-        assertEq(handler.ghostRefundCredited() + raffle.uncreditedRefundLiability(), raffle.grossSales());
-        assertTrue(
-            raffle.outcome() == IRaffle.RaffleOutcome.DrawNotRequested
-                || raffle.outcome() == IRaffle.RaffleOutcome.DrawTimedOut
-        );
+        assertEq(raffle.remainingRefundLiability() + handler.ghostQuotePaidOut(), raffle.grossSales());
     }
 
-    function invariantResolutionBranchMatchesExactThresholdBoundary() public view {
-        if (handler.ghostResolutionCount() == 0) return;
-        IRaffle.RaffleOutcome expected = raffle.totalTickets() >= raffle.minimumTickets()
-            ? IRaffle.RaffleOutcome.NftAwarded
-            : IRaffle.RaffleOutcome.CashFallback;
-        assertEq(uint256(raffle.outcome()), uint256(expected));
-        assertEq(raffle.winner(), handler.resolvedWinner());
-        assertEq(uint256(raffle.outcome()), uint256(handler.resolvedOutcome()));
-        if (expected == IRaffle.RaffleOutcome.NftAwarded) {
-            assertEq(raffle.prizeClaimant(), raffle.winner());
-        } else {
-            assertEq(raffle.prizeClaimant(), address(handler));
+    function invariantSuccessfulSettlementAlwaysChargesFivePercent() public view {
+        IRaffle.Status current = raffle.status();
+        if (current != IRaffle.Status.NftWon && current != IRaffle.Status.CashWon) return;
+        assertEq(raffle.claimableQuote(treasury) + handler.ghostProtocolPaidOut(), raffle.grossSales() * 500 / 10_000);
+        if (current == IRaffle.Status.NftWon) {
+            assertEq(raffle.winnerCashLiability(), 0);
         }
     }
 
-    function _quoteTokens(address quoteToken_) internal pure returns (address[] memory tokens) {
-        tokens = new address[](1);
-        tokens[0] = quoteToken_;
+    function invariantPrizeCanLeaveEscrowOnlyOnceOnAnExplicitClaimPath() public view {
+        assertLe(handler.ghostSponsorPrizeClaims(), 1);
+        assertLe(handler.ghostWinningTicketRedemptions(), 1);
+        if (!raffle.prizeClaimed()) {
+            assertEq(prize.ownerOf(raffle.prizeTokenId()), address(raffle));
+        } else {
+            assertNotEq(prize.ownerOf(raffle.prizeTokenId()), address(raffle));
+            IRaffle.Status current = raffle.status();
+            assertTrue(
+                current == IRaffle.Status.NftWon || current == IRaffle.Status.CashWon
+                    || current == IRaffle.Status.Refunding || current == IRaffle.Status.Closed
+            );
+            if (current == IRaffle.Status.NftWon) {
+                assertEq(handler.ghostWinningTicketRedemptions(), 1);
+                assertEq(handler.ghostSponsorPrizeClaims(), 0);
+            } else {
+                assertEq(handler.ghostSponsorPrizeClaims(), 1);
+            }
+        }
     }
 }

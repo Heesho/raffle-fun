@@ -42,7 +42,7 @@ contract ReentrantTicketReceiver is IERC721Receiver {
 
     /// @notice Executes the receiver's authorized prize claim.
     function executePrizeClaim() external {
-        raffle.claimPrize(address(this));
+        raffle.redeemWinningTicket(address(this));
     }
 
     /// @notice Attempts the configured nested action and always remains able to receive the NFT.
@@ -62,7 +62,7 @@ contract ReentrantTicketReceiver is IERC721Receiver {
             }
         } else if (msg.sender == address(raffle.prizeToken()) && tokenId == raffle.prizeTokenId() && attackPrize) {
             attackPrize = false;
-            try raffle.claimPrize(address(this)) {
+            try raffle.redeemWinningTicket(address(this)) {
                 reentryBlocked = false;
             } catch {
                 reentryBlocked = true;

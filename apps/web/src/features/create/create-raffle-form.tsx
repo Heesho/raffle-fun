@@ -53,7 +53,6 @@ const formSchema = z.object({
   prizeTokenId: z
     .string()
     .regex(/^(0|[1-9]\d*)$/, "Use a nonnegative token ID."),
-  quoteToken: z.string().refine(isAddress, "Choose a verified payment token."),
   ticketPrice: z
     .string()
     .regex(/^(?:0|[1-9]\d*)(?:\.\d+)?$/, "Enter a positive token amount."),
@@ -92,7 +91,6 @@ export function CreateRaffleForm() {
   const [form, setForm] = useState({
     prizeToken: "",
     prizeTokenId: "",
-    quoteToken: "",
     ticketPrice: "1",
     minimumTickets: "100",
     startTime: initialDate(1),
@@ -113,82 +111,56 @@ export function CreateRaffleForm() {
 
   const deployed = protocolDeployment !== undefined;
 
-  const quoteTokenCountQuery = useReadContract({
+  const quoteTokenAddressQuery = useReadContract({
     address: protocolDeployment?.raffleFactory,
     abi: raffleFactoryAbi,
-    functionName: "verifiedQuoteTokenCount",
+    functionName: "quoteToken",
     query: { enabled: deployed, staleTime: 30_000 },
   });
-  const quoteTokenCount = Number(quoteTokenCountQuery.data ?? 0n);
-  const quoteTokenAddressQuery = useReadContracts({
-    allowFailure: true,
-    contracts: Array.from({ length: quoteTokenCount }, (_, index) => ({
-      address: protocolDeployment?.raffleFactory,
-      abi: raffleFactoryAbi,
-      functionName: "verifiedQuoteTokenAt" as const,
-      args: [BigInt(index)] as const,
-    })),
-    query: { enabled: quoteTokenCount > 0, staleTime: 30_000 },
-  });
-  const knownQuoteTokens = useMemo(
-    () =>
-      (quoteTokenAddressQuery.data ?? []).flatMap((result) =>
-        result.status === "success" &&
-        typeof result.result === "string" &&
-        isAddress(result.result)
-          ? [result.result]
-          : [],
-      ),
-    [quoteTokenAddressQuery.data],
-  );
+  const quoteTokenAddress =
+    typeof quoteTokenAddressQuery.data === "string" &&
+    isAddress(quoteTokenAddressQuery.data)
+      ? quoteTokenAddressQuery.data
+      : undefined;
   const quoteTokenDetailsQuery = useReadContracts({
     allowFailure: true,
-    contracts: knownQuoteTokens.flatMap((quoteToken) => [
-      {
-        address: protocolDeployment?.raffleFactory,
-        abi: raffleFactoryAbi,
-        functionName: "isVerifiedQuoteToken" as const,
-        args: [quoteToken] as const,
-      },
-      { address: quoteToken, abi: erc20Abi, functionName: "symbol" as const },
-      { address: quoteToken, abi: erc20Abi, functionName: "decimals" as const },
-    ]),
+    contracts:
+      quoteTokenAddress === undefined
+        ? []
+        : [
+            {
+              address: quoteTokenAddress,
+              abi: erc20Abi,
+              functionName: "symbol" as const,
+            },
+            {
+              address: quoteTokenAddress,
+              abi: erc20Abi,
+              functionName: "decimals" as const,
+            },
+          ],
     query: {
-      enabled: knownQuoteTokens.length > 0,
+      enabled: quoteTokenAddress !== undefined,
       staleTime: 30_000,
-      refetchInterval: 30_000,
     },
   });
-  const quoteTokens = useMemo<readonly QuoteTokenOption[]>(() => {
+  const selectedQuoteToken = useMemo<QuoteTokenOption | undefined>(() => {
+    if (quoteTokenAddress === undefined) return undefined;
     const details = quoteTokenDetailsQuery.data ?? [];
-    return knownQuoteTokens.flatMap((quoteToken, index) => {
-      const allowed = details[index * 3];
-      const symbol = details[index * 3 + 1];
-      const decimals = details[index * 3 + 2];
-      if (
-        allowed?.status !== "success" ||
-        allowed.result !== true ||
-        decimals?.status !== "success" ||
-        typeof decimals.result !== "number"
-      ) {
-        return [];
-      }
-      return [
-        {
-          address: quoteToken,
-          symbol:
-            symbol?.status === "success" && typeof symbol.result === "string"
-              ? symbol.result.slice(0, 16)
-              : `${quoteToken.slice(0, 6)}…${quoteToken.slice(-4)}`,
-          decimals: decimals.result,
-        },
-      ];
-    });
-  }, [knownQuoteTokens, quoteTokenDetailsQuery.data]);
-  const selectedQuoteToken =
-    quoteTokens.find(
-      (token) => token.address.toLowerCase() === form.quoteToken.toLowerCase(),
-    ) ?? quoteTokens[0];
+    const symbol = details[0];
+    const decimals = details[1];
+    if (decimals?.status !== "success" || typeof decimals.result !== "number") {
+      return undefined;
+    }
+    return {
+      address: quoteTokenAddress,
+      symbol:
+        symbol?.status === "success" && typeof symbol.result === "string"
+          ? symbol.result.slice(0, 16)
+          : `${quoteTokenAddress.slice(0, 6)}…${quoteTokenAddress.slice(-4)}`,
+      decimals: decimals.result,
+    };
+  }, [quoteTokenAddress, quoteTokenDetailsQuery.data]);
   const parsed = useMemo(
     () =>
       formSchema
@@ -196,9 +168,8 @@ export function CreateRaffleForm() {
           if (selectedQuoteToken === undefined) {
             context.addIssue({
               code: "custom",
-              path: ["quoteToken"],
-              message:
-                "Choose a verified payment token with readable decimals.",
+              path: ["ticketPrice"],
+              message: "The factory USDC configuration is not readable.",
             });
             return;
           }
@@ -219,10 +190,7 @@ export function CreateRaffleForm() {
             });
           }
         })
-        .safeParse({
-          ...form,
-          quoteToken: selectedQuoteToken?.address ?? form.quoteToken,
-        }),
+        .safeParse(form),
     [form, selectedQuoteToken],
   );
 
@@ -436,7 +404,6 @@ export function CreateRaffleForm() {
         {
           prizeToken: target.prizeToken,
           prizeTokenId: target.prizeTokenId,
-          quoteToken: selectedQuoteToken.address,
           sponsorPrizeRecoveryRecipient: address,
           ticketPrice: parseQuoteAmount(
             parsed.data.ticketPrice,
@@ -466,7 +433,7 @@ export function CreateRaffleForm() {
             break;
           }
         } catch {
-          // Logs from the prize NFT and clone are intentionally skipped.
+          // Logs from the prize NFT and new raffle are intentionally skipped.
         }
       }
       setProgress({ kind: "success", hash, raffle });
@@ -509,7 +476,7 @@ export function CreateRaffleForm() {
             <p>
               <strong>No deployment on {configuredChain.name} yet.</strong> You
               can walk through the whole flow, but creating a raffle stays
-              disabled until a verified factory is registered for this network.
+              disabled until a canonical factory is registered for this network.
             </p>
           </div>
         ) : null}
@@ -592,33 +559,17 @@ export function CreateRaffleForm() {
           number="2"
           title="Set the ticket economics"
         >
-          <label className="mb-4 block">
-            <span className="field-label">Payment token</span>
-            <select
-              className="select"
-              disabled={quoteTokens.length === 0}
-              onChange={(event) => update("quoteToken", event.target.value)}
-              value={selectedQuoteToken?.address ?? ""}
-            >
-              {quoteTokens.length === 0 ? (
-                <option value="">
-                  {deployed
-                    ? "No verified tokens available yet"
-                    : "Available after deployment"}
-                </option>
-              ) : null}
-              {quoteTokens.map((token) => (
-                <option key={token.address} value={token.address}>
-                  {token.symbol} · {token.address.slice(0, 6)}…
-                  {token.address.slice(-4)}
-                </option>
-              ))}
-            </select>
+          <div className="mb-4 rounded-2xl bg-[var(--paper-sunk)] p-4">
+            <span className="field-label">Factory payment token</span>
+            <p className="numeric mt-1 text-sm font-bold">
+              {selectedQuoteToken === undefined
+                ? "USDC configuration unavailable"
+                : `${selectedQuoteToken.symbol} · ${selectedQuoteToken.address.slice(0, 6)}…${selectedQuoteToken.address.slice(-4)}`}
+            </p>
             <span className="field-hint">
-              The protocol accepts any contract-backed ERC-20. This official
-              flow offers only tokens currently verified for discovery.
+              Every raffle from this factory uses the same immutable USDC token.
             </span>
-          </label>
+          </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field
               error={errorFor("ticketPrice")}

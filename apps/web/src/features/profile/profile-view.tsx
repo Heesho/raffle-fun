@@ -38,7 +38,8 @@ type LiveClaim = {
   readonly quoteToken: Address;
   readonly accountQuoteClaim: bigint;
   readonly canClaimQuote: boolean;
-  readonly canClaimPrize: boolean;
+  readonly canRedeemWinningTicket: boolean;
+  readonly canClaimSponsorPrize: boolean;
 };
 
 type ProfileData = {
@@ -124,7 +125,7 @@ export function ProfileView({
       .map((item) => item.quoteToken.toLowerCase()),
   ).size;
   const claimablePrizes = liveClaims.filter(
-    (item) => item.canClaimPrize,
+    (item) => item.canRedeemWinningTicket || item.canClaimSponsorPrize,
   ).length;
   const connectedProfile =
     address !== undefined &&
@@ -135,6 +136,7 @@ export function ProfileView({
       ? [
           {
             to: item.raffle,
+            kind: "quote" as const,
             data: encodeFunctionData({
               abi: raffleAbi,
               functionName: "claimQuoteFor",
@@ -143,13 +145,27 @@ export function ProfileView({
           },
         ]
       : []),
-    ...(item.canClaimPrize && connectedProfile
+    ...(item.canRedeemWinningTicket && connectedProfile
       ? [
           {
             to: item.raffle,
+            kind: "winner" as const,
             data: encodeFunctionData({
               abi: raffleAbi,
-              functionName: "claimPrize",
+              functionName: "redeemWinningTicket",
+              args: [profile!],
+            }),
+          },
+        ]
+      : []),
+    ...(item.canClaimSponsorPrize && connectedProfile
+      ? [
+          {
+            to: item.raffle,
+            kind: "sponsor" as const,
+            data: encodeFunctionData({
+              abi: raffleAbi,
+              functionName: "claimSponsorPrize",
               args: [profile!],
             }),
           },
@@ -183,21 +199,35 @@ export function ProfileView({
       );
       try {
         for (const call of batchCalls) {
-          const isQuoteClaim =
-            call.data.slice(0, 10) ===
-            encodeFunctionData({
+          let hash: `0x${string}`;
+          if (call.kind === "quote") {
+            const { request } = await publicClient.simulateContract({
+              account: address,
+              address: call.to,
               abi: raffleAbi,
               functionName: "claimQuoteFor",
               args: [profile],
-            }).slice(0, 10);
-          const { request } = await publicClient.simulateContract({
-            account: address,
-            address: call.to,
-            abi: raffleAbi,
-            functionName: isQuoteClaim ? "claimQuoteFor" : "claimPrize",
-            args: [profile],
-          } as Parameters<typeof publicClient.simulateContract>[0]);
-          const hash = await wallet.data.writeContract(request);
+            });
+            hash = await wallet.data.writeContract(request);
+          } else if (call.kind === "winner") {
+            const { request } = await publicClient.simulateContract({
+              account: address,
+              address: call.to,
+              abi: raffleAbi,
+              functionName: "redeemWinningTicket",
+              args: [profile],
+            });
+            hash = await wallet.data.writeContract(request);
+          } else {
+            const { request } = await publicClient.simulateContract({
+              account: address,
+              address: call.to,
+              abi: raffleAbi,
+              functionName: "claimSponsorPrize",
+              args: [profile],
+            });
+            hash = await wallet.data.writeContract(request);
+          }
           await publicClient.waitForTransactionReceipt({ hash });
         }
         await liveQuery.refetch();

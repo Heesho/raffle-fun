@@ -17,16 +17,20 @@ import type { IndexedRaffle } from "@/lib/subgraph";
 
 const stateTones: Record<string, StatusTone> = {
   ACTIVE: "active",
-  DRAW_REQUESTED: "warning",
-  RESOLVED: "resolved",
-  CANCELLED: "neutral",
+  DRAWING: "warning",
+  NFT_WON: "resolved",
+  CASH_WON: "resolved",
+  REFUNDING: "warning",
+  CLOSED: "neutral",
 };
 
 const ctaLabels: Record<string, string> = {
   ACTIVE: "Buy tickets",
-  DRAW_REQUESTED: "Watch the draw",
-  RESOLVED: "See the result",
-  CANCELLED: "View raffle",
+  DRAWING: "Watch the draw",
+  NFT_WON: "See the result",
+  CASH_WON: "See the result",
+  REFUNDING: "Redeem refund",
+  CLOSED: "View raffle",
 };
 
 /** Under an hour left reads as urgent. */

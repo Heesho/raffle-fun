@@ -2,8 +2,11 @@
 
 ## Status and scope
 
-Raffle Fun v1 is unaudited. Testing, fuzzing, invariants, Slither, Solhint, and code
-review are defense-in-depth measures; none is an independent audit.
+Raffle Fun v2 has completed an internal adversarial hardening campaign and remains
+independently unaudited. Fuzzing, invariants, differential models, mutation testing,
+static analysis, fork checks, and internal code review are defense-in-depth measures;
+none is an independent audit or a claim of production safety. The internal evidence is
+recorded in [`packages/contracts/audit/INTERNAL-AUDIT.md`](packages/contracts/audit/INTERNAL-AUDIT.md).
 
 In scope:
 
@@ -63,14 +66,14 @@ preserving the dependency name expected by the CLI.
 Existing raffles cannot be upgraded or paused. If a vulnerability is confirmed,
 maintainers can pause creation, warn users, remove the frontend deployment, and deploy
 a new factory version, but cannot rewrite the economics or seize assets in existing
-clones. Existing raffles retain their permissionless no-sales, draw, missing-request,
-callback-timeout, bounded refund-credit, and pull-claim paths.
+raffles. Existing raffles retain their permissionless empty closure, draw, oracle
+deadline, bounded ticket-burn refund, bearer-prize, and pull-claim paths.
 
 ## Supported recovery envelope
 
 The protocol's recovery property applies only to a standards-compliant ERC721 whose
-ownership and safe transfers remain honest, and a factory-admitted, exact-transfer,
-non-rebasing ERC20 whose transfers remain available. The contracts cannot guarantee
+ownership and safe transfers remain honest, and the factory-wide exact-transfer,
+non-rebasing USDC whose transfers remain available. The contracts cannot guarantee
 recovery against malicious or upgraded assets, pauses/freezes/blacklists/burns, a
 halted or reorganized chain, lost keys, or unrelated NFTs forced in through unsafe
 `transferFrom`. No administrator rescue function exists for those cases.

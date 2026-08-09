@@ -19,11 +19,11 @@ export function getOrCreateProtocol(factory: Address): Protocol {
     protocol = new Protocol(factory);
     protocol.raffleCount = BigInt.zero();
     protocol.activeCount = BigInt.zero();
-    protocol.resolvedCount = BigInt.zero();
-    protocol.cancelledCount = BigInt.zero();
+    protocol.drawingCount = BigInt.zero();
+    protocol.nftWonCount = BigInt.zero();
+    protocol.cashWonCount = BigInt.zero();
     protocol.refundingCount = BigInt.zero();
-    protocol.nftAwardedCount = BigInt.zero();
-    protocol.cashFallbackCount = BigInt.zero();
+    protocol.closedCount = BigInt.zero();
     protocol.totalTickets = BigInt.zero();
     protocol.save();
   }
@@ -37,7 +37,6 @@ export function getOrCreateAccount(address: Address): Account {
     account.ticketsBought = BigInt.zero();
     account.ticketsCurrentlyOwned = BigInt.zero();
     account.rafflesSponsored = BigInt.zero();
-    account.rafflesWon = BigInt.zero();
     account.save();
   }
   return account;
@@ -57,13 +56,13 @@ export function getOrCreateQuoteTokenStats(
     stats = new QuoteTokenStats(id);
     stats.protocol = protocol.id;
     stats.token = token;
-    stats.verified = false;
     stats.raffleCount = BigInt.zero();
     stats.grossVolume = BigInt.zero();
     stats.settledVolume = BigInt.zero();
     stats.protocolFees = BigInt.zero();
     stats.quoteClaimed = BigInt.zero();
     stats.refundedVolume = BigInt.zero();
+    stats.winnerCashRedeemed = BigInt.zero();
     stats.save();
   }
   return stats;
@@ -81,6 +80,8 @@ export function getOrCreateAccountTokenStats(
     stats.quoteToken = quoteToken.id;
     stats.grossSpent = BigInt.zero();
     stats.quoteClaimed = BigInt.zero();
+    stats.refundsRedeemed = BigInt.zero();
+    stats.winnerCashRedeemed = BigInt.zero();
     stats.save();
   }
   return stats;
@@ -100,7 +101,8 @@ export function getOrCreateRaffleAccount(
     participation.ticketsCurrentlyOwned = BigInt.zero();
     participation.grossSpent = BigInt.zero();
     participation.quoteClaimed = BigInt.zero();
-    participation.won = false;
+    participation.refundsRedeemed = BigInt.zero();
+    participation.winnerCashRedeemed = BigInt.zero();
     participation.save();
   }
   return participation;

@@ -2,16 +2,14 @@ import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 
 export default buildModule("RaffleFunModule", (m) => {
   const deployer = m.getAccount(0);
-  const verifiedQuoteTokens = m.getParameter("verifiedQuoteTokens");
+  const quoteToken = m.getParameter("quoteToken");
   const entropy = m.getParameter("entropy");
   const protocolTreasury = m.getParameter("protocolTreasury");
   const callbackGasLimit = m.getParameter("callbackGasLimit", 300_000n);
   const finalFactoryOwner = m.getParameter("finalFactoryOwner");
 
-  const raffleImplementation = m.contract("Raffle");
   const raffleFactory = m.contract("RaffleFactory", [
-    raffleImplementation,
-    verifiedQuoteTokens,
+    quoteToken,
     entropy,
     protocolTreasury,
     callbackGasLimit,
@@ -21,7 +19,6 @@ export default buildModule("RaffleFunModule", (m) => {
   m.call(raffleFactory, "transferOwnership", [finalFactoryOwner]);
 
   return {
-    raffleImplementation,
     raffleFactory,
     raffleLens,
   };

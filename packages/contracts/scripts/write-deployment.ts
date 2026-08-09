@@ -2,12 +2,13 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 
-import { createPublicClient, http, type Address } from "viem";
+import { createPublicClient, http } from "viem";
 
 import {
   deploymentRecordSchema,
   writeDeploymentRecord,
 } from "./deployment-record.js";
+import { validateDeploymentOnchain } from "./deployment-validation.js";
 
 const inputPath = process.argv[2];
 if (inputPath === undefined) {
@@ -30,21 +31,7 @@ if (rpcUrl === undefined) {
 }
 
 const client = createPublicClient({ transport: http(rpcUrl) });
-for (const [label, address] of [
-  ...candidate.verifiedQuoteTokens.map(
-    (quoteToken, index) =>
-      [`verifiedQuoteTokens[${index}]`, quoteToken] as const,
-  ),
-  ["entropy", candidate.entropy],
-  ["raffleImplementation", candidate.raffleImplementation],
-  ["raffleFactory", candidate.raffleFactory],
-  ["raffleLens", candidate.raffleLens],
-] as const) {
-  const code = await client.getCode({ address: address as Address });
-  if (code === undefined || code === "0x") {
-    throw new Error(`${label} has no runtime bytecode at ${address}.`);
-  }
-}
+await validateDeploymentOnchain(client, candidate);
 
 const repositoryRoot = path.resolve(import.meta.dirname, "../../..");
 const destination = await writeDeploymentRecord(candidate, repositoryRoot);

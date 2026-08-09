@@ -47,7 +47,6 @@ contract ReentrantPrizeERC721 is ERC721 {
                 IRaffleFactory.CreateRaffleParams({
                     prizeToken: address(this),
                     prizeTokenId: nestedPrizeTokenId,
-                    quoteToken: factory.verifiedQuoteTokenAt(0),
                     sponsorPrizeRecoveryRecipient: address(0),
                     ticketPrice: 1e6,
                     minimumTickets: 1,

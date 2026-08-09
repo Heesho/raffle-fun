@@ -107,13 +107,8 @@
             "type": "address"
           },
           {
-            "internalType": "enum IRaffle.RaffleState",
-            "name": "state",
-            "type": "uint8"
-          },
-          {
-            "internalType": "enum IRaffle.RaffleOutcome",
-            "name": "outcome",
+            "internalType": "enum IRaffle.Status",
+            "name": "status",
             "type": "uint8"
           },
           {
@@ -129,11 +124,6 @@
           {
             "internalType": "address",
             "name": "protocolTreasury",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "prizeClaimant",
             "type": "address"
           },
           {
@@ -208,7 +198,12 @@
           },
           {
             "internalType": "uint256",
-            "name": "uncreditedRefundLiability",
+            "name": "remainingRefundLiability",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "winnerCashLiability",
             "type": "uint256"
           },
           {
@@ -218,17 +213,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "totalClaimableNative",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
             "name": "accountedQuoteBalance",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "accountedNativeBalance",
             "type": "uint256"
           },
           {
@@ -238,8 +223,18 @@
           },
           {
             "internalType": "address",
-            "name": "winner",
+            "name": "winningTicketOwner",
             "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "winningTicketRedeemed",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "prizeClaimed",
+            "type": "bool"
           },
           {
             "internalType": "uint256",
@@ -252,13 +247,13 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint256",
-            "name": "accountNativeClaim",
-            "type": "uint256"
+            "internalType": "bool",
+            "name": "accountOwnsWinningTicket",
+            "type": "bool"
           },
           {
             "internalType": "bool",
-            "name": "accountIsPrizeClaimant",
+            "name": "accountIsPrizeRecoveryRecipient",
             "type": "bool"
           },
           {
@@ -283,12 +278,17 @@
           },
           {
             "internalType": "bool",
-            "name": "canFinalizeUnrequestedDraw",
+            "name": "canEnableRefunds",
             "type": "bool"
           },
           {
             "internalType": "bool",
-            "name": "canFinalizeTimedOutDraw",
+            "name": "canRedeemWinningTicket",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "canRedeemRefundTickets",
             "type": "bool"
           },
           {
@@ -298,12 +298,7 @@
           },
           {
             "internalType": "bool",
-            "name": "canClaimNative",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
-            "name": "canClaimPrize",
+            "name": "canClaimSponsorPrize",
             "type": "bool"
           }
         ],
@@ -348,13 +343,8 @@
             "type": "address"
           },
           {
-            "internalType": "enum IRaffle.RaffleState",
-            "name": "state",
-            "type": "uint8"
-          },
-          {
-            "internalType": "enum IRaffle.RaffleOutcome",
-            "name": "outcome",
+            "internalType": "enum IRaffle.Status",
+            "name": "status",
             "type": "uint8"
           },
           {
@@ -370,11 +360,6 @@
           {
             "internalType": "address",
             "name": "protocolTreasury",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "prizeClaimant",
             "type": "address"
           },
           {
@@ -449,7 +434,12 @@
           },
           {
             "internalType": "uint256",
-            "name": "uncreditedRefundLiability",
+            "name": "remainingRefundLiability",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "winnerCashLiability",
             "type": "uint256"
           },
           {
@@ -459,17 +449,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "totalClaimableNative",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
             "name": "accountedQuoteBalance",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "accountedNativeBalance",
             "type": "uint256"
           },
           {
@@ -479,8 +459,18 @@
           },
           {
             "internalType": "address",
-            "name": "winner",
+            "name": "winningTicketOwner",
             "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "winningTicketRedeemed",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "prizeClaimed",
+            "type": "bool"
           },
           {
             "internalType": "uint256",
@@ -493,13 +483,13 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint256",
-            "name": "accountNativeClaim",
-            "type": "uint256"
+            "internalType": "bool",
+            "name": "accountOwnsWinningTicket",
+            "type": "bool"
           },
           {
             "internalType": "bool",
-            "name": "accountIsPrizeClaimant",
+            "name": "accountIsPrizeRecoveryRecipient",
             "type": "bool"
           },
           {
@@ -524,12 +514,17 @@
           },
           {
             "internalType": "bool",
-            "name": "canFinalizeUnrequestedDraw",
+            "name": "canEnableRefunds",
             "type": "bool"
           },
           {
             "internalType": "bool",
-            "name": "canFinalizeTimedOutDraw",
+            "name": "canRedeemWinningTicket",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "canRedeemRefundTickets",
             "type": "bool"
           },
           {
@@ -539,12 +534,7 @@
           },
           {
             "internalType": "bool",
-            "name": "canClaimNative",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
-            "name": "canClaimPrize",
+            "name": "canClaimSponsorPrize",
             "type": "bool"
           }
         ],

@@ -30,6 +30,8 @@ jobs:
           node-version: 22.23.2
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @raffle-fun/config build
+      - run: pnpm --filter @raffle-fun/sdk build
       - run: pnpm --filter @raffle-fun/web lint
       - run: pnpm --filter @raffle-fun/web typecheck
       - run: pnpm --filter @raffle-fun/web test

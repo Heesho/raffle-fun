@@ -19,9 +19,10 @@ import type { IndexedRaffle } from "@/lib/subgraph";
 const filters = [
   { value: "ALL", label: "All" },
   { value: "ACTIVE", label: "Live" },
-  { value: "DRAW_REQUESTED", label: "Drawing" },
-  { value: "RESOLVED", label: "Settled" },
-  { value: "CANCELLED", label: "Cancelled" },
+  { value: "DRAWING", label: "Drawing" },
+  { value: "SETTLED", label: "Settled" },
+  { value: "REFUNDING", label: "Refunding" },
+  { value: "CLOSED", label: "Closed" },
 ] as const;
 
 const sorts = [
@@ -58,7 +59,11 @@ export function RaffleDirectory() {
   const raffles = useMemo(() => {
     const value = search.trim().toLowerCase();
     const matched = all.filter((raffle) => {
-      const matchesState = filter === "ALL" || raffle.state === filter;
+      const matchesState =
+        filter === "ALL" ||
+        raffle.state === filter ||
+        (filter === "SETTLED" &&
+          (raffle.state === "NFT_WON" || raffle.state === "CASH_WON"));
       const matchesSearch =
         value === "" ||
         [
@@ -74,7 +79,7 @@ export function RaffleDirectory() {
     });
 
     const rank = (raffle: IndexedRaffle) =>
-      raffle.state === "ACTIVE" ? 0 : raffle.state === "DRAW_REQUESTED" ? 1 : 2;
+      raffle.state === "ACTIVE" ? 0 : raffle.state === "DRAWING" ? 1 : 2;
 
     return [...matched].sort((a, b) => {
       // Open raffles always lead; a settled one is not "ending soonest".

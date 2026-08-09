@@ -16,9 +16,8 @@ const record = {
   deploymentBlock: 1,
   deployer: "0x1111111111111111111111111111111111111111",
   finalFactoryOwner: "0x2222222222222222222222222222222222222222",
-  verifiedQuoteTokens: ["0x3333333333333333333333333333333333333333"],
+  quoteToken: "0x3333333333333333333333333333333333333333",
   entropy: "0x4444444444444444444444444444444444444444",
-  raffleImplementation: "0x5555555555555555555555555555555555555555",
   raffleFactory: "0x6666666666666666666666666666666666666666",
   raffleLens: "0x7777777777777777777777777777777777777777",
   protocolTreasury: "0x8888888888888888888888888888888888888888",
@@ -42,7 +41,7 @@ describe("deployment record", () => {
     assert.throws(() =>
       deploymentRecordSchema.parse({
         ...record,
-        verifiedQuoteTokens: ["0x0000000000000000000000000000000000000000"],
+        quoteToken: "0x0000000000000000000000000000000000000000",
       }),
     );
     assert.throws(() =>
@@ -51,10 +50,13 @@ describe("deployment record", () => {
     assert.throws(() =>
       deploymentRecordSchema.parse({
         ...record,
-        verifiedQuoteTokens: [
-          record.verifiedQuoteTokens[0],
-          record.verifiedQuoteTokens[0],
-        ],
+        callbackGasLimit: 4_294_967_296,
+      }),
+    );
+    assert.throws(() =>
+      deploymentRecordSchema.parse({
+        ...record,
+        raffleLens: record.raffleFactory,
       }),
     );
   });

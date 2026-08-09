@@ -26,5 +26,6 @@ jobs:
       - run: pnpm contracts:test:hardhat
       - run: pnpm --filter @raffle-fun/sdk test
       - run: pnpm --filter @raffle-fun/sdk sync:check
+      - run: pnpm subgraph:codegen
       - run: pnpm typecheck
       - run: pnpm format:check

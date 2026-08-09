@@ -2,36 +2,36 @@ import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 import {
   DrawRequested as DrawRequestedEvent,
-  DrawFailureFinalized,
-  NoSalesClosed,
-  PrizeClaimed as PrizeClaimedEvent,
+  EmptyRaffleClosed,
   PrizeDeposited,
   QuoteClaimed as QuoteClaimedEvent,
-  RaffleCancelled,
   RaffleResolved,
+  RefundsEnabled,
+  RefundTicketsRedeemed,
+  SponsorPrizeClaimed as SponsorPrizeClaimedEvent,
   TicketsPurchased,
-  TicketRefundCredited,
   Transfer,
+  WinningTicketRedeemed,
 } from "../generated/templates/Raffle/Raffle";
 import {
   DrawRequest,
-  DrawFailure,
-  PrizeClaim,
   Protocol,
   Purchase,
-  QuoteTokenStats,
   QuoteClaim,
+  QuoteTokenStats,
   Raffle,
   RaffleTransfer,
+  RefundEnable,
+  RefundRedemption,
   Resolution,
+  SponsorPrizeClaim,
   Ticket,
-  TicketRefund,
+  WinningRedemption,
 } from "../generated/schema";
 import {
   eventId,
   getOrCreateAccount,
   getOrCreateAccountTokenStats,
-  getOrCreateProtocol,
   getOrCreateRaffleAccount,
   ticketId,
   updatePurchaseDayData,
@@ -39,18 +39,28 @@ import {
 } from "./helpers";
 
 const ZERO_ADDRESS = Address.zero();
+const ONE = BigInt.fromI32(1);
+
+function statusName(value: i32): string {
+  if (value == 3) return "NFT_WON";
+  if (value == 4) return "CASH_WON";
+  if (value == 5) return "REFUNDING";
+  if (value == 6) return "CLOSED";
+  if (value == 2) return "DRAWING";
+  if (value == 1) return "ACTIVE";
+  return "AWAITING_PRIZE";
+}
 
 export function handlePrizeDeposited(event: PrizeDeposited): void {
   const raffle = Raffle.load(event.address);
   if (raffle == null) return;
-  raffle.state = "ACTIVE";
+  raffle.status = "ACTIVE";
   raffle.save();
 }
 
 export function handleTicketsPurchased(event: TicketsPurchased): void {
   const raffle = Raffle.load(event.address);
-  if (raffle == null) return;
-  if (Purchase.load(eventId(event)) != null) return;
+  if (raffle == null || Purchase.load(eventId(event)) != null) return;
 
   const buyer = getOrCreateAccount(event.params.buyer);
   const recipient = getOrCreateAccount(event.params.recipient);
@@ -77,37 +87,32 @@ export function handleTicketsPurchased(event: TicketsPurchased): void {
   buyer.save();
   const quoteToken = QuoteTokenStats.load(raffle.quoteTokenStats);
   if (quoteToken != null) {
-    const buyerTokenStats = getOrCreateAccountTokenStats(
+    const buyerStats = getOrCreateAccountTokenStats(
       quoteToken,
       event.params.buyer,
     );
-    buyerTokenStats.grossSpent = buyerTokenStats.grossSpent.plus(
+    buyerStats.grossSpent = buyerStats.grossSpent.plus(
       event.params.grossAmount,
     );
-    buyerTokenStats.save();
+    buyerStats.save();
+    quoteToken.grossVolume = quoteToken.grossVolume.plus(
+      event.params.grossAmount,
+    );
+    quoteToken.save();
   }
-  const buyerParticipation = getOrCreateRaffleAccount(
-    raffle,
-    event.params.buyer,
-  );
-  buyerParticipation.ticketsBought = buyerParticipation.ticketsBought.plus(
+  const participation = getOrCreateRaffleAccount(raffle, event.params.buyer);
+  participation.ticketsBought = participation.ticketsBought.plus(
     event.params.quantity,
   );
-  buyerParticipation.grossSpent = buyerParticipation.grossSpent.plus(
+  participation.grossSpent = participation.grossSpent.plus(
     event.params.grossAmount,
   );
-  buyerParticipation.save();
+  participation.save();
 
   const protocol = Protocol.load(raffle.protocol);
   if (protocol != null) {
     protocol.totalTickets = protocol.totalTickets.plus(event.params.quantity);
     protocol.save();
-  }
-  if (quoteToken != null) {
-    quoteToken.grossVolume = quoteToken.grossVolume.plus(
-      event.params.grossAmount,
-    );
-    quoteToken.save();
   }
 
   let current = event.params.firstTicketId;
@@ -117,9 +122,8 @@ export function handleTicketsPurchased(event: TicketsPurchased): void {
       ticket.purchase = purchase.id;
       ticket.save();
     }
-    current = current.plus(BigInt.fromI32(1));
+    current = current.plus(ONE);
   }
-
   updatePurchaseDayData(
     raffle,
     event,
@@ -130,44 +134,41 @@ export function handleTicketsPurchased(event: TicketsPurchased): void {
 
 export function handleTransfer(event: Transfer): void {
   const raffle = Raffle.load(event.address);
-  if (raffle == null) return;
-  if (RaffleTransfer.load(eventId(event)) != null) return;
+  if (raffle == null || RaffleTransfer.load(eventId(event)) != null) return;
   const id = ticketId(raffle.id, event.params.tokenId);
   let ticket = Ticket.load(id);
 
   if (event.params.from != ZERO_ADDRESS) {
     const from = getOrCreateAccount(event.params.from);
-    from.ticketsCurrentlyOwned = from.ticketsCurrentlyOwned.minus(
-      BigInt.fromI32(1),
-    );
+    from.ticketsCurrentlyOwned = from.ticketsCurrentlyOwned.minus(ONE);
     from.save();
-    const fromParticipation = getOrCreateRaffleAccount(
-      raffle,
-      event.params.from,
-    );
-    fromParticipation.ticketsCurrentlyOwned =
-      fromParticipation.ticketsCurrentlyOwned.minus(BigInt.fromI32(1));
-    fromParticipation.save();
+    const participation = getOrCreateRaffleAccount(raffle, event.params.from);
+    participation.ticketsCurrentlyOwned =
+      participation.ticketsCurrentlyOwned.minus(ONE);
+    participation.save();
   }
 
   if (event.params.to != ZERO_ADDRESS) {
     const to = getOrCreateAccount(event.params.to);
-    to.ticketsCurrentlyOwned = to.ticketsCurrentlyOwned.plus(BigInt.fromI32(1));
+    to.ticketsCurrentlyOwned = to.ticketsCurrentlyOwned.plus(ONE);
     to.save();
-    const toParticipation = getOrCreateRaffleAccount(raffle, event.params.to);
-    toParticipation.ticketsCurrentlyOwned =
-      toParticipation.ticketsCurrentlyOwned.plus(BigInt.fromI32(1));
-    toParticipation.save();
-
+    const participation = getOrCreateRaffleAccount(raffle, event.params.to);
+    participation.ticketsCurrentlyOwned =
+      participation.ticketsCurrentlyOwned.plus(ONE);
+    participation.save();
     if (ticket == null) {
       ticket = new Ticket(id);
       ticket.raffle = raffle.id;
       ticket.ticketId = event.params.tokenId;
       ticket.originalRecipient = to.id;
       ticket.winning = false;
-      ticket.refundCredited = false;
+      ticket.burned = false;
     }
     ticket.currentOwner = to.id;
+    ticket.save();
+  } else if (ticket != null) {
+    ticket.currentOwner = null;
+    ticket.burned = true;
     ticket.save();
   }
 
@@ -187,15 +188,14 @@ export function handleTransfer(event: Transfer): void {
 
 export function handleDrawRequested(event: DrawRequestedEvent): void {
   const raffle = Raffle.load(event.address);
-  if (raffle == null) return;
-  if (DrawRequest.load(eventId(event)) != null) return;
+  if (raffle == null || DrawRequest.load(eventId(event)) != null) return;
   const requester = getOrCreateAccount(event.params.requester);
   const request = new DrawRequest(eventId(event));
   request.raffle = raffle.id;
   request.sequenceNumber = event.params.sequenceNumber;
   request.requester = requester.id;
   request.fee = event.params.fee;
-  request.excessCredited = event.params.excessCredited;
+  request.excessReturned = event.params.excessReturned;
   request.drawRequestedAt = event.params.drawRequestedAt;
   request.callbackDeadline = event.params.callbackDeadline;
   request.transactionHash = event.transaction.hash;
@@ -204,7 +204,7 @@ export function handleDrawRequested(event: DrawRequestedEvent): void {
   request.logIndex = event.logIndex;
   request.save();
 
-  raffle.state = "DRAW_REQUESTED";
+  raffle.status = "DRAWING";
   raffle.entropySequenceNumber = event.params.sequenceNumber;
   raffle.drawRequestedAt = event.params.drawRequestedAt;
   raffle.callbackDeadline = event.params.callbackDeadline;
@@ -212,23 +212,27 @@ export function handleDrawRequested(event: DrawRequestedEvent): void {
   raffle.requestedBlock = event.block.number;
   raffle.requestedTimestamp = event.block.timestamp;
   raffle.save();
+
+  const protocol = Protocol.load(raffle.protocol);
+  if (protocol != null) {
+    protocol.activeCount = protocol.activeCount.minus(ONE);
+    protocol.drawingCount = protocol.drawingCount.plus(ONE);
+    protocol.save();
+  }
 }
 
 export function handleRaffleResolved(event: RaffleResolved): void {
   const raffle = Raffle.load(event.address);
-  if (raffle == null) return;
-  if (Resolution.load(eventId(event)) != null) return;
-  const winner = getOrCreateAccount(event.params.winner);
-  const claimant = getOrCreateAccount(event.params.prizeClaimant);
-  const outcome = event.params.outcome == 1 ? "NFT_AWARDED" : "CASH_FALLBACK";
-
-  raffle.state = "RESOLVED";
-  raffle.outcome = outcome;
+  if (raffle == null || Resolution.load(eventId(event)) != null) return;
+  const result = statusName(event.params.result);
+  raffle.status = result;
   raffle.entropySequenceNumber = event.params.sequenceNumber;
   raffle.winningTicketId = event.params.winningTicketId;
-  raffle.winner = winner.id;
-  raffle.prizeClaimant = claimant.id;
   raffle.unsettledPot = BigInt.zero();
+  raffle.winnerCashLiability = event.params.winnerCashAmount;
+  raffle.totalClaimableQuote = raffle.totalClaimableQuote
+    .plus(event.params.protocolFee)
+    .plus(event.params.sponsorCashAmount);
   raffle.totalProtocolFees = raffle.totalProtocolFees.plus(
     event.params.protocolFee,
   );
@@ -236,15 +240,6 @@ export function handleRaffleResolved(event: RaffleResolved): void {
   raffle.resolvedBlock = event.block.number;
   raffle.resolvedTimestamp = event.block.timestamp;
   raffle.save();
-
-  winner.rafflesWon = winner.rafflesWon.plus(BigInt.fromI32(1));
-  winner.save();
-  const winnerParticipation = getOrCreateRaffleAccount(
-    raffle,
-    event.params.winner,
-  );
-  winnerParticipation.won = true;
-  winnerParticipation.save();
 
   const winningTicket = Ticket.load(
     ticketId(raffle.id, event.params.winningTicketId),
@@ -258,13 +253,8 @@ export function handleRaffleResolved(event: RaffleResolved): void {
   resolution.raffle = raffle.id;
   resolution.sequenceNumber = event.params.sequenceNumber;
   resolution.winningTicketId = event.params.winningTicketId;
-  resolution.winner = winner.id;
-  resolution.outcome = outcome;
-  resolution.prizeClaimant = claimant.id;
+  resolution.result = result;
   resolution.protocolFee = event.params.protocolFee;
-  resolution.distributablePot = event.params.winnerCashAmount.plus(
-    event.params.sponsorCashAmount,
-  );
   resolution.winnerCashAmount = event.params.winnerCashAmount;
   resolution.sponsorCashAmount = event.params.sponsorCashAmount;
   resolution.transactionHash = event.transaction.hash;
@@ -275,66 +265,185 @@ export function handleRaffleResolved(event: RaffleResolved): void {
 
   const protocol = Protocol.load(raffle.protocol);
   if (protocol != null) {
-    protocol.activeCount = protocol.activeCount.minus(BigInt.fromI32(1));
-    protocol.resolvedCount = protocol.resolvedCount.plus(BigInt.fromI32(1));
-    if (event.params.outcome == 1) {
-      protocol.nftAwardedCount = protocol.nftAwardedCount.plus(
-        BigInt.fromI32(1),
-      );
-    } else {
-      protocol.cashFallbackCount = protocol.cashFallbackCount.plus(
-        BigInt.fromI32(1),
-      );
-    }
+    protocol.drawingCount = protocol.drawingCount.minus(ONE);
+    if (event.params.result == 3)
+      protocol.nftWonCount = protocol.nftWonCount.plus(ONE);
+    else protocol.cashWonCount = protocol.cashWonCount.plus(ONE);
     protocol.save();
   }
   const quoteToken = QuoteTokenStats.load(raffle.quoteTokenStats);
-  const distributablePot = event.params.winnerCashAmount.plus(
+  const distributable = event.params.winnerCashAmount.plus(
     event.params.sponsorCashAmount,
   );
   if (quoteToken != null) {
     quoteToken.protocolFees = quoteToken.protocolFees.plus(
       event.params.protocolFee,
     );
-    quoteToken.settledVolume = quoteToken.settledVolume.plus(distributablePot);
+    quoteToken.settledVolume = quoteToken.settledVolume.plus(distributable);
     quoteToken.save();
   }
   updateResolutionDayData(
     raffle,
     event,
     event.params.protocolFee,
-    distributablePot,
+    distributable,
   );
+}
+
+export function handleRefundsEnabled(event: RefundsEnabled): void {
+  const raffle = Raffle.load(event.address);
+  if (raffle == null || RefundEnable.load(eventId(event)) != null) return;
+  const finalizer = getOrCreateAccount(event.params.finalizer);
+  raffle.status = "REFUNDING";
+  raffle.unsettledPot = BigInt.zero();
+  raffle.remainingRefundLiability = event.params.remainingRefundLiability;
+  raffle.resolvedTxHash = event.transaction.hash;
+  raffle.resolvedBlock = event.block.number;
+  raffle.resolvedTimestamp = event.block.timestamp;
+  raffle.save();
+
+  const enable = new RefundEnable(eventId(event));
+  enable.raffle = raffle.id;
+  enable.finalizer = finalizer.id;
+  enable.requestWasAccepted = event.params.requestWasAccepted;
+  enable.remainingRefundLiability = event.params.remainingRefundLiability;
+  enable.transactionHash = event.transaction.hash;
+  enable.blockNumber = event.block.number;
+  enable.timestamp = event.block.timestamp;
+  enable.logIndex = event.logIndex;
+  enable.save();
+
+  const protocol = Protocol.load(raffle.protocol);
+  if (protocol != null) {
+    if (event.params.requestWasAccepted)
+      protocol.drawingCount = protocol.drawingCount.minus(ONE);
+    else protocol.activeCount = protocol.activeCount.minus(ONE);
+    protocol.refundingCount = protocol.refundingCount.plus(ONE);
+    protocol.save();
+  }
+}
+
+export function handleRefundTicketsRedeemed(
+  event: RefundTicketsRedeemed,
+): void {
+  const raffle = Raffle.load(event.address);
+  if (raffle == null || RefundRedemption.load(eventId(event)) != null) return;
+  const owner = getOrCreateAccount(event.params.owner);
+  raffle.remainingRefundLiability = event.params.remainingRefundLiability;
+  raffle.totalRefundRedeemed = raffle.totalRefundRedeemed.plus(
+    event.params.amount,
+  );
+  raffle.save();
+
+  const redemption = new RefundRedemption(eventId(event));
+  redemption.raffle = raffle.id;
+  redemption.owner = owner.id;
+  redemption.destination = event.params.to;
+  redemption.quantity = event.params.quantity;
+  redemption.amount = event.params.amount;
+  redemption.remainingRefundLiability = event.params.remainingRefundLiability;
+  redemption.transactionHash = event.transaction.hash;
+  redemption.blockNumber = event.block.number;
+  redemption.timestamp = event.block.timestamp;
+  redemption.logIndex = event.logIndex;
+  redemption.save();
+
+  const participation = getOrCreateRaffleAccount(raffle, event.params.owner);
+  participation.refundsRedeemed = participation.refundsRedeemed.plus(
+    event.params.amount,
+  );
+  participation.save();
+  const quoteToken = QuoteTokenStats.load(raffle.quoteTokenStats);
+  if (quoteToken != null) {
+    quoteToken.refundedVolume = quoteToken.refundedVolume.plus(
+      event.params.amount,
+    );
+    const stats = getOrCreateAccountTokenStats(quoteToken, event.params.owner);
+    stats.refundsRedeemed = stats.refundsRedeemed.plus(event.params.amount);
+    stats.save();
+    quoteToken.save();
+  }
+}
+
+export function handleWinningTicketRedeemed(
+  event: WinningTicketRedeemed,
+): void {
+  const raffle = Raffle.load(event.address);
+  if (raffle == null || WinningRedemption.load(eventId(event)) != null) return;
+  const owner = getOrCreateAccount(event.params.owner);
+  raffle.winningTicketRedeemed = true;
+  if (event.params.result == 3) {
+    raffle.prizeClaimed = true;
+    raffle.prizeDestination = event.params.to;
+    raffle.prizeClaimedTxHash = event.transaction.hash;
+  } else {
+    raffle.winnerCashLiability = BigInt.zero();
+  }
+  raffle.save();
+
+  const redemption = new WinningRedemption(eventId(event));
+  redemption.raffle = raffle.id;
+  redemption.ticketId = event.params.ticketId;
+  redemption.owner = owner.id;
+  redemption.destination = event.params.to;
+  redemption.result = statusName(event.params.result);
+  redemption.cashAmount = event.params.cashAmount;
+  redemption.transactionHash = event.transaction.hash;
+  redemption.blockNumber = event.block.number;
+  redemption.timestamp = event.block.timestamp;
+  redemption.logIndex = event.logIndex;
+  redemption.save();
+
+  if (event.params.cashAmount.gt(BigInt.zero())) {
+    const participation = getOrCreateRaffleAccount(raffle, event.params.owner);
+    participation.winnerCashRedeemed = participation.winnerCashRedeemed.plus(
+      event.params.cashAmount,
+    );
+    participation.save();
+    const quoteToken = QuoteTokenStats.load(raffle.quoteTokenStats);
+    if (quoteToken != null) {
+      quoteToken.winnerCashRedeemed = quoteToken.winnerCashRedeemed.plus(
+        event.params.cashAmount,
+      );
+      const stats = getOrCreateAccountTokenStats(
+        quoteToken,
+        event.params.owner,
+      );
+      stats.winnerCashRedeemed = stats.winnerCashRedeemed.plus(
+        event.params.cashAmount,
+      );
+      stats.save();
+      quoteToken.save();
+    }
+  }
 }
 
 export function handleQuoteClaimed(event: QuoteClaimedEvent): void {
   const raffle = Raffle.load(event.address);
-  if (raffle == null) return;
-  if (QuoteClaim.load(eventId(event)) != null) return;
+  if (raffle == null || QuoteClaim.load(eventId(event)) != null) return;
   const account = getOrCreateAccount(event.params.account);
+  raffle.quoteClaimed = raffle.quoteClaimed.plus(event.params.amount);
+  raffle.totalClaimableQuote = raffle.totalClaimableQuote.minus(
+    event.params.amount,
+  );
+  raffle.save();
+
   const quoteToken = QuoteTokenStats.load(raffle.quoteTokenStats);
   if (quoteToken != null) {
-    const accountTokenStats = getOrCreateAccountTokenStats(
+    quoteToken.quoteClaimed = quoteToken.quoteClaimed.plus(event.params.amount);
+    const stats = getOrCreateAccountTokenStats(
       quoteToken,
       event.params.account,
     );
-    accountTokenStats.quoteClaimed = accountTokenStats.quoteClaimed.plus(
-      event.params.amount,
-    );
-    accountTokenStats.save();
+    stats.quoteClaimed = stats.quoteClaimed.plus(event.params.amount);
+    stats.save();
+    quoteToken.save();
   }
   const participation = getOrCreateRaffleAccount(raffle, event.params.account);
   participation.quoteClaimed = participation.quoteClaimed.plus(
     event.params.amount,
   );
   participation.save();
-
-  raffle.quoteClaimed = raffle.quoteClaimed.plus(event.params.amount);
-  raffle.save();
-  if (quoteToken != null) {
-    quoteToken.quoteClaimed = quoteToken.quoteClaimed.plus(event.params.amount);
-    quoteToken.save();
-  }
 
   const claim = new QuoteClaim(eventId(event));
   claim.raffle = raffle.id;
@@ -348,96 +457,20 @@ export function handleQuoteClaimed(event: QuoteClaimedEvent): void {
   claim.save();
 }
 
-export function handleDrawFailureFinalized(event: DrawFailureFinalized): void {
+export function handleSponsorPrizeClaimed(
+  event: SponsorPrizeClaimedEvent,
+): void {
   const raffle = Raffle.load(event.address);
-  if (raffle == null) return;
-  if (DrawFailure.load(eventId(event)) != null) return;
-  const finalizer = getOrCreateAccount(event.params.finalizer);
-  const claimant = getOrCreateAccount(event.params.prizeClaimant);
-  const outcome =
-    event.params.outcome == 5 ? "DRAW_NOT_REQUESTED" : "DRAW_TIMED_OUT";
-
-  raffle.state = "REFUNDING";
-  raffle.outcome = outcome;
-  raffle.prizeClaimant = claimant.id;
-  raffle.unsettledPot = BigInt.zero();
-  raffle.uncreditedRefundLiability = event.params.grossRefundLiability;
-  raffle.resolvedTxHash = event.transaction.hash;
-  raffle.resolvedBlock = event.block.number;
-  raffle.resolvedTimestamp = event.block.timestamp;
-  raffle.save();
-
-  const failure = new DrawFailure(eventId(event));
-  failure.raffle = raffle.id;
-  failure.outcome = outcome;
-  failure.finalizer = finalizer.id;
-  failure.prizeClaimant = claimant.id;
-  failure.grossRefundLiability = event.params.grossRefundLiability;
-  failure.transactionHash = event.transaction.hash;
-  failure.blockNumber = event.block.number;
-  failure.timestamp = event.block.timestamp;
-  failure.logIndex = event.logIndex;
-  failure.save();
-
-  const protocol = Protocol.load(raffle.protocol);
-  if (protocol != null) {
-    protocol.activeCount = protocol.activeCount.minus(BigInt.fromI32(1));
-    protocol.refundingCount = protocol.refundingCount.plus(BigInt.fromI32(1));
-    protocol.save();
-  }
-}
-
-export function handleTicketRefundCredited(event: TicketRefundCredited): void {
-  const raffle = Raffle.load(event.address);
-  if (raffle == null) return;
-  if (TicketRefund.load(eventId(event)) != null) return;
-  const ticket = Ticket.load(ticketId(raffle.id, event.params.ticketId));
-  if (ticket == null || ticket.refundCredited) return;
-  const owner = getOrCreateAccount(event.params.owner);
-
-  ticket.refundCredited = true;
-  ticket.refundOwner = owner.id;
-  ticket.save();
-  raffle.uncreditedRefundLiability = event.params.remainingRefundLiability;
-  raffle.totalRefundCredited = raffle.totalRefundCredited.plus(
-    event.params.amount,
-  );
-  raffle.save();
-
-  const refund = new TicketRefund(eventId(event));
-  refund.raffle = raffle.id;
-  refund.ticket = ticket.id;
-  refund.owner = owner.id;
-  refund.amount = event.params.amount;
-  refund.remainingRefundLiability = event.params.remainingRefundLiability;
-  refund.transactionHash = event.transaction.hash;
-  refund.blockNumber = event.block.number;
-  refund.timestamp = event.block.timestamp;
-  refund.logIndex = event.logIndex;
-  refund.save();
-
-  const quoteToken = QuoteTokenStats.load(raffle.quoteTokenStats);
-  if (quoteToken != null) {
-    quoteToken.refundedVolume = quoteToken.refundedVolume.plus(
-      event.params.amount,
-    );
-    quoteToken.save();
-  }
-}
-
-export function handlePrizeClaimed(event: PrizeClaimedEvent): void {
-  const raffle = Raffle.load(event.address);
-  if (raffle == null) return;
-  if (PrizeClaim.load(eventId(event)) != null) return;
-  const claimant = getOrCreateAccount(event.params.claimant);
+  if (raffle == null || SponsorPrizeClaim.load(eventId(event)) != null) return;
+  const recipient = getOrCreateAccount(event.params.recipient);
   raffle.prizeClaimed = true;
   raffle.prizeDestination = event.params.to;
   raffle.prizeClaimedTxHash = event.transaction.hash;
   raffle.save();
 
-  const claim = new PrizeClaim(eventId(event));
+  const claim = new SponsorPrizeClaim(eventId(event));
   claim.raffle = raffle.id;
-  claim.claimant = claimant.id;
+  claim.recipient = recipient.id;
   claim.destination = event.params.to;
   claim.prizeToken = event.params.prizeToken;
   claim.prizeTokenId = event.params.prizeTokenId;
@@ -448,36 +481,20 @@ export function handlePrizeClaimed(event: PrizeClaimedEvent): void {
   claim.save();
 }
 
-export function handleRaffleCancelled(event: RaffleCancelled): void {
+export function handleEmptyRaffleClosed(event: EmptyRaffleClosed): void {
   const raffle = Raffle.load(event.address);
-  if (raffle == null) return;
-  if (raffle.outcome != "NONE") return;
-  raffle.state = "CANCELLED";
-  raffle.outcome = "CANCELLED_BEFORE_SALE";
-  raffle.prizeClaimant = event.params.prizeClaimant;
-  raffle.save();
-
-  const protocol = getOrCreateProtocol(Address.fromBytes(raffle.protocol));
-  protocol.activeCount = protocol.activeCount.minus(BigInt.fromI32(1));
-  protocol.cancelledCount = protocol.cancelledCount.plus(BigInt.fromI32(1));
-  protocol.save();
-}
-
-export function handleNoSalesClosed(event: NoSalesClosed): void {
-  const raffle = Raffle.load(event.address);
-  if (raffle == null) return;
-  if (raffle.outcome != "NONE") return;
-  raffle.state = "RESOLVED";
-  raffle.outcome = "NO_SALES";
-  raffle.prizeClaimant = event.params.prizeClaimant;
+  if (raffle == null || raffle.status != "ACTIVE") return;
+  raffle.status = "CLOSED";
   raffle.resolvedTxHash = event.transaction.hash;
   raffle.resolvedBlock = event.block.number;
   raffle.resolvedTimestamp = event.block.timestamp;
   raffle.save();
 
-  const protocol = getOrCreateProtocol(Address.fromBytes(raffle.protocol));
-  protocol.activeCount = protocol.activeCount.minus(BigInt.fromI32(1));
-  protocol.resolvedCount = protocol.resolvedCount.plus(BigInt.fromI32(1));
-  protocol.save();
+  const protocol = Protocol.load(raffle.protocol);
+  if (protocol != null) {
+    protocol.activeCount = protocol.activeCount.minus(ONE);
+    protocol.closedCount = protocol.closedCount.plus(ONE);
+    protocol.save();
+  }
   updateResolutionDayData(raffle, event, BigInt.zero(), BigInt.zero());
 }

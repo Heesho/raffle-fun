@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.36;
 
-import { Test } from "forge-std/Test.sol";
-
 import { IERC721Receiver } from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import { Test } from "forge-std/Test.sol";
 
 import { Raffle } from "../../../src/Raffle.sol";
 import { IRaffle } from "../../../src/interfaces/IRaffle.sol";
@@ -11,44 +10,30 @@ import { MockERC20 } from "../../../src/mocks/MockERC20.sol";
 import { MockEntropyV2 } from "../../../src/mocks/MockEntropyV2.sol";
 
 contract RaffleHandler is Test, IERC721Receiver {
-    uint256 internal constant MAX_HANDLER_TICKETS = 500;
+    uint256 internal constant MAX_HANDLER_TICKETS = 100;
 
     MockERC20 public immutable quote;
     MockEntropyV2 public immutable entropy;
     address public immutable treasury;
-    address public immutable recipientOne;
-    address public immutable recipientTwo;
-    address public immutable recipientThree;
 
     Raffle public raffle;
     bool public configured;
-
     uint256 public ghostGrossPaid;
-    uint256 public ghostQuoteClaimed;
+    uint256 public ghostQuotePaidOut;
+    uint256 public ghostProtocolPaidOut;
     uint256 public ghostRequestCount;
     uint256 public ghostResolutionCount;
-    uint256 public ghostFailureCount;
-    uint256 public ghostRefundCredited;
-    uint256 public ghostPrizeClaims;
-    bool public stateWentBackward;
-    IRaffle.RaffleState public lastObservedState;
-    address public resolvedWinner;
-    IRaffle.RaffleOutcome public resolvedOutcome;
+    uint256 public ghostRefundEnableCount;
+    uint256 public ghostWinningTicketRedemptions;
+    uint256 public ghostRefundTicketRedemptions;
+    uint256 public ghostSponsorPrizeClaims;
+    bool public statusWentBackward;
+    IRaffle.Status public lastObservedStatus;
 
-    constructor(
-        MockERC20 quote_,
-        MockEntropyV2 entropy_,
-        address treasury_,
-        address recipientOne_,
-        address recipientTwo_,
-        address recipientThree_
-    ) {
+    constructor(MockERC20 quote_, MockEntropyV2 entropy_, address treasury_) {
         quote = quote_;
         entropy = entropy_;
         treasury = treasury_;
-        recipientOne = recipientOne_;
-        recipientTwo = recipientTwo_;
-        recipientThree = recipientThree_;
     }
 
     function configure(Raffle raffle_) external {
@@ -56,11 +41,11 @@ contract RaffleHandler is Test, IERC721Receiver {
         configured = true;
         raffle = raffle_;
         quote.approve(address(raffle_), type(uint256).max);
-        lastObservedState = raffle_.state();
+        lastObservedStatus = raffle_.status();
     }
 
     function buy(uint256 quantitySeed) external {
-        if (!raffle.isOpen()) return;
+        if (!_isOpen()) return;
         uint256 sold = raffle.totalTickets();
         if (sold >= MAX_HANDLER_TICKETS) return;
         uint256 remaining = MAX_HANDLER_TICKETS - sold;
@@ -68,18 +53,6 @@ contract RaffleHandler is Test, IERC721Receiver {
         uint256 grossBefore = raffle.grossSales();
         try raffle.buyTickets(address(this), quantity) {
             ghostGrossPaid += raffle.grossSales() - grossBefore;
-        } catch { }
-        _observe();
-    }
-
-    function transferTicket(uint256 ticketSeed, uint256 recipientSeed) external {
-        uint256 sold = raffle.totalTickets();
-        if (sold == 0 || raffle.state() == IRaffle.RaffleState.DrawRequested) return;
-        uint256 ticketId = bound(ticketSeed, 1, sold);
-        try raffle.ownerOf(ticketId) returns (address owner) {
-            if (owner != address(this)) return;
-            address to = _recipient(recipientSeed);
-            try raffle.transferFrom(address(this), to, ticketId) { } catch { }
         } catch { }
         _observe();
     }
@@ -101,7 +74,7 @@ contract RaffleHandler is Test, IERC721Receiver {
     }
 
     function requestDraw() external {
-        if (!raffle.canRequestDraw()) return;
+        if (!_canRequestDraw()) return;
         uint256 fee = raffle.getEntropyFee();
         vm.deal(address(this), address(this).balance + fee);
         try raffle.requestDraw{ value: fee }() {
@@ -111,92 +84,87 @@ contract RaffleHandler is Test, IERC721Receiver {
     }
 
     function fulfill(bytes32 randomNumber) external {
-        if (raffle.state() != IRaffle.RaffleState.DrawRequested) return;
-        uint64 sequence = raffle.entropySequenceNumber();
-        IRaffle.RaffleState beforeState = raffle.state();
-        try entropy.fulfill(sequence, randomNumber) {
-            if (beforeState == IRaffle.RaffleState.DrawRequested && raffle.state() == IRaffle.RaffleState.Resolved) {
-                ++ghostResolutionCount;
-                resolvedWinner = raffle.winner();
-                resolvedOutcome = raffle.outcome();
-            }
+        if (raffle.status() != IRaffle.Status.Drawing) return;
+        try entropy.fulfill(raffle.entropySequenceNumber(), randomNumber) {
+            IRaffle.Status current = raffle.status();
+            if (current == IRaffle.Status.NftWon || current == IRaffle.Status.CashWon) ++ghostResolutionCount;
         } catch { }
         _observe();
     }
 
     function wrongSequence(bytes32 randomNumber) external {
-        if (raffle.state() != IRaffle.RaffleState.DrawRequested) return;
+        if (raffle.status() != IRaffle.Status.Drawing) return;
         uint64 sequence = raffle.entropySequenceNumber();
         try entropy.fulfillAs(sequence, sequence + 1, randomNumber) { } catch { }
         _observe();
     }
 
-    function duplicateCallback(bytes32 randomNumber) external {
-        if (raffle.entropySequenceNumber() == 0) return;
-        try entropy.fulfill(raffle.entropySequenceNumber(), randomNumber) { } catch { }
-        _observe();
-    }
-
-    function finalizeUnrequestedDraw() external {
-        if (!raffle.canFinalizeUnrequestedDraw()) return;
-        try raffle.finalizeUnrequestedDraw() {
-            ++ghostFailureCount;
+    function enableRefunds() external {
+        if (!_canEnableRefunds()) return;
+        try raffle.enableRefunds() {
+            ++ghostRefundEnableCount;
         } catch { }
         _observe();
     }
 
-    function finalizeTimedOutDraw() external {
-        if (!raffle.canFinalizeTimedOutDraw()) return;
-        try raffle.finalizeTimedOutDraw() {
-            ++ghostFailureCount;
+    function redeemRefundTicket(uint256 ticketSeed) external {
+        if (raffle.status() != IRaffle.Status.Refunding || raffle.totalTickets() == 0) return;
+        uint256 ticketId = bound(ticketSeed, 1, raffle.totalTickets());
+        try raffle.ownerOf(ticketId) returns (address owner) {
+            if (owner != address(this)) return;
+            uint256[] memory ids = new uint256[](1);
+            ids[0] = ticketId;
+            try raffle.redeemRefundTickets(ids, address(this)) returns (uint256 amount) {
+                ghostQuotePaidOut += amount;
+                ++ghostRefundTicketRedemptions;
+            } catch { }
         } catch { }
         _observe();
     }
 
-    function creditRefund(uint256 ticketSeed) external {
-        uint256 sold = raffle.totalTickets();
-        if (raffle.state() != IRaffle.RaffleState.Refunding || sold == 0) return;
-        uint256 ticketId = bound(ticketSeed, 1, sold);
-        if (raffle.isTicketRefundCredited(ticketId)) return;
-        uint256[] memory ticketIds = new uint256[](1);
-        ticketIds[0] = ticketId;
-        try raffle.creditTicketRefunds(ticketIds) {
-            ghostRefundCredited += raffle.ticketPrice();
+    function redeemWinningTicket() external {
+        IRaffle.Status current = raffle.status();
+        if (current != IRaffle.Status.NftWon && current != IRaffle.Status.CashWon) return;
+        uint256 ticketId = raffle.winningTicketId();
+        try raffle.ownerOf(ticketId) returns (address owner) {
+            if (owner != address(this)) return;
+            try raffle.redeemWinningTicket(address(this)) returns (uint256 cashAmount) {
+                ghostQuotePaidOut += cashAmount;
+                ++ghostWinningTicketRedemptions;
+            } catch { }
         } catch { }
         _observe();
     }
 
-    function claimQuote(uint256 accountSeed) external {
-        address account = _claimAccount(accountSeed);
-        uint256 accrued = raffle.claimableQuote(account);
-        if (accrued == 0) return;
-        try raffle.claimQuoteFor(account) returns (uint256 amount) {
-            ghostQuoteClaimed += amount;
+    function claimQuote(bool protocolClaim) external {
+        address account = protocolClaim ? treasury : address(this);
+        uint256 amount = raffle.claimableQuote(account);
+        if (amount == 0) return;
+        try raffle.claimQuoteFor(account) returns (uint256 paid) {
+            ghostQuotePaidOut += paid;
+            if (protocolClaim) ghostProtocolPaidOut += paid;
         } catch { }
         _observe();
     }
 
-    function claimPrize() external {
-        if (raffle.prizeClaimant() != address(this) || raffle.prizeClaimed()) return;
-        bool beforeClaimed = raffle.prizeClaimed();
-        try raffle.claimPrize(recipientOne) {
-            if (!beforeClaimed && raffle.prizeClaimed()) ++ghostPrizeClaims;
-        } catch { }
-        _observe();
-    }
-
-    function cancelBeforeSales() external {
-        if (raffle.state() != IRaffle.RaffleState.Active || raffle.totalTickets() != 0) return;
-        try raffle.cancelBeforeSales() { } catch { }
-        _observe();
-    }
-
-    function closeNoSales() external {
+    function claimSponsorPrize() external {
+        IRaffle.Status current = raffle.status();
         if (
-            raffle.state() != IRaffle.RaffleState.Active || raffle.totalTickets() != 0
-                || block.timestamp < raffle.endTime()
+            raffle.prizeClaimed()
+                || (
+                    current != IRaffle.Status.CashWon && current != IRaffle.Status.Refunding
+                        && current != IRaffle.Status.Closed
+                )
         ) return;
-        try raffle.closeNoSales() { } catch { }
+        try raffle.claimSponsorPrize(address(this)) {
+            ++ghostSponsorPrizeClaims;
+        } catch { }
+        _observe();
+    }
+
+    function closeEmptyRaffle() external {
+        if (raffle.status() != IRaffle.Status.Active || raffle.totalTickets() != 0) return;
+        try raffle.closeEmptyRaffle() { } catch { }
         _observe();
     }
 
@@ -205,24 +173,26 @@ contract RaffleHandler is Test, IERC721Receiver {
     }
 
     function _observe() internal {
-        IRaffle.RaffleState current = raffle.state();
-        if (uint256(current) < uint256(lastObservedState)) stateWentBackward = true;
-        if (uint256(current) > uint256(lastObservedState)) lastObservedState = current;
+        IRaffle.Status current = raffle.status();
+        if (uint256(current) < uint256(lastObservedStatus)) statusWentBackward = true;
+        if (uint256(current) > uint256(lastObservedStatus)) lastObservedStatus = current;
     }
 
-    function _recipient(uint256 seed) internal view returns (address) {
-        uint256 index = seed % 3;
-        if (index == 0) return recipientOne;
-        if (index == 1) return recipientTwo;
-        return recipientThree;
+    function _isOpen() internal view returns (bool) {
+        return raffle.status() == IRaffle.Status.Active && block.timestamp >= raffle.startTime()
+            && block.timestamp < raffle.endTime();
     }
 
-    function _claimAccount(uint256 seed) internal view returns (address) {
-        uint256 index = seed % 5;
-        if (index == 0) return address(this);
-        if (index == 1) return treasury;
-        if (index == 2) return recipientOne;
-        if (index == 3) return recipientTwo;
-        return recipientThree;
+    function _canRequestDraw() internal view returns (bool) {
+        return raffle.status() == IRaffle.Status.Active && block.timestamp >= raffle.endTime()
+            && block.timestamp < raffle.requestGraceDeadline() && raffle.totalTickets() != 0;
+    }
+
+    function _canEnableRefunds() internal view returns (bool) {
+        IRaffle.Status current = raffle.status();
+        return (
+            current == IRaffle.Status.Active && raffle.totalTickets() != 0
+                && block.timestamp >= raffle.requestGraceDeadline()
+        ) || (current == IRaffle.Status.Drawing && block.timestamp >= raffle.callbackDeadline());
     }
 }

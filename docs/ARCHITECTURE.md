@@ -1,102 +1,71 @@
 # Architecture
 
-## System boundary
-
-raffle.fun isolates every prize and accounting domain in a non-upgradeable EIP-1167
-clone. The factory creates and registers clones but never custodies raffle assets.
-The lens is read-only, and the subgraph is discovery infrastructure rather than a
-source of transaction authority.
+The protocol has three production contracts:
 
 ```mermaid
-flowchart TB
-  subgraph Base["Base / Base Sepolia"]
-    F["RaffleFactory\nregistry + future-only controls"]
-    I["Locked Raffle implementation"]
-    C["Non-upgradeable Raffle clones"]
-    L["RaffleLens\nregistry-gated bounded reads"]
-    E["Pyth Entropy v2"]
-    Q["Verified exact-transfer ERC-20s"]
-    F --> I
-    F -->|"deterministic EIP-1167"| C
-    L --> C
-    C <-->|"one request / authenticated callback"| E
-    C <--> Q
-  end
-  Base --> Logs["Lifecycle and liability events"]
-  Logs --> Graph["Network-specific subgraph"]
-  Web["Next.js web"] --> Graph
-  Web -->|"live reads + simulations"| Base
-  Artifacts["Hardhat artifacts"] --> SDK["Generated SDK and subgraph ABIs"]
+flowchart LR
+  S[Sponsor] -->|createRaffle| F[RaffleFactory]
+  F -->|CREATE constructor| R[Independent Raffle]
+  F -->|safeTransferFrom exact prize| R
+  U[Ticket holders] --> R
+  P[Pyth Entropy v2] --> R
+  L[RaffleLens] -->|read-only registry-authenticated view| R
 ```
 
-## Factory and atomic escrow
+## Constructor-deployed raffles
 
-`RaffleFactory` deploys one implementation whose constructor disables initializers.
-Creation validates code, ERC-165/ERC-721 support, a currently verified quote token,
-economics, metadata bounds, and timing. New sales may start at most 7 days ahead and
-last at most 30 days. A zero recovery recipient defaults to the sponsor.
+`RaffleFactory` uses ordinary `CREATE`; it does not use clones, initializers, proxies,
+or deterministic addresses. Each raffle receives all dependencies and configuration in
+its constructor. The constructor authenticates `msg.sender == factory` and begins in
+`AwaitingPrize`.
 
-The factory clones and initializes, registers and emits, then transfers the exact NFT
-with `safeTransferFrom`. The clone receiver requires the configured NFT contract,
-token ID, sponsor as `from`, factory as `operator`, and `AwaitingPrize` state. The
-factory finally checks `Active` and `ownerOf(tokenId) == clone`. Any failure reverts
-the entire transaction, including clone creation, registration, and events.
+The factory registers the new address, emits `RaffleCreated`, and transfers the exact
+ERC-721 prize in the same transaction. The raffle receiver checks token contract,
+token ID, sponsor, operator, and status. The factory then verifies `ownerOf` and
+`Active`. Any failure reverts deployment, registry updates, events, and escrow.
 
-`Ownable2Step` controls only future creation pause, treasury, and the bounded verified
-token registry. Delisting does not change an existing clone. No clone has an admin,
-proxy, upgrade, settlement override, rescue function, or arbitrary call path.
+## Factory authority
 
-## Clone initialization and storage
+Every factory has one immutable USDC token, Pyth Entropy v2 address, and callback gas
+limit. `Ownable2Step` administration can only pause future creation and select the
+treasury captured by future raffles. It cannot alter existing raffles, replace their
+dependencies, change a recipient, choose a winner, or rescue their assets.
 
-The clone uses `ERC721Upgradeable` because ticket name/symbol require an initializer.
-The implementation address is embedded immutably; `initialize` accepts only a factory
-whose `raffleImplementation()` equals that address. Initializable prevents a second
-call.
+`createRaffle` bounds start delay to seven days, sale duration to 30 days, ticket price
+and threshold to positive values, and metadata to 2,048 bytes. A zero recovery
+recipient defaults to the sponsor.
 
-OpenZeppelin Contracts 5.6.1 `ReentrancyGuard` is safe with fresh zeroed clone storage:
-only status `2` means entered, and the first successful guarded call normalizes zero to
-the standard status `1`. This is an exact-version storage assumption. Clones are not
-upgradeable, so no later layout is installed over this storage.
+## Settlement
 
-## Accounting
+Tickets are ordinary ERC-721 bearer claims. They never freeze. A successful draw stores
+only the winning ticket ID and liabilities. The current ticket owner burns that ticket
+for its NFT or cash. In `Refunding`, current owners burn bounded batches for exact
+refunds. Sponsor and treasury cash remain pull claims so one recipient cannot block
+another.
 
-For supported exact-transfer, non-rebasing quote tokens:
+Known protocol contracts cannot receive tickets or be selected as new fixed claimants.
+A permissionless bounded helper handles the narrower future-address case where a
+ticket, quote claim, or prize right reached a code-less address before it became a
+registered raffle. The helper exposes only four fixed claim kinds, targets only a
+registered raffle, and pays only the holding raffle's immutable recovery recipient, so
+it cannot be used as an arbitrary call or asset sweep.
+
+The only quote accounting identity is:
 
 ```text
-accountedQuoteBalance =
-    unsettledPot
-  + uncreditedRefundLiability
+accountedQuoteBalance
+  = unsettledPot
+  + remainingRefundLiability
+  + winnerCashLiability
   + totalClaimableQuote
-
-quoteToken.balanceOf(raffle) >= accountedQuoteBalance
 ```
 
-Purchases verify the exact inbound balance increase. Claims clear liability before
-interaction and verify both the raffle debit and recipient credit; failure reverts and
-restores the claim. Settlement moves the complete pot into normal claims or the
-complete gross pot into refund liability. Direct token/native donations are reported
-as surplus and never alter a claimant's amount.
+## Read and indexing layers
 
-Refund entitlement is bound to `ownerOf(ticketId)` while the ticket is frozen in
-`Refunding`. Permissionless batches of at most 100 tickets move value from uncredited
-liability to that owner's pull claim without an external call. A credited ticket may
-then move as a souvenir.
+`RaffleLens` is stateless and authenticates every raffle through the factory registry.
+It returns the one status, four liabilities, current bearer ownership, deadlines,
+dynamic Entropy fee, and account-specific actions. Its batch is capped at 64.
 
-## Read and index boundaries
-
-`RaffleLens` checks factory registration before raffle calls, caps batches at 100, and
-reports deadlines, available transitions, all aggregate liabilities, claimant state,
-and entropy-fee availability. An oracle fee read failure does not hide timeout/refund
-recovery data.
-
-The subgraph indexes factory admission, requests, both success branches, both failure
-branches, per-ticket refund ownership, claims, and token-partitioned aggregates. The
-web rereads live chain state and simulates immediately before writes; indexed state is
-never a security-critical transaction argument.
-
-## Versioning
-
-Protocol changes require a new implementation and factory. Existing clones continue
-with their fixed code and configuration. A deployment record binds the app/indexer to
-specific implementation, factory, lens, oracle, treasury, token allowlist, source
-commit, and compiler output.
+SDK and subgraph ABIs are generated from Hardhat artifacts. The subgraph mirrors status
+and liabilities but is never authoritative for transactions; the web re-reads the lens
+before every action.

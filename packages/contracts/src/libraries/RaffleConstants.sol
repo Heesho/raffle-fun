@@ -5,9 +5,9 @@ pragma solidity 0.8.36;
  * @title raffle.fun Protocol Constants
  * @author Heesho
  * @notice Defines the economic percentages and bounded-execution limits shared by raffle.fun contracts.
- * @dev Constants are compiled into each factory version and clone implementation, so factory ownership cannot extend an
+ * @dev Constants are compiled into each constructor-deployed raffle, so factory ownership cannot extend an
  *      existing raffle's custody period or increase its per-transaction loops.
- * @custom:version 1.0.0
+ * @custom:version 2.0.0
  */
 library RaffleConstants {
     /// @notice Denominator used for all basis-point calculations.
@@ -22,8 +22,8 @@ library RaffleConstants {
     /// @notice Maximum ERC-721 tickets minted by one purchase, bounding receiver callbacks and gas consumption.
     uint256 internal constant MAX_TICKETS_PER_PURCHASE = 100;
 
-    /// @notice Maximum refundable tickets credited by one permissionless transaction.
-    uint256 internal constant MAX_REFUND_CREDIT_BATCH_SIZE = 100;
+    /// @notice Maximum refundable bearer tickets burned by one redemption transaction.
+    uint256 internal constant MAX_REFUND_REDEMPTION_BATCH_SIZE = 100;
 
     /// @notice Maximum time between raffle creation and its configured sale start.
     uint256 internal constant MAX_START_DELAY = 7 days;

@@ -1,9 +1,6 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 
-import {
-  QuoteTokenVerificationUpdated,
-  RaffleCreated,
-} from "../generated/RaffleFactory/RaffleFactory";
+import { RaffleCreated } from "../generated/RaffleFactory/RaffleFactory";
 import { Raffle as RaffleTemplate } from "../generated/templates";
 import { Raffle } from "../generated/schema";
 import {
@@ -50,32 +47,22 @@ export function handleRaffleCreated(event: RaffleCreated): void {
   raffle.startTime = event.params.startTime;
   raffle.endTime = event.params.endTime;
   raffle.requestGraceDeadline = event.params.requestGraceDeadline;
-  raffle.state = "AWAITING_PRIZE";
-  raffle.outcome = "NONE";
+  raffle.status = "AWAITING_PRIZE";
   raffle.totalTickets = BigInt.zero();
   raffle.grossSales = BigInt.zero();
   raffle.unsettledPot = BigInt.zero();
-  raffle.uncreditedRefundLiability = BigInt.zero();
-  raffle.totalRefundCredited = BigInt.zero();
+  raffle.remainingRefundLiability = BigInt.zero();
+  raffle.winnerCashLiability = BigInt.zero();
+  raffle.totalClaimableQuote = BigInt.zero();
+  raffle.totalRefundRedeemed = BigInt.zero();
   raffle.totalProtocolFees = BigInt.zero();
   raffle.quoteClaimed = BigInt.zero();
   raffle.prizeClaimed = false;
+  raffle.winningTicketRedeemed = false;
   raffle.createdTxHash = event.transaction.hash;
   raffle.createdBlock = event.block.number;
   raffle.createdTimestamp = event.block.timestamp;
   raffle.save();
 
   RaffleTemplate.create(event.params.raffle);
-}
-
-export function handleQuoteTokenVerificationUpdated(
-  event: QuoteTokenVerificationUpdated,
-): void {
-  const protocol = getOrCreateProtocol(event.address);
-  const quoteTokenStats = getOrCreateQuoteTokenStats(
-    protocol,
-    event.params.quoteToken,
-  );
-  quoteTokenStats.verified = event.params.newVerified;
-  quoteTokenStats.save();
 }

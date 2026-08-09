@@ -14,13 +14,12 @@ import {
 
 import {
   buyTickets as applyBuy,
-  cancelBeforeSales as applyCancel,
-  claimPrize as applyClaimPrize,
+  claimSponsorPrize as applyClaimSponsorPrize,
   claimQuote as applyClaimQuote,
-  closeNoSales as applyCloseNoSales,
-  creditTicketRefunds as applyCreditTicketRefunds,
-  finalizeTimedOutDraw as applyFinalizeTimedOutDraw,
-  finalizeUnrequestedDraw as applyFinalizeUnrequestedDraw,
+  closeEmptyRaffle as applyCloseEmptyRaffle,
+  enableRefunds as applyEnableRefunds,
+  redeemRefundTickets as applyRedeemRefundTickets,
+  redeemWinningTicket as applyRedeemWinningTicket,
   requestDraw as applyRequestDraw,
   resolveDraw,
   SandboxError,
@@ -30,7 +29,7 @@ import {
 } from "./engine";
 import { createSandbox } from "./seed";
 
-const STORAGE_KEY = "raffle-fun.sandbox.v2";
+const STORAGE_KEY = "raffle-fun.sandbox.v3";
 
 /** How long the stand-in oracle takes to deliver randomness. */
 export const ORACLE_DELAY_MS = 4_000;
@@ -126,12 +125,11 @@ interface SandboxContextValue {
   readonly clearError: () => void;
   readonly buyTickets: (raffleId: string, quantity: number) => void;
   readonly requestDraw: (raffleId: string) => void;
-  readonly closeNoSales: (raffleId: string) => void;
-  readonly finalizeUnrequestedDraw: (raffleId: string) => void;
-  readonly finalizeTimedOutDraw: (raffleId: string) => void;
-  readonly creditTicketRefunds: (raffleId: string) => void;
-  readonly cancelBeforeSales: (raffleId: string) => void;
-  readonly claimPrize: (raffleId: string) => void;
+  readonly closeEmptyRaffle: (raffleId: string) => void;
+  readonly enableRefunds: (raffleId: string) => void;
+  readonly redeemRefundTickets: (raffleId: string) => void;
+  readonly redeemWinningTicket: (raffleId: string) => void;
+  readonly claimSponsorPrize: (raffleId: string) => void;
   readonly claimQuote: (raffleId: string) => void;
   readonly skipToEnd: (raffleId: string) => void;
   readonly reset: () => void;
@@ -177,12 +175,12 @@ export function SandboxProvider({
   // Timers deliberately survive re-renders. Cancelling them in this effect's
   // cleanup would let any unrelated state change — an ambient purchase, say —
   // kill a scheduled callback that the `pending` guard then refuses to
-  // reschedule, stranding the raffle in DRAW_REQUESTED forever.
+  // reschedule, stranding the raffle in DRAWING forever.
   useEffect(() => {
     if (sandbox === undefined) return;
 
     for (const raffle of sandbox.raffles) {
-      if (raffle.state !== "DRAW_REQUESTED") {
+      if (raffle.status !== "DRAWING") {
         const existing = pending.current.get(raffle.id);
         if (existing !== undefined) {
           clearTimeout(existing);
@@ -200,7 +198,7 @@ export function SandboxProvider({
             const target = state.raffles.find(
               (entry) => entry.id === raffle.id,
             );
-            if (target?.state !== "DRAW_REQUESTED") return state;
+            if (target?.status !== "DRAWING") return state;
             return resolveDraw(state, raffle.id, Date.now());
           });
         },
@@ -236,29 +234,28 @@ export function SandboxProvider({
         run((state) => applyBuy(state, raffleId, quantity, Date.now())),
       requestDraw: (raffleId) =>
         run((state) => applyRequestDraw(state, raffleId, Date.now())),
-      closeNoSales: (raffleId) =>
-        run((state) => applyCloseNoSales(state, raffleId, Date.now())),
-      finalizeUnrequestedDraw: (raffleId) =>
-        run((state) =>
-          applyFinalizeUnrequestedDraw(state, raffleId, Date.now()),
-        ),
-      finalizeTimedOutDraw: (raffleId) =>
-        run((state) => applyFinalizeTimedOutDraw(state, raffleId, Date.now())),
-      creditTicketRefunds: (raffleId) =>
+      closeEmptyRaffle: (raffleId) =>
+        run((state) => applyCloseEmptyRaffle(state, raffleId, Date.now())),
+      enableRefunds: (raffleId) =>
+        run((state) => applyEnableRefunds(state, raffleId, Date.now())),
+      redeemRefundTickets: (raffleId) =>
         run((state) => {
           const raffle = state.raffles.find((entry) => entry.id === raffleId);
-          const credited = new Set(raffle?.refundCreditedTicketIds ?? []);
           const batch =
             raffle?.tickets
-              .filter((ticket) => !credited.has(ticket.id))
+              .filter(
+                (ticket) =>
+                  !ticket.burned &&
+                  ticket.owner.toLowerCase() === state.player.toLowerCase(),
+              )
               .slice(0, 100)
               .map((ticket) => ticket.id) ?? [];
-          return applyCreditTicketRefunds(state, raffleId, batch, Date.now());
+          return applyRedeemRefundTickets(state, raffleId, batch, Date.now());
         }),
-      cancelBeforeSales: (raffleId) =>
-        run((state) => applyCancel(state, raffleId, Date.now())),
-      claimPrize: (raffleId) =>
-        run((state) => applyClaimPrize(state, raffleId, Date.now())),
+      redeemWinningTicket: (raffleId) =>
+        run((state) => applyRedeemWinningTicket(state, raffleId, Date.now())),
+      claimSponsorPrize: (raffleId) =>
+        run((state) => applyClaimSponsorPrize(state, raffleId, Date.now())),
       claimQuote: (raffleId) =>
         run((state) => applyClaimQuote(state, raffleId, Date.now())),
       // Pulls a sale deadline into the past so settlement can be demonstrated
@@ -267,7 +264,7 @@ export function SandboxProvider({
         run((state) => ({
           ...state,
           raffles: state.raffles.map((raffle) =>
-            raffle.id === raffleId && raffle.state === "ACTIVE"
+            raffle.id === raffleId && raffle.status === "ACTIVE"
               ? { ...raffle, endTime: Date.now() - 1_000 }
               : raffle,
           ),

@@ -21,8 +21,6 @@ dataSources:
         - name: RaffleFactory
           file: ./abis/RaffleFactory.json
       eventHandlers:
-        - event: QuoteTokenVerificationUpdated(indexed address,bool,bool)
-          handler: handleQuoteTokenVerificationUpdated
         - event: RaffleCreated(indexed uint256,indexed address,indexed address,address,address,uint256,address,address,uint256,uint256,uint256,uint256,uint256,string)
           handler: handleRaffleCreated
       file: ./src/factory.ts
@@ -44,10 +42,11 @@ templates:
         - Purchase
         - DrawRequest
         - Resolution
-        - DrawFailure
-        - TicketRefund
+        - RefundEnable
+        - RefundRedemption
+        - WinningRedemption
         - QuoteClaim
-        - PrizeClaim
+        - SponsorPrizeClaim
         - RaffleTransfer
         - ProtocolDayData
         - RaffleDayData
@@ -63,18 +62,18 @@ templates:
           handler: handleTransfer
         - event: DrawRequested(indexed uint64,indexed address,uint256,uint256,uint256,uint256)
           handler: handleDrawRequested
-        - event: RaffleResolved(indexed uint64,indexed uint256,indexed address,uint8,address,uint256,uint256,uint256)
+        - event: RaffleResolved(indexed uint64,indexed uint256,indexed uint8,uint256,uint256,uint256)
           handler: handleRaffleResolved
         - event: QuoteClaimed(indexed address,indexed address,uint256)
           handler: handleQuoteClaimed
-        - event: PrizeClaimed(indexed address,indexed address,indexed address,uint256)
-          handler: handlePrizeClaimed
-        - event: DrawFailureFinalized(indexed uint8,indexed address,indexed address,uint256)
-          handler: handleDrawFailureFinalized
-        - event: TicketRefundCredited(indexed uint256,indexed address,uint256,uint256)
-          handler: handleTicketRefundCredited
-        - event: RaffleCancelled(indexed address,indexed address)
-          handler: handleRaffleCancelled
-        - event: NoSalesClosed(indexed address,indexed address)
-          handler: handleNoSalesClosed
+        - event: RefundsEnabled(indexed address,indexed bool,uint256)
+          handler: handleRefundsEnabled
+        - event: RefundTicketsRedeemed(indexed address,indexed address,uint256,uint256,uint256)
+          handler: handleRefundTicketsRedeemed
+        - event: WinningTicketRedeemed(indexed uint256,indexed address,indexed address,uint8,uint256)
+          handler: handleWinningTicketRedeemed
+        - event: SponsorPrizeClaimed(indexed address,indexed address,indexed address,uint256)
+          handler: handleSponsorPrizeClaimed
+        - event: EmptyRaffleClosed(indexed address,indexed address)
+          handler: handleEmptyRaffleClosed
       file: ./src/raffle.ts

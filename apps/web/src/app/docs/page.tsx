@@ -64,7 +64,7 @@ export default function DocsPage() {
               icon={<Gift />}
               number="1"
               title="Prize escrowed"
-              text="The factory creates a non-upgradeable raffle clone and deposits the exact NFT."
+              text="The factory constructor-deploys an independent raffle and deposits the exact NFT atomically."
             />
             <ArrowDown className="mx-auto md:-rotate-90" aria-hidden />
             <Step
@@ -122,9 +122,8 @@ export default function DocsPage() {
               Anyone can open refunds if no request succeeds within three days
               after the sale, or if an accepted request has no callback for two
               days. No winner, sponsor proceeds, or protocol fee is awarded.
-              Bounded batches credit exactly one ticket price to each
-              ticket&apos;s frozen owner, and the recovery recipient claims the
-              NFT.
+              Each current bearer burns a bounded batch of tickets for exactly
+              one ticket price each, and the recovery recipient claims the NFT.
             </p>
           </div>
         </section>
@@ -175,18 +174,18 @@ export default function DocsPage() {
           <DocHeading
             eyebrow="Randomness & claims"
             title="The callback decides; it never sends assets."
-            text="A raffle permits exactly one Entropy v2 request. Resolution stores the winning ticket, snapshots its current owner, allocates claims, and stops. Every NFT, quote-token, and excess-native transfer happens later through a pull claim."
+            text="A raffle permits exactly one Entropy v2 request. Resolution stores the winning ticket and bounded liabilities, then stops. The callback never transfers an NFT, quote token, or native currency."
           />
           <div className="mt-8 grid gap-5 md:grid-cols-3">
             <RiskCard
               icon={<Dices />}
               title="Verifiable draw"
-              text="Pyth Entropy combines committed randomness and delivers the requested sequence to the same raffle clone."
+              text="Pyth Entropy combines committed randomness and delivers the requested sequence to the same independent raffle."
             />
             <RiskCard
               icon={<LockKeyhole />}
-              title="Winner snapshotted"
-              text="Moving the winning ticket after resolution cannot redirect the prize or cash payout."
+              title="Bearer ticket"
+              text="The winning ticket stays transferable until its current owner burns it for the NFT or cash payout."
             />
             <RiskCard
               icon={<CircleDollarSign />}
@@ -207,7 +206,7 @@ export default function DocsPage() {
           <DocHeading
             eyebrow="Ticket ownership"
             title="Ownership fixes both winners and refunds."
-            text="Tickets move while a raffle is active and freeze while randomness is pending. In a failed draw, an uncredited ticket stays frozen until its current owner receives the refund credit. Resolved and credited tickets may move as souvenirs."
+            text="Tickets never freeze. The current owner burns the winning ticket for its prize, or burns refundable tickets for their exact purchase-price refunds."
           />
           <div className="card mt-8 grid gap-5 p-6 sm:grid-cols-3">
             <Fact
@@ -233,7 +232,7 @@ export default function DocsPage() {
           <DocHeading
             eyebrow="Trust model"
             title="Know what code can—and cannot—protect."
-            text="Existing raffle clones are non-upgradeable. Factory administration affects future creation, treasury, and payment-token admission—not an active raffle’s fixed economics or recovery paths."
+            text="Existing raffles are non-upgradeable. Factory administration affects only future creation pause and treasury selection—not an active raffle’s USDC, economics, winner, or recovery paths."
           />
           <div className="mt-8 grid gap-5 lg:grid-cols-2">
             <div className="card p-7">
@@ -243,7 +242,6 @@ export default function DocsPage() {
               </div>
               <ul className="mt-5 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--ink-2)]">
                 <li>Change the treasury captured by newly created raffles</li>
-                <li>Admit or remove payment tokens for future creation</li>
                 <li>Pause creation of new raffles</li>
                 <li>Transfer two-step factory ownership</li>
               </ul>
@@ -256,7 +254,7 @@ export default function DocsPage() {
               <ul className="mt-5 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--ink-2)]">
                 <li>Change existing economics, fees, timing, or threshold</li>
                 <li>
-                  Choose a winner, request another result, or upgrade a clone
+                  Choose a winner, request another result, or upgrade a raffle
                 </li>
                 <li>Seize the prize, settlement pot, or user claims</li>
                 <li>Pause an existing raffle or its claims</li>

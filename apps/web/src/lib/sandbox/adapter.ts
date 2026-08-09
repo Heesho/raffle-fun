@@ -9,16 +9,6 @@ export const SANDBOX_WETH = {
   decimals: 18,
 } as const;
 
-const outcomeLabels: Record<string, string> = {
-  NONE: "NONE",
-  NFT_AWARDED: "PRIZE_TO_WINNER",
-  CASH_FALLBACK: "CASH_TO_WINNER",
-  NO_SALES: "NO_SALES",
-  CANCELLED_BEFORE_SALE: "CANCELLED",
-  DRAW_NOT_REQUESTED: "DRAW_NOT_REQUESTED",
-  DRAW_TIMED_OUT: "DRAW_TIMED_OUT",
-};
-
 /**
  * Presents a sandbox raffle in the same shape as an indexed one, so cards,
  * the directory and the activity feed stay a single implementation.
@@ -41,12 +31,20 @@ export function toIndexedRaffle(raffle: SandboxRaffle): IndexedRaffle {
     minimumTickets: String(raffle.minimumTickets),
     startTime: String(Math.floor(raffle.startTime / 1000)),
     endTime: String(Math.floor(raffle.endTime / 1000)),
-    state: raffle.state,
-    outcome: outcomeLabels[raffle.outcome] ?? "NONE",
+    state: raffle.status,
+    outcome:
+      raffle.status === "NFT_WON" ||
+      raffle.status === "CASH_WON" ||
+      raffle.status === "CLOSED"
+        ? raffle.status
+        : "NONE",
     totalTickets: String(raffle.tickets.length),
     grossSales: raffle.grossSales.toString(),
     unsettledPot: raffle.unsettledPot.toString(),
-    winner: raffle.winner,
+    winner:
+      raffle.winningTicketId === null
+        ? null
+        : (raffle.tickets[raffle.winningTicketId - 1]?.owner ?? null),
   };
 }
 
@@ -59,10 +57,10 @@ const activityKinds: Record<
   QUOTE_CLAIM: "QUOTE_CLAIM",
   PRIZE_CLAIM: "PRIZE_CLAIM",
   DRAW_REQUESTED: undefined,
-  CANCELLED: undefined,
-  NO_SALES: undefined,
-  DRAW_FAILURE: undefined,
-  REFUND_CREDIT: undefined,
+  CLOSED: undefined,
+  REFUNDS_ENABLED: undefined,
+  REFUND_REDEEMED: "QUOTE_CLAIM",
+  WINNING_REDEEMED: "QUOTE_CLAIM",
 };
 
 export function toIndexedActivity(

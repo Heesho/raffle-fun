@@ -1,57 +1,48 @@
-# Pyth Entropy v2 randomness
+# Pyth Entropy v2
 
-## One bounded request
+Each sold raffle accepts one request after `endTime` and before its three-day request
+grace deadline. The contract obtains the dynamic fee with
+`getFeeV2(callbackGasLimit)` and submits the same gas limit to
+`requestV2(callbackGasLimit)`.
 
-After at least one sale and `endTime`, anyone may call `requestDraw` before the fixed
-three-day grace deadline. The raffle reads `getFeeV2(callbackGasLimit)`, records
-`DrawRequested` and `drawRequestedAt` before the external call, then calls
-`requestV2(callbackGasLimit)`. A reverting fee read/request reverts the attempted
-transaction and leaves the raffle eligible for deterministic grace-expiry recovery.
-Excess native value becomes a pull refund for the requester.
+The caller may supply more than the current fee. Only the exact fee is forwarded and
+the excess is returned immediately in the same transaction. If that return fails, the
+whole request rolls back; the raffle does not retain native refund balances.
 
-The in-flight guard ignores a malicious synchronous callback before the returned
-sequence has been stored. There is never a second request, block-derived fallback,
-administrator-selected value, or replacement oracle.
+Before the external request call, the raffle enters `Drawing` and sets an in-flight
+guard. A callback is accepted only from the immutable Entropy address, after the
+request call has completed, for the stored sequence, and while status remains
+`Drawing`. Wrong, in-flight, stale, late, or duplicate callbacks emit an ignored event
+and return without changing settlement.
 
-## Callback
+The callback performs bounded storage work only:
 
-Pyth's `IEntropyConsumer` wrapper authenticates the configured Entropy contract. The
-internal callback additionally requires `DrawRequested`, the stored sequence, and no
-in-flight request. Wrong, stale, late-after-failure, and duplicate callbacks emit
-`EntropyCallbackIgnored` and change nothing.
+1. choose `(uint256(random) % totalTickets) + 1`;
+2. calculate the 5% protocol fee for either successful branch;
+3. record sponsor claims and, for cash fallback, the winning-ticket liability;
+4. enter `NftWon` or `CashWon`.
 
-```text
-winningTicketId = uint256(randomNumber) % totalTickets + 1
-winner = ownerOf(winningTicketId) at callback execution
-```
+It never calls an ERC-20, an ERC-721, or a user. The configured callback gas limit must
+be measured against production bytecode with safety margin. The Foundry suite asserts
+the local callback remains below 80% of that limit.
 
-The callback performs bounded storage work only: it snapshots the winner, calculates
-the aggregate fee and branch, credits pull claims, assigns the prize claimant, and
-sets `Resolved`. It calls no ERC-20, ERC-721, user, or provider contract.
+If no request succeeds by the grace deadline, or no callback succeeds within two days
+of an accepted request, anyone calls the same `enableRefunds` function. This terminal
+path charges no fee. A callback and timeout transaction may race at the deadline; the
+first included valid transition determines the outcome.
 
-## Liveness failure
+The winner mapping has negligible but nonzero modulo bias whenever `totalTickets` does
+not evenly divide the 256-bit random domain; it is not described as perfectly
+unbiased. Entropy's default security model also assumes its provider and blockchain
+validator/sequencer do not collude. The refund deadlines bound withholding and callback
+liveness, but they cannot prevent Base transaction ordering or censorship. Sequence
+zero, repeated sequences, changing/zero/extreme fees, synchronous callbacks, and
+withheld callbacks are covered by the adversarial Entropy harness.
 
-There are two deterministic permissionless exits:
+Official references:
 
-1. If no request successfully completes by `endTime + 3 days`,
-   `finalizeUnrequestedDraw` enters `Refunding`.
-2. If the accepted sequence is unresolved at `drawRequestedAt + 2 days`,
-   `finalizeTimedOutDraw` enters `Refunding`.
-
-Both paths select no winner, charge no fee, assign the prize to the fixed recovery
-recipient, and conserve the entire gross pot as ticket refunds. The same-sequence
-callback may still resolve after its nominal deadline until the timeout transaction
-wins. This first-included-transaction rule is explicit: it avoids an administrator
-ordering choice, but at the boundary searchers may influence which already-valid
-transition lands first.
-
-## Deployment checks
-
-- verify the official Entropy v2 address and bytecode for the exact Base network;
-- confirm SDK 2.2.1 `getFeeV2(uint32)` and `requestV2(uint32)` interfaces;
-- size the configured 300,000 callback gas limit against production bytecode;
-- monitor requests, deadlines, callbacks, ignored callbacks, and failure events;
-- exercise successful callback, unrequested failure, and timeout failure on testnet.
-
-The supported guarantee does not cover a halted/reorganized chain, compromised oracle
-randomness, lost claimant keys, or censorship of every recovery transaction.
+- [request variants and dynamic fees](https://docs.pyth.network/entropy/request-callback-variants)
+- [custom callback gas limits](https://docs.pyth.network/entropy/set-custom-gas-limits)
+- [EVM integration](https://docs.pyth.network/entropy/generate-random-numbers-evm)
+- [chain addresses](https://docs.pyth.network/entropy/chainlist)
+- [callback debugging](https://docs.pyth.network/entropy/debug-callback-failures)

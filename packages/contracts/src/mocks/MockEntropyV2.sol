@@ -33,6 +33,8 @@ contract MockEntropyV2 {
     mapping(uint64 sequenceNumber => uint32 gasLimit) public gasLimitBySequence;
     /// @notice Gas consumed by the most recently delivered callback including call overhead.
     uint256 public lastCallbackGasUsed;
+    /// @notice Whether fee reads should revert for lens availability tests.
+    bool public feeReadReverts;
 
     /// @notice Changes the mock fee for fee-refresh and overpayment tests.
     /// @param newFee Replacement native-currency fee.
@@ -40,9 +42,15 @@ contract MockEntropyV2 {
         fee = newFee;
     }
 
+    /// @notice Configures deterministic fee-read failure without affecting registered requests.
+    function setFeeReadReverts(bool reverts_) external {
+        feeReadReverts = reverts_;
+    }
+
     /// @notice Returns the configured fee for any callback limit.
     /// @return feeAmount Current deterministic fee.
     function getFeeV2(uint32) external view returns (uint128 feeAmount) {
+        if (feeReadReverts) revert();
         feeAmount = fee;
     }
 
