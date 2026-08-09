@@ -135,6 +135,38 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "raffle",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "prizeToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "prizeTokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "PrizeEscrowVerificationFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "quoteToken",
+        "type": "address"
+      }
+    ],
+    "name": "QuoteTokenNotVerified",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "quoteToken",
         "type": "address"
       },
@@ -156,6 +188,22 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "duration",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maximumDuration",
+        "type": "uint256"
+      }
+    ],
+    "name": "SaleDurationTooLong",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "startTime",
         "type": "uint256"
       },
@@ -166,6 +214,22 @@
       }
     ],
     "name": "StartTimeInPast",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "startTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maximumStartTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "StartTimeTooDistant",
     "type": "error"
   },
   {
@@ -335,6 +399,12 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "sponsorPrizeRecoveryRecipient",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "prizeToken",
         "type": "address"
       },
@@ -382,6 +452,12 @@
       },
       {
         "indexed": false,
+        "internalType": "uint256",
+        "name": "requestGraceDeadline",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
         "internalType": "string",
         "name": "metadataURI",
         "type": "string"
@@ -406,6 +482,71 @@
   {
     "inputs": [],
     "name": "CASH_WINNER_BPS",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "DRAW_CALLBACK_TIMEOUT",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "DRAW_REQUEST_GRACE_PERIOD",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "MAX_REFUND_CREDIT_BATCH_SIZE",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "MAX_SALE_DURATION",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "MAX_START_DELAY",
     "outputs": [
       {
         "internalType": "uint256",
@@ -492,6 +633,11 @@
           {
             "internalType": "address",
             "name": "quoteToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "sponsorPrizeRecoveryRecipient",
             "type": "address"
           },
           {
@@ -659,7 +805,7 @@
       },
       {
         "internalType": "address",
-        "name": "quoteToken_",
+        "name": "quoteToken",
         "type": "address"
       },
       {
@@ -779,7 +925,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "quoteToken_",
+        "name": "quoteToken",
         "type": "address"
       },
       {
@@ -818,7 +964,7 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "quoteToken_",
+        "name": "quoteToken",
         "type": "address"
       }
     ],

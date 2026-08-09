@@ -15,6 +15,8 @@ const outcomeLabels: Record<string, string> = {
   CASH_FALLBACK: "CASH_TO_WINNER",
   NO_SALES: "NO_SALES",
   CANCELLED_BEFORE_SALE: "CANCELLED",
+  DRAW_NOT_REQUESTED: "DRAW_NOT_REQUESTED",
+  DRAW_TIMED_OUT: "DRAW_TIMED_OUT",
 };
 
 /**
@@ -59,6 +61,8 @@ const activityKinds: Record<
   DRAW_REQUESTED: undefined,
   CANCELLED: undefined,
   NO_SALES: undefined,
+  DRAW_FAILURE: undefined,
+  REFUND_CREDIT: undefined,
 };
 
 export function toIndexedActivity(

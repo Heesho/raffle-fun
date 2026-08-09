@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   calculatePurchaseAmounts,
+  calculateRefundAmounts,
   calculateResolutionAmounts,
 } from "./economics.js";
 import { formatQuoteAmount, parseQuoteAmount } from "./quote.js";
@@ -47,6 +48,21 @@ describe("protocol economics", () => {
     expect(resolution.winnerCashAmount).toBe(6n);
     expect(resolution.sponsorCashAmount).toBe(2n);
     expect(resolution.winnerCashAmount + resolution.sponsorCashAmount).toBe(8n);
+  });
+
+  it("conserves gross sales exactly across partial failed-draw refunds", () => {
+    expect(
+      calculateRefundAmounts({
+        ticketPrice: 1_000_000n,
+        totalTickets: 80n,
+        creditedTickets: 31n,
+      }),
+    ).toEqual({
+      grossRefundLiability: 80_000_000n,
+      creditedRefunds: 31_000_000n,
+      uncreditedRefundLiability: 49_000_000n,
+      protocolFee: 0n,
+    });
   });
 
   it("parses and formats quote units without floating point", () => {

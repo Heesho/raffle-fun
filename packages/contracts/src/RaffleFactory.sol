@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity 0.8.36;
 
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { Ownable2Step } from "@openzeppelin/contracts/access/Ownable2Step.sol";
-
 import { Clones } from "@openzeppelin/contracts/proxy/Clones.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
@@ -14,34 +13,51 @@ import { IRaffle } from "./interfaces/IRaffle.sol";
 import { IRaffleFactory } from "./interfaces/IRaffleFactory.sol";
 import { RaffleConstants } from "./libraries/RaffleConstants.sol";
 
-/// @title RaffleFactory
-/// @notice Deploys and registers non-upgradeable raffle clones while administering only future creation policy.
+/**
+ * @title raffle.fun Canonical Raffle Factory
+ * @author Heesho
+ * @notice Creates and registers non-upgradeable raffle clones and atomically deposits their exact configured prizes.
+ * @dev Ownership administers only future creation: treasury selection, quote-token allowlisting, and creation pause.
+ *      Existing clones have no administrator. The production allowlist is a custody safety gate, not merely discovery
+ *      metadata; admitted tokens must be reviewed as non-rebasing exact-transfer ERC-20s in both directions.
+ * @custom:version 1.0.0
+ */
 contract RaffleFactory is IRaffleFactory, Ownable2Step, ReentrancyGuard {
     using Strings for uint256;
 
     /// @notice Denominator used for all basis-point calculations.
     uint256 public constant BPS = RaffleConstants.BPS;
-    /// @notice Protocol fee allocated once against aggregate gross sales at resolution.
+    /// @notice Fee charged only by successful verified-randomness resolution.
     uint256 public constant PROTOCOL_FEE_BPS = RaffleConstants.PROTOCOL_FEE_BPS;
-    /// @notice Winner share of the distributable pot in the cash-fallback branch.
+    /// @notice Winner share of the post-fee cash-fallback pot.
     uint256 public constant CASH_WINNER_BPS = RaffleConstants.CASH_WINNER_BPS;
-    /// @notice Bounded ticket quantity minted by one purchase.
+    /// @notice Maximum tickets minted by one purchase.
     uint256 public constant MAX_TICKETS_PER_PURCHASE = RaffleConstants.MAX_TICKETS_PER_PURCHASE;
-    /// @notice Maximum number of unique quote tokens one factory can mark verified.
+    /// @notice Maximum refunds credited by one transaction.
+    uint256 public constant MAX_REFUND_CREDIT_BATCH_SIZE = RaffleConstants.MAX_REFUND_CREDIT_BATCH_SIZE;
+    /// @notice Maximum scheduling delay for a new raffle's start.
+    uint256 public constant MAX_START_DELAY = RaffleConstants.MAX_START_DELAY;
+    /// @notice Maximum ticket-sale duration for a new raffle.
+    uint256 public constant MAX_SALE_DURATION = RaffleConstants.MAX_SALE_DURATION;
+    /// @notice Fixed request grace period compiled into this factory version and its implementation.
+    uint256 public constant DRAW_REQUEST_GRACE_PERIOD = RaffleConstants.DRAW_REQUEST_GRACE_PERIOD;
+    /// @notice Fixed callback timeout compiled into this factory version and its implementation.
+    uint256 public constant DRAW_CALLBACK_TIMEOUT = RaffleConstants.DRAW_CALLBACK_TIMEOUT;
+    /// @notice Maximum unique tokens retained by the stable allowlist registry.
     uint256 public constant MAX_VERIFIED_QUOTE_TOKENS = 32;
 
-    /// @notice Pyth Entropy v2 contract inherited by every clone.
-    address public immutable entropy;
-    /// @notice Locked implementation copied by every EIP-1167 clone.
-    address public immutable raffleImplementation;
-    /// @notice Entropy callback limit inherited by every clone.
-    uint32 public immutable callbackGasLimit;
+    /// @inheritdoc IRaffleFactory
+    address public immutable override entropy;
+    /// @inheritdoc IRaffleFactory
+    address public immutable override raffleImplementation;
+    /// @inheritdoc IRaffleFactory
+    uint32 public immutable override callbackGasLimit;
 
-    /// @notice Treasury captured only by raffles created after an update.
+    /// @notice Treasury captured only by raffles created after the latest update.
     address public protocolTreasury;
-    /// @notice Number of canonical raffle clones created by this factory.
+    /// @notice Number of canonical clones successfully created and funded.
     uint256 public raffleCount;
-    /// @notice Creation pause that cannot affect existing clones.
+    /// @notice Creation pause that cannot affect an existing clone.
     bool public creationPaused;
 
     /// @inheritdoc IRaffleFactory
@@ -55,13 +71,15 @@ contract RaffleFactory is IRaffleFactory, Ownable2Step, ReentrancyGuard {
     address[] private _verifiedQuoteTokens;
     mapping(address quoteToken => bool known) private _knownVerifiedQuoteToken;
 
-    /// @notice Creates a versioned factory bound to one implementation and Entropy deployment.
-    /// @param raffleImplementation_ Locked Raffle implementation with runtime code.
-    /// @param initialVerifiedQuoteTokens ERC20s initially verified for official discovery.
-    /// @param entropy_ Pyth Entropy v2 deployment.
-    /// @param protocolTreasury_ Treasury captured by initial raffles.
-    /// @param callbackGasLimit_ Per-raffle callback limit passed to Entropy.
-    /// @param initialOwner Multisig or temporary deployment authority using two-step ownership transfers.
+    /**
+     * @notice Deploys a factory permanently bound to one implementation, Entropy deployment, and callback gas limit.
+     * @param raffleImplementation_ Locked Raffle implementation with initialization disabled.
+     * @param initialVerifiedQuoteTokens Exact-transfer ERC-20s reviewed for production custody.
+     * @param entropy_ Official Pyth Entropy v2 deployment for the target chain.
+     * @param protocolTreasury_ Initial protocol-fee recipient.
+     * @param callbackGasLimit_ Bounded gas supplied to the storage-only callback.
+     * @param initialOwner Two-step administrative owner for future-creation policy.
+     */
     constructor(
         address raffleImplementation_,
         address[] memory initialVerifiedQuoteTokens,
@@ -81,9 +99,9 @@ contract RaffleFactory is IRaffleFactory, Ownable2Step, ReentrancyGuard {
         protocolTreasury = protocolTreasury_;
         callbackGasLimit = callbackGasLimit_;
 
-        for (uint256 i; i < initialVerifiedQuoteTokens.length; ++i) {
-            address quoteToken_ = initialVerifiedQuoteTokens[i];
-            if (!isVerifiedQuoteToken[quoteToken_]) _setQuoteTokenVerification(quoteToken_, true);
+        for (uint256 index; index < initialVerifiedQuoteTokens.length; ++index) {
+            address quoteToken = initialVerifiedQuoteTokens[index];
+            if (!isVerifiedQuoteToken[quoteToken]) _setQuoteTokenVerification(quoteToken, true);
         }
     }
 
@@ -96,10 +114,16 @@ contract RaffleFactory is IRaffleFactory, Ownable2Step, ReentrancyGuard {
         if (normalizedStartTime < block.timestamp) {
             revert StartTimeInPast(normalizedStartTime, block.timestamp);
         }
-        if (params.endTime <= normalizedStartTime) {
-            revert InvalidEndTime(normalizedStartTime, params.endTime);
+        uint256 maximumStartTime = block.timestamp + MAX_START_DELAY;
+        if (normalizedStartTime > maximumStartTime) {
+            revert StartTimeTooDistant(normalizedStartTime, maximumStartTime);
         }
+        if (params.endTime <= normalizedStartTime) revert InvalidEndTime(normalizedStartTime, params.endTime);
+        uint256 saleDuration = params.endTime - normalizedStartTime;
+        if (saleDuration > MAX_SALE_DURATION) revert SaleDurationTooLong(saleDuration, MAX_SALE_DURATION);
 
+        address recoveryRecipient =
+            params.sponsorPrizeRecoveryRecipient == address(0) ? msg.sender : params.sponsorPrizeRecoveryRecipient;
         uint256 raffleId = ++raffleCount;
         bytes32 salt = _raffleSalt(raffleId, msg.sender, params.quoteToken, params.prizeToken, params.prizeTokenId);
         raffle = Clones.cloneDeterministic(raffleImplementation, salt);
@@ -108,6 +132,7 @@ contract RaffleFactory is IRaffleFactory, Ownable2Step, ReentrancyGuard {
             IRaffle.InitializeParams({
                 factory: address(this),
                 sponsor: msg.sender,
+                sponsorPrizeRecoveryRecipient: recoveryRecipient,
                 protocolTreasury: protocolTreasury,
                 quoteToken: params.quoteToken,
                 entropy: entropy,
@@ -128,21 +153,21 @@ contract RaffleFactory is IRaffleFactory, Ownable2Step, ReentrancyGuard {
         raffleById[raffleId] = raffle;
         idByRaffle[raffle] = raffleId;
         isRaffle[raffle] = true;
-
-        _emitRaffleCreated(raffleId, raffle, msg.sender, params, normalizedStartTime);
+        _emitRaffleCreated(raffleId, raffle, recoveryRecipient, params, normalizedStartTime);
 
         IERC721(params.prizeToken).safeTransferFrom(msg.sender, raffle, params.prizeTokenId);
+        _verifyPrizeEscrow(raffle, params.prizeToken, params.prizeTokenId);
     }
 
     /// @inheritdoc IRaffleFactory
     function predictRaffleAddress(
         uint256 raffleId,
         address sponsor,
-        address quoteToken_,
+        address quoteToken,
         address prizeToken,
         uint256 prizeTokenId
     ) external view override returns (address predicted) {
-        bytes32 salt = _raffleSalt(raffleId, sponsor, quoteToken_, prizeToken, prizeTokenId);
+        bytes32 salt = _raffleSalt(raffleId, sponsor, quoteToken, prizeToken, prizeTokenId);
         predicted = Clones.predictDeterministicAddress(raffleImplementation, salt, address(this));
     }
 
@@ -152,49 +177,46 @@ contract RaffleFactory is IRaffleFactory, Ownable2Step, ReentrancyGuard {
     }
 
     /// @inheritdoc IRaffleFactory
-    function verifiedQuoteTokenAt(uint256 index) external view override returns (address quoteToken_) {
-        quoteToken_ = _verifiedQuoteTokens[index];
+    function verifiedQuoteTokenAt(uint256 index) external view override returns (address quoteToken) {
+        quoteToken = _verifiedQuoteTokens[index];
     }
 
-    /// @notice Changes the treasury captured only by future raffle clones.
-    /// @param newTreasury Nonzero replacement treasury.
-    function setProtocolTreasury(address newTreasury) external onlyOwner {
+    /// @inheritdoc IRaffleFactory
+    function setProtocolTreasury(address newTreasury) external override onlyOwner {
         if (newTreasury == address(0)) revert ZeroAddress();
         address previousTreasury = protocolTreasury;
         protocolTreasury = newTreasury;
         emit ProtocolTreasuryUpdated(previousTreasury, newTreasury);
     }
 
-    /// @notice Updates a quote token's official discovery verification without gating raffle creation.
-    /// @param quoteToken_ ERC20 to update.
-    /// @param verified New discovery verification status.
-    function setQuoteTokenVerification(address quoteToken_, bool verified) external onlyOwner {
-        if (isVerifiedQuoteToken[quoteToken_] == verified) {
-            revert QuoteTokenVerificationUnchanged(quoteToken_, verified);
+    /// @inheritdoc IRaffleFactory
+    function setQuoteTokenVerification(address quoteToken, bool verified) external override onlyOwner {
+        if (isVerifiedQuoteToken[quoteToken] == verified) {
+            revert QuoteTokenVerificationUnchanged(quoteToken, verified);
         }
-        _setQuoteTokenVerification(quoteToken_, verified);
+        _setQuoteTokenVerification(quoteToken, verified);
     }
 
-    /// @notice Pauses or resumes only the creation of new raffles.
-    /// @param paused New creation pause state.
-    function setCreationPaused(bool paused) external onlyOwner {
+    /// @inheritdoc IRaffleFactory
+    function setCreationPaused(bool paused) external override onlyOwner {
         bool previousPaused = creationPaused;
         creationPaused = paused;
         emit CreationPauseUpdated(previousPaused, paused);
     }
 
-    /// @dev Keeping the indexer-complete event in one helper avoids excessive creation-flow stack pressure.
+    /// @dev Keeps the indexer-complete event out of the already stack-heavy atomic creation function.
     function _emitRaffleCreated(
         uint256 raffleId,
         address raffle,
-        address sponsor,
+        address recoveryRecipient,
         CreateRaffleParams calldata params,
         uint256 normalizedStartTime
     ) internal {
         emit RaffleCreated(
             raffleId,
             raffle,
-            sponsor,
+            msg.sender,
+            recoveryRecipient,
             params.prizeToken,
             params.prizeTokenId,
             params.quoteToken,
@@ -203,58 +225,73 @@ contract RaffleFactory is IRaffleFactory, Ownable2Step, ReentrancyGuard {
             params.minimumTickets,
             normalizedStartTime,
             params.endTime,
+            params.endTime + DRAW_REQUEST_GRACE_PERIOD,
             params.metadataURI
         );
     }
 
-    /// @dev The deployment salt commits to identity and prize while the factory address namespaces CREATE2.
+    /// @dev CREATE2 identity commits to chain, factory sequence, sponsor, payment token, and exact prize.
     function _raffleSalt(
         uint256 raffleId,
         address sponsor,
-        address quoteToken_,
+        address quoteToken,
         address prizeToken,
         uint256 prizeTokenId
-    ) internal view returns (bytes32) {
-        return keccak256(abi.encode(block.chainid, raffleId, sponsor, quoteToken_, prizeToken, prizeTokenId));
+    ) internal view returns (bytes32 salt) {
+        salt = keccak256(abi.encode(block.chainid, raffleId, sponsor, quoteToken, prizeToken, prizeTokenId));
     }
 
-    /// @dev Explicit ERC165 rejections are respected, while legacy ERC721 contracts that revert are tolerated.
+    /// @dev Enforces the production quote-token gate and strict standards-compliant ERC-721 support envelope.
     function _validateCreateParams(CreateRaffleParams calldata params) internal view {
         _requireContract(params.prizeToken);
         _requireContract(params.quoteToken);
+        if (!isVerifiedQuoteToken[params.quoteToken]) revert QuoteTokenNotVerified(params.quoteToken);
         if (params.ticketPrice == 0) revert ZeroTicketPrice();
         if (params.minimumTickets == 0) revert ZeroMinimumTickets();
-        if (bytes(params.metadataURI).length > RaffleConstants.MAX_METADATA_URI_LENGTH) {
-            revert MetadataURITooLong(bytes(params.metadataURI).length, RaffleConstants.MAX_METADATA_URI_LENGTH);
+        uint256 metadataLength = bytes(params.metadataURI).length;
+        if (metadataLength > RaffleConstants.MAX_METADATA_URI_LENGTH) {
+            revert MetadataURITooLong(metadataLength, RaffleConstants.MAX_METADATA_URI_LENGTH);
         }
 
         try IERC165(params.prizeToken).supportsInterface(type(IERC721).interfaceId) returns (bool supported) {
             if (!supported) revert UnsupportedPrizeToken(params.prizeToken);
         } catch {
-            // Some established ERC721 deployments predate or incompletely implement ERC165.
+            revert UnsupportedPrizeToken(params.prizeToken);
         }
     }
 
-    /// @dev Protocol dependencies must contain runtime code at factory deployment or raffle creation.
+    /// @dev A successful receiver callback is insufficient: honest ERC-721 ownership must also report the clone.
+    function _verifyPrizeEscrow(address raffle, address prizeToken, uint256 prizeTokenId) internal view {
+        if (IRaffle(raffle).state() != IRaffle.RaffleState.Active) {
+            revert PrizeEscrowVerificationFailed(raffle, prizeToken, prizeTokenId);
+        }
+        try IERC721(prizeToken).ownerOf(prizeTokenId) returns (address owner) {
+            if (owner != raffle) revert PrizeEscrowVerificationFailed(raffle, prizeToken, prizeTokenId);
+        } catch {
+            revert PrizeEscrowVerificationFailed(raffle, prizeToken, prizeTokenId);
+        }
+    }
+
+    /// @dev Protocol dependencies must contain runtime code when configured or admitted.
     function _requireContract(address account) internal view {
         if (account == address(0)) revert ZeroAddress();
         if (account.code.length == 0) revert NotContract(account);
     }
 
-    /// @dev Known tokens retain a stable registry index across verification changes.
-    function _setQuoteTokenVerification(address quoteToken_, bool verified) internal {
+    /// @dev Registry indices remain stable when tokens are removed and later re-admitted.
+    function _setQuoteTokenVerification(address quoteToken, bool verified) internal {
         if (verified) {
-            _requireContract(quoteToken_);
-            if (!_knownVerifiedQuoteToken[quoteToken_]) {
+            _requireContract(quoteToken);
+            if (!_knownVerifiedQuoteToken[quoteToken]) {
                 if (_verifiedQuoteTokens.length == MAX_VERIFIED_QUOTE_TOKENS) {
                     revert TooManyVerifiedQuoteTokens(MAX_VERIFIED_QUOTE_TOKENS);
                 }
-                _knownVerifiedQuoteToken[quoteToken_] = true;
-                _verifiedQuoteTokens.push(quoteToken_);
+                _knownVerifiedQuoteToken[quoteToken] = true;
+                _verifiedQuoteTokens.push(quoteToken);
             }
         }
-        bool previousVerified = isVerifiedQuoteToken[quoteToken_];
-        isVerifiedQuoteToken[quoteToken_] = verified;
-        emit QuoteTokenVerificationUpdated(quoteToken_, previousVerified, verified);
+        bool previousVerified = isVerifiedQuoteToken[quoteToken];
+        isVerifiedQuoteToken[quoteToken] = verified;
+        emit QuoteTokenVerificationUpdated(quoteToken, previousVerified, verified);
     }
 }

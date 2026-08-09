@@ -1,38 +1,35 @@
-# Economics
+# Economics and accounting
 
-## Constants
+## Fixed constants
 
 ```text
-BPS                  = 10,000
-PROTOCOL_FEE_BPS     = 500   (5% of the gross pot at resolution)
-CASH_WINNER_BPS      = 8,000 (80% of the distributable pot)
-MAX_TICKETS_PER_BUY  = 100
+BPS                           = 10,000
+PROTOCOL_FEE_BPS              = 500    (5% of gross normal settlement)
+CASH_WINNER_BPS               = 8,000  (80% of distributable cash branch)
+MAX_TICKETS_PER_PURCHASE      = 100
+MAX_REFUND_CREDIT_BATCH_SIZE  = 100
+MAX_START_DELAY               = 7 days
+MAX_SALE_DURATION             = 30 days
+DRAW_REQUEST_GRACE_PERIOD     = 3 days
+DRAW_CALLBACK_TIMEOUT         = 2 days
 ```
 
-The advertised ticket price is the total payment. All math operates in raw
-quote-token units with floor rounding. Each raffle fixes one contract-backed ERC20 at
-creation; verification is not required and amounts from different tokens are never
-combined.
+The advertised ticket price is the exact gross amount paid. All math uses raw token
+units and floor rounding; decimals are display metadata only. New raffles may use only
+tokens currently verified by the canonical factory. Delisting affects future creation
+only.
 
 ## Purchase
 
-For ticket price `P` and quantity `Q`:
-
 ```text
-purchaseGross = P × Q
+purchaseGross = ticketPrice × quantity
 ```
 
-The contract pulls `purchaseGross` once, requires its balance to increase by exactly
-that amount, and adds the entire payment to `unsettledPot`. It allocates no fee and
-creates no quote-token claim during ticket sales.
+The raffle pulls the gross amount once, verifies the exact balance increase, and adds
+it to both `grossSales` and `unsettledPot`. The minimum ticket count selects the
+economic branch; it is not a sales cap.
 
-The minimum-ticket value is an outcome threshold, not a sales cap. Once the minimum is
-reached, buyers may continue purchasing tickets until the fixed exclusive `endTime`.
-Each additional ticket increases the gross pot and changes every ticket's odds.
-
-## Resolution
-
-The callback calculates the protocol fee once from the aggregate pot:
+## Normal resolution
 
 ```text
 grossPot         = unsettledPot
@@ -41,70 +38,57 @@ distributablePot = grossPot − protocolFee
 thresholdMet     = totalTickets >= minimumTickets
 ```
 
-Calculating one aggregate fee prevents a buyer from changing fee rounding by splitting
-one purchase into many small transactions.
-
-When the threshold is met, the winner claims the NFT and the sponsor receives the
-whole distributable pot.
-
-When the threshold is missed:
+When met, the winning ticket owner receives the NFT and the sponsor receives the
+complete distributable pot. When missed:
 
 ```text
 winnerCash  = floor(distributablePot × 8,000 / 10,000)
 sponsorCash = distributablePot − winnerCash
 ```
 
-The sponsor-side subtraction receives every rounding remainder. In both branches:
+The sponsor subtraction receives every rounding remainder. Conservation is exact:
 
 ```text
-protocolFee + winnerCash + sponsorCash = grossPot
+NFT branch:  protocolFee + sponsorCash = grossPot
+cash branch: protocolFee + winnerCash + sponsorCash = grossPot
 ```
 
-At resolution, `unsettledPot` becomes zero and the complete gross pot becomes pull
-claims for the treasury, winner, and sponsor as applicable.
+## Failed draw
 
-## Fixed vectors
-
-These vectors use a six-decimal USDC-like quote token. The formulas are identical for
-WETH or another exact-transfer token; only the raw unit scale changes.
-
-### Threshold met, sales continue past the minimum
-
-`P = 1,000,000`, `Q = 120`, `minimum = 100`:
+Missing-request and callback-timeout outcomes charge no protocol fee and award no
+sponsor proceeds or winner benefit:
 
 ```text
-gross pot       120,000,000 (120 USDC)
-protocol fee      6,000,000 (6 USDC)
-distributable   114,000,000 (114 USDC)
-winner          NFT
-sponsor         114 USDC
+grossRefundLiability = grossSales = ticketPrice × totalTickets
+protocolFee          = 0
 ```
 
-Ticket 100 makes the NFT branch likely, but tickets 101 through 120 remain valid
-because the sale is open until `endTime`.
+The terminal transition moves the whole unsettled pot to
+`uncreditedRefundLiability`. Each ticket later moves exactly one `ticketPrice` from
+that aggregate into the frozen owner's `claimableQuote`. Therefore, after all ticket
+IDs are credited, total refunds equal gross sales exactly. Crediting is bounded and
+makes no token call; claim order cannot change totals.
 
-### Threshold missed
-
-`P = 1,000,000`, `Q = 80`, `minimum = 100`:
+## Continuous invariant
 
 ```text
-gross pot       80,000,000 (80 USDC)
-protocol fee     4,000,000 (4 USDC)
-distributable   76,000,000 (76 USDC)
-cash winner     60,800,000 (60.80 USDC)
-sponsor         NFT + 15,200,000 (15.20 USDC)
+accountedQuoteBalance =
+    unsettledPot
+  + uncreditedRefundLiability
+  + totalClaimableQuote
+
+quoteToken.balanceOf(raffle) >= accountedQuoteBalance
 ```
 
-## Threshold selection
+Claims reduce `totalClaimableQuote` only if an exact outgoing transfer succeeds.
+Direct token donations are unaccounted surplus and do not affect economics. Native
+accounting separately equals `totalClaimableNative`; forced native value is surplus.
 
-There is intentionally no maximum economic threshold. A high value cannot draw more
-than gross sales or create insolvency; it only makes the cash branch more likely.
-Sponsors and buyers must assess whether the implied gross target
-`ticketPrice × minimumTickets` is realistic.
+## Asset/role overlap
 
-## Claims and overlap
-
-Sponsor, winner, treasury, buyer, and recipient may be the same address. Credits
-accumulate in one `claimableQuote` mapping and are claimed once. Claim order does not
-change the total. Direct quote-token transfers are unaccounted surplus and cannot
-settle, cancel, or resolve a raffle.
+Sponsor, winner, treasury, recovery recipient, buyer, and ticket recipient may be the
+same account. Quote credits accumulate in one mapping. A recovery recipient receives
+the prize in no-sales, cancellation, cash-fallback, and failed-draw branches, but
+normal sponsor quote proceeds still belong to the sponsor. No branch lets a normal
+winner also receive refunds, or the sponsor receive normal proceeds after a failed
+draw.

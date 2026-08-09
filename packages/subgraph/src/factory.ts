@@ -22,6 +22,7 @@ export function handleRaffleCreated(event: RaffleCreated): void {
   const sponsor = getOrCreateAccount(event.params.sponsor);
   sponsor.rafflesSponsored = sponsor.rafflesSponsored.plus(BigInt.fromI32(1));
   sponsor.save();
+  getOrCreateAccount(event.params.sponsorPrizeRecoveryRecipient);
   getOrCreateAccount(event.params.protocolTreasury);
   const quoteTokenStats = getOrCreateQuoteTokenStats(
     protocol,
@@ -36,6 +37,8 @@ export function handleRaffleCreated(event: RaffleCreated): void {
   raffle.protocol = protocol.id;
   raffle.factoryId = event.params.raffleId;
   raffle.sponsor = sponsor.id;
+  raffle.sponsorPrizeRecoveryRecipient =
+    event.params.sponsorPrizeRecoveryRecipient;
   raffle.protocolTreasury = event.params.protocolTreasury;
   raffle.quoteToken = event.params.quoteToken;
   raffle.quoteTokenStats = quoteTokenStats.id;
@@ -46,11 +49,14 @@ export function handleRaffleCreated(event: RaffleCreated): void {
   raffle.minimumTickets = event.params.minimumTickets;
   raffle.startTime = event.params.startTime;
   raffle.endTime = event.params.endTime;
+  raffle.requestGraceDeadline = event.params.requestGraceDeadline;
   raffle.state = "AWAITING_PRIZE";
   raffle.outcome = "NONE";
   raffle.totalTickets = BigInt.zero();
   raffle.grossSales = BigInt.zero();
   raffle.unsettledPot = BigInt.zero();
+  raffle.uncreditedRefundLiability = BigInt.zero();
+  raffle.totalRefundCredited = BigInt.zero();
   raffle.totalProtocolFees = BigInt.zero();
   raffle.quoteClaimed = BigInt.zero();
   raffle.prizeClaimed = false;

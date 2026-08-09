@@ -6,7 +6,10 @@ import {
   claimPrize,
   claimQuote,
   closeNoSales,
+  creditTicketRefunds,
   ENTROPY_FEE,
+  finalizeTimedOutDraw,
+  finalizeUnrequestedDraw,
   requestDraw,
   resolveDraw,
   SandboxError,
@@ -24,6 +27,7 @@ function raffle(overrides: Partial<SandboxRaffle> = {}): SandboxRaffle {
     id: "0xraffle",
     factoryId: "1",
     sponsor: SPONSOR,
+    sponsorPrizeRecoveryRecipient: SPONSOR,
     prizeToken: "0xprize",
     prizeTokenId: "7",
     prizeCollection: "Test Collection",
@@ -33,11 +37,14 @@ function raffle(overrides: Partial<SandboxRaffle> = {}): SandboxRaffle {
     minimumTickets: 10,
     startTime: 0,
     endTime: 1_000,
+    requestGraceDeadline: 2_000,
     state: "ACTIVE",
     outcome: "NONE",
     tickets: [],
     grossSales: 0n,
     unsettledPot: 0n,
+    uncreditedRefundLiability: 0n,
+    refundCreditedTicketIds: [],
     winningTicketId: null,
     winner: null,
     prizeClaimant: null,
@@ -45,6 +52,7 @@ function raffle(overrides: Partial<SandboxRaffle> = {}): SandboxRaffle {
     claimableQuote: {},
     drawRequestedAt: null,
     drawRequestedBy: null,
+    callbackDeadline: null,
     ...overrides,
   };
 }
@@ -196,6 +204,40 @@ describe("sandbox settlement", () => {
       return resolveDraw(state, "0xraffle", 1_005).raffles[0]!.winningTicketId;
     };
     expect(run()).toBe(run());
+  });
+
+  it("opens exact refunds only after the request grace deadline", () => {
+    let state = buyTickets(sandbox(), "0xraffle", 3, 100);
+    expect(() => finalizeUnrequestedDraw(state, "0xraffle", 1_999)).toThrow(
+      SandboxError,
+    );
+
+    state = finalizeUnrequestedDraw(state, "0xraffle", 2_000);
+    expect(state.raffles[0]!.state).toBe("REFUNDING");
+    expect(state.raffles[0]!.outcome).toBe("DRAW_NOT_REQUESTED");
+    expect(state.raffles[0]!.uncreditedRefundLiability).toBe(PRICE * 3n);
+
+    state = creditTicketRefunds(state, "0xraffle", [1, 3], 2_001);
+    expect(state.raffles[0]!.claimableQuote[PLAYER]).toBe(PRICE * 2n);
+    expect(state.raffles[0]!.uncreditedRefundLiability).toBe(PRICE);
+    expect(() => creditTicketRefunds(state, "0xraffle", [1], 2_002)).toThrow(
+      SandboxError,
+    );
+  });
+
+  it("defines the callback timeout boundary and terminal race", () => {
+    let state = buyTickets(sandbox(), "0xraffle", 2, 100);
+    state = requestDraw(state, "0xraffle", 1_000);
+    const deadline = state.raffles[0]!.callbackDeadline!;
+    expect(() => finalizeTimedOutDraw(state, "0xraffle", deadline - 1)).toThrow(
+      SandboxError,
+    );
+
+    state = finalizeTimedOutDraw(state, "0xraffle", deadline);
+    expect(state.raffles[0]!.outcome).toBe("DRAW_TIMED_OUT");
+    expect(() => resolveDraw(state, "0xraffle", deadline)).toThrow(
+      SandboxError,
+    );
   });
 });
 

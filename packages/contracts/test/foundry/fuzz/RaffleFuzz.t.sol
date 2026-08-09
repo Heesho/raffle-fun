@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity 0.8.36;
 
 import { Test } from "forge-std/Test.sol";
 
@@ -168,6 +168,40 @@ contract RaffleFuzzTest is Test {
         assertEq(quote.balanceOf(address(raffle)), 0);
     }
 
+    function testFuzzFailedDrawRefundsEveryTicketExactlyOnce(
+        uint128 ticketPriceSeed,
+        uint256 ticketCountSeed,
+        uint256 transferredTicketSeed
+    ) public {
+        uint256 ticketPrice = bound(uint256(ticketPriceSeed), 1, 1e24);
+        uint256 ticketCount = bound(ticketCountSeed, 1, 100);
+        uint256 transferredTicket = bound(transferredTicketSeed, 1, ticketCount);
+        uint256 gross = ticketPrice * ticketCount;
+        Raffle raffle = _create(ticketPrice, ticketCount + 1);
+        _fundAndApprove(raffle, gross);
+        vm.prank(buyer);
+        raffle.buyTickets(buyer, ticketCount);
+        vm.prank(buyer);
+        raffle.transferFrom(buyer, recipient, transferredTicket);
+
+        vm.warp(raffle.requestGraceDeadline());
+        raffle.finalizeUnrequestedDraw();
+        uint256[] memory ticketIds = new uint256[](ticketCount);
+        for (uint256 index; index < ticketCount; ++index) {
+            ticketIds[index] = index + 1;
+        }
+        raffle.creditTicketRefunds(ticketIds);
+
+        assertEq(raffle.uncreditedRefundLiability(), 0);
+        assertEq(raffle.totalClaimableQuote(), gross);
+        assertEq(raffle.claimableQuote(recipient), ticketPrice);
+        assertEq(raffle.claimableQuote(buyer), gross - ticketPrice);
+        assertEq(raffle.claimableQuote(treasury), 0);
+        assertEq(raffle.claimableQuote(sponsor), 0);
+        assertTrue(raffle.isTicketRefundCredited(1));
+        assertTrue(raffle.isTicketRefundCredited(ticketCount));
+    }
+
     function _create(uint256 ticketPrice, uint256 minimumTickets) internal returns (Raffle raffle) {
         uint256 tokenId = nextPrizeId++;
         prize.mint(sponsor, tokenId);
@@ -177,6 +211,7 @@ contract RaffleFuzzTest is Test {
                 prizeToken: address(prize),
                 prizeTokenId: tokenId,
                 quoteToken: address(quote),
+                sponsorPrizeRecoveryRecipient: address(0),
                 ticketPrice: ticketPrice,
                 minimumTickets: minimumTickets,
                 startTime: block.timestamp,

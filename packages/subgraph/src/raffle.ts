@@ -2,6 +2,7 @@ import { Address, BigInt } from "@graphprotocol/graph-ts";
 
 import {
   DrawRequested as DrawRequestedEvent,
+  DrawFailureFinalized,
   NoSalesClosed,
   PrizeClaimed as PrizeClaimedEvent,
   PrizeDeposited,
@@ -9,10 +10,12 @@ import {
   RaffleCancelled,
   RaffleResolved,
   TicketsPurchased,
+  TicketRefundCredited,
   Transfer,
 } from "../generated/templates/Raffle/Raffle";
 import {
   DrawRequest,
+  DrawFailure,
   PrizeClaim,
   Protocol,
   Purchase,
@@ -22,6 +25,7 @@ import {
   RaffleTransfer,
   Resolution,
   Ticket,
+  TicketRefund,
 } from "../generated/schema";
 import {
   eventId,
@@ -161,6 +165,7 @@ export function handleTransfer(event: Transfer): void {
       ticket.ticketId = event.params.tokenId;
       ticket.originalRecipient = to.id;
       ticket.winning = false;
+      ticket.refundCredited = false;
     }
     ticket.currentOwner = to.id;
     ticket.save();
@@ -191,6 +196,8 @@ export function handleDrawRequested(event: DrawRequestedEvent): void {
   request.requester = requester.id;
   request.fee = event.params.fee;
   request.excessCredited = event.params.excessCredited;
+  request.drawRequestedAt = event.params.drawRequestedAt;
+  request.callbackDeadline = event.params.callbackDeadline;
   request.transactionHash = event.transaction.hash;
   request.blockNumber = event.block.number;
   request.timestamp = event.block.timestamp;
@@ -199,6 +206,8 @@ export function handleDrawRequested(event: DrawRequestedEvent): void {
 
   raffle.state = "DRAW_REQUESTED";
   raffle.entropySequenceNumber = event.params.sequenceNumber;
+  raffle.drawRequestedAt = event.params.drawRequestedAt;
+  raffle.callbackDeadline = event.params.callbackDeadline;
   raffle.requestedTxHash = event.transaction.hash;
   raffle.requestedBlock = event.block.number;
   raffle.requestedTimestamp = event.block.timestamp;
@@ -339,6 +348,83 @@ export function handleQuoteClaimed(event: QuoteClaimedEvent): void {
   claim.save();
 }
 
+export function handleDrawFailureFinalized(event: DrawFailureFinalized): void {
+  const raffle = Raffle.load(event.address);
+  if (raffle == null) return;
+  if (DrawFailure.load(eventId(event)) != null) return;
+  const finalizer = getOrCreateAccount(event.params.finalizer);
+  const claimant = getOrCreateAccount(event.params.prizeClaimant);
+  const outcome =
+    event.params.outcome == 5 ? "DRAW_NOT_REQUESTED" : "DRAW_TIMED_OUT";
+
+  raffle.state = "REFUNDING";
+  raffle.outcome = outcome;
+  raffle.prizeClaimant = claimant.id;
+  raffle.unsettledPot = BigInt.zero();
+  raffle.uncreditedRefundLiability = event.params.grossRefundLiability;
+  raffle.resolvedTxHash = event.transaction.hash;
+  raffle.resolvedBlock = event.block.number;
+  raffle.resolvedTimestamp = event.block.timestamp;
+  raffle.save();
+
+  const failure = new DrawFailure(eventId(event));
+  failure.raffle = raffle.id;
+  failure.outcome = outcome;
+  failure.finalizer = finalizer.id;
+  failure.prizeClaimant = claimant.id;
+  failure.grossRefundLiability = event.params.grossRefundLiability;
+  failure.transactionHash = event.transaction.hash;
+  failure.blockNumber = event.block.number;
+  failure.timestamp = event.block.timestamp;
+  failure.logIndex = event.logIndex;
+  failure.save();
+
+  const protocol = Protocol.load(raffle.protocol);
+  if (protocol != null) {
+    protocol.activeCount = protocol.activeCount.minus(BigInt.fromI32(1));
+    protocol.refundingCount = protocol.refundingCount.plus(BigInt.fromI32(1));
+    protocol.save();
+  }
+}
+
+export function handleTicketRefundCredited(event: TicketRefundCredited): void {
+  const raffle = Raffle.load(event.address);
+  if (raffle == null) return;
+  if (TicketRefund.load(eventId(event)) != null) return;
+  const ticket = Ticket.load(ticketId(raffle.id, event.params.ticketId));
+  if (ticket == null || ticket.refundCredited) return;
+  const owner = getOrCreateAccount(event.params.owner);
+
+  ticket.refundCredited = true;
+  ticket.refundOwner = owner.id;
+  ticket.save();
+  raffle.uncreditedRefundLiability = event.params.remainingRefundLiability;
+  raffle.totalRefundCredited = raffle.totalRefundCredited.plus(
+    event.params.amount,
+  );
+  raffle.save();
+
+  const refund = new TicketRefund(eventId(event));
+  refund.raffle = raffle.id;
+  refund.ticket = ticket.id;
+  refund.owner = owner.id;
+  refund.amount = event.params.amount;
+  refund.remainingRefundLiability = event.params.remainingRefundLiability;
+  refund.transactionHash = event.transaction.hash;
+  refund.blockNumber = event.block.number;
+  refund.timestamp = event.block.timestamp;
+  refund.logIndex = event.logIndex;
+  refund.save();
+
+  const quoteToken = QuoteTokenStats.load(raffle.quoteTokenStats);
+  if (quoteToken != null) {
+    quoteToken.refundedVolume = quoteToken.refundedVolume.plus(
+      event.params.amount,
+    );
+    quoteToken.save();
+  }
+}
+
 export function handlePrizeClaimed(event: PrizeClaimedEvent): void {
   const raffle = Raffle.load(event.address);
   if (raffle == null) return;
@@ -368,7 +454,7 @@ export function handleRaffleCancelled(event: RaffleCancelled): void {
   if (raffle.outcome != "NONE") return;
   raffle.state = "CANCELLED";
   raffle.outcome = "CANCELLED_BEFORE_SALE";
-  raffle.prizeClaimant = event.params.sponsor;
+  raffle.prizeClaimant = event.params.prizeClaimant;
   raffle.save();
 
   const protocol = getOrCreateProtocol(Address.fromBytes(raffle.protocol));
@@ -383,7 +469,7 @@ export function handleNoSalesClosed(event: NoSalesClosed): void {
   if (raffle.outcome != "NONE") return;
   raffle.state = "RESOLVED";
   raffle.outcome = "NO_SALES";
-  raffle.prizeClaimant = event.params.sponsor;
+  raffle.prizeClaimant = event.params.prizeClaimant;
   raffle.resolvedTxHash = event.transaction.hash;
   raffle.resolvedBlock = event.block.number;
   raffle.resolvedTimestamp = event.block.timestamp;

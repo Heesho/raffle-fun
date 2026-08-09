@@ -20,6 +20,8 @@ import { formatTokenAmount } from "@/lib/format";
 import { SANDBOX_WETH } from "@/lib/sandbox/adapter";
 import {
   canCloseNoSales,
+  canFinalizeTimedOutDraw,
+  canFinalizeUnrequestedDraw,
   canRequestDraw,
   ENTROPY_FEE,
   isOpen,
@@ -240,14 +242,26 @@ function SettlePanel({
   readonly now: number;
   readonly isPrizeClaimant: boolean;
 }) {
-  const { sandbox, requestDraw, closeNoSales, claimPrize, claimQuote } =
-    useSandbox();
+  const {
+    sandbox,
+    requestDraw,
+    closeNoSales,
+    finalizeUnrequestedDraw,
+    finalizeTimedOutDraw,
+    creditTicketRefunds,
+    claimPrize,
+    claimQuote,
+  } = useSandbox();
   if (sandbox === undefined) return null;
 
   const drawable = canRequestDraw(raffle, now);
   const closable = canCloseNoSales(raffle, now);
+  const unrequestedFailure = canFinalizeUnrequestedDraw(raffle, now);
+  const timedOutFailure = canFinalizeTimedOutDraw(raffle, now);
   const pending = raffle.state === "DRAW_REQUESTED";
-  const settled = raffle.state === "RESOLVED" || raffle.state === "CANCELLED";
+  const refunding = raffle.state === "REFUNDING";
+  const settled =
+    raffle.state === "RESOLVED" || raffle.state === "CANCELLED" || refunding;
   const iWon = raffle.winner?.toLowerCase() === sandbox.player.toLowerCase();
 
   return (
@@ -309,6 +323,23 @@ function SettlePanel({
         </>
       ) : null}
 
+      {unrequestedFailure ? (
+        <>
+          <h2 className="mt-2 text-2xl">Draw request window expired</h2>
+          <p className="mt-3 text-sm leading-6 text-[var(--ink-2)]">
+            Anyone can now return the prize to its fixed recovery recipient and
+            open exact ticket-price refunds. No protocol fee is charged.
+          </p>
+          <button
+            className="btn btn-outline mt-5 w-full"
+            onClick={() => finalizeUnrequestedDraw(raffle.id)}
+            type="button"
+          >
+            <Undo2 aria-hidden size={17} /> Finalize refunds
+          </button>
+        </>
+      ) : null}
+
       {pending ? (
         <>
           <h2 className="mt-2 text-2xl">Waiting on the oracle</h2>
@@ -324,6 +355,15 @@ function SettlePanel({
             , snapshots whoever owns it, and credits the payouts. It moves no
             assets — everything after this is a claim.
           </p>
+          {timedOutFailure ? (
+            <button
+              className="btn btn-outline mt-5 w-full"
+              onClick={() => finalizeTimedOutDraw(raffle.id)}
+              type="button"
+            >
+              <Undo2 aria-hidden size={17} /> Finalize timeout refunds
+            </button>
+          ) : null}
         </>
       ) : null}
 
@@ -334,9 +374,11 @@ function SettlePanel({
               ? "No tickets sold"
               : raffle.outcome === "CANCELLED_BEFORE_SALE"
                 ? "Cancelled before any sale"
-                : iWon
-                  ? "You won!"
-                  : `Ticket #${raffle.winningTicketId} won`}
+                : refunding
+                  ? "Draw failed · refunds open"
+                  : iWon
+                    ? "You won!"
+                    : `Ticket #${raffle.winningTicketId} won`}
           </h2>
 
           {raffle.winningTicketId !== null ? (
@@ -356,6 +398,17 @@ function SettlePanel({
                   : "The threshold was missed, so the winning ticket takes 80% of the distributable pot and the NFT goes back to the sponsor."}
               </p>
             </div>
+          ) : null}
+
+          {refunding && raffle.uncreditedRefundLiability > 0n ? (
+            <button
+              className="btn btn-outline mt-5 w-full"
+              onClick={() => creditTicketRefunds(raffle.id)}
+              type="button"
+            >
+              <CircleDollarSign aria-hidden size={17} /> Credit next refund
+              batch
+            </button>
           ) : null}
 
           <div className="mt-5 grid gap-2">

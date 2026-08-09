@@ -13,10 +13,12 @@ import {
   RaffleCreated,
 } from "../generated/RaffleFactory/RaffleFactory";
 import {
+  DrawFailureFinalized,
   PrizeClaimed,
   PrizeDeposited,
   QuoteClaimed,
   RaffleResolved,
+  TicketRefundCredited,
   TicketsPurchased,
   Transfer,
 } from "../generated/templates/Raffle/Raffle";
@@ -25,10 +27,12 @@ import {
   handleRaffleCreated,
 } from "../src/factory";
 import {
+  handleDrawFailureFinalized,
   handlePrizeClaimed,
   handlePrizeDeposited,
   handleQuoteClaimed,
   handleRaffleResolved,
+  handleTicketRefundCredited,
   handleTicketsPurchased,
   handleTransfer,
 } from "../src/raffle";
@@ -40,6 +44,9 @@ const FACTORY = Address.fromString(
 const RAFFLE = Address.fromString("0x2000000000000000000000000000000000000002");
 const SPONSOR = Address.fromString(
   "0x3000000000000000000000000000000000000003",
+);
+const RECOVERY = Address.fromString(
+  "0x7000000000000000000000000000000000000007",
 );
 const TREASURY = Address.fromString(
   "0x4000000000000000000000000000000000000004",
@@ -210,6 +217,73 @@ describe("Raffle mappings", () => {
     );
   });
 
+  test("failed draws and bounded refund credits reconstruct liabilities", () => {
+    handleRaffleCreated(createRaffleCreatedEvent());
+    handleTransfer(createTransferEvent(Address.zero(), RECIPIENT, 1, 1));
+    handleTransfer(createTransferEvent(Address.zero(), BUYER, 2, 2));
+    handleTicketsPurchased(createPurchaseEvent());
+
+    handleDrawFailureFinalized(createDrawFailureEvent());
+    assert.fieldEquals("Raffle", RAFFLE.toHexString(), "state", "REFUNDING");
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "outcome",
+      "DRAW_NOT_REQUESTED",
+    );
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "prizeClaimant",
+      RECOVERY.toHexString(),
+    );
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "uncreditedRefundLiability",
+      "2000000",
+    );
+    assert.fieldEquals(
+      "Protocol",
+      FACTORY.toHexString(),
+      "refundingCount",
+      "1",
+    );
+    assert.entityCount("DrawFailure", 1);
+
+    handleTicketRefundCredited(
+      createTicketRefundCreditedEvent(1, RECIPIENT, 1_000_000, 1_000_000, 6),
+    );
+    handleTicketRefundCredited(
+      createTicketRefundCreditedEvent(2, BUYER, 1_000_000, 0, 7),
+    );
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "uncreditedRefundLiability",
+      "0",
+    );
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "totalRefundCredited",
+      "2000000",
+    );
+    assert.fieldEquals(
+      "Ticket",
+      ticketId(RAFFLE, BigInt.fromI32(1)),
+      "refundOwner",
+      RECIPIENT.toHexString(),
+    );
+    assert.fieldEquals(
+      "QuoteTokenStats",
+      FACTORY.toHexString() + "-" + QUOTE.toHexString(),
+      "refundedVolume",
+      "2000000",
+    );
+    assert.entityCount("TicketRefund", 2);
+  });
+
   test("duplicate delivery is idempotent for counters and immutable histories", () => {
     const created = createRaffleCreatedEvent();
     handleRaffleCreated(created);
@@ -278,6 +352,12 @@ function createRaffleCreatedEvent(): RaffleCreated {
     new ethereum.EventParam("sponsor", ethereum.Value.fromAddress(SPONSOR)),
   );
   event.parameters.push(
+    new ethereum.EventParam(
+      "sponsorPrizeRecoveryRecipient",
+      ethereum.Value.fromAddress(RECOVERY),
+    ),
+  );
+  event.parameters.push(
     new ethereum.EventParam("prizeToken", ethereum.Value.fromAddress(PRIZE)),
   );
   event.parameters.push(
@@ -317,6 +397,12 @@ function createRaffleCreatedEvent(): RaffleCreated {
     new ethereum.EventParam(
       "endTime",
       ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(2_000)),
+    ),
+  );
+  event.parameters.push(
+    new ethereum.EventParam(
+      "requestGraceDeadline",
+      ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(3_000)),
     ),
   );
   event.parameters.push(
@@ -467,6 +553,45 @@ function createPrizeClaimedEvent(): PrizeClaimed {
     new ethereum.EventParam("prizeToken", ethereum.Value.fromAddress(PRIZE)),
   );
   pushUnsigned(event, "prizeTokenId", 42);
+  return event;
+}
+
+function createDrawFailureEvent(): DrawFailureFinalized {
+  const event = changetype<DrawFailureFinalized>(newMockEvent());
+  event.address = RAFFLE;
+  event.logIndex = BigInt.fromI32(5);
+  event.parameters = new Array();
+  pushUnsigned(event, "outcome", 5);
+  event.parameters.push(
+    new ethereum.EventParam("finalizer", ethereum.Value.fromAddress(BUYER)),
+  );
+  event.parameters.push(
+    new ethereum.EventParam(
+      "prizeClaimant",
+      ethereum.Value.fromAddress(RECOVERY),
+    ),
+  );
+  pushUnsigned(event, "grossRefundLiability", 2_000_000);
+  return event;
+}
+
+function createTicketRefundCreditedEvent(
+  tokenIdValue: i32,
+  owner: Address,
+  amount: i32,
+  remaining: i32,
+  logIndex: i32,
+): TicketRefundCredited {
+  const event = changetype<TicketRefundCredited>(newMockEvent());
+  event.address = RAFFLE;
+  event.logIndex = BigInt.fromI32(logIndex);
+  event.parameters = new Array();
+  pushUnsigned(event, "ticketId", tokenIdValue);
+  event.parameters.push(
+    new ethereum.EventParam("owner", ethereum.Value.fromAddress(owner)),
+  );
+  pushUnsigned(event, "amount", amount);
+  pushUnsigned(event, "remainingRefundLiability", remaining);
   return event;
 }
 

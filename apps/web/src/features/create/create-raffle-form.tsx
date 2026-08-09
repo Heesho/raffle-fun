@@ -33,6 +33,8 @@ import { z } from "zod";
 import {
   createRaffle,
   formatQuoteAmount,
+  MAX_SALE_DURATION_SECONDS,
+  MAX_START_DELAY_SECONDS,
   parseQuoteAmount,
   raffleFactoryAbi,
   type ActionContext,
@@ -416,6 +418,12 @@ export function CreateRaffleForm() {
       if (endTime <= startTime) {
         throw new Error("End time must be after the start time.");
       }
+      if (startTime > latestBlock.timestamp + MAX_START_DELAY_SECONDS) {
+        throw new Error("Start time must be within seven days of creation.");
+      }
+      if (endTime - startTime > MAX_SALE_DURATION_SECONDS) {
+        throw new Error("Ticket sales cannot run longer than 30 days.");
+      }
 
       setProgress({ kind: "pending", message: "Simulating raffle creation…" });
       const hash = await createRaffle(
@@ -429,6 +437,7 @@ export function CreateRaffleForm() {
           prizeToken: target.prizeToken,
           prizeTokenId: target.prizeTokenId,
           quoteToken: selectedQuoteToken.address,
+          sponsorPrizeRecoveryRecipient: address,
           ticketPrice: parseQuoteAmount(
             parsed.data.ticketPrice,
             selectedQuoteToken.decimals,

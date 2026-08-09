@@ -36,9 +36,12 @@ import {
   calculatePurchaseAmounts,
   calculateResolutionAmounts,
   cancelBeforeSales,
+  creditTicketRefunds,
   claimPrize,
   claimQuote,
   closeNoSales,
+  finalizeTimedOutDraw,
+  finalizeUnrequestedDraw,
   formatQuoteAmount,
   raffleAbi,
   raffleFactoryAbi,
@@ -81,7 +84,9 @@ type LiveRaffleView = {
   readonly state: number;
   readonly outcome: number;
   readonly sponsor: Address;
+  readonly sponsorPrizeRecoveryRecipient: Address;
   readonly protocolTreasury: Address;
+  readonly prizeClaimant: Address;
   readonly quoteToken: Address;
   readonly prizeToken: Address;
   readonly prizeTokenId: bigint;
@@ -89,18 +94,32 @@ type LiveRaffleView = {
   readonly minimumTickets: bigint;
   readonly startTime: bigint;
   readonly endTime: bigint;
+  readonly requestGraceDeadline: bigint;
+  readonly drawRequestedAt: bigint;
+  readonly callbackDeadline: bigint;
+  readonly entropySequenceNumber: bigint;
   readonly totalTickets: bigint;
   readonly grossSales: bigint;
   readonly unsettledPot: bigint;
+  readonly uncreditedRefundLiability: bigint;
+  readonly totalClaimableQuote: bigint;
+  readonly totalClaimableNative: bigint;
+  readonly accountedQuoteBalance: bigint;
+  readonly accountedNativeBalance: bigint;
   readonly winningTicketId: bigint;
   readonly winner: Address;
   readonly accountTicketBalance: bigint;
   readonly accountQuoteClaim: bigint;
+  readonly accountNativeClaim: bigint;
   readonly accountIsPrizeClaimant: boolean;
   readonly entropyFee: bigint;
+  readonly entropyFeeAvailable: boolean;
   readonly canBuy: boolean;
   readonly canDraw: boolean;
+  readonly canFinalizeUnrequestedDraw: boolean;
+  readonly canFinalizeTimedOutDraw: boolean;
   readonly canClaimQuote: boolean;
+  readonly canClaimNative: boolean;
   readonly canClaimPrize: boolean;
 };
 
@@ -118,10 +137,34 @@ type ActionProgress =
 const MAX_QUANTITY = 100;
 const quantityPattern = /^(?:[1-9]|[1-9]\d|100)$/;
 
+function parseRefundTicketIds(value: string): readonly bigint[] {
+  const values = value
+    .split(",")
+    .map((part) => part.trim())
+    .filter((part) => part !== "");
+  if (values.length === 0 || values.length > 100) {
+    throw new Error("Enter between one and 100 ticket IDs.");
+  }
+  if (values.some((part) => !/^[1-9]\d*$/.test(part))) {
+    throw new Error("Ticket IDs must be positive integers.");
+  }
+  const ticketIds = values.map(BigInt);
+  if (new Set(ticketIds.map(String)).size !== ticketIds.length) {
+    throw new Error("Do not include a ticket ID more than once.");
+  }
+  return ticketIds;
+}
+
+function formatDeadline(timestamp: bigint): string {
+  if (timestamp === 0n) return "Not set";
+  return new Date(Number(timestamp) * 1_000).toLocaleString();
+}
+
 function stateTone(state: RaffleState): StatusTone {
   if (state === RaffleState.Active) return "active";
   if (state === RaffleState.Resolved) return "resolved";
-  if (state === RaffleState.DrawRequested) return "warning";
+  if (state === RaffleState.DrawRequested || state === RaffleState.Refunding)
+    return "warning";
   return "neutral";
 }
 
@@ -231,6 +274,7 @@ function LiveRaffleDetail({
   const [quantity, setQuantity] = useState(1);
   const [recipient, setRecipient] = useState("");
   const [claimDestination, setClaimDestination] = useState("");
+  const [refundTicketIds, setRefundTicketIds] = useState("");
   const [acceptedUnverifiedTokenRisk, setAcceptedUnverifiedTokenRisk] =
     useState(false);
   const [progress, setProgress] = useState<ActionProgress>({ kind: "idle" });
@@ -447,7 +491,15 @@ function LiveRaffleDetail({
   }
 
   async function handleAction(
-    action: "draw" | "close" | "quote" | "prize" | "cancel",
+    action:
+      | "draw"
+      | "close"
+      | "quote"
+      | "prize"
+      | "cancel"
+      | "fail-unrequested"
+      | "fail-timeout"
+      | "refund",
   ) {
     if (raffle === undefined) return;
     setProgress({ kind: "pending", text: "Checking current onchain state…" });
@@ -458,11 +510,29 @@ function LiveRaffleDetail({
       if (action === "draw") {
         if (!live.canDraw)
           throw new Error("A draw cannot be requested right now.");
+        if (!live.entropyFeeAvailable)
+          throw new Error("The oracle fee is currently unavailable.");
         setProgress({
           kind: "pending",
           text: `Simulating draw with ${formatQuoteAmount(live.entropyFee, 18)} ETH oracle fee…`,
         });
         hash = await requestDraw(context, raffle, live.entropyFee);
+      } else if (action === "fail-unrequested") {
+        if (!live.canFinalizeUnrequestedDraw) {
+          throw new Error("The draw-request grace period has not expired.");
+        }
+        hash = await finalizeUnrequestedDraw(context, raffle);
+      } else if (action === "fail-timeout") {
+        if (!live.canFinalizeTimedOutDraw) {
+          throw new Error("The oracle callback timeout has not expired.");
+        }
+        hash = await finalizeTimedOutDraw(context, raffle);
+      } else if (action === "refund") {
+        if (live.state !== RaffleState.Refunding) {
+          throw new Error("This raffle is not refunding.");
+        }
+        const ticketIds = parseRefundTicketIds(refundTicketIds);
+        hash = await creditTicketRefunds(context, raffle, ticketIds);
       } else if (action === "cancel") {
         if (live.state !== RaffleState.Active || live.totalTickets !== 0n) {
           throw new Error(
@@ -605,10 +675,10 @@ function LiveRaffleDetail({
                 <AlertTriangle aria-hidden size={18} /> Unverified payment token
               </p>
               <p className="mt-2 text-sm leading-6">
-                This raffle is canonical, but its ERC-20 is not currently
-                verified for official discovery. It may freeze, rebase,
-                blacklist accounts, or otherwise prevent purchases and claims.
-                Review the token contract before interacting.
+                This raffle was created while its ERC-20 was admitted by the
+                production factory, but the token is no longer on the current
+                allowlist. Existing clones are immutable. Issuer pause,
+                blacklist, and upgrade controls can still prevent claims.
               </p>
               <label className="mt-4 flex items-start gap-2 text-sm font-bold">
                 <input
@@ -728,12 +798,46 @@ function LiveRaffleDetail({
                 value={claimDestination}
               />
             </label>
+            {view.state === RaffleState.Refunding ? (
+              <label className="mt-4 block">
+                <span className="field-label">
+                  Ticket IDs to credit (comma-separated, max 100)
+                </span>
+                <input
+                  className="input numeric"
+                  onChange={(event) => setRefundTicketIds(event.target.value)}
+                  placeholder="1, 2, 3"
+                  value={refundTicketIds}
+                />
+              </label>
+            ) : null}
             <div className="mt-4 grid gap-2">
               <ActionButton
-                disabled={!view.canDraw || progress.kind === "pending"}
+                disabled={
+                  !view.canDraw ||
+                  !view.entropyFeeAvailable ||
+                  progress.kind === "pending"
+                }
                 icon={<Dices size={17} />}
                 label={`Request draw · ${formatQuoteAmount(view.entropyFee, 18)} ETH`}
                 onClick={() => handleAction("draw")}
+              />
+              <ActionButton
+                disabled={
+                  !view.canFinalizeUnrequestedDraw ||
+                  progress.kind === "pending"
+                }
+                icon={<Undo2 size={17} />}
+                label="Finalize missing draw · enable refunds"
+                onClick={() => handleAction("fail-unrequested")}
+              />
+              <ActionButton
+                disabled={
+                  !view.canFinalizeTimedOutDraw || progress.kind === "pending"
+                }
+                icon={<Undo2 size={17} />}
+                label="Finalize oracle timeout · enable refunds"
+                onClick={() => handleAction("fail-timeout")}
               />
               <ActionButton
                 disabled={
@@ -744,6 +848,16 @@ function LiveRaffleDetail({
                 icon={<Check size={17} />}
                 label="Close no-sales raffle"
                 onClick={() => handleAction("close")}
+              />
+              <ActionButton
+                disabled={
+                  view.state !== RaffleState.Refunding ||
+                  refundTicketIds.trim() === "" ||
+                  progress.kind === "pending"
+                }
+                icon={<CircleDollarSign size={17} />}
+                label="Credit ticket refunds"
+                onClick={() => handleAction("refund")}
               />
               <ActionButton
                 disabled={!view.canClaimQuote || progress.kind === "pending"}
@@ -764,6 +878,64 @@ function LiveRaffleDetail({
             </div>
           </section>
 
+          <section className="card p-6">
+            <p className="eyebrow">Recovery & liabilities</p>
+            <dl className="mt-4 space-y-2 text-sm">
+              <Split
+                label="Request grace deadline"
+                value={formatDeadline(view.requestGraceDeadline)}
+              />
+              <Split
+                label="Draw requested"
+                value={formatDeadline(view.drawRequestedAt)}
+              />
+              <Split
+                label="Callback deadline"
+                value={formatDeadline(view.callbackDeadline)}
+              />
+              <Split
+                label="Uncredited refunds"
+                value={formatTokenAmount(
+                  view.uncreditedRefundLiability,
+                  tokenMetadata.decimals,
+                  tokenMetadata.symbol,
+                )}
+              />
+              <Split
+                label="All quote claims"
+                value={formatTokenAmount(
+                  view.totalClaimableQuote,
+                  tokenMetadata.decimals,
+                  tokenMetadata.symbol,
+                )}
+              />
+              <Split
+                label="Accounted quote"
+                strong
+                value={formatTokenAmount(
+                  view.accountedQuoteBalance,
+                  tokenMetadata.decimals,
+                  tokenMetadata.symbol,
+                )}
+              />
+              <Split
+                label="Accounted native"
+                value={`${formatQuoteAmount(view.accountedNativeBalance, 18)} ETH`}
+              />
+            </dl>
+            <p className="mt-4 break-all text-xs leading-5 text-[var(--ink-2)]">
+              Fixed prize recovery: {view.sponsorPrizeRecoveryRecipient}
+              <br />
+              Current prize claimant: {view.prizeClaimant}
+            </p>
+            {!view.entropyFeeAvailable && view.canDraw ? (
+              <p className="mt-4 rounded-2xl bg-[var(--amber-wash)] p-3 text-xs font-bold text-[var(--amber-ink)]">
+                The oracle fee read is unavailable. The request grace deadline
+                and permissionless refund path remain visible above.
+              </p>
+            ) : null}
+          </section>
+
           {isSponsor ? (
             <section className="card p-6">
               <p className="eyebrow">Sponsor controls</p>
@@ -771,7 +943,7 @@ function LiveRaffleDetail({
               <p className="mt-3 text-sm leading-6 text-[var(--ink-2)]">
                 {view.totalTickets === 0n
                   ? "No tickets have sold yet, so you can still cancel and reclaim the NFT. The moment ticket #1 sells this option disappears for good."
-                  : `${view.totalTickets.toString()} tickets have sold. The NFT is now locked until the draw settles — it can only go to the winner or back to you through settlement.`}
+                  : `${view.totalTickets.toString()} tickets have sold. The NFT follows the verified draw, or returns to the fixed recovery recipient after a three-day request grace period or two-day callback timeout.`}
               </p>
               <button
                 className="btn btn-outline mt-4 w-full"

@@ -1,6 +1,12 @@
 export const BPS = 10_000n;
 export const PROTOCOL_FEE_BPS = 500n;
 export const CASH_WINNER_BPS = 8_000n;
+export const MAX_TICKETS_PER_PURCHASE = 100n;
+export const MAX_REFUND_CREDIT_BATCH_SIZE = 100n;
+export const MAX_START_DELAY_SECONDS = 7n * 24n * 60n * 60n;
+export const MAX_SALE_DURATION_SECONDS = 30n * 24n * 60n * 60n;
+export const DRAW_REQUEST_GRACE_SECONDS = 3n * 24n * 60n * 60n;
+export const DRAW_CALLBACK_TIMEOUT_SECONDS = 2n * 24n * 60n * 60n;
 
 export interface PurchaseAmounts {
   readonly grossAmount: bigint;
@@ -11,6 +17,13 @@ export interface ResolutionAmounts {
   readonly distributablePot: bigint;
   readonly winnerCashAmount: bigint;
   readonly sponsorCashAmount: bigint;
+}
+
+export interface RefundAmounts {
+  readonly grossRefundLiability: bigint;
+  readonly creditedRefunds: bigint;
+  readonly uncreditedRefundLiability: bigint;
+  readonly protocolFee: 0n;
 }
 
 export function calculatePurchaseAmounts({
@@ -48,6 +61,35 @@ export function calculateResolutionAmounts(
     distributablePot,
     winnerCashAmount,
     sponsorCashAmount: distributablePot - winnerCashAmount,
+  };
+}
+
+export function calculateRefundAmounts({
+  ticketPrice,
+  totalTickets,
+  creditedTickets = 0n,
+}: {
+  readonly ticketPrice: bigint;
+  readonly totalTickets: bigint;
+  readonly creditedTickets?: bigint;
+}): RefundAmounts {
+  if (ticketPrice <= 0n) throw new RangeError("ticketPrice must be positive");
+  if (totalTickets < 0n) {
+    throw new RangeError("totalTickets must not be negative");
+  }
+  if (creditedTickets < 0n || creditedTickets > totalTickets) {
+    throw new RangeError(
+      "creditedTickets must be within the sold ticket range",
+    );
+  }
+
+  const grossRefundLiability = ticketPrice * totalTickets;
+  const creditedRefunds = ticketPrice * creditedTickets;
+  return {
+    grossRefundLiability,
+    creditedRefunds,
+    uncreditedRefundLiability: grossRefundLiability - creditedRefunds,
+    protocolFee: 0n,
   };
 }
 

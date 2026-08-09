@@ -1,77 +1,38 @@
 # Subgraph
 
-## Model
+Each deployment indexes one factory plus dynamic raffle templates. `RaffleCreated`
+contains the recovery recipient and request grace deadline; the template then observes
+the same-transaction `PrizeDeposited` event.
 
-Each deployment indexes one chain. `RaffleFactory` is the static data source;
-`RaffleCreated` initializes the `Raffle` entity and creates a dynamic `Raffle`
-template. The factory emits before prize escrow, allowing the template to receive
-`PrizeDeposited` later in the same transaction/block.
+Mutable entities cover protocol/token aggregates, raffles, accounts, tickets, and
+daily data. Immutable histories cover purchases, requests, successful resolutions,
+draw failures, per-ticket refund credits, quote/prize claims, and ticket transfers.
+`Raffle` exposes request/callback timestamps, remaining refund liability, total
+credited refunds, prize claimant, and terminal outcome. `Ticket` records the frozen
+refund owner and credited flag.
 
-Entities:
+Event IDs use transaction hash plus log index and handlers guard duplicate delivery.
+Amounts remain partitioned by quote token. Token admission is indexed for discovery;
+delisting never rewrites existing raffle state.
 
-- mutable state: `Protocol`, `QuoteTokenStats`, `Raffle`, `Account`,
-  `AccountTokenStats`, `RaffleAccount`, `Ticket`, `ProtocolDayData`,
-  `RaffleDayData`;
-- immutable history: `Purchase`, `DrawRequest`, `Resolution`, `QuoteClaim`,
-  `PrizeClaim`, `RaffleTransfer`.
-
-IDs avoid unbounded arrays. Event histories use transaction hash plus log index and
-guard duplicate delivery before changing aggregates. Monetary protocol, account, and
-daily aggregates are partitioned by quote token; values from different ERC20s are
-never added together. `QuoteTokenVerificationUpdated` maintains the mutable discovery
-label used by public UI lists; it does not alter raffle state.
-
-## Generated sources
-
-ABIs come from Hardhat artifacts:
+## Generated sources and verification
 
 ```bash
 pnpm contracts:build
 pnpm sdk:sync
 pnpm subgraph:codegen
-```
-
-Do not edit `packages/subgraph/abis/*.json` or generated bindings manually.
-`pnpm --filter @raffle-fun/sdk sync:check` fails if committed ABI outputs drift.
-
-## Manifest generation
-
-The checked-in `subgraph.yaml` is a compile/test template without a fake factory
-address. Production generation reads the validated network deployment record:
-
-```bash
-pnpm --filter @raffle-fun/subgraph manifest:base-sepolia
-pnpm --filter @raffle-fun/subgraph manifest:base
-```
-
-This creates `subgraph.generated.yaml` with the exact factory address and start block.
-Missing records fail; there is no zero-address fallback.
-
-## Test and build
-
-```bash
-pnpm subgraph:codegen
 pnpm subgraph:build
 pnpm subgraph:test
+pnpm --filter @raffle-fun/sdk sync:check
 ```
 
-Matchstick covers dynamic template creation, same-block prize deposit, purchases,
-multi-ticket ownership, transfers, both resolution branches, claims, aggregates, and
-duplicate-event idempotency.
+Do not hand-edit generated ABI/binding files. Matchstick covers atomic template
+creation, same-block escrow, purchases/transfers, both normal branches, failed draw,
+bounded ticket refund reconstruction, claims, aggregates, and idempotency.
 
-## Local and Studio deployment
+The checked-in manifest is a build/test template. Production manifest generation must
+read a validated network deployment record; there is no zero-address fallback.
 
-```bash
-pnpm --filter @raffle-fun/subgraph deploy:local
-pnpm --filter @raffle-fun/subgraph deploy:studio
-```
-
-Run manifest generation first for Studio. A local Graph Node expects JSON-RPC, IPFS,
-Postgres, and Graph Node endpoints from the documented script.
-
-## Consumer rules
-
-The index supplies lists, search, profiles, per-token aggregates, and activity. It may
-lag, reorganize, or fail. A transaction client must reread factory/raffle state
-onchain, validate the chain and selected quote token, fetch the current Entropy fee,
-and simulate the call.
+The index may lag, reorganize, or fail. Transaction clients must reread registered
+live state, deadlines, claimant/liability values, current token admission where
+relevant, and the current entropy fee, then simulate before requesting a signature.

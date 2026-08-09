@@ -18,6 +18,9 @@ import {
   claimPrize as applyClaimPrize,
   claimQuote as applyClaimQuote,
   closeNoSales as applyCloseNoSales,
+  creditTicketRefunds as applyCreditTicketRefunds,
+  finalizeTimedOutDraw as applyFinalizeTimedOutDraw,
+  finalizeUnrequestedDraw as applyFinalizeUnrequestedDraw,
   requestDraw as applyRequestDraw,
   resolveDraw,
   SandboxError,
@@ -27,7 +30,7 @@ import {
 } from "./engine";
 import { createSandbox } from "./seed";
 
-const STORAGE_KEY = "raffle-fun.sandbox.v1";
+const STORAGE_KEY = "raffle-fun.sandbox.v2";
 
 /** How long the stand-in oracle takes to deliver randomness. */
 export const ORACLE_DELAY_MS = 4_000;
@@ -124,6 +127,9 @@ interface SandboxContextValue {
   readonly buyTickets: (raffleId: string, quantity: number) => void;
   readonly requestDraw: (raffleId: string) => void;
   readonly closeNoSales: (raffleId: string) => void;
+  readonly finalizeUnrequestedDraw: (raffleId: string) => void;
+  readonly finalizeTimedOutDraw: (raffleId: string) => void;
+  readonly creditTicketRefunds: (raffleId: string) => void;
   readonly cancelBeforeSales: (raffleId: string) => void;
   readonly claimPrize: (raffleId: string) => void;
   readonly claimQuote: (raffleId: string) => void;
@@ -232,6 +238,23 @@ export function SandboxProvider({
         run((state) => applyRequestDraw(state, raffleId, Date.now())),
       closeNoSales: (raffleId) =>
         run((state) => applyCloseNoSales(state, raffleId, Date.now())),
+      finalizeUnrequestedDraw: (raffleId) =>
+        run((state) =>
+          applyFinalizeUnrequestedDraw(state, raffleId, Date.now()),
+        ),
+      finalizeTimedOutDraw: (raffleId) =>
+        run((state) => applyFinalizeTimedOutDraw(state, raffleId, Date.now())),
+      creditTicketRefunds: (raffleId) =>
+        run((state) => {
+          const raffle = state.raffles.find((entry) => entry.id === raffleId);
+          const credited = new Set(raffle?.refundCreditedTicketIds ?? []);
+          const batch =
+            raffle?.tickets
+              .filter((ticket) => !credited.has(ticket.id))
+              .slice(0, 100)
+              .map((ticket) => ticket.id) ?? [];
+          return applyCreditTicketRefunds(state, raffleId, batch, Date.now());
+        }),
       cancelBeforeSales: (raffleId) =>
         run((state) => applyCancel(state, raffleId, Date.now())),
       claimPrize: (raffleId) =>

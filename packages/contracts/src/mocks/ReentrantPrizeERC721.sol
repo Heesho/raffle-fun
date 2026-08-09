@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity 0.8.36;
 
 import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
@@ -48,6 +48,7 @@ contract ReentrantPrizeERC721 is ERC721 {
                     prizeToken: address(this),
                     prizeTokenId: nestedPrizeTokenId,
                     quoteToken: factory.verifiedQuoteTokenAt(0),
+                    sponsorPrizeRecoveryRecipient: address(0),
                     ticketPrice: 1e6,
                     minimumTickets: 1,
                     startTime: block.timestamp,

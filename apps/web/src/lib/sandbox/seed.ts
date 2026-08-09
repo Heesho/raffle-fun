@@ -1,4 +1,9 @@
-import type { Sandbox, SandboxRaffle, SandboxTicket } from "./engine";
+import {
+  DRAW_REQUEST_GRACE_MS,
+  type Sandbox,
+  type SandboxRaffle,
+  type SandboxTicket,
+} from "./engine";
 
 /** The account the visitor plays as. Not a real wallet. */
 export const PLAYER = "0x7a3f9c14b8e02d65a17c94f38b05e2d7c619a4f8";
@@ -36,6 +41,9 @@ function raffle(
     | "outcome"
     | "grossSales"
     | "unsettledPot"
+    | "requestGraceDeadline"
+    | "uncreditedRefundLiability"
+    | "refundCreditedTicketIds"
     | "winningTicketId"
     | "winner"
     | "prizeClaimant"
@@ -43,6 +51,7 @@ function raffle(
     | "claimableQuote"
     | "drawRequestedAt"
     | "drawRequestedBy"
+    | "callbackDeadline"
   >,
 ): SandboxRaffle {
   const gross = partial.ticketPrice * BigInt(partial.tickets.length);
@@ -52,6 +61,9 @@ function raffle(
     outcome: "NONE",
     grossSales: gross,
     unsettledPot: gross,
+    requestGraceDeadline: partial.endTime + DRAW_REQUEST_GRACE_MS,
+    uncreditedRefundLiability: 0n,
+    refundCreditedTicketIds: [],
     winningTicketId: null,
     winner: null,
     prizeClaimant: null,
@@ -59,6 +71,7 @@ function raffle(
     claimableQuote: {},
     drawRequestedAt: null,
     drawRequestedBy: null,
+    callbackDeadline: null,
   };
 }
 
@@ -84,6 +97,7 @@ export function createSandbox(now: number): Sandbox {
         id: "0xd91a7f26b0c84e35a1f7d0b92c46e8137fa05d2b",
         factoryId: "38",
         sponsor: SPONSOR_A,
+        sponsorPrizeRecoveryRecipient: SPONSOR_A,
         prizeToken: "0xbd3531da5cf5857e7cfaa92426877b022e612cf8",
         prizeTokenId: "6873",
         prizeCollection: "Pudgy Penguins",
@@ -99,6 +113,7 @@ export function createSandbox(now: number): Sandbox {
         id: "0xe38c05b1a7f2d964c0e83b17d5a29f460c81b7e3",
         factoryId: "37",
         sponsor: SPONSOR_B,
+        sponsorPrizeRecoveryRecipient: SPONSOR_B,
         prizeToken: "0xed5af388653567af2f388e6224dc7c4b3241c544",
         prizeTokenId: "9605",
         prizeCollection: "Azuki",
@@ -114,6 +129,7 @@ export function createSandbox(now: number): Sandbox {
         id: "0xb7d41e08c95a2367fd0b8e1a4c72d9350fa6b21c",
         factoryId: "40",
         sponsor: SPONSOR_B,
+        sponsorPrizeRecoveryRecipient: SPONSOR_B,
         prizeToken: "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d",
         prizeTokenId: "8817",
         prizeCollection: "Bored Ape Yacht Club",
@@ -129,6 +145,7 @@ export function createSandbox(now: number): Sandbox {
         id: "0xa1f0c2e5d4b39871c60a5f2e8d7b4c1902e6f3a8",
         factoryId: "41",
         sponsor: SPONSOR_A,
+        sponsorPrizeRecoveryRecipient: SPONSOR_A,
         prizeToken: "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb",
         prizeTokenId: "3100",
         prizeCollection: "CryptoPunks",
@@ -145,6 +162,7 @@ export function createSandbox(now: number): Sandbox {
         id: "0xc2e83b17f409a56d1c7b0e94a3d82f65017c9ba4",
         factoryId: "39",
         sponsor: SPONSOR_C,
+        sponsorPrizeRecoveryRecipient: SPONSOR_C,
         prizeToken: "0x5af0d9827e0c53e4799bb226655a1de152a425a5",
         prizeTokenId: "1618",
         prizeCollection: "Milady Maker",
@@ -161,6 +179,7 @@ export function createSandbox(now: number): Sandbox {
         id: "0xf40b91c67d28a35e0b1c7f94a28d6350e91c4b7d",
         factoryId: "36",
         sponsor: PLAYER,
+        sponsorPrizeRecoveryRecipient: PLAYER,
         prizeToken: "0x8a90cab2b38dba80c64b7734e58ee1db38b8992e",
         prizeTokenId: "6914",
         prizeCollection: "Doodles",

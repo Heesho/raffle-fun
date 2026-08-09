@@ -1,138 +1,66 @@
 # Web application
 
-## Stack and routes
+The Next.js app uses indexed data for discovery/history and live registered-contract
+reads for every actionable state. Before a write it checks the wallet chain, rereads
+the lens/factory, derives raw-unit bigint amounts, and simulates the exact call.
 
-The app uses Next.js App Router, React, Tailwind CSS, Wagmi, Viem, TanStack Query,
-GraphQL Request, and Zod.
+| Route                | Purpose                                                                   |
+| -------------------- | ------------------------------------------------------------------------- |
+| `/`                  | discovery and state/outcome filtering                                     |
+| `/create`            | NFT validation, verified quote-token selection, approval, atomic creation |
+| `/raffle/[address]`  | live economics, deadlines, buy/draw/failure/refund/claim actions          |
+| `/profile/[address]` | positions and live claimability                                           |
+| `/activity`          | indexed lifecycle and claim history                                       |
+| `/docs`              | mechanic, guarantees, and external risks                                  |
 
-| Route                | Purpose                                                              |
-| -------------------- | -------------------------------------------------------------------- |
-| `/`                  | discover, search, filter, active/resolved empty/error/loading states |
-| `/create`            | NFT verification, exact economics, approval, create                  |
-| `/raffle/[address]`  | live state, economics, buy/draw/close/claims                         |
-| `/profile/[address]` | sponsored/positions plus live batch claimability                     |
-| `/activity`          | indexed purchases, resolutions, and claims                           |
-| `/docs`              | plain-language mechanic, examples, trust, risks                      |
+## Creation policy
 
-## Configuration
+The canonical factory rejects unverified quote tokens. The creation form offers only
+currently admitted tokens, limits the start delay to 7 days and sale duration to 30
+days, and supplies a sponsor recovery recipient (the connected sponsor by default).
+Decimals are display-only; parsed prices become exact raw token units.
 
-Copy `apps/web/.env.example`. Base Sepolia is the default; Base and local Anvil are also supported. Every supplied value is
-validated; empty optional endpoints remain unset. The chain deployment comes only from
-`@raffle-fun/config`. If it is absent, writes are disabled and the UI explains why.
+Issuer pause, blacklist, upgrade, and freeze controls remain residual risks even for
+an admitted token. Delisting blocks future creation but does not change existing
+raffle liabilities, so direct raffle pages continue to expose recovery and claim
+actions.
 
-## Interactive preview
+## Live lifecycle UI
 
-`NEXT_PUBLIC_DEMO_MODE` swaps the chain-backed app for a playable, offline
-model of the protocol, so the product can be demonstrated before a deployment
-and a subgraph exist.
+The raffle page displays state/outcome, request grace and callback deadlines, entropy
+sequence/timestamps, current prize claimant/recovery recipient, outstanding quote and
+native liabilities, refund liability, and whether the entropy fee read succeeded.
+Oracle fee failure does not hide failure-finalization buttons.
 
-| Value            | Behavior                                               |
-| ---------------- | ------------------------------------------------------ |
-| `auto` (default) | Preview only while `NEXT_PUBLIC_SUBGRAPH_URL` is unset |
-| `on`             | Always preview                                         |
-| `off`            | Never substitute simulated state                       |
+Available writes include purchase, draw request, missing-request finalization,
+callback-timeout finalization, comma-separated bounded refund-ticket crediting,
+no-sales closure, cancellation, and quote/prize/native claims. The SDK constructs each
+call; the UI never fabricates a winner, refund owner, claimant, or amount.
 
-`src/lib/sandbox/engine.ts` is a pure reducer mirroring
-`packages/contracts/src/Raffle.sol`, covered by `engine.test.ts`:
+For insufficient allowance, the app simulates ordered approve/buy behavior before
+requesting an EIP-5792 wallet batch and falls back to separately confirmed approval
+only if no batch was submitted. A receipt triggers direct refresh while the index
+catches up.
 
-- the advertised ticket price is the total paid; the aggregate 5% fee is allocated at resolution
-- tickets are sequential ids from 1, owned by their recipient
-- sales are uncapped and bounded only by `endTime`
-- the sponsor may cancel only while zero tickets have sold
-- settlement is two steps — `requestDraw` (paying the entropy fee), then a
-  callback that picks `(random % totalTickets) + 1`
-- **the callback moves no assets**; it credits pull claims, and the winner
-  claims the NFT or their 80% afterwards
+## Offline sandbox
 
-`store.tsx` holds the state outside React behind `useSyncExternalStore`,
-persists it to `localStorage`, schedules the stand-in oracle callback, and
-runs ambient buyers so open raffles move. Raffles the visitor sponsors are
-excluded from ambient buying so the cancel-before-sales path stays reachable.
+Demo mode is a pure reducer that mirrors normal settlement and the bounded failure
+model: three-day request grace, two-day callback timeout, `Refunding`, maximum 100-ID
+refund batches, frozen-owner credits, zero failure fee, and pull claims. The stand-in
+oracle normally responds after four seconds, while reducer tests exercise both exact
+failure boundaries. Demo state uses a versioned local-storage key and is never mixed
+with a live deployment.
 
-Sale windows are compressed to minutes and each open raffle offers a
-skip-ahead control, so a visitor can watch a sale close, request the draw and
-claim inside one sitting.
+## Content and numerical safety
 
-The preview presents as the real product — a connected account with balances
-rather than demo badges — with a single disclosure in the footer stating that
-balances, draws and prizes are simulated. Any build serving real users must
-set `NEXT_PUBLIC_DEMO_MODE=off`; with a subgraph configured, `auto` already
-does this. Outside preview mode there are no fake addresses, raffles, odds,
-volume, or activity.
+NFT metadata is untrusted. It is never rendered as HTML; Zod bounds fields; embedded
+credentials, active schemes, oversized responses, and SVG are rejected. HTTPS/IPFS
+image URLs use constrained handling.
 
-Prize artwork for the fixtures is vendored in `public/demo/` — see that
-directory's README for provenance and the licensing caveat.
-
-## Data authority
-
-- **Subgraph:** lists, search, profile discovery, history, aggregates.
-- **Direct chain:** registration, lifecycle state, outcome, price, threshold, sold
-  count, claims, account ticket balance, quote-token verification, and current
-  Entropy fee.
-
-Immediately before a write, the app checks the wallet chain, rereads the lens/factory,
-derives exact bigint amounts, and simulates. After a receipt it refreshes direct reads
-and marks the index as catching up.
-
-## Transaction behavior
-
-The contracts and SDK accept any contract-backed ERC20. The official creation flow
-enumerates the bounded verification registry and offers only currently verified
-tokens with readable decimals. Public discovery and activity hide unverified-token
-raffles by default. Profiles and direct links still render them with an explicit risk
-warning; purchases require acknowledgement, while claims remain available.
-
-For insufficient quote allowance, the app first simulates ordered `approve` and
-`buyTickets` calls with `eth_simulateV1`, then requests an EIP-5792 wallet batch with
-Viem's sequential fallback enabled. If batching fails before submission, it simulates
-and confirms approval, rereads raffle state, and only then simulates/submits purchase.
-
-Before purchase, the UI shows the exact gross payment, projected aggregate protocol
-fee, and projected distributable pot. Because the fee is allocated only at resolution,
-the projection can change as more tickets sell. Ticket sales remain open until the
-fixed closing time even after the minimum threshold is reached.
-
-## NFT metadata policy
-
-Metadata is never HTML-rendered. JSON fields are bounded with Zod. Display URLs allow
-HTTPS, local HTTP in development, or `ipfs://` transformed through a fixed HTTPS
-gateway. Embedded credentials, script/data schemes, redirects, oversized declared
-responses, and SVG images are rejected. Metadata and prize authenticity remain
-untrusted even after safe display.
-
-## Numerical safety
-
-Contract amounts are bigint end to end. `parseQuoteAmount` accepts the selected
-token's decimals, plain decimal strings, and rejects exponent notation, negatives,
-grouping separators, and excess decimals. Settlement helpers calculate the aggregate
-fee and payout splits with Solidity-equivalent floor rounding. The UI never combines
-monetary values from different quote tokens.
-
-## Design system
-
-Tokens live at the top of `src/app/globals.css`, sampled from the brand exports in
-`public/brand`: indigo ink `#1b2a9b`, hot pink `#ec2fa0`, sunshine `#ffd84d`, sky
-`#5aa9ff`, on near-white paper with soft pink/blue gradient blooms. Display and body
-text use Nunito via `next/font`.
-
-Component classes (`.card`, `.btn`, `.input`, `.chip`, `.progress-*`) are declared
-inside `@layer components` so Tailwind utilities still win — without that layer,
-`.btn { display: inline-flex }` silently overrides `hidden` and `md:hidden`.
-
-Ticket iconography is a dashed `.perforation` rule inside cards. The earlier
-pseudo-element notches painted an opaque paper color and visibly leaked wherever a
-card sat on a non-paper surface.
-
-`ThresholdBar` keeps visual headroom past the minimum and marks the flip point — the
-ticket count where the prize switches from the cash pot to the NFT. Sales beyond the
-minimum remain visible as an overshoot segment instead of collapsing into a full bar.
-
-## Accessibility and UX
-
-The interface is mobile-first, keyboard operable, contrast-aware, and respects
-`prefers-reduced-motion`. It provides status labels, transaction progress, skeletons,
-recoverable index errors, known-address explorer links, and explicit likely-but-not-
-guaranteed branch language.
+Contract amounts remain bigint end to end. Exponent notation, negatives, grouping,
+and excess decimals are rejected. Projected normal settlement uses the SDK's
+Solidity-equivalent floor math; failure refunds always display exact ticket price.
+Values from different quote tokens are never aggregated.
 
 ## Verification
 
@@ -142,6 +70,3 @@ pnpm --filter @raffle-fun/web typecheck
 pnpm --filter @raffle-fun/web test
 pnpm --filter @raffle-fun/web build
 ```
-
-The generated Open Graph image is a non-data brand asset. It does not represent a real
-prize or protocol activity.

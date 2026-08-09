@@ -1,11 +1,11 @@
 # raffle.fun
 
-raffle.fun is a permissionless, single-prize NFT raffle protocol for Base. A sponsor
-escrows one ERC721, selects any contract-backed ERC20 as the fixed payment token, and
+raffle.fun is a single-prize NFT raffle protocol for Base. A sponsor escrows one
+ERC721 and selects a factory-verified exact-transfer ERC20 as the fixed payment token;
 participants buy equal-chance ERC721 tickets. One Pyth Entropy v2 result selects the
 winning ticket. The minimum-ticket threshold determines whether that winner receives
-the NFT or a cash fallback. Token verification controls official discovery, not
-onchain creation.
+the NFT or a cash fallback. Fixed deadlines convert oracle liveness failure into exact
+ticket-owner refunds and prize recovery.
 
 > **Security status:** unaudited. The test suite, fuzzing, invariants, static analysis,
 > and review in this repository are not an independent audit. Do not use this software
@@ -21,24 +21,23 @@ software does not provide or claim regulatory compliance.
 2. During the inclusive `startTime` and exclusive `endTime`, buyers pay the advertised
    gross ticket price. Each ticket is a sequential ERC721 ID beginning at 1.
 3. After the sale, anyone may pay the current Entropy fee to request the raffle's only
-   random result.
+   random result before the fixed three-day request deadline.
 4. The callback selects `(random % totalTickets) + 1`, snapshots that ticket's owner,
    chooses the economic branch, and creates pull claims. It transfers no asset.
-5. Claimants independently pull the raffle's selected quote token, excess native
-   currency, and the prize to safe destinations.
-
-There are no ticket refunds. If no tickets were sold, no randomness is requested and
-the sponsor reclaims the prize.
+5. If no request completes by that deadline, or an accepted request remains unresolved
+   for two days, anyone opens deterministic refunds: no winner/fee/proceeds, exactly
+   one ticket-price refund per sold ticket, and prize recovery.
+6. Claimants independently pull quote tokens, excess native currency, and the prize.
 
 ## Roles
 
-- **Sponsor:** owns and escrows the prize, fixes price/threshold/times, and receives
-  the sponsor-side settlement.
+- **Sponsor:** owns and escrows the prize, fixes price/threshold/times and an immutable
+  prize-recovery recipient, and receives sponsor-side normal settlement.
 - **Buyer:** pays gross ticket cost; tickets may be minted to another recipient.
 - **Ticket holder:** owns transferable odds before the draw request. The holder of the
   winning ticket at callback time is snapshotted as winner.
 - **Protocol treasury:** receives the fixed 5% protocol fee when a raffle resolves.
-- **Factory owner:** administers new creation, quote-token verification labels, and
+- **Factory owner:** administers new creation, quote-token admission, and
   future treasury capture; it has no custody or settlement power over existing
   raffles.
 - **Pyth Entropy:** supplies and replays the one requested random sequence.
@@ -63,9 +62,17 @@ the sponsor reclaims the prize.
 
 ### No sales
 
-After `endTime`, anyone calls `closeNoSales`; the sponsor reclaims the NFT and no quote
-claim is created. Before any sale, the sponsor may instead cancel. Ticket 1 permanently
-removes that cancellation power.
+After `endTime`, anyone calls `closeNoSales`; the fixed recovery recipient claims the
+NFT and no quote claim is created. Before any sale, the sponsor may instead cancel.
+Ticket 1 permanently removes that cancellation power.
+
+### Failed draw and refunds
+
+If no draw request successfully completes by `endTime + 3 days`, or no callback wins
+by `drawRequestedAt + 2 days`, anyone enters `Refunding`. The fixed recovery recipient
+claims the NFT. Permissionless batches of at most 100 ticket IDs credit exactly one
+`ticketPrice` to each ticket's frozen owner. The protocol fee and sponsor proceeds are
+zero. Uncredited tickets remain frozen; credited tickets may move as souvenirs.
 
 ## Fee model
 
@@ -102,9 +109,9 @@ Every ticket has equal probability. The last ticket is included and a one-ticket
 raffle always selects ticket 1. `oddsFor(account)` returns
 `ticketBalance × 1e18 / totalTickets`.
 
-Tickets transfer normally while `Active`, freeze while `DrawRequested`, and resume
-after resolution as souvenirs. Post-resolution transfers cannot redirect a payout
-because the callback already snapshotted the winner.
+Tickets transfer normally while `Active` and freeze while `DrawRequested`. After a
+failed draw, each ticket stays frozen until its refund is credited to its current
+owner. Resolved or credited tickets may move as souvenirs without redirecting claims.
 
 ## State machine
 
@@ -114,10 +121,13 @@ stateDiagram-v2
   AwaitingPrize --> Active: exact prize deposited
   Active --> Cancelled: sponsor cancels, zero sales
   Active --> Resolved: closeNoSales, zero sales after end
-  Active --> DrawRequested: requestDraw, sold > 0 after end
+  Active --> DrawRequested: request before grace deadline
+  Active --> Refunding: request grace expires
   DrawRequested --> Resolved: matching Entropy callback
+  DrawRequested --> Refunding: callback timeout
   Cancelled --> [*]: sponsor claims prize
-  Resolved --> [*]: pull claims complete independently
+  Resolved --> [*]: pull claims
+  Refunding --> [*]: batched refund credits + pull claims
 ```
 
 Boundary details are in [docs/STATE-MACHINE.md](docs/STATE-MACHINE.md).
@@ -137,7 +147,9 @@ The callback:
 - performs bounded storage updates only;
 - records the branch, amounts, claimant, winner, and ticket.
 
-Provider reveal delay and callback retry/replay are external liveness dependencies.
+At the callback timeout boundary, callback and timeout are simultaneously valid; the
+first included terminal transition wins and the other becomes harmless. Oracle
+availability remains external until the deterministic failure deadline.
 See [docs/RANDOMNESS.md](docs/RANDOMNESS.md).
 
 ## Architecture
@@ -147,7 +159,7 @@ flowchart LR
   User["Wallet / web app"] -->|direct reads + simulated writes| Factory["RaffleFactory"]
   Factory -->|CREATE2 EIP-1167| Raffle["Immutable Raffle clone"]
   Sponsor["Sponsor ERC721"] -->|exact safe transfer| Raffle
-  Raffle --> Quote["Selected contract-backed quote token"]
+  Raffle --> Quote["Factory-admitted exact-transfer quote token"]
   Raffle <-->|requestV2 / callback| Pyth["Pyth Entropy v2"]
   Lens["RaffleLens"] -->|bounded, registry-gated views| Raffle
   Factory --> Events["Factory + raffle events"]
@@ -159,11 +171,11 @@ flowchart LR
 
 ### Contract map
 
-| Contract        | Purpose                                                                                   | Custody/admin                               |
-| --------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------- |
-| `RaffleFactory` | Immutable implementation reference, clone registry, token verification, creation controls | Ownable2Step; never custodies raffle assets |
-| `Raffle`        | Prize escrow, ticket ERC721, accounting, Entropy consumer, pull claims                    | No admin, rescue, or upgrade path           |
-| `RaffleLens`    | Bounded live views for registered clones                                                  | Stateless and read-only                     |
+| Contract        | Purpose                                                                      | Custody/admin                               |
+| --------------- | ---------------------------------------------------------------------------- | ------------------------------------------- |
+| `RaffleFactory` | Immutable implementation, clone registry, token admission, creation controls | Ownable2Step; never custodies raffle assets |
+| `Raffle`        | Prize escrow, ticket ERC721, accounting, Entropy consumer, pull claims       | No admin, rescue, or upgrade path           |
+| `RaffleLens`    | Bounded live views for registered clones                                     | Stateless and read-only                     |
 
 More detail: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
@@ -290,11 +302,10 @@ runs each fuzz case 1,000 times and each invariant 256 × 64 calls. CI raises th
 10,000 fuzz cases and 1,000 × 256 invariant calls. Hardhat 3 owns Ignition and
 Viem-compatible end-to-end journeys.
 
-Gas expectations are committed in `packages/contracts/.gas-snapshot`. The production
-contracts currently measure 100% line, statement, branch, and function coverage.
-Deployment scripts, test-only mocks, and test handlers are excluded from that
-production metric; the checked-in coverage gate enforces at least 95% lines and 90%
-branches. Coverage is not a security proof.
+Gas expectations are committed in `packages/contracts/.gas-snapshot`. Deployment
+scripts, test-only mocks, and test handlers are excluded from the production coverage
+metric; the checked-in gate enforces at least 95% lines and 90% branches. Coverage is
+not a security proof.
 
 ## Subgraph development
 
@@ -375,16 +386,17 @@ await buyTickets(
 
 Stable factory/raffle events include token-verification updates, creation, prize
 deposit, aggregate purchase, draw request, callback ignored, resolution,
-cancellation/no-sales, quote/native claims, prize claim, and standard ticket
-`Transfer`. The subgraph derives protocol, raffle, account, ticket, purchase,
-resolution, claim, transfer, and daily aggregate entities without unbounded arrays.
+cancellation/no-sales, draw failure, per-ticket refund credit, quote/native claims,
+prize claim, and standard ticket `Transfer`. The subgraph reconstructs deadlines,
+refund liabilities and owners, normal/failure outcomes, claims, transfers, and
+per-token aggregates without unbounded entity arrays.
 
 ## Admin powers and limitations
 
 The factory owner can:
 
 - change the treasury captured by **new** raffles;
-- mark or unmark up to 32 quote tokens as verified for official discovery;
+- admit or remove up to 32 quote tokens for future raffle creation;
 - pause **new creation**;
 - transfer two-step factory ownership.
 
@@ -397,17 +409,18 @@ The factory owner cannot:
 
 ## Trust assumptions, known risks, and non-goals
 
-- Entropy must eventually callback or replay the same sequence.
-- Any contract-backed quote token can be selected. A token may exercise issuer-level
-  controls, rebase, blacklist accounts, or block transfers. Exact balance-delta checks
-  reject taxed transfers during purchase but cannot guarantee future claims.
+- Entropy supplies the normal result, but a missing request or callback reaches a
+  deterministic refund path after fixed deadlines.
+- Only factory-admitted exact-transfer, non-rebasing quote tokens are supported.
+  Issuer pause, blacklist, upgrade, or freeze controls remain residual risks; exact
+  inbound/outbound delta checks reject taxed behavior without curing issuer control.
 - Prize contracts and metadata may be malicious, mutable, or counterfeit.
 - Users evaluate sponsor, authenticity, price, and threshold.
 - The subgraph may lag; the chain is authoritative.
-- v1 supports one ERC721 prize and one immutable contract-backed quote token per
-  raffle. Verification changes discovery only and never changes raffle behavior.
-- There is no refund branch, arbitrary proceeds recipient, public burn, custody
-  multicall, upgradeability, or owner rescue.
+- v1 supports one ERC721 prize and one immutable quote token per raffle. Admission
+  changes apply only to future creation and never mutate existing liabilities.
+- There is a bounded failed-draw refund branch, but no arbitrary proceeds recipient,
+  public burn, custody multicall, upgradeability, or owner rescue.
 
 Read [docs/THREAT-MODEL.md](docs/THREAT-MODEL.md) before deployment.
 

@@ -98,8 +98,8 @@ export default function DocsPage() {
               title="Cash fallback"
               items={[
                 "Winner claims 80% of the distributable pot",
-                "Sponsor claims 20% and reclaims the NFT",
-                "There are no ticket refunds",
+                "Sponsor claims 20%; fixed recovery recipient claims the NFT",
+                "The aggregate protocol fee is 5%",
               ]}
             />
           </div>
@@ -107,11 +107,24 @@ export default function DocsPage() {
             <h3 className="text-2xl">If nobody buys a ticket</h3>
             <p className="mt-3 text-sm leading-6 text-[var(--ink-2)]">
               Anyone can close the raffle after its end without requesting
-              randomness. The sponsor reclaims the NFT and no quote-token
-              payouts are created. A sponsor may also cancel at any point while
-              zero tickets have sold. Once ticket 1 is sold the prize is locked:
-              it can only reach the winner or return to the sponsor through
-              settlement.
+              randomness. The fixed recovery recipient claims the NFT and no
+              quote-token payouts are created. A sponsor may also cancel at any
+              point while zero tickets have sold. Once ticket 1 is sold the
+              prize is locked: it can only reach the winner or return to the
+              recovery recipient through settlement.
+            </p>
+          </div>
+          <div className="mt-5 rounded-2xl bg-[var(--amber-wash)] p-6">
+            <h3 className="text-2xl text-[var(--amber-ink)]">
+              If randomness is unavailable
+            </h3>
+            <p className="mt-3 text-sm leading-6 text-[var(--amber-ink)]">
+              Anyone can open refunds if no request succeeds within three days
+              after the sale, or if an accepted request has no callback for two
+              days. No winner, sponsor proceeds, or protocol fee is awarded.
+              Bounded batches credit exactly one ticket price to each
+              ticket&apos;s frozen owner, and the recovery recipient claims the
+              NFT.
             </p>
           </div>
         </section>
@@ -182,18 +195,19 @@ export default function DocsPage() {
             />
           </div>
           <p className="mt-5 text-sm leading-6 text-[var(--ink-2)]">
-            Oracle delivery is not instantaneous. If a callback fails, Pyth
-            retry or replay tooling must deliver the same sequence; the raffle
-            cannot request a replacement result. This preserves uniqueness but
-            creates an external liveness dependency.
+            Oracle delivery is not instantaneous and no replacement sequence is
+            allowed. At the callback deadline, a callback and timeout
+            transaction may both be valid; the first included terminal action
+            wins. A timeout opens refunds, while late callbacks after failure
+            are ignored.
           </p>
         </section>
 
         <section className="mt-24 scroll-mt-8" id="transfers">
           <DocHeading
             eyebrow="Ticket ownership"
-            title="Transferable before and after the pending draw."
-            text="Tickets move like normal ERC721s while a raffle is active. Transfers freeze only while randomness is pending, preventing ownership changes between request and winner snapshot. After resolution, tickets may move again as souvenirs."
+            title="Ownership fixes both winners and refunds."
+            text="Tickets move while a raffle is active and freeze while randomness is pending. In a failed draw, an uncredited ticket stays frozen until its current owner receives the refund credit. Resolved and credited tickets may move as souvenirs."
           />
           <div className="card mt-8 grid gap-5 p-6 sm:grid-cols-3">
             <Fact
@@ -219,7 +233,7 @@ export default function DocsPage() {
           <DocHeading
             eyebrow="Trust model"
             title="Know what code can—and cannot—protect."
-            text="Existing raffle clones are non-upgradeable. Factory administration affects future creation and payment-token discovery labels—not an active raffle’s fixed economics."
+            text="Existing raffle clones are non-upgradeable. Factory administration affects future creation, treasury, and payment-token admission—not an active raffle’s fixed economics or recovery paths."
           />
           <div className="mt-8 grid gap-5 lg:grid-cols-2">
             <div className="card p-7">
@@ -229,9 +243,7 @@ export default function DocsPage() {
               </div>
               <ul className="mt-5 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--ink-2)]">
                 <li>Change the treasury captured by newly created raffles</li>
-                <li>
-                  Verify or unverify payment tokens for official discovery
-                </li>
+                <li>Admit or remove payment tokens for future creation</li>
                 <li>Pause creation of new raffles</li>
                 <li>Transfer two-step factory ownership</li>
               </ul>
@@ -265,13 +277,14 @@ export default function DocsPage() {
                 or worthless.
               </li>
               <li>
-                Any contract-backed quote token can be selected. Unverified and
-                verified tokens may still freeze, rebase, blacklist accounts, or
-                prevent claims.
+                New raffles accept only factory-admitted exact-transfer tokens.
+                Their issuers may still upgrade, pause, freeze, blacklist, or
+                otherwise prevent later claims.
               </li>
               <li>
-                Pyth Entropy availability and replay tooling are external
-                liveness dependencies.
+                Deadlines recover protocol liveness, but cannot overcome a
+                halted/reorganized chain, censorship of all recovery calls, or
+                lost keys.
               </li>
               <li>
                 The subgraph can lag or fail. Direct chain state is

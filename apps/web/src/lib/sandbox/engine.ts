@@ -9,6 +9,7 @@
  *  - sales are uncapped and only bounded by `endTime`
  *  - the sponsor may cancel only while zero tickets have sold
  *  - settlement is two steps: request the draw, then the oracle callback
+ *  - missed request/callback deadlines enter bounded, ticket-owned refunds
  *  - the callback moves no assets; it credits pull claims
  *
  * All amounts are bigint wei. No wallet, chain, or network is involved.
@@ -17,19 +18,24 @@
 export const PROTOCOL_FEE_PERCENT = 5n;
 export const CASH_WINNER_PERCENT = 80n;
 export const MAX_TICKETS_PER_PURCHASE = 100;
+export const MAX_REFUND_BATCH_SIZE = 100;
+export const DRAW_REQUEST_GRACE_MS = 3 * 24 * 60 * 60 * 1_000;
+export const CALLBACK_TIMEOUT_MS = 2 * 24 * 60 * 60 * 1_000;
 
 /** A stand-in for the Pyth Entropy fee, payable in native ETH. */
 export const ENTROPY_FEE = 1_500_000_000_000_000n; // 0.0015 ETH
 
 export type SandboxState =
-  "ACTIVE" | "DRAW_REQUESTED" | "RESOLVED" | "CANCELLED";
+  "ACTIVE" | "DRAW_REQUESTED" | "RESOLVED" | "CANCELLED" | "REFUNDING";
 
 export type SandboxOutcome =
   | "NONE"
   | "NFT_AWARDED"
   | "CASH_FALLBACK"
   | "NO_SALES"
-  | "CANCELLED_BEFORE_SALE";
+  | "CANCELLED_BEFORE_SALE"
+  | "DRAW_NOT_REQUESTED"
+  | "DRAW_TIMED_OUT";
 
 export interface SandboxTicket {
   readonly id: number;
@@ -40,6 +46,7 @@ export interface SandboxRaffle {
   readonly id: string;
   readonly factoryId: string;
   readonly sponsor: string;
+  readonly sponsorPrizeRecoveryRecipient: string;
   readonly prizeToken: string;
   readonly prizeTokenId: string;
   readonly prizeCollection: string;
@@ -50,12 +57,15 @@ export interface SandboxRaffle {
   readonly minimumTickets: number;
   readonly startTime: number;
   readonly endTime: number;
+  readonly requestGraceDeadline: number;
 
   readonly state: SandboxState;
   readonly outcome: SandboxOutcome;
   readonly tickets: readonly SandboxTicket[];
   readonly grossSales: bigint;
   readonly unsettledPot: bigint;
+  readonly uncreditedRefundLiability: bigint;
+  readonly refundCreditedTicketIds: readonly number[];
 
   readonly winningTicketId: number | null;
   readonly winner: string | null;
@@ -67,6 +77,7 @@ export interface SandboxRaffle {
   /** Set when the draw is requested; the callback lands a moment later. */
   readonly drawRequestedAt: number | null;
   readonly drawRequestedBy: string | null;
+  readonly callbackDeadline: number | null;
 }
 
 export interface SandboxWallet {
@@ -96,7 +107,9 @@ export interface SandboxEvent {
     | "QUOTE_CLAIM"
     | "PRIZE_CLAIM"
     | "CANCELLED"
-    | "NO_SALES";
+    | "NO_SALES"
+    | "DRAW_FAILURE"
+    | "REFUND_CREDIT";
   readonly account: string;
   readonly amount: bigint | null;
   readonly at: number;
@@ -141,7 +154,30 @@ export function canRequestDraw(raffle: SandboxRaffle, now: number): boolean {
   return (
     raffle.state === "ACTIVE" &&
     now >= raffle.endTime &&
+    now < raffle.requestGraceDeadline &&
     raffle.tickets.length > 0
+  );
+}
+
+export function canFinalizeUnrequestedDraw(
+  raffle: SandboxRaffle,
+  now: number,
+): boolean {
+  return (
+    raffle.state === "ACTIVE" &&
+    raffle.tickets.length > 0 &&
+    now >= raffle.requestGraceDeadline
+  );
+}
+
+export function canFinalizeTimedOutDraw(
+  raffle: SandboxRaffle,
+  now: number,
+): boolean {
+  return (
+    raffle.state === "DRAW_REQUESTED" &&
+    raffle.callbackDeadline !== null &&
+    now >= raffle.callbackDeadline
   );
 }
 
@@ -238,6 +274,11 @@ export function requestDraw(
   const raffle = requireRaffle(sandbox, raffleId);
   if (raffle.state !== "ACTIVE") fail("The draw is not available.");
   if (now < raffle.endTime) fail("The sale has not ended yet.");
+  if (now >= raffle.requestGraceDeadline) {
+    fail(
+      "The draw-request grace period has expired; finalize refunds instead.",
+    );
+  }
   if (raffle.tickets.length === 0) {
     fail("No tickets were sold, so there is nothing to draw.");
   }
@@ -250,6 +291,7 @@ export function requestDraw(
     state: "DRAW_REQUESTED",
     drawRequestedAt: now,
     drawRequestedBy: sandbox.player,
+    callbackDeadline: now + CALLBACK_TIMEOUT_MS,
   };
 
   return replace(
@@ -314,7 +356,7 @@ export function resolveDraw(
     outcome: met ? "NFT_AWARDED" : "CASH_FALLBACK",
     winningTicketId,
     winner,
-    prizeClaimant: met ? winner : raffle.sponsor,
+    prizeClaimant: met ? winner : raffle.sponsorPrizeRecoveryRecipient,
     unsettledPot: 0n,
     claimableQuote: claimable,
   };
@@ -336,6 +378,99 @@ export function resolveDraw(
   );
 }
 
+function finalizeDrawFailure(
+  sandbox: Sandbox,
+  raffle: SandboxRaffle,
+  outcome: "DRAW_NOT_REQUESTED" | "DRAW_TIMED_OUT",
+  now: number,
+): Sandbox {
+  const updated: SandboxRaffle = {
+    ...raffle,
+    state: "REFUNDING",
+    outcome,
+    prizeClaimant: raffle.sponsorPrizeRecoveryRecipient,
+    unsettledPot: 0n,
+    uncreditedRefundLiability: raffle.grossSales,
+  };
+  return replace(sandbox, updated, {
+    id: eventId(raffle.id, "DRAW_FAILURE", now),
+    raffleId: raffle.id,
+    kind: "DRAW_FAILURE",
+    account: sandbox.player,
+    amount: raffle.grossSales,
+    at: now,
+    detail: outcome,
+  });
+}
+
+export function finalizeUnrequestedDraw(
+  sandbox: Sandbox,
+  raffleId: string,
+  now: number,
+): Sandbox {
+  const raffle = requireRaffle(sandbox, raffleId);
+  if (!canFinalizeUnrequestedDraw(raffle, now)) {
+    fail("The draw-request grace period has not expired.");
+  }
+  return finalizeDrawFailure(sandbox, raffle, "DRAW_NOT_REQUESTED", now);
+}
+
+export function finalizeTimedOutDraw(
+  sandbox: Sandbox,
+  raffleId: string,
+  now: number,
+): Sandbox {
+  const raffle = requireRaffle(sandbox, raffleId);
+  if (!canFinalizeTimedOutDraw(raffle, now)) {
+    fail("The oracle callback timeout has not expired.");
+  }
+  return finalizeDrawFailure(sandbox, raffle, "DRAW_TIMED_OUT", now);
+}
+
+export function creditTicketRefunds(
+  sandbox: Sandbox,
+  raffleId: string,
+  ticketIds: readonly number[],
+  now: number,
+): Sandbox {
+  const raffle = requireRaffle(sandbox, raffleId);
+  if (raffle.state !== "REFUNDING") fail("This raffle is not refunding.");
+  if (ticketIds.length === 0 || ticketIds.length > MAX_REFUND_BATCH_SIZE) {
+    fail(`Credit between 1 and ${MAX_REFUND_BATCH_SIZE} ticket refunds.`);
+  }
+  if (new Set(ticketIds).size !== ticketIds.length) {
+    fail("A ticket appears more than once in this refund batch.");
+  }
+
+  const credited = new Set(raffle.refundCreditedTicketIds);
+  const claimable: Record<string, bigint> = { ...raffle.claimableQuote };
+  for (const ticketId of ticketIds) {
+    const ticket = raffle.tickets[ticketId - 1];
+    if (ticket === undefined || ticket.id !== ticketId) fail("Unknown ticket.");
+    if (credited.has(ticketId)) fail("A ticket refund was already credited.");
+    credited.add(ticketId);
+    claimable[ticket.owner] =
+      (claimable[ticket.owner] ?? 0n) + raffle.ticketPrice;
+  }
+
+  const amount = raffle.ticketPrice * BigInt(ticketIds.length);
+  const updated: SandboxRaffle = {
+    ...raffle,
+    claimableQuote: claimable,
+    refundCreditedTicketIds: [...credited],
+    uncreditedRefundLiability: raffle.uncreditedRefundLiability - amount,
+  };
+  return replace(sandbox, updated, {
+    id: eventId(raffle.id, "REFUND_CREDIT", now),
+    raffleId: raffle.id,
+    kind: "REFUND_CREDIT",
+    account: sandbox.player,
+    amount,
+    at: now,
+    detail: `${ticketIds.length} ticket refund${ticketIds.length === 1 ? "" : "s"}`,
+  });
+}
+
 export function closeNoSales(
   sandbox: Sandbox,
   raffleId: string,
@@ -349,7 +484,7 @@ export function closeNoSales(
     ...raffle,
     state: "RESOLVED",
     outcome: "NO_SALES",
-    prizeClaimant: raffle.sponsor,
+    prizeClaimant: raffle.sponsorPrizeRecoveryRecipient,
   };
   return replace(sandbox, updated, {
     id: eventId(raffle.id, "NO_SALES", now),
@@ -379,7 +514,7 @@ export function cancelBeforeSales(
     ...raffle,
     state: "CANCELLED",
     outcome: "CANCELLED_BEFORE_SALE",
-    prizeClaimant: raffle.sponsor,
+    prizeClaimant: raffle.sponsorPrizeRecoveryRecipient,
   };
   return replace(sandbox, updated, {
     id: eventId(raffle.id, "CANCELLED", now),
@@ -400,7 +535,11 @@ export function claimPrize(
   now: number,
 ): Sandbox {
   const raffle = requireRaffle(sandbox, raffleId);
-  if (raffle.state !== "RESOLVED" && raffle.state !== "CANCELLED") {
+  if (
+    raffle.state !== "RESOLVED" &&
+    raffle.state !== "CANCELLED" &&
+    raffle.state !== "REFUNDING"
+  ) {
     fail("This raffle has not settled yet.");
   }
   if (

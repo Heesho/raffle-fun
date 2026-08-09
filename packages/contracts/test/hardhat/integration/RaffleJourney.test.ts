@@ -68,7 +68,6 @@ describe("Raffle Fun integration", () => {
     assert.ok(requester);
 
     const quote = await viem.deployContract("MockERC20");
-    const unverifiedQuote = await viem.deployContract("MockERC20");
     const prize = await viem.deployContract("MockERC721");
     const entropy = await viem.deployContract("MockEntropyV2");
     const implementation = await viem.deployContract("Raffle");
@@ -95,7 +94,7 @@ describe("Raffle Fun integration", () => {
     const predicted = await factory.read.predictRaffleAddress([
       1n,
       sponsor.account.address,
-      unverifiedQuote.address,
+      quote.address,
       prize.address,
       1n,
     ]);
@@ -110,7 +109,8 @@ describe("Raffle Fun integration", () => {
       {
         prizeToken: prize.address,
         prizeTokenId: 1n,
-        quoteToken: unverifiedQuote.address,
+        quoteToken: quote.address,
+        sponsorPrizeRecoveryRecipient: sponsor.account.address,
         ticketPrice: 1_000_000n,
         minimumTickets: 3n,
         startTime: 0n,
@@ -125,22 +125,20 @@ describe("Raffle Fun integration", () => {
     assertAddressEqual(await factory.read.raffleById([1n]), predicted);
     assertAddressEqual(await prize.read.ownerOf([1n]), predicted);
     assert.equal(
-      await factory.read.isVerifiedQuoteToken([unverifiedQuote.address]),
-      false,
+      await factory.read.isVerifiedQuoteToken([quote.address]),
+      true,
     );
 
     const raffle = await viem.getContractAt("Raffle", predicted);
-    const buyerQuote = await viem.getContractAt(
-      "MockERC20",
-      unverifiedQuote.address,
-      { client: { wallet: buyer } },
-    );
+    const buyerQuote = await viem.getContractAt("MockERC20", quote.address, {
+      client: { wallet: buyer },
+    });
     const buyerRaffle = await viem.getContractAt("Raffle", predicted, {
       client: { wallet: buyer },
     });
     await wait(
       publicClient,
-      unverifiedQuote.write.mint([buyer.account.address, 2_000_000n]),
+      quote.write.mint([buyer.account.address, 2_000_000n]),
     );
     await wait(publicClient, buyerQuote.write.approve([predicted, 2_000_000n]));
     await wait(
@@ -197,14 +195,14 @@ describe("Raffle Fun integration", () => {
     const winnerRaffle = await viem.getContractAt("Raffle", predicted, {
       client: { wallet: buyerTwo },
     });
-    const winnerBalanceBefore = await unverifiedQuote.read.balanceOf([
+    const winnerBalanceBefore = await quote.read.balanceOf([
       buyerTwo.account.address,
     ]);
     await wait(
       publicClient,
       winnerRaffle.write.claimQuote([buyerTwo.account.address]),
     );
-    const winnerBalanceAfter = await unverifiedQuote.read.balanceOf([
+    const winnerBalanceAfter = await quote.read.balanceOf([
       buyerTwo.account.address,
     ]);
     assert.equal(winnerBalanceAfter - winnerBalanceBefore, 1_520_000n);
@@ -217,6 +215,126 @@ describe("Raffle Fun integration", () => {
       sponsorRaffle.write.claimPrize([sponsor.account.address]),
     );
     assertAddressEqual(await prize.read.ownerOf([1n]), sponsor.account.address);
+  });
+
+  it("completes grace-expiry, bounded refund, and fixed claim-for recovery", async () => {
+    const { networkHelpers, viem } = await network.create({
+      network: "hardhatBase",
+    });
+    const publicClient = await viem.getPublicClient();
+    const [owner, sponsor, buyer, recovery, treasury, finalizer] =
+      await viem.getWalletClients();
+    assert.ok(owner);
+    assert.ok(sponsor);
+    assert.ok(buyer);
+    assert.ok(recovery);
+    assert.ok(treasury);
+    assert.ok(finalizer);
+
+    const quote = await viem.deployContract("MockERC20");
+    const prize = await viem.deployContract("MockERC721");
+    const entropy = await viem.deployContract("MockEntropyV2");
+    const implementation = await viem.deployContract("Raffle");
+    const factory = await viem.deployContract("RaffleFactory", [
+      implementation.address,
+      [quote.address],
+      entropy.address,
+      treasury.account.address,
+      300_000,
+      owner.account.address,
+    ]);
+
+    await wait(publicClient, prize.write.mint([sponsor.account.address, 9n]));
+    const sponsorPrize = await viem.getContractAt("MockERC721", prize.address, {
+      client: { wallet: sponsor },
+    });
+    await wait(
+      publicClient,
+      sponsorPrize.write.setApprovalForAll([factory.address, true]),
+    );
+
+    const endTime = BigInt(await networkHelpers.time.latest()) + 60n;
+    const sponsorFactory = await viem.getContractAt(
+      "RaffleFactory",
+      factory.address,
+      { client: { wallet: sponsor } },
+    );
+    await wait(
+      publicClient,
+      sponsorFactory.write.createRaffle([
+        {
+          prizeToken: prize.address,
+          prizeTokenId: 9n,
+          quoteToken: quote.address,
+          sponsorPrizeRecoveryRecipient: recovery.account.address,
+          ticketPrice: 1_000_000n,
+          minimumTickets: 2n,
+          startTime: 0n,
+          endTime,
+          metadataURI: "ipfs://integration-refund",
+        },
+      ]),
+    );
+
+    const raffleAddress = await factory.read.raffleById([1n]);
+    const raffle = await viem.getContractAt("Raffle", raffleAddress);
+    const buyerQuote = await viem.getContractAt("MockERC20", quote.address, {
+      client: { wallet: buyer },
+    });
+    const buyerRaffle = await viem.getContractAt("Raffle", raffleAddress, {
+      client: { wallet: buyer },
+    });
+    await wait(
+      publicClient,
+      quote.write.mint([buyer.account.address, 2_000_000n]),
+    );
+    await wait(
+      publicClient,
+      buyerQuote.write.approve([raffleAddress, 2_000_000n]),
+    );
+    await wait(
+      publicClient,
+      buyerRaffle.write.buyTickets([buyer.account.address, 2n]),
+    );
+
+    const requestGraceDeadline = await raffle.read.requestGraceDeadline();
+    await networkHelpers.time.increaseTo(requestGraceDeadline);
+    const finalizerRaffle = await viem.getContractAt("Raffle", raffleAddress, {
+      client: { wallet: finalizer },
+    });
+    await wait(publicClient, finalizerRaffle.write.finalizeUnrequestedDraw());
+    assert.equal(await raffle.read.state(), 6);
+    assert.equal(await raffle.read.outcome(), 5);
+    assert.equal(await raffle.read.uncreditedRefundLiability(), 2_000_000n);
+    assert.equal(await raffle.read.totalClaimableQuote(), 0n);
+
+    await wait(
+      publicClient,
+      finalizerRaffle.write.creditTicketRefunds([[1n, 2n]]),
+    );
+    assert.equal(await raffle.read.uncreditedRefundLiability(), 0n);
+    assert.equal(
+      await raffle.read.claimableQuote([buyer.account.address]),
+      2_000_000n,
+    );
+    const buyerBalanceBefore = await quote.read.balanceOf([
+      buyer.account.address,
+    ]);
+    await wait(
+      publicClient,
+      finalizerRaffle.write.claimQuoteFor([buyer.account.address]),
+    );
+    assert.equal(
+      (await quote.read.balanceOf([buyer.account.address])) -
+        buyerBalanceBefore,
+      2_000_000n,
+    );
+
+    await wait(publicClient, finalizerRaffle.write.claimPrizeFor());
+    assertAddressEqual(
+      await prize.read.ownerOf([9n]),
+      recovery.account.address,
+    );
   });
 });
 

@@ -1,39 +1,20 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity 0.8.36;
 
 import { IRaffle } from "./IRaffle.sol";
 
-/// @title IRaffleLens
-/// @notice Read-only bounded aggregation interface for chain-authoritative web application state.
+/**
+ * @title raffle.fun Raffle Lens Interface
+ * @author Heesho
+ * @notice Defines bounded, wallet-oriented reads for canonical raffle.fun clones.
+ * @dev Every implementation must authenticate clone addresses through its immutable factory before forwarding reads.
+ * @custom:version 1.0.0
+ */
 interface IRaffleLens {
-    /// @notice Chain state and account-specific action availability for one canonical raffle.
-    /// @param factoryId Numeric factory identifier.
-    /// @param registered Whether the supplied address belongs to the configured factory.
-    /// @param raffle Raffle clone address.
-    /// @param state Current lifecycle state.
-    /// @param outcome Terminal outcome or none.
-    /// @param sponsor Prize sponsor.
-    /// @param protocolTreasury Treasury captured by this clone.
-    /// @param quoteToken Gross payment token.
-    /// @param prizeToken Prize NFT contract.
-    /// @param prizeTokenId Prize token ID.
-    /// @param ticketPrice Gross price per ticket.
-    /// @param minimumTickets NFT-outcome threshold.
-    /// @param startTime Inclusive start timestamp.
-    /// @param endTime Exclusive end timestamp.
-    /// @param totalTickets Tickets sold.
-    /// @param grossSales Historical gross sales.
-    /// @param unsettledPot Aggregate gross sales awaiting resolution.
-    /// @param winningTicketId Resolved winning ticket.
-    /// @param winner Snapshotted resolved winner.
-    /// @param accountTicketBalance Tickets currently owned by the requested account.
-    /// @param accountQuoteClaim Quote-token accrual for the requested account.
-    /// @param accountIsPrizeClaimant Whether the requested account may claim the prize.
-    /// @param entropyFee Current draw-request fee.
-    /// @param canBuy Whether a purchase is currently accepted.
-    /// @param canDraw Whether the only draw request is currently available.
-    /// @param canClaimQuote Whether the requested account has a quote claim.
-    /// @param canClaimPrize Whether the requested account can pull the unclaimed prize.
+    /**
+     * @notice Chain-authoritative lifecycle, liability, deadline, and account action data for one raffle.
+     * @dev `entropyFeeAvailable` distinguishes a real zero fee from an oracle fee read that currently reverts.
+     */
     struct RaffleView {
         uint256 factoryId;
         bool registered;
@@ -41,7 +22,9 @@ interface IRaffleLens {
         IRaffle.RaffleState state;
         IRaffle.RaffleOutcome outcome;
         address sponsor;
+        address sponsorPrizeRecoveryRecipient;
         address protocolTreasury;
+        address prizeClaimant;
         address quoteToken;
         address prizeToken;
         uint256 prizeTokenId;
@@ -49,38 +32,46 @@ interface IRaffleLens {
         uint256 minimumTickets;
         uint256 startTime;
         uint256 endTime;
+        uint256 requestGraceDeadline;
+        uint256 drawRequestedAt;
+        uint256 callbackDeadline;
+        uint64 entropySequenceNumber;
         uint256 totalTickets;
         uint256 grossSales;
         uint256 unsettledPot;
+        uint256 uncreditedRefundLiability;
+        uint256 totalClaimableQuote;
+        uint256 totalClaimableNative;
+        uint256 accountedQuoteBalance;
+        uint256 accountedNativeBalance;
         uint256 winningTicketId;
         address winner;
         uint256 accountTicketBalance;
         uint256 accountQuoteClaim;
+        uint256 accountNativeClaim;
         bool accountIsPrizeClaimant;
         uint256 entropyFee;
+        bool entropyFeeAvailable;
         bool canBuy;
         bool canDraw;
+        bool canFinalizeUnrequestedDraw;
+        bool canFinalizeTimedOutDraw;
         bool canClaimQuote;
+        bool canClaimNative;
         bool canClaimPrize;
     }
 
-    /// @notice Raised when a candidate address is not registered by the configured factory.
+    /// @notice Raised before any forwarded read when an address is not registered by the immutable factory.
     error UnregisteredRaffle(address raffle);
     /// @notice Raised when an aggregate request exceeds the explicit read bound.
     error BatchTooLarge(uint256 supplied, uint256 maximum);
-    /// @notice Raised when the configured factory is zero or has no runtime code.
+    /// @notice Raised when construction is attempted with a zero or code-less factory.
     error InvalidFactory(address factory);
 
-    /// @notice Returns chain-authoritative state for one canonical raffle and account.
-    /// @param raffle Canonical clone.
-    /// @param account Optional account for ticket and claim reads.
-    /// @return raffleView Aggregated state.
+    /// @notice Returns wallet-oriented state for one canonical raffle and optional account.
     function getRaffleState(address raffle, address account) external view returns (RaffleView memory raffleView);
 
-    /// @notice Returns chain-authoritative state for a bounded list of canonical raffles.
-    /// @param raffles Canonical clone addresses.
-    /// @param account Optional account for ticket and claim reads.
-    /// @return raffleViews Aggregated states in input order.
+    /// @notice Returns wallet-oriented state for a bounded list of canonical raffles.
     function getRaffleStates(address[] calldata raffles, address account)
         external
         view

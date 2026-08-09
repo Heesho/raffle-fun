@@ -21,6 +21,7 @@ export function getOrCreateProtocol(factory: Address): Protocol {
     protocol.activeCount = BigInt.zero();
     protocol.resolvedCount = BigInt.zero();
     protocol.cancelledCount = BigInt.zero();
+    protocol.refundingCount = BigInt.zero();
     protocol.nftAwardedCount = BigInt.zero();
     protocol.cashFallbackCount = BigInt.zero();
     protocol.totalTickets = BigInt.zero();
@@ -62,6 +63,7 @@ export function getOrCreateQuoteTokenStats(
     stats.settledVolume = BigInt.zero();
     stats.protocolFees = BigInt.zero();
     stats.quoteClaimed = BigInt.zero();
+    stats.refundedVolume = BigInt.zero();
     stats.save();
   }
   return stats;

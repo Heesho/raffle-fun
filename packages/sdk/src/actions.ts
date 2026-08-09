@@ -71,6 +71,47 @@ export async function requestDraw(
   return context.walletClient.writeContract(request);
 }
 
+export async function finalizeUnrequestedDraw(
+  context: ActionContext,
+  raffle: Address,
+): Promise<Hash> {
+  const { request } = await context.publicClient.simulateContract({
+    account: context.account,
+    address: raffle,
+    abi: raffleAbi,
+    functionName: "finalizeUnrequestedDraw",
+  });
+  return context.walletClient.writeContract(request);
+}
+
+export async function finalizeTimedOutDraw(
+  context: ActionContext,
+  raffle: Address,
+): Promise<Hash> {
+  const { request } = await context.publicClient.simulateContract({
+    account: context.account,
+    address: raffle,
+    abi: raffleAbi,
+    functionName: "finalizeTimedOutDraw",
+  });
+  return context.walletClient.writeContract(request);
+}
+
+export async function creditTicketRefunds(
+  context: ActionContext,
+  raffle: Address,
+  ticketIds: readonly bigint[],
+): Promise<Hash> {
+  const { request } = await context.publicClient.simulateContract({
+    account: context.account,
+    address: raffle,
+    abi: raffleAbi,
+    functionName: "creditTicketRefunds",
+    args: [ticketIds],
+  });
+  return context.walletClient.writeContract(request);
+}
+
 export async function closeNoSales(
   context: ActionContext,
   raffle: Address,
@@ -84,10 +125,7 @@ export async function closeNoSales(
   return context.walletClient.writeContract(request);
 }
 
-/**
- * The sponsor's only exit. Reverts once a single ticket has been sold, after
- * which the escrowed prize can move only through settlement.
- */
+/** Cancels only before any sale; sold raffles remain bounded by draw-failure deadlines. */
 export async function cancelBeforeSales(
   context: ActionContext,
   raffle: Address,
@@ -127,6 +165,34 @@ export async function claimPrize(
     abi: raffleAbi,
     functionName: "claimPrize",
     args: [to],
+  });
+  return context.walletClient.writeContract(request);
+}
+
+export async function claimPrizeFor(
+  context: ActionContext,
+  raffle: Address,
+): Promise<Hash> {
+  const { request } = await context.publicClient.simulateContract({
+    account: context.account,
+    address: raffle,
+    abi: raffleAbi,
+    functionName: "claimPrizeFor",
+  });
+  return context.walletClient.writeContract(request);
+}
+
+export async function claimQuoteFor(
+  context: ActionContext,
+  raffle: Address,
+  account: Address,
+): Promise<Hash> {
+  const { request } = await context.publicClient.simulateContract({
+    account: context.account,
+    address: raffle,
+    abi: raffleAbi,
+    functionName: "claimQuoteFor",
+    args: [account],
   });
   return context.walletClient.writeContract(request);
 }

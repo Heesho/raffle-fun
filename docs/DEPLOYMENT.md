@@ -1,98 +1,79 @@
 # Deployment runbook
 
-Hardhat Ignition is the production source of truth. The Foundry script is for local
-debugging and independent constructor/state verification.
+Hardhat Ignition is the canonical deployment pipeline. The Foundry script is an
+independent constructor/state comparison. Never deploy from an unclean or
+unreproducible checkout.
+
+## Frozen toolchain
+
+- Solidity `0.8.36`, exact pragmas, EVM target `cancun`;
+- OpenZeppelin Contracts and Contracts Upgradeable `5.6.1`;
+- Pyth Entropy Solidity SDK `2.2.1`;
+- forge-std commit `37a36ca389095b2f677abb07642634573ba7e265`;
+- Node `>=22.13 <23`, workspace `22.23.2`; pnpm `11.18.0`.
+
+Base supports Cancun semantics from Ecotone; changing the target requires a separate
+network compatibility review. Hardhat and the default Foundry profile must compile
+the same sources. The comparison Foundry profile additionally uses IR compilation.
 
 ## Non-negotiable gates
 
-- independent contract/security review completed for the exact source commit;
-- legal review for every operating jurisdiction;
-- every initially verified Base quote token and the Pyth Entropy v2 address rechecked;
-- `eth_getCode` confirms every configured dependency contains expected bytecode;
-- protocol treasury and final owner are nonzero Safe/multisig addresses;
-- Safe threshold, signers, hardware wallets, and incident procedure reviewed;
-- full frozen-lockfile CI passes;
-- callback gas retested against production compiler settings;
-- Base Sepolia full create/buy/draw/claim smoke test completed.
-
-Never copy an address from an old deployment, this README, or an unverified third-party
-post. The repository intentionally ships no production/testnet parameter file.
+- independent audit/review of the exact source and dependency locks;
+- full frozen-lockfile format, lint, type, build, test, coverage, gas, and Slither
+  suite green with no unresolved critical/high/medium issue;
+- compiler known-bugs/release notes rechecked at the release date;
+- official Base Entropy v2 address and bytecode verified;
+- every initial quote token reviewed for exact-transfer/non-rebasing behavior and
+  issuer pause/blacklist controls;
+- callback gas limit tested with production bytecode;
+- nonzero treasury and final `Ownable2Step` owner are reviewed multisigs;
+- Base Sepolia smoke tests cover success, no-sales, unrequested failure, timeout,
+  bounded refund crediting, quote/prize claim, and failed-destination retry.
 
 ## Inputs
 
 ```text
-DEPLOYER_PRIVATE_KEY       temporary funded deployer EOA
-VERIFIED_QUOTE_TOKENS      reviewed discovery tokens (comma-separated in Foundry)
-ENTROPY                    verified Pyth Entropy v2 contract
-PROTOCOL_TREASURY          configured Safe/treasury
-FACTORY_OWNER              final Safe
-CALLBACK_GAS_LIMIT         default 300000 after regression test
+DEPLOYER_PRIVATE_KEY
+VERIFIED_QUOTE_TOKENS
+ENTROPY
+PROTOCOL_TREASURY
+FACTORY_OWNER
+CALLBACK_GAS_LIMIT       # default 300000 only after measurement
 BASE_SEPOLIA_RPC_URL
-BASE_RPC_URL               mainnet only
+BASE_RPC_URL             # mainnet procedure only
 BASESCAN_API_KEY
 ```
 
-Use a secrets manager or encrypted CI environment. Never commit `.env` or parameter
-files containing a key.
+Use an encrypted secret manager. The repository intentionally contains no real
+deployment parameters or placeholder addresses.
 
-## Base Sepolia
+## Base Sepolia procedure
 
-1. Record the clean source commit.
-2. Run all build, Foundry, Hardhat, ABI, subgraph, and web checks.
-3. Prepare an Ignition parameter file outside version control.
-4. Deploy:
+1. Record the clean source commit, compiler binaries, dependency lock, and bytecode.
+2. Run the complete validation matrix in the root README.
+3. Prepare Ignition parameters outside version control and simulate deployment.
+4. Deploy with `pnpm deploy:base-sepolia`; record every address, block, transaction,
+   constructor argument, salt, and implementation bytecode hash.
+5. Verify with `pnpm verify:base-sepolia`.
+6. Confirm `pendingOwner` is exactly the reviewed Safe, then accept ownership from it.
+7. Verify initial quote-token admission and that unverified-token creation reverts.
+8. Create a validated deployment record with the exact 40-hex source commit and run
+   `pnpm --filter @raffle-fun/contracts deployment:write ./candidate.json`.
+9. Regenerate SDK/subgraph ABIs, create the network manifest, deploy the indexer, and
+   configure the web app from that record.
+10. Execute and document every smoke-test lifecycle, including exact deadline
+    boundaries and post-failure refunds.
 
-   ```bash
-   pnpm deploy:base-sepolia
-   ```
+Mainnet has no default root deployment command. Add a reviewed, environment-guarded
+operator procedure only after audit fixes and testnet monitoring.
 
-5. Record implementation, factory, lens, blocks, transaction hashes, and constructor
-   arguments.
-6. Verify contracts:
+## Monitoring and incident response
 
-   ```bash
-   pnpm verify:base-sepolia
-   ```
+Monitor creation failures, draw requests, request/callback deadlines, ignored
+callbacks, failure finalizations, remaining refund liability, quote solvency, claims,
+owner/pending-owner changes, pause, treasury, and token-admission events.
 
-7. Ignition starts `transferOwnership(FACTORY_OWNER)`. Confirm `pendingOwner` exactly
-   matches the Safe, then submit `acceptOwnership()` from the Safe.
-8. Configure later quote-token verification changes through reviewed Safe transactions
-   and record each hash. Verification changes official discovery only.
-9. Build a candidate deployment record with `verifiedQuoteTokens` as an address array
-   and the source commit encoded as exactly the 40 Git SHA hex characters. Validate
-   runtime code and write:
-
-   ```bash
-   pnpm --filter @raffle-fun/contracts deployment:write ./candidate.json
-   ```
-
-10. Run `pnpm sdk:sync`, generate the network subgraph manifest, deploy the subgraph,
-    and configure public web endpoints.
-11. Complete a smoke raffle using disposable test assets and document create,
-    purchase, request, callback, quote claim, and prize claim transactions.
-
-## Mainnet
-
-There is no root mainnet deployment command. Mainnet requires an explicit, reviewed
-operator procedure and an environment guard added for that release. Repeat every
-testnet step, confirm audit fixes/source commit, use a dedicated deployer, simulate all
-Safe transactions, and apply monitoring before enabling public creation.
-
-## Deployment record
-
-`deployments/schema.json` and the TypeScript parser require:
-
-- chain/network, UTC timestamp, positive deployment block;
-- deployer and final owner;
-- one to 32 initially verified quote tokens, Entropy, implementation, factory, lens,
-  treasury;
-- callback gas, 20-byte source commit, verification status.
-
-Zero addresses, extra fields, mismatched chain labels, missing RPC, and addresses
-without runtime bytecode are rejected. No record is better than a guessed record.
-
-## Rollback and incident reality
-
-Existing clones are immutable and cannot be paused or upgraded. An incident response
-can pause creation, remove UI exposure, warn users, and deploy a new factory, but
-cannot change an existing raffle's result or seize/redirect claims.
+Existing clones cannot be upgraded or paused. Response is limited to pausing future
+creation, warning users, removing UI exposure, and deploying a new factory. Lifecycle
+recovery in an existing clone remains permissionless and cannot be redirected by the
+owner.

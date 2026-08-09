@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity 0.8.36;
 
 import { Test } from "forge-std/Test.sol";
 
@@ -27,6 +27,8 @@ contract RaffleHandler is Test, IERC721Receiver {
     uint256 public ghostQuoteClaimed;
     uint256 public ghostRequestCount;
     uint256 public ghostResolutionCount;
+    uint256 public ghostFailureCount;
+    uint256 public ghostRefundCredited;
     uint256 public ghostPrizeClaims;
     bool public stateWentBackward;
     IRaffle.RaffleState public lastObservedState;
@@ -87,6 +89,17 @@ contract RaffleHandler is Test, IERC721Receiver {
         _observe();
     }
 
+    function warpToRequestGraceDeadline() external {
+        if (block.timestamp < raffle.requestGraceDeadline()) vm.warp(raffle.requestGraceDeadline());
+        _observe();
+    }
+
+    function warpToCallbackDeadline() external {
+        uint256 deadline = raffle.callbackDeadline();
+        if (deadline != 0 && block.timestamp < deadline) vm.warp(deadline);
+        _observe();
+    }
+
     function requestDraw() external {
         if (!raffle.canRequestDraw()) return;
         uint256 fee = raffle.getEntropyFee();
@@ -121,6 +134,35 @@ contract RaffleHandler is Test, IERC721Receiver {
     function duplicateCallback(bytes32 randomNumber) external {
         if (raffle.entropySequenceNumber() == 0) return;
         try entropy.fulfill(raffle.entropySequenceNumber(), randomNumber) { } catch { }
+        _observe();
+    }
+
+    function finalizeUnrequestedDraw() external {
+        if (!raffle.canFinalizeUnrequestedDraw()) return;
+        try raffle.finalizeUnrequestedDraw() {
+            ++ghostFailureCount;
+        } catch { }
+        _observe();
+    }
+
+    function finalizeTimedOutDraw() external {
+        if (!raffle.canFinalizeTimedOutDraw()) return;
+        try raffle.finalizeTimedOutDraw() {
+            ++ghostFailureCount;
+        } catch { }
+        _observe();
+    }
+
+    function creditRefund(uint256 ticketSeed) external {
+        uint256 sold = raffle.totalTickets();
+        if (raffle.state() != IRaffle.RaffleState.Refunding || sold == 0) return;
+        uint256 ticketId = bound(ticketSeed, 1, sold);
+        if (raffle.isTicketRefundCredited(ticketId)) return;
+        uint256[] memory ticketIds = new uint256[](1);
+        ticketIds[0] = ticketId;
+        try raffle.creditTicketRefunds(ticketIds) {
+            ghostRefundCredited += raffle.ticketPrice();
+        } catch { }
         _observe();
     }
 

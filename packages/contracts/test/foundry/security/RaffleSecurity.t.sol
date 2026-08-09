@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity 0.8.36;
 
 import { Test } from "forge-std/Test.sol";
 
@@ -9,8 +9,8 @@ import { Raffle } from "../../../src/Raffle.sol";
 import { RaffleFactory } from "../../../src/RaffleFactory.sol";
 import { IRaffle } from "../../../src/interfaces/IRaffle.sol";
 import { IRaffleFactory } from "../../../src/interfaces/IRaffleFactory.sol";
+import { AdversarialOutboundERC20 } from "../../../src/mocks/AdversarialOutboundERC20.sol";
 import { FalseERC20 } from "../../../src/mocks/FalseERC20.sol";
-import { ForceNative } from "../../../src/mocks/ForceNative.sol";
 import { MockERC20 } from "../../../src/mocks/MockERC20.sol";
 import { MockERC721 } from "../../../src/mocks/MockERC721.sol";
 import { MockEntropyV2 } from "../../../src/mocks/MockEntropyV2.sol";
@@ -110,10 +110,7 @@ contract RaffleSecurityTest is Test {
 
     function testForcedNativeCurrencyCannotChangeStateOrCreateRefund() public {
         Raffle raffle = _createDefaultRaffle(2);
-        vm.deal(address(this), 1 ether);
-        ForceNative force = new ForceNative{ value: 1 ether }();
-
-        force.force(payable(address(raffle)));
+        vm.deal(address(raffle), 1 ether);
 
         assertEq(address(raffle).balance, 1 ether);
         assertEq(raffle.claimableNative(address(this)), 0);
@@ -136,6 +133,7 @@ contract RaffleSecurityTest is Test {
                 prizeToken: address(maliciousPrize),
                 prizeTokenId: outerTokenId,
                 quoteToken: address(quote),
+                sponsorPrizeRecoveryRecipient: address(0),
                 ticketPrice: USDC,
                 minimumTickets: 1,
                 startTime: block.timestamp,
@@ -150,6 +148,46 @@ contract RaffleSecurityTest is Test {
         assertEq(maliciousPrize.ownerOf(nestedTokenId), address(maliciousPrize));
     }
 
+    function testOutboundRecipientFeeAndSenderTaxPreserveQuoteLiability() public {
+        AdversarialOutboundERC20 token = new AdversarialOutboundERC20();
+        (, Raffle raffle) = _createWithQuote(address(token), USDC, 1);
+        token.mint(buyer, USDC);
+        vm.prank(buyer);
+        token.approve(address(raffle), USDC);
+        vm.prank(buyer);
+        raffle.buyTickets(buyer, 1);
+        _resolve(raffle);
+
+        uint256 sponsorClaim = raffle.claimableQuote(sponsor);
+        uint256 fee = sponsorClaim / 100;
+        token.setTransferMode(AdversarialOutboundERC20.TransferMode.RecipientFee);
+        vm.prank(sponsor);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IRaffle.UnsupportedQuoteTokenTransfer.selector, sponsorClaim, sponsorClaim, sponsorClaim - fee
+            )
+        );
+        raffle.claimQuote(sponsor);
+        assertEq(raffle.claimableQuote(sponsor), sponsorClaim);
+        assertEq(raffle.totalClaimableQuote(), USDC);
+
+        token.mint(address(raffle), fee);
+        token.setTransferMode(AdversarialOutboundERC20.TransferMode.SenderTax);
+        vm.prank(sponsor);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IRaffle.UnsupportedQuoteTokenTransfer.selector, sponsorClaim, sponsorClaim + fee, sponsorClaim
+            )
+        );
+        raffle.claimQuote(sponsor);
+        assertEq(raffle.claimableQuote(sponsor), sponsorClaim);
+
+        token.setTransferMode(AdversarialOutboundERC20.TransferMode.Exact);
+        vm.prank(sponsor);
+        raffle.claimQuote(sponsor);
+        assertEq(raffle.claimableQuote(sponsor), 0);
+    }
+
     function _createDefaultRaffle(uint256 minimumTickets) internal returns (Raffle raffle) {
         uint256 tokenId = nextPrizeId++;
         prize.mint(sponsor, tokenId);
@@ -159,6 +197,7 @@ contract RaffleSecurityTest is Test {
                 prizeToken: address(prize),
                 prizeTokenId: tokenId,
                 quoteToken: address(quote),
+                sponsorPrizeRecoveryRecipient: address(0),
                 ticketPrice: USDC,
                 minimumTickets: minimumTickets,
                 startTime: block.timestamp,
@@ -189,6 +228,7 @@ contract RaffleSecurityTest is Test {
                 prizeToken: address(prize),
                 prizeTokenId: tokenId,
                 quoteToken: quoteAddress,
+                sponsorPrizeRecoveryRecipient: address(0),
                 ticketPrice: price,
                 minimumTickets: minimumTickets,
                 startTime: block.timestamp,

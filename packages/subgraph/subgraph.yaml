@@ -23,7 +23,7 @@ dataSources:
       eventHandlers:
         - event: QuoteTokenVerificationUpdated(indexed address,bool,bool)
           handler: handleQuoteTokenVerificationUpdated
-        - event: RaffleCreated(indexed uint256,indexed address,indexed address,address,uint256,address,address,uint256,uint256,uint256,uint256,string)
+        - event: RaffleCreated(indexed uint256,indexed address,indexed address,address,address,uint256,address,address,uint256,uint256,uint256,uint256,uint256,string)
           handler: handleRaffleCreated
       file: ./src/factory.ts
 templates:
@@ -44,6 +44,8 @@ templates:
         - Purchase
         - DrawRequest
         - Resolution
+        - DrawFailure
+        - TicketRefund
         - QuoteClaim
         - PrizeClaim
         - RaffleTransfer
@@ -59,7 +61,7 @@ templates:
           handler: handleTicketsPurchased
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
-        - event: DrawRequested(indexed uint64,indexed address,uint256,uint256)
+        - event: DrawRequested(indexed uint64,indexed address,uint256,uint256,uint256,uint256)
           handler: handleDrawRequested
         - event: RaffleResolved(indexed uint64,indexed uint256,indexed address,uint8,address,uint256,uint256,uint256)
           handler: handleRaffleResolved
@@ -67,8 +69,12 @@ templates:
           handler: handleQuoteClaimed
         - event: PrizeClaimed(indexed address,indexed address,indexed address,uint256)
           handler: handlePrizeClaimed
-        - event: RaffleCancelled(indexed address)
+        - event: DrawFailureFinalized(indexed uint8,indexed address,indexed address,uint256)
+          handler: handleDrawFailureFinalized
+        - event: TicketRefundCredited(indexed uint256,indexed address,uint256,uint256)
+          handler: handleTicketRefundCredited
+        - event: RaffleCancelled(indexed address,indexed address)
           handler: handleRaffleCancelled
-        - event: NoSalesClosed(indexed address)
+        - event: NoSalesClosed(indexed address,indexed address)
           handler: handleNoSalesClosed
       file: ./src/raffle.ts

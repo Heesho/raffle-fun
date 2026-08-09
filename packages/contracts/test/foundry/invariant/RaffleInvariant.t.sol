@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity 0.8.36;
 
 import { StdInvariant } from "forge-std/StdInvariant.sol";
 import { Test } from "forge-std/Test.sol";
@@ -45,6 +45,7 @@ contract RaffleInvariantTest is StdInvariant, Test {
                 prizeToken: address(prize),
                 prizeTokenId: 1,
                 quoteToken: address(quote),
+                sponsorPrizeRecoveryRecipient: address(0),
                 ticketPrice: 1e6,
                 minimumTickets: 250,
                 startTime: block.timestamp,
@@ -66,6 +67,8 @@ contract RaffleInvariantTest is StdInvariant, Test {
     function invariantAtMostOneRequestAndResolutionExist() public view {
         assertLe(handler.ghostRequestCount(), 1);
         assertLe(handler.ghostResolutionCount(), 1);
+        assertLe(handler.ghostFailureCount(), 1);
+        assertLe(handler.ghostResolutionCount() + handler.ghostFailureCount(), 1);
         if (raffle.entropySequenceNumber() != 0) assertEq(handler.ghostRequestCount(), 1);
     }
 
@@ -91,6 +94,7 @@ contract RaffleInvariantTest is StdInvariant, Test {
         } else {
             assertTrue(
                 raffle.state() == IRaffle.RaffleState.Resolved || raffle.state() == IRaffle.RaffleState.Cancelled
+                    || raffle.state() == IRaffle.RaffleState.Refunding
             );
             assertNotEq(raffle.prizeClaimant(), address(0));
             assertNotEq(prize.ownerOf(raffle.prizeTokenId()), address(raffle));
@@ -103,9 +107,23 @@ contract RaffleInvariantTest is StdInvariant, Test {
     }
 
     function invariantAccountedQuoteAlwaysReconcilesAndIsSolvent() public view {
-        assertEq(raffle.accountedQuoteBalance(), raffle.unsettledPot() + raffle.totalClaimableQuote());
+        assertEq(
+            raffle.accountedQuoteBalance(),
+            raffle.unsettledPot() + raffle.uncreditedRefundLiability() + raffle.totalClaimableQuote()
+        );
         assertGe(quote.balanceOf(address(raffle)), raffle.accountedQuoteBalance());
         assertLe(raffle.totalClaimableQuote(), raffle.grossSales());
+    }
+
+    function invariantRefundingConservesGrossAndNeverCreditsProtocolFee() public view {
+        if (raffle.state() != IRaffle.RaffleState.Refunding) return;
+        assertEq(raffle.unsettledPot(), 0);
+        assertEq(raffle.claimableQuote(treasury), 0);
+        assertEq(handler.ghostRefundCredited() + raffle.uncreditedRefundLiability(), raffle.grossSales());
+        assertTrue(
+            raffle.outcome() == IRaffle.RaffleOutcome.DrawNotRequested
+                || raffle.outcome() == IRaffle.RaffleOutcome.DrawTimedOut
+        );
     }
 
     function invariantResolutionBranchMatchesExactThresholdBoundary() public view {

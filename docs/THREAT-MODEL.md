@@ -1,92 +1,68 @@
 # Threat model
 
-## Assets and safety properties
+## Safety property and scope
 
-- one escrowed prize NFT per raffle;
-- gross quote-token inflow, unsettled pot, and resolution claims;
-- uniqueness/unbiasability of the requested random result;
-- winner identity at callback time;
-- availability of terminal and claim paths;
-- integrity of indexed/UI representations.
+For a supported standards-compliant ERC-721 prize and a verified exact-transfer
+ERC-20 quote token, no protocol-controlled lifecycle state permanently prevents the
+authorized party from recovering the prize or accounted quote funds.
 
-Required properties:
+The protocol enforces this with immutable clone configuration, explicit deadlines,
+permissionless failure transitions, bounded refund crediting, pull claims, and the
+accounting invariant documented in `ARCHITECTURE.md`.
 
-1. accounted quote is solvent and reconciles;
-2. the prize leaves at most once through a terminal claimant;
-3. no second random sequence is accepted;
-4. winner selection covers every sold ticket exactly once in the modulo domain;
-5. admin and UI/index infrastructure cannot alter clone economics.
+## Supported assets
 
-## Actors
+A supported prize honestly reports ERC-165/ERC-721 support and ownership, and permits
+the configured safe transfers. A supported quote token has contract code, is admitted
+by the canonical factory, supports normal no-return or optional-return ERC-20 calls,
+does not rebase, and moves the exact requested amount both into and out of a raffle.
+Raw units are used; decimals never affect accounting.
 
-- honest or malicious sponsor, buyer, recipient, treasury, and claimant;
-- malicious ERC20/ERC721 contracts in local tests;
-- factory Safe signers;
-- oracle/provider infrastructure;
-- RPC, subgraph, wallet, browser, and metadata hosts;
-- searchers ordering transactions at the sale boundary.
+The guarantee cannot cover dishonest/upgradeable/paused/burned/frozen/blacklisting
+NFTs; malicious/rebasing/frozen/blacklisting ERC-20s; issuer controls introduced after
+creation; lost keys; a halted/reorganized chain; or unrelated NFTs forced in with
+unsafe `transferFrom`. There is deliberately no broad rescue authority.
 
-## Trust boundaries
+## Attacks and controls
 
-```mermaid
-flowchart LR
-  Browser["Untrusted metadata + browser"] --> Web["Web validation"]
-  Graph["Lagging/fallible subgraph"] --> Web
-  Web --> Wallet["User confirmation"]
-  Wallet --> Chain["Authoritative contracts"]
-  NFT["Potentially malicious NFT"] --> Chain
-  Quote["Selected permissionless quote token"] --> Chain
-  Entropy["Pyth liveness"] --> Chain
-  Safe["Factory Safe"] --> Factory["Future creation config"]
-  Factory -. no mutation path .-> Clone["Existing clone"]
-```
-
-## Attacks and mitigations
-
-| Attack                                                       | Mitigation                                                                    |
-| ------------------------------------------------------------ | ----------------------------------------------------------------------------- |
-| Buy before/after window or after request                     | exact state/timestamp checks                                                  |
-| Fee-on-transfer/false ERC20                                  | `SafeERC20` plus exact balance delta                                          |
-| Malicious/rebasing/blocked quote token                       | clone isolation, verification labels, UI warning; residual claim risk remains |
-| Reentrancy on mint, token, prize receiver, or factory escrow | checks-effects-interactions and guards                                        |
-| Arbitrary NFT sent to clone                                  | receiver binds state/token/id/from/operator                                   |
-| Last/one ticket excluded                                     | `(random % totalTickets) + 1`                                                 |
-| Winner changes after reveal                                  | transfer freeze pending; owner snapshot in callback                           |
-| Duplicate/wrong callback                                     | sequence/state validation and safe ignore                                     |
-| Callback gas grief via transfers                             | bounded storage-only callback                                                 |
-| Repeated settlement/request                                  | monotonic state and stored sequence                                           |
-| Admin seizure or upgrade                                     | no clone admin/rescue/proxy hooks                                             |
-| Direct token/native donation changes state                   | explicit accounting; donation only surplus                                    |
-| Fake address passed to lens                                  | factory registry gate before candidate calls                                  |
-| Index lag manipulates transaction                            | live onchain reread and simulation                                            |
-| Malicious NFT metadata                                       | no HTML, Zod bounds, constrained HTTP/IPFS URLs, SVG blocked                  |
-| Batch wallet unsupported                                     | ordered approve receipt then simulated buy fallback                           |
+| Attack                                | Control / residual risk                                                           |
+| ------------------------------------- | --------------------------------------------------------------------------------- |
+| Failed or fake prize escrow           | exact receiver tuple plus factory `ownerOf` postcondition; whole creation reverts |
+| Clone/implementation reinitialization | implementation lock, canonical-factory authentication, `initializer`              |
+| Infinite sale lock                    | 7-day maximum start delay and 30-day maximum sale duration                        |
+| Oracle unavailable before request     | permissionless failure after fixed 3-day grace                                    |
+| Accepted request never fulfilled      | permissionless failure after fixed 2-day callback timeout                         |
+| Timeout/callback race                 | first valid included terminal transition wins; other path harmless                |
+| Wrong/duplicate/late callback         | authenticated sender plus sequence/state/in-flight checks                         |
+| Winner ownership changes pending      | all ticket transfers frozen in `DrawRequested`                                    |
+| Refund redirected by transfer         | uncredited ticket frozen; current owner credited onchain                          |
+| Refund double spend/unbounded gas     | per-ticket marker and maximum 100-ID batch                                        |
+| Fee-on-transfer/sender-tax token      | exact inbound delta and exact outbound debit/credit checks                        |
+| Reentrant ERC-20/ERC-721/receiver     | checks-effects-interactions plus reentrancy guard                                 |
+| Claim destination reverts             | transfer and consumed-marker revert atomically; claimant retries                  |
+| Permissionless claim redirect         | claim-for destination fixed to rightful account                                   |
+| Admin seizure/settlement              | no clone admin, upgrade, rescue, or settlement override                           |
+| Direct donations/forced native        | explicit liability aggregates; extra balance is surplus only                      |
+| Fake raffle passed to lens            | factory registry checked before candidate reads                                   |
+| Stale/malicious index/UI              | live chain reread and simulation before writes                                    |
 
 ## Admin compromise
 
-A compromised factory owner can redirect the treasury for future raffles, change
-quote-token verification, pause future creation, or transfer ownership. Token
-verification affects official discovery but cannot block creation or
-interaction. The owner cannot change a selected token or economics, upgrade, cancel,
-settle, seize, or pause an existing clone. Frontends should surface factory versions
-and owner changes.
+A compromised factory owner may pause or misconfigure future creation, change the
+future treasury, change token admission, or transfer ownership. It cannot change an
+existing clone's token, recovery recipient, economics, deadlines, winner, claims, or
+code; pause settlement; or seize its assets. Removing token admission prevents new
+raffles but does not mutate existing ones.
 
-## Oracle liveness
+## Remaining risks
 
-The protocol favors result uniqueness over an insecure emergency result. If the
-callback fails, the same Entropy sequence must be retried/replayed; users may wait.
-There is no timeout refund or admin randomness. See `RANDOMNESS.md`.
+- unaudited first-party code, compiler, dependency, EVM, and tooling defects;
+- oracle randomness/availability assumptions before deterministic failure;
+- Base ordering, censorship, finality, or reorganization behavior;
+- claimant key loss and hostile safe-transfer destinations;
+- counterfeit, mutable, legally encumbered, or economically worthless prizes;
+- browser, wallet, RPC, metadata, or supply-chain compromise;
+- jurisdiction-specific gambling, sweepstakes, sanctions, tax, and consumer law.
 
-## Residual risks
-
-- unaudited first-party code and dependencies;
-- compiler/EVM/tooling defects;
-- selected quote-token freezes, blacklists, or unexpected behavior after deployment;
-- malicious, mutable, counterfeit, or legally encumbered prizes;
-- oracle/provider outage or censorship;
-- compromised RPC/wallet/frontend presenting misleading data before user review;
-- high threshold, low participation, or adverse market value;
-- applicable gambling, sweepstakes, consumer, sanctions, tax, or licensing law.
-
-Independent audit, multisig operational review, oracle runbooks, frontend supply-chain
-hardening, and jurisdiction-specific legal advice are required before production use.
+Independent audit, multisig review, monitored testnet operation, frontend
+supply-chain hardening, and legal review remain production prerequisites.

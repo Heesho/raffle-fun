@@ -47,11 +47,12 @@ Use local networks or accounts/assets you control. Do not:
 
 ## Dependency posture
 
-The dependency tree is pinned and audited in CI. As of 2026-07-30, `pnpm audit`
+The dependency tree is pinned and audited in CI. As of 2026-08-09, `pnpm audit`
 reports no critical, high, or moderate findings. One low-severity advisory remains in
-the development-only Hardhat verification path through `elliptic@6.6.1`; the upstream
-advisory lists no patched version. It is not bundled into the contracts or web runtime
-and should be upgraded as soon as its upstream chain provides a compatible release.
+the development-only Hardhat verification path through `elliptic@6.6.1`; although the
+advisory identifies `6.6.2` as patched, npm still publishes `6.6.1` as the latest
+release. It is not bundled into the contracts or web runtime and must be upgraded when
+the upstream package is available.
 
 The Graph CLI still declares the abandoned `decompress` package. The workspace
 replaces it with the maintained, security-patched `@xhmikosr/decompress` fork while
@@ -62,4 +63,14 @@ preserving the dependency name expected by the CLI.
 Existing raffles cannot be upgraded or paused. If a vulnerability is confirmed,
 maintainers can pause creation, warn users, remove the frontend deployment, and deploy
 a new factory version, but cannot rewrite the economics or seize assets in existing
-clones.
+clones. Existing raffles retain their permissionless no-sales, draw, missing-request,
+callback-timeout, bounded refund-credit, and pull-claim paths.
+
+## Supported recovery envelope
+
+The protocol's recovery property applies only to a standards-compliant ERC721 whose
+ownership and safe transfers remain honest, and a factory-admitted, exact-transfer,
+non-rebasing ERC20 whose transfers remain available. The contracts cannot guarantee
+recovery against malicious or upgraded assets, pauses/freezes/blacklists/burns, a
+halted or reorganized chain, lost keys, or unrelated NFTs forced in through unsafe
+`transferFrom`. No administrator rescue function exists for those cases.
