@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>
+      raffle.fun - A Plain-English Whitepaper for Onchain NFT Raffles
+    </title>
+    <style>
+      /*CSS*/
+    </style>
+  </head>
+  <body>
+    <!-- ============================================================= cover -->
+    <section class="sheet cover" id="cover">
+      <svg
+        class="arcs"
+        viewBox="0 0 816 1055"
+        preserveAspectRatio="xMidYMax slice"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <g fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="42">
+          <ellipse cx="408" cy="1180" rx="330" ry="300" />
+          <ellipse cx="408" cy="1180" rx="470" ry="430" />
+          <ellipse cx="408" cy="1180" rx="610" ry="560" />
+          <ellipse cx="408" cy="1180" rx="750" ry="690" />
+        </g>
+      </svg>
+      <div class="cover-brandline">
+        <img
+          src="../assets/logo-pink.png"
+          alt="raffle.fun ticket logo"
+          style="border-radius: 14px"
+        />
+        <span class="wordmark">raffle.fun</span>
+      </div>
+      <div class="cover-main">
+        <div class="cover-kicker">
+          Whitepaper &middot; Version {{DOCUMENT_VERSION}}
+        </div>
+        <h1>raffle.fun</h1>
+        <div class="cover-sub">
+          A Plain-English Whitepaper for Onchain NFT Raffles
+        </div>
+        <div class="cover-sub2">
+          How prize escrow, ticket ownership, randomness, payouts, refunds, and
+          recovery work
+        </div>
+      </div>
+      <div class="cover-foot">
+        <div class="cover-chips">
+          <span class="chip"><b>Target</b>&nbsp; {{TARGET_NETWORK}}</span>
+          <span class="chip"
+            ><b>Commit</b>&nbsp; {{REVIEWED_COMMIT_SHORT}}</span
+          >
+          <span class="chip"><b>Date</b>&nbsp; {{PUBLICATION_DATE}}</span>
+          <span class="chip"><b>Status</b>&nbsp; Internal review only</span>
+        </div>
+        <div class="cover-author">Heesho</div>
+      </div>
+    </section>
+
+    <!-- ========================================================== colophon -->
+    <div class="colophon">
+      <h1 class="h1-continue" id="c-about-this-document">
+        <span class="chapno">About this document</span>Document and review
+        record
+      </h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Title</td>
+            <td>
+              raffle.fun: A Plain-English Whitepaper for Onchain NFT Raffles
+            </td>
+          </tr>
+          <tr>
+            <td>Author</td>
+            <td>Heesho</td>
+          </tr>
+          <tr>
+            <td>Document version</td>
+            <td>{{DOCUMENT_VERSION}}</td>
+          </tr>
+          <tr>
+            <td>Protocol version reviewed</td>
+            <td>raffle.fun contracts 2.0.0 (monorepo 0.1.0)</td>
+          </tr>
+          <tr>
+            <td>Reviewed repository commit</td>
+            <td><code>{{REVIEWED_COMMIT}}</code></td>
+          </tr>
+          <tr>
+            <td>Reviewed contract commit</td>
+            <td><code>{{CONTRACT_COMMIT}}</code></td>
+          </tr>
+          <tr>
+            <td>Internal-audit source identity</td>
+            <td>
+              <code>{{AUDIT_BASELINE_COMMIT}}</code> plus patch fingerprint
+              <code>{{AUDIT_PATCH_FINGERPRINT}}</code>; the final reviewed
+              implementation was committed as
+              <code>{{FINAL_REVIEWED_COMMIT}}</code>
+            </td>
+          </tr>
+          <tr>
+            <td>Production Solidity after audit baseline</td>
+            <td>
+              Yes. The constructor/bearer refactor and internal-review
+              remediations changed production Solidity after the baseline SHA.
+              Those changes are included in the internally reviewed final commit
+              above. No independent audit covers them.
+            </td>
+          </tr>
+          <tr>
+            <td>Publication date</td>
+            <td>{{PUBLICATION_DATE}}</td>
+          </tr>
+          <tr>
+            <td>Target network</td>
+            <td>{{TARGET_NETWORK}}</td>
+          </tr>
+          <tr>
+            <td>Deployment status</td>
+            <td>{{DEPLOYMENT_STATUS}}</td>
+          </tr>
+          <tr>
+            <td>Testnet deployment status</td>
+            <td>{{TESTNET_DEPLOYMENT_STATUS}}</td>
+          </tr>
+          <tr>
+            <td>Internal-review status</td>
+            <td>Security review status: {{SECURITY_REVIEW_STATUS}}</td>
+          </tr>
+          <tr>
+            <td>Independent-audit status</td>
+            <td>Independent external audit: {{INDEPENDENT_AUDIT_STATUS}}</td>
+          </tr>
+          <tr>
+            <td>Legal-review status</td>
+            <td>Legal review: {{LEGAL_REVIEW_STATUS}}</td>
+          </tr>
+          <tr>
+            <td>Compiler / dependencies</td>
+            <td>
+              Solidity 0.8.36 &middot; OpenZeppelin 5.6.1 &middot; Pyth Entropy
+              SDK 2.2.1
+            </td>
+          </tr>
+          <tr>
+            <td>License</td>
+            <td>
+              Repository license applies. Embedded Nunito and Inter fonts use
+              the SIL Open Font License 1.1.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4>Disclaimer</h4>
+      <div class="disclaimer-box">
+        This whitepaper explains how the raffle.fun smart contracts work at one
+        reviewed source-code commit. It is an explanatory document, not an
+        offer, a promise of future performance, or an inducement to participate.
+        The protocol distributes a prize by chance. Gambling, lottery,
+        sweepstakes, contest, consumer-protection, sanctions, tax, licensing,
+        and age-restriction laws may apply differently across jurisdictions.
+        Nothing here is legal, tax, investment, or financial advice. Anyone who
+        operates or uses the protocol must obtain advice for their own
+        jurisdiction. Smart-contract testing and internal review reduce risk but
+        cannot eliminate it, and this document describes unaudited software: do
+        not commit assets you cannot afford to lose unless and until the
+        protocol has received appropriate independent review, legal review, and
+        deployment validation. Raffle tickets are entries in a prize drawing.
+        They are not investments, they carry no expectation of profit, and most
+        tickets win nothing.
+      </div>
+    </div>
+
+    <!-- =============================================================== toc -->
+    <div class="pagebreak"></div>
+    <div class="toc">
+      <h1 id="c-contents">
+        <span class="chapno">Contents</span>What is in this whitepaper
+      </h1>
+      <!--TOC-->
+    </div>
+
+    <!-- ============================================================== body -->
+    <!--BODY-->
+
+    <script>
+      window.addEventListener("load", () => {
+        const issues = [];
+        for (const element of document.querySelectorAll("body *")) {
+          if (!(element instanceof HTMLElement) || element.closest("svg"))
+            continue;
+          const style = getComputedStyle(element);
+          if (style.position === "fixed" || element.clientWidth === 0) continue;
+          if (
+            element.scrollWidth > element.clientWidth + 2 &&
+            style.overflowX !== "auto"
+          ) {
+            issues.push(
+              element.tagName.toLowerCase() +
+                (element.id ? "#" + element.id : ""),
+            );
+          }
+        }
+        document.body.dataset.overflowCount = String(issues.length);
+        document.body.dataset.overflowElements = issues.slice(0, 20).join(",");
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -50 960 610" font-family="Inter, sans-serif">
+  <defs>
+    <marker id="lc-arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#454b78"/>
+    </marker>
+    <marker id="lc-arr-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#c8213f"/>
+    </marker>
+  </defs>
+
+  <!-- state boxes: main path -->
+  <g text-anchor="middle">
+    <!-- AwaitingPrize -->
+    <rect x="30" y="60" width="160" height="72" rx="12" fill="#f4f4fb" stroke="#676c94" stroke-width="1.5"/>
+    <text x="110" y="90" font-size="15" font-weight="700" fill="#10143a">AwaitingPrize</text>
+    <text x="110" y="112" font-size="12" fill="#676c94">clone created, empty</text>
+
+    <!-- Active -->
+    <rect x="270" y="60" width="160" height="72" rx="12" fill="#e8f2ff" stroke="#1f6fd0" stroke-width="2"/>
+    <text x="350" y="90" font-size="15" font-weight="700" fill="#1b5aa8">Active</text>
+    <text x="350" y="112" font-size="12" fill="#676c94">prize escrowed</text>
+
+    <!-- DrawRequested -->
+    <rect x="530" y="60" width="170" height="72" rx="12" fill="#fff7dc" stroke="#eab308" stroke-width="2"/>
+    <text x="615" y="90" font-size="15" font-weight="700" fill="#7a4f00">DrawRequested</text>
+    <text x="615" y="112" font-size="12" fill="#676c94">waiting for randomness</text>
+
+    <!-- Resolved -->
+    <rect x="770" y="60" width="160" height="72" rx="12" fill="#e3f7ee" stroke="#0d6b45" stroke-width="2.5"/>
+    <text x="850" y="90" font-size="15" font-weight="700" fill="#0d6b45">Resolved &#9679;</text>
+    <text x="850" y="112" font-size="12" fill="#676c94">outcome fixed forever</text>
+
+    <!-- Cancelled -->
+    <rect x="48" y="330" width="184" height="72" rx="12" fill="#fdeaee" stroke="#c8213f" stroke-width="2.5"/>
+    <text x="140" y="360" font-size="15" font-weight="700" fill="#c8213f">Cancelled &#9679;</text>
+    <text x="140" y="382" font-size="12" fill="#676c94">recovery address gets prize</text>
+
+    <!-- Refunding -->
+    <rect x="530" y="330" width="170" height="72" rx="12" fill="#fce9f5" stroke="#b81478" stroke-width="2.5"/>
+    <text x="615" y="360" font-size="15" font-weight="700" fill="#b81478">Refunding &#9679;</text>
+    <text x="615" y="382" font-size="12" fill="#676c94">every ticket refunded in full</text>
+  </g>
+
+  <!-- transitions -->
+  <line x1="192" y1="96" x2="266" y2="96" stroke="#454b78" stroke-width="2" marker-end="url(#lc-arr)"/>
+  <text x="229" y="55" text-anchor="middle" font-size="12" font-weight="600" fill="#454b78">exact prize NFT</text>
+  <text x="229" y="72" text-anchor="middle" font-size="12" font-weight="600" fill="#454b78">escrowed and verified</text>
+
+  <line x1="432" y1="96" x2="526" y2="96" stroke="#454b78" stroke-width="2" marker-end="url(#lc-arr)"/>
+  <text x="479" y="22" text-anchor="middle" font-size="12" font-weight="600" fill="#454b78">requestDraw: anyone, after close,</text>
+  <text x="479" y="39" text-anchor="middle" font-size="12" font-weight="600" fill="#454b78">within 3 days, tickets &gt; 0, fee paid</text>
+
+  <line x1="702" y1="96" x2="766" y2="96" stroke="#454b78" stroke-width="2" marker-end="url(#lc-arr)"/>
+  <text x="734" y="30" text-anchor="middle" font-size="12" font-weight="600" fill="#454b78">matching Entropy</text>
+  <text x="734" y="47" text-anchor="middle" font-size="12" font-weight="600" fill="#454b78">callback</text>
+
+  <!-- Active -> Resolved via closeNoSales (curved above) -->
+  <path d="M 430 66 C 520 -34, 690 -34, 802 54" fill="none" stroke="#454b78" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#lc-arr)"/>
+  <text x="615" y="-32" text-anchor="middle" font-size="11.5" font-weight="600" fill="#676c94">closeNoSales: anyone, after close, zero tickets sold</text>
+
+  <!-- Active -> Cancelled -->
+  <line x1="300" y1="134" x2="165" y2="326" stroke="#454b78" stroke-width="2" marker-end="url(#lc-arr)"/>
+  <text x="140" y="230" font-size="12" font-weight="600" fill="#454b78">cancelBeforeSales:</text>
+  <text x="140" y="247" font-size="12" font-weight="600" fill="#454b78">sponsor only, zero</text>
+  <text x="140" y="264" font-size="12" font-weight="600" fill="#454b78">tickets sold</text>
+
+  <!-- Active -> Refunding (grace expiry) -->
+  <line x1="400" y1="134" x2="560" y2="326" stroke="#c8213f" stroke-width="2" marker-end="url(#lc-arr-r)"/>
+  <text x="400" y="230" font-size="12" font-weight="600" fill="#c8213f">finalizeUnrequestedDraw:</text>
+  <text x="400" y="247" font-size="12" font-weight="600" fill="#c8213f">anyone, tickets sold, no request</text>
+  <text x="400" y="264" font-size="12" font-weight="600" fill="#c8213f">by closing + 3 days</text>
+
+  <!-- DrawRequested -> Refunding (timeout) -->
+  <line x1="615" y1="134" x2="615" y2="326" stroke="#c8213f" stroke-width="2" marker-end="url(#lc-arr-r)"/>
+  <text x="740" y="230" font-size="12" font-weight="600" fill="#c8213f">finalizeTimedOutDraw:</text>
+  <text x="740" y="247" font-size="12" font-weight="600" fill="#c8213f">anyone, no callback within</text>
+  <text x="740" y="264" font-size="12" font-weight="600" fill="#c8213f">2 days of the request</text>
+
+  <!-- ignored callback self-loop on DrawRequested -->
+  <path d="M 704 120 C 760 160, 700 195, 650 140" fill="none" stroke="#9aa0c0" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#lc-arr)"/>
+  <text x="800" y="168" font-size="11" fill="#9aa0c0">wrong or duplicate</text>
+  <text x="800" y="182" font-size="11" fill="#9aa0c0">callback: ignored</text>
+
+  <!-- outcomes note under Resolved -->
+  <g>
+    <rect x="740" y="330" width="200" height="112" rx="12" fill="#ffffff" stroke="#0d6b45" stroke-width="1.2"/>
+    <text x="756" y="356" font-size="12" font-weight="700" fill="#0d6b45">Resolved outcomes:</text>
+    <text x="756" y="378" font-size="11.5" fill="#454b78">&#8226; NftAwarded</text>
+    <text x="756" y="397" font-size="11.5" fill="#454b78">&#8226; CashFallback</text>
+    <text x="756" y="416" font-size="11.5" fill="#454b78">&#8226; NoSales</text>
+    <text x="756" y="435" font-size="11.5" fill="#454b78">(claims never expire)</text>
+  </g>
+
+  <!-- refunding note -->
+  <g>
+    <rect x="300" y="330" width="200" height="112" rx="12" fill="#ffffff" stroke="#b81478" stroke-width="1.2"/>
+    <text x="316" y="356" font-size="12" font-weight="700" fill="#b81478">Refunding outcomes:</text>
+    <text x="316" y="378" font-size="11.5" fill="#454b78">&#8226; DrawNotRequested</text>
+    <text x="316" y="397" font-size="11.5" fill="#454b78">&#8226; DrawTimedOut</text>
+    <text x="316" y="416" font-size="11.5" fill="#454b78">no winner, no fee; every</text>
+    <text x="316" y="435" font-size="11.5" fill="#454b78">ticket credited its price back</text>
+  </g>
+
+  <!-- purchase self-loop -->
+  <path d="M 292 134 C 265 190, 400 195, 398 136" fill="none" stroke="#1f6fd0" stroke-width="1.8" marker-end="url(#lc-arr)"/>
+  <text x="345" y="188" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1b5aa8">buyTickets while the sale is open</text>
+
+  <!-- legend -->
+  <g font-size="12.5" fill="#676c94">
+    <line x1="30" y1="510" x2="60" y2="510" stroke="#454b78" stroke-width="2" marker-end="url(#lc-arr)"/>
+    <text x="70" y="514">one-way transition (states never move backward)</text>
+    <line x1="360" y1="510" x2="390" y2="510" stroke="#c8213f" stroke-width="2" marker-end="url(#lc-arr-r)"/>
+    <text x="400" y="514">deadline-driven failure path</text>
+    <line x1="600" y1="510" x2="630" y2="510" stroke="#9aa0c0" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#lc-arr)"/>
+    <text x="640" y="514">rejected event, no change</text>
+    <text x="30" y="544" font-weight="700" fill="#10143a">&#9679;</text>
+    <text x="46" y="544">terminal state: the outcome can never change again, only claims remain</text>
+  </g>
+</svg>

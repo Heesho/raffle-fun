@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 566" font-family="Inter, sans-serif">
+  <defs>
+    <marker id="mf-arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#454b78"/>
+    </marker>
+  </defs>
+
+  <!-- buyers -->
+  <g>
+    <rect x="30" y="90" width="180" height="96" rx="12" fill="#e8f2ff" stroke="#1f6fd0" stroke-width="1.5"/>
+    <text x="120" y="122" text-anchor="middle" font-size="14.5" font-weight="700" fill="#1b5aa8">Ticket buyers</text>
+    <text x="120" y="146" text-anchor="middle" font-size="12.5" fill="#454b78">pay 10 USDC per ticket</text>
+    <text x="120" y="166" text-anchor="middle" font-size="12.5" fill="#454b78">(the advertised price)</text>
+  </g>
+
+  <line x1="212" y1="138" x2="326" y2="138" stroke="#454b78" stroke-width="2.5" marker-end="url(#mf-arr)"/>
+  <text x="269" y="112" text-anchor="middle" font-size="12" font-weight="600" fill="#676c94">exact-amount</text>
+  <text x="269" y="129" text-anchor="middle" font-size="12" font-weight="600" fill="#676c94">transfer, checked</text>
+
+  <!-- pot -->
+  <g>
+    <rect x="330" y="70" width="240" height="140" rx="14" fill="#1e2a9b"/>
+    <text x="450" y="102" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff" font-family="Nunito, Inter, sans-serif">Unsettled pot</text>
+    <text x="450" y="128" text-anchor="middle" font-size="13" fill="#c9d2ff">every payment accumulates</text>
+    <text x="450" y="148" text-anchor="middle" font-size="13" fill="#c9d2ff">untouched until resolution</text>
+    <text x="450" y="180" text-anchor="middle" font-size="17" font-weight="750" fill="#ffd84d">Example: 800 USDC</text>
+  </g>
+
+  <!-- resolution node -->
+  <line x1="450" y1="212" x2="450" y2="248" stroke="#454b78" stroke-width="2.5" marker-end="url(#mf-arr)"/>
+  <g>
+    <rect x="300" y="252" width="300" height="52" rx="10" fill="#fce9f5" stroke="#d31d8b" stroke-width="1.5"/>
+    <text x="450" y="274" text-anchor="middle" font-size="13.5" font-weight="700" fill="#b81478">Resolution (the one callback)</text>
+    <text x="450" y="294" text-anchor="middle" font-size="12" fill="#454b78">splits the pot into claim credits, all at once</text>
+  </g>
+
+  <!-- three claim outputs -->
+  <line x1="330" y1="304" x2="180" y2="352" stroke="#454b78" stroke-width="2.5" marker-end="url(#mf-arr)"/>
+  <line x1="450" y1="306" x2="450" y2="352" stroke="#454b78" stroke-width="2.5" marker-end="url(#mf-arr)"/>
+  <line x1="570" y1="304" x2="720" y2="352" stroke="#454b78" stroke-width="2.5" marker-end="url(#mf-arr)"/>
+
+  <!-- treasury -->
+  <g>
+    <rect x="60" y="356" width="240" height="104" rx="12" fill="#f4f4fb" stroke="#676c94" stroke-width="1.5"/>
+    <text x="180" y="384" text-anchor="middle" font-size="14" font-weight="700" fill="#10143a">Protocol treasury</text>
+    <text x="180" y="408" text-anchor="middle" font-size="13" fill="#454b78">5% of the pot, both branches</text>
+    <text x="180" y="436" text-anchor="middle" font-size="15" font-weight="750" fill="#1e2a9b">40 USDC</text>
+  </g>
+
+  <!-- winner -->
+  <g>
+    <rect x="330" y="356" width="240" height="104" rx="12" fill="#e3f7ee" stroke="#0d6b45" stroke-width="1.5"/>
+    <text x="450" y="384" text-anchor="middle" font-size="14" font-weight="700" fill="#0d6b45">Winner</text>
+    <text x="450" y="408" text-anchor="middle" font-size="13" fill="#454b78">met: the NFT &#183; missed: 80% post-fee</text>
+    <text x="450" y="436" text-anchor="middle" font-size="15" font-weight="750" fill="#0d6b45">NFT, or 608 USDC</text>
+  </g>
+
+  <!-- sponsor -->
+  <g>
+    <rect x="600" y="356" width="240" height="104" rx="12" fill="#e8f2ff" stroke="#1f6fd0" stroke-width="1.5"/>
+    <text x="720" y="384" text-anchor="middle" font-size="14" font-weight="700" fill="#1b5aa8">Sponsor</text>
+    <text x="720" y="408" text-anchor="middle" font-size="13" fill="#454b78">met: 95% &#183; missed: the post-fee rest</text>
+    <text x="720" y="436" text-anchor="middle" font-size="15" font-weight="750" fill="#1b5aa8">760, or 152 USDC</text>
+  </g>
+
+  <!-- oracle fee side-note -->
+  <g>
+    <rect x="640" y="90" width="290" height="96" rx="12" fill="#fff7dc" stroke="#eab308" stroke-width="1.3"/>
+    <text x="660" y="118" font-size="13" font-weight="700" fill="#7a4f00">Separate: the oracle fee (ETH)</text>
+    <text x="660" y="140" font-size="12" fill="#454b78">paid by whoever requests the draw, passed</text>
+    <text x="660" y="158" font-size="12" fill="#454b78">straight to Pyth. Never taken from ticket</text>
+    <text x="660" y="176" font-size="12" fill="#454b78">money. Overpayment is refundable by pull.</text>
+  </g>
+
+  <!-- conservation strip -->
+  <g>
+    <rect x="30" y="478" width="900" height="34" rx="8" fill="#e3f7ee"/>
+    <text x="480" y="500" text-anchor="middle" font-size="13" font-weight="650" fill="#0d6b45">Conservation: fee + winner cash + sponsor cash = the exact pot. Example (missed): 40 + 608 + 152 = 800 USDC. Nothing is lost or minted.</text>
+  </g>
+
+  <!-- failed draw strip -->
+  <g>
+    <rect x="30" y="520" width="900" height="34" rx="8" fill="#fce9f5"/>
+    <text x="480" y="542" text-anchor="middle" font-size="13" font-weight="650" fill="#b81478">Failed draw instead? The split never happens: the whole 800 USDC becomes refunds of exactly 10 USDC per ticket, and there is no fee.</text>
+  </g>
+
+  <!-- legend -->
+  <text x="30" y="72" font-size="12" fill="#676c94">Amounts follow the worked example: 80 tickets sold at 10 USDC, minimum 100. Arrows show quote-token movement or credit.</text>
+</svg>

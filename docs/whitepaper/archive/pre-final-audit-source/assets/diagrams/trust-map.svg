@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" font-family="Inter, sans-serif">
+  <!-- three trust rings as columns -->
+  <g>
+    <rect x="20" y="52" width="295" height="440" rx="14" fill="#e3f7ee" stroke="#0d6b45" stroke-width="1.6"/>
+    <text x="167" y="84" text-anchor="middle" font-size="13.5" font-weight="800" fill="#0d6b45" font-family="Nunito, Inter, sans-serif">ENFORCED BY THE PROTOCOL</text>
+    <text x="167" y="104" text-anchor="middle" font-size="11" fill="#454b78">breaking these requires breaking the chain itself</text>
+
+    <g font-size="12" fill="#10143a">
+      <rect x="40" y="122" width="255" height="64" rx="9" fill="#ffffff"/>
+      <text x="56" y="146" font-weight="700">Raffle rules and custody</text>
+      <text x="56" y="164" fill="#454b78">price, dates, splits, escrow: fixed at</text>
+      <text x="56" y="178" fill="#454b78">creation, no admin can touch them</text>
+
+      <rect x="40" y="196" width="255" height="64" rx="9" fill="#ffffff"/>
+      <text x="56" y="220" font-weight="700">One draw, one result</text>
+      <text x="56" y="238" fill="#454b78">a single stored sequence; duplicates</text>
+      <text x="56" y="252" fill="#454b78">and forgeries are ignored</text>
+
+      <rect x="40" y="270" width="255" height="64" rx="9" fill="#ffffff"/>
+      <text x="56" y="294" font-weight="700">Solvent accounting</text>
+      <text x="56" y="312" fill="#454b78">credited claims never exceed the</text>
+      <text x="56" y="326" fill="#454b78">tokens actually held</text>
+
+      <rect x="40" y="344" width="255" height="64" rx="9" fill="#ffffff"/>
+      <text x="56" y="368" font-weight="700">Pull claims + bounded refunds</text>
+      <text x="56" y="386" fill="#454b78">withdrawals are separate; a failed draw</text>
+      <text x="56" y="400" fill="#454b78">refunds every ticket by fixed deadlines</text>
+
+      <rect x="40" y="418" width="255" height="58" rx="9" fill="#ffffff"/>
+      <text x="56" y="442" font-weight="700">Admin containment</text>
+      <text x="56" y="460" fill="#454b78">no function exists to reach into a raffle</text>
+    </g>
+  </g>
+
+  <g>
+    <rect x="332" y="52" width="295" height="440" rx="14" fill="#fff7dc" stroke="#eab308" stroke-width="1.6"/>
+    <text x="479" y="84" text-anchor="middle" font-size="13.5" font-weight="800" fill="#7a4f00" font-family="Nunito, Inter, sans-serif">TRUSTED DEPENDENCIES</text>
+    <text x="479" y="104" text-anchor="middle" font-size="11" fill="#454b78">the protocol relies on these behaving as designed</text>
+
+    <g font-size="12" fill="#10143a">
+      <rect x="352" y="122" width="255" height="64" rx="9" fill="#ffffff"/>
+      <text x="368" y="146" font-weight="700">The network (Ethereum / Base)</text>
+      <text x="368" y="164" fill="#454b78">must process transactions and keep</text>
+      <text x="368" y="178" fill="#454b78">history final</text>
+
+      <rect x="352" y="196" width="255" height="64" rx="9" fill="#ffffff"/>
+      <text x="368" y="220" font-weight="700">Pyth Entropy + its provider</text>
+      <text x="368" y="238" fill="#454b78">needed for a normal result; if it stalls,</text>
+      <text x="368" y="252" fill="#454b78">fixed deadlines open full refunds</text>
+
+      <rect x="352" y="270" width="255" height="64" rx="9" fill="#ffffff"/>
+      <text x="368" y="294" font-weight="700">Compiler and libraries</text>
+      <text x="368" y="312" fill="#454b78">Solidity 0.8.36 and OpenZeppelin 5.6.1</text>
+      <text x="368" y="326" fill="#454b78">must be free of relevant defects</text>
+
+      <rect x="352" y="344" width="255" height="64" rx="9" fill="#ffffff"/>
+      <text x="368" y="368" font-weight="700">Factory owner multisig</text>
+      <text x="368" y="386" fill="#454b78">trusted only for future-raffle policy,</text>
+      <text x="368" y="400" fill="#454b78">labels, and creation pause</text>
+
+      <rect x="352" y="418" width="255" height="58" rx="9" fill="#ffffff"/>
+      <text x="368" y="442" font-weight="700">The chosen tokens</text>
+      <text x="368" y="460" fill="#454b78">prize NFT and payment token contracts</text>
+    </g>
+  </g>
+
+  <g>
+    <rect x="644" y="52" width="295" height="440" rx="14" fill="#fdeaee" stroke="#c8213f" stroke-width="1.6"/>
+    <text x="791" y="84" text-anchor="middle" font-size="13.5" font-weight="800" fill="#c8213f" font-family="Nunito, Inter, sans-serif">OUTSIDE PROTOCOL CONTROL</text>
+    <text x="791" y="104" text-anchor="middle" font-size="11" fill="#454b78">the contracts cannot protect you here</text>
+
+    <g font-size="12" fill="#10143a">
+      <rect x="664" y="122" width="255" height="64" rx="9" fill="#ffffff"/>
+      <text x="680" y="146" font-weight="700">Prize authenticity and value</text>
+      <text x="680" y="164" fill="#454b78">a counterfeit or worthless NFT raffles</text>
+      <text x="680" y="178" fill="#454b78">exactly like a real one</text>
+
+      <rect x="664" y="196" width="255" height="64" rx="9" fill="#ffffff"/>
+      <text x="680" y="220" font-weight="700">Token-issuer powers</text>
+      <text x="680" y="238" fill="#454b78">blacklists, pauses, or upgrades in the</text>
+      <text x="680" y="252" fill="#454b78">chosen tokens can block claims</text>
+
+      <rect x="664" y="270" width="255" height="64" rx="9" fill="#ffffff"/>
+      <text x="680" y="294" font-weight="700">Your wallet and keys</text>
+      <text x="680" y="312" fill="#454b78">lost keys or a signed malicious</text>
+      <text x="680" y="326" fill="#454b78">transaction cannot be undone</text>
+
+      <rect x="664" y="344" width="255" height="64" rx="9" fill="#ffffff"/>
+      <text x="680" y="368" font-weight="700">Websites, RPC, metadata</text>
+      <text x="680" y="386" fill="#454b78">any of these can lie about state;</text>
+      <text x="680" y="400" fill="#454b78">verify against the chain</text>
+
+      <rect x="664" y="418" width="255" height="58" rx="9" fill="#ffffff"/>
+      <text x="680" y="442" font-weight="700">Law and regulation</text>
+      <text x="680" y="460" fill="#454b78">chance-based prizes are regulated activity</text>
+    </g>
+  </g>
+
+  <!-- header -->
+  <text x="480" y="32" text-anchor="middle" font-size="13" font-weight="700" fill="#10143a">Every guarantee in this document lives in the left column only. The middle column can delay or halt outcomes; the right column can cost you money.</text>
+
+  <!-- footer -->
+  <text x="480" y="530" text-anchor="middle" font-size="12" fill="#676c94">Read each column left to right as decreasing protocol control. A raffle is only as trustworthy as its weakest relevant dependency.</text>
+</svg>

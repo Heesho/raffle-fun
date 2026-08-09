@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 470" font-family="Inter, sans-serif">
+  <!-- CAN column -->
+  <g>
+    <rect x="20" y="20" width="450" height="420" rx="14" fill="#ffffff" stroke="#0d6b45" stroke-width="2"/>
+    <rect x="20" y="20" width="450" height="52" rx="14" fill="#e3f7ee"/>
+    <rect x="20" y="58" width="450" height="14" fill="#e3f7ee"/>
+    <text x="45" y="53" font-size="16" font-weight="800" fill="#0d6b45" font-family="Nunito, Inter, sans-serif">The factory owner CAN ...</text>
+
+    <g font-size="13" fill="#10143a">
+      <circle cx="52" cy="100" r="5" fill="#0d6b45"/>
+      <text x="70" y="105">change the treasury address that <tspan font-weight="700">future</tspan> raffles capture</text>
+
+      <circle cx="52" cy="140" r="5" fill="#0d6b45"/>
+      <text x="70" y="145">admit or remove up to 32 payment tokens for <tspan font-weight="700">new</tspan> raffles</text>
+      <text x="70" y="164" font-size="11.5" fill="#676c94">a hard creation gate; removal never touches existing raffles</text>
+
+      <circle cx="52" cy="198" r="5" fill="#0d6b45"/>
+      <text x="70" y="203">pause the creation of <tspan font-weight="700">new</tspan> raffles at this factory</text>
+
+      <circle cx="52" cy="238" r="5" fill="#0d6b45"/>
+      <text x="70" y="243">hand ownership to another address (two-step transfer)</text>
+
+      <circle cx="52" cy="278" r="5" fill="#0d6b45"/>
+      <text x="70" y="283">deploy a new factory version alongside this one</text>
+    </g>
+
+    <rect x="40" y="320" width="410" height="100" rx="10" fill="#f4f4fb"/>
+    <text x="60" y="348" font-size="12" font-weight="700" fill="#454b78">Blast radius if the owner key is stolen:</text>
+    <text x="60" y="370" font-size="12" fill="#676c94">future raffles could capture a thief's treasury, labels could</text>
+    <text x="60" y="388" font-size="12" fill="#676c94">mislead discovery, and creation could be paused. Every</text>
+    <text x="60" y="406" font-size="12" fill="#676c94">existing raffle keeps running exactly as configured.</text>
+  </g>
+
+  <!-- CANNOT column -->
+  <g>
+    <rect x="490" y="20" width="450" height="420" rx="14" fill="#ffffff" stroke="#c8213f" stroke-width="2"/>
+    <rect x="490" y="20" width="450" height="52" rx="14" fill="#fdeaee"/>
+    <rect x="490" y="58" width="450" height="14" fill="#fdeaee"/>
+    <text x="515" y="53" font-size="16" font-weight="800" fill="#c8213f" font-family="Nunito, Inter, sans-serif">The factory owner CANNOT ...</text>
+
+    <g font-size="13" fill="#10143a">
+      <text x="516" y="103" font-size="14" font-weight="800" fill="#c8213f">&#215;</text>
+      <text x="540" y="105">change any existing raffle's price, minimum, dates, fee, or split</text>
+
+      <text x="516" y="141" font-size="14" font-weight="800" fill="#c8213f">&#215;</text>
+      <text x="540" y="143">pick, replace, or influence a winner, or request a second draw</text>
+
+      <text x="516" y="179" font-size="14" font-weight="800" fill="#c8213f">&#215;</text>
+      <text x="540" y="181">seize or redirect the prize, the pot, or anyone's claim</text>
+
+      <text x="516" y="217" font-size="14" font-weight="800" fill="#c8213f">&#215;</text>
+      <text x="540" y="219">upgrade, pause, cancel, or settle an existing raffle</text>
+
+      <text x="516" y="255" font-size="14" font-weight="800" fill="#c8213f">&#215;</text>
+      <text x="540" y="257">change an existing raffle's token, recovery address, or deadlines</text>
+
+      <text x="516" y="293" font-size="14" font-weight="800" fill="#c8213f">&#215;</text>
+      <text x="540" y="295">block buying, claiming, refunds, or the draw on a live raffle</text>
+    </g>
+
+    <rect x="510" y="320" width="410" height="100" rx="10" fill="#f4f4fb"/>
+    <text x="530" y="348" font-size="12" font-weight="700" fill="#454b78">Why: these functions do not exist in the code.</text>
+    <text x="530" y="370" font-size="12" fill="#676c94">A raffle clone has no owner role, no upgrade hook, no pause</text>
+    <text x="530" y="388" font-size="12" fill="#676c94">switch, and no rescue function. The limits are structural,</text>
+    <text x="530" y="406" font-size="12" fill="#676c94">not a policy promise that could quietly change later.</text>
+  </g>
+
+  <!-- footer -->
+  <text x="480" y="462" text-anchor="middle" font-size="12" fill="#676c94">Derived from RaffleFactory.sol access control and the absence of admin functions in Raffle.sol at the reviewed commit.</text>
+</svg>

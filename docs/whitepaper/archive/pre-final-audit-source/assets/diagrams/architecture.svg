@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" font-family="Inter, sans-serif">
+  <defs>
+    <marker id="ar-arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#454b78"/>
+    </marker>
+    <marker id="ar-arr-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#9aa0c0"/>
+    </marker>
+  </defs>
+
+  <!-- offchain band -->
+  <rect x="20" y="20" width="920" height="150" rx="14" fill="#fbfaff" stroke="#9aa0c0" stroke-width="1.2" stroke-dasharray="7 5"/>
+  <text x="40" y="46" font-size="12" font-weight="750" fill="#9aa0c0" letter-spacing="2">OFFCHAIN &#183; HELPFUL BUT NEVER AUTHORITATIVE</text>
+
+  <g text-anchor="middle">
+    <rect x="45" y="62" width="190" height="88" rx="10" fill="#ffffff" stroke="#676c94" stroke-width="1.3"/>
+    <text x="140" y="90" font-size="13.5" font-weight="700" fill="#10143a">Web app (Next.js)</text>
+    <text x="140" y="110" font-size="11.5" fill="#676c94">shows raffles, builds and</text>
+    <text x="140" y="126" font-size="11.5" fill="#676c94">simulates transactions</text>
+
+    <rect x="265" y="62" width="190" height="88" rx="10" fill="#ffffff" stroke="#676c94" stroke-width="1.3"/>
+    <text x="360" y="90" font-size="13.5" font-weight="700" fill="#10143a">SDK (@raffle-fun/sdk)</text>
+    <text x="360" y="110" font-size="11.5" fill="#676c94">generated ABIs, Viem</text>
+    <text x="360" y="126" font-size="11.5" fill="#676c94">actions, exact math</text>
+
+    <rect x="485" y="62" width="190" height="88" rx="10" fill="#ffffff" stroke="#676c94" stroke-width="1.3"/>
+    <text x="580" y="90" font-size="13.5" font-weight="700" fill="#10143a">Subgraph (indexer)</text>
+    <text x="580" y="110" font-size="11.5" fill="#676c94">searchable history built</text>
+    <text x="580" y="126" font-size="11.5" fill="#676c94">from contract events</text>
+
+    <rect x="705" y="62" width="190" height="88" rx="10" fill="#ffffff" stroke="#676c94" stroke-width="1.3"/>
+    <text x="800" y="90" font-size="13.5" font-weight="700" fill="#10143a">Wallets &amp; RPC</text>
+    <text x="800" y="110" font-size="11.5" fill="#676c94">sign transactions; relay</text>
+    <text x="800" y="126" font-size="11.5" fill="#676c94">reads and writes onchain</text>
+  </g>
+
+  <!-- connectors between bands -->
+  <line x1="140" y1="152" x2="140" y2="216" stroke="#454b78" stroke-width="1.8" marker-end="url(#ar-arr)"/>
+  <text x="148" y="196" font-size="11" fill="#676c94">reads + simulated writes</text>
+  <line x1="580" y1="216" x2="580" y2="154" stroke="#9aa0c0" stroke-width="1.8" marker-end="url(#ar-arr-g)"/>
+  <text x="588" y="196" font-size="11" fill="#9aa0c0">events flow up only</text>
+
+  <!-- onchain band -->
+  <rect x="20" y="212" width="920" height="330" rx="14" fill="#e9eefc" stroke="#1e2a9b" stroke-width="1.6"/>
+  <text x="40" y="240" font-size="12" font-weight="750" fill="#1e2a9b" letter-spacing="2">ONCHAIN &#183; ETHEREUM / BASE &#183; THE AUTHORITATIVE STATE</text>
+
+  <!-- factory -->
+  <g>
+    <rect x="45" y="262" width="240" height="120" rx="12" fill="#1e2a9b"/>
+    <text x="165" y="292" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff" font-family="Nunito, Inter, sans-serif">RaffleFactory</text>
+    <text x="165" y="314" text-anchor="middle" font-size="11.5" fill="#c9d2ff">creates and registers raffles;</text>
+    <text x="165" y="330" text-anchor="middle" font-size="11.5" fill="#c9d2ff">admits payment tokens;</text>
+    <text x="165" y="346" text-anchor="middle" font-size="11.5" fill="#c9d2ff">owned by a multisig;</text>
+    <text x="165" y="362" text-anchor="middle" font-size="11.5" fill="#c9d2ff">never holds user assets</text>
+  </g>
+
+  <!-- implementation -->
+  <g>
+    <rect x="45" y="412" width="240" height="66" rx="12" fill="#ffffff" stroke="#1e2a9b" stroke-width="1.4"/>
+    <text x="165" y="438" text-anchor="middle" font-size="13" font-weight="700" fill="#1e2a9b">Raffle implementation</text>
+    <text x="165" y="458" text-anchor="middle" font-size="11.5" fill="#676c94">one locked master copy of the logic</text>
+  </g>
+  <line x1="165" y1="410" x2="165" y2="386" stroke="#454b78" stroke-width="1.8" marker-end="url(#ar-arr)"/>
+  <text x="175" y="402" font-size="11" fill="#676c94">clones share its code</text>
+
+  <!-- clones -->
+  <g>
+    <rect x="345" y="262" width="270" height="216" rx="12" fill="#ffffff" stroke="#d31d8b" stroke-width="2"/>
+    <text x="480" y="292" text-anchor="middle" font-size="15" font-weight="800" fill="#b81478" font-family="Nunito, Inter, sans-serif">Raffle clone (one per raffle)</text>
+    <text x="480" y="316" text-anchor="middle" font-size="11.5" fill="#454b78">escrows the prize NFT &#183; mints ticket NFTs</text>
+    <text x="480" y="334" text-anchor="middle" font-size="11.5" fill="#454b78">holds ticket money &#183; runs the state machine</text>
+    <text x="480" y="352" text-anchor="middle" font-size="11.5" fill="#454b78">records claims &#183; not upgradeable, no admin</text>
+    <rect x="370" y="372" width="105" height="42" rx="8" fill="#fce9f5"/>
+    <text x="422" y="390" text-anchor="middle" font-size="11" font-weight="700" fill="#b81478">Prize NFT</text>
+    <text x="422" y="406" text-anchor="middle" font-size="10.5" fill="#676c94">in escrow</text>
+    <rect x="487" y="372" width="105" height="42" rx="8" fill="#e8f2ff"/>
+    <text x="539" y="390" text-anchor="middle" font-size="11" font-weight="700" fill="#1b5aa8">Quote tokens</text>
+    <text x="539" y="406" text-anchor="middle" font-size="10.5" fill="#676c94">ticket money</text>
+    <rect x="370" y="424" width="222" height="40" rx="8" fill="#f4f4fb"/>
+    <text x="481" y="442" text-anchor="middle" font-size="11" font-weight="700" fill="#454b78">Ticket ERC-721 ledger</text>
+    <text x="481" y="457" text-anchor="middle" font-size="10.5" fill="#676c94">ticket #1 ... #N, one owner each</text>
+  </g>
+  <line x1="287" y1="322" x2="341" y2="322" stroke="#454b78" stroke-width="1.8" marker-end="url(#ar-arr)"/>
+  <text x="314" y="313" text-anchor="middle" font-size="11" fill="#676c94">deploys</text>
+
+  <!-- external contracts column -->
+  <g>
+    <rect x="675" y="262" width="240" height="62" rx="12" fill="#ffffff" stroke="#7b3fe4" stroke-width="1.5"/>
+    <text x="795" y="288" text-anchor="middle" font-size="13.5" font-weight="700" fill="#7b3fe4">Pyth Entropy v2</text>
+    <text x="795" y="308" text-anchor="middle" font-size="11.5" fill="#676c94">delivers the one random result</text>
+
+    <rect x="675" y="338" width="240" height="62" rx="12" fill="#ffffff" stroke="#676c94" stroke-width="1.4"/>
+    <text x="795" y="364" text-anchor="middle" font-size="13.5" font-weight="700" fill="#10143a">Prize + quote contracts</text>
+    <text x="795" y="384" text-anchor="middle" font-size="11.5" fill="#676c94">third-party ERC-721 and ERC-20 code</text>
+
+    <rect x="675" y="414" width="240" height="62" rx="12" fill="#ffffff" stroke="#0d6b45" stroke-width="1.5"/>
+    <text x="795" y="440" text-anchor="middle" font-size="13.5" font-weight="700" fill="#0d6b45">RaffleLens</text>
+    <text x="795" y="460" text-anchor="middle" font-size="11.5" fill="#676c94">read-only snapshots for apps</text>
+  </g>
+  <line x1="617" y1="293" x2="671" y2="293" stroke="#454b78" stroke-width="1.8" marker-end="url(#ar-arr)"/>
+  <line x1="671" y1="308" x2="617" y2="308" stroke="#454b78" stroke-width="1.8" marker-end="url(#ar-arr)"/>
+  <text x="644" y="285" text-anchor="middle" font-size="10.5" fill="#676c94">request /</text>
+  <text x="644" y="322" text-anchor="middle" font-size="10.5" fill="#676c94">callback</text>
+  <line x1="617" y1="369" x2="671" y2="369" stroke="#454b78" stroke-width="1.8" marker-end="url(#ar-arr)"/>
+  <text x="644" y="361" text-anchor="middle" font-size="10.5" fill="#676c94">calls</text>
+  <line x1="671" y1="445" x2="617" y2="445" stroke="#9aa0c0" stroke-width="1.8" marker-end="url(#ar-arr-g)"/>
+  <text x="644" y="437" text-anchor="middle" font-size="10.5" fill="#9aa0c0">reads</text>
+
+  <!-- treasury note -->
+  <rect x="345" y="496" width="570" height="34" rx="8" fill="#fff7dc"/>
+  <text x="630" y="518" text-anchor="middle" font-size="11.5" font-weight="600" fill="#7a4f00">Protocol treasury: an ordinary address recorded in each clone at creation; it can claim only the 5% fee.</text>
+
+  <!-- legend -->
+  <g font-size="12" fill="#676c94">
+    <line x1="30" y1="576" x2="60" y2="576" stroke="#454b78" stroke-width="1.8" marker-end="url(#ar-arr)"/>
+    <text x="70" y="580">contract call / deployment</text>
+    <line x1="270" y1="576" x2="300" y2="576" stroke="#9aa0c0" stroke-width="1.8" marker-end="url(#ar-arr-g)"/>
+    <text x="310" y="580">read-only data flow</text>
+    <rect x="480" y="567" width="16" height="12" rx="3" fill="#fbfaff" stroke="#9aa0c0" stroke-dasharray="4 3"/>
+    <text x="504" y="578">offchain (replaceable)</text>
+    <rect x="670" y="567" width="16" height="12" rx="3" fill="#e9eefc" stroke="#1e2a9b"/>
+    <text x="694" y="578">onchain (authoritative)</text>
+  </g>
+</svg>

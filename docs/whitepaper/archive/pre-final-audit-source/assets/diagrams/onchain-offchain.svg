@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 470" font-family="Inter, sans-serif">
+  <!-- Pyramid of authority: 5 layers -->
+  <defs>
+    <marker id="oo-arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#454b78"/>
+    </marker>
+  </defs>
+
+  <text x="330" y="36" text-anchor="middle" font-size="13" font-weight="750" fill="#10143a" letter-spacing="1">MOST AUTHORITATIVE</text>
+
+  <!-- layer 1 -->
+  <g>
+    <rect x="180" y="50" width="300" height="60" rx="10" fill="#1e2a9b"/>
+    <text x="330" y="75" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">1. Blockchain state</text>
+    <text x="330" y="95" text-anchor="middle" font-size="11.5" fill="#c9d2ff">who owns what, right now, on the network</text>
+  </g>
+  <!-- layer 2 -->
+  <g>
+    <rect x="155" y="120" width="350" height="60" rx="10" fill="#4b2fbe"/>
+    <text x="330" y="145" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">2. Verified contract code + configuration</text>
+    <text x="330" y="165" text-anchor="middle" font-size="11.5" fill="#ddd6ff">the rules that will apply to every future action</text>
+  </g>
+  <!-- layer 3 -->
+  <g>
+    <rect x="130" y="190" width="400" height="60" rx="10" fill="#9b2cc4"/>
+    <text x="330" y="215" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">3. Transaction simulation</text>
+    <text x="330" y="235" text-anchor="middle" font-size="11.5" fill="#f3d9ff">a dress rehearsal of your exact transaction before signing</text>
+  </g>
+  <!-- layer 4 -->
+  <g>
+    <rect x="105" y="260" width="450" height="60" rx="10" fill="#ec2fa0"/>
+    <text x="330" y="285" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">4. Indexed subgraph data</text>
+    <text x="330" y="305" text-anchor="middle" font-size="11.5" fill="#ffe3f3">searchable history; can lag or fail; rebuilt from events</text>
+  </g>
+  <!-- layer 5 -->
+  <g>
+    <rect x="80" y="330" width="500" height="60" rx="10" fill="#ffc857"/>
+    <text x="330" y="355" text-anchor="middle" font-size="13.5" font-weight="700" fill="#10143a">5. Frontend presentation</text>
+    <text x="330" y="375" text-anchor="middle" font-size="11.5" fill="#7a4f00">any website; convenient, replaceable, and the easiest thing to fake</text>
+  </g>
+
+  <text x="330" y="420" text-anchor="middle" font-size="13" font-weight="750" fill="#10143a" letter-spacing="1">LEAST AUTHORITATIVE</text>
+
+  <!-- right panel: what lives where -->
+  <g>
+    <rect x="620" y="50" width="320" height="160" rx="12" fill="#e9eefc" stroke="#1e2a9b" stroke-width="1.4"/>
+    <text x="640" y="78" font-size="13" font-weight="750" fill="#1e2a9b">RECORDED ONCHAIN</text>
+    <text x="640" y="102" font-size="12" fill="#454b78">&#8226; raffle rules, state, and outcome</text>
+    <text x="640" y="122" font-size="12" fill="#454b78">&#8226; NFT and ticket ownership</text>
+    <text x="640" y="142" font-size="12" fill="#454b78">&#8226; escrowed money and claim balances</text>
+    <text x="640" y="162" font-size="12" fill="#454b78">&#8226; every event, forever</text>
+    <text x="640" y="182" font-size="12" fill="#454b78">&#8226; the random draw request and result</text>
+  </g>
+  <g>
+    <rect x="620" y="230" width="320" height="160" rx="12" fill="#fbfaff" stroke="#9aa0c0" stroke-width="1.3" stroke-dasharray="7 5"/>
+    <text x="640" y="258" font-size="13" font-weight="750" fill="#676c94">LIVES OFFCHAIN</text>
+    <text x="640" y="282" font-size="12" fill="#454b78">&#8226; the website and its servers</text>
+    <text x="640" y="302" font-size="12" fill="#454b78">&#8226; NFT images and metadata files</text>
+    <text x="640" y="322" font-size="12" fill="#454b78">&#8226; the subgraph index</text>
+    <text x="640" y="342" font-size="12" fill="#454b78">&#8226; RPC providers relaying your requests</text>
+    <text x="640" y="362" font-size="12" fill="#454b78">&#8226; your wallet software and keys</text>
+  </g>
+
+  <!-- caption strip -->
+  <rect x="80" y="435" width="860" height="30" rx="8" fill="#f4f4fb"/>
+  <text x="510" y="455" text-anchor="middle" font-size="12" font-weight="600" fill="#454b78">Lower layers can mislead you about the upper layers, but they can never change them. When two layers disagree, trust the higher one.</text>
+</svg>

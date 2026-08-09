@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 470" font-family="Inter, sans-serif">
+  <defs>
+    <marker id="tl-arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#10143a"/>
+    </marker>
+  </defs>
+
+  <!-- axis -->
+  <line x1="40" y1="210" x2="930" y2="210" stroke="#10143a" stroke-width="2.5" marker-end="url(#tl-arr)"/>
+  <text x="935" y="238" text-anchor="end" font-size="12" font-weight="600" fill="#676c94">time</text>
+
+  <!-- phase bands above axis -->
+  <!-- setup -->
+  <rect x="40" y="150" width="105" height="46" rx="8" fill="#f4f4fb" stroke="#9aa0c0" stroke-width="1.2"/>
+  <text x="92" y="170" text-anchor="middle" font-size="13" font-weight="700" fill="#454b78">Setup</text>
+  <text x="92" y="188" text-anchor="middle" font-size="11.5" fill="#676c94">prize escrowed</text>
+
+  <!-- sale window -->
+  <rect x="145" y="150" width="295" height="46" rx="8" fill="#e8f2ff" stroke="#1f6fd0" stroke-width="1.5"/>
+  <text x="292" y="170" text-anchor="middle" font-size="13" font-weight="700" fill="#1b5aa8">Sale window (30 days max)</text>
+  <text x="292" y="188" text-anchor="middle" font-size="11.5" fill="#676c94">tickets sell and transfer freely</text>
+
+  <!-- request window -->
+  <rect x="440" y="150" width="205" height="46" rx="8" fill="#fff7dc" stroke="#eab308" stroke-width="1.5"/>
+  <text x="542" y="170" text-anchor="middle" font-size="13" font-weight="700" fill="#7a4f00">Draw-request window: 3 days</text>
+  <text x="542" y="188" text-anchor="middle" font-size="11.5" fill="#676c94">anyone may pay the fee and request</text>
+
+  <!-- callback window -->
+  <rect x="645" y="150" width="160" height="46" rx="8" fill="#fce9f5" stroke="#d31d8b" stroke-width="1.5"/>
+  <text x="725" y="170" text-anchor="middle" font-size="13" font-weight="700" fill="#b81478">Callback: 2 days</text>
+  <text x="725" y="188" text-anchor="middle" font-size="11.5" fill="#676c94">transfers frozen</text>
+
+  <!-- resolved -->
+  <rect x="805" y="150" width="125" height="46" rx="8" fill="#e3f7ee" stroke="#0d6b45" stroke-width="1.5"/>
+  <text x="867" y="170" text-anchor="middle" font-size="13" font-weight="700" fill="#0d6b45">Settled</text>
+  <text x="867" y="188" text-anchor="middle" font-size="11.5" fill="#676c94">claims open forever</text>
+
+  <!-- boundary markers -->
+  <g text-anchor="middle">
+    <line x1="145" y1="140" x2="145" y2="228" stroke="#1f6fd0" stroke-width="2"/>
+    <text x="145" y="252" font-size="12.5" font-weight="700" fill="#1b5aa8">startTime</text>
+    <text x="145" y="269" font-size="11.5" fill="#676c94">inclusive: buying works at</text>
+    <text x="145" y="285" font-size="11.5" fill="#676c94">this exact second; at most</text>
+    <text x="145" y="301" font-size="11.5" fill="#676c94">7 days after creation</text>
+
+    <line x1="440" y1="140" x2="440" y2="228" stroke="#c8213f" stroke-width="2"/>
+    <text x="440" y="252" font-size="12.5" font-weight="700" fill="#c8213f">endTime</text>
+    <text x="440" y="269" font-size="11.5" fill="#676c94">exclusive: buying fails at this</text>
+    <text x="440" y="285" font-size="11.5" fill="#676c94">second; draw and no-sales</text>
+    <text x="440" y="301" font-size="11.5" fill="#676c94">close become allowed</text>
+
+    <line x1="645" y1="140" x2="645" y2="228" stroke="#b81478" stroke-width="2"/>
+    <text x="645" y="252" font-size="12.5" font-weight="700" fill="#b81478">requestDraw</text>
+    <text x="645" y="269" font-size="11.5" fill="#676c94">first success freezes</text>
+    <text x="645" y="285" font-size="11.5" fill="#676c94">transfers, starts the</text>
+    <text x="645" y="301" font-size="11.5" fill="#676c94">2-day callback clock</text>
+
+    <line x1="805" y1="140" x2="805" y2="228" stroke="#0d6b45" stroke-width="2"/>
+    <text x="805" y="252" font-size="12.5" font-weight="700" fill="#0d6b45">callback</text>
+    <text x="805" y="269" font-size="11.5" fill="#676c94">winner snapshotted,</text>
+    <text x="805" y="285" font-size="11.5" fill="#676c94">claims recorded</text>
+  </g>
+
+  <!-- failure exits under axis -->
+  <g>
+    <rect x="440" y="322" width="205" height="52" rx="8" fill="#fdeaee" stroke="#c8213f" stroke-width="1.2"/>
+    <text x="542" y="343" text-anchor="middle" font-size="11.5" font-weight="700" fill="#c8213f">if no request by endTime + 3 days:</text>
+    <text x="542" y="361" text-anchor="middle" font-size="11.5" fill="#454b78">anyone can open full refunds</text>
+    <line x1="542" y1="230" x2="542" y2="318" stroke="#c8213f" stroke-width="1.5" stroke-dasharray="5 4"/>
+
+    <rect x="655" y="322" width="205" height="52" rx="8" fill="#fdeaee" stroke="#c8213f" stroke-width="1.2"/>
+    <text x="757" y="343" text-anchor="middle" font-size="11.5" font-weight="700" fill="#c8213f">if no callback within 2 days:</text>
+    <text x="757" y="361" text-anchor="middle" font-size="11.5" fill="#454b78">anyone can open full refunds</text>
+    <line x1="757" y1="230" x2="757" y2="318" stroke="#c8213f" stroke-width="1.5" stroke-dasharray="5 4"/>
+  </g>
+
+  <!-- boundary-rule strip -->
+  <g>
+    <rect x="40" y="386" width="890" height="48" rx="10" fill="#f4f4fb"/>
+    <text x="60" y="406" font-size="12" fill="#454b78"><tspan font-weight="700" fill="#10143a">Exact comparisons:</tspan> buy needs startTime &#8804; now &lt; endTime &#183; draw and no-sales close need now &#8805; endTime</text>
+    <text x="60" y="424" font-size="12" fill="#454b78">request needs now &lt; endTime + 3 days &#183; both refund exits open exactly at their deadline (&#8805;)</text>
+  </g>
+
+  <!-- legend -->
+  <g font-size="12" fill="#676c94">
+    <line x1="40" y1="452" x2="70" y2="452" stroke="#10143a" stroke-width="2.5"/>
+    <text x="80" y="456">the raffle's single timeline</text>
+    <rect x="255" y="443" width="16" height="12" fill="#ffffff" stroke="#c8213f" stroke-width="2"/>
+    <text x="279" y="454">solid rule = exact timestamp boundary</text>
+    <line x1="530" y1="452" x2="560" y2="452" stroke="#c8213f" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="570" y="456">deadline-triggered refund exit</text>
+  </g>
+</svg>

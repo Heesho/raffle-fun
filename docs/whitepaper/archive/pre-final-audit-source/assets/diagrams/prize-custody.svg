@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 470" font-family="Inter, sans-serif">
+  <defs>
+    <marker id="pc-arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#454b78"/>
+    </marker>
+  </defs>
+
+  <!-- sponsor wallet -->
+  <g>
+    <rect x="30" y="60" width="200" height="90" rx="12" fill="#fce9f5" stroke="#d31d8b" stroke-width="1.5"/>
+    <text x="130" y="92" text-anchor="middle" font-size="15" font-weight="700" fill="#b81478">Sponsor's wallet</text>
+    <text x="130" y="116" text-anchor="middle" font-size="12.5" fill="#454b78">owns the prize NFT</text>
+    <text x="130" y="134" text-anchor="middle" font-size="12.5" fill="#454b78">before the raffle</text>
+  </g>
+
+  <!-- escrow -->
+  <g>
+    <rect x="330" y="40" width="250" height="130" rx="14" fill="#1e2a9b"/>
+    <text x="455" y="76" text-anchor="middle" font-size="16" font-weight="800" fill="#ffffff" font-family="Nunito, Inter, sans-serif">Raffle escrow</text>
+    <text x="455" y="100" text-anchor="middle" font-size="12.5" fill="#c9d2ff">the contract itself owns the NFT;</text>
+    <text x="455" y="118" text-anchor="middle" font-size="12.5" fill="#c9d2ff">no person or admin holds keys to it</text>
+    <text x="455" y="142" text-anchor="middle" font-size="12" fill="#8fa0f5">accepts only the exact expected NFT and</text>
+    <text x="455" y="158" text-anchor="middle" font-size="12" fill="#8fa0f5">verifies real ownership after the deposit</text>
+  </g>
+
+  <line x1="232" y1="112" x2="326" y2="112" stroke="#454b78" stroke-width="2" marker-end="url(#pc-arr)"/>
+  <text x="279" y="98" text-anchor="middle" font-size="11" font-weight="600" fill="#676c94">create + escrow</text>
+
+  <!-- winner door -->
+  <line x1="584" y1="80" x2="686" y2="60" stroke="#454b78" stroke-width="2" marker-end="url(#pc-arr)"/>
+  <g>
+    <rect x="690" y="30" width="240" height="72" rx="12" fill="#e3f7ee" stroke="#0d6b45" stroke-width="1.8"/>
+    <text x="810" y="56" text-anchor="middle" font-size="14" font-weight="700" fill="#0d6b45">Winner claims the NFT</text>
+    <text x="810" y="76" text-anchor="middle" font-size="12" fill="#454b78">only in the NftAwarded outcome;</text>
+    <text x="810" y="92" text-anchor="middle" font-size="12" fill="#454b78">winner picks the destination</text>
+  </g>
+
+  <!-- recovery door -->
+  <line x1="584" y1="130" x2="686" y2="160" stroke="#454b78" stroke-width="2" marker-end="url(#pc-arr)"/>
+  <g>
+    <rect x="690" y="130" width="240" height="130" rx="12" fill="#e8f2ff" stroke="#1f6fd0" stroke-width="1.8"/>
+    <text x="810" y="158" text-anchor="middle" font-size="14" font-weight="700" fill="#1b5aa8">Recovery address reclaims</text>
+    <text x="810" y="180" text-anchor="middle" font-size="12" fill="#454b78">in every other ending:</text>
+    <text x="810" y="200" text-anchor="middle" font-size="12" fill="#454b78">&#8226; cash fallback (minimum missed)</text>
+    <text x="810" y="218" text-anchor="middle" font-size="12" fill="#454b78">&#8226; no tickets sold &#183; cancelled early</text>
+    <text x="810" y="236" text-anchor="middle" font-size="12" fill="#454b78">&#8226; failed draw (refund outcomes)</text>
+    <text x="810" y="254" text-anchor="middle" font-size="11" fill="#676c94">fixed at creation; default: the sponsor</text>
+  </g>
+
+  <!-- claim mechanics strip -->
+  <g>
+    <rect x="30" y="200" width="550" height="150" rx="12" fill="#f4f4fb"/>
+    <text x="52" y="228" font-size="13" font-weight="700" fill="#10143a">How the prize leaves escrow, in every case:</text>
+    <text x="52" y="254" font-size="12.5" fill="#454b78">&#8226; only after the raffle reaches a terminal state that names a prize claimant;</text>
+    <text x="52" y="276" font-size="12.5" fill="#454b78">&#8226; only once: a permanent flag marks the prize as claimed;</text>
+    <text x="52" y="298" font-size="12.5" fill="#454b78">&#8226; the claimant chooses any safe destination, or anyone may push the prize</text>
+    <text x="52" y="316" font-size="12.5" fill="#454b78">&#160;&#160;&#160;directly to the recorded claimant (never anywhere else);</text>
+    <text x="52" y="338" font-size="12.5" fill="#454b78">&#8226; a failed delivery reverts harmlessly and the claim survives for a retry.</text>
+  </g>
+
+  <!-- key fact strip -->
+  <g>
+    <rect x="30" y="375" width="900" height="40" rx="10" fill="#fce9f5"/>
+    <text x="480" y="400" text-anchor="middle" font-size="13" font-weight="650" fill="#b81478">The prize leaves escrow at most once, through exactly one of these two doors, and only to or by the recorded claimant.</text>
+  </g>
+
+  <!-- legend -->
+  <g font-size="12" fill="#676c94">
+    <line x1="322" y1="448" x2="352" y2="448" stroke="#454b78" stroke-width="2" marker-end="url(#pc-arr)"/>
+    <text x="362" y="452">NFT ownership moves (ERC-721 safe transfer)</text>
+  </g>
+</svg>
