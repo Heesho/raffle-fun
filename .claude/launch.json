@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "NODE22=\"$(ls -d \"$HOME\"/.nvm/versions/node/v22.*/bin 2>/dev/null | sort -V | tail -1)\"; [ -n \"$NODE22\" ] && export PATH=\"$NODE22:$PATH\"; node --version; [ -d node_modules ] || corepack pnpm install --frozen-lockfile; [ -f packages/config/dist/index.js ] && [ -f packages/sdk/dist/index.js ] || corepack pnpm --filter @raffle-fun/config --filter @raffle-fun/sdk build; exec corepack pnpm run dev"
+      ],
+      "port": 3000
+    }
+  ]
+}
