@@ -511,7 +511,7 @@ const figures = {};
 
 figures["01-at-a-glance.svg"] = (() => {
   const ctx = makeCtx("f01");
-  const H = 336;
+  const H = 316;
   const steps = [
     {
       t: "Create",
@@ -578,29 +578,25 @@ figures["01-at-a-glance.svg"] = (() => {
       );
     }
   });
-  // Failure branch from the Draw stage down to a refund strip.
+  // Failure branch drops from the Draw stage into a full-width refund strip.
   const drawX = 26 + 3 * (cw + gap) + cw / 2;
-  const stripY = 218;
+  const stripY = 206;
   put(
     ctx,
-    elbow(
-      ctx,
-      [
-        [drawX, y + h],
-        [drawX, stripY + 27],
-        [26 + 470, stripY + 27],
-      ],
-      { color: pal.danger, width: 2, dashed: true },
-    ),
+    arrow(ctx, drawX, y + h + 2, drawX, stripY - 4, {
+      color: pal.danger,
+      width: 2,
+      dashed: true,
+    }),
   );
   put(
     ctx,
-    `<rect x="26" y="${stripY}" width="466" height="54" rx="12" fill="${pal.dangerWash}" stroke="${pal.danger}" stroke-width="1.3" stroke-dasharray="6 4"/>`,
+    `<rect x="26" y="${stripY}" width="668" height="58" rx="12" fill="${pal.dangerWash}" stroke="${pal.danger}" stroke-width="1.3" stroke-dasharray="6 4"/>`,
   );
-  put(ctx, icon("undo", 40, stripY + 17, 20, pal.danger));
+  put(ctx, icon("undo", 44, stripY + 19, 20, pal.danger));
   put(
     ctx,
-    txt(70, stripY + 23, "If no draw request or callback lands in time", {
+    txt(76, stripY + 25, "If no draw request or callback lands in time", {
       size: 11.5,
       weight: 750,
       color: pal.danger,
@@ -609,9 +605,9 @@ figures["01-at-a-glance.svg"] = (() => {
   put(
     ctx,
     txt(
-      70,
-      stripY + 39,
-      "anyone enables refunds; owners burn tickets for the exact price paid",
+      76,
+      stripY + 41,
+      "anyone enables refunds and every owner burns their tickets for the exact price paid",
       { size: 10.5, weight: 500, color: pal.ink2 },
     ),
   );
@@ -630,13 +626,13 @@ figures["01-at-a-glance.svg"] = (() => {
 
 figures["02-participant-role-map.svg"] = (() => {
   const ctx = makeCtx("f02");
-  const H = 486;
+  const H = 434;
   const cw = 210;
   const ch = 82;
   const roles = [
     {
       x: 26,
-      y: 34,
+      y: 32,
       t: "Sponsor",
       b: "Deposits the prize; fixes price, threshold, dates, recovery recipient",
       icon: "gem",
@@ -644,7 +640,7 @@ figures["02-participant-role-map.svg"] = (() => {
     },
     {
       x: 255,
-      y: 34,
+      y: 32,
       t: "Buyer / ticket holder",
       b: "Pays USDC; owns a transferable bearer claim until it burns",
       icon: "ticket",
@@ -652,7 +648,7 @@ figures["02-participant-role-map.svg"] = (() => {
     },
     {
       x: 484,
-      y: 34,
+      y: 32,
       t: "Draw requester",
       b: "Anyone; pays the current Pyth fee to start the draw",
       icon: "dice",
@@ -660,7 +656,7 @@ figures["02-participant-role-map.svg"] = (() => {
     },
     {
       x: 26,
-      y: 196,
+      y: 172,
       t: "Factory owner",
       b: "Future creation pause and future treasury only",
       icon: "key",
@@ -668,7 +664,7 @@ figures["02-participant-role-map.svg"] = (() => {
     },
     {
       x: 484,
-      y: 196,
+      y: 172,
       t: "Pyth Entropy",
       b: "External randomness; delivers the authenticated callback",
       icon: "bolt",
@@ -676,7 +672,7 @@ figures["02-participant-role-map.svg"] = (() => {
     },
     {
       x: 26,
-      y: 358,
+      y: 312,
       t: "Recovery recipient",
       b: "Fixed at creation; claims the NFT in cash, refund, or empty outcomes",
       icon: "wallet",
@@ -684,7 +680,7 @@ figures["02-participant-role-map.svg"] = (() => {
     },
     {
       x: 255,
-      y: 358,
+      y: 312,
       t: "Protocol treasury",
       b: "Receives the fee as a pull claim on successful settlement",
       icon: "coin",
@@ -692,7 +688,7 @@ figures["02-participant-role-map.svg"] = (() => {
     },
     {
       x: 484,
-      y: 358,
+      y: 312,
       t: "Read layer",
       b: "Lens, SDK, subgraph, frontend; helpful but never authoritative",
       icon: "eye",
@@ -700,7 +696,7 @@ figures["02-participant-role-map.svg"] = (() => {
     },
   ];
   // Hub.
-  const hub = { x: 262, y: 187, w: 196, h: 100 };
+  const hub = { x: 262, y: 166, w: 196, h: 94 };
   // Spokes first (under cards).
   const hubCx = hub.x + hub.w / 2;
   const hubCy = hub.y + hub.h / 2;
@@ -1093,8 +1089,8 @@ figures["04-lifecycle.svg"] = (() => {
 
 figures["05-sale-deadline-timeline.svg"] = (() => {
   const ctx = makeCtx("f05");
-  const H = 330;
-  const axisY = 150;
+  const H = 292;
+  const axisY = 108;
   const x0 = 44;
   const x1 = 688;
   // Segment boundaries.
@@ -1266,143 +1262,146 @@ figures["05-sale-deadline-timeline.svg"] = (() => {
 
 figures["06-ticket-ownership.svg"] = (() => {
   const ctx = makeCtx("f06");
-  const H = 350;
-  // Phase bands.
+  const H = 300;
+  const bandY = 76;
+  const bandH = 170;
+  // Lifecycle phases sit behind the owners: the ticket keeps moving across
+  // every one of them.
   const bands = [
-    { a: 26, b: 300, t: "Active", fill: pal.skyWash, color: pal.skyDeep },
-    { a: 308, b: 486, t: "Drawing", fill: pal.violetWash, color: pal.violet },
-    { a: 494, b: 694, t: "terminal status", fill: pal.greenWash, color: pal.greenDeep },
+    { a: 26, b: 330, t: "Active", fill: pal.skyWash, color: pal.skyDeep },
+    { a: 338, b: 500, t: "Drawing", fill: pal.violetWash, color: pal.violet },
+    { a: 508, b: 694, t: "terminal", fill: pal.greenWash, color: pal.greenDeep },
   ];
   for (const b of bands) {
     put(
       ctx,
-      `<rect x="${b.a}" y="40" width="${b.b - b.a}" height="216" rx="14" fill="${b.fill}"/>`,
+      `<rect x="${b.a}" y="${bandY}" width="${b.b - b.a}" height="${bandH}" rx="14" fill="${b.fill}"/>`,
     );
-    put(ctx, tag(b.a + 14, 62, b.t, b.color));
+    put(ctx, tag(b.a + 14, bandY + 22, b.t, b.color));
   }
-  // People.
-  const people = [
-    { x: 96, y: 130, name: "Maya", note: "buys ticket #12" },
-    { x: 240, y: 190, name: "Leo", note: "receives it" },
-    { x: 400, y: 130, name: "Noor", note: "receives it mid-draw" },
+  // Holders share one baseline; the zigzag in the previous version encoded
+  // nothing and cost a third of the figure's height.
+  const baseY = 172;
+  const r = 20;
+  const holders = [
+    { x: 104, name: "Maya", note: "buys ticket #12", color: pal.skyDeep },
+    { x: 250, name: "Leo", note: "receives it", color: pal.indigo },
+    { x: 419, name: "Noor", note: "receives it mid-draw", color: pal.violet },
   ];
-  const r = 21;
-  const avatarFills = [pal.skyDeep, pal.indigo, pal.violet];
-  people.forEach((p, i) => {
+  const burnX = 601;
+  // The ticket rail: one dotted line proving it is the same ticket throughout.
+  const railY = 60;
+  put(
+    ctx,
+    `<line x1="${holders[0].x}" y1="${railY}" x2="${burnX}" y2="${railY}" stroke="${pal.ink4}" stroke-width="1.4" stroke-dasharray="4 4"/>`,
+  );
+  const rail = pill(ctx, {
+    x: 360,
+    y: railY - 34,
+    text: "one ticket #12, one bearer right",
+    size: 9.6,
+    weight: 700,
+    fg: pal.ink2,
+    bg: pal.paper,
+    stroke: pal.lineStrong,
+    h: 22,
+    anchor: "middle",
+  });
+  put(ctx, rail.svg);
+  for (const holder of [...holders, { x: burnX }]) {
     put(
       ctx,
-      `<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${pal.white}" stroke="${avatarFills[i]}" stroke-width="1.8"/>`,
+      `<circle cx="${holder.x}" cy="${railY}" r="4" fill="${pal.paper}" stroke="${pal.ink4}" stroke-width="1.4"/>`,
     );
-    put(ctx, icon("user", p.x - 10, p.y - 10, 20, avatarFills[i]));
     put(
       ctx,
-      txt(p.x, p.y + r + 15, p.name, {
+      `<line x1="${holder.x}" y1="${railY + 4}" x2="${holder.x}" y2="${baseY - r - 3}" stroke="${pal.ink4}" stroke-width="1.2" stroke-dasharray="3 3"/>`,
+    );
+  }
+  holders.forEach((holder, i) => {
+    put(
+      ctx,
+      `<circle cx="${holder.x}" cy="${baseY}" r="${r}" fill="${pal.white}" stroke="${holder.color}" stroke-width="1.9"/>`,
+    );
+    put(ctx, icon("user", holder.x - 10, baseY - 10, 20, holder.color));
+    put(
+      ctx,
+      txt(holder.x, baseY + r + 16, holder.name, {
         size: 11,
-        weight: 750,
+        weight: 780,
         anchor: "middle",
         color: pal.ink,
       }),
     );
     put(
       ctx,
-      txt(p.x, p.y + r + 29, p.note, {
+      txt(holder.x, baseY + r + 30, holder.note, {
         size: 9,
         weight: 550,
         anchor: "middle",
         color: pal.ink3,
       }),
     );
+    const next = i < holders.length - 1 ? holders[i + 1].x : burnX;
+    const isBurn = i === holders.length - 1;
+    put(
+      ctx,
+      arrow(ctx, holder.x + r + 4, baseY, next - r - 6, baseY, {
+        color: isBurn ? pal.green : pal.ink3,
+        width: isBurn ? 2.3 : 2,
+        label: isBurn ? "burns to redeem" : "transfer",
+        labelSize: 9.3,
+        labelDy: -8,
+        labelColor: isBurn ? pal.greenDeep : pal.ink3,
+      }),
+    );
   });
-  // Burn node.
-  const burn = { x: 590, y: 150 };
   put(
     ctx,
-    `<circle cx="${burn.x}" cy="${burn.y}" r="${r + 2}" fill="${pal.white}" stroke="${pal.green}" stroke-width="2"/>`,
+    `<circle cx="${burnX}" cy="${baseY}" r="${r + 2}" fill="${pal.white}" stroke="${pal.green}" stroke-width="2.1"/>`,
   );
-  put(ctx, icon("flame", burn.x - 10, burn.y - 11, 21, pal.green));
+  put(ctx, icon("flame", burnX - 10, baseY - 11, 21, pal.green));
   put(
     ctx,
-    txt(burn.x, burn.y + r + 17, "current owner burns", {
-      size: 10,
-      weight: 750,
+    txt(burnX, baseY + r + 16, "current owner", {
+      size: 11,
+      weight: 780,
       anchor: "middle",
       color: pal.greenDeep,
     }),
   );
   put(
     ctx,
-    txt(burn.x, burn.y + r + 31, "collects award or refund", {
+    txt(burnX, baseY + r + 30, "collects, ticket ceases to exist", {
       size: 9,
       weight: 550,
       anchor: "middle",
       color: pal.ink3,
     }),
   );
-  // Transfers.
-  const t1 = arrow(ctx, people[0].x + r + 4, people[0].y + 10, people[1].x - r - 5, people[1].y - 8, {
-    color: pal.ink3,
-    width: 2,
-    label: "transfer",
-    labelSize: 9.3,
-    labelDy: -8,
-    labelDx: -4,
-  });
-  const t2 = arrow(ctx, people[1].x + r + 4, people[1].y - 8, people[2].x - r - 5, people[2].y + 10, {
-    color: pal.ink3,
-    width: 2,
-    label: "transfer",
-    labelSize: 9.3,
-    labelDy: 22,
-    labelDx: 0,
-  });
-  const t3 = arrow(ctx, people[2].x + r + 5, people[2].y + 6, burn.x - r - 6, burn.y - 2, {
-    color: pal.green,
-    width: 2.2,
-    label: "burn to redeem",
-    labelSize: 9.3,
-    labelDy: -8,
-  });
-  put(ctx, t1);
-  put(ctx, t2);
-  put(ctx, t3);
-  // Ticket chip following the path.
-  const chip = pill(ctx, {
-    x: 96 - 34,
-    y: 74,
-    text: "ticket #12 · bearer right",
-    size: 9.5,
-    weight: 700,
-    fg: pal.skyDeep,
-    bg: pal.white,
-    stroke: pal.skyDeep,
-  });
-  put(ctx, chip.svg);
   put(
     ctx,
     txt(
       26,
-      H - 54,
-      "Tickets never freeze: transfers stay open in every status until the moment a ticket burns. Whoever owns the",
+      H - 34,
+      "Tickets never freeze: transfers stay open in every status until the moment a ticket burns. Whoever holds the",
       { size: 10.3, weight: 550, color: pal.ink3 },
     ),
   );
   put(
     ctx,
-    txt(
-      26,
-      H - 40,
-      "unburned ticket at redemption time collects; approvals allow transfers, never redemptions.",
-      { size: 10.3, weight: 550, color: pal.ink3 },
-    ),
+    txt(26, H - 20, "unburned ticket at redemption time collects; approvals allow transfers, never redemptions.", {
+      size: 10.3,
+      weight: 550,
+      color: pal.ink3,
+    }),
   );
   return finish(ctx, {
     title: "Bearer ticket ownership through time",
-    desc: "Ticket 12 moves from Maya to Leo to Noor across sale, drawing, and terminal phases; the current owner at burn time collects the award or refund.",
+    desc: "Ticket 12 passes from Maya to Leo to Noor across the sale, drawing, and terminal phases; whoever holds the unburned ticket at redemption collects.",
     height: H,
   });
 })();
-
-/* --------------------------------- 07 randomness sequence diagram ------ */
 
 figures["07-randomness-sequence.svg"] = (() => {
   const ctx = makeCtx("f07");
@@ -1539,15 +1538,15 @@ figures["07-randomness-sequence.svg"] = (() => {
 
 figures["08-winner-selection.svg"] = (() => {
   const ctx = makeCtx("f08");
-  const H = 312;
-  const y = 56;
+  const H = 274;
+  const y = 40;
   const boxH = 64;
   // Pipeline.
   const stops = [
-    { x: 26, w: 172, title: "randomNumber", sub: "authenticated uint256", mono: true, accent: pal.violet, fill: pal.violetWash },
-    { x: 240, w: 160, title: "mod totalTickets", sub: "uniform 0 .. N-1", mono: true, accent: pal.indigo, fill: pal.white },
-    { x: 442, w: 64, title: "+ 1", sub: "", mono: true, accent: pal.indigo, fill: pal.white },
-    { x: 548, w: 146, title: "winning ID", sub: "1 .. N inclusive", accent: pal.green, fill: pal.greenWash },
+    { x: 26, w: 168, title: "randomNumber", sub: "authenticated uint256", mono: true, accent: pal.violet, fill: pal.violetWash },
+    { x: 228, w: 168, title: "mod totalTickets", sub: "uniform 0 .. N-1", mono: true, accent: pal.indigo, fill: pal.white },
+    { x: 430, w: 96, title: "+ 1", sub: "shift to 1-based", mono: true, accent: pal.indigo, fill: pal.white },
+    { x: 560, w: 134, title: "winning ID", sub: "1 .. N inclusive", accent: pal.green, fill: pal.greenWash },
   ];
   for (const s of stops) {
     put(
@@ -1575,11 +1574,11 @@ figures["08-winner-selection.svg"] = (() => {
         }),
       );
   }
-  put(ctx, arrow(ctx, 200, y + boxH / 2, 236, y + boxH / 2, { color: pal.ink3, width: 2.2 }));
-  put(ctx, arrow(ctx, 402, y + boxH / 2, 438, y + boxH / 2, { color: pal.ink3, width: 2.2 }));
-  put(ctx, arrow(ctx, 508, y + boxH / 2, 544, y + boxH / 2, { color: pal.ink3, width: 2.2 }));
+  put(ctx, arrow(ctx, 196, y + boxH / 2, 224, y + boxH / 2, { color: pal.ink3, width: 2.2 }));
+  put(ctx, arrow(ctx, 398, y + boxH / 2, 426, y + boxH / 2, { color: pal.ink3, width: 2.2 }));
+  put(ctx, arrow(ctx, 528, y + boxH / 2, 556, y + boxH / 2, { color: pal.ink3, width: 2.2 }));
   // Ticket strip.
-  const stripY = 178;
+  const stripY = 150;
   const cells = ["1", "2", "3", "···", "41", "42", "43", "···", "118", "119", "120"];
   const winnerIdx = 5;
   const cellW = 52;
@@ -1655,7 +1654,7 @@ figures["08-winner-selection.svg"] = (() => {
 
 figures["09-outcome-comparison.svg"] = (() => {
   const ctx = makeCtx("f09");
-  const H = 448;
+  const H = 402;
   const cols = [
     {
       key: "NftWon",
@@ -1714,7 +1713,7 @@ figures["09-outcome-comparison.svg"] = (() => {
     { key: "nft", label: "prize NFT to" },
     { key: "usdc", label: "USDC to" },
   ];
-  const rowH = 66;
+  const rowH = 54;
   const rowGap = 8;
   cols.forEach((c, i) => {
     const x = x0 + labelW + 10 + i * (colW + gap);
@@ -1763,7 +1762,7 @@ figures["09-outcome-comparison.svg"] = (() => {
   });
   rows.forEach((r, j) => {
     const y = headY + headH + 10 + j * (rowH + rowGap);
-    put(ctx, tag(x0, y + rowH / 2 + 3, r.label, pal.ink3, "start", 8.6));
+    put(ctx, tag(x0 + labelW, y + rowH / 2 + 3, r.label, pal.ink3, "end", 8.6));
   });
   put(
     ctx,
@@ -2351,11 +2350,13 @@ figures["13-timeout-refund.svg"] = (() => {
 figures["14-refund-redemption.svg"] = (() => {
   const ctx = makeCtx("f14");
   const H = 344;
+  // Neutral indigo carries the mechanical steps; color marks only the two
+  // steps that actually change what the holder owns.
   const steps = [
-    { t: "Choose tickets", b: `1 to ${K.MAX_REFUND_REDEMPTION_BATCH_SIZE} owned IDs`, icon: "ticket", accent: pal.skyDeep },
+    { t: "Choose tickets", b: `1 to ${K.MAX_REFUND_REDEMPTION_BATCH_SIZE} owned IDs`, icon: "ticket", accent: pal.indigo },
     { t: "Validate", b: "Refunding status; caller owns every unique ID", icon: "shield", accent: pal.indigo },
     { t: "Burn", b: "bearer rights are consumed", icon: "flame", accent: pal.pink },
-    { t: "Reduce liability", b: "price x quantity comes off the books", icon: "doc", accent: pal.yellow },
+    { t: "Reduce liability", b: "price x quantity comes off the books", icon: "doc", accent: pal.indigo },
     { t: "Exact transfer", b: "USDC to any chosen destination", icon: "coin", accent: pal.green },
   ];
   const cw = 124;
@@ -2888,7 +2889,6 @@ figures["17-onchain-offchain.svg"] = (() => {
 
 figures["18-owner-matrix.svg"] = (() => {
   const ctx = makeCtx("f18");
-  const H = 430;
   const colW = 326;
   const canItems = [
     "pause or resume future raffle creation",
@@ -2934,30 +2934,41 @@ figures["18-owner-matrix.svg"] = (() => {
     }
     return y;
   };
-  drawCol(26, "The factory owner can", pal.green, pal.greenWash, canItems, "check");
-  drawCol(368, "The owner cannot", pal.danger, pal.dangerWash, cannotItems, "cross");
-  const stripY = 348;
+  const leftEnd = drawCol(26, "The factory owner can", pal.green, pal.greenWash, canItems, "check");
+  const rightEnd = drawCol(368, "The owner cannot", pal.danger, pal.dangerWash, cannotItems, "cross");
+  // The "can" column is deliberately shorter than the "cannot" column. The
+  // incident-response card fills that gap exactly, so the two columns finish
+  // on the same line instead of leaving a hole under the short one.
+  const incY = leftEnd + 4;
+  const incH = Math.max(76, rightEnd - 8 - incY);
   put(
     ctx,
-    `<rect x="26" y="${stripY}" width="668" height="48" rx="11" fill="${pal.skyWash}" stroke="${pal.indigo}" stroke-width="1.2"/>`,
+    `<rect x="26" y="${incY}" width="${colW}" height="${incH}" rx="11" fill="${pal.skyWash}" stroke="${pal.indigo}" stroke-width="1.2"/>`,
   );
-  put(ctx, icon("bell", 42, stripY + 14, 19, pal.indigo));
+  put(ctx, icon("bell", 42, incY + 14, 18, pal.indigo));
   put(
     ctx,
-    txt(70, stripY + 21, "Incident response without an admin key:", {
-      size: 10.5,
+    txt(68, incY + 27, "Incident response, no admin key", {
+      size: 10.8,
       weight: 750,
       color: pal.indigo,
     }),
   );
+  const incLines = wrapW(
+    "warn users · hide writes in the frontend · pause new creation · deploy a reviewed replacement factory",
+    colW - 34,
+    9.8,
+    550,
+  );
   put(
     ctx,
-    txt(70, stripY + 37, "warn users · hide writes in the frontend · pause new creation · deploy a reviewed replacement factory", {
-      size: 10,
+    linesTxt(42, incY + 48, incLines, 14, {
+      size: 9.8,
       weight: 550,
       color: pal.ink2,
     }),
   );
+  const H = Math.max(rightEnd, incY + incH) + 34;
   put(
     ctx,
     txt(26, H - 16, "Every deployed raffle runs to completion under its original fixed rules.", {
@@ -3106,128 +3117,134 @@ figures["19-recovery-envelope.svg"] = (() => {
 
 figures["20-trust-dependency-map.svg"] = (() => {
   const ctx = makeCtx("f20");
-  const H = 486;
-  const cw = 210;
-  const ch = 86;
-  const deps = [
-    {
-      x: 26,
-      y: 40,
-      t: "Base network",
-      b: "execution, ordering, inclusion, reorg and sequencer behavior",
-      icon: "cube",
-      accent: pal.indigo,
-    },
-    {
-      x: 484,
-      y: 40,
-      t: "Pyth Entropy",
-      b: "randomness correctness, provider and keeper liveness, fee policy",
-      icon: "bolt",
-      accent: pal.violet,
-    },
-    {
-      x: 26,
-      y: 200,
-      t: "USDC issuer",
-      b: "transfers, pause, blacklist, and upgrade decisions",
-      icon: "coin",
-      accent: pal.skyDeep,
-    },
-    {
-      x: 484,
-      y: 200,
-      t: "Prize contract",
-      b: "honest ownerOf, safe transfers, metadata provenance",
-      icon: "gem",
-      accent: pal.pink,
-    },
-    {
-      x: 26,
-      y: 360,
-      t: "User stack",
-      b: "wallet keys, RPC honesty, frontend authenticity, tx review",
-      icon: "key",
-      accent: pal.yellow,
-    },
-    {
-      x: 484,
-      y: 360,
-      t: "Operations and law",
-      b: "owner Safe custody, monitoring, jurisdictional compliance",
-      icon: "scale",
-      accent: pal.green,
-    },
-  ];
-  const hub = { x: 262, y: 196, w: 196, h: 94 };
-  const hubCx = hub.x + hub.w / 2;
-  const hubCy = hub.y + hub.h / 2;
-  for (const d of deps) {
-    const cx = d.x + cw / 2;
-    const cy = d.y + ch / 2;
-    put(
-      ctx,
-      arrow(ctx, hubCx + (cx > hubCx ? 40 : -40), hubCy + (cy > hubCy ? 22 : -22), cx + (cx > hubCx ? -46 : 46), cy + (cy > hubCy ? -26 : 26), {
-        color: pal.lineStrong,
-        width: 1.7,
-        dashed: true,
-        head: true,
-      }),
-    );
-  }
+  const H = 324;
+  // Drawn as load-bearing columns rather than a second hub-and-spoke map:
+  // figure 3 already owns that device, and the point here is that settlement
+  // rests on these, not that it merely touches them.
+  const slabY = 32;
+  const slabH = 52;
   put(
     ctx,
-    `<rect x="${hub.x}" y="${hub.y}" width="${hub.w}" height="${hub.h}" rx="16" fill="${pal.ink}" stroke="${pal.indigoDeep}" stroke-width="2"/>`,
+    `<rect x="26" y="${slabY}" width="668" height="${slabH}" rx="10" fill="${pal.ink}"/>`,
   );
-  put(ctx, icon("shield", hubCx - 10, hub.y + 12, 20, pal.white));
+  put(ctx, icon("shield", 44, slabY + 16, 20, pal.white));
   put(
     ctx,
-    txt(hubCx, hub.y + 52, "raffle.fun settlement", {
-      size: 13,
+    txt(74, slabY + 24, "raffle.fun settlement correctness", {
+      size: 13.5,
       weight: 800,
       color: pal.white,
-      anchor: "middle",
       family: F_DISP,
     }),
   );
   put(
     ctx,
-    txt(hubCx, hub.y + 70, "correct only if its dependencies hold", {
-      size: 9.3,
+    txt(74, slabY + 41, "every column below must hold for the contract's guarantees to mean anything", {
+      size: 9.4,
       weight: 550,
       color: "#c9d1ff",
-      anchor: "middle",
     }),
   );
-  for (const d of deps) {
-    rowCard(ctx, {
-      x: d.x,
-      y: d.y,
-      w: cw,
-      h: ch,
-      title: d.t,
-      body: d.b,
-      accent: d.accent,
-      iconName: d.icon,
-    });
+  const deps = [
+    { t: "Base network", p: "ordering and inclusion", f: "delay, censorship, reorg", icon: "cube", accent: pal.indigo },
+    { t: "Pyth Entropy", p: "the random value", f: "no callback, refunds only", icon: "bolt", accent: pal.violet },
+    { t: "USDC issuer", p: "exact transfers", f: "freeze or blacklist", icon: "coin", accent: pal.skyDeep },
+    { t: "Prize contract", p: "honest ownerOf", f: "prize unrecoverable", icon: "gem", accent: pal.pink },
+    { t: "User stack", p: "wallet keys, real UI", f: "phishing, lost keys", icon: "key", accent: pal.yellow },
+    { t: "Ops and law", p: "policy and conduct", f: "jurisdictional block", icon: "scale", accent: pal.green },
+  ];
+  const py = slabY + slabH;
+  const ph = 176;
+  const footH = 58;
+  const pw = 102;
+  const pgap = (668 - pw * deps.length) / (deps.length - 1);
+  const bottom = py + ph;
+  deps.forEach((d, i) => {
+    const x = 26 + i * (pw + pgap);
+    put(
+      ctx,
+      `<rect x="${x.toFixed(1)}" y="${py}" width="${pw}" height="${ph}" rx="4" fill="${pal.white}" stroke="${pal.line}" stroke-width="1.3"/>`,
+    );
+    put(
+      ctx,
+      `<rect x="${x.toFixed(1)}" y="${py}" width="${pw}" height="4.5" fill="${d.accent}"/>`,
+    );
+    const cx = x + pw / 2;
+    put(ctx, icon(d.icon, cx - 10, py + 18, 20, d.accent));
+    const nameLines = wrapW(d.t, pw - 14, 10, 780);
+    for (const line of nameLines)
+      assertFits(ctx, line, estW(line, 10, 780), pw - 12, "pillar name");
+    put(
+      ctx,
+      linesTxt(cx, py + 54, nameLines, 13, {
+        size: 10,
+        weight: 780,
+        color: pal.ink,
+        anchor: "middle",
+      }),
+    );
+    const provLines = wrapW(d.p, pw - 16, 9.2, 550);
+    put(
+      ctx,
+      linesTxt(cx, py + 54 + (nameLines.length - 1) * 13 + 17, provLines, 12, {
+        size: 9.2,
+        weight: 550,
+        color: pal.ink3,
+        anchor: "middle",
+      }),
+    );
+    // Failure footer: square top so it reads as part of the column, rounded
+    // bottom so it follows the column's own corner.
+    const fy = bottom - footH;
+    const r = 4;
+    put(
+      ctx,
+      `<path d="M ${(x + 1).toFixed(1)} ${fy} H ${(x + pw - 1).toFixed(1)} V ${bottom - 1 - r} Q ${(x + pw - 1).toFixed(1)} ${bottom - 1} ${(x + pw - 1 - r).toFixed(1)} ${bottom - 1} H ${(x + 1 + r).toFixed(1)} Q ${(x + 1).toFixed(1)} ${bottom - 1} ${(x + 1).toFixed(1)} ${bottom - 1 - r} Z" fill="${pal.dangerWash}"/>`,
+    );
+    put(
+      ctx,
+      `<line x1="${(x + 1).toFixed(1)}" y1="${fy}" x2="${(x + pw - 1).toFixed(1)}" y2="${fy}" stroke="${pal.danger}" stroke-width="1" opacity="0.45"/>`,
+    );
+    put(ctx, tag(cx, fy + 16, "if it fails", pal.danger, "middle", 7.4));
+    const failLines = wrapW(d.f, pw - 14, 9, 650);
+    for (const line of failLines)
+      assertFits(ctx, line, estW(line, 9, 650), pw - 12, "pillar failure");
+    put(
+      ctx,
+      linesTxt(cx, fy + 31, failLines, 11.5, {
+        size: 9,
+        weight: 650,
+        color: pal.danger,
+        anchor: "middle",
+      }),
+    );
+  });
+  // Ground line with hatching: the columns rest on something external.
+  put(
+    ctx,
+    `<line x1="26" y1="${bottom}" x2="694" y2="${bottom}" stroke="${pal.ink4}" stroke-width="2"/>`,
+  );
+  for (let hx = 36; hx < 700; hx += 24) {
+    put(
+      ctx,
+      `<line x1="${hx}" y1="${bottom + 1}" x2="${hx - 9}" y2="${bottom + 10}" stroke="${pal.line}" stroke-width="1.4"/>`,
+    );
   }
   put(
     ctx,
     txt(
       26,
-      H - 24,
-      "Each arrow is an independent failure surface: contract correctness alone cannot compensate for a failed dependency.",
+      H - 20,
+      "Each column is an independent failure surface. Correct contract code cannot compensate for a column that gives way.",
       { size: 10, weight: 550, color: pal.ink3 },
     ),
   );
   return finish(ctx, {
     title: "Trust and dependency map",
-    desc: "Raffle settlement depends on Base, Pyth Entropy, the USDC issuer, the prize contract, user key hygiene, and legal-operational controls; each is an independent failure surface.",
+    desc: "Raffle settlement rests on Base, Pyth Entropy, the USDC issuer, the prize contract, user key hygiene, and legal-operational controls, each shown with what it provides and what breaks if it fails.",
     height: H,
   });
 })();
-
-/* ------------------------------------------- 21 worked example --------- */
 
 figures["21-worked-example.svg"] = (() => {
   const ctx = makeCtx("f21");
@@ -3363,6 +3380,24 @@ figures["21-worked-example.svg"] = (() => {
         color: pal.ink2,
       }),
     );
+  }
+  // The lower-left quadrant is empty under a 1-to-4 fan; it carries what holds
+  // regardless of which branch the raffle actually takes.
+  const invY = 320;
+  put(
+    ctx,
+    `<rect x="26" y="${invY}" width="252" height="112" rx="12" fill="${pal.sunk}" stroke="${pal.line}" stroke-width="1.2"/>`,
+  );
+  put(ctx, tag(42, invY + 24, "true in every branch", pal.ink3));
+  let invRow = invY + 46;
+  for (const item of [
+    "the NFT has exactly one claimant",
+    "no fee unless randomness settled",
+    "every ticket carries one right",
+  ]) {
+    put(ctx, icon("check", 42, invRow - 10, 13, pal.greenDeep));
+    put(ctx, txt(62, invRow, item, { size: 9.6, weight: 600, color: pal.ink2 }));
+    invRow += 22;
   }
   put(
     ctx,
