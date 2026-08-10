@@ -860,6 +860,51 @@ figure figcaption {
   break-after: avoid;
 }
 
+/* Merged part row: the part label, its title, and its page in one line. */
+.toc-part-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5em;
+  margin: 0.55em 0 0.1em;
+  padding: 0.12em 0;
+  break-inside: avoid;
+  break-after: avoid;
+}
+
+.toc-part-row .toc-partno {
+  font-size: 7.4pt;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pink-deep);
+  min-width: 4.1em;
+}
+
+.toc-part-row .toc-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 10pt;
+  letter-spacing: -0.01em;
+}
+
+.toc-part-row .toc-title a {
+  color: var(--ink);
+}
+
+.toc-part-row .toc-dots {
+  flex: 1;
+  border-bottom: 1.5px dotted var(--ink-4);
+  transform: translateY(-0.28em);
+  min-width: 0.3in;
+}
+
+.toc-part-row .toc-page {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 9pt;
+}
+
 .toc-list {
   margin: 0;
   padding: 0;
@@ -905,7 +950,7 @@ figure figcaption {
 .toc-cols {
   columns: 2;
   column-gap: 0.42in;
-  column-fill: auto;
+  column-fill: balance;
 }
 
 .toc-cols .toc-block {

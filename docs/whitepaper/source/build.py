@@ -449,27 +449,55 @@ class Converter:
 
 
 def build_toc_html(toc: list[dict], pages: dict[str, int] | None) -> str:
-    """Two-column part-grouped table of contents."""
+    """Two-column part-grouped table of contents.
+
+    A part whose opening chapter repeats its own number and title collapses
+    into a single page-numbered row instead of a group label plus a duplicate
+    chapter line.
+    """
     blocks: list[str] = []
     current: list[str] = ['<ol class="toc-list">']
-    for entry in toc:
+    i = 0
+    while i < len(toc):
+        entry = toc[i]
         if entry["kind"] == "part":
             if current:
                 blocks.append("".join(current) + "</ol>")
-            current = [
-                f'<div class="toc-part">{html.escape(entry["no"])}: '
-                f'{html.escape(entry["title"])}</div><ol class="toc-list">'
-            ]
-        else:
-            page = pages.get(entry["slug"], "") if pages else ""
-            no = html.escape(entry["no"].replace("Chapter ", "").replace("Appendix ", ""))
-            current.append(
-                f'<li><span class="toc-no">{no}</span>'
-                f'<span class="toc-title"><a href="#{entry["slug"]}">'
-                f'{html.escape(entry["title"])}</a></span>'
-                f'<span class="toc-dots"></span>'
-                f'<span class="toc-page">{page}</span></li>'
-            )
+            nxt = toc[i + 1] if i + 1 < len(toc) else None
+            if (
+                nxt
+                and nxt["kind"] == "chapter"
+                and nxt["no"] == entry["no"]
+                and nxt["title"] == entry["title"]
+            ):
+                page = pages.get(nxt["slug"], "") if pages else ""
+                header = (
+                    '<div class="toc-part-row">'
+                    f'<span class="toc-partno">{html.escape(entry["no"])}</span>'
+                    f'<span class="toc-title"><a href="#{nxt["slug"]}">'
+                    f'{html.escape(entry["title"])}</a></span>'
+                    '<span class="toc-dots"></span>'
+                    f'<span class="toc-page">{page}</span></div>'
+                )
+                i += 2
+            else:
+                header = (
+                    f'<div class="toc-part">{html.escape(entry["no"])}: '
+                    f'{html.escape(entry["title"])}</div>'
+                )
+                i += 1
+            current = [header, '<ol class="toc-list">']
+            continue
+        page = pages.get(entry["slug"], "") if pages else ""
+        no = html.escape(entry["no"].replace("Chapter ", "").replace("Appendix ", ""))
+        current.append(
+            f'<li><span class="toc-no">{no}</span>'
+            f'<span class="toc-title"><a href="#{entry["slug"]}">'
+            f'{html.escape(entry["title"])}</a></span>'
+            f'<span class="toc-dots"></span>'
+            f'<span class="toc-page">{page}</span></li>'
+        )
+        i += 1
     if current:
         blocks.append("".join(current) + "</ol>")
     inner = "".join(f'<div class="toc-block">{b}</div>' for b in blocks)

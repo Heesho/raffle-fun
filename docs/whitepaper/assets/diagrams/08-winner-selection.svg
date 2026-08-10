@@ -1,11 +1,46 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 720 300">
-  <title id="title">Winner selection</title>
-  <desc id="desc">The 256-bit random value is mapped into the complete sold ticket range.</desc>
-  <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1e2a9b"/></marker>
-    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1e2a9b"/><stop offset="0.55" stop-color="#d31d8b"/><stop offset="1" stop-color="#ffd84d"/></linearGradient>
-  </defs>
-  <rect width="720" height="300" rx="22" fill="#fbfaff"/>
-  <text x="24" y="38" text-anchor="start" font-family="Inter,Arial,sans-serif" font-size="21" font-weight="800" fill="#10143a"><tspan x="24" dy="0">Winner selection</tspan></text><g><rect x="22" y="82" width="155.5" height="132" rx="16" fill="#ffffff" stroke="#7b3fe4" stroke-width="2"/><rect x="22" y="82" width="8" height="132" rx="4" fill="#7b3fe4"/><text x="99.75" y="112" text-anchor="middle" font-family="Nunito,Arial,sans-serif" font-size="16" font-weight="800" fill="#10143a"><tspan x="99.75" dy="0">randomNumber</tspan></text><text x="99.75" y="137" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="12.5" font-weight="500" fill="#676c94"><tspan x="99.75" dy="0">Authenticated</tspan><tspan x="99.75" dy="16">bytes32 value</tspan></text></g><line x1="177.5" y1="148" x2="193.5" y2="148" stroke="#1e2a9b" stroke-width="2.5"  marker-end="url(#arrow)"/><g><rect x="195.5" y="82" width="155.5" height="132" rx="16" fill="#ffffff" stroke="#d31d8b" stroke-width="2"/><rect x="195.5" y="82" width="8" height="132" rx="4" fill="#d31d8b"/><text x="273.25" y="112" text-anchor="middle" font-family="Nunito,Arial,sans-serif" font-size="16" font-weight="800" fill="#10143a"><tspan x="273.25" dy="0">Modulo</tspan></text><text x="273.25" y="137" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="12.5" font-weight="500" fill="#676c94"><tspan x="273.25" dy="0">randomNumber %</tspan><tspan x="273.25" dy="16">totalTickets</tspan></text></g><line x1="351" y1="148" x2="367" y2="148" stroke="#1e2a9b" stroke-width="2.5"  marker-end="url(#arrow)"/><g><rect x="369" y="82" width="155.5" height="132" rx="16" fill="#ffffff" stroke="#ffd84d" stroke-width="2"/><rect x="369" y="82" width="8" height="132" rx="4" fill="#ffd84d"/><text x="446.75" y="112" text-anchor="middle" font-family="Nunito,Arial,sans-serif" font-size="16" font-weight="800" fill="#10143a"><tspan x="446.75" dy="0">+ 1</tspan></text><text x="446.75" y="137" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="12.5" font-weight="500" fill="#676c94"><tspan x="446.75" dy="0">Shift zero-based</tspan><tspan x="446.75" dy="16">result</tspan></text></g><line x1="524.5" y1="148" x2="540.5" y2="148" stroke="#1e2a9b" stroke-width="2.5"  marker-end="url(#arrow)"/><g><rect x="542.5" y="82" width="155.5" height="132" rx="16" fill="#ffffff" stroke="#22b573" stroke-width="2"/><rect x="542.5" y="82" width="8" height="132" rx="4" fill="#22b573"/><text x="620.25" y="112" text-anchor="middle" font-family="Nunito,Arial,sans-serif" font-size="16" font-weight="800" fill="#10143a"><tspan x="620.25" dy="0">Ticket ID</tspan></text><text x="620.25" y="137" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="12.5" font-weight="500" fill="#676c94"><tspan x="620.25" dy="0">1 through</tspan><tspan x="620.25" dy="16">totalTickets</tspan><tspan x="620.25" dy="16">inclusive</tspan></text></g><text x="360" y="256" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#676c94"><tspan x="360" dy="0">One ticket always selects #1. The final sold ticket is reachable. Modulo bias is</tspan><tspan x="360" dy="17">mathematically nonzero for most ticket counts.</tspan></text>
-  <text x="24" y="284" font-family="Inter,Arial,sans-serif" font-size="10.5" fill="#676c94">Solid arrows: calls or asset movement. Dashed arrows: reads, conditions, or external dependencies.</text>
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="f08-title f08-desc" viewBox="0 0 720 312" font-family="Inter,'Helvetica Neue',Arial,sans-serif">
+  <title id="f08-title">Winner selection</title>
+  <desc id="f08-desc">The authenticated 256-bit random value is reduced modulo the sold ticket count and shifted by one, selecting a winning ID in the complete range.</desc>
+  <defs><marker id="f08m676c94" viewBox="0 0 10 10" refX="8.4" refY="5" markerWidth="6.4" markerHeight="6.4" orient="auto-start-reverse"><path d="M 0 0.6 L 9.4 5 L 0 9.4 z" fill="#676c94"/></marker></defs>
+  <rect x="0.75" y="0.75" width="718.5" height="310.5" rx="17" fill="#fcfcff" stroke="#dcdded" stroke-width="1.5"/>
+  <rect x="26" y="56" width="172" height="64" rx="12" fill="#f1eafc" stroke="#7b3fe4" stroke-width="1.6"/>
+  <text x="112" y="84" text-anchor="middle" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="12.5" font-weight="760" fill="#10143a">randomNumber</text>
+  <text x="112" y="102" text-anchor="middle" font-family="Inter,'Helvetica Neue',Arial,sans-serif" font-size="9.3" font-weight="550" fill="#676c94">authenticated uint256</text>
+  <rect x="240" y="56" width="160" height="64" rx="12" fill="#ffffff" stroke="#1e2a9b" stroke-width="1.6"/>
+  <text x="320" y="84" text-anchor="middle" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="12.5" font-weight="760" fill="#10143a">mod totalTickets</text>
+  <text x="320" y="102" text-anchor="middle" font-family="Inter,'Helvetica Neue',Arial,sans-serif" font-size="9.3" font-weight="550" fill="#676c94">uniform 0 .. N-1</text>
+  <rect x="442" y="56" width="64" height="64" rx="12" fill="#ffffff" stroke="#1e2a9b" stroke-width="1.6"/>
+  <text x="474" y="94" text-anchor="middle" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="12.5" font-weight="760" fill="#10143a">+ 1</text>
+  <rect x="548" y="56" width="146" height="64" rx="12" fill="#e3f7ee" stroke="#22b573" stroke-width="1.6"/>
+  <text x="621" y="84" text-anchor="middle" font-family="Inter,'Helvetica Neue',Arial,sans-serif" font-size="12.5" font-weight="760" fill="#10143a">winning ID</text>
+  <text x="621" y="102" text-anchor="middle" font-family="Inter,'Helvetica Neue',Arial,sans-serif" font-size="9.3" font-weight="550" fill="#676c94">1 .. N inclusive</text>
+  <line x1="200" y1="88" x2="236" y2="88" stroke="#676c94" stroke-width="2.2" stroke-linecap="round" marker-end="url(#f08m676c94)"/>
+  <line x1="402" y1="88" x2="438" y2="88" stroke="#676c94" stroke-width="2.2" stroke-linecap="round" marker-end="url(#f08m676c94)"/>
+  <line x1="508" y1="88" x2="544" y2="88" stroke="#676c94" stroke-width="2.2" stroke-linecap="round" marker-end="url(#f08m676c94)"/>
+  <text x="44" y="164" text-anchor="start" font-family="Inter,'Helvetica Neue',Arial,sans-serif" font-size="9.5" font-weight="650" fill="#676c94">every sold ticket 1 .. totalTickets · nothing excluded, nothing weighted</text>
+  <rect x="44" y="178" width="52" height="50" rx="9" fill="#ffffff" stroke="#dcdded" stroke-width="1.2"/>
+  <text x="70" y="208" text-anchor="middle" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11" font-weight="650" fill="#454b78">1</text>
+  <rect x="102" y="178" width="52" height="50" rx="9" fill="#ffffff" stroke="#dcdded" stroke-width="1.2"/>
+  <text x="128" y="208" text-anchor="middle" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11" font-weight="650" fill="#454b78">2</text>
+  <rect x="160" y="178" width="52" height="50" rx="9" fill="#ffffff" stroke="#dcdded" stroke-width="1.2"/>
+  <text x="186" y="208" text-anchor="middle" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11" font-weight="650" fill="#454b78">3</text>
+  <rect x="218" y="178" width="52" height="50" rx="9" fill="#fcfcff" stroke="#dcdded" stroke-width="1.2"/>
+  <text x="244" y="208" text-anchor="middle" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11" font-weight="650" fill="#9aa0c0">···</text>
+  <rect x="276" y="178" width="52" height="50" rx="9" fill="#ffffff" stroke="#dcdded" stroke-width="1.2"/>
+  <text x="302" y="208" text-anchor="middle" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11" font-weight="650" fill="#454b78">41</text>
+  <rect x="334" y="178" width="52" height="50" rx="9" fill="#22b573" stroke="#0d6b45" stroke-width="2"/>
+  <g transform="translate(352 185) scale(0.667)" stroke="#ffffff" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" color="#ffffff"><path d="M8.2 4.2h7.6v4.4a3.8 3.8 0 0 1-7.6 0z"/><path d="M8.2 5.2H5.9a2.55 2.55 0 0 0 2.5 3.3M15.8 5.2h2.3a2.55 2.55 0 0 1-2.5 3.3M12 12.4v3.4M9.2 19.4h5.6M12 15.8c-1.7 0-2.6 1.1-2.8 3.6M12 15.8c1.7 0 2.6 1.1 2.8 3.6"/></g>
+  <text x="360" y="218" text-anchor="middle" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11.5" font-weight="800" fill="#ffffff">#42</text>
+  <rect x="392" y="178" width="52" height="50" rx="9" fill="#ffffff" stroke="#dcdded" stroke-width="1.2"/>
+  <text x="418" y="208" text-anchor="middle" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11" font-weight="650" fill="#454b78">43</text>
+  <rect x="450" y="178" width="52" height="50" rx="9" fill="#fcfcff" stroke="#dcdded" stroke-width="1.2"/>
+  <text x="476" y="208" text-anchor="middle" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11" font-weight="650" fill="#9aa0c0">···</text>
+  <rect x="508" y="178" width="52" height="50" rx="9" fill="#ffffff" stroke="#dcdded" stroke-width="1.2"/>
+  <text x="534" y="208" text-anchor="middle" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11" font-weight="650" fill="#454b78">118</text>
+  <rect x="566" y="178" width="52" height="50" rx="9" fill="#ffffff" stroke="#dcdded" stroke-width="1.2"/>
+  <text x="592" y="208" text-anchor="middle" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11" font-weight="650" fill="#454b78">119</text>
+  <rect x="624" y="178" width="52" height="50" rx="9" fill="#ffffff" stroke="#dcdded" stroke-width="1.2"/>
+  <text x="650" y="208" text-anchor="middle" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11" font-weight="650" fill="#454b78">120</text>
+  <text x="26" y="280" text-anchor="start" font-family="Inter,'Helvetica Neue',Arial,sans-serif" font-size="9.8" font-weight="550" fill="#676c94">One sold ticket always selects #1; the final ticket is reachable. Residual modulo bias is astronomically small</text>
+  <text x="26" y="294" text-anchor="start" font-family="Inter,'Helvetica Neue',Arial,sans-serif" font-size="9.8" font-weight="550" fill="#676c94">for realistic ticket counts against a 256-bit value, but it is not exactly zero.</text>
 </svg>

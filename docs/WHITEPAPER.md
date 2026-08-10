@@ -3,7 +3,7 @@
 # | How to Read This Paper
 
 This paper explains the raffle.fun contracts committed at
-`6539e0c2b7e1a112dae70215f299dbd6ef48c4b3`. It serves two readers at once. The main text is for an
+`f165e4c1d8f5d093fe0a36094f79a29857c26286`. It serves two readers at once. The main text is for an
 intelligent reader who has never used a blockchain. The callouts, formulas, state
 tables, and appendices provide the precision needed by sponsors, developers,
 auditors, operators, and legal reviewers.
@@ -1670,7 +1670,7 @@ The no-rescue design is part of the trust model, not proof every asset is recove
 
 The internal review identity was baseline commit `a2120f5e163dc3641d9864773febbfedca047edb` plus patch
 fingerprint `55589ce1fce0bd5579e60df747796575df9b0d96`. The final reviewed implementation was later
-committed as `6539e0c2b7e1a112dae70215f299dbd6ef48c4b3`. This paper reviews that committed result.
+committed as `f165e4c1d8f5d093fe0a36094f79a29857c26286`. This paper reviews that committed result.
 
 <!-- table:breakable -->
 | Category | Tool and version | Completed evidence | Result |
@@ -2460,7 +2460,7 @@ external audit: Not completed.
 
 The internal audit used source identity `a2120f5e163dc3641d9864773febbfedca047edb` plus dirty-worktree
 fingerprint `55589ce1fce0bd5579e60df747796575df9b0d96`. The final reviewed implementation is
-committed at `6539e0c2b7e1a112dae70215f299dbd6ef48c4b3`.
+committed at `f165e4c1d8f5d093fe0a36094f79a29857c26286`.
 
 Findings: 0 Critical; 4 High fixed; 1 Medium fixed; 2 Low fixed; 1 Informational
 accepted. No unresolved Critical, High, or Medium supported-asset finding remained in
@@ -2617,7 +2617,7 @@ dependent.
 
 ## Primary raffle.fun sources
 
-- Reviewed repository and contract commit: `6539e0c2b7e1a112dae70215f299dbd6ef48c4b3`.
+- Reviewed repository and contract commit: `f165e4c1d8f5d093fe0a36094f79a29857c26286`.
 - Production contracts: `packages/contracts/src/Raffle.sol`, `RaffleFactory.sol`,
   `RaffleLens.sol`, interfaces, and `RaffleConstants.sol`.
 - Executable evidence: `packages/contracts/test/` and generated Hardhat artifacts.
