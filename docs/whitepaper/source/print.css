@@ -122,10 +122,13 @@
   }
 }
 
+/* Full-bleed pages size to the page box, never to hard-coded paper inches:
+   a sheet wider than the headless layout viewport makes Chrome shrink-to-fit
+   the whole printed page, leaving unpainted paper at the right and bottom. */
 .sheet {
   page: bare;
-  width: 8.267in;
-  height: 11.69in;
+  width: 100%;
+  height: 100vh;
   overflow: hidden;
   position: relative;
   page-break-after: always;
