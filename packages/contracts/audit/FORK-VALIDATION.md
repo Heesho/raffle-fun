@@ -7,6 +7,17 @@ without silently treating it as passed.
 RUN_FORK_TESTS=true forge test --match-contract BaseForkTest -vv
 ```
 
+An independently gated current-head campaign detects live dependency or interface
+drift without making ordinary CI nondeterministic:
+
+```text
+RUN_LATEST_FORK_TESTS=true forge test --match-contract BaseForkTest -vv
+```
+
+Both flags can be enabled together to compare the pinned and current-head behavior in
+one run. The 2026-08-13 current-head rerun passed at Base block `49,923,565` and Base
+Sepolia block `45,434,095`.
+
 Two tests passed against pinned Base mainnet block `49,752,968` (chain 8453) and Base
 Sepolia block `45,263,498` (chain 84532). The test uses the official chain-specific
 addresses:

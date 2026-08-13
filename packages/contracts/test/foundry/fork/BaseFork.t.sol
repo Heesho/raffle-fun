@@ -19,10 +19,13 @@ contract BaseForkTest is Test {
     address internal treasury = makeAddr("fork-treasury");
 
     function setUp() public {
-        if (!vm.envOr("RUN_FORK_TESTS", false)) vm.skip(true);
+        bool pinned = vm.envOr("RUN_FORK_TESTS", false);
+        bool latest = vm.envOr("RUN_LATEST_FORK_TESTS", false);
+        if (!pinned && !latest) vm.skip(true);
     }
 
     function testBaseMainnetPythUsdcAndPrizeLifecycleAtPinnedBlock() public {
+        if (!vm.envOr("RUN_FORK_TESTS", false)) vm.skip(true);
         _validateFork(
             vm.envOr("BASE_RPC_URL", string("https://mainnet.base.org")),
             49_752_968,
@@ -33,9 +36,32 @@ contract BaseForkTest is Test {
     }
 
     function testBaseSepoliaPythUsdcAndPrizeLifecycleAtPinnedBlock() public {
+        if (!vm.envOr("RUN_FORK_TESTS", false)) vm.skip(true);
         _validateFork(
             vm.envOr("BASE_SEPOLIA_RPC_URL", string("https://sepolia.base.org")),
             45_263_498,
+            84_532,
+            0x41c9e39574F40Ad34c79f1C99B66A45eFB830d4c,
+            0x036CbD53842c5426634e7929541eC2318f3dCF7e
+        );
+    }
+
+    function testBaseMainnetPythUsdcAndPrizeLifecycleAtLatestBlock() public {
+        if (!vm.envOr("RUN_LATEST_FORK_TESTS", false)) vm.skip(true);
+        _validateFork(
+            vm.envOr("BASE_RPC_URL", string("https://mainnet.base.org")),
+            0,
+            8453,
+            0x6E7D74FA7d5c90FEF9F0512987605a6d546181Bb,
+            0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
+        );
+    }
+
+    function testBaseSepoliaPythUsdcAndPrizeLifecycleAtLatestBlock() public {
+        if (!vm.envOr("RUN_LATEST_FORK_TESTS", false)) vm.skip(true);
+        _validateFork(
+            vm.envOr("BASE_SEPOLIA_RPC_URL", string("https://sepolia.base.org")),
+            0,
             84_532,
             0x41c9e39574F40Ad34c79f1C99B66A45eFB830d4c,
             0x036CbD53842c5426634e7929541eC2318f3dCF7e
@@ -49,7 +75,8 @@ contract BaseForkTest is Test {
         address entropyAddress,
         address usdc
     ) internal {
-        vm.createSelectFork(rpcUrl, forkBlock);
+        if (forkBlock == 0) vm.createSelectFork(rpcUrl);
+        else vm.createSelectFork(rpcUrl, forkBlock);
         assertEq(block.chainid, expectedChainId);
         assertGt(entropyAddress.code.length, 0);
         assertGt(usdc.code.length, 0);
@@ -100,8 +127,7 @@ contract BaseForkTest is Test {
         prize.mint(sponsor, tokenId);
         vm.prank(sponsor);
         raffle = Raffle(
-            payable(
-                factory.createRaffle(
+            payable(factory.createRaffle(
                     IRaffleFactory.CreateRaffleParams({
                         prizeToken: address(prize),
                         prizeTokenId: tokenId,
@@ -112,8 +138,7 @@ contract BaseForkTest is Test {
                         endTime: endTime,
                         metadataURI: "ipfs://fork"
                     })
-                )
-            )
+                ))
         );
     }
 }
