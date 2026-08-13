@@ -48,6 +48,8 @@ function raffle(overrides: Partial<SandboxRaffle> = {}): SandboxRaffle {
     drawRequestedAt: null,
     drawRequestedBy: null,
     callbackDeadline: null,
+    resolvedAt: null,
+    nftRedemptionDeadline: null,
     ...overrides,
   };
 }
@@ -109,9 +111,28 @@ describe("sandbox bearer settlement", () => {
     state = requestDraw(state, "0xraffle", 1_000);
     state = resolveDraw(state, "0xraffle", 1_005);
     expect(state.raffles[0]!.status).toBe("NFT_WON");
+    expect(state.raffles[0]!.unsettledPot).toBe(PRICE * 12n);
+    expect(state.raffles[0]!.claimableQuote[SPONSOR]).toBeUndefined();
     state = redeemWinningTicket(state, "0xraffle", 1_010);
     expect(state.wallet.nfts).toEqual(["0xraffle"]);
     expect(state.raffles[0]!.prizeClaimed).toBe(true);
+    expect(state.raffles[0]!.unsettledPot).toBe(0n);
+    expect(state.raffles[0]!.claimableQuote[SPONSOR]).toBe(
+      (PRICE * 12n * 95n) / 100n,
+    );
+  });
+
+  it("falls back to full refunds when an NFT win is not redeemed", () => {
+    let state = buyTickets(sandbox(), "0xraffle", 12, 100);
+    state = requestDraw(state, "0xraffle", 1_000);
+    state = resolveDraw(state, "0xraffle", 1_005);
+    const deadline = state.raffles[0]!.nftRedemptionDeadline!;
+    expect(() => enableRefunds(state, "0xraffle", deadline - 1)).toThrow(
+      SandboxError,
+    );
+    state = enableRefunds(state, "0xraffle", deadline);
+    expect(state.raffles[0]!.remainingRefundLiability).toBe(PRICE * 12n);
+    expect(state.raffles[0]!.claimableQuote[SPONSOR]).toBeUndefined();
   });
 
   it("uses one deadline function and burns refundable tickets for exact value", () => {

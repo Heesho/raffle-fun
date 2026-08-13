@@ -176,3 +176,23 @@ export function updateResolutionDayData(
     data.save();
   }
 }
+
+export function updateSettlementDayData(
+  raffle: Raffle,
+  event: ethereum.Event,
+  protocolFee: BigInt,
+  distributablePot: BigInt,
+): void {
+  const day = event.block.timestamp.div(SECONDS_PER_DAY);
+  const id = raffle.quoteTokenStats + "-" + day.toString();
+  let data = ProtocolDayData.load(id);
+  if (data == null) {
+    updatePurchaseDayData(raffle, event, BigInt.zero(), BigInt.zero());
+    data = ProtocolDayData.load(id);
+  }
+  if (data != null) {
+    data.protocolFees = data.protocolFees.plus(protocolFee);
+    data.settledVolume = data.settledVolume.plus(distributablePot);
+    data.save();
+  }
+}

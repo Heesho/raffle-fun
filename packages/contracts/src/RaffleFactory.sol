@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.36;
 
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
-import { Ownable2Step } from "@openzeppelin/contracts/access/Ownable2Step.sol";
-import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-import { Raffle } from "./Raffle.sol";
-import { IRaffle } from "./interfaces/IRaffle.sol";
-import { IRaffleFactory } from "./interfaces/IRaffleFactory.sol";
-import { RaffleConstants } from "./libraries/RaffleConstants.sol";
+import {Raffle} from "./Raffle.sol";
+import {IRaffle} from "./interfaces/IRaffle.sol";
+import {IRaffleFactory} from "./interfaces/IRaffleFactory.sol";
+import {RaffleConstants} from "./libraries/RaffleConstants.sol";
 
 /**
  * @title raffle.fun Canonical USDC Raffle Factory
@@ -142,6 +142,11 @@ contract RaffleFactory is IRaffleFactory, Ownable2Step, ReentrancyGuard {
         bool previousPaused = creationPaused;
         creationPaused = paused;
         emit CreationPauseUpdated(previousPaused, paused);
+    }
+
+    /// @notice Disabled so the creation pause and treasury controls can never be stranded without an administrator.
+    function renounceOwnership() public pure override {
+        revert OwnershipRenunciationDisabled();
     }
 
     /// @dev Keeps the indexer-complete event out of the stack-heavy deployment function.

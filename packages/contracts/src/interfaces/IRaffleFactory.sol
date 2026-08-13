@@ -60,6 +60,8 @@ interface IRaffleFactory {
     error UnsafeProtocolDestination(address destination);
     /// @notice Raised when the post-deposit ownership or activation check fails.
     error PrizeEscrowVerificationFailed(address raffle, address prizeToken, uint256 prizeTokenId);
+    /// @notice Raised because the canonical factory must always retain a recoverable administrative owner.
+    error OwnershipRenunciationDisabled();
 
     /**
      * @notice Emitted after one constructor-deployed raffle is registered, funded, and verified atomically.

@@ -28,13 +28,16 @@ the same sources. The comparison Foundry profile additionally uses IR compilatio
 - compiler known-bugs/release notes rechecked at the release date;
 - official Base Entropy v2 address and bytecode verified;
 - the factory-wide USDC reviewed for exact-transfer/non-rebasing behavior and
-  issuer pause/blacklist controls;
+  issuer pause/blacklist controls; deployment validation must read six decimals and an
+  unpaused state;
 - callback gas limit tested with production bytecode;
-- nonzero treasury and final `Ownable2Step` owner are reviewed multisigs;
-- Base Sepolia smoke tests cover NFT and cash success, empty closure, both oracle
-  deadlines, bounded ticket-burn refunds, both NFT recovery paths, and failed-destination retry.
-- future-raffle claim recovery is exercised for NFT, cash, refund, quote, and fixed
-  prize branches and cannot redirect away from the holding raffle's immutable recovery recipient.
+- nonzero treasury and final `Ownable2Step` owner are reviewed multisigs, and ownership
+  acceptance is complete before any deployment record is published;
+- Base Sepolia smoke tests cover NFT and cash success, empty closure, all three refund
+  deadlines, bounded ticket-burn refunds, transfer locking, NFT delivery failure, and
+  failed-destination retry;
+- the default Entropy provider is reviewed and a provider-pinning design is completed,
+  or its substitution risk is explicitly accepted by independent review.
 
 ## Inputs
 
@@ -61,8 +64,10 @@ deployment parameters or placeholder addresses.
 4. Deploy with `pnpm deploy:base-sepolia`; record every address, block, transaction,
    constructor argument and deployed bytecode hash.
 5. Verify with `pnpm verify:base-sepolia`.
-6. Confirm `pendingOwner` is exactly the reviewed Safe, then accept ownership from it.
-7. Verify `quoteToken()` is the reviewed USDC contract and has runtime bytecode.
+6. Confirm `pendingOwner` is exactly the reviewed Safe, accept ownership from it, then
+   require `owner == Safe` and `pendingOwner == address(0)`.
+7. Verify `quoteToken()` is the reviewed USDC contract, has runtime bytecode, reports
+   six decimals, and is not paused.
 8. Create a validated deployment record with the exact 40-hex source commit and run
    `pnpm --filter @raffle-fun/contracts deployment:write ./candidate.json`.
 9. Regenerate SDK/subgraph ABIs, create the network manifest, deploy the indexer, and
@@ -75,9 +80,10 @@ operator procedure only after audit fixes and testnet monitoring.
 
 ## Monitoring and incident response
 
-Monitor creation failures, draw requests, request/callback deadlines, ignored
-callbacks, refund enablement, remaining refund and winning-cash liabilities, quote
-solvency, redemptions, owner/pending-owner changes, pause, and treasury events.
+Monitor creation failures, draw requests, request/callback/NFT-redemption deadlines,
+ignored callbacks, refund enablement, remaining refund and winning-cash liabilities,
+quote solvency, USDC pause/blacklist indicators, redemptions, owner/pending-owner
+changes, creation pause, and treasury events.
 
 Existing raffles cannot be upgraded or paused. Response is limited to pausing future
 creation, warning users, removing UI exposure, and deploying a new factory. Lifecycle

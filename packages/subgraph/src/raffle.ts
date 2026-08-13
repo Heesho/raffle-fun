@@ -36,6 +36,7 @@ import {
   ticketId,
   updatePurchaseDayData,
   updateResolutionDayData,
+  updateSettlementDayData,
 } from "./helpers";
 
 const ZERO_ADDRESS = Address.zero();
@@ -228,14 +229,17 @@ export function handleRaffleResolved(event: RaffleResolved): void {
   raffle.status = result;
   raffle.entropySequenceNumber = event.params.sequenceNumber;
   raffle.winningTicketId = event.params.winningTicketId;
-  raffle.unsettledPot = BigInt.zero();
   raffle.winnerCashLiability = event.params.winnerCashAmount;
-  raffle.totalClaimableQuote = raffle.totalClaimableQuote
-    .plus(event.params.protocolFee)
-    .plus(event.params.sponsorCashAmount);
-  raffle.totalProtocolFees = raffle.totalProtocolFees.plus(
-    event.params.protocolFee,
-  );
+  const nftResult = event.params.result == 3;
+  if (!nftResult) {
+    raffle.unsettledPot = BigInt.zero();
+    raffle.totalClaimableQuote = raffle.totalClaimableQuote
+      .plus(event.params.protocolFee)
+      .plus(event.params.sponsorCashAmount);
+    raffle.totalProtocolFees = raffle.totalProtocolFees.plus(
+      event.params.protocolFee,
+    );
+  }
   raffle.resolvedTxHash = event.transaction.hash;
   raffle.resolvedBlock = event.block.number;
   raffle.resolvedTimestamp = event.block.timestamp;
@@ -275,7 +279,7 @@ export function handleRaffleResolved(event: RaffleResolved): void {
   const distributable = event.params.winnerCashAmount.plus(
     event.params.sponsorCashAmount,
   );
-  if (quoteToken != null) {
+  if (quoteToken != null && !nftResult) {
     quoteToken.protocolFees = quoteToken.protocolFees.plus(
       event.params.protocolFee,
     );
@@ -285,14 +289,15 @@ export function handleRaffleResolved(event: RaffleResolved): void {
   updateResolutionDayData(
     raffle,
     event,
-    event.params.protocolFee,
-    distributable,
+    nftResult ? BigInt.zero() : event.params.protocolFee,
+    nftResult ? BigInt.zero() : distributable,
   );
 }
 
 export function handleRefundsEnabled(event: RefundsEnabled): void {
   const raffle = Raffle.load(event.address);
   if (raffle == null || RefundEnable.load(eventId(event)) != null) return;
+  const previousStatus = raffle.status;
   const finalizer = getOrCreateAccount(event.params.finalizer);
   raffle.status = "REFUNDING";
   raffle.unsettledPot = BigInt.zero();
@@ -315,7 +320,9 @@ export function handleRefundsEnabled(event: RefundsEnabled): void {
 
   const protocol = Protocol.load(raffle.protocol);
   if (protocol != null) {
-    if (event.params.requestWasAccepted)
+    if (previousStatus == "NFT_WON")
+      protocol.nftWonCount = protocol.nftWonCount.minus(ONE);
+    else if (event.params.requestWasAccepted)
       protocol.drawingCount = protocol.drawingCount.minus(ONE);
     else protocol.activeCount = protocol.activeCount.minus(ONE);
     protocol.refundingCount = protocol.refundingCount.plus(ONE);
@@ -373,9 +380,25 @@ export function handleWinningTicketRedeemed(
   const owner = getOrCreateAccount(event.params.owner);
   raffle.winningTicketRedeemed = true;
   if (event.params.result == 3) {
+    const protocolFee = raffle.grossSales
+      .times(BigInt.fromI32(500))
+      .div(BigInt.fromI32(10_000));
+    const distributable = raffle.grossSales.minus(protocolFee);
     raffle.prizeClaimed = true;
     raffle.prizeDestination = event.params.to;
     raffle.prizeClaimedTxHash = event.transaction.hash;
+    raffle.unsettledPot = BigInt.zero();
+    raffle.totalClaimableQuote = raffle.totalClaimableQuote.plus(
+      raffle.grossSales,
+    );
+    raffle.totalProtocolFees = raffle.totalProtocolFees.plus(protocolFee);
+    const quoteToken = QuoteTokenStats.load(raffle.quoteTokenStats);
+    if (quoteToken != null) {
+      quoteToken.protocolFees = quoteToken.protocolFees.plus(protocolFee);
+      quoteToken.settledVolume = quoteToken.settledVolume.plus(distributable);
+      quoteToken.save();
+    }
+    updateSettlementDayData(raffle, event, protocolFee, distributable);
   } else {
     raffle.winnerCashLiability = BigInt.zero();
   }

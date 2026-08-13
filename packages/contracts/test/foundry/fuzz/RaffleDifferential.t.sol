@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.36;
 
-import { Test } from "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 
-import { Raffle } from "../../../src/Raffle.sol";
-import { RaffleFactory } from "../../../src/RaffleFactory.sol";
-import { IRaffle } from "../../../src/interfaces/IRaffle.sol";
-import { IRaffleFactory } from "../../../src/interfaces/IRaffleFactory.sol";
-import { MockERC20 } from "../../../src/mocks/MockERC20.sol";
-import { MockERC721 } from "../../../src/mocks/MockERC721.sol";
-import { MockEntropyV2 } from "../../../src/mocks/MockEntropyV2.sol";
+import {Raffle} from "../../../src/Raffle.sol";
+import {RaffleFactory} from "../../../src/RaffleFactory.sol";
+import {IRaffle} from "../../../src/interfaces/IRaffle.sol";
+import {IRaffleFactory} from "../../../src/interfaces/IRaffleFactory.sol";
+import {MockERC20} from "../../../src/mocks/MockERC20.sol";
+import {MockERC721} from "../../../src/mocks/MockERC721.sol";
+import {MockEntropyV2} from "../../../src/mocks/MockEntropyV2.sol";
 
 /// @notice Independent transition/accounting model plus an after-sequence permissionless liveness drain.
 contract RaffleDifferentialTest is Test {
@@ -54,8 +54,7 @@ contract RaffleDifferentialTest is Test {
         prize.approve(address(factory), 1);
         vm.prank(sponsor);
         raffle = Raffle(
-            payable(
-                factory.createRaffle(
+            payable(factory.createRaffle(
                     IRaffleFactory.CreateRaffleParams({
                         prizeToken: address(prize),
                         prizeTokenId: 1,
@@ -66,8 +65,7 @@ contract RaffleDifferentialTest is Test {
                         endTime: block.timestamp + 100,
                         metadataURI: "ipfs://differential"
                     })
-                )
-            )
+                ))
         );
 
         quote.mint(actorA, 1000 * PRICE);
@@ -134,6 +132,11 @@ contract RaffleDifferentialTest is Test {
     function _transfer(uint256 random) internal {
         if (modelTotal == 0) return;
         uint256 ticketId = (random % modelTotal) + 1;
+        if (modelStatus == IRaffle.Status.Drawing) return;
+        if (
+            (modelStatus == IRaffle.Status.NftWon || modelStatus == IRaffle.Status.CashWon)
+                && ticketId == modelWinningTicket
+        ) return;
         address owner = modelOwner[ticketId];
         if (owner == address(0)) return;
         address recipient = owner == actorA ? actorB : actorA;
@@ -166,13 +169,12 @@ contract RaffleDifferentialTest is Test {
         modelWinningTicket = (uint256(randomNumber) % modelTotal) + 1;
         uint256 fee = modelGross * 500 / 10_000;
         uint256 distributable = modelGross - fee;
-        modelTreasuryClaim += fee;
-        modelUnsettled = 0;
         if (modelTotal >= THRESHOLD) {
             modelStatus = IRaffle.Status.NftWon;
-            modelSponsorClaim += distributable;
         } else {
             modelStatus = IRaffle.Status.CashWon;
+            modelUnsettled = 0;
+            modelTreasuryClaim += fee;
             modelWinnerCash = distributable * 8000 / 10_000;
             modelSponsorClaim += distributable - modelWinnerCash;
         }
@@ -182,7 +184,9 @@ contract RaffleDifferentialTest is Test {
         bool activeReady =
             modelStatus == IRaffle.Status.Active && modelTotal != 0 && block.timestamp >= raffle.requestGraceDeadline();
         bool drawingReady = modelStatus == IRaffle.Status.Drawing && block.timestamp >= raffle.callbackDeadline();
-        if (!activeReady && !drawingReady) return;
+        bool nftReady = modelStatus == IRaffle.Status.NftWon && !modelPrizeClaimed
+            && block.timestamp >= raffle.nftRedemptionDeadline();
+        if (!activeReady && !drawingReady && !nftReady) return;
         raffle.enableRefunds();
         modelStatus = IRaffle.Status.Refunding;
         modelRefund = modelUnsettled;
@@ -209,8 +213,15 @@ contract RaffleDifferentialTest is Test {
         vm.prank(owner);
         raffle.redeemWinningTicket(owner);
         modelOwner[modelWinningTicket] = address(0);
-        if (modelStatus == IRaffle.Status.NftWon) modelPrizeClaimed = true;
-        else modelWinnerCash = 0;
+        if (modelStatus == IRaffle.Status.NftWon) {
+            uint256 fee = modelGross * 500 / 10_000;
+            modelPrizeClaimed = true;
+            modelUnsettled = 0;
+            modelTreasuryClaim += fee;
+            modelSponsorClaim += modelGross - fee;
+        } else {
+            modelWinnerCash = 0;
+        }
     }
 
     function _claim(address account) internal {
@@ -224,10 +235,9 @@ contract RaffleDifferentialTest is Test {
     function _claimSponsorPrize() internal {
         if (
             modelPrizeClaimed
-                || (
-                    modelStatus != IRaffle.Status.CashWon && modelStatus != IRaffle.Status.Refunding
-                        && modelStatus != IRaffle.Status.Closed
-                )
+                || (modelStatus != IRaffle.Status.CashWon
+                    && modelStatus != IRaffle.Status.Refunding
+                    && modelStatus != IRaffle.Status.Closed)
         ) return;
         vm.prank(sponsor);
         raffle.claimSponsorPrize(sponsor);
@@ -328,7 +338,7 @@ contract RaffleDifferentialTest is Test {
             if (expectedOwner == address(0)) {
                 try raffle.ownerOf(ticketId) returns (address) {
                     fail();
-                } catch { }
+                } catch {}
             } else {
                 assertEq(raffle.ownerOf(ticketId), expectedOwner);
             }

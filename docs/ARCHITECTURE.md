@@ -37,18 +37,17 @@ recipient defaults to the sponsor.
 
 ## Settlement
 
-Tickets are ordinary ERC-721 bearer claims. They never freeze. A successful draw stores
-only the winning ticket ID and liabilities. The current ticket owner burns that ticket
-for its NFT or cash. In `Refunding`, current owners burn bounded batches for exact
-refunds. Sponsor and treasury cash remain pull claims so one recipient cannot block
-another.
+Tickets are ERC-721 bearer claims until a draw request fixes ownership. All transfers
+freeze in `Drawing`, and the selected winner stays locked after resolution. For an NFT
+win, the gross pot remains unsettled until exact prize delivery; successful delivery
+creates sponsor and treasury pull claims. If delivery does not happen within 30 days,
+the gross pot becomes full ticket refunds. Cash winners settle directly from callback
+liabilities.
 
-Known protocol contracts cannot receive tickets or be selected as new fixed claimants.
-A permissionless bounded helper handles the narrower future-address case where a
-ticket, quote claim, or prize right reached a code-less address before it became a
-registered raffle. The helper exposes only four fixed claim kinds, targets only a
-registered raffle, and pays only the holding raffle's immutable recovery recipient, so
-it cannot be used as an arbitrary call or asset sweep.
+Known protocol contracts cannot receive tickets or asset payouts or be selected as new
+fixed claimants. Future code-less addresses are unsupported. There is deliberately no
+cross-raffle recovery dispatcher because a permissionless `CREATE` caller can capture a
+predicted future raffle address.
 
 The only quote accounting identity is:
 

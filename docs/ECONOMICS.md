@@ -3,15 +3,17 @@
 Every factory is bound to one immutable exact-transfer USDC contract. `ticketPrice`
 is the total paid per ticket; no fee is added at checkout.
 
-On every successful Entropy resolution, including the cash fallback:
+For every successfully delivered prize or cash result:
 
 ```text
 protocol fee       = floor(grossSales × 500 / 10_000)
 distributable pot  = grossSales − protocol fee
 ```
 
-If `totalTickets >= minimumTickets`, the winning ticket burns for the NFT and the
-sponsor receives the distributable pot as a pull claim.
+If `totalTickets >= minimumTickets`, the callback records the winner but leaves the
+gross pot unsettled. The winning ticket's NFT redemption and the creation of the
+sponsor/treasury pull claims happen atomically. If delivery is not completed within 30
+days, all tickets become refundable and no fee or sponsor proceeds are created.
 
 If the threshold is missed:
 

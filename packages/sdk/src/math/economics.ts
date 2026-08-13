@@ -7,6 +7,7 @@ export const MAX_START_DELAY_SECONDS = 7n * 24n * 60n * 60n;
 export const MAX_SALE_DURATION_SECONDS = 30n * 24n * 60n * 60n;
 export const DRAW_REQUEST_GRACE_SECONDS = 3n * 24n * 60n * 60n;
 export const DRAW_CALLBACK_TIMEOUT_SECONDS = 2n * 24n * 60n * 60n;
+export const NFT_REDEMPTION_TIMEOUT_SECONDS = 30n * 24n * 60n * 60n;
 
 export interface PurchaseAmounts {
   readonly grossAmount: bigint;

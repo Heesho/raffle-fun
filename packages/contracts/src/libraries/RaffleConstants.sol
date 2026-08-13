@@ -37,6 +37,9 @@ library RaffleConstants {
     /// @notice Time after an accepted Entropy request before permissionless refund finalization becomes available.
     uint256 internal constant DRAW_CALLBACK_TIMEOUT = 2 days;
 
+    /// @notice Time a selected NFT winner has to receive the prize before full ticket refunds become available.
+    uint256 internal constant NFT_REDEMPTION_TIMEOUT = 30 days;
+
     /// @notice Maximum accepted byte length for a raffle and ticket metadata URI.
     uint256 internal constant MAX_METADATA_URI_LENGTH = 2048;
 }

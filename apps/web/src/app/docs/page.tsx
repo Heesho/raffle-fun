@@ -185,7 +185,7 @@ export default function DocsPage() {
             <RiskCard
               icon={<LockKeyhole />}
               title="Bearer ticket"
-              text="The winning ticket stays transferable until its current owner burns it for the NFT or cash payout."
+              text="Ticket ownership locks once randomness is requested, and the selected ticket remains locked until redemption or refund fallback."
             />
             <RiskCard
               icon={<CircleDollarSign />}
@@ -206,7 +206,7 @@ export default function DocsPage() {
           <DocHeading
             eyebrow="Ticket ownership"
             title="Ownership fixes both winners and refunds."
-            text="Tickets never freeze. The current owner burns the winning ticket for its prize, or burns refundable tickets for their exact purchase-price refunds."
+            text="Tickets lock while randomness is pending and the selected winner stays locked after resolution. In refunds, current owners burn transferable tickets for their exact purchase prices."
           />
           <div className="card mt-8 grid gap-5 p-6 sm:grid-cols-3">
             <Fact

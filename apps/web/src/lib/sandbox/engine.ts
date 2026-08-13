@@ -6,6 +6,7 @@ export const MAX_TICKETS_PER_PURCHASE = 100;
 export const MAX_REFUND_BATCH_SIZE = 100;
 export const DRAW_REQUEST_GRACE_MS = 3 * 24 * 60 * 60 * 1_000;
 export const CALLBACK_TIMEOUT_MS = 2 * 24 * 60 * 60 * 1_000;
+export const NFT_REDEMPTION_TIMEOUT_MS = 30 * 24 * 60 * 60 * 1_000;
 export const ENTROPY_FEE = 1_500_000_000_000_000n;
 
 export type SandboxStatus =
@@ -45,6 +46,8 @@ export interface SandboxRaffle {
   readonly drawRequestedAt: number | null;
   readonly drawRequestedBy: string | null;
   readonly callbackDeadline: number | null;
+  readonly resolvedAt: number | null;
+  readonly nftRedemptionDeadline: number | null;
 }
 
 export interface SandboxWallet {
@@ -122,10 +125,14 @@ export function canRequestDraw(raffle: SandboxRaffle, now: number): boolean {
 export function canEnableRefunds(raffle: SandboxRaffle, now: number): boolean {
   if (raffle.tickets.length === 0) return false;
   if (raffle.status === "ACTIVE") return now >= raffle.requestGraceDeadline;
+  if (raffle.status === "DRAWING" && raffle.callbackDeadline !== null) {
+    return now >= raffle.callbackDeadline;
+  }
   return (
-    raffle.status === "DRAWING" &&
-    raffle.callbackDeadline !== null &&
-    now >= raffle.callbackDeadline
+    raffle.status === "NFT_WON" &&
+    !raffle.prizeClaimed &&
+    raffle.nftRedemptionDeadline !== null &&
+    now >= raffle.nftRedemptionDeadline
   );
 }
 
@@ -251,16 +258,20 @@ export function resolveDraw(
   const winnerCash = met ? 0n : (distributable * CASH_WINNER_PERCENT) / 100n;
   const sponsorCash = distributable - winnerCash;
   const claimable = { ...raffle.claimableQuote };
-  claimable[raffle.sponsor] = (claimable[raffle.sponsor] ?? 0n) + sponsorCash;
+  if (!met) {
+    claimable[raffle.sponsor] = (claimable[raffle.sponsor] ?? 0n) + sponsorCash;
+  }
   return replace(
     sandbox,
     {
       ...raffle,
       status: met ? "NFT_WON" : "CASH_WON",
       winningTicketId,
-      unsettledPot: 0n,
+      unsettledPot: met ? raffle.unsettledPot : 0n,
       winnerCashLiability: winnerCash,
       claimableQuote: claimable,
+      resolvedAt: now,
+      nftRedemptionDeadline: met ? now + NFT_REDEMPTION_TIMEOUT_MS : null,
     },
     {
       id: eventId(raffle.id, "RESOLVED", now),
@@ -283,21 +294,22 @@ export function enableRefunds(
 ): Sandbox {
   const raffle = requireRaffle(sandbox, raffleId);
   if (!canEnableRefunds(raffle, now))
-    fail("The oracle deadline has not expired.");
+    fail("The applicable settlement deadline has not expired.");
+  const refundLiability = raffle.unsettledPot;
   return replace(
     sandbox,
     {
       ...raffle,
       status: "REFUNDING",
       unsettledPot: 0n,
-      remainingRefundLiability: raffle.grossSales,
+      remainingRefundLiability: refundLiability,
     },
     {
       id: eventId(raffle.id, "REFUNDS_ENABLED", now),
       raffleId: raffle.id,
       kind: "REFUNDS_ENABLED",
       account: sandbox.player,
-      amount: raffle.grossSales,
+      amount: refundLiability,
       at: now,
     },
   );
@@ -392,6 +404,14 @@ export function redeemWinningTicket(
     entry.id === ticket.id ? { ...entry, burned: true } : entry,
   );
   const nftWon = raffle.status === "NFT_WON";
+  const protocolFee = (raffle.unsettledPot * PROTOCOL_FEE_PERCENT) / 100n;
+  const claimableQuote = { ...raffle.claimableQuote };
+  if (nftWon) {
+    claimableQuote[raffle.sponsor] =
+      (claimableQuote[raffle.sponsor] ?? 0n) +
+      raffle.unsettledPot -
+      protocolFee;
+  }
   return replace(
     sandbox,
     {
@@ -399,6 +419,9 @@ export function redeemWinningTicket(
       tickets,
       winnerCashLiability: 0n,
       prizeClaimed: nftWon ? true : raffle.prizeClaimed,
+      unsettledPot: nftWon ? 0n : raffle.unsettledPot,
+      claimableQuote,
+      nftRedemptionDeadline: null,
     },
     {
       id: eventId(raffle.id, "WINNING_REDEEMED", now),

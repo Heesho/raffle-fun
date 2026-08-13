@@ -8,7 +8,8 @@ and settles through one of three simple bearer paths:
 - burn the winning ticket for the cash fallback;
 - burn refundable tickets for their exact purchase-price refunds.
 
-There is no winner ownership snapshot and no ticket transfer freeze.
+Ticket ownership freezes once randomness is requested. After resolution, the selected
+winning ticket remains locked until it burns or the raffle enters refund fallback.
 
 ## Mechanics
 
@@ -17,14 +18,20 @@ There is no winner ownership snapshot and no ticket transfer freeze.
    `Raffle` atomically.
 3. Buyers pay the factory-wide USDC token and receive sequential transferable tickets.
 4. After the sale, anyone may pay Pyth Entropy's current fee to request the one draw.
-5. The storage-only callback selects `(random % totalTickets) + 1` and records
-   liabilities.
-6. The current bearer burns the selected ticket for its NFT or cash award.
+5. The storage-only callback selects `(random % totalTickets) + 1` and records the
+   result. Cash liabilities become claimable immediately; NFT-branch proceeds remain
+   escrowed.
+6. The request-time bearer burns the selected ticket for its NFT or cash award. A
+   successful NFT delivery releases the sponsor and treasury quote claims.
 
 If nobody successfully requests randomness within three days of sale end, or an
 accepted request receives no callback for two days, anyone calls `enableRefunds`.
 Every current bearer can then burn up to 100 tickets per transaction for exact refunds.
 No fee or sponsor proceeds are awarded on this failure path.
+
+If an NFT winner cannot receive the prize within 30 days of resolution, anyone can
+enable the same full-ticket refund path. This prevents a paused or broken collection
+from releasing sponsor proceeds while buyer funds remain trapped.
 
 A zero-sale raffle can be closed by the sponsor before `endTime`, or by anyone at or
 after `endTime`. The immutable sponsor recovery recipient then withdraws the NFT.
@@ -41,6 +48,7 @@ stateDiagram-v2
   Drawing --> NftWon: threshold met
   Drawing --> CashWon: threshold missed
   Drawing --> Refunding: callback timeout
+  NftWon --> Refunding: NFT delivery timeout
 ```
 
 `Status` is both lifecycle and economic result. There is no second outcome enum.
@@ -55,8 +63,9 @@ protocolFee      = floor(grossSales × 500 / 10_000)
 distributablePot = grossSales − protocolFee
 ```
 
-When the minimum-ticket threshold is met, the winning ticket redeems the NFT and the
-sponsor receives the distributable pot. Below the threshold:
+When the minimum-ticket threshold is met, the gross pot stays unsettled until the NFT
+is delivered. That delivery atomically creates the treasury fee and sponsor pull
+claim. Below the threshold, liabilities are recorded in the callback:
 
 ```text
 winnerCash = floor(distributablePot × 8_000 / 10_000)
@@ -89,11 +98,9 @@ The factory uses ordinary `CREATE`. There are no proxies, clones, initializers,
 deterministic salts, address prediction, upgrades, settlement overrides, or broad
 rescue functions.
 
-Ticket transfers and fixed claimants reject known protocol destinations. A bounded
-permissionless helper also recovers a ticket, quote claim, or prize right assigned to a
-future code-less address that later becomes a registered raffle, but can pay only the
-holding raffle's immutable recovery recipient. It is not an administrator rescue or
-generic asset sweep.
+Ticket and payout destinations reject known protocol contracts. Transfers or fixed
+claims intentionally assigned to a future code-less address are unsupported: the
+protocol exposes no cross-raffle recovery dispatcher or generic asset sweep.
 
 Each factory has immutable `quoteToken`, `entropy`, and `callbackGasLimit` values.
 Every existing raffle captures its treasury and all configuration permanently.
@@ -119,6 +126,7 @@ duplicate callbacks are ignored. See [docs/RANDOMNESS.md](docs/RANDOMNESS.md) an
 | maximum sale duration         |     30 days |
 | request grace after sale      |      3 days |
 | callback timeout              |      2 days |
+| NFT redemption timeout        |     30 days |
 | metadata URI                  | 2,048 bytes |
 | lens batch                    |  64 raffles |
 
@@ -133,11 +141,11 @@ The recovery guarantee assumes:
 Incoming and outgoing USDC operations verify balance deltas. Fee-on-transfer,
 rebasing, frozen, or blacklisting tokens are unsupported.
 
-No smart contract can guarantee recovery against a malicious or upgraded NFT, a
-collection pause/burn/freeze/blacklist, a malicious or halted ERC-20, a stopped or
-reorganized chain, lost keys, or unrelated NFTs forced in through unsafe
-`transferFrom`. The protocol deliberately has no administrator rescue path for those
-cases.
+A reverting, paused, burned, or frozen prize cannot release NFT-branch USDC proceeds;
+after the redemption timeout, buyers can recover the gross pot through ticket refunds.
+A fully malicious or upgraded NFT can still lie about ERC-165 or ownership. No smart
+contract can create value in a fraudulent collection, force a frozen USDC transfer,
+recover lost keys, or recover unrelated NFTs forced in through unsafe `transferFrom`.
 
 ## Repository
 
@@ -216,3 +224,5 @@ static analysis, fork checks, and integration tests are defense in depth, not pr
 production safety. See the [internal audit report](packages/contracts/audit/INTERNAL-AUDIT.md)
 and [release checklist](packages/contracts/audit/RELEASE-CHECKLIST.md), and report
 vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
+The latest focused review is the
+[ETHSkills security review](packages/contracts/audit/ETHSKILLS-REVIEW-2026-08-13.md).

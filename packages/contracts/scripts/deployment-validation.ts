@@ -17,6 +17,10 @@ const factoryAbi = parseAbi([
   "function pendingOwner() view returns (address)",
 ]);
 const lensAbi = parseAbi(["function factory() view returns (address)"]);
+const quoteTokenAbi = parseAbi([
+  "function decimals() view returns (uint8)",
+  "function paused() view returns (bool)",
+]);
 
 const officialAddresses: Record<
   DeploymentRecord["chainId"],
@@ -66,39 +70,57 @@ export async function validateDeploymentOnchain(
   }
 
   const factory = candidate.raffleFactory as Address;
-  const [quoteToken, entropy, callbackGasLimit, treasury, owner, pendingOwner] =
-    await Promise.all([
-      client.readContract({
-        address: factory,
-        abi: factoryAbi,
-        functionName: "quoteToken",
-      }),
-      client.readContract({
-        address: factory,
-        abi: factoryAbi,
-        functionName: "entropy",
-      }),
-      client.readContract({
-        address: factory,
-        abi: factoryAbi,
-        functionName: "callbackGasLimit",
-      }),
-      client.readContract({
-        address: factory,
-        abi: factoryAbi,
-        functionName: "protocolTreasury",
-      }),
-      client.readContract({
-        address: factory,
-        abi: factoryAbi,
-        functionName: "owner",
-      }),
-      client.readContract({
-        address: factory,
-        abi: factoryAbi,
-        functionName: "pendingOwner",
-      }),
-    ]);
+  const [
+    quoteToken,
+    entropy,
+    callbackGasLimit,
+    treasury,
+    owner,
+    pendingOwner,
+    quoteTokenDecimals,
+    quoteTokenPaused,
+  ] = await Promise.all([
+    client.readContract({
+      address: factory,
+      abi: factoryAbi,
+      functionName: "quoteToken",
+    }),
+    client.readContract({
+      address: factory,
+      abi: factoryAbi,
+      functionName: "entropy",
+    }),
+    client.readContract({
+      address: factory,
+      abi: factoryAbi,
+      functionName: "callbackGasLimit",
+    }),
+    client.readContract({
+      address: factory,
+      abi: factoryAbi,
+      functionName: "protocolTreasury",
+    }),
+    client.readContract({
+      address: factory,
+      abi: factoryAbi,
+      functionName: "owner",
+    }),
+    client.readContract({
+      address: factory,
+      abi: factoryAbi,
+      functionName: "pendingOwner",
+    }),
+    client.readContract({
+      address: candidate.quoteToken as Address,
+      abi: quoteTokenAbi,
+      functionName: "decimals",
+    }),
+    client.readContract({
+      address: candidate.quoteToken as Address,
+      abi: quoteTokenAbi,
+      functionName: "paused",
+    }),
+  ]);
   assertAddress("factory.quoteToken", quoteToken, candidate.quoteToken);
   assertAddress("factory.entropy", entropy, candidate.entropy);
   assertAddress(
@@ -111,23 +133,36 @@ export async function validateDeploymentOnchain(
       `factory callbackGasLimit ${callbackGasLimit} does not match record ${candidate.callbackGasLimit}.`,
     );
   }
+  if (quoteTokenDecimals !== 6) {
+    throw new Error(
+      `quote token decimals ${quoteTokenDecimals} do not match canonical USDC decimals 6.`,
+    );
+  }
+  if (quoteTokenPaused) {
+    throw new Error("quote token is paused at deployment validation time.");
+  }
 
   const finalOwner = getAddress(candidate.finalFactoryOwner);
   const ownershipAccepted =
     getAddress(owner) === finalOwner && pendingOwner === zeroAddress;
-  const ownershipPending =
-    getAddress(owner) === getAddress(candidate.deployer) &&
-    getAddress(pendingOwner) === finalOwner;
-  if (!ownershipAccepted && !ownershipPending) {
+  if (!ownershipAccepted) {
     throw new Error(
-      `factory ownership is neither accepted by nor pending for ${finalOwner}.`,
+      `factory ownership has not been accepted by ${finalOwner}; pending handoff is not a publishable deployment state.`,
     );
   }
   if (candidate.chainId === 8_453) {
-    const ownerCode = await client.getCode({ address: finalOwner });
+    const [ownerCode, treasuryCode] = await Promise.all([
+      client.getCode({ address: finalOwner }),
+      client.getCode({ address: candidate.protocolTreasury as Address }),
+    ]);
     if (ownerCode === undefined || ownerCode === "0x") {
       throw new Error(
         "Base mainnet finalFactoryOwner must be a reviewed contract wallet.",
+      );
+    }
+    if (treasuryCode === undefined || treasuryCode === "0x") {
+      throw new Error(
+        "Base mainnet protocolTreasury must be a reviewed contract wallet.",
       );
     }
     if (candidate.verificationStatus !== "verified") {

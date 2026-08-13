@@ -49,6 +49,8 @@ function raffle(
     | "drawRequestedAt"
     | "drawRequestedBy"
     | "callbackDeadline"
+    | "resolvedAt"
+    | "nftRedemptionDeadline"
   >,
 ): SandboxRaffle {
   const gross = partial.ticketPrice * BigInt(partial.tickets.length);
@@ -66,6 +68,8 @@ function raffle(
     drawRequestedAt: null,
     drawRequestedBy: null,
     callbackDeadline: null,
+    resolvedAt: null,
+    nftRedemptionDeadline: null,
   };
 }
 

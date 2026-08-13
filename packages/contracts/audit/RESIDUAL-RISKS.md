@@ -1,42 +1,44 @@
 # Residual risks and accepted assumptions
 
-No unresolved Critical, High, or Medium supported-asset finding remains in the
-internal campaign. The following risks remain external, operational, or deliberately
-outside the scoped recovery property.
+The 2026-08-13 ETHSkills review removed multiple High/Medium implementation risks, but
+one High oracle trust issue remains unresolved: the Entropy provider can selectively
+reveal a favorable result when it already owns tickets. The following external and
+operational risks also remain.
 
 ## Assets
 
 - USDC can blacklist, pause, upgrade, or otherwise change behavior. Exact-delta checks
   preserve onchain liabilities on revert but cannot force an issuer-controlled token
   to transfer.
-- A malicious/upgraded prize can lie through ERC-165/`ownerOf`, burn escrow, reject
-  transfer, reenter, or change behavior. The supported property assumes honest,
-  available ERC-721 ownership and safe transfer.
+- A reverting, paused, burned, or frozen prize cannot release NFT-branch quote proceeds;
+  full refunds open after 30 days. A malicious/upgraded prize can still lie through
+  ERC-165/`ownerOf` or misrepresent its value.
 - Unrelated NFTs forced in by unsafe transfer have no rescue path.
 
 ## Bearer destinations
 
 Unsafe ERC-721 transfer to an arbitrary non-callable user-selected contract can lock a
-ticket. Known current protocol destinations are rejected, and same-factory future
-canonical raffle addresses have a selective ticket/quote/prize recovery path, but
-arbitrary bytecode capability, unrelated factory graphs, and lost keys are not solvable
-without a generic rescue or removing ERC-721 transferability.
+ticket. Known current protocol destinations are rejected. Future code-less addresses,
+arbitrary bytecode capability, unrelated factory graphs, and lost keys remain
+unsupported without a generic seizure-capable rescue path.
 
 ## Oracle and chain
 
-- Pyth Entropy's default PRNG assumes the provider and validator do not collude. An
-  unavailable oracle leads to refunds, not replacement randomness; it does not remove
-  the oracle trust assumption on successful draws.
+- Pyth documents that the provider can know the final word before reveal and may
+  selectively withhold it. Transfer locking prevents post-request winner purchases,
+  but a provider that already owns tickets can reveal favorable results and accept
+  refunds otherwise. Provider pinning prevents silent substitution but does not solve
+  selective reveal.
 - Modulo mapping has negligible but nonzero mathematical bias for most ticket counts.
 - The Base sequencer can order the callback/timeout boundary, delay requests, or censor
   transactions. First-valid-terminal-transition semantics are deterministic given
   inclusion but cannot defeat universal censorship or a halted/reorganized chain.
-- Pyth fee/provider gas policy and official addresses are external configuration that
-  must be reverified at deployment time.
+- Pyth fee/provider gas policy, default provider, and official addresses are external
+  configuration that must be reverified at deployment time.
 
 ## Code and operations
 
-- `RaffleFactory` runtime is 24,311 bytes, only 265 bytes below EIP-170. Any production
+- `RaffleFactory` runtime is 24,267 bytes, only 309 bytes below EIP-170. Any production
   change requires a fresh size gate.
 - Constructor-deployed raffles are immutable. Incident response can pause only future
   creation and remove frontend exposure; it cannot patch an existing raffle.

@@ -1,5 +1,9 @@
 # Findings
 
+> Historical baseline: entries referring to transferable `Drawing` tickets or
+> `recoverProtocolOwnedClaim` describe pre-remediation code. See
+> [`ETHSKILLS-REVIEW-2026-08-13.md`](ETHSKILLS-REVIEW-2026-08-13.md).
+
 Review date: 2026-08-09. Affected identity is `a2120f5e163dc3641d9864773febbfedca047edb`
 plus the pre-audit simplified-settlement patch fingerprint
 `55589ce1fce0bd5579e60df747796575df9b0d96`. The findings therefore do not describe

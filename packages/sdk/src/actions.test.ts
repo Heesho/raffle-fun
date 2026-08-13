@@ -1,16 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import { validateRefundTicketIds } from "./actions.js";
-import { ProtocolOwnedClaim } from "./types/protocol.js";
-
-describe("ProtocolOwnedClaim", () => {
-  it("matches the Solidity enum ordinals", () => {
-    expect(ProtocolOwnedClaim.WinningTicket).toBe(0);
-    expect(ProtocolOwnedClaim.RefundTickets).toBe(1);
-    expect(ProtocolOwnedClaim.Quote).toBe(2);
-    expect(ProtocolOwnedClaim.SponsorPrize).toBe(3);
-  });
-});
 
 describe("validateRefundTicketIds", () => {
   it("accepts a unique bounded positive batch", () => {

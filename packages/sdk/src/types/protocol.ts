@@ -8,13 +8,6 @@ export enum RaffleStatus {
   Closed,
 }
 
-export enum ProtocolOwnedClaim {
-  WinningTicket,
-  RefundTickets,
-  Quote,
-  SponsorPrize,
-}
-
 export const raffleStatusLabels = {
   [RaffleStatus.AwaitingPrize]: "Awaiting prize",
   [RaffleStatus.Active]: "Active",

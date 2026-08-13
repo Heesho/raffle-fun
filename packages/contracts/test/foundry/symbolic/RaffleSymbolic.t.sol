@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.36;
 
-import { IERC721Receiver } from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-import { Test } from "forge-std/Test.sol";
+import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import {Test} from "forge-std/Test.sol";
 
-import { Raffle } from "../../../src/Raffle.sol";
-import { IRaffle } from "../../../src/interfaces/IRaffle.sol";
-import { MockERC20 } from "../../../src/mocks/MockERC20.sol";
-import { MockERC721 } from "../../../src/mocks/MockERC721.sol";
-import { MockEntropyV2 } from "../../../src/mocks/MockEntropyV2.sol";
+import {Raffle} from "../../../src/Raffle.sol";
+import {IRaffle} from "../../../src/interfaces/IRaffle.sol";
+import {MockERC20} from "../../../src/mocks/MockERC20.sol";
+import {MockERC721} from "../../../src/mocks/MockERC721.sol";
+import {MockEntropyV2} from "../../../src/mocks/MockEntropyV2.sol";
 
 /// @notice Focused Halmos checks over a concrete one-ticket production raffle and symbolic randomness.
 contract RaffleSymbolicTest is Test, IERC721Receiver {
@@ -64,7 +64,8 @@ contract RaffleSymbolicTest is Test, IERC721Receiver {
         (bool success,) = address(raffle).call(abi.encodeCall(IRaffle.enableRefunds, ()));
         assertFalse(success);
         assertEq(uint256(raffle.status()), uint256(IRaffle.Status.NftWon));
-        assertEq(raffle.claimableQuote(treasury), 50_000);
+        assertEq(raffle.claimableQuote(treasury), 0);
+        assertEq(raffle.unsettledPot(), 1e6);
         assertEq(raffle.remainingRefundLiability(), 0);
     }
 

@@ -1,5 +1,9 @@
 # Independently derived protocol specification
 
+> Historical baseline: this specification predates the 2026-08-13 transfer lock,
+> NFT-delivery refund fallback, and removal of the cross-raffle recovery dispatcher.
+> See [`ETHSKILLS-REVIEW-2026-08-13.md`](ETHSKILLS-REVIEW-2026-08-13.md).
+
 This specification was derived from production Solidity and executable interfaces in
 the reviewed worktree. Existing architecture documents were consulted only after the
 code-derived model was written.

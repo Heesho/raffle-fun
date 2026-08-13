@@ -1,28 +1,29 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.36;
 
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import { IERC721Receiver } from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
-import { IEntropyConsumer } from "@pythnetwork/entropy-sdk-solidity/IEntropyConsumer.sol";
-import { IEntropyV2 } from "@pythnetwork/entropy-sdk-solidity/IEntropyV2.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+import {IEntropyConsumer} from "@pythnetwork/entropy-sdk-solidity/IEntropyConsumer.sol";
+import {IEntropyV2} from "@pythnetwork/entropy-sdk-solidity/IEntropyV2.sol";
 
-import { IRaffle } from "./interfaces/IRaffle.sol";
-import { IRaffleFactory } from "./interfaces/IRaffleFactory.sol";
-import { RaffleConstants } from "./libraries/RaffleConstants.sol";
+import {IRaffle} from "./interfaces/IRaffle.sol";
+import {IRaffleFactory} from "./interfaces/IRaffleFactory.sol";
+import {RaffleConstants} from "./libraries/RaffleConstants.sol";
 
 /**
  * @title raffle.fun Raffle Escrow and Bearer Ticket
  * @author Heesho
  * @notice Escrows one NFT, sells transferable tickets, and settles through Pyth Entropy v2 or exact ticket refunds.
  * @dev Each raffle is a non-upgradeable constructor deployment. Ticket ownership is the claim credential: the winning
- *      ticket burns for the NFT or cash award, and refundable tickets burn for their purchase price. No ownership
- *      snapshot or transfer freeze exists. Normal sponsor and treasury proceeds remain pull claims so one recipient
- *      cannot block another. The Entropy callback performs bounded storage work and no external asset transfer.
+ *      ticket burns for the NFT or cash award, and refundable tickets burn for their purchase price. Ownership freezes
+ *      while randomness is pending and the selected ticket remains locked until redemption or refund fallback. Normal
+ *      sponsor and treasury proceeds remain pull claims. The Entropy callback performs bounded storage work and no
+ *      external asset transfer.
  * @custom:version 2.0.0
  */
 contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, IEntropyConsumer {
@@ -51,6 +52,7 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, IEntropyCo
     uint256 public override totalClaimableQuote;
     uint64 public override entropySequenceNumber;
     uint256 public override drawRequestedAt;
+    uint256 public override resolvedAt;
     uint256 public override winningTicketId;
     Status public override status;
     bool public override prizeClaimed;
@@ -166,13 +168,17 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, IEntropyCo
         status = Status.Drawing;
         drawRequestedAt = block.timestamp;
         _requestInFlight = true;
-        sequenceNumber = entropy.requestV2{ value: fee }(callbackGasLimit);
+        sequenceNumber = entropy.requestV2{value: fee}(callbackGasLimit);
         entropySequenceNumber = sequenceNumber;
         _requestInFlight = false;
 
         uint256 excess = msg.value - fee;
         if (excess != 0) {
-            (bool success,) = payable(msg.sender).call{ value: excess }("");
+            address refundRecipient = msg.sender;
+            bool success;
+            assembly ("memory-safe") {
+                success := call(gas(), refundRecipient, excess, 0, 0, 0, 0)
+            }
             if (!success) revert NativeRefundFailed(msg.sender, excess);
         }
 
@@ -190,6 +196,9 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, IEntropyCo
         } else if (status == Status.Drawing) {
             requestWasAccepted = true;
             deadline = callbackDeadline();
+        } else if (status == Status.NftWon && !prizeClaimed) {
+            requestWasAccepted = true;
+            deadline = nftRedemptionDeadline();
         } else {
             revert InvalidStatus(status);
         }
@@ -208,6 +217,7 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, IEntropyCo
         Status result = status;
         if (result != Status.NftWon && result != Status.CashWon) revert InvalidStatus(result);
         if (to == address(0)) revert ZeroAddress();
+        if (result == Status.NftWon && _isKnownProtocolDestination(to)) revert UnsafeProtocolDestination(to);
 
         uint256 ticketId = winningTicketId;
         address owner = ownerOf(ticketId);
@@ -217,6 +227,13 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, IEntropyCo
         if (result == Status.NftWon) {
             prizeClaimed = true;
             prizeToken.safeTransferFrom(address(this), to, prizeTokenId);
+            if (prizeToken.ownerOf(prizeTokenId) != to) revert PrizeDeliveryVerificationFailed(to);
+
+            uint256 grossPot = unsettledPot;
+            uint256 protocolFee = Math.mulDiv(grossPot, RaffleConstants.PROTOCOL_FEE_BPS, RaffleConstants.BPS);
+            unsettledPot = 0;
+            _creditQuote(protocolTreasury, protocolFee);
+            _creditQuote(sponsor, grossPot - protocolFee);
         } else {
             cashAmount = winnerCashLiability;
             winnerCashLiability = 0;
@@ -254,27 +271,6 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, IEntropyCo
     }
 
     /// @inheritdoc IRaffle
-    function recoverProtocolOwnedClaim(address raffle, ProtocolOwnedClaim claim, uint256[] calldata refundTicketIds)
-        external
-        override
-        nonReentrant
-        returns (uint256 amount)
-    {
-        if (!IRaffleFactory(factory).isRaffle(raffle)) revert UnsafeProtocolDestination(raffle);
-        IRaffle target = IRaffle(raffle);
-        address recipient = sponsorPrizeRecoveryRecipient;
-        if (claim == ProtocolOwnedClaim.WinningTicket) {
-            amount = target.redeemWinningTicket(recipient);
-        } else if (claim == ProtocolOwnedClaim.RefundTickets) {
-            amount = target.redeemRefundTickets(refundTicketIds, recipient);
-        } else if (claim == ProtocolOwnedClaim.Quote) {
-            amount = target.claimQuote(recipient);
-        } else {
-            target.claimSponsorPrize(recipient);
-        }
-    }
-
-    /// @inheritdoc IRaffle
     function claimQuote(address to) external override nonReentrant returns (uint256 amount) {
         amount = _claimQuote(msg.sender, to);
     }
@@ -294,6 +290,7 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, IEntropyCo
             revert SponsorPrizeUnavailable(currentStatus);
         }
         if (to == address(0)) revert ZeroAddress();
+        if (_isKnownProtocolDestination(to)) revert UnsafeProtocolDestination(to);
         if (prizeClaimed) revert PrizeAlreadyClaimed();
 
         prizeClaimed = true;
@@ -309,6 +306,13 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, IEntropyCo
     /// @inheritdoc IRaffle
     function callbackDeadline() public view override returns (uint256 deadline) {
         if (drawRequestedAt != 0) deadline = drawRequestedAt + RaffleConstants.DRAW_CALLBACK_TIMEOUT;
+    }
+
+    /// @inheritdoc IRaffle
+    function nftRedemptionDeadline() public view override returns (uint256 deadline) {
+        if (status == Status.NftWon && !prizeClaimed) {
+            deadline = resolvedAt + RaffleConstants.NFT_REDEMPTION_TIMEOUT;
+        }
     }
 
     /// @inheritdoc IRaffle
@@ -337,6 +341,12 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, IEntropyCo
      *      responsibility because capability cannot be inferred reliably from deployed bytecode.
      */
     function transferFrom(address from, address to, uint256 tokenId) public override {
+        Status currentStatus = status;
+        bool resultLocksTicket =
+            (currentStatus == Status.NftWon || currentStatus == Status.CashWon) && tokenId == winningTicketId;
+        if (currentStatus == Status.Drawing || resultLocksTicket) {
+            revert TicketTransferLocked(tokenId, currentStatus);
+        }
         if (to != address(0) && _isKnownProtocolDestination(to)) revert UnsafeProtocolDestination(to);
         super.transferFrom(from, to, tokenId);
     }
@@ -386,19 +396,20 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, IEntropyCo
         uint256 sponsorCashAmount = 0;
 
         winningTicketId = resolvedTicketId;
-        unsettledPot = 0;
-        _creditQuote(protocolTreasury, protocolFee);
+        resolvedAt = block.timestamp;
 
         if (totalTickets >= minimumTickets) {
             status = Status.NftWon;
             sponsorCashAmount = distributablePot;
         } else {
             status = Status.CashWon;
+            unsettledPot = 0;
             winnerCashAmount = Math.mulDiv(distributablePot, RaffleConstants.CASH_WINNER_BPS, RaffleConstants.BPS);
             winnerCashLiability = winnerCashAmount;
             sponsorCashAmount = distributablePot - winnerCashAmount;
+            _creditQuote(protocolTreasury, protocolFee);
+            _creditQuote(sponsor, sponsorCashAmount);
         }
-        _creditQuote(sponsor, sponsorCashAmount);
 
         emit RaffleResolved(sequence, resolvedTicketId, status, protocolFee, winnerCashAmount, sponsorCashAmount);
     }
@@ -432,7 +443,7 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, IEntropyCo
      *      including ticket burns and cleared claims, for fee-on-transfer or sender-tax behavior.
      */
     function _transferQuoteExact(address to, uint256 amount) internal {
-        if (to == address(this)) revert InvalidQuoteDestination(to);
+        if (_isKnownProtocolDestination(to)) revert InvalidQuoteDestination(to);
         uint256 raffleBalanceBefore = quoteToken.balanceOf(address(this));
         uint256 recipientBalanceBefore = quoteToken.balanceOf(to);
         quoteToken.safeTransfer(to, amount);

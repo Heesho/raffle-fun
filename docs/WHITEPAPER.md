@@ -1,5 +1,10 @@
 <!-- pagebreak -->
 
+> **Superseded security model (2026-08-13):** this paper predates the draw-time
+> ticket-transfer lock, NFT-delivery refund fallback, and removal of
+> `recoverProtocolOwnedClaim`. Do not use it for deployment or transaction decisions;
+> see `packages/contracts/audit/ETHSKILLS-REVIEW-2026-08-13.md` and current Solidity.
+
 # | How to Read This Paper
 
 This paper explains the raffle.fun contracts committed at

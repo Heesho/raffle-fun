@@ -1,5 +1,9 @@
 # Internal adversarial audit
 
+> Historical baseline: this report predates the 2026-08-13 ETHSkills remediation and
+> is superseded for current-code conclusions by
+> [`ETHSKILLS-REVIEW-2026-08-13.md`](ETHSKILLS-REVIEW-2026-08-13.md).
+
 Review date: 2026-08-09 (Europe/Podgorica)
 
 Reviewed identity: commit `a2120f5e163dc3641d9864773febbfedca047edb`

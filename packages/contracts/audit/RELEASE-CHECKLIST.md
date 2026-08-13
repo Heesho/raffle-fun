@@ -4,6 +4,13 @@ This checklist applies to the exact source, lockfile, compiler, deployment param
 and generated artifacts being released. A checked internal item does not replace
 independent review or operational approval.
 
+> **Current status: not release-ready.** Checked campaign items below describe the
+> pre-remediation audit baseline unless stated otherwise. The 2026-08-13 ETHSkills
+> patch passed its local aggregate build, lint, typecheck, unit/fuzz/invariant tests,
+> coverage, gas snapshot, and Slither run, but still requires a clean-commit campaign,
+> configured Base forks, and independent review. The unresolved Entropy
+> selective-reveal trust assumption is a release decision, not a solved property.
+
 ## Source identity and reproducibility
 
 - [x] Record reviewed commit and pre-audit worktree fingerprint.
@@ -18,7 +25,8 @@ independent review or operational approval.
 ## Findings and security properties
 
 - [x] No unresolved Critical finding.
-- [x] No unresolved High finding.
+- [ ] Resolve or explicitly accept the Entropy provider selective-reveal High finding
+      after independent RNG architecture review.
 - [x] No unresolved Medium finding involving supported assets.
 - [x] Every fix has a minimal preserved regression.
 - [x] Prize leaves at most once.
@@ -26,15 +34,16 @@ independent review or operational approval.
 - [x] Missing request and missing callback both reach fee-free refunds.
 - [x] Every failed-draw ticket burns for exactly one refund.
 - [x] Normal and failure branches conserve gross quote liabilities.
-- [x] Protocol-self ticket ownership has a bounded recovery path.
+- [x] Known protocol destinations are rejected for tickets and quote payouts.
 - [x] A new raffle cannot select itself as recovery recipient or treasury.
-- [x] A later same-factory raffle can recover earlier ticket, quote, and prize claims
-      assigned to its code-less future address.
-- [x] Callback and timeout terminal transitions are mutually exclusive.
+- [x] The unsafe predicted-address cross-raffle recovery dispatcher is removed.
+- [x] Ticket ownership locks during the Entropy reveal gap and for the selected winner.
+- [x] NFT proceeds remain escrowed until delivery; failed delivery reaches full refunds.
+- [x] Callback and its two-day timeout transition are mutually exclusive.
 - [x] Callback work is bounded beneath 300,000 gas.
 - [x] Purchase and refund loops are capped at 100.
 - [x] Factory owner cannot mutate or seize existing raffles.
-- [x] All 110 practical invariants have executable or reviewed evidence.
+- [ ] Reconcile and rerun all 110 practical invariants for the remediated state machine.
 
 ## Automated campaigns
 
@@ -73,13 +82,16 @@ independent review or operational approval.
 
 - [ ] Verify official Base chain ID and current Pyth Entropy v2 address from primary
       sources on release day.
+- [ ] Pin and callback-check a reviewed Entropy provider, or replace the RNG integration
+      with an independently reviewed design that addresses selective reveal.
 - [ ] Verify official USDC address, decimals, runtime code, proxy/issuer controls, and
       exact-transfer assumptions on release day.
 - [ ] Re-measure callback gas using the exact deployed bytecode.
 - [ ] Select and review a nonzero treasury Safe.
 - [ ] Select and review the final factory-owner Safe, signer set, threshold, modules,
       guards, and recovery process.
-- [ ] Confirm pending-owner acceptance from the intended Safe.
+- [ ] Confirm completed owner acceptance from the intended Safe (`owner == Safe`,
+      `pendingOwner == address(0)`).
 - [ ] Validate factory quote token, Entropy, callback gas, treasury, owner, pending
       owner, runtime code, and Lens binding onchain.
 - [ ] Require mainnet verified source and contract-wallet final ownership.
@@ -91,8 +103,8 @@ independent review or operational approval.
 - [ ] Independent external audit of the exact final commit and locks.
 - [ ] Resolve every external-audit Critical/High and supported-asset Medium finding.
 - [ ] Monitored Base Sepolia soak covering NFT and cash success, empty close, both
-      liveness failures, partial/complete refunds, future-raffle recovery, and retry after
-      destination rejection.
+      liveness failures, NFT delivery timeout, partial/complete refunds, transfer locks,
+      and retry after destination rejection.
 - [ ] Production dashboards and alerts for creation, draw, ignored callbacks,
       deadlines, refund liabilities, quote solvency, redemptions, pause, treasury, owner,
       and pending owner.

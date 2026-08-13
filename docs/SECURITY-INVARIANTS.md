@@ -52,7 +52,7 @@ Evidence tags:
 28. A reverting prize receiver restores the ticket, claimant, and `prizeClaimed` state. `U/A`
 29. NFT-winner redemption burns the winning credential before its external transfer. `A/H`
 30. Sponsor-side recovery marks the claim before its external transfer. `U/A/I`
-31. `NftWon` assigns the NFT only to the current winning-ticket owner. `U/F/I`
+31. `NftWon` assigns the NFT only to the winning-ticket owner fixed at draw request. `U/F/I`
 32. `CashWon`, `Refunding`, and `Closed` expose the NFT only to the immutable recovery recipient. `U/I`
 33. The recovery recipient may choose a different nonzero safe NFT destination. `U`
 34. Factory owner and treasury have no prize seizure or rescue selector. `X/I`
@@ -72,8 +72,8 @@ Evidence tags:
 45. Separate purchases continue from `totalTickets + 1`. `U`
 46. `totalTickets` equals all tickets ever issued and `grossSales = ticketPrice * totalTickets`. `F/I/S/E`
 47. Every unburned ticket has exactly one nonzero owner. `U/I/E`
-48. Tickets and approvals follow ERC-721 bearer semantics in every lifecycle state. `U/F/I`
-49. A winning or refundable right moves with its unburned ticket and is consumed by burning. `U/F/H`
+48. Ticket transfers freeze in `Drawing`; the selected ticket remains locked in `NftWon` and `CashWon`. `U/A/F/I`
+49. Refund tickets are transferable in `Refunding`, and every award or refund right is consumed by burning. `U/F/H`
 50. A zero-sales raffle closes only by the sponsor before end or permissionlessly at/after end. `U/I`
 
 ## Randomness and lifecycle
@@ -84,7 +84,7 @@ Evidence tags:
 54. A raffle completes at most one Entropy request. `I/S/E`
 55. Fee-read or request reverts leave the raffle `Active` and preserve deadline recovery. `A`
 56. Exact fee payment succeeds; insufficient payment reverts. `U/A/K`
-57. Native overpayment is returned immediately to the requester or the request rolls back. `U/A`
+57. Native overpayment is returned immediately without copying unbounded requester returndata, or the request rolls back. `U/A`
 58. Direct native transfers revert and forced native value creates no liability. `U/I`
 59. Status becomes `Drawing` and the in-flight guard is set before the oracle call. `A`
 60. A synchronous callback cannot settle before the returned sequence is stored. `A`
@@ -97,17 +97,17 @@ Evidence tags:
 67. Modulo bias is nonzero in general and documented rather than described as perfect uniformity. `X`
 68. Missing-request refunds become available exactly at `end + 3 days`. `U/I`
 69. Callback-timeout refunds become available exactly at `drawRequestedAt + 2 days`. `U/I/H`
-70. Callback-first and timeout-first ordering are mutually exclusive; the first valid terminal transition wins. `U/I/S/H`
+70. Callback-first and callback-timeout-first ordering are mutually exclusive; an unredeemed NFT result can later enter refunds. `U/I/S/H`
 
 ## Settlement and quote conservation
 
-71. A successful resolution charges `floor(grossSales * 500 / 10,000)` in both NFT and cash branches. `U/F/I/S/E`
-72. A failure branch charges no protocol fee and creates no sponsor or winner proceeds. `U/I/E`
+71. Cash resolution charges `floor(grossSales * 500 / 10,000)` immediately; an NFT result charges it only after successful prize delivery. `U/F/I/S/E`
+72. Missing request, callback timeout, and NFT delivery timeout charge no fee or sponsor proceeds. `U/A/I/E`
 73. Threshold equality selects `NftWon`; threshold minus one selects `CashWon`. `U/F`
-74. `NftWon` assigns all post-fee distributable quote to the sponsor. `U/F`
+74. `NftWon` keeps gross quote unsettled until exact prize delivery atomically assigns post-fee quote to the sponsor. `U/A/F`
 75. `CashWon` assigns floor 80% of post-fee quote to the winning ticket and the remainder to the sponsor. `U/F`
 76. Fee plus sponsor plus winner liabilities conserve every gross unit in successful branches. `F/I/E`
-77. Refund enablement moves the complete unsettled pot to `remainingRefundLiability`. `U/I/S/E`
+77. Every refund path moves the complete unsettled gross pot to `remainingRefundLiability`. `U/A/I/S/E`
 78. Each refund ticket burns for exactly one ticket price. `U/F/H`
 79. Refund redemption accepts one to 100 caller-owned IDs and no unbounded loop. `U/F/I`
 80. Duplicate, invalid, or foreign refund IDs revert the whole batch and restore tentative burns. `U/A`
@@ -116,7 +116,7 @@ Evidence tags:
 83. Sponsor and treasury claims are pull liabilities and can be consumed at most once. `U/I/S/E`
 84. `claimQuoteFor` is permissionless but can pay only the fixed account itself. `U/A`
 85. A claimant may direct its own quote claim to another nonzero destination. `U`
-86. A payment to the raffle itself is rejected and preserves the claim. `U/A`
+86. A quote payment to any known protocol contract is rejected and preserves the ticket or claim. `U/A`
 87. Exact outgoing raffle debit and recipient credit are both verified. `U/A`
 88. A failing, taxed, surcharged, blacklisted, or paused outgoing token transfer restores all effects. `A`
 89. `accountedQuoteBalance = unsettledPot + remainingRefundLiability + winnerCashLiability + totalClaimableQuote`. `F/I/S/E`
@@ -131,30 +131,30 @@ Evidence tags:
 95. The newly constructed raffle cannot be its own fixed recovery recipient. `A`
 96. The newly constructed raffle cannot be its own treasury. `A`
 97. Factory treasury configuration rejects the factory, quote token, Entropy, and registered raffles. `A`
-98. Tickets and fixed claims assigned to a future code-less canonical raffle remain recoverable after it registers. `A`
-99. Protocol-owned ticket, quote, and prize claims route only to the holder raffle's immutable recovery recipient. `A`
-100.  The protocol-owned claim-kind helper accepts only a canonical registered target and exposes no arbitrary call. `U/A`
+98. No registered raffle exposes a cross-raffle claim dispatcher that a predicted-address captor can abuse. `A`
+99. Tickets and fixed claims assigned to a future code-less address remain an explicit unsupported destination risk. `A/X`
+100.  A captured future raffle cannot invoke the removed recovery selector or redirect an earlier claim. `A`
 101.  Arbitrary user-selected non-callable contracts remain an explicit bearer-transfer risk, not a claimed solved case. `X`
 102.  Lens rejects unregistered targets before forwarding reads. `U/X`
 103.  Lens batch length is at most 64 and fields match authoritative contract state. `U/X`
 104.  Entropy fee-read failure cannot hide non-fee state or refund availability in Lens. `U/X`
-105.  SDK ABI, enums, deadline arithmetic, and economic arithmetic match Solidity. `X`
+105.  SDK ABI, status enum, deadline arithmetic, and economic arithmetic match Solidity. `X`
 106.  SDK rejects duplicate, nonpositive, empty, and oversized refund batches before simulation. `X`
 107.  Every first-party wallet write is simulated against live chain state; the subgraph is non-authoritative. `X`
 108.  Subgraph handlers reconstruct bearer transfers, burns, liabilities, fees, and one terminal result without duplicate entities. `X`
-109.  Deployment records fail closed on chain, code, official USDC/Entropy, immutables, owner/pending owner, treasury, and Lens mismatch. `X/K`
+109.  Deployment records fail closed on chain, code, official USDC/Entropy, USDC decimals/pause, completed Safe ownership, contract treasury, immutables, and Lens mismatch. `X/K`
 110.  No checked-in deployment record or placeholder enables public writes; public deployment and ownership transfer require an external reviewed release procedure. `X`
 
 ## Reconciliation of the clone-era 342-item list
 
 The following requested groups are not applicable to this code and were not
 reintroduced: shared implementation locks, EIP-1167 clone initialization, CREATE2
-salts/address prediction, quote-token allowlisting/removal/caps, transfer freezes,
-refund credit/souvenir state, native pull-refund liabilities, `claimPrizeFor`, and a
+salts/address prediction, quote-token allowlisting/removal/caps, refund credit/souvenir
+state, native pull-refund liabilities, `claimPrizeFor`, and a
 100-entry Lens batch. Their replacement invariants are respectively constructor
-authentication/atomic registration, one immutable factory-wide token, transferable
-bearer burns, immediate native excess rollback, recovery-recipient initiated prize
-claims, and a 64-entry Lens bound.
+authentication/atomic registration, one immutable factory-wide token, draw-time
+transfer locking plus transferable refund burns, immediate native excess rollback,
+recovery-recipient initiated prize claims, and a 64-entry Lens bound.
 
 This catalog is evidence organization, not formal verification. External asset,
 oracle, chain, sequencer, key-management, legal, and operational assumptions remain in

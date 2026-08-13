@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.36;
 
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import { IEntropyV2 } from "@pythnetwork/entropy-sdk-solidity/IEntropyV2.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {IEntropyV2} from "@pythnetwork/entropy-sdk-solidity/IEntropyV2.sol";
 
 /**
  * @title raffle.fun Raffle Escrow and Bearer Ticket Interface
  * @author Heesho
  * @notice Defines a constructor-deployed raffle whose tickets burn to redeem the winning asset or their own refund.
- * @dev The current ticket owner is the claim owner. Tickets never freeze: the winning ticket remains transferable
- *      until it burns for the NFT or cash award. Every refundable ticket remains transferable until it burns for its
- *      purchase-price refund. Supported quote tokens are non-rebasing exact-transfer ERC-20s. Supported prizes are
- *      honest, standards-compliant ERC-721s.
+ * @dev The current ticket owner is the claim owner. Ownership freezes while randomness is pending, and the selected
+ *      ticket remains locked after resolution so advance knowledge or stale marketplace approvals cannot redirect
+ *      the award. Refundable tickets are transferable until they burn for their purchase-price refund. Supported quote
+ *      tokens are non-rebasing exact-transfer ERC-20s. Supported prizes are honest, standards-compliant ERC-721s.
  * @custom:version 2.0.0
  */
 interface IRaffle {
@@ -25,14 +25,6 @@ interface IRaffle {
         CashWon,
         Refunding,
         Closed
-    }
-
-    /// @notice Claim type a registered raffle may permissionlessly exercise for another registered raffle.
-    enum ProtocolOwnedClaim {
-        WinningTicket,
-        RefundTickets,
-        Quote,
-        SponsorPrize
     }
 
     /**
@@ -93,7 +85,7 @@ interface IRaffle {
     error UnsupportedQuoteToken(uint256 expectedAmount, uint256 receivedAmount);
     /// @notice Raised when an outgoing quote transfer does not debit and credit the exact liability amount.
     error UnsupportedQuoteTokenTransfer(uint256 expectedAmount, uint256 debitedAmount, uint256 creditedAmount);
-    /// @notice Raised when a quote payment attempts to pay the raffle itself.
+    /// @notice Raised when a quote payment targets a known protocol contract that cannot recover the payment.
     error InvalidQuoteDestination(address destination);
     /// @notice Raised when an early empty-raffle closure is attempted by anyone other than the sponsor.
     error OnlySponsor();
@@ -115,6 +107,8 @@ interface IRaffle {
     error NoQuoteClaim(address account);
     /// @notice Raised when a bearer or fixed claimant would become a known non-callable protocol address.
     error UnsafeProtocolDestination(address destination);
+    /// @notice Raised when ticket ownership is fixed during the draw or for the selected winning credential.
+    error TicketTransferLocked(uint256 ticketId, Status status);
     /// @notice Raised when the caller does not own the ticket being redeemed.
     error NotTicketOwner(uint256 ticketId, address caller, address owner);
     /// @notice Raised when sponsor-side NFT recovery is unavailable for the current result.
@@ -123,6 +117,8 @@ interface IRaffle {
     error OnlyPrizeRecoveryRecipient(address caller, address recipient);
     /// @notice Raised when the configured prize already left escrow.
     error PrizeAlreadyClaimed();
+    /// @notice Raised when a prize transfer reports success without assigning the NFT to the requested recipient.
+    error PrizeDeliveryVerificationFailed(address recipient);
 
     /// @notice Emitted after the exact configured prize enters escrow and activates ticket sales.
     event PrizeDeposited(address indexed prizeToken, uint256 indexed prizeTokenId, address indexed sponsor);
@@ -206,15 +202,6 @@ interface IRaffle {
 
     /// @notice Burns a bounded batch of caller-owned tickets for their aggregate exact refund.
     function redeemRefundTickets(uint256[] calldata ticketIds, address to) external returns (uint256 amount);
-    /**
-     * @notice Permissionlessly exercises a claim this raffle owns in another canonical raffle.
-     * @dev Refund ticket IDs are used only for `RefundTickets`. Every recovered asset routes only to this raffle's
-     *      immutable sponsor-side recovery recipient.
-     */
-    function recoverProtocolOwnedClaim(address raffle, ProtocolOwnedClaim claim, uint256[] calldata refundTicketIds)
-        external
-        returns (uint256 amount);
-
     /// @notice Pays the caller's ordinary quote claim to a chosen destination.
     function claimQuote(address to) external returns (uint256 amount);
 
@@ -229,6 +216,9 @@ interface IRaffle {
 
     /// @notice Returns the callback deadline, or zero before a request is accepted.
     function callbackDeadline() external view returns (uint256 deadline);
+
+    /// @notice Returns the NFT delivery deadline, or zero unless the result is an unredeemed NFT win.
+    function nftRedemptionDeadline() external view returns (uint256 deadline);
 
     /// @notice Returns whether the winning ticket has already burned for its award.
     function winningTicketRedeemed() external view returns (bool redeemed);
@@ -280,6 +270,8 @@ interface IRaffle {
     function entropySequenceNumber() external view returns (uint64);
     /// @notice Returns the timestamp at which Entropy accepted the request, or zero before one.
     function drawRequestedAt() external view returns (uint256);
+    /// @notice Returns the timestamp at which authenticated randomness resolved the raffle.
+    function resolvedAt() external view returns (uint256);
     /// @notice Returns the selected winning ticket, or zero before successful resolution.
     function winningTicketId() external view returns (uint256);
     /// @notice Returns the single authoritative lifecycle and economic result.

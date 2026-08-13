@@ -116,7 +116,7 @@ describe("Raffle mappings", () => {
     handleDrawRequested(createDrawRequestedEvent());
     handleRaffleResolved(createResolutionEvent(4));
     handleTransfer(createTransferEvent(RECIPIENT, Address.zero(), 2, 7));
-    handleWinningTicketRedeemed(createWinningRedemptionEvent());
+    handleWinningTicketRedeemed(createWinningRedemptionEvent(4));
 
     assert.fieldEquals("Raffle", RAFFLE.toHexString(), "status", "CASH_WON");
     assert.fieldEquals(
@@ -146,9 +146,73 @@ describe("Raffle mappings", () => {
     assert.entityCount("WinningRedemption", 1);
   });
 
+  test("NFT resolution defers proceeds until delivery", () => {
+    createPurchasedRaffle();
+    handleTransfer(createTransferEvent(BUYER, RECIPIENT, 2, 4));
+    handleDrawRequested(createDrawRequestedEvent());
+    handleRaffleResolved(createResolutionEvent(3));
+
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "unsettledPot",
+      "2000000",
+    );
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "totalClaimableQuote",
+      "0",
+    );
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "totalProtocolFees",
+      "0",
+    );
+
+    handleTransfer(createTransferEvent(RECIPIENT, Address.zero(), 2, 7));
+    handleWinningTicketRedeemed(createWinningRedemptionEvent(3));
+    assert.fieldEquals("Raffle", RAFFLE.toHexString(), "unsettledPot", "0");
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "totalClaimableQuote",
+      "2000000",
+    );
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "totalProtocolFees",
+      "100000",
+    );
+  });
+
+  test("NFT delivery timeout reclassifies the winner branch as refunds", () => {
+    createPurchasedRaffle();
+    handleDrawRequested(createDrawRequestedEvent());
+    handleRaffleResolved(createResolutionEvent(3));
+    handleRefundsEnabled(createRefundsEnabledEvent(true));
+
+    assert.fieldEquals("Raffle", RAFFLE.toHexString(), "status", "REFUNDING");
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "remainingRefundLiability",
+      "2000000",
+    );
+    assert.fieldEquals("Protocol", FACTORY.toHexString(), "nftWonCount", "0");
+    assert.fieldEquals(
+      "Protocol",
+      FACTORY.toHexString(),
+      "refundingCount",
+      "1",
+    );
+  });
+
   test("refund enable and batch redemption track only remaining liability", () => {
     createPurchasedRaffle();
-    handleRefundsEnabled(createRefundsEnabledEvent());
+    handleRefundsEnabled(createRefundsEnabledEvent(false));
     handleTransfer(createTransferEvent(BUYER, Address.zero(), 1, 6));
     handleTransfer(createTransferEvent(BUYER, Address.zero(), 2, 7));
     handleRefundTicketsRedeemed(createRefundRedemptionEvent());
@@ -277,7 +341,7 @@ function createResolutionEvent(result: i32): RaffleResolved {
   return event;
 }
 
-function createWinningRedemptionEvent(): WinningTicketRedeemed {
+function createWinningRedemptionEvent(result: i32): WinningTicketRedeemed {
   const event = changetype<WinningTicketRedeemed>(newMockEvent());
   event.address = RAFFLE;
   event.logIndex = BigInt.fromI32(8);
@@ -285,12 +349,14 @@ function createWinningRedemptionEvent(): WinningTicketRedeemed {
   pushUnsigned(event, "ticketId", 2);
   pushAddress(event, "owner", RECIPIENT);
   pushAddress(event, "to", RECIPIENT);
-  pushUnsigned(event, "result", 4);
-  pushUnsigned(event, "cashAmount", 1_520_000);
+  pushUnsigned(event, "result", result);
+  pushUnsigned(event, "cashAmount", result == 4 ? 1_520_000 : 0);
   return event;
 }
 
-function createRefundsEnabledEvent(): RefundsEnabled {
+function createRefundsEnabledEvent(
+  requestWasAccepted: boolean,
+): RefundsEnabled {
   const event = changetype<RefundsEnabled>(newMockEvent());
   event.address = RAFFLE;
   event.logIndex = BigInt.fromI32(5);
@@ -299,7 +365,7 @@ function createRefundsEnabledEvent(): RefundsEnabled {
   event.parameters.push(
     new ethereum.EventParam(
       "requestWasAccepted",
-      ethereum.Value.fromBoolean(false),
+      ethereum.Value.fromBoolean(requestWasAccepted),
     ),
   );
   pushUnsigned(event, "remainingRefundLiability", 2_000_000);

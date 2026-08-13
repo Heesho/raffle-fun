@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.36;
 
-import { StdInvariant } from "forge-std/StdInvariant.sol";
-import { Test } from "forge-std/Test.sol";
+import {StdInvariant} from "forge-std/StdInvariant.sol";
+import {Test} from "forge-std/Test.sol";
 
-import { Raffle } from "../../../src/Raffle.sol";
-import { RaffleFactory } from "../../../src/RaffleFactory.sol";
-import { IRaffle } from "../../../src/interfaces/IRaffle.sol";
-import { IRaffleFactory } from "../../../src/interfaces/IRaffleFactory.sol";
-import { MockERC20 } from "../../../src/mocks/MockERC20.sol";
-import { MockERC721 } from "../../../src/mocks/MockERC721.sol";
-import { MockEntropyV2 } from "../../../src/mocks/MockEntropyV2.sol";
-import { RaffleHandler } from "./RaffleHandler.sol";
+import {Raffle} from "../../../src/Raffle.sol";
+import {RaffleFactory} from "../../../src/RaffleFactory.sol";
+import {IRaffle} from "../../../src/interfaces/IRaffle.sol";
+import {IRaffleFactory} from "../../../src/interfaces/IRaffleFactory.sol";
+import {MockERC20} from "../../../src/mocks/MockERC20.sol";
+import {MockERC721} from "../../../src/mocks/MockERC721.sol";
+import {MockEntropyV2} from "../../../src/mocks/MockEntropyV2.sol";
+import {RaffleHandler} from "./RaffleHandler.sol";
 
 contract RaffleInvariantTest is StdInvariant, Test {
     MockERC20 internal quote;
@@ -34,8 +34,7 @@ contract RaffleInvariantTest is StdInvariant, Test {
         prize.setApprovalForAll(address(factory), true);
         vm.prank(address(handler));
         raffle = Raffle(
-            payable(
-                factory.createRaffle(
+            payable(factory.createRaffle(
                     IRaffleFactory.CreateRaffleParams({
                         prizeToken: address(prize),
                         prizeTokenId: 1,
@@ -46,8 +45,7 @@ contract RaffleInvariantTest is StdInvariant, Test {
                         endTime: block.timestamp + 7 days,
                         metadataURI: "ipfs://invariant"
                     })
-                )
-            )
+                ))
         );
         quote.mint(address(handler), 1_000_000 * 1e6);
         handler.configure(raffle);
@@ -62,7 +60,10 @@ contract RaffleInvariantTest is StdInvariant, Test {
         assertLe(handler.ghostRequestCount(), 1);
         assertLe(handler.ghostResolutionCount(), 1);
         assertLe(handler.ghostRefundEnableCount(), 1);
-        assertLe(handler.ghostResolutionCount() + handler.ghostRefundEnableCount(), 1);
+        assertLe(handler.ghostResolutionCount() + handler.ghostRefundEnableCount(), 2);
+        if (handler.ghostResolutionCount() + handler.ghostRefundEnableCount() == 2) {
+            assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Refunding));
+        }
         if (raffle.entropySequenceNumber() != 0) assertEq(handler.ghostRequestCount(), 1);
     }
 
@@ -99,10 +100,15 @@ contract RaffleInvariantTest is StdInvariant, Test {
     function invariantSuccessfulSettlementAlwaysChargesFivePercent() public view {
         IRaffle.Status current = raffle.status();
         if (current != IRaffle.Status.NftWon && current != IRaffle.Status.CashWon) return;
-        assertEq(raffle.claimableQuote(treasury) + handler.ghostProtocolPaidOut(), raffle.grossSales() * 500 / 10_000);
         if (current == IRaffle.Status.NftWon) {
             assertEq(raffle.winnerCashLiability(), 0);
+            if (!raffle.prizeClaimed()) {
+                assertEq(raffle.unsettledPot(), raffle.grossSales());
+                assertEq(raffle.claimableQuote(treasury) + handler.ghostProtocolPaidOut(), 0);
+                return;
+            }
         }
+        assertEq(raffle.claimableQuote(treasury) + handler.ghostProtocolPaidOut(), raffle.grossSales() * 500 / 10_000);
     }
 
     function invariantPrizeCanLeaveEscrowOnlyOnceOnAnExplicitClaimPath() public view {

@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.36;
 
-import { Test } from "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 
-import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import { IERC721Receiver } from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
-import { Raffle } from "../../../src/Raffle.sol";
-import { RaffleFactory } from "../../../src/RaffleFactory.sol";
-import { RaffleLens } from "../../../src/RaffleLens.sol";
-import { IRaffle } from "../../../src/interfaces/IRaffle.sol";
-import { IRaffleFactory } from "../../../src/interfaces/IRaffleFactory.sol";
-import { IRaffleLens } from "../../../src/interfaces/IRaffleLens.sol";
-import { MockERC20 } from "../../../src/mocks/MockERC20.sol";
-import { MockERC721 } from "../../../src/mocks/MockERC721.sol";
-import { MockEntropyV2 } from "../../../src/mocks/MockEntropyV2.sol";
+import {Raffle} from "../../../src/Raffle.sol";
+import {RaffleFactory} from "../../../src/RaffleFactory.sol";
+import {RaffleLens} from "../../../src/RaffleLens.sol";
+import {IRaffle} from "../../../src/interfaces/IRaffle.sol";
+import {IRaffleFactory} from "../../../src/interfaces/IRaffleFactory.sol";
+import {IRaffleLens} from "../../../src/interfaces/IRaffleLens.sol";
+import {MockERC20} from "../../../src/mocks/MockERC20.sol";
+import {MockERC721} from "../../../src/mocks/MockERC721.sol";
+import {MockEntropyV2} from "../../../src/mocks/MockEntropyV2.sol";
 
 contract NonERC721 {
     function supportsInterface(bytes4) external pure returns (bool) {
@@ -55,15 +55,27 @@ contract VerificationPrize {
     }
 }
 
-contract RejectPrizeReceiver { }
+contract RejectPrizeReceiver {}
 
 contract RejectNativeRequester {
     function request(Raffle raffle) external payable {
-        raffle.requestDraw{ value: msg.value }();
+        raffle.requestDraw{value: msg.value}();
     }
 
     receive() external payable {
         revert();
+    }
+}
+
+contract ReturnDataNativeRequester {
+    function request(Raffle raffle) external payable {
+        raffle.requestDraw{value: msg.value}();
+    }
+
+    receive() external payable {
+        assembly ("memory-safe") {
+            return(0, 0x10000)
+        }
     }
 }
 
@@ -223,6 +235,10 @@ contract RaffleTest is Test, IERC721Receiver {
         vm.prank(sponsor);
         factory.createRaffle(_validCreateParams(address(prize)));
         factory.setCreationPaused(false);
+
+        vm.expectRevert(IRaffleFactory.OwnershipRenunciationDisabled.selector);
+        factory.renounceOwnership();
+        assertEq(factory.owner(), address(this));
     }
 
     function testFactoryRejectsIncompleteEscrowVerification() public {
@@ -275,10 +291,11 @@ contract RaffleTest is Test, IERC721Receiver {
 
         vm.warp(raffle.endTime());
         vm.prank(outsider);
-        raffle.requestDraw{ value: raffle.getEntropyFee() }();
+        raffle.requestDraw{value: raffle.getEntropyFee()}();
         vm.prank(buyerTwo);
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.TicketTransferLocked.selector, 2, IRaffle.Status.Drawing));
         raffle.transferFrom(buyerTwo, buyer, 2);
-        assertEq(raffle.ownerOf(2), buyer);
+        assertEq(raffle.ownerOf(2), buyerTwo);
     }
 
     function testRegressionSeparatePurchasesContinueSequentialTicketIds() public {
@@ -351,13 +368,13 @@ contract RaffleTest is Test, IERC721Receiver {
         _buy(beforeEnd, buyer, 1);
         uint256 beforeEndFee = beforeEnd.getEntropyFee();
         vm.expectRevert(abi.encodeWithSelector(IRaffle.RaffleNotEnded.selector, beforeEnd.endTime(), block.timestamp));
-        beforeEnd.requestDraw{ value: beforeEndFee }();
+        beforeEnd.requestDraw{value: beforeEndFee}();
 
         Raffle empty = _createDefaultRaffle(1);
         vm.warp(empty.endTime());
         uint256 emptyFee = empty.getEntropyFee();
         vm.expectRevert(IRaffle.NoTicketsSold.selector);
-        empty.requestDraw{ value: emptyFee }();
+        empty.requestDraw{value: emptyFee}();
         vm.warp(empty.requestGraceDeadline());
         vm.expectRevert(IRaffle.NoTicketsSold.selector);
         empty.enableRefunds();
@@ -371,7 +388,7 @@ contract RaffleTest is Test, IERC721Receiver {
                 IRaffle.DrawRequestWindowExpired.selector, expired.requestGraceDeadline(), block.timestamp
             )
         );
-        expired.requestDraw{ value: expiredFee }();
+        expired.requestDraw{value: expiredFee}();
     }
 
     function testEmptyRaffleClosesEarlyForSponsorAndAfterEndForAnyone() public {
@@ -402,11 +419,11 @@ contract RaffleTest is Test, IERC721Receiver {
 
         vm.prank(outsider);
         vm.expectRevert(abi.encodeWithSelector(IRaffle.InsufficientEntropyFee.selector, fee, fee - 1));
-        raffle.requestDraw{ value: fee - 1 }();
+        raffle.requestDraw{value: fee - 1}();
 
         uint256 balanceBefore = outsider.balance;
         vm.prank(outsider);
-        uint64 sequence = raffle.requestDraw{ value: fee + 1 ether }();
+        uint64 sequence = raffle.requestDraw{value: fee + 1 ether}();
         assertEq(outsider.balance, balanceBefore - fee);
         assertEq(address(raffle).balance, 0);
         assertEq(entropy.consumerBySequence(sequence), address(raffle));
@@ -422,9 +439,22 @@ contract RaffleTest is Test, IERC721Receiver {
         uint256 fee = raffle.getEntropyFee();
 
         vm.expectRevert(abi.encodeWithSelector(IRaffle.NativeRefundFailed.selector, address(requester), 1));
-        requester.request{ value: fee + 1 }(raffle);
+        requester.request{value: fee + 1}(raffle);
         assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Active));
         assertEq(entropy.latestSequenceNumber(), 0);
+    }
+
+    function testImmediateNativeRefundIgnoresOversizedReturnData() public {
+        Raffle raffle = _createDefaultRaffle(1);
+        _buy(raffle, buyer, 1);
+        vm.warp(raffle.endTime());
+        ReturnDataNativeRequester requester = new ReturnDataNativeRequester();
+        vm.deal(address(requester), 2 ether);
+
+        requester.request{value: raffle.getEntropyFee() + 1}(raffle);
+
+        assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Drawing));
+        assertEq(address(raffle).balance, 0);
     }
 
     function testOneFunctionEnablesNoRequestAndCallbackTimeoutRefunds() public {
@@ -467,7 +497,11 @@ contract RaffleTest is Test, IERC721Receiver {
         entropy.fulfill(callbackWinsSequence, bytes32(0));
         assertEq(uint256(callbackWins.status()), uint256(IRaffle.Status.NftWon));
         vm.warp(callbackWins.callbackDeadline());
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidStatus.selector, IRaffle.Status.NftWon));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IRaffle.RefundsNotAvailable.selector, callbackWins.nftRedemptionDeadline(), block.timestamp
+            )
+        );
         callbackWins.enableRefunds();
     }
 
@@ -530,25 +564,62 @@ contract RaffleTest is Test, IERC721Receiver {
     function testNftWinnerBurnsBearerTicketAndProtocolReceivesFivePercent() public {
         Raffle raffle = _createDefaultRaffle(2);
         _buy(raffle, buyer, 2);
+        vm.prank(buyer);
+        raffle.transferFrom(buyer, buyerTwo, 2);
         _resolve(raffle, bytes32(uint256(1)));
 
         assertEq(uint256(raffle.status()), uint256(IRaffle.Status.NftWon));
         assertEq(raffle.winningTicketId(), 2);
-        assertEq(raffle.claimableQuote(treasury), 100_000);
-        assertEq(raffle.claimableQuote(sponsor), 1_900_000);
+        assertEq(raffle.claimableQuote(treasury), 0);
+        assertEq(raffle.claimableQuote(sponsor), 0);
+        assertEq(raffle.unsettledPot(), 2 * USDC);
 
-        vm.prank(buyer);
-        raffle.transferFrom(buyer, buyerTwo, 2);
+        vm.prank(buyerTwo);
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.TicketTransferLocked.selector, 2, IRaffle.Status.NftWon));
+        raffle.transferFrom(buyerTwo, buyer, 2);
         vm.prank(buyerTwo);
         raffle.redeemWinningTicket(buyerTwo);
         assertEq(prize.ownerOf(raffle.prizeTokenId()), buyerTwo);
         assertTrue(raffle.winningTicketRedeemed());
+        assertEq(raffle.claimableQuote(treasury), 100_000);
+        assertEq(raffle.claimableQuote(sponsor), 1_900_000);
+        assertEq(raffle.unsettledPot(), 0);
 
         vm.prank(treasury);
         raffle.claimQuote(treasury);
         vm.prank(sponsor);
         raffle.claimQuote(sponsor);
         assertEq(raffle.accountedQuoteBalance(), 0);
+    }
+
+    function testUnredeemedNftResultFallsBackToFullTicketRefunds() public {
+        Raffle raffle = _createDefaultRaffle(1);
+        _buy(raffle, buyer, 1);
+        _resolve(raffle, bytes32(0));
+
+        assertEq(raffle.nftRedemptionDeadline(), raffle.resolvedAt() + 30 days);
+        vm.warp(raffle.nftRedemptionDeadline() - 1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IRaffle.RefundsNotAvailable.selector, raffle.nftRedemptionDeadline(), block.timestamp
+            )
+        );
+        raffle.enableRefunds();
+
+        vm.warp(raffle.nftRedemptionDeadline());
+        raffle.enableRefunds();
+        assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Refunding));
+        assertEq(raffle.remainingRefundLiability(), USDC);
+        assertEq(raffle.claimableQuote(treasury), 0);
+        assertEq(raffle.claimableQuote(sponsor), 0);
+
+        vm.prank(buyer);
+        raffle.transferFrom(buyer, buyerTwo, 1);
+        uint256[] memory ticketIds = new uint256[](1);
+        ticketIds[0] = 1;
+        vm.prank(buyerTwo);
+        raffle.redeemRefundTickets(ticketIds, buyerTwo);
+        assertEq(raffle.remainingRefundLiability(), 0);
     }
 
     function testCashWinnerBurnsBearerTicketAndFeeStillApplies() public {
@@ -606,6 +677,8 @@ contract RaffleTest is Test, IERC721Receiver {
         vm.prank(outsider);
         vm.expectRevert(abi.encodeWithSelector(IRaffle.NotTicketOwner.selector, 1, outsider, buyer));
         active.redeemWinningTicket(outsider);
+        vm.prank(buyer);
+        active.redeemWinningTicket(buyer);
 
         vm.prank(sponsor);
         vm.expectRevert(IRaffle.ZeroAddress.selector);
@@ -658,7 +731,7 @@ contract RaffleTest is Test, IERC721Receiver {
 
         vm.deal(outsider, 1);
         vm.prank(outsider);
-        (bool success, bytes memory result) = address(raffle).call{ value: 1 }("");
+        (bool success, bytes memory result) = address(raffle).call{value: 1}("");
         assertFalse(success);
         assertEq(bytes4(result), Raffle.DirectNativeTransfer.selector);
     }
@@ -731,10 +804,7 @@ contract RaffleTest is Test, IERC721Receiver {
         vm.warp(drawing.callbackDeadline());
         viewData = lens.getRaffleState(address(drawing), buyer);
         assertTrue(viewData.canEnableRefunds);
-
-        uint256[] memory noTickets = new uint256[](0);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.UnsafeProtocolDestination.selector, outsider));
-        drawing.recoverProtocolOwnedClaim(outsider, IRaffle.ProtocolOwnedClaim.WinningTicket, noTickets);
+        assertEq(viewData.nftRedemptionDeadline, 0);
     }
 
     function testDirectDonationDoesNotAlterLiabilities() public {
@@ -805,12 +875,17 @@ contract RaffleTest is Test, IERC721Receiver {
         vm.warp(raffle.endTime());
         vm.prank(outsider);
         uint256 gasBefore = gasleft();
-        uint64 sequence = raffle.requestDraw{ value: raffle.getEntropyFee() }();
+        uint64 sequence = raffle.requestDraw{value: raffle.getEntropyFee()}();
         emit log_named_uint("draw request gas", gasBefore - gasleft());
 
         gasBefore = gasleft();
         entropy.fulfill(sequence, bytes32(0));
         emit log_named_uint("oracle fulfillment transaction gas", gasBefore - gasleft());
+
+        vm.prank(buyer);
+        gasBefore = gasleft();
+        raffle.redeemWinningTicket(buyer);
+        emit log_named_uint("winning NFT redemption gas", gasBefore - gasleft());
 
         vm.prank(treasury);
         gasBefore = gasleft();
@@ -821,11 +896,6 @@ contract RaffleTest is Test, IERC721Receiver {
         gasBefore = gasleft();
         raffle.claimQuote(sponsor);
         emit log_named_uint("sponsor quote claim gas", gasBefore - gasleft());
-
-        vm.prank(buyer);
-        gasBefore = gasleft();
-        raffle.redeemWinningTicket(buyer);
-        emit log_named_uint("winning NFT redemption gas", gasBefore - gasleft());
 
         Raffle timeout = _createDefaultRaffle(2);
         _buy(timeout, buyer, 1);
@@ -953,7 +1023,7 @@ contract RaffleTest is Test, IERC721Receiver {
     function _request(Raffle raffle) internal returns (uint64 sequence) {
         vm.warp(raffle.endTime());
         vm.prank(outsider);
-        sequence = raffle.requestDraw{ value: raffle.getEntropyFee() }();
+        sequence = raffle.requestDraw{value: raffle.getEntropyFee()}();
     }
 
     function _resolve(Raffle raffle, bytes32 random) internal {

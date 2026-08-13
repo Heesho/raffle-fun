@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.36;
 
-import { IRaffle } from "./IRaffle.sol";
+import {IRaffle} from "./IRaffle.sol";
 
 /**
  * @title raffle.fun Raffle Lens Interface
@@ -30,7 +30,9 @@ interface IRaffleLens {
         uint256 requestGraceDeadline;
         uint256 drawRequestedAt;
         uint256 callbackDeadline;
+        uint256 nftRedemptionDeadline;
         uint64 entropySequenceNumber;
+        uint256 resolvedAt;
         uint256 totalTickets;
         uint256 grossSales;
         uint256 unsettledPot;

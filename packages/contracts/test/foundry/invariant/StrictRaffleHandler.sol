@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.36;
 
-import { IERC721Receiver } from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-import { Test } from "forge-std/Test.sol";
+import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import {Test} from "forge-std/Test.sol";
 
-import { Raffle } from "../../../src/Raffle.sol";
-import { IRaffle } from "../../../src/interfaces/IRaffle.sol";
-import { MockERC20 } from "../../../src/mocks/MockERC20.sol";
-import { MockEntropyV2 } from "../../../src/mocks/MockEntropyV2.sol";
+import {Raffle} from "../../../src/Raffle.sol";
+import {IRaffle} from "../../../src/interfaces/IRaffle.sol";
+import {MockERC20} from "../../../src/mocks/MockERC20.sol";
+import {MockEntropyV2} from "../../../src/mocks/MockEntropyV2.sol";
 
 /// @dev Every targeted action is guarded so a strict fail-on-revert campaign exercises only valid protocol calls.
 contract StrictRaffleHandler is Test, IERC721Receiver {
@@ -72,11 +72,17 @@ contract StrictRaffleHandler is Test, IERC721Receiver {
         _observe();
     }
 
+    function warpToNftRedemptionDeadline() external {
+        uint256 deadline = raffle.nftRedemptionDeadline();
+        if (deadline != 0 && block.timestamp < deadline) vm.warp(deadline);
+        _observe();
+    }
+
     function requestDraw() external {
         if (!_canRequestDraw()) return;
         uint256 fee = raffle.getEntropyFee();
         vm.deal(address(this), address(this).balance + fee);
-        raffle.requestDraw{ value: fee }();
+        raffle.requestDraw{value: fee}();
         ++ghostRequestCount;
         _observe();
     }
@@ -135,10 +141,9 @@ contract StrictRaffleHandler is Test, IERC721Receiver {
         IRaffle.Status current = raffle.status();
         if (
             raffle.prizeClaimed()
-                || (
-                    current != IRaffle.Status.CashWon && current != IRaffle.Status.Refunding
-                        && current != IRaffle.Status.Closed
-                )
+                || (current != IRaffle.Status.CashWon
+                    && current != IRaffle.Status.Refunding
+                    && current != IRaffle.Status.Closed)
         ) return;
         raffle.claimSponsorPrize(address(this));
         ++ghostSponsorPrizeClaims;
@@ -173,9 +178,12 @@ contract StrictRaffleHandler is Test, IERC721Receiver {
 
     function _canEnableRefunds() internal view returns (bool) {
         IRaffle.Status current = raffle.status();
-        return (
-            current == IRaffle.Status.Active && raffle.totalTickets() != 0
-                && block.timestamp >= raffle.requestGraceDeadline()
-        ) || (current == IRaffle.Status.Drawing && block.timestamp >= raffle.callbackDeadline());
+        return (current == IRaffle.Status.Active
+                && raffle.totalTickets() != 0
+                && block.timestamp >= raffle.requestGraceDeadline())
+            || (current == IRaffle.Status.Drawing && block.timestamp >= raffle.callbackDeadline())
+            || (current == IRaffle.Status.NftWon
+                && !raffle.prizeClaimed()
+                && block.timestamp >= raffle.nftRedemptionDeadline());
     }
 }

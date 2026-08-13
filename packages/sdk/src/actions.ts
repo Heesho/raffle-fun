@@ -2,10 +2,7 @@ import type { Account, Address, Hash, PublicClient, WalletClient } from "viem";
 
 import { raffleAbi, raffleFactoryAbi } from "./abis/generated.js";
 import { MAX_REFUND_REDEMPTION_BATCH_SIZE } from "./math/economics.js";
-import {
-  ProtocolOwnedClaim,
-  type CreateRaffleParams,
-} from "./types/protocol.js";
+import type { CreateRaffleParams } from "./types/protocol.js";
 
 export interface ActionContext {
   readonly publicClient: PublicClient;
@@ -113,26 +110,6 @@ export async function redeemWinningTicket(
     abi: raffleAbi,
     functionName: "redeemWinningTicket",
     args: [to],
-  });
-  return context.walletClient.writeContract(request);
-}
-
-export async function recoverProtocolOwnedClaim(
-  context: ActionContext,
-  holderRaffle: Address,
-  targetRaffle: Address,
-  claim: ProtocolOwnedClaim,
-  refundTicketIds: readonly bigint[],
-): Promise<Hash> {
-  if (claim === ProtocolOwnedClaim.RefundTickets) {
-    validateRefundTicketIds(refundTicketIds);
-  }
-  const { request } = await context.publicClient.simulateContract({
-    account: context.account,
-    address: holderRaffle,
-    abi: raffleAbi,
-    functionName: "recoverProtocolOwnedClaim",
-    args: [targetRaffle, claim, refundTicketIds],
   });
   return context.walletClient.writeContract(request);
 }

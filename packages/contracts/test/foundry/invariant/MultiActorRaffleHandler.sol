@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.36;
 
-import { Test } from "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 
-import { Raffle } from "../../../src/Raffle.sol";
-import { RaffleFactory } from "../../../src/RaffleFactory.sol";
-import { IRaffle } from "../../../src/interfaces/IRaffle.sol";
-import { MockERC20 } from "../../../src/mocks/MockERC20.sol";
-import { MockERC721 } from "../../../src/mocks/MockERC721.sol";
-import { MockEntropyV2 } from "../../../src/mocks/MockEntropyV2.sol";
+import {Raffle} from "../../../src/Raffle.sol";
+import {RaffleFactory} from "../../../src/RaffleFactory.sol";
+import {IRaffle} from "../../../src/interfaces/IRaffle.sol";
+import {MockERC20} from "../../../src/mocks/MockERC20.sol";
+import {MockERC721} from "../../../src/mocks/MockERC721.sol";
+import {MockEntropyV2} from "../../../src/mocks/MockEntropyV2.sol";
 
 contract MultiActorRaffleHandler is Test {
     MockERC20 public immutable quote;
@@ -75,7 +75,7 @@ contract MultiActorRaffleHandler is Test {
         vm.prank(buyer);
         try raffle.buyTickets(recipient, quantity) {
             ghostGrossPaid += raffle.grossSales() - beforeGross;
-        } catch { }
+        } catch {}
         _observe();
     }
 
@@ -87,9 +87,9 @@ contract MultiActorRaffleHandler is Test {
             vm.prank(owner);
             try raffle.approve(operator, ticketId) {
                 vm.prank(operator);
-                try raffle.transferFrom(owner, recipient, ticketId) { } catch { }
-            } catch { }
-        } catch { }
+                try raffle.transferFrom(owner, recipient, ticketId) {} catch {}
+            } catch {}
+        } catch {}
         _observe();
     }
 
@@ -100,8 +100,8 @@ contract MultiActorRaffleHandler is Test {
             [address(raffle), address(factory), address(quote), address(prize), address(entropy)];
         try raffle.ownerOf(ticketId) returns (address owner) {
             vm.prank(owner);
-            try raffle.transferFrom(owner, destinations[destinationSeed % destinations.length], ticketId) { } catch { }
-        } catch { }
+            try raffle.transferFrom(owner, destinations[destinationSeed % destinations.length], ticketId) {} catch {}
+        } catch {}
         _observe();
     }
 
@@ -121,14 +121,20 @@ contract MultiActorRaffleHandler is Test {
         _observe();
     }
 
+    function warpToNftRedemptionDeadline() external {
+        uint256 deadline = raffle.nftRedemptionDeadline();
+        if (deadline != 0 && block.timestamp < deadline) vm.warp(deadline);
+        _observe();
+    }
+
     function requestDraw() external {
         if (!_canRequestDraw()) return;
         uint256 fee = raffle.getEntropyFee();
         vm.deal(requester, fee);
         vm.prank(requester);
-        try raffle.requestDraw{ value: fee }() {
+        try raffle.requestDraw{value: fee}() {
             ++ghostRequestCount;
-        } catch { }
+        } catch {}
         _observe();
     }
 
@@ -137,14 +143,14 @@ contract MultiActorRaffleHandler is Test {
         try entropy.fulfill(raffle.entropySequenceNumber(), randomNumber) {
             IRaffle.Status current = raffle.status();
             if (current == IRaffle.Status.NftWon || current == IRaffle.Status.CashWon) ++ghostResolutionCount;
-        } catch { }
+        } catch {}
         _observe();
     }
 
     function wrongCallback(bytes32 randomNumber) external {
         if (raffle.status() != IRaffle.Status.Drawing) return;
         uint64 sequence = raffle.entropySequenceNumber();
-        try entropy.fulfillAs(sequence, sequence + 1, randomNumber) { } catch { }
+        try entropy.fulfillAs(sequence, sequence + 1, randomNumber) {} catch {}
         _observe();
     }
 
@@ -153,7 +159,7 @@ contract MultiActorRaffleHandler is Test {
         vm.prank(refundExecutor);
         try raffle.enableRefunds() {
             ++ghostFailureCount;
-        } catch { }
+        } catch {}
         _observe();
     }
 
@@ -168,9 +174,9 @@ contract MultiActorRaffleHandler is Test {
                 vm.prank(owner);
                 try raffle.redeemRefundTickets(ids, owner) returns (uint256 amount) {
                     ghostQuotePaidOut += amount;
-                } catch { }
+                } catch {}
                 break;
-            } catch { }
+            } catch {}
         }
         _observe();
     }
@@ -184,8 +190,8 @@ contract MultiActorRaffleHandler is Test {
             try raffle.redeemWinningTicket(prizeReceiver) returns (uint256 amount) {
                 ghostQuotePaidOut += amount;
                 if (current == IRaffle.Status.NftWon) ++ghostPrizeClaims;
-            } catch { }
-        } catch { }
+            } catch {}
+        } catch {}
         _observe();
     }
 
@@ -194,7 +200,7 @@ contract MultiActorRaffleHandler is Test {
         if (raffle.claimableQuote(account) == 0) return;
         try raffle.claimQuoteFor(account) returns (uint256 amount) {
             ghostQuotePaidOut += amount;
-        } catch { }
+        } catch {}
         _observe();
     }
 
@@ -202,15 +208,14 @@ contract MultiActorRaffleHandler is Test {
         IRaffle.Status current = raffle.status();
         if (
             raffle.prizeClaimed()
-                || (
-                    current != IRaffle.Status.CashWon && current != IRaffle.Status.Refunding
-                        && current != IRaffle.Status.Closed
-                )
+                || (current != IRaffle.Status.CashWon
+                    && current != IRaffle.Status.Refunding
+                    && current != IRaffle.Status.Closed)
         ) return;
         vm.prank(recovery);
         try raffle.claimSponsorPrize(prizeReceiver) {
             ++ghostPrizeClaims;
-        } catch { }
+        } catch {}
         _observe();
     }
 
@@ -224,7 +229,7 @@ contract MultiActorRaffleHandler is Test {
     function closeEmpty(bool sponsorCalls) external {
         if (raffle.status() != IRaffle.Status.Active || raffle.totalTickets() != 0) return;
         vm.prank(sponsorCalls ? sponsor : refundExecutor);
-        try raffle.closeEmptyRaffle() { } catch { }
+        try raffle.closeEmptyRaffle() {} catch {}
         _observe();
     }
 
@@ -240,10 +245,13 @@ contract MultiActorRaffleHandler is Test {
 
     function _canEnableRefunds() internal view returns (bool) {
         IRaffle.Status current = raffle.status();
-        return (
-            current == IRaffle.Status.Active && raffle.totalTickets() != 0
-                && block.timestamp >= raffle.requestGraceDeadline()
-        ) || (current == IRaffle.Status.Drawing && block.timestamp >= raffle.callbackDeadline());
+        return (current == IRaffle.Status.Active
+                && raffle.totalTickets() != 0
+                && block.timestamp >= raffle.requestGraceDeadline())
+            || (current == IRaffle.Status.Drawing && block.timestamp >= raffle.callbackDeadline())
+            || (current == IRaffle.Status.NftWon
+                && !raffle.prizeClaimed()
+                && block.timestamp >= raffle.nftRedemptionDeadline());
     }
 
     function _observe() internal {

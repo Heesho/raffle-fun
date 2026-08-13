@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.36;
 
-import { StdInvariant } from "forge-std/StdInvariant.sol";
-import { Test } from "forge-std/Test.sol";
+import {StdInvariant} from "forge-std/StdInvariant.sol";
+import {Test} from "forge-std/Test.sol";
 
-import { Raffle } from "../../../src/Raffle.sol";
-import { RaffleFactory } from "../../../src/RaffleFactory.sol";
-import { IRaffle } from "../../../src/interfaces/IRaffle.sol";
-import { IRaffleFactory } from "../../../src/interfaces/IRaffleFactory.sol";
-import { MockERC20 } from "../../../src/mocks/MockERC20.sol";
-import { MockERC721 } from "../../../src/mocks/MockERC721.sol";
-import { MockEntropyV2 } from "../../../src/mocks/MockEntropyV2.sol";
-import { StrictRaffleHandler } from "./StrictRaffleHandler.sol";
+import {Raffle} from "../../../src/Raffle.sol";
+import {RaffleFactory} from "../../../src/RaffleFactory.sol";
+import {IRaffle} from "../../../src/interfaces/IRaffle.sol";
+import {IRaffleFactory} from "../../../src/interfaces/IRaffleFactory.sol";
+import {MockERC20} from "../../../src/mocks/MockERC20.sol";
+import {MockERC721} from "../../../src/mocks/MockERC721.sol";
+import {MockEntropyV2} from "../../../src/mocks/MockEntropyV2.sol";
+import {StrictRaffleHandler} from "./StrictRaffleHandler.sol";
 
 contract RaffleStrictInvariantTest is StdInvariant, Test {
     MockERC20 internal quote;
@@ -34,8 +34,7 @@ contract RaffleStrictInvariantTest is StdInvariant, Test {
         prize.setApprovalForAll(address(factory), true);
         vm.prank(address(handler));
         raffle = Raffle(
-            payable(
-                factory.createRaffle(
+            payable(factory.createRaffle(
                     IRaffleFactory.CreateRaffleParams({
                         prizeToken: address(prize),
                         prizeTokenId: 1,
@@ -46,13 +45,12 @@ contract RaffleStrictInvariantTest is StdInvariant, Test {
                         endTime: block.timestamp + 7 days,
                         metadataURI: "ipfs://strict-invariant"
                     })
-                )
-            )
+                ))
         );
         quote.mint(address(handler), 1_000_000 * 1e6);
         handler.configure(raffle);
 
-        bytes4[] memory selectors = new bytes4[](11);
+        bytes4[] memory selectors = new bytes4[](12);
         selectors[0] = handler.buy.selector;
         selectors[1] = handler.warpToEnd.selector;
         selectors[2] = handler.warpToRequestGraceDeadline.selector;
@@ -64,8 +62,9 @@ contract RaffleStrictInvariantTest is StdInvariant, Test {
         selectors[8] = handler.redeemWinningTicket.selector;
         selectors[9] = handler.claimQuote.selector;
         selectors[10] = handler.claimSponsorPrize.selector;
+        selectors[11] = handler.warpToNftRedemptionDeadline.selector;
         targetContract(address(handler));
-        targetSelector(FuzzSelector({ addr: address(handler), selectors: selectors }));
+        targetSelector(FuzzSelector({addr: address(handler), selectors: selectors}));
     }
 
     function invariantStrictStatusAndResolutionAreMonotonic() public view {
@@ -73,7 +72,7 @@ contract RaffleStrictInvariantTest is StdInvariant, Test {
         assertLe(handler.ghostRequestCount(), 1);
         assertLe(handler.ghostResolutionCount(), 1);
         assertLe(handler.ghostRefundEnableCount(), 1);
-        assertLe(handler.ghostResolutionCount() + handler.ghostRefundEnableCount(), 1);
+        assertLe(handler.ghostResolutionCount() + handler.ghostRefundEnableCount(), 2);
     }
 
     function invariantStrictQuoteAccountingReconciles() public view {
@@ -92,7 +91,14 @@ contract RaffleStrictInvariantTest is StdInvariant, Test {
         if (current != IRaffle.Status.NftWon && current != IRaffle.Status.CashWon) return;
         assertGe(raffle.winningTicketId(), 1);
         assertLe(raffle.winningTicketId(), raffle.totalTickets());
-        assertEq(raffle.claimableQuote(treasury) + handler.ghostProtocolPaidOut(), raffle.grossSales() * 500 / 10_000);
+        if (current == IRaffle.Status.NftWon && !raffle.prizeClaimed()) {
+            assertEq(raffle.unsettledPot(), raffle.grossSales());
+            assertEq(raffle.claimableQuote(treasury) + handler.ghostProtocolPaidOut(), 0);
+        } else {
+            assertEq(
+                raffle.claimableQuote(treasury) + handler.ghostProtocolPaidOut(), raffle.grossSales() * 500 / 10_000
+            );
+        }
     }
 
     function invariantStrictPrizeEscrowMatchesClaimState() public view {

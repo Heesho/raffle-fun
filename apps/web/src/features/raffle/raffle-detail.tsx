@@ -90,6 +90,8 @@ type LiveRaffleView = {
   readonly requestGraceDeadline: bigint;
   readonly drawRequestedAt: bigint;
   readonly callbackDeadline: bigint;
+  readonly nftRedemptionDeadline: bigint;
+  readonly resolvedAt: bigint;
   readonly entropySequenceNumber: bigint;
   readonly totalTickets: bigint;
   readonly grossSales: bigint;
@@ -249,8 +251,8 @@ function SandboxRaffleDetail({ address }: { readonly address: string }) {
       aside={<SandboxPanel raffle={raffle} />}
       footnote={
         <p className="px-2 text-xs leading-5 text-[var(--ink-3)]">
-          Tickets remain transferable during settlement. The current bearer
-          burns a winning or refundable ticket to receive its asset.{" "}
+          Ticket ownership locks while randomness is pending and for the
+          selected winner after resolution. Refund tickets are transferable.{" "}
           <Link className="font-bold underline" href="/docs">
             Read the full mechanics.
           </Link>
@@ -487,7 +489,9 @@ function LiveRaffleDetail({
         hash = await requestDraw(context, raffle, live.entropyFee);
       } else if (action === "refunds") {
         if (!live.canEnableRefunds) {
-          throw new Error("The applicable oracle deadline has not expired.");
+          throw new Error(
+            "The applicable settlement deadline has not expired.",
+          );
         }
         hash = await enableRefunds(context, raffle);
       } else if (action === "refund") {
@@ -749,7 +753,7 @@ function LiveRaffleDetail({
               <ActionButton
                 disabled={!view.canEnableRefunds || progress.kind === "pending"}
                 icon={<Undo2 size={17} />}
-                label="Enable refunds after oracle deadline"
+                label="Enable refunds after settlement deadline"
                 onClick={() => handleAction("refunds")}
               />
               <ActionButton
@@ -817,6 +821,10 @@ function LiveRaffleDetail({
                 value={formatDeadline(view.callbackDeadline)}
               />
               <Split
+                label="NFT redemption deadline"
+                value={formatDeadline(view.nftRedemptionDeadline)}
+              />
+              <Split
                 label="Remaining refunds"
                 value={formatTokenAmount(
                   view.remainingRefundLiability,
@@ -868,9 +876,9 @@ function LiveRaffleDetail({
       }
       footnote={
         <p className="px-2 text-xs leading-5 text-[var(--ink-3)]">
-          Tickets remain transferable throughout settlement. The current owner
-          burns the winning ticket for the prize, or burns refundable tickets
-          for their exact USDC refund.{" "}
+          Ticket ownership locks while randomness is pending and for the
+          selected winner after resolution. Refund tickets remain transferable
+          until burn.{" "}
           <Link className="font-bold underline" href="/docs">
             Read the full mechanics.
           </Link>

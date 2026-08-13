@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.36;
 
-import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
-import { IRaffle } from "./interfaces/IRaffle.sol";
-import { IRaffleFactory } from "./interfaces/IRaffleFactory.sol";
-import { IRaffleLens } from "./interfaces/IRaffleLens.sol";
+import {IRaffle} from "./interfaces/IRaffle.sol";
+import {IRaffleFactory} from "./interfaces/IRaffleFactory.sol";
+import {IRaffleLens} from "./interfaces/IRaffleLens.sol";
 
 /**
  * @title raffle.fun Canonical Raffle Lens
@@ -49,7 +49,7 @@ contract RaffleLens is IRaffleLens {
         try target.getEntropyFee() returns (uint256 currentFee) {
             entropyFee = currentFee;
             entropyFeeAvailable = true;
-        } catch { }
+        } catch {}
 
         raffleView.factoryId = factory.idByRaffle(raffle);
         raffleView.registered = true;
@@ -68,7 +68,9 @@ contract RaffleLens is IRaffleLens {
         raffleView.requestGraceDeadline = target.requestGraceDeadline();
         raffleView.drawRequestedAt = target.drawRequestedAt();
         raffleView.callbackDeadline = target.callbackDeadline();
+        raffleView.nftRedemptionDeadline = target.nftRedemptionDeadline();
         raffleView.entropySequenceNumber = target.entropySequenceNumber();
+        raffleView.resolvedAt = target.resolvedAt();
         raffleView.totalTickets = target.totalTickets();
         raffleView.grossSales = target.grossSales();
         raffleView.unsettledPot = target.unsettledPot();
@@ -91,6 +93,8 @@ contract RaffleLens is IRaffleLens {
                 raffleView.totalTickets != 0 && block.timestamp >= raffleView.requestGraceDeadline;
         } else if (currentStatus == IRaffle.Status.Drawing) {
             raffleView.canEnableRefunds = block.timestamp >= raffleView.callbackDeadline;
+        } else if (currentStatus == IRaffle.Status.NftWon && !raffleView.prizeClaimed) {
+            raffleView.canEnableRefunds = block.timestamp >= raffleView.nftRedemptionDeadline;
         }
 
         if (account != address(0)) {
