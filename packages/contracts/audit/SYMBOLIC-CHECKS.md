@@ -16,6 +16,13 @@ Five focused properties passed, zero failed:
 4. the winning bearer credential can be consumed at most once (2 paths);
 5. a refund bearer credential can be consumed at most once (1 path).
 
+The 2026-08-13 follow-up rerun initially reported `revert-all` for checks 4 and 5.
+Their payout destination was the test contract, which is also the direct raffle
+factory and is correctly rejected by the hardened production destination guard. The
+harness now uses an independent payout address and asserts final prize ownership or
+quote balance. The rerun then passed all five checks and nine feasible paths without a
+vacuity warning.
+
 Solidity SMTChecker was also invoked with the exact production standard JSON, CHC,
 Z3, a 20-second query timeout, and `assert` targets. Compilation completed, but the
 production dependency graph reported 14-228 unsupported language features per

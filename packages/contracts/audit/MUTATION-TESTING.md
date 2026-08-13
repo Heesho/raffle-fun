@@ -38,3 +38,18 @@ helper's returned cash/refund amounts; exact assertions were added and killed th
 
 This is a deterministic 52-mutant security sample, not an exhaustive enumeration of
 every Gambit operator.
+
+## 2026-08-13 current-commit follow-up
+
+A fresh Gambit 1.0.6 sample generated 24 compiling mutants from the exact production
+`Raffle` at `fe09d476cbe770d770cbc2603a1ce73330739025`. It targeted draw timing,
+Entropy sequence state, all refund-finalization branches, winner redemption,
+`nftRedemptionDeadline`, NFT/cash settlement, winner selection, and exact quote
+transfers. Twenty-two mutants died on the existing suite. Two survivors exposed
+missing assertions rather than accepted equivalence:
+
+- an overbroad NFT-timeout branch could corrupt `CashWon` and terminal states;
+- the NFT resolution event could report a zero sponsor amount.
+
+The added terminal-state and exact-event regressions killed both on rerun. Final result:
+24 generated, 24 compiling, 24 killed, zero survivor (100% for this seeded sample).

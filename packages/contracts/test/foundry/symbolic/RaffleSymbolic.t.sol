@@ -17,6 +17,7 @@ contract RaffleSymbolicTest is Test, IERC721Receiver {
     MockEntropyV2 internal entropy;
     Raffle internal raffle;
     address internal treasury = address(0x5151);
+    address internal payout = address(0xCAFE);
 
     function setUp() public {
         vm.warp(100_000);
@@ -83,11 +84,11 @@ contract RaffleSymbolicTest is Test, IERC721Receiver {
     function check_winnerCredentialConsumesAtMostOnce(bytes32 randomNumber) public {
         uint64 sequence = _request();
         entropy.fulfill(sequence, randomNumber);
-        raffle.redeemWinningTicket(address(this));
-        (bool success,) = address(raffle).call(abi.encodeCall(IRaffle.redeemWinningTicket, (address(this))));
+        raffle.redeemWinningTicket(payout);
+        (bool success,) = address(raffle).call(abi.encodeCall(IRaffle.redeemWinningTicket, (payout)));
         assertFalse(success);
         assertTrue(raffle.prizeClaimed());
-        assertEq(prize.ownerOf(1), address(this));
+        assertEq(prize.ownerOf(1), payout);
     }
 
     function check_refundCredentialConsumesAtMostOnce() public {
@@ -95,11 +96,12 @@ contract RaffleSymbolicTest is Test, IERC721Receiver {
         raffle.enableRefunds();
         uint256[] memory ids = new uint256[](1);
         ids[0] = 1;
-        raffle.redeemRefundTickets(ids, address(this));
-        (bool success,) = address(raffle).call(abi.encodeCall(IRaffle.redeemRefundTickets, (ids, address(this))));
+        raffle.redeemRefundTickets(ids, payout);
+        (bool success,) = address(raffle).call(abi.encodeCall(IRaffle.redeemRefundTickets, (ids, payout)));
         assertFalse(success);
         assertEq(raffle.remainingRefundLiability(), 0);
         assertEq(raffle.accountedQuoteBalance(), 0);
+        assertEq(quote.balanceOf(payout), 1e6);
     }
 
     function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {

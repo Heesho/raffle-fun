@@ -6,9 +6,11 @@ independent review or operational approval.
 
 > **Current status: not release-ready.** Checked campaign items below describe the
 > pre-remediation audit baseline unless stated otherwise. The 2026-08-13 ETHSkills
-> patch passed its local aggregate build, lint, typecheck, unit/fuzz/invariant tests,
-> coverage, gas snapshot, and Slither run, but still requires a clean-commit campaign,
-> configured Base forks, and independent review. The unresolved Entropy
+> patch and exact production commit were followed by the deep campaign recorded in
+> `DEEP-TESTING-2026-08-13.md`, including live pinned Base forks, compiler
+> differentials, 197M+ strict invariant calls, a dual-harness Echidna rerun, Halmos,
+> and current-commit mutation testing. A final clean release commit and independent
+> review are still required. The unresolved Entropy
 > selective-reveal trust assumption is a release decision, not a solved property.
 
 ## Source identity and reproducibility

@@ -505,6 +505,35 @@ contract RaffleTest is Test, IERC721Receiver {
         callbackWins.enableRefunds();
     }
 
+    function testEnableRefundsRejectsResolvedAndTerminalStatuses() public {
+        Raffle cashWon = _createDefaultRaffle(2);
+        _buy(cashWon, buyer, 1);
+        _resolve(cashWon, bytes32(0));
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidStatus.selector, IRaffle.Status.CashWon));
+        cashWon.enableRefunds();
+
+        Raffle claimedNft = _createDefaultRaffle(1);
+        _buy(claimedNft, buyer, 1);
+        _resolve(claimedNft, bytes32(0));
+        vm.prank(buyer);
+        claimedNft.redeemWinningTicket(buyer);
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidStatus.selector, IRaffle.Status.NftWon));
+        claimedNft.enableRefunds();
+
+        Raffle refunding = _createDefaultRaffle(2);
+        _buy(refunding, buyer, 1);
+        vm.warp(refunding.requestGraceDeadline());
+        refunding.enableRefunds();
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidStatus.selector, IRaffle.Status.Refunding));
+        refunding.enableRefunds();
+
+        Raffle closed = _createDefaultRaffle(1);
+        vm.prank(sponsor);
+        closed.closeEmptyRaffle();
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidStatus.selector, IRaffle.Status.Closed));
+        closed.enableRefunds();
+    }
+
     function testRefundTicketsRemainTransferableAndBurnForExactRefund() public {
         Raffle raffle = _createDefaultRaffle(3);
         _buy(raffle, buyer, 3);
@@ -566,7 +595,11 @@ contract RaffleTest is Test, IERC721Receiver {
         _buy(raffle, buyer, 2);
         vm.prank(buyer);
         raffle.transferFrom(buyer, buyerTwo, 2);
-        _resolve(raffle, bytes32(uint256(1)));
+
+        uint64 sequence = _request(raffle);
+        vm.expectEmit(true, true, true, true, address(raffle));
+        emit IRaffle.RaffleResolved(sequence, 2, IRaffle.Status.NftWon, 100_000, 0, 1_900_000);
+        entropy.fulfill(sequence, bytes32(uint256(1)));
 
         assertEq(uint256(raffle.status()), uint256(IRaffle.Status.NftWon));
         assertEq(raffle.winningTicketId(), 2);

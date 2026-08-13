@@ -9,8 +9,8 @@ import { MockERC20 } from "../../src/mocks/MockERC20.sol";
 import { MockERC721 } from "../../src/mocks/MockERC721.sol";
 import { MockEntropyV2 } from "../../src/mocks/MockEntropyV2.sol";
 
-/// @notice Independent Echidna harness; it does not inherit Foundry helpers or production models.
-contract RaffleEchidna is IERC721Receiver {
+/// @notice Independent Echidna harness base; it does not inherit Foundry helpers or production models.
+abstract contract RaffleEchidnaBase is IERC721Receiver {
     uint256 internal constant PRICE = 1e6;
     address internal constant RECOVERY = address(0xBEEF);
     address internal constant TREASURY = address(0xCAFE);
@@ -24,7 +24,7 @@ contract RaffleEchidna is IERC721Receiver {
     uint256 public highestStatus;
     bool public statusRegressed;
 
-    constructor() payable {
+    constructor(uint256 minimumTickets_) payable {
         quote = new MockERC20();
         prize = new MockERC721();
         entropy = new MockEntropyV2();
@@ -42,7 +42,7 @@ contract RaffleEchidna is IERC721Receiver {
                 prizeTokenId: 1,
                 raffleId: 1,
                 ticketPrice: PRICE,
-                minimumTickets: 25,
+                minimumTickets: minimumTickets_,
                 startTime: block.timestamp,
                 endTime: block.timestamp + 7 days,
                 callbackGasLimit: 300_000,
@@ -88,6 +88,10 @@ contract RaffleEchidna is IERC721Receiver {
             && block.timestamp >= raffle.requestGraceDeadline();
         ready = ready
             || (current == IRaffle.Status.Drawing && block.timestamp >= raffle.callbackDeadline());
+        ready = ready
+            || (current == IRaffle.Status.NftWon
+                && !raffle.prizeClaimed()
+                && block.timestamp >= raffle.nftRedemptionDeadline());
         if (!ready) return;
         try raffle.enableRefunds() { } catch { }
         _observe();
@@ -181,8 +185,12 @@ contract RaffleEchidna is IERC721Receiver {
 
     function echidna_winner_is_in_sold_range() external view returns (bool) {
         IRaffle.Status current = raffle.status();
-        if (current != IRaffle.Status.NftWon && current != IRaffle.Status.CashWon) return raffle.winningTicketId() == 0;
-        return raffle.winningTicketId() >= 1 && raffle.winningTicketId() <= raffle.totalTickets();
+        uint256 winner = raffle.winningTicketId();
+        if (raffle.resolvedAt() == 0) return winner == 0;
+        if (current != IRaffle.Status.NftWon && current != IRaffle.Status.CashWon) {
+            if (current != IRaffle.Status.Refunding) return false;
+        }
+        return winner >= 1 && winner <= raffle.totalTickets();
     }
 
     function echidna_prize_leaves_only_after_claim_marker() external view returns (bool) {
@@ -199,4 +207,14 @@ contract RaffleEchidna is IERC721Receiver {
         if (current < highestStatus) statusRegressed = true;
         if (current > highestStatus) highestStatus = current;
     }
+}
+
+/// @notice Exercises both the below-threshold cash branch and the above-threshold NFT branch.
+contract RaffleEchidna is RaffleEchidnaBase {
+    constructor() payable RaffleEchidnaBase(25) { }
+}
+
+/// @notice Forces every successful draw through the NFT branch, including its redemption timeout fallback.
+contract RaffleNftEchidna is RaffleEchidnaBase {
+    constructor() payable RaffleEchidnaBase(1) { }
 }
