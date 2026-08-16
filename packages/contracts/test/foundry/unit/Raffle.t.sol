@@ -171,6 +171,16 @@ contract RaffleTest is Test, IERC721Receiver {
         params = _validCreateParams(address(prize));
         params.minimumTickets = 0;
         _expectCreateRevert(IRaffleFactory.ZeroMinimumTickets.selector, params);
+
+        uint256 exactMetadataTokenId = nextPrizeId++;
+        prize.mint(sponsor, exactMetadataTokenId);
+        params = _validCreateParams(address(prize));
+        params.prizeTokenId = exactMetadataTokenId;
+        params.metadataURI = new string(2048);
+        vm.prank(sponsor);
+        Raffle exactMetadata = Raffle(payable(factory.createRaffle(params)));
+        assertEq(bytes(exactMetadata.raffleMetadataURI()).length, 2048);
+
         params = _validCreateParams(address(prize));
         params.metadataURI = new string(2049);
         vm.prank(sponsor);
@@ -200,6 +210,16 @@ contract RaffleTest is Test, IERC721Receiver {
         );
         factory.createRaffle(params);
 
+        uint256 exactStartTokenId = nextPrizeId++;
+        prize.mint(sponsor, exactStartTokenId);
+        params = _validCreateParams(address(prize));
+        params.prizeTokenId = exactStartTokenId;
+        params.startTime = block.timestamp + 7 days;
+        params.endTime = params.startTime + 1 days;
+        vm.prank(sponsor);
+        Raffle exactStart = Raffle(payable(factory.createRaffle(params)));
+        assertEq(exactStart.startTime(), block.timestamp + 7 days);
+
         params = _validCreateParams(address(prize));
         params.startTime = block.timestamp + 7 days + 1;
         params.endTime = params.startTime + 1 days;
@@ -210,6 +230,16 @@ contract RaffleTest is Test, IERC721Receiver {
             )
         );
         factory.createRaffle(params);
+
+        uint256 exactDurationTokenId = nextPrizeId++;
+        prize.mint(sponsor, exactDurationTokenId);
+        params = _validCreateParams(address(prize));
+        params.prizeTokenId = exactDurationTokenId;
+        params.startTime = block.timestamp;
+        params.endTime = params.startTime + 30 days;
+        vm.prank(sponsor);
+        Raffle exactDuration = Raffle(payable(factory.createRaffle(params)));
+        assertEq(exactDuration.endTime() - exactDuration.startTime(), 30 days);
 
         params = _validCreateParams(address(prize));
         params.endTime = params.startTime;
@@ -340,6 +370,9 @@ contract RaffleTest is Test, IERC721Receiver {
         vm.prank(buyer);
         vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidQuantity.selector, 0, 100));
         raffle.buyTickets(buyer, 0);
+        vm.prank(buyer);
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidQuantity.selector, 101, 100));
+        raffle.buyTickets(buyer, 101);
         vm.prank(buyer);
         raffle.buyTickets(buyer, 1);
         vm.expectRevert(abi.encodeWithSelector(IRaffle.TicketsWereSold.selector, 1));
@@ -838,6 +871,29 @@ contract RaffleTest is Test, IERC721Receiver {
         viewData = lens.getRaffleState(address(drawing), buyer);
         assertTrue(viewData.canEnableRefunds);
         assertEq(viewData.nftRedemptionDeadline, 0);
+    }
+
+    function testLensExactSaleAndRequestGraceBoundariesMatchRaffle() public {
+        Raffle raffle = _createDefaultRaffle(1);
+        IRaffleLens.RaffleView memory viewData = lens.getRaffleState(address(raffle), buyer);
+        assertTrue(viewData.canBuy);
+
+        _buy(raffle, buyer, 1);
+        vm.warp(raffle.endTime());
+        viewData = lens.getRaffleState(address(raffle), buyer);
+        assertFalse(viewData.canBuy);
+        assertTrue(viewData.canDraw);
+
+        vm.warp(raffle.requestGraceDeadline());
+        viewData = lens.getRaffleState(address(raffle), buyer);
+        assertFalse(viewData.canDraw);
+        assertTrue(viewData.canEnableRefunds);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IRaffle.DrawRequestWindowExpired.selector, raffle.requestGraceDeadline(), block.timestamp
+            )
+        );
+        raffle.requestDraw();
     }
 
     function testDirectDonationDoesNotAlterLiabilities() public {

@@ -49,11 +49,32 @@ contract RaffleInvariantTest is StdInvariant, Test {
         );
         quote.mint(address(handler), 1_000_000 * 1e6);
         handler.configure(raffle);
+
+        bytes4[] memory selectors = new bytes4[](14);
+        selectors[0] = handler.buy.selector;
+        selectors[1] = handler.warpToEnd.selector;
+        selectors[2] = handler.warpToRequestGraceDeadline.selector;
+        selectors[3] = handler.warpToCallbackDeadline.selector;
+        selectors[4] = handler.warpToNftRedemptionDeadline.selector;
+        selectors[5] = handler.requestDraw.selector;
+        selectors[6] = handler.fulfill.selector;
+        selectors[7] = handler.wrongSequence.selector;
+        selectors[8] = handler.enableRefunds.selector;
+        selectors[9] = handler.redeemRefundTicket.selector;
+        selectors[10] = handler.redeemWinningTicket.selector;
+        selectors[11] = handler.claimQuote.selector;
+        selectors[12] = handler.claimSponsorPrize.selector;
+        selectors[13] = handler.closeEmptyRaffle.selector;
         targetContract(address(handler));
+        targetSelector(FuzzSelector({addr: address(handler), selectors: selectors}));
     }
 
     function invariantStatusTransitionsNeverMoveBackward() public view {
         assertFalse(handler.statusWentBackward());
+    }
+
+    function invariantSetupOnlyConfigureIsNeverFuzzed() public view {
+        assertEq(handler.ghostConfigureReentryAttempts(), 0);
     }
 
     function invariantAtMostOneRequestAndTerminalChoiceExist() public view {

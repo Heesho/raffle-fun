@@ -38,6 +38,27 @@ contract PausablePrizeERC721 is ERC721 {
     }
 }
 
+contract MisdirectingPrizeERC721 is ERC721 {
+    address public immutable wrongRecipient;
+    bool public misdirects;
+
+    constructor(address wrongRecipient_) ERC721("Misdirecting Prize", "MPRIZE") {
+        wrongRecipient = wrongRecipient_;
+    }
+
+    function mint(address to, uint256 tokenId) external {
+        _mint(to, tokenId);
+    }
+
+    function setMisdirects(bool enabled) external {
+        misdirects = enabled;
+    }
+
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public override {
+        super.safeTransferFrom(from, misdirects ? wrongRecipient : to, tokenId, data);
+    }
+}
+
 contract RaffleSecurityTest is Test {
     uint256 internal constant USDC = 1e6;
 
@@ -367,6 +388,49 @@ contract RaffleSecurityTest is Test {
         vm.prank(buyer);
         raffle.redeemRefundTickets(ids, buyer);
         assertEq(quote.balanceOf(buyer), buyerBefore + USDC);
+    }
+
+    function testRegressionMisdirectedPrizeCannotConsumeWinnerOrReleaseProceeds() public {
+        address wrongRecipient = makeAddr("wrong-prize-recipient");
+        MisdirectingPrizeERC721 misdirectingPrize = new MisdirectingPrizeERC721(wrongRecipient);
+        misdirectingPrize.mint(sponsor, 1);
+        vm.prank(sponsor);
+        misdirectingPrize.setApprovalForAll(address(factory), true);
+        vm.prank(sponsor);
+        Raffle raffle = Raffle(
+            payable(
+                factory.createRaffle(
+                    IRaffleFactory.CreateRaffleParams({
+                        prizeToken: address(misdirectingPrize),
+                        prizeTokenId: 1,
+                        sponsorPrizeRecoveryRecipient: sponsor,
+                        ticketPrice: USDC,
+                        minimumTickets: 1,
+                        startTime: block.timestamp,
+                        endTime: block.timestamp + 1 days,
+                        metadataURI: "ipfs://misdirecting-prize"
+                    })
+                )
+            )
+        );
+        quote.mint(buyer, USDC);
+        vm.startPrank(buyer);
+        quote.approve(address(raffle), USDC);
+        raffle.buyTickets(buyer, 1);
+        vm.stopPrank();
+        _resolve(raffle);
+        misdirectingPrize.setMisdirects(true);
+
+        vm.prank(buyer);
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.PrizeDeliveryVerificationFailed.selector, buyer));
+        raffle.redeemWinningTicket(buyer);
+
+        assertEq(raffle.ownerOf(1), buyer);
+        assertEq(misdirectingPrize.ownerOf(1), address(raffle));
+        assertFalse(raffle.prizeClaimed());
+        assertEq(raffle.unsettledPot(), USDC);
+        assertEq(raffle.totalClaimableQuote(), 0);
+        assertEq(misdirectingPrize.balanceOf(wrongRecipient), 0);
     }
 
     function testRegressionFactoryRejectsKnownProtocolFixedClaimants() public {

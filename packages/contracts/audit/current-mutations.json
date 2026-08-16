@@ -1,0 +1,272 @@
+{
+  "schema": 1,
+  "seed": 20260816,
+  "mutants": [
+    {
+      "id": "M-01",
+      "description": "remove Drawing transfer lock",
+      "path": "src/Raffle.sol",
+      "before": "if (currentStatus == Status.Drawing || resultLocksTicket) {",
+      "after": "if (resultLocksTicket) {"
+    },
+    {
+      "id": "M-02",
+      "description": "remove resolved winning-ticket lock",
+      "path": "src/Raffle.sol",
+      "before": "bool resultLocksTicket =\n            (currentStatus == Status.NftWon || currentStatus == Status.CashWon) && tokenId == winningTicketId;",
+      "after": "bool resultLocksTicket = false;"
+    },
+    {
+      "id": "M-03",
+      "description": "select zero-based winner",
+      "path": "src/Raffle.sol",
+      "before": "uint256 resolvedTicketId = (uint256(randomNumber) % totalTickets) + 1;",
+      "after": "uint256 resolvedTicketId = uint256(randomNumber) % totalTickets;"
+    },
+    {
+      "id": "M-04",
+      "description": "use wrong winner denominator",
+      "path": "src/Raffle.sol",
+      "before": "uint256 resolvedTicketId = (uint256(randomNumber) % totalTickets) + 1;",
+      "after": "uint256 resolvedTicketId = (uint256(randomNumber) % (totalTickets + 1)) + 1;"
+    },
+    {
+      "id": "M-05",
+      "description": "remove callback in-flight check",
+      "path": "src/Raffle.sol",
+      "before": "if (_requestInFlight || status != Status.Drawing || sequence != entropySequenceNumber) {",
+      "after": "if (status != Status.Drawing || sequence != entropySequenceNumber) {"
+    },
+    {
+      "id": "M-06",
+      "description": "remove callback sequence check",
+      "path": "src/Raffle.sol",
+      "before": "if (_requestInFlight || status != Status.Drawing || sequence != entropySequenceNumber) {",
+      "after": "if (_requestInFlight || status != Status.Drawing) {"
+    },
+    {
+      "id": "M-07",
+      "description": "remove callback lifecycle check",
+      "path": "src/Raffle.sol",
+      "before": "if (_requestInFlight || status != Status.Drawing || sequence != entropySequenceNumber) {",
+      "after": "if (_requestInFlight || sequence != entropySequenceNumber) {"
+    },
+    {
+      "id": "M-08",
+      "description": "change threshold comparison",
+      "path": "src/Raffle.sol",
+      "before": "if (totalTickets >= minimumTickets) {",
+      "after": "if (totalTickets > minimumTickets) {"
+    },
+    {
+      "id": "M-09",
+      "description": "change callback protocol fee",
+      "path": "src/Raffle.sol",
+      "before": "uint256 protocolFee = Math.mulDiv(grossPot, RaffleConstants.PROTOCOL_FEE_BPS, RaffleConstants.BPS);\n        uint256 distributablePot = grossPot - protocolFee;",
+      "after": "uint256 protocolFee = Math.mulDiv(grossPot, RaffleConstants.PROTOCOL_FEE_BPS - 1, RaffleConstants.BPS);\n        uint256 distributablePot = grossPot - protocolFee;"
+    },
+    {
+      "id": "M-10",
+      "description": "change cash-winner basis points",
+      "path": "src/Raffle.sol",
+      "before": "Math.mulDiv(distributablePot, RaffleConstants.CASH_WINNER_BPS, RaffleConstants.BPS);",
+      "after": "Math.mulDiv(distributablePot, RaffleConstants.CASH_WINNER_BPS - 1, RaffleConstants.BPS);"
+    },
+    {
+      "id": "M-11",
+      "description": "leave cash unsettled pot uncleared",
+      "path": "src/Raffle.sol",
+      "before": "status = Status.CashWon;\n            unsettledPot = 0;",
+      "after": "status = Status.CashWon;"
+    },
+    {
+      "id": "M-12",
+      "description": "underpay refund by one unit per ticket",
+      "path": "src/Raffle.sol",
+      "before": "amount = ticketPrice * quantity;\n        remainingRefundLiability -= amount;",
+      "after": "amount = (ticketPrice - 1) * quantity;\n        remainingRefundLiability -= amount;"
+    },
+    {
+      "id": "M-13",
+      "description": "omit refund liability decrement",
+      "path": "src/Raffle.sol",
+      "before": "amount = ticketPrice * quantity;\n        remainingRefundLiability -= amount;",
+      "after": "amount = ticketPrice * quantity;"
+    },
+    {
+      "id": "M-14",
+      "description": "omit refund ticket burn",
+      "path": "src/Raffle.sol",
+      "before": "if (msg.sender != owner) revert NotTicketOwner(ticketId, msg.sender, owner);\n            _burn(ticketId);\n        }\n\n        amount = ticketPrice * quantity;",
+      "after": "if (msg.sender != owner) revert NotTicketOwner(ticketId, msg.sender, owner);\n        }\n\n        amount = ticketPrice * quantity;"
+    },
+    {
+      "id": "M-15",
+      "description": "check only outgoing sender debit",
+      "path": "src/Raffle.sol",
+      "before": "if (debitedAmount != amount || creditedAmount != amount) {",
+      "after": "if (debitedAmount != amount) {"
+    },
+    {
+      "id": "M-16",
+      "description": "check only outgoing recipient credit",
+      "path": "src/Raffle.sol",
+      "before": "if (debitedAmount != amount || creditedAmount != amount) {",
+      "after": "if (creditedAmount != amount) {"
+    },
+    {
+      "id": "M-17",
+      "description": "exclude exact sale start",
+      "path": "src/Raffle.sol",
+      "before": "if (block.timestamp < startTime) revert SaleNotStarted(startTime, block.timestamp);",
+      "after": "if (block.timestamp <= startTime) revert SaleNotStarted(startTime, block.timestamp);"
+    },
+    {
+      "id": "M-18",
+      "description": "allow purchase at exact sale end",
+      "path": "src/Raffle.sol",
+      "before": "if (block.timestamp >= endTime) revert SaleEnded(endTime, block.timestamp);",
+      "after": "if (block.timestamp > endTime) revert SaleEnded(endTime, block.timestamp);"
+    },
+    {
+      "id": "M-19",
+      "description": "allow zero-quantity purchase",
+      "path": "src/Raffle.sol",
+      "before": "if (quantity == 0 || quantity > RaffleConstants.MAX_TICKETS_PER_PURCHASE) {",
+      "after": "if (quantity > RaffleConstants.MAX_TICKETS_PER_PURCHASE) {"
+    },
+    {
+      "id": "M-20",
+      "description": "allow 101-ticket purchase",
+      "path": "src/Raffle.sol",
+      "before": "if (quantity == 0 || quantity > RaffleConstants.MAX_TICKETS_PER_PURCHASE) {",
+      "after": "if (quantity == 0 || quantity > RaffleConstants.MAX_TICKETS_PER_PURCHASE + 1) {"
+    },
+    {
+      "id": "M-21",
+      "description": "break sequential first ticket ID",
+      "path": "src/Raffle.sol",
+      "before": "firstTicketId = totalTickets + 1;",
+      "after": "firstTicketId = 1;"
+    },
+    {
+      "id": "M-22",
+      "description": "accept incoming quote over-credit",
+      "path": "src/Raffle.sol",
+      "before": "if (receivedAmount != grossAmount) revert UnsupportedQuoteToken(grossAmount, receivedAmount);",
+      "after": "if (receivedAmount < grossAmount) revert UnsupportedQuoteToken(grossAmount, receivedAmount);"
+    },
+    {
+      "id": "M-23",
+      "description": "omit NFT winner delivery ownership verification",
+      "path": "src/Raffle.sol",
+      "before": "if (prizeToken.ownerOf(prizeTokenId) != to) revert PrizeDeliveryVerificationFailed(to);",
+      "after": ""
+    },
+    {
+      "id": "M-24",
+      "description": "allow NFT timeout after prize claimed",
+      "path": "src/Raffle.sol",
+      "before": "} else if (status == Status.NftWon && !prizeClaimed) {",
+      "after": "} else if (status == Status.NftWon) {"
+    },
+    {
+      "id": "M-25",
+      "description": "allow refund finalization before its deadline",
+      "path": "src/Raffle.sol",
+      "before": "if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);",
+      "after": ""
+    },
+    {
+      "id": "M-26",
+      "description": "omit known-protocol ticket destination check",
+      "path": "src/Raffle.sol",
+      "before": "if (to != address(0) && _isKnownProtocolDestination(to)) revert UnsafeProtocolDestination(to);",
+      "after": ""
+    },
+    {
+      "id": "M-27",
+      "description": "allow Factory ownership renunciation",
+      "path": "src/RaffleFactory.sol",
+      "before": "function renounceOwnership() public pure override {\n        revert OwnershipRenunciationDisabled();\n    }",
+      "after": "function renounceOwnership() public override {\n        super.renounceOwnership();\n    }"
+    },
+    {
+      "id": "M-28",
+      "description": "ignore Factory creation pause",
+      "path": "src/RaffleFactory.sol",
+      "before": "if (creationPaused) revert CreationPaused();",
+      "after": ""
+    },
+    {
+      "id": "M-29",
+      "description": "reject exact maximum start delay",
+      "path": "src/RaffleFactory.sol",
+      "before": "if (normalizedStartTime > maximumStartTime) {",
+      "after": "if (normalizedStartTime >= maximumStartTime) {"
+    },
+    {
+      "id": "M-30",
+      "description": "reject exact maximum sale duration",
+      "path": "src/RaffleFactory.sol",
+      "before": "if (saleDuration > RaffleConstants.MAX_SALE_DURATION) {",
+      "after": "if (saleDuration >= RaffleConstants.MAX_SALE_DURATION) {"
+    },
+    {
+      "id": "M-31",
+      "description": "allow zero ticket price",
+      "path": "src/RaffleFactory.sol",
+      "before": "if (params.ticketPrice == 0) revert ZeroTicketPrice();",
+      "after": ""
+    },
+    {
+      "id": "M-32",
+      "description": "allow zero minimum-ticket threshold",
+      "path": "src/RaffleFactory.sol",
+      "before": "if (params.minimumTickets == 0) revert ZeroMinimumTickets();",
+      "after": ""
+    },
+    {
+      "id": "M-33",
+      "description": "reject exact maximum metadata length",
+      "path": "src/RaffleFactory.sol",
+      "before": "if (metadataLength > RaffleConstants.MAX_METADATA_URI_LENGTH) {",
+      "after": "if (metadataLength >= RaffleConstants.MAX_METADATA_URI_LENGTH) {"
+    },
+    {
+      "id": "M-34",
+      "description": "omit creation prize owner verification",
+      "path": "src/RaffleFactory.sol",
+      "before": "if (IERC721(params.prizeToken).ownerOf(params.prizeTokenId) != raffle) {",
+      "after": "if (false) {"
+    },
+    {
+      "id": "M-35",
+      "description": "omit creation Active-status verification",
+      "path": "src/RaffleFactory.sol",
+      "before": "if (IRaffle(raffle).status() != IRaffle.Status.Active) {",
+      "after": "if (false) {"
+    },
+    {
+      "id": "M-36",
+      "description": "Lens permits draw at grace deadline",
+      "path": "src/RaffleLens.sol",
+      "before": "&& block.timestamp < raffleView.requestGraceDeadline && raffleView.totalTickets != 0;",
+      "after": "&& block.timestamp <= raffleView.requestGraceDeadline && raffleView.totalTickets != 0;"
+    },
+    {
+      "id": "M-37",
+      "description": "Lens permits buy at sale end",
+      "path": "src/RaffleLens.sol",
+      "before": "&& block.timestamp < raffleView.endTime;",
+      "after": "&& block.timestamp <= raffleView.endTime;"
+    },
+    {
+      "id": "M-38",
+      "description": "Lens rejects exact 64-Raffle batch",
+      "path": "src/RaffleLens.sol",
+      "before": "if (length > MAX_BATCH_SIZE) revert BatchTooLarge(length, MAX_BATCH_SIZE);",
+      "after": "if (length >= MAX_BATCH_SIZE) revert BatchTooLarge(length, MAX_BATCH_SIZE);"
+    }
+  ]
+}

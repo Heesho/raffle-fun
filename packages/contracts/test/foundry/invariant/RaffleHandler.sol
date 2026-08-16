@@ -18,6 +18,7 @@ contract RaffleHandler is Test, IERC721Receiver {
 
     Raffle public raffle;
     bool public configured;
+    uint256 public ghostConfigureReentryAttempts;
     uint256 public ghostGrossPaid;
     uint256 public ghostQuotePaidOut;
     uint256 public ghostProtocolPaidOut;
@@ -37,7 +38,10 @@ contract RaffleHandler is Test, IERC721Receiver {
     }
 
     function configure(Raffle raffle_) external {
-        require(!configured, "configured");
+        if (configured) {
+            ++ghostConfigureReentryAttempts;
+            return;
+        }
         configured = true;
         raffle = raffle_;
         quote.approve(address(raffle_), type(uint256).max);
