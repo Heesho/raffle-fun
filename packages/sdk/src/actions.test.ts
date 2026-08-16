@@ -1,6 +1,18 @@
 import { describe, expect, it } from "vitest";
 
-import { validateRefundTicketIds } from "./actions.js";
+import {
+  validatePurchaseQuantity,
+  validateRefundTicketIds,
+} from "./actions.js";
+
+describe("validatePurchaseQuantity", () => {
+  it("accepts the onchain range and rejects malformed quantities before RPC", () => {
+    expect(() => validatePurchaseQuantity(1n)).not.toThrow();
+    expect(() => validatePurchaseQuantity(100n)).not.toThrow();
+    expect(() => validatePurchaseQuantity(0n)).toThrow("between 1 and 100");
+    expect(() => validatePurchaseQuantity(101n)).toThrow("between 1 and 100");
+  });
+});
 
 describe("validateRefundTicketIds", () => {
   it("accepts a unique bounded positive batch", () => {

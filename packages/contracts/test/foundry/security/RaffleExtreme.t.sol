@@ -444,6 +444,100 @@ contract RaffleExtremeTest is Test {
         }
     }
 
+    function testSameFactoryNestedRaffleTicketPrizeRevertsAtomically() public {
+        Raffle inner = _create(factory, 2);
+        _buy(inner, sponsor, 1);
+        vm.prank(sponsor);
+        inner.approve(address(factory), 1);
+        uint256 raffleCountBefore = factory.raffleCount();
+
+        vm.prank(sponsor);
+        vm.expectPartialRevert(IRaffle.UnsafeProtocolDestination.selector);
+        factory.createRaffle(
+            IRaffleFactory.CreateRaffleParams({
+                prizeToken: address(inner),
+                prizeTokenId: 1,
+                sponsorPrizeRecoveryRecipient: sponsor,
+                ticketPrice: USDC,
+                minimumTickets: 1,
+                startTime: block.timestamp,
+                endTime: block.timestamp + 1 days,
+                metadataURI: "ipfs://same-factory-nested"
+            })
+        );
+
+        assertEq(factory.raffleCount(), raffleCountBefore);
+        assertEq(inner.ownerOf(1), sponsor);
+    }
+
+    function testCrossFactoryNestedWinnerLockPreservesBuyerRefundButCanStrandPrize() public {
+        Raffle inner = _create(factory, 2);
+        _buy(inner, sponsor, 1);
+
+        RaffleFactory outerFactory =
+            new RaffleFactory(address(quote), address(entropy), treasury, 300_000, address(this));
+        vm.prank(sponsor);
+        inner.approve(address(outerFactory), 1);
+        vm.prank(sponsor);
+        Raffle outer = Raffle(
+            payable(outerFactory.createRaffle(
+                    IRaffleFactory.CreateRaffleParams({
+                        prizeToken: address(inner),
+                        prizeTokenId: 1,
+                        sponsorPrizeRecoveryRecipient: sponsor,
+                        ticketPrice: USDC,
+                        minimumTickets: 1,
+                        startTime: block.timestamp,
+                        endTime: block.timestamp + 1 days,
+                        metadataURI: "ipfs://cross-factory-nested"
+                    })
+                ))
+        );
+        assertEq(inner.ownerOf(1), address(outer));
+        _buy(outer, buyer, 1);
+
+        uint64 innerSequence = _request(inner);
+        uint64 outerSequence = _request(outer);
+        entropy.fulfill(outerSequence, bytes32(0));
+        assertEq(uint256(inner.status()), uint256(IRaffle.Status.Drawing));
+        assertEq(uint256(outer.status()), uint256(IRaffle.Status.NftWon));
+
+        vm.prank(buyer);
+        vm.expectRevert(
+            abi.encodeWithSelector(IRaffle.TicketTransferLocked.selector, 1, IRaffle.Status.Drawing)
+        );
+        outer.redeemWinningTicket(buyer);
+        assertEq(outer.ownerOf(1), buyer);
+        assertEq(inner.ownerOf(1), address(outer));
+        assertEq(outer.unsettledPot(), USDC);
+
+        vm.warp(outer.nftRedemptionDeadline());
+        outer.enableRefunds();
+        uint256[] memory ids = new uint256[](1);
+        ids[0] = 1;
+        uint256 buyerBefore = quote.balanceOf(buyer);
+        vm.prank(buyer);
+        outer.redeemRefundTickets(ids, buyer);
+        assertEq(quote.balanceOf(buyer) - buyerBefore, USDC);
+        assertEq(outer.accountedQuoteBalance(), 0);
+
+        vm.prank(sponsor);
+        vm.expectRevert(
+            abi.encodeWithSelector(IRaffle.TicketTransferLocked.selector, 1, IRaffle.Status.Drawing)
+        );
+        outer.claimSponsorPrize(sponsor);
+
+        entropy.fulfill(innerSequence, bytes32(0));
+        assertEq(uint256(inner.status()), uint256(IRaffle.Status.CashWon));
+        vm.prank(sponsor);
+        vm.expectRevert(
+            abi.encodeWithSelector(IRaffle.TicketTransferLocked.selector, 1, IRaffle.Status.CashWon)
+        );
+        outer.claimSponsorPrize(sponsor);
+        assertEq(inner.ownerOf(1), address(outer));
+        assertFalse(outer.prizeClaimed());
+    }
+
     function _create(RaffleFactory selectedFactory, uint256 minimumTickets) internal returns (Raffle raffle) {
         uint256 tokenId = nextPrizeId++;
         prize.mint(sponsor, tokenId);

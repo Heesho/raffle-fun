@@ -1,7 +1,10 @@
 import type { Account, Address, Hash, PublicClient, WalletClient } from "viem";
 
 import { raffleAbi, raffleFactoryAbi } from "./abis/generated.js";
-import { MAX_REFUND_REDEMPTION_BATCH_SIZE } from "./math/economics.js";
+import {
+  MAX_REFUND_REDEMPTION_BATCH_SIZE,
+  MAX_TICKETS_PER_PURCHASE,
+} from "./math/economics.js";
 import type { CreateRaffleParams } from "./types/protocol.js";
 
 export interface ActionContext {
@@ -31,6 +34,7 @@ export async function buyTickets(
   recipient: Address,
   quantity: bigint,
 ): Promise<Hash> {
+  validatePurchaseQuantity(quantity);
   const { request } = await context.publicClient.simulateContract({
     account: context.account,
     address: raffle,
@@ -39,6 +43,15 @@ export async function buyTickets(
     args: [recipient, quantity],
   });
   return context.walletClient.writeContract(request);
+}
+
+/** Rejects ticket quantities outside the contract's per-purchase bounds before any RPC call. */
+export function validatePurchaseQuantity(quantity: bigint): void {
+  if (quantity <= 0n || quantity > MAX_TICKETS_PER_PURCHASE) {
+    throw new RangeError(
+      `quantity must be between 1 and ${MAX_TICKETS_PER_PURCHASE.toString()}`,
+    );
+  }
 }
 
 export async function requestDraw(

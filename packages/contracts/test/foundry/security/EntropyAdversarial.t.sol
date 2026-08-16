@@ -89,6 +89,22 @@ contract EntropyAdversarialTest is Test {
         assertEq(raffle.winningTicketId(), winningTicket);
     }
 
+    function testSynchronousZeroSequenceCannotMatchDefaultStoredSequence() public {
+        entropy.configureSequence(0, true);
+        Raffle raffle = _soldRaffle();
+        vm.warp(raffle.endTime());
+        entropy.configureSynchronousCallbacks(1, 0, bytes32(0));
+
+        uint64 sequence = raffle.requestDraw{ value: raffle.getEntropyFee() }();
+        assertEq(sequence, 0);
+        assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Drawing));
+        assertEq(raffle.winningTicketId(), 0);
+
+        entropy.fulfillAs(address(raffle), sequence, bytes32(0));
+        assertEq(uint256(raffle.status()), uint256(IRaffle.Status.NftWon));
+        assertEq(raffle.winningTicketId(), 1);
+    }
+
     function testZeroAndRepeatedSequencesRemainSingleRaffleScoped() public {
         entropy.configureSequence(7, true);
         Raffle first = _soldRaffle();
