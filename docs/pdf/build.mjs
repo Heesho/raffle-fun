@@ -275,7 +275,8 @@ const documentHtml = (doc, commit) => `<!doctype html>
 :root{
   --ink:#10143a; --ink2:#454b78; --ink3:#676c94;
   --line:#dcdded; --line-strong:#c3c5dd; --sunk:#f4f4fb;
-  --accent:#f033bb; --accent-deep:#c01a92; --indigo:#1e2a9b; --danger:#c8213f;
+  --accent:#f033bb; --accent-deep:#c01a92; --navy:#16229b;
+  --indigo:#1e2a9b; --danger:#c8213f;
   --amber:#7a4f00; --amber-wash:#fff5d6;
   --body:"Inter var",system-ui,sans-serif;
   --display:"Nunito var","Inter var",system-ui,sans-serif;
@@ -288,44 +289,46 @@ body{font-family:var(--body);color:var(--ink);font-size:10.2pt;line-height:1.55;
   -webkit-print-color-adjust:exact;print-color-adjust:exact}
 a{color:var(--indigo);text-decoration:none;border-bottom:.4pt solid var(--line-strong)}
 
-/* ---- brand cover panel ----
-   Chrome cannot bleed into the printToPDF margins, so the cover is a rounded panel that
-   fills the text area rather than a full-bleed page. Negative margins clip instead. */
+/* ---- brand cover ----
+   Matches the brand's actual hero surface, sampled from the social banner: off-white
+   ground, #16229b navy display type, the pink ticket mark, and a soft pink/purple/blue
+   glow low in the frame. Chrome cannot bleed into the printToPDF margins, so this is a
+   rounded panel filling the text area; negative margins clip the wordmark instead. */
 .cover{position:relative;overflow:hidden;break-after:page;
-  border-radius:16pt;padding:20mm 18mm;min-height:250mm;color:#fff;
-  display:flex;flex-direction:column;
-  background:linear-gradient(158deg,#f033bb 0%,#d21fae 32%,#7b3fe4 70%,#2b1b8f 100%)}
-.cover::after{content:"";position:absolute;right:-30mm;bottom:-40mm;width:135mm;height:135mm;
-  border-radius:50%;background:rgba(255,255,255,.10)}
-.badge{width:22mm;height:22mm;border-radius:6mm;background:#fff;display:flex;
-  align-items:center;justify-content:center;margin-bottom:9mm;position:relative;z-index:1}
-.badge img{width:13mm;height:auto;display:block}
-.brand{font-family:var(--display);font-weight:900;font-size:22pt;letter-spacing:-.03em;
-  margin:0 0 9mm;color:#fff;position:relative;z-index:1}
-.brand span{opacity:.7;font-weight:800}
+  border-radius:16pt;padding:20mm 18mm;min-height:250mm;background:#fbfbfb;
+  border:.5pt solid #eceaf2;display:flex;flex-direction:column}
+.cover::before{content:"";position:absolute;left:-12%;right:-12%;bottom:-16%;height:64%;
+  background:
+    radial-gradient(46% 62% at 28% 60%, rgba(240,51,187,.40) 0%, rgba(240,51,187,0) 70%),
+    radial-gradient(44% 60% at 52% 76%, rgba(123,63,228,.38) 0%, rgba(123,63,228,0) 72%),
+    radial-gradient(48% 62% at 76% 58%, rgba(59,139,234,.34) 0%, rgba(59,139,234,0) 72%)}
+.mark{width:17mm;height:auto;display:block;margin-bottom:9mm;position:relative;z-index:1}
+.brand{font-family:var(--display);font-weight:900;font-size:21pt;letter-spacing:-.03em;
+  margin:0 0 10mm;color:var(--navy);position:relative;z-index:1}
+.brand span{color:var(--accent)}
 .kicker{font-family:var(--mono);font-size:7.5pt;letter-spacing:.2em;text-transform:uppercase;
-  color:rgba(255,255,255,.8);margin:0 0 4mm;position:relative;z-index:1}
+  color:var(--accent);margin:0 0 4mm;position:relative;z-index:1}
 h1.t{font-family:var(--display);font-weight:900;font-size:34pt;line-height:1.04;
-  letter-spacing:-.03em;margin:0 0 6mm;color:#fff;max-width:142mm;position:relative;z-index:1}
-.lede{font-size:12.5pt;line-height:1.42;color:rgba(255,255,255,.92);max-width:124mm;
-  margin:0;position:relative;z-index:1}
+  letter-spacing:-.03em;margin:0 0 6mm;color:var(--navy);max-width:142mm;
+  position:relative;z-index:1}
+.lede{font-size:12.5pt;line-height:1.42;color:var(--ink2);max-width:124mm;margin:0;
+  position:relative;z-index:1}
 .spacer{flex:1 1 auto;min-height:12mm}
-.meta{display:flex;flex-wrap:wrap;gap:4mm 14mm;font-size:8.6pt;margin:0;
-  color:rgba(255,255,255,.94);position:relative;z-index:1}
+.meta{display:flex;flex-wrap:wrap;gap:4mm 14mm;font-size:8.6pt;margin:0;color:var(--ink2);
+  position:relative;z-index:1}
 .meta b{font-family:var(--mono);font-size:6.6pt;letter-spacing:.13em;text-transform:uppercase;
-  color:rgba(255,255,255,.6);font-weight:600;display:block;margin-bottom:1mm}
+  color:var(--ink3);font-weight:600;display:block;margin-bottom:1mm}
 .meta span{font-family:var(--mono)}
 .flags{margin-top:8mm;display:flex;gap:3mm;flex-wrap:wrap;position:relative;z-index:1}
 .flag{font-family:var(--mono);font-size:7pt;letter-spacing:.06em;text-transform:uppercase;
   padding:2.4mm 4mm;border-radius:12pt;font-weight:600;
-  background:rgba(255,255,255,.17);border:.7pt solid rgba(255,255,255,.5);color:#fff}
-.flag.n{background:none;border-color:rgba(255,255,255,.32);color:rgba(255,255,255,.78);
-  text-transform:none;letter-spacing:0}
+  background:#fff;border:.7pt solid var(--danger);color:var(--danger)}
+.flag.n{border-color:var(--line-strong);color:var(--ink2);text-transform:none;letter-spacing:0}
 
-h2{font-family:var(--display);font-weight:900;font-size:14pt;line-height:1.2;
+h2{font-family:var(--display);font-weight:900;font-size:14pt;line-height:1.2;color:var(--navy);
   margin:19pt 0 5pt;padding-top:7pt;border-top:1.4pt solid var(--accent);
   break-after:avoid;break-inside:avoid}
-h3{font-family:var(--display);font-weight:800;font-size:11pt;margin:13pt 0 3pt;
+h3{font-family:var(--display);font-weight:800;font-size:11pt;margin:13pt 0 3pt;color:var(--navy);
   break-after:avoid;break-inside:avoid}
 h4{font-family:var(--display);font-weight:800;font-size:9.6pt;margin:11pt 0 2pt;break-after:avoid}
 p,ul,ol{margin:0 0 7.5pt}
@@ -367,7 +370,7 @@ figure.diagram svg{max-width:100%;max-height:200mm;height:auto;width:auto}
 figure.diagram pre.mermaid{background:none;border:0;padding:0;margin:0}
 </style></head><body>
 <div class="cover">
-  <div class="badge"><img src="data:image/png;base64,${brandMark}" alt=""></div>
+  <img class="mark" src="data:image/png;base64,${brandMark}" alt="">
   <p class="brand">raffle<span>.fun</span></p>
   <p class="kicker">${doc.kicker}</p>
   <h1 class="t">${doc.title}</h1>
