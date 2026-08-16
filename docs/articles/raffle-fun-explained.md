@@ -440,8 +440,9 @@ own conclusions, bug and all.
 Read this before putting money at risk.
 
 **The randomness provider is trusted.** Per section 8: the provider can know the result
-before publishing it, and if it holds tickets it could publish only when it wins.
-Unresolved, and rated High severity by the project itself.
+before publishing it, and if it holds tickets it could publish only when it wins. The
+project's own model puts the gain at up to a quarter of the pot, when the provider holds
+half the tickets. Unresolved, and rated High severity.
 
 **The stablecoin issuer is trusted.** Circle can freeze, blacklist, pause, or upgrade USDC.
 If your address were blacklisted, no contract could force a payment to you. The contracts
@@ -471,9 +472,16 @@ are regulated very differently across jurisdictions, and no jurisdiction-specifi
 review has been performed. Whether participating in or sponsoring one is lawful where you
 live is a question this article cannot answer.
 
+**Losing tickets keep existing.** Only the winning ticket is burned. Everyone else's
+tickets stay in their wallets and stay tradable after the raffle is over, even though they
+are now worth nothing. If you buy a ticket on a secondary market, check that the raffle is
+still running — a settled loser looks exactly like a live ticket.
+
 **Some things are unsupported outright.** Tokens with transfer taxes or rebasing supplies
 are rejected; stablecoins donated directly to a raffle are unrecoverable; an unrelated NFT
-force-sent into a raffle has no rescue path.
+force-sent into a raffle has no rescue path. Using another raffle's ticket as a prize is a
+known bad idea: if that inner raffle locks the ticket, the prize can be stranded for good,
+though buyers still get refunded.
 
 ## 21. Current status
 
