@@ -135,7 +135,6 @@ export function buildFacts() {
   const interfaceSource = readFileSync(interfacePath, "utf8");
   const constants = parseConstants(constantsSource);
   const states = parseEnum(interfaceSource, "Status");
-  const protocolOwnedClaims = parseEnum(interfaceSource, "ProtocolOwnedClaim");
   const raffleArtifact = readArtifact(raffleArtifactPath);
   const factoryArtifact = readArtifact(factoryArtifactPath);
   const lensArtifact = readArtifact(lensArtifactPath);
@@ -150,6 +149,7 @@ export function buildFacts() {
     "MAX_SALE_DURATION",
     "DRAW_REQUEST_GRACE_PERIOD",
     "DRAW_CALLBACK_TIMEOUT",
+    "NFT_REDEMPTION_TIMEOUT",
     "MAX_METADATA_URI_LENGTH",
   ];
   requireNames(Object.keys(constants), requiredConstants, "RaffleConstants");
@@ -164,14 +164,24 @@ export function buildFacts() {
       "enableRefunds",
       "redeemWinningTicket",
       "redeemRefundTickets",
-      "recoverProtocolOwnedClaim",
       "claimQuote",
       "claimQuoteFor",
       "claimSponsorPrize",
       "accountedQuoteBalance",
+      "requestGraceDeadline",
+      "callbackDeadline",
+      "nftRedemptionDeadline",
+      "winningTicketRedeemed",
     ],
     "compiled Raffle ABI",
   );
+  // ES-01 removed the cross-raffle recovery dispatcher. Assert it stays removed so a
+  // regenerated whitepaper can never describe it again.
+  if (raffleFunctions.includes("recoverProtocolOwnedClaim")) {
+    fail(
+      "compiled Raffle ABI still exposes recoverProtocolOwnedClaim, which ETHSkills ES-01 removed",
+    );
+  }
   requireNames(
     abiNames(factoryArtifact, "function"),
     [
@@ -247,10 +257,14 @@ export function buildFacts() {
       clone: false,
       quoteTokenModel:
         "one immutable factory-wide exact-transfer, non-rebasing USDC deployment",
-      ticketsTransferableInAllStates: true,
-      ticketTransferFreeze: false,
+      ticketsTransferableInAllStates: false,
+      ticketTransferFreeze: true,
+      ticketTransferFreezeModel:
+        "all transfers lock in Drawing; the selected winning ticket stays locked in NftWon and CashWon",
       refundModel:
-        "current owners burn refundable bearer tickets for exact payment",
+        "current owners burn refundable bearer tickets for exact payment, opened by one permissionless enableRefunds() from three origins: missing request, missing callback, or undelivered NFT",
+      refundOrigins: 3,
+      crossRaffleRecoveryDispatcher: false,
       nativeOverpaymentModel: "immediate return or complete request rollback",
       lensBatchSize: 64,
     },
@@ -262,9 +276,16 @@ export function buildFacts() {
       maxSaleDurationDays: constants.MAX_SALE_DURATION / 86_400,
       requestGraceDays: constants.DRAW_REQUEST_GRACE_PERIOD / 86_400,
       callbackTimeoutDays: constants.DRAW_CALLBACK_TIMEOUT / 86_400,
+      nftRedemptionDays: constants.NFT_REDEMPTION_TIMEOUT / 86_400,
+      maxCustodyDays:
+        (constants.MAX_START_DELAY +
+          constants.MAX_SALE_DURATION +
+          constants.DRAW_REQUEST_GRACE_PERIOD +
+          constants.DRAW_CALLBACK_TIMEOUT +
+          constants.NFT_REDEMPTION_TIMEOUT) /
+        86_400,
     },
     states,
-    protocolOwnedClaims,
     compiled: {
       raffleFunctions,
       raffleEvents: abiNames(raffleArtifact, "event"),
