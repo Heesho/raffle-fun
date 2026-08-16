@@ -17,24 +17,24 @@ external-audit, deployment, operational, legal, and monitored testnet blockers i
 
 ## Results
 
-| Campaign | Result |
-| --- | ---: |
-| Final Foundry aggregate | 74 passed, 0 failed, 1 RPC-gated test skipped |
-| Hardhat integration | 9 passed, 0 failed |
-| Arithmetic/value fuzzing | 1,200,000 cases across two deterministic seeds |
-| Independent differential model | 100,000 state-machine sequences, 1–32 actions plus terminal drain |
-| Broad and multi-actor invariants | 2,816,000 handler calls |
-| Strict release invariants | 385,148 sequences; 197,195,776 calls; zero handler reverts |
-| Final dual-harness Echidna rerun | 200,439 calls; 12 property results passed |
-| Halmos 0.3.3 / Z3 4.12.6 | 5 checks, 9 feasible paths, 0 failures |
-| Current-commit Gambit sample | 24/24 compiling mutants killed after regressions |
-| Pinned Base forks | Base mainnet and Base Sepolia passed against live public RPCs |
-| Compiler differentials | default, via-IR, optimizer-off, and Prague all passed |
-| Storage-layout differential | default and via-IR layouts identical for Raffle, Factory, and Lens |
-| Slither 0.11.6 | 49 contracts, 64 detectors, 0 findings |
-| Production coverage | 99.74% lines, 94.38% branches, 100% functions |
-| Secrets | Gitleaks full-history scan passed |
-| Dependencies | no critical/high/moderate advisory; one low development/transitive advisory |
+| Campaign                         |                                                                      Result |
+| -------------------------------- | --------------------------------------------------------------------------: |
+| Final Foundry aggregate          |                               74 passed, 0 failed, 1 RPC-gated test skipped |
+| Hardhat integration              |                                                          9 passed, 0 failed |
+| Arithmetic/value fuzzing         |                              1,200,000 cases across two deterministic seeds |
+| Independent differential model   |           100,000 state-machine sequences, 1–32 actions plus terminal drain |
+| Broad and multi-actor invariants |                                                     2,816,000 handler calls |
+| Strict release invariants        |                  385,148 sequences; 197,195,776 calls; zero handler reverts |
+| Final dual-harness Echidna rerun |                                   200,439 calls; 12 property results passed |
+| Halmos 0.3.3 / Z3 4.12.6         |                                      5 checks, 9 feasible paths, 0 failures |
+| Current-commit Gambit sample     |                            24/24 compiling mutants killed after regressions |
+| Pinned Base forks                |               Base mainnet and Base Sepolia passed against live public RPCs |
+| Compiler differentials           |                       default, via-IR, optimizer-off, and Prague all passed |
+| Storage-layout differential      |          default and via-IR layouts identical for Raffle, Factory, and Lens |
+| Slither 0.11.6                   |                                      49 contracts, 64 detectors, 0 findings |
+| Production coverage              |                               99.74% lines, 94.38% branches, 100% functions |
+| Secrets                          |                                           Gitleaks full-history scan passed |
+| Dependencies                     | no critical/high/moderate advisory; one low development/transitive advisory |
 
 The strict invariant profile ran until its one-hour timeout and substantially exceeded
 its nominal sequence target:

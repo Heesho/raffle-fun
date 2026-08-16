@@ -47,23 +47,23 @@ pinned-block tests. Ordinary local runs remain RPC-independent.
 
 ## Campaign results
 
-| Campaign | Result |
-| --- | ---: |
-| Foundry aggregate | 88 passed, 0 failed, 1 RPC-gated suite skipped |
-| Hardhat integration/deployment | 9 passed, 0 failed |
-| New fleet invariants, three independent seeds | 3,072,000 calls, 0 handler reverts, 0 violations |
-| Fresh arithmetic/value fuzzing | 600,000 cases passed |
-| Fresh differential-model fuzzing | 100,000 lifecycle sequences passed |
-| Echidna 2.3.3, cash and forced-NFT harnesses | 1,000,747 calls; 12/12 properties passed |
-| Medusa 1.5.1, cash and forced-NFT harnesses | 523,017 calls; 46/46 tests passed |
-| Gambit 1.0.6 targeted sample | 36/36 compiling mutants killed after regressions |
-| Halmos 0.3.3 / Z3 4.12.6 | 5 checks, 9 feasible paths, 0 failures |
-| Live Base and Base Sepolia forks | pinned and latest-head suites passed |
-| Compiler differentials | canonical, via-IR, optimizer-off, and Prague passed |
-| Storage-layout differential | Raffle, Factory, and Lens identical under default/via-IR |
-| Slither 0.11.6 | 49 contracts, 64 detectors, 0 results |
-| Production coverage | 99.74% lines, 98.78% statements, 94.38% branches, 100% functions |
-| Gas snapshot | regenerated for new tests and immediately rechecked successfully |
+| Campaign                                      |                                                           Result |
+| --------------------------------------------- | ---------------------------------------------------------------: |
+| Foundry aggregate                             |                   88 passed, 0 failed, 1 RPC-gated suite skipped |
+| Hardhat integration/deployment                |                                               9 passed, 0 failed |
+| New fleet invariants, three independent seeds |                 3,072,000 calls, 0 handler reverts, 0 violations |
+| Fresh arithmetic/value fuzzing                |                                             600,000 cases passed |
+| Fresh differential-model fuzzing              |                               100,000 lifecycle sequences passed |
+| Echidna 2.3.3, cash and forced-NFT harnesses  |                         1,000,747 calls; 12/12 properties passed |
+| Medusa 1.5.1, cash and forced-NFT harnesses   |                                523,017 calls; 46/46 tests passed |
+| Gambit 1.0.6 targeted sample                  |                 36/36 compiling mutants killed after regressions |
+| Halmos 0.3.3 / Z3 4.12.6                      |                           5 checks, 9 feasible paths, 0 failures |
+| Live Base and Base Sepolia forks              |                             pinned and latest-head suites passed |
+| Compiler differentials                        |              canonical, via-IR, optimizer-off, and Prague passed |
+| Storage-layout differential                   |         Raffle, Factory, and Lens identical under default/via-IR |
+| Slither 0.11.6                                |                            49 contracts, 64 detectors, 0 results |
+| Production coverage                           | 99.74% lines, 98.78% statements, 94.38% branches, 100% functions |
+| Gas snapshot                                  | regenerated for new tests and immediately rechecked successfully |
 
 The final latest-head fork rerun observed Base block `49,923,565` and Base Sepolia
 block `45,434,095`. It validated deployed USDC and Pyth code/interfaces, six-decimal
@@ -73,11 +73,11 @@ callback-wrapper authentication. Public chain state was only read through local 
 
 Canonical runtime sizes remained:
 
-| Contract | Runtime | EIP-170 margin |
-| --- | ---: | ---: |
-| Raffle | 16,726 bytes | 7,850 bytes |
-| RaffleFactory | 24,267 bytes | 309 bytes |
-| RaffleLens | 6,954 bytes | 17,622 bytes |
+| Contract      |      Runtime | EIP-170 margin |
+| ------------- | -----------: | -------------: |
+| Raffle        | 16,726 bytes |    7,850 bytes |
+| RaffleFactory | 24,267 bytes |      309 bytes |
+| RaffleLens    |  6,954 bytes |   17,622 bytes |
 
 The Factory margin is release-sensitive. Any production change must repeat the size
 gate and should not consume that margin casually.
