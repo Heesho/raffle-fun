@@ -155,18 +155,21 @@ const docs = [
     path: "docs/one-pagers/raffle-fun.md",
     kicker: "Orientation",
     who: "Participants, sponsors, partners, press",
+    lede: "Your NFT either sells at your price, or it earns while it waits.",
   },
   {
     id: "raffle-fun-explained",
     path: "docs/articles/raffle-fun-explained.md",
     kicker: "Explanation",
     who: "Anyone who knows NFTs but not Solidity",
+    lede: "How an onchain raffle turns an unsold NFT into either a sale at your number or income while it waits.",
   },
   {
     id: "raffle-fun-technical-whitepaper",
     path: "docs/whitepapers/raffle-fun-technical-whitepaper.md",
     kicker: "Technical reference",
     who: "Auditors, protocol engineers, integrators",
+    lede: "State machine, economics, invariants, threat model and integration surface for an immutable, administrator-free NFT raffle protocol.",
   },
 ];
 
@@ -191,6 +194,26 @@ function protocolCommit() {
 const escapeHtml = (value) =>
   value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
+/** Inlines a repository SVG so the PDF carries real vectors rather than a broken link. */
+function inlineSvg(relative, fromDir) {
+  const file = resolve(root, fromDir, relative);
+  if (!existsSync(file)) return null;
+  let svg = readFileSync(file, "utf8").replace(/<\?xml[^>]*\?>/, "");
+  const box = svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/);
+  svg = svg.replace(/\sstyle="[^"]*"/, "");
+  if (box) {
+    svg = svg.replace(
+      /<svg([^>]*?)\swidth="[^"]*"/,
+      `<svg$1 width="${Math.round(+box[1])}" height="${Math.round(+box[2])}"`,
+    );
+  }
+  return svg;
+}
+
+const brandMark = readFileSync(
+  resolve(root, "apps/web/public/brand/logo-raffle-pink.png"),
+).toString("base64");
+
 function renderDocument(doc) {
   const raw = readFileSync(resolve(root, doc.path), "utf8");
   const title = (raw.match(/^#\s+(.+)$/m) || [, doc.id])[1].trim();
@@ -206,6 +229,11 @@ function renderDocument(doc) {
   };
   renderer.table = function (token) {
     return `<div class="tbl">${marked.Renderer.prototype.table.call(this, token)}</div>`;
+  };
+  renderer.image = function ({ href, text }) {
+    const svg = inlineSvg(href, dirname(doc.path));
+    if (!svg) return "";
+    return `<figure class="plate">${svg}<figcaption>${text}</figcaption></figure>`;
   };
   renderer.link = function ({ href, tokens }) {
     const label = this.parser.parseInline(tokens);
@@ -247,7 +275,7 @@ const documentHtml = (doc, commit) => `<!doctype html>
 :root{
   --ink:#10143a; --ink2:#454b78; --ink3:#676c94;
   --line:#dcdded; --line-strong:#c3c5dd; --sunk:#f4f4fb;
-  --accent:#d31d8b; --indigo:#1e2a9b; --danger:#c8213f;
+  --accent:#f033bb; --accent-deep:#c01a92; --indigo:#1e2a9b; --danger:#c8213f;
   --amber:#7a4f00; --amber-wash:#fff5d6;
   --body:"Inter var",system-ui,sans-serif;
   --display:"Nunito var","Inter var",system-ui,sans-serif;
@@ -260,24 +288,42 @@ body{font-family:var(--body);color:var(--ink);font-size:10.2pt;line-height:1.55;
   -webkit-print-color-adjust:exact;print-color-adjust:exact}
 a{color:var(--indigo);text-decoration:none;border-bottom:.4pt solid var(--line-strong)}
 
-.cover{border-bottom:1.6pt solid var(--ink);padding-bottom:11pt;margin-bottom:16pt}
-.brand{font-family:var(--display);font-weight:900;font-size:11pt;letter-spacing:-.01em;margin:0 0 14pt}
-.brand b{color:var(--accent)}
-.kicker{font-family:var(--mono);font-size:7pt;letter-spacing:.13em;text-transform:uppercase;
-  color:var(--accent);margin:0 0 5pt}
-h1.t{font-family:var(--display);font-weight:900;font-size:25pt;line-height:1.08;
-  letter-spacing:-.02em;margin:0 0 10pt}
-.meta{display:flex;flex-wrap:wrap;gap:3pt 20pt;font-size:8.2pt;color:var(--ink2);margin:0}
-.meta b{font-family:var(--mono);font-size:6.8pt;letter-spacing:.09em;text-transform:uppercase;
-  color:var(--ink3);font-weight:600;display:block}
+/* ---- brand cover panel ----
+   Chrome cannot bleed into the printToPDF margins, so the cover is a rounded panel that
+   fills the text area rather than a full-bleed page. Negative margins clip instead. */
+.cover{position:relative;overflow:hidden;break-after:page;
+  border-radius:16pt;padding:20mm 18mm;min-height:250mm;color:#fff;
+  display:flex;flex-direction:column;
+  background:linear-gradient(158deg,#f033bb 0%,#d21fae 32%,#7b3fe4 70%,#2b1b8f 100%)}
+.cover::after{content:"";position:absolute;right:-30mm;bottom:-40mm;width:135mm;height:135mm;
+  border-radius:50%;background:rgba(255,255,255,.10)}
+.badge{width:22mm;height:22mm;border-radius:6mm;background:#fff;display:flex;
+  align-items:center;justify-content:center;margin-bottom:9mm;position:relative;z-index:1}
+.badge img{width:13mm;height:auto;display:block}
+.brand{font-family:var(--display);font-weight:900;font-size:22pt;letter-spacing:-.03em;
+  margin:0 0 9mm;color:#fff;position:relative;z-index:1}
+.brand span{opacity:.7;font-weight:800}
+.kicker{font-family:var(--mono);font-size:7.5pt;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.8);margin:0 0 4mm;position:relative;z-index:1}
+h1.t{font-family:var(--display);font-weight:900;font-size:34pt;line-height:1.04;
+  letter-spacing:-.03em;margin:0 0 6mm;color:#fff;max-width:142mm;position:relative;z-index:1}
+.lede{font-size:12.5pt;line-height:1.42;color:rgba(255,255,255,.92);max-width:124mm;
+  margin:0;position:relative;z-index:1}
+.spacer{flex:1 1 auto;min-height:12mm}
+.meta{display:flex;flex-wrap:wrap;gap:4mm 14mm;font-size:8.6pt;margin:0;
+  color:rgba(255,255,255,.94);position:relative;z-index:1}
+.meta b{font-family:var(--mono);font-size:6.6pt;letter-spacing:.13em;text-transform:uppercase;
+  color:rgba(255,255,255,.6);font-weight:600;display:block;margin-bottom:1mm}
 .meta span{font-family:var(--mono)}
-.flags{margin-top:9pt;display:flex;gap:5pt;flex-wrap:wrap}
-.flag{font-family:var(--mono);font-size:6.8pt;letter-spacing:.05em;text-transform:uppercase;
-  padding:2.5pt 5pt;border:.6pt solid var(--danger);color:var(--danger);border-radius:1.5pt}
-.flag.n{border-color:var(--line-strong);color:var(--ink2);text-transform:none;letter-spacing:0}
+.flags{margin-top:8mm;display:flex;gap:3mm;flex-wrap:wrap;position:relative;z-index:1}
+.flag{font-family:var(--mono);font-size:7pt;letter-spacing:.06em;text-transform:uppercase;
+  padding:2.4mm 4mm;border-radius:12pt;font-weight:600;
+  background:rgba(255,255,255,.17);border:.7pt solid rgba(255,255,255,.5);color:#fff}
+.flag.n{background:none;border-color:rgba(255,255,255,.32);color:rgba(255,255,255,.78);
+  text-transform:none;letter-spacing:0}
 
 h2{font-family:var(--display);font-weight:900;font-size:14pt;line-height:1.2;
-  margin:19pt 0 5pt;padding-top:7pt;border-top:.5pt solid var(--line);
+  margin:19pt 0 5pt;padding-top:7pt;border-top:1.4pt solid var(--accent);
   break-after:avoid;break-inside:avoid}
 h3{font-family:var(--display);font-weight:800;font-size:11pt;margin:13pt 0 3pt;
   break-after:avoid;break-inside:avoid}
@@ -287,16 +333,16 @@ li{margin-bottom:2.5pt}
 li>ul,li>ol{margin-top:2.5pt;margin-bottom:0}
 ul,ol{padding-left:14pt}
 hr{border:0;border-top:.5pt solid var(--line);margin:14pt 0}
-code{font-family:var(--mono);font-size:8.4pt;background:var(--sunk);
-  border:.4pt solid var(--line);border-radius:1.5pt;padding:.5pt 2pt}
-pre{background:var(--sunk);border:.5pt solid var(--line);border-radius:2pt;
+code{font-family:var(--mono);font-size:8.4pt;background:#fdf0f9;color:var(--accent-deep);
+  border:.4pt solid #f7d6ee;border-radius:3pt;padding:.5pt 2.4pt}
+pre{background:var(--sunk);border:.5pt solid var(--line);border-radius:6pt;
   padding:7pt 9pt;font-family:var(--mono);font-size:7.8pt;line-height:1.45;
   color:var(--ink2);white-space:pre-wrap;word-wrap:break-word;
   break-inside:avoid;margin:0 0 8pt}
 pre code{background:none;border:0;padding:0;font-size:1em}
-blockquote{margin:0 0 8pt;padding:7pt 10pt;background:var(--amber-wash);
-  border:.5pt solid var(--line);border-left:2pt solid var(--amber);
-  color:var(--ink2);break-inside:avoid}
+blockquote{margin:0 0 8pt;padding:8pt 11pt;background:var(--amber-wash);
+  border:.5pt solid var(--line);border-left:2.4pt solid var(--amber);
+  border-radius:0 6pt 6pt 0;color:var(--ink2);break-inside:avoid}
 blockquote p:last-child{margin-bottom:0}
 
 .tbl{margin:0 0 9pt}
@@ -311,14 +357,22 @@ td:first-child,th:first-child{padding-left:0}
 tr{break-inside:avoid}
 td strong{color:var(--ink)}
 
+figure.plate{margin:12pt 0 14pt;padding:9pt;text-align:center;break-inside:avoid;
+  background:#fdfcff;border:.5pt solid var(--line);border-radius:8pt}
+figure.plate svg{max-width:100%;max-height:176mm;height:auto;width:auto}
+figure.plate figcaption{margin-top:7pt;font-size:7.6pt;color:var(--ink3);
+  font-family:var(--body);text-align:center;line-height:1.4}
 figure.diagram{margin:10pt 0 12pt;text-align:center;break-inside:avoid}
 figure.diagram svg{max-width:100%;max-height:200mm;height:auto;width:auto}
 figure.diagram pre.mermaid{background:none;border:0;padding:0;margin:0}
 </style></head><body>
 <div class="cover">
-  <p class="brand">raffle<b>.fun</b></p>
+  <div class="badge"><img src="data:image/png;base64,${brandMark}" alt=""></div>
+  <p class="brand">raffle<span>.fun</span></p>
   <p class="kicker">${doc.kicker}</p>
   <h1 class="t">${doc.title}</h1>
+  <p class="lede">${doc.lede}</p>
+  <div class="spacer"></div>
   <dl class="meta">
     <div><b>Reader</b>${doc.who}</div>
     <div><b>Protocol commit</b><span>${commit.slice(0, 12)}</span></div>

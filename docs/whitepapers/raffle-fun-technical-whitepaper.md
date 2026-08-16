@@ -129,6 +129,8 @@ flowchart LR
   L -->|isRaffle / idByRaffle| F
 ```
 
+![Contract architecture: factory, independent raffles, and the read-only lens](../whitepaper/assets/diagrams/16-contract-architecture.svg)
+
 ### 2.1 Contract responsibilities
 
 | Contract        | Holds assets                                      | Mutable state                                                          | Authority                                         |
@@ -215,6 +217,8 @@ stateDiagram-v2
 | `NftWon` → `Refunding`     | `enableRefunds`    | `!prizeClaimed` ∧ `now >= resolvedAt + 30d`                                                                                       |
 
 ### 3.4 Timing envelope
+
+![Sale, request grace, and callback windows on one timeline](../whitepaper/assets/diagrams/05-sale-deadline-timeline.svg)
 
 All constants from `RaffleConstants.sol`:
 
@@ -438,6 +442,8 @@ a provider minimum gas limit above the requested value — the fork run observed
 effective limit against a local callback consumption of 95,078 gas
 (`FORK-VALIDATION.md:39-43`).
 
+![Entropy request and callback sequence](../whitepaper/assets/diagrams/07-randomness-sequence.svg)
+
 ### 6.2 Callback authentication
 
 Authentication is layered:
@@ -554,7 +560,41 @@ or trustless.
 Both are compile-time constants embedded in every deployed raffle. Neither can be changed
 for an existing raffle by any party `[RF-046]`.
 
-### 7.2 Fee
+### 7.2 The sponsor's position
+
+The threshold is not a safety rail bolted onto a raffle; it is the sponsor's **ask**.
+
+```text
+ask = ticketPrice x minimumTickets
+```
+
+Settlement is therefore a binary on whether gross sales cleared that ask, and the sponsor is
+paid either way:
+
+| Condition              | Branch    | Sponsor receives                            | Prize                   |
+| ---------------------- | --------- | ------------------------------------------- | ----------------------- |
+| `grossSales >= ask`    | `NftWon`  | `0.95 x grossSales`, uncapped above the ask | to the winning ticket   |
+| `0 < grossSales < ask` | `CashWon` | `0.19 x grossSales`                         | retained by the sponsor |
+| `grossSales = 0`       | `Closed`  | nothing                                     | retained by the sponsor |
+
+The `0.19` is exact: `(1 - 0.05) x (1 - 0.80) = 0.19` `[RF-038]`, `[RF-046]`.
+
+This is structurally a **covered call**. The sponsor writes an option on an asset they hold;
+ticket buyers pay the premium; if the strike is cleared the asset is delivered, and if it is
+not, the writer keeps both the asset and the premium. `minimumTickets` is the strike,
+`ticketPrice x quantity` is the premium paid by each buyer, and `endTime` is expiry. Two
+differences from a conventional covered call matter:
+
+1. **Exercise is probabilistic per buyer but deterministic in aggregate.** Clearing the ask
+   guarantees the NFT transfers; which buyer receives it is the random part.
+2. **The writer cannot close the position early.** The prize is escrowed until settlement
+   `[RF-012]`, so there is no buy-back.
+
+For an integrator, the practical consequence is that `minimumTickets` and `ticketPrice`
+should be surfaced to a sponsor as one derived figure — the ask — rather than as two
+unrelated parameters.
+
+### 7.3 Fee
 
 ```text
 protocolFee = floor(grossPot × 500 / 10_000)
@@ -564,7 +604,9 @@ Computed via `Math.mulDiv` in exactly two locations: the `CashWon` arm of `entro
 and the `NftWon` arm of `redeemWinningTicket`. Charged on **neither** of the three refund
 origins nor on empty closure `[RF-044]`.
 
-### 7.3 Branch settlement
+### 7.4 Branch settlement
+
+![The four terminal outcomes compared by fee, winner, prize and quote destination](../whitepaper/assets/diagrams/09-outcome-comparison.svg)
 
 **NFT branch (`totalTickets >= minimumTickets`).** No liability is created at resolution.
 On `redeemWinningTicket(to)`:
@@ -594,7 +636,7 @@ sponsorCash = distributablePot − winnerCash
 **Refund branches.** `remainingRefundLiability = unsettledPot`, `unsettledPot = 0`; each
 burned ticket pays exactly `ticketPrice` `[RF-043]`.
 
-### 7.4 Conservation
+### 7.5 Conservation
 
 Both floor divisions assign their remainder to the sponsor via subtraction, so value is
 conserved exactly in raw token units `[RF-047]`:
@@ -617,7 +659,7 @@ Refund  : Σ (ticketPrice per burned ticket)            = grossPot
 
 Accepted as ETHSkills `ES-11` (sub-unit remainder accrues to the sponsor).
 
-### 7.5 Canonical cash-branch example
+### 7.6 Canonical cash-branch example
 
 80 tickets × 1.00 USDC, `minimumTickets = 100`:
 
@@ -706,6 +748,8 @@ Any other status reverts with `InvalidStatus`. Before the deadline: `RefundsNotA
 
 ### 9.2 First-included-transition semantics
 
+![Callback versus timeout race at the deadline boundary](../whitepaper/assets/diagrams/13-timeout-refund.svg)
+
 **A deadline does not mutate state.** At and after each boundary, both the "success"
 transaction and `enableRefunds()` are valid; whichever is included first wins and the other
 becomes a harmless no-op `[RF-041]`, `[RF-042]`.
@@ -782,6 +826,8 @@ assumption is that a ticket holder or the sponsor is motivated to pay it `[RF-02
 
 ### 10.2 Factory ownership
 
+![What the factory owner can and cannot reach](../whitepaper/assets/diagrams/18-owner-matrix.svg)
+
 `Ownable2Step` — a proposed owner must actively accept, so a mistyped address cannot strand
 the role. `renounceOwnership()` is overridden `pure` and always reverts with
 `OwnershipRenunciationDisabled` `[RF-005]`; ETHSkills `ES-04` found that renouncing while
@@ -830,6 +876,8 @@ only: pause creation, warn users, remove frontend exposure, deploy a new factory
 ## 12. Trust assumptions
 
 Ordered by the project's own severity assessment.
+
+![Trust dependencies and what each one can do](../whitepaper/assets/diagrams/20-trust-dependency-map.svg)
 
 ### T1 — Pyth Entropy provider (HIGH, unresolved)
 

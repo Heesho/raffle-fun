@@ -10,19 +10,38 @@ contract, function, and test behind it. Described commit:
 
 ## 1. The basic idea
 
-You already know how a raffle works. Someone donates a prize, people buy numbered tickets,
-a number is drawn, and whoever holds that ticket takes the prize home.
+The mechanism is a raffle. The problem it solves is that NFTs are hard to sell.
 
-Everything interesting happens in the gaps between those steps. Who holds the prize while
-tickets are selling? Who draws the number, and how do you know they did not pick a
-friend's ticket? What happens if barely anyone shows up, or if the organizer disappears?
+If you hold one, you know the pattern. You list at the price you want. The listing sits there
+earning nothing. Weeks pass. Eventually you get lucky or you capitulate and cut, because a
+listing has only two states: _unsold_ and _sold cheaper_.
 
-In the physical world those gaps are filled by trust — in a charity, a licensing body, a
-friend. raffle.fun fills them with code: smart contracts on Base, an Ethereum layer-2
-network, that hold the prize, sell the tickets, draw the number, pay out, and — importantly
-— refund everyone when something goes wrong. In one sentence: **raffle.fun locks one NFT
-into a contract, sells numbered tickets for a stablecoin, draws one ticket using an external
-randomness service, and lets whoever holds that ticket claim the prize.**
+raffle.fun adds a third state: **earning while unsold**. You name your price and open the NFT
+up for a fixed period. People buy tickets. When the period ends:
+
+- **Ticket sales reached your price** — one ticket wins the NFT and you receive 95% of
+  everything sold. You sold, at your number.
+- **They fell short** — the NFT comes straight back to you and **you keep 19% of everything
+  sold**. One ticket wins the remaining cash instead. Then you can run it again.
+
+So the two things the protocol actually does for an NFT holder are: **sell your NFT at your
+price, or earn yield on it while it fails to sell.**
+
+```mermaid
+flowchart LR
+  L["A normal listing"] --> L1["unsold<br/>you earn nothing"]
+  L --> L2["sold<br/>often after cutting the price"]
+  R["A raffle.fun sale"] --> R1["fell short<br/>you keep the NFT<br/>and 19% of what sold"]
+  R --> R2["price met<br/>you receive 95%<br/>at your number or better"]
+```
+
+Section 17 works a full example end to end.
+
+Everything else here is the machinery that makes those outcomes trustworthy without trusting
+the organiser: who holds the NFT while tickets sell, how the winner is drawn, and what
+happens when something breaks. In one sentence: **raffle.fun locks one NFT into a contract,
+sells numbered tickets for a stablecoin, draws one ticket using an external randomness
+service, and lets whoever holds that ticket claim the prize.**
 
 ## 2. How the sponsor creates a raffle
 
@@ -228,8 +247,11 @@ Sofia and the treasury each now hold a claim they withdraw whenever they like. T
 
 ## 11. The cash-fallback outcome
 
-The minimum threshold protects the sponsor from an otherwise common outcome: a valuable NFT
-going to someone who paid almost nothing because only a handful of tickets sold.
+This branch turns a failed sale into income, so it is worth being precise.
+
+The threshold **is the ask**: ticket price times minimum tickets is the number the sponsor
+wants for the NFT. Above it they have sold, below it they have not. It also protects them
+from a valuable NFT going to someone who paid almost nothing because few tickets sold.
 
 So if the sale finished **below** the threshold, the draw still happens and a ticket still
 wins — but it wins **money** instead, and the sponsor keeps the NFT plus the rest of the
@@ -463,19 +485,18 @@ for.** That judgment is yours.
 **Ticket destinations are your responsibility.** A ticket sent to a lost key or an incapable
 contract is gone, with no recovery.
 
-**Nothing is private.** Sponsor identity, every purchase and transfer, the winner, and every
-amount are permanently public. Websites and RPC providers may also see your IP address and
-wallet metadata.
+**Nothing is private.** Sponsor identity, every purchase and transfer, the winner and every
+amount are permanently public. Websites and RPC providers may also see your IP and wallet
+metadata.
 
 **The legal position is unresolved.** Raffles, lotteries, sweepstakes, and prize promotions
 are regulated very differently across jurisdictions, and no jurisdiction-specific legal
 review has been performed. Whether participating in or sponsoring one is lawful where you
 live is a question this article cannot answer.
 
-**Losing tickets keep existing.** Only the winning ticket is burned. Everyone else's
-tickets stay in their wallets and stay tradable after the raffle is over, even though they
-are now worth nothing. If you buy a ticket on a secondary market, check that the raffle is
-still running — a settled loser looks exactly like a live ticket.
+**Losing tickets keep existing.** Only the winning ticket is burned. The rest stay in their
+wallets, tradable, worth nothing. If you buy on a secondary market, check the raffle is still
+running — a settled loser looks exactly like a live ticket.
 
 **Some things are unsupported outright.** Tokens with transfer taxes or rebasing supplies
 are rejected; stablecoins donated directly to a raffle are unrecoverable; an unrelated NFT

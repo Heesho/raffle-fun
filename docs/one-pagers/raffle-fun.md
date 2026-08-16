@@ -1,123 +1,101 @@
 # raffle.fun at a Glance
 
-**raffle.fun is an NFT raffle protocol written as immutable smart contracts.** A sponsor
-locks one NFT into a purpose-built contract; anyone buys numbered tickets in a stablecoin;
-one ticket is drawn using Pyth Entropy; the holder of that ticket claims the prize. Every
-rule is fixed when the raffle is created, and nobody — including the people who wrote it —
-can change it afterwards.
+**Your NFT either sells at your price, or it earns while it waits.**
 
-## What a sponsor does
+NFTs are hard to sell. You list at the price you actually want, and the listing sits there —
+earning nothing, doing nothing — until someone finally meets it or you give up and cut.
 
-The sponsor calls `createRaffle`, setting the prize, ticket price, minimum ticket
-threshold, and sale window. In that single transaction the protocol deploys a new `Raffle`,
-registers it, and pulls the NFT into escrow, verifying it actually arrived. If any step
-fails the whole transaction reverts — so a raffle can never exist without its prize already
-locked inside it.
+raffle.fun changes what happens during the waiting. You name your price and open it up for a
+fixed period. People buy tickets. When the period ends there are exactly two outcomes, and
+**you are paid in both of them**.
 
-## What a buyer receives
-
-Tickets are ERC-721 NFTs minted by the raffle itself, numbered sequentially from 1, at a
-flat price with no checkout fee. **Ticket ownership is the bearer claim credential.**
-Whoever holds the ticket at redemption time can claim — the protocol never consults
-purchase history, and an approved operator is not enough. Tickets trade freely during the
-sale, which also means you can lose the claim by sending one somewhere that cannot call
-back into the contract.
-
-## How a winner is selected
-
-After the sale closes, anyone may pay Pyth Entropy's current fee and request the one draw,
-within a three-day window. The moment that request is submitted, **all ticket transfers
-freeze**, fixing ownership before the randomness provider can know the outcome. The
-Entropy callback then selects ticket `(random mod totalTickets) + 1`.
-
-## The two success outcomes
-
-If at least `minimumTickets` sold, the drawn ticket wins **the NFT**. The pot stays
-escrowed until the winner burns their ticket and delivery is verified onchain; only then
-are the sponsor and the fee paid. If the threshold was missed, the drawn ticket wins
-**cash** — 80% of the post-fee pot — and the sponsor keeps the NFT plus the rest.
-
-## The three refund fallbacks
+## The two outcomes
 
 ```mermaid
 flowchart TD
-  A["Sponsor escrows one ERC-721 prize<br/>atomic with raffle creation"]
-  B["Anyone buys ERC-721 tickets<br/>flat price, one stablecoin per factory"]
-  C{"Sale ends"}
-  Z["Closed<br/>sponsor recovers the NFT"]
-  D["Anyone pays the Pyth Entropy fee<br/>and requests the one draw<br/>all transfers freeze"]
-  E["Entropy callback selects<br/>random mod totalTickets, plus 1"]
-  F["NFT outcome<br/>winner burns ticket for the NFT;<br/>sponsor and 5% fee paid only on verified delivery"]
-  G["Cash outcome<br/>winner burns ticket for 80% of the post-fee pot;<br/>sponsor keeps the NFT and the rest"]
-  R["Refunding<br/>every ticket burns for exactly its purchase price<br/>no protocol fee, no sponsor proceeds"]
-
+  A["You own an NFT<br/>you would sell at the right price"]
+  B["Name your price<br/>ticket price x how many must sell"]
+  C["People buy tickets<br/>for a fixed period you choose"]
+  D{"Did ticket sales<br/>reach your price?"}
+  E["SOLD<br/>one ticket wins the NFT<br/>you receive 95% of everything sold"]
+  F["KEPT<br/>the NFT comes straight back to you<br/>you keep 19% of everything sold<br/>one ticket wins the rest of the cash"]
   A --> B
   B --> C
-  C -->|"zero tickets sold"| Z
-  C -->|"tickets sold"| D
-  D --> E
-  E -->|"sold at or above minimum"| F
-  E -->|"sold below minimum"| G
-
-  C -.->|"origin 1: no draw requested within 3 days"| R
-  D -.->|"origin 2: request accepted, no callback for 2 days"| R
-  F -.->|"origin 3: NFT not delivered within 30 days"| R
+  C --> D
+  D -->|"yes, price met"| E
+  D -->|"no, fell short"| F
+  F -.->|"run it again"| B
 ```
 
-All three origins are finalized by the same permissionless function, `enableRefunds()`,
-which anyone may call once the relevant deadline passes. Each outstanding ticket burns for
-exactly one ticket price, in batches of up to 100. A raffle that sold zero tickets is
-closed instead, returning the NFT to the sponsor's recovery address.
+Say you want **10,000 USDC** for an NFT, so you offer 1,000 tickets at 10 USDC each.
 
-A deadline does not change state by itself: at each boundary a valid callback and a refund
-finalization are both executable, and whichever lands first wins.
+| Tickets sold | What happens        |     You receive | Who gets the NFT  |
+| ------------ | ------------------- | --------------: | ----------------- |
+| 400          | fell short          |    **760 USDC** | you keep it       |
+| 999          | fell short          |  **1,898 USDC** | you keep it       |
+| 1,000        | price met           |  **9,500 USDC** | one ticket holder |
+| 1,500        | price met, oversold | **14,250 USDC** | one ticket holder |
+| 0            | nobody showed up    |         nothing | you keep it       |
+
+**Fall short and you keep the NFT and 19% of whatever sold.** Then run it again. That is the
+yield: you are paid for waiting, which a normal listing pays you nothing for.
+
+**Hit your price and you have sold** — at your number, to a buyer who never had to write a
+five-figure cheque. Nothing caps the upside above your price, so a sale that runs hot pays
+you more.
+
+If you think in options: you are writing a covered call on your own NFT and keeping the
+premium.
+
+## What ticket buyers get
+
+A real shot at an NFT for a small fixed amount instead of its full price. Tickets are
+themselves NFTs, so they sit in your wallet and can be traded while the sale is open.
+Whoever holds the winning ticket claims the prize — the protocol never looks at who bought
+it. If the sale falls short, the drawn ticket still wins **80% of the pot** in cash.
+
+The winner is drawn using Pyth Entropy, an external randomness service. The instant the draw
+is requested every ticket freezes, so nobody who learns the result early can go and buy the
+winning ticket.
+
+## If something goes wrong
+
+Nobody can walk off with the money. The NFT is locked in the contract before a single ticket
+sells, and if the draw never completes or the prize cannot be delivered, **every ticket
+refunds exactly what it cost** and no fee is taken. Three separate deadlines trigger this,
+and **anyone** can trigger them — nobody is waiting on us to show up.
 
 ## Fee and control
 
-The protocol charges **5% of gross sales**, floored, and only when a raffle actually
-resolves. Every refund path charges nothing. The rate is a compile-time constant baked
-into every deployed raffle and cannot be changed for an existing raffle by anyone.
-
-An existing `Raffle` has **no administrator** — no owner, pause, upgrade, rescue, or
-settlement override. The factory owner controls two future-facing things: which treasury
-_new_ raffles pay, and whether _new_ raffles can be created. Neither touches an existing
-raffle. Factory ownership cannot be renounced.
+The protocol takes **5%**, and only when a sale actually resolves. Failed draws and refunds
+cost nothing. Once your sale exists, nobody — including us — can change its price, deadline
+or prize, cancel it, pick the winner, or touch the money. There is no admin key on it.
 
 ## Key risks
 
-- **Pyth Entropy provider trust.** The provider can know the result before revealing it.
-  Transfer locking prevents buying the winning ticket after the draw, but a provider that
-  already holds tickets could publish only favorable results and take a refund otherwise.
-  Modelled, its advantage peaks at a quarter of the pot when it holds half the tickets.
-  This is a documented, **unresolved** High-severity trust assumption.
-- **USDC issuer controls.** Circle can pause, freeze, blacklist, or upgrade the token. No
-  contract can force a frozen transfer.
-- **Base liveness and censorship.** The sequencer can delay or censor a draw request or
-  callback into a refund. A halted chain has no application-level escape.
-- **Malicious or upgradeable NFTs.** A prize collection can lie about its own standard and
-  ownership, or be paused or burned after escrow. Buyers bear all prize due diligence.
+- **The randomness provider is trusted.** It can see the result before publishing it. If it
+  held tickets, its edge peaks at a quarter of the pot. Documented, **unresolved**, rated
+  High severity by the project itself.
+- **Your NFT is locked** for the whole sale period. You cannot pull it out early.
+- **Tickets are bearer assets.** Send one to a wallet you cannot use and the claim is gone.
+  No admin can reverse it.
+- **USDC and Base are trusted.** Circle can freeze funds; Base can delay or censor.
 - **Smart-contract risk.** Never independently audited, never run in production.
-- **Unsafe ticket destinations.** A ticket sent to a lost key or a contract that cannot
-  redeem forfeits the claim permanently. There is no admin recovery.
-- **Legal and gaming regulation.** Raffles and prize promotions are regulated differently
-  in every jurisdiction. No legal review has been performed.
-- **Worthless leftovers.** Losing tickets are not burned. They stay in wallets and stay
-  tradable after a raffle settles, so a secondary-market buyer can be sold a settled
-  ticket that looks identical to a live one.
-- **No privacy.** Sponsors, purchases, ticket ownership, the winner, and all amounts are
-  public.
+- **Losing tickets stay tradable** after a sale ends, though they are worth nothing.
+- **Legal and gaming rules vary** by jurisdiction. No legal review has been done.
+- **Nothing is private.** Every purchase, transfer and payout is public.
 
 ## Status
 
-| Item                         | Status                                                                                                                                                                                                                                                                                                                 |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Protocol status**          | Pre-release. Feature-complete contracts; the release checklist states verbatim "not release-ready".                                                                                                                                                                                                                    |
-| **Deployment status**        | **Not deployed.** No deployment record exists for any public network; the repository contains no live address, and the web app disables writes without one.                                                                                                                                                            |
-| **Internal review status**   | An internal adversarial hardening campaign has been completed, including fuzzing, stateful and strict invariants, differential modelling, Echidna and Medusa, Halmos symbolic checks, mutation testing, Slither, and pinned Base fork validation. The maintainers state this is evidence, not proof, and not an audit. |
-| **Independent audit status** | **None.** No external audit has been performed. The most recent review is self-administered and describes itself as "not an independent audit or a production authorization".                                                                                                                                          |
-| **Source commit**            | `5772e54ba89c06646815ed52a881cd8940f094ca`                                                                                                                                                                                                                                                                             |
+| Item                  | Status                                                                                                                                                                                                                             |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Protocol**          | Pre-release. The release checklist states verbatim "not release-ready".                                                                                                                                                            |
+| **Deployment**        | **Not deployed.** No deployment record exists for any public network.                                                                                                                                                              |
+| **Internal review**   | An internal adversarial campaign has been completed — fuzzing, invariants, differential models, Echidna, Medusa, Halmos, mutation testing, pinned Base forks. The maintainers state this is evidence, not proof, and not an audit. |
+| **Independent audit** | **None.** The most recent review is self-administered and describes itself as "not an independent audit".                                                                                                                          |
+| **Source commit**     | `5772e54ba89c06646815ed52a881cd8940f094ca`                                                                                                                                                                                         |
 
-_raffle.fun must not be described as audited, trustless, provably fair, guaranteed, live,
-or production-ready. Every claim on this page traces to
+_raffle.fun must not be described as audited, trustless, provably fair, guaranteed, live or
+production-ready. Nothing here is financial advice. Every claim traces to
 [`docs/facts/raffle-fun-facts.md`](../facts/raffle-fun-facts.md), which cites the exact
-contract, function, and test behind it._
+contract, function and test behind it._
