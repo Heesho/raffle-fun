@@ -1144,6 +1144,8 @@ deployment/static check.
     (lost key, or a contract with no redemption capability).
   - Tickets or fixed claims assigned to an address that is **code-less now** and becomes a
     registered raffle **later** (see `RF-057` below).
+  - A raffle ticket minted by a **different factory** used as a prize (see `RF-074`); the
+    same-factory case is rejected at creation.
 - **Source.** `packages/contracts/src/Raffle.sol:355-358,376-379`; `SECURITY.md:73-79`;
   `packages/contracts/audit/RESIDUAL-RISKS.md:8-23`.
 - **Evidence.** `testFeeOnTransferQuoteTokenIsRejectedWithoutCreatingLiability`,
@@ -1298,13 +1300,25 @@ deployment/static check.
 - **Source.** `packages/contracts/audit/EXTREME-TESTING-2026-08-13.md:50-66`;
   `DEEP-TESTING-2026-08-13.md:20-45`.
 - **Evidence.** The reports themselves; the test suite in `packages/contracts/test/`.
-- **Commit.** Campaign commits `b992b23` (extreme) and `fe09d47` (deep); registry HEAD `5772e54`.
+- **Superseded by a newer campaign.** The 2026-08-16 campaign
+  (`packages/contracts/audit/CURRENT-*.md`, merged as `38dcf02`) is scoped explicitly to
+  production commit `5772e54` and is the current evidence of record. It reports **0
+  Critical and 0 High production defects**, one unresolved external High trust assumption
+  (`RF-065`), one Medium composition limitation (`RF-074`), and a set of test-quality and
+  off-chain gaps. It added six tests, raising the Foundry suite to **94 passed, 0 failed**,
+  and cleared a High upstream dependency advisory.
+- **Commit.** Campaign commits `b992b23` (extreme), `fe09d47` (deep), `38dcf02` (current);
+  protocol commit `5772e54`.
 - **Status.** Current, with the caveat that these numbers were produced at the two
   immediately-preceding commits and `RELEASE-CHECKLIST.md:69` requires re-running the full
   aggregate transcript from a clean checkout of the final release commit.
 - **Caveats.** `EXTREME-TESTING-2026-08-13.md:100-102`: fuzzing, symbolic execution,
   mutation testing, and high coverage are "evidence, not a mathematical proof". SMTChecker
-  was inconclusive; Mythril was never executed (`RESIDUAL-RISKS.md:53-59`).
+  was inconclusive; Mythril was never executed (`RESIDUAL-RISKS.md:53-59`). The 2026-08-16
+  campaign also found and fixed four **test-quality** defects in the prior suites — most
+  notably an ordinary invariant run that spent 17,263 calls on a setup-only action that
+  always reverted (`CURRENT-TEST-01`). Earlier campaign call counts should therefore be
+  read as upper bounds on useful exploration, not as effective coverage.
 
 ### RF-064 — Independent audit status: none
 
@@ -1337,7 +1351,14 @@ deployment/static check.
   _post-request acquisition_ vector but does not address a provider that already owned
   tickets before the request. Withholding leads to the two-day callback timeout and a full
   refund (`RF-041`) — so the provider's downside is a refund, and its upside is a win.
+- **Quantified.** The 2026-08-16 campaign models the provider's abort option. Owning a
+  fraction `f` of tickets against a gross pot `G`, its advantage over always revealing is
+  `f·G·(1 − f)`, **maximised at `G/4` when `f = 0.5`** (`CURRENT-FINDINGS.md`,
+  `CURRENT-EXT-01`). The model quantifies the capability; it does not remediate it.
+- **Named remediation options** (none implemented): provider pinning with monitoring,
+  composed entropy, an alternative RNG, independent sources, or bonds/slashing.
 - **Source.** `docs/RANDOMNESS.md:40-48`; `packages/contracts/audit/RESIDUAL-RISKS.md:25-31`;
+  `packages/contracts/audit/CURRENT-FINDINGS.md` (`CURRENT-EXT-01`, High, unresolved);
   `ETHSKILLS-REVIEW-2026-08-13.md` finding `ES-02` ("Partly fixed ... remains unresolved").
 - **Evidence.** Disposition recorded as unresolved in `ES-02`;
   `RELEASE-CHECKLIST.md:30-31` is unchecked.
@@ -1398,6 +1419,60 @@ deployment/static check.
 - **Status.** Current. Runtime sizes at the last measured campaign: `Raffle` 16,726 B
   (7,850 B margin), `RaffleFactory` 24,267 B (309 B margin), `RaffleLens` 6,954 B
   (17,622 B margin).
+
+### RF-074 — MEDIUM: a raffle ticket from another factory can be stranded as a prize
+
+- **Claim.** If a sponsor uses one raffle's ticket as the prize in a _different_ factory's
+  raffle, that ticket can become permanently stuck. Buyers still get their money back.
+- **Technical.** `_isKnownProtocolDestination` screens only the raffle's **own** factory
+  registry (`RF-025`), so a ticket minted by another factory passes every check at
+  creation. If the inner raffle later enters `Drawing`, or the escrowed ticket becomes the
+  inner winning ticket, the inner transfer lock (`RF-022`, `RF-023`) blocks it. The outer
+  raffle can then complete neither `redeemWinningTicket` nor `claimSponsorPrize`.
+- **Source.** `packages/contracts/src/Raffle.sol:483-489` (same-factory registry check only);
+  `packages/contracts/audit/CURRENT-FINDINGS.md` (`CURRENT-COMP-01`, Medium).
+- **Evidence.** `testCrossFactoryNestedWinnerLockPreservesBuyerRefundButCanStrandPrize` (`A`);
+  `testSameFactoryNestedRaffleTicketPrizeRevertsAtomically` (`A`) — the **same-factory**
+  case is correctly rejected at creation.
+- **Commit.** Protocol `5772e54`; evidence `38dcf02`.
+- **Status.** Accepted limitation, pending owner-facing policy.
+- **Caveats.** **Quote solvency is not violated**: outer buyers still redeem full
+  per-ticket refunds after the 30-day NFT-delivery timeout (`RF-042`). Only the nested
+  prize is stranded. The root cause generalises — any ERC-721 that imposes transfer locks
+  after escrow can do this, and no receiving factory can detect every such token. The
+  campaign's suggested policy is to **document raffle-ticket prizes as unsupported**.
+
+### RF-075 — Losing tickets survive settlement as transferable souvenirs
+
+- **Claim.** After a raffle resolves, the losing tickets still exist in wallets and can
+  still be traded — but they are worth nothing.
+- **Technical.** Only the winning ticket is burned on redemption (`RF-021`). Non-winning
+  tickets are never burned, remain valid ERC-721 tokens, and become transferable again
+  once the raffle leaves `Drawing` (`RF-024`).
+- **Source.** `packages/contracts/src/Raffle.sol:216-244`;
+  `packages/contracts/audit/CURRENT-RESIDUAL-RISKS.md` ("Accepted design limitations").
+- **Evidence.** `testPurchasesMintSequentialTransferableBearerTickets` (`U`).
+- **Commit.** Protocol `5772e54`; evidence `38dcf02`.
+- **Status.** Current, accepted.
+- **Caveats.** This is a market-integrity obligation on **interfaces, not the contracts**:
+  UIs and marketplaces must not imply a settled raffle's losing tickets carry continuing
+  economic value. A buyer on a secondary market can otherwise be sold a worthless token
+  that looks identical to a live one.
+
+### RF-076 — The subgraph does not index ignored Entropy callbacks
+
+- **Claim.** A rejected oracle callback is visible onchain but not in the indexer.
+- **Technical.** `Raffle` emits `EntropyCallbackIgnored` for wrong-sequence, in-flight,
+  stale, and duplicate callbacks (`RF-033`), but the subgraph has no handler or entity for
+  it.
+- **Source.** `packages/subgraph/schema.graphql`;
+  `packages/contracts/audit/CURRENT-FINDINGS.md` (`CURRENT-SUBGRAPH-01`, Low).
+- **Evidence.** Absence of a matching entity in the schema.
+- **Commit.** Protocol `5772e54`; evidence `38dcf02`.
+- **Status.** Current, open.
+- **Caveats.** Monitoring must read this event from chain logs directly rather than
+  relying on the indexer. It is a monitoring signal, not a lifecycle event, so no
+  financial state is misrepresented.
 
 ### RF-071 — No protocol privacy
 

@@ -6,7 +6,8 @@ oracle-bounded liveness, and three-origin refund fallback.**
 | Field                 | Value                                                                                                     |
 | --------------------- | --------------------------------------------------------------------------------------------------------- |
 | **Version**           | Contracts `2.0.0`                                                                                         |
-| **Source commit**     | `5772e54ba89c06646815ed52a881cd8940f094ca`                                                                |
+| **Protocol commit**   | `5772e54ba89c06646815ed52a881cd8940f094ca` (production Solidity)                                          |
+| **Evidence commit**   | `38dcf02` — current-commit campaign and audit ledger; no production Solidity changed                      |
 | **Document date**     | 2026-08-16                                                                                                |
 | **Audience**          | Security auditors, protocol engineers, researchers, integrators, sophisticated participants               |
 | **Target chain**      | Base (8453) / Base Sepolia (84532)                                                                        |
@@ -28,7 +29,14 @@ Every substantive claim below is backed by a Fact ID in
 [`docs/facts/raffle-fun-facts.md`](../facts/raffle-fun-facts.md), which cites the contract,
 line, function, and test for each. Fact IDs appear inline as `[RF-nnn]`.
 
-### 0.2 Superseded artifacts
+### 0.2 Current evidence of record
+
+`packages/contracts/audit/CURRENT-*.md` (merged as `38dcf02`) is scoped explicitly to
+production commit `5772e54` and supersedes every earlier audit report for current-behaviour
+questions. Its findings are folded into §5.4, §6.5, §11, §13.1, §14 and §16. `docs/WHITEPAPER.md`
+is a redirect stub pointing at this document set.
+
+### 0.3 Superseded artifacts
 
 Several documents in this repository describe an **earlier** architecture and must not be
 relied on:
@@ -41,7 +49,7 @@ relied on:
   commit `a2120f5e163dc3641d9864773febbfedca047edb`; describe a cross-raffle recovery
   dispatcher that **no longer exists** `[RF-057]`.
 
-### 0.3 Non-claims
+### 0.4 Non-claims
 
 This document does **not** assert that raffle.fun is audited, formally verified, trustless,
 provably fair, risk-free, guaranteed, live, or production-ready. The project's own release
@@ -49,7 +57,7 @@ checklist states verbatim: _"Current status: not release-ready."_ `[RF-061]` The
 restrictions are imposed by `packages/contracts/audit/RELEASE-CHECKLIST.md:117-119` and are
 reproduced here deliberately.
 
-### 0.4 Security objective (as stated by the project)
+### 0.5 Security objective (as stated by the project)
 
 > For a supported standards-compliant ERC-721 prize whose ownership and safe transfers
 > remain honest, and a non-rebasing exact-transfer ERC-20 whose transfers remain available,
@@ -376,6 +384,15 @@ recovery recipient and treasury; `RaffleFactory.setProtocolTreasury` applies the
 > gap is accepted in preference to reintroducing a seizure-capable executor. Regression:
 > `testRegressionCapturedFutureRaffleCannotExerciseRemovedRecoveryPath`.
 
+> **Auditor note — screening is same-factory only.** `isRaffle` resolves against _this
+> raffle's_ factory registry. A ticket minted by a **different** factory is invisible to the
+> check and can be escrowed as a prize; if that inner raffle later locks the ticket, the
+> outer prize is stranded. Outer buyers still recover in full through the NFT-delivery
+> timeout, so quote solvency holds. `CURRENT-COMP-01`, Medium, accepted `[RF-074]`.
+> Regression: `testCrossFactoryNestedWinnerLockPreservesBuyerRefundButCanStrandPrize`; the
+> same-factory case is rejected at creation by
+> `testSameFactoryNestedRaffleTicketPrizeRevertsAtomically`.
+
 > **Gas note.** Every transfer to an address with code performs an external `isRaffle` call
 > to the factory. Integrators batching transfers should budget for it.
 
@@ -498,8 +515,22 @@ request was made. Such a provider faces:
 | Provider's ticket drawn     | reveal          | provider wins the prize                     |
 | Provider's ticket not drawn | withhold        | callback timeout → provider refunded at par |
 
-The payoff is asymmetric and strictly non-negative. Disposition in
-`ETHSKILLS-REVIEW-2026-08-13.md` is `ES-02`, **High, partly fixed, unresolved** `[RF-065]`.
+The payoff is asymmetric and strictly non-negative. The 2026-08-16 campaign models it:
+for a provider owning fraction `f` of tickets against gross pot `G`, the advantage over
+always revealing is
+
+```text
+advantage(f) = f · G · (1 − f)      maximised at G/4 when f = 0.5
+```
+
+so a provider holding half the tickets captures up to a quarter of the pot in expectation
+(`CURRENT-FINDINGS.md`, `CURRENT-EXT-01`, High, unresolved). The model quantifies the
+capability; it does not remediate it. Named remediation options, **none implemented**:
+provider pinning with monitoring, composed entropy, an alternative RNG, independent
+sources, or bonds/slashing.
+
+Disposition in `ETHSKILLS-REVIEW-2026-08-13.md` is `ES-02`, **High, partly fixed,
+unresolved** `[RF-065]`.
 `RELEASE-CHECKLIST.md:30-31` and `:88` require either pinning and callback-checking a
 reviewed provider, or replacing the RNG integration with an independently reviewed design,
 before release. Both items are **unchecked**. The current integration uses Entropy's mutable
@@ -770,27 +801,29 @@ only: pause creation, warn users, remove frontend exposure, deploy a new factory
 
 ## 11. Failure mode analysis
 
-| Failure                                           | Detection                     | Outcome                                     | Fee charged | Fact     |
-| ------------------------------------------------- | ----------------------------- | ------------------------------------------- | :---------: | -------- |
-| Prize transfer fails at creation                  | post-condition                | entire creation reverts                     |      —      | `RF-010` |
-| Quote token under-delivers on purchase            | balance delta                 | purchase reverts, no tickets                |      —      | `RF-015` |
-| Ticket receiver reverts                           | `_safeMint`                   | purchase fully reverts                      |      —      | `RF-018` |
-| Zero tickets sold                                 | `totalTickets == 0`           | `Closed`; NFT recovered                     |     no      | `RF-045` |
-| Entropy fee read reverts                          | try in `requestDraw`          | tx reverts, stays `Active`, grace preserved |      —      | `RF-031` |
-| Native excess refund fails                        | raw call result               | whole request reverts                       |      —      | `RF-030` |
-| No draw request in 3 days                         | `enableRefunds` origin 1      | full refunds                                |   **no**    | `RF-040` |
-| No callback in 2 days                             | `enableRefunds` origin 2      | full refunds                                |   **no**    | `RF-041` |
-| Wrong / stale / duplicate callback                | 3 application guards          | ignored, event emitted                      |      —      | `RF-033` |
-| Prize undeliverable at redemption                 | `ownerOf` post-check          | tx reverts; retry possible                  |      —      | `RF-037` |
-| Prize still undelivered at 30 days                | `enableRefunds` origin 3      | **full** refunds, gross pot                 |   **no**    | `RF-042` |
-| Quote payout under/over-delivers                  | two-sided delta               | reverts; claim preserved                    |      —      | `RF-051` |
-| Payout destination is a protocol sink             | `_isKnownProtocolDestination` | reverts; claim preserved                    |      —      | `RF-025` |
-| Direct ETH sent to raffle                         | `receive()`                   | reverts                                     |      —      | `RF-052` |
-| Forced ETH (`SELFDESTRUCT`)                       | none                          | outside accounting; unrecoverable           |      —      | `RF-052` |
-| Direct quote-token donation                       | none                          | surplus; unrecoverable                      |      —      | `RF-050` |
-| Unrelated NFT via unsafe transfer                 | none                          | outside accounting; unrecoverable           |      —      | `RF-056` |
-| Ticket sent to incapable contract                 | none                          | claim forfeit; **no recovery**              |      —      | `RF-069` |
-| Claim assigned to future code-less raffle address | none                          | **unsupported**                             |      —      | `RF-057` |
+| Failure                                                | Detection                     | Outcome                                         | Fee charged | Fact     |
+| ------------------------------------------------------ | ----------------------------- | ----------------------------------------------- | :---------: | -------- |
+| Prize transfer fails at creation                       | post-condition                | entire creation reverts                         |      —      | `RF-010` |
+| Quote token under-delivers on purchase                 | balance delta                 | purchase reverts, no tickets                    |      —      | `RF-015` |
+| Ticket receiver reverts                                | `_safeMint`                   | purchase fully reverts                          |      —      | `RF-018` |
+| Zero tickets sold                                      | `totalTickets == 0`           | `Closed`; NFT recovered                         |     no      | `RF-045` |
+| Entropy fee read reverts                               | try in `requestDraw`          | tx reverts, stays `Active`, grace preserved     |      —      | `RF-031` |
+| Native excess refund fails                             | raw call result               | whole request reverts                           |      —      | `RF-030` |
+| No draw request in 3 days                              | `enableRefunds` origin 1      | full refunds                                    |   **no**    | `RF-040` |
+| No callback in 2 days                                  | `enableRefunds` origin 2      | full refunds                                    |   **no**    | `RF-041` |
+| Wrong / stale / duplicate callback                     | 3 application guards          | ignored, event emitted                          |      —      | `RF-033` |
+| Prize undeliverable at redemption                      | `ownerOf` post-check          | tx reverts; retry possible                      |      —      | `RF-037` |
+| Prize still undelivered at 30 days                     | `enableRefunds` origin 3      | **full** refunds, gross pot                     |   **no**    | `RF-042` |
+| Quote payout under/over-delivers                       | two-sided delta               | reverts; claim preserved                        |      —      | `RF-051` |
+| Payout destination is a protocol sink                  | `_isKnownProtocolDestination` | reverts; claim preserved                        |      —      | `RF-025` |
+| Direct ETH sent to raffle                              | `receive()`                   | reverts                                         |      —      | `RF-052` |
+| Forced ETH (`SELFDESTRUCT`)                            | none                          | outside accounting; unrecoverable               |      —      | `RF-052` |
+| Direct quote-token donation                            | none                          | surplus; unrecoverable                          |      —      | `RF-050` |
+| Unrelated NFT via unsafe transfer                      | none                          | outside accounting; unrecoverable               |      —      | `RF-056` |
+| Ticket sent to incapable contract                      | none                          | claim forfeit; **no recovery**                  |      —      | `RF-069` |
+| Claim assigned to future code-less raffle address      | none                          | **unsupported**                                 |      —      | `RF-057` |
+| Prize is another factory's raffle ticket, later locked | none                          | prize stranded; **buyers still fully refunded** |     no      | `RF-074` |
+| Losing tickets after settlement                        | none                          | remain valid, tradable, worth nothing           |      —      | `RF-075` |
 
 ---
 
@@ -840,7 +873,29 @@ accepted internal finding `I-01`.
 > These are the maintainers' own campaign results. They are evidence of testing depth, not
 > proof of correctness, and **not an audit** `[RF-063]`, `[RF-064]`.
 
-### 13.1 Latest campaign
+### 13.1 Current-commit campaign (2026-08-16)
+
+The evidence of record for this commit is `packages/contracts/audit/CURRENT-*.md`, scoped
+explicitly to production commit `5772e54` rather than to historical reports. It reports
+**0 Critical and 0 High production defects**, against 13 findings:
+
+| Class                       | Count | Notable                                                                                                                       |
+| --------------------------- | ----: | ----------------------------------------------------------------------------------------------------------------------------- |
+| Unresolved external trust   |     1 | `CURRENT-EXT-01` Entropy selective reveal, High (§6.5)                                                                        |
+| Composition limitation      |     1 | `CURRENT-COMP-01` cross-factory nested prize, Medium (§5.4)                                                                   |
+| Test-quality defects, fixed |     4 | incl. an invariant run spending 17,263 calls on an always-reverting setup action                                              |
+| Off-chain / release gaps    |     6 | SDK quantity validation, subgraph coverage, deployment binding, EIP-170 headroom, dependency advisory, superseded public docs |
+| Informational               |     1 | historical documents describe superseded behaviour                                                                            |
+
+It added six tests — raising the Foundry suite to **94 passed, 0 failed, 1 RPC-gated
+skip** — and cleared a High upstream `nanoid` advisory.
+
+> **Auditor note.** `CURRENT-TEST-01` matters when reading the older numbers below: an
+> ordinary invariant campaign was spending a large share of its calls on a setup-only
+> action that always reverted. Earlier call counts are upper bounds on useful exploration,
+> not effective coverage.
+
+### 13.2 Prior campaign
 
 `EXTREME-TESTING-2026-08-13.md`, production contracts at commit `b992b23` (the commit
 immediately preceding this document's HEAD, which adds tests only):
@@ -863,16 +918,17 @@ immediately preceding this document's HEAD, which adds tests only):
 | Production coverage             | 99.74% lines, 98.78% statements, 94.38% branches, 100% functions |
 
 An earlier strict-invariant campaign recorded **197,195,776 handler calls with zero reverts**
-under `fail_on_revert = true` (`DEEP-TESTING-2026-08-13.md:27`).
+under `fail_on_revert = true` (`DEEP-TESTING-2026-08-13.md:27`), subject to the exploration
+caveat above.
 
-### 13.2 Invariant catalog
+### 13.3 Invariant catalog
 
 `docs/SECURITY-INVARIANTS.md` enumerates **110 practical invariants** mapped to unit, fuzz,
 stateful, strict, Echidna/Medusa, Halmos, fork, and static evidence. `RELEASE-CHECKLIST.md:48`
 notes that a full reconciliation of all 110 against the _remediated_ state machine is still
 **unchecked**.
 
-### 13.3 Fork validation
+### 13.4 Fork validation
 
 Pinned Base 49,752,968 / Base Sepolia 45,263,498; latest-head Base 49,923,565 / Base Sepolia
 45,434,095. Official addresses used `[RF-059]`:
@@ -885,7 +941,7 @@ Pinned Base 49,752,968 / Base Sepolia 45,263,498; latest-head Base 49,923,565 / 
 Fork tests read public state through local forks only. **No transaction has been broadcast.**
 They do not impersonate Pyth to deliver a real production callback.
 
-### 13.4 Acknowledged tooling limits
+### 13.5 Acknowledged tooling limits
 
 - SMTChecker could not model much of the dependency graph and is not represented as proof.
 - Mythril was never executed (no compatible Python runtime).
@@ -893,7 +949,7 @@ They do not impersonate Pyth to deliver a real production callback.
 - Fuzzing, symbolic execution, mutation testing, and coverage cannot enumerate all states or
   external behaviors (`RESIDUAL-RISKS.md:53-59`).
 
-### 13.5 Test-suite defects found and corrected
+### 13.6 Test-suite defects found and corrected
 
 Worth noting for auditors assessing evidence quality — the campaign found defects in its own
 oracles, not only in the contracts:
@@ -946,16 +1002,16 @@ Caveats:
 All first-party SDK actions simulate against live chain state before writing
 (`packages/sdk/src/actions.ts`). The subgraph is **never** authoritative for transactions.
 
-| Action                         | Notes                                                                                                     |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------- |
-| `createRaffle`                 | requires prior ERC-721 approval                                                                           |
-| `buyTickets`                   | requires prior ERC-20 approval; quantity ≤ 100                                                            |
-| `requestDraw`                  | payable; quote `getEntropyFee()` immediately before, and overpay to absorb fee drift — excess is returned |
-| `enableRefunds`                | permissionless; check the relevant deadline first                                                         |
-| `redeemWinningTicket`          | caller must be `ownerOf(winningTicketId)`; `to` must not be a protocol destination                        |
-| `redeemRefundTickets`          | batch ≤ 100, deduplicated, all owned by caller                                                            |
-| `claimQuote` / `claimQuoteFor` | `claimQuoteFor` pays only the named account                                                               |
-| `claimSponsorPrize`            | only `sponsorPrizeRecoveryRecipient`, only in `CashWon`/`Refunding`/`Closed`                              |
+| Action                         | Notes                                                                                                              |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `createRaffle`                 | requires prior ERC-721 approval                                                                                    |
+| `buyTickets`                   | requires prior ERC-20 approval; `validatePurchaseQuantity` rejects quantities outside `1..100` before any RPC call |
+| `requestDraw`                  | payable; quote `getEntropyFee()` immediately before, and overpay to absorb fee drift — excess is returned          |
+| `enableRefunds`                | permissionless; check the relevant deadline first                                                                  |
+| `redeemWinningTicket`          | caller must be `ownerOf(winningTicketId)`; `to` must not be a protocol destination                                 |
+| `redeemRefundTickets`          | batch ≤ 100, deduplicated, all owned by caller                                                                     |
+| `claimQuote` / `claimQuoteFor` | `claimQuoteFor` pays only the named account                                                                        |
+| `claimSponsorPrize`            | only `sponsorPrizeRecoveryRecipient`, only in `CashWon`/`Refunding`/`Closed`                                       |
 
 ### 14.4 Indexing pitfalls
 
@@ -964,9 +1020,13 @@ All first-party SDK actions simulate against live chain state before writing
 2. `RaffleResolved.sponsorCashAmount` is advisory in the NFT branch (§6.3).
 3. `RefundsEnabled.requestWasAccepted` is `true` for both origin 2 and origin 3 (§9.1).
 4. `EntropyCallbackIgnored` is emitted without a state change — it is a monitoring signal,
-   not a lifecycle event.
-5. Each raffle captures its own `protocolTreasury`; do not read the factory's current value.
-6. Ticket burns emit ERC-721 `Transfer` to the zero address and do **not** route through the
+   not a lifecycle event. **The subgraph does not index it** (`CURRENT-SUBGRAPH-01`, Low,
+   open) `[RF-076]`, so monitoring must read it from chain logs directly.
+5. Losing tickets are never burned. After settlement they remain valid, transferable
+   ERC-721s worth nothing; a marketplace integration must not present them as live
+   `[RF-075]`.
+6. Each raffle captures its own `protocolTreasury`; do not read the factory's current value.
+7. Ticket burns emit ERC-721 `Transfer` to the zero address and do **not** route through the
    overridden `transferFrom`.
 
 ### 14.5 Gas characteristics
@@ -1014,19 +1074,21 @@ creation pause; treasury events.
 
 ## 16. Open problems and limitations
 
-|   # | Problem                                                       | Status                                                                        |
-| --: | ------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-|   1 | Entropy provider selective reveal                             | **Unresolved, High.** Requires provider pinning or an RNG redesign `[RF-065]` |
-|   2 | Claims assigned to future code-less addresses                 | Accepted unsupported; the fix was itself exploitable and removed `[RF-057]`   |
-|   3 | Arbitrary non-callable ticket destinations                    | Deliberately unsolved; undecidable from bytecode `[RF-069]`                   |
-|   4 | Modulo bias                                                   | Accepted, negligible, documented `[RF-035]`                                   |
-|   5 | `RaffleFactory` EIP-170 headroom (309 B)                      | Release-sensitive constraint `[RF-070]`                                       |
-|   6 | Requester must fund the Entropy fee                           | Economic assumption; no protocol keeper `[RF-029]`                            |
-|   7 | Independent audit                                             | **Not performed** `[RF-064]`                                                  |
-|   8 | Monitored Base Sepolia soak                                   | **Not performed** `[RF-073]`                                                  |
-|   9 | Jurisdiction-specific legal review                            | **Not performed** `[RF-072]`                                                  |
-|  10 | Operational runbooks, dashboards, bounty                      | **Not in place** `[RF-073]`                                                   |
-|  11 | 110-invariant reconciliation for the remediated state machine | **Unchecked** on the release checklist                                        |
+|   # | Problem                                                       | Status                                                                                               |
+| --: | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+|   1 | Entropy provider selective reveal                             | **Unresolved, High.** Requires provider pinning or an RNG redesign `[RF-065]`                        |
+|   2 | Claims assigned to future code-less addresses                 | Accepted unsupported; the fix was itself exploitable and removed `[RF-057]`                          |
+|   3 | Arbitrary non-callable ticket destinations                    | Deliberately unsolved; undecidable from bytecode `[RF-069]`                                          |
+|   4 | Modulo bias                                                   | Accepted, negligible, documented `[RF-035]`                                                          |
+|   5 | Cross-factory raffle-ticket prize can be stranded             | Accepted; the campaign's policy option is to document raffle-ticket prizes as unsupported `[RF-074]` |
+|   6 | Ignored Entropy callbacks absent from the subgraph            | Open, Low `[RF-076]`                                                                                 |
+|   7 | `RaffleFactory` EIP-170 headroom (309 B)                      | Release-sensitive constraint `[RF-070]`                                                              |
+|   8 | Requester must fund the Entropy fee                           | Economic assumption; no protocol keeper `[RF-029]`                                                   |
+|   9 | Independent audit                                             | **Not performed** `[RF-064]`                                                                         |
+|  10 | Monitored Base Sepolia soak                                   | **Not performed** `[RF-073]`                                                                         |
+|  11 | Jurisdiction-specific legal review                            | **Not performed** `[RF-072]`                                                                         |
+|  12 | Operational runbooks, dashboards, bounty                      | **Not in place** `[RF-073]`                                                                          |
+|  13 | 110-invariant reconciliation for the remediated state machine | **Unchecked** on the release checklist                                                               |
 
 ---
 
