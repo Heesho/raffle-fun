@@ -1239,13 +1239,13 @@ figures["05-sale-deadline-timeline.svg"] = (() => {
     txt(
       26,
       H - 32,
-      "At either red deadline, enableRefunds becomes valid for anyone. At the exact callback boundary, the callback and the",
+      `At either red deadline, enableRefunds becomes valid for anyone; a third origin opens the same refunds when an NFT result goes`,
       { size: 9.8, weight: 550, color: pal.ink3 },
     ),
   );
   put(
     ctx,
-    txt(26, H - 18, "timeout transaction may race; the first one included in a block wins.", {
+    txt(26, H - 18, `undelivered for ${C.nftRedemptionDays}d. At each boundary the callback and the timeout race; the first included in a block wins.`, {
       size: 9.8,
       weight: 550,
       color: pal.ink3,
@@ -1283,10 +1283,30 @@ figures["06-ticket-ownership.svg"] = (() => {
   // nothing and cost a third of the figure's height.
   const baseY = 172;
   const r = 20;
+  // ES-02: every transfer locks in Drawing, so the holder at request time is the holder
+  // at resolution. The third marker is deliberately the same person as the second.
   const holders = [
-    { x: 104, name: "Maya", note: "buys ticket #12", color: pal.skyDeep },
-    { x: 250, name: "Leo", note: "receives it", color: pal.indigo },
-    { x: 419, name: "Noor", note: "receives it mid-draw", color: pal.violet },
+    {
+      x: 104,
+      name: "Maya",
+      note: "buys ticket #12",
+      color: pal.skyDeep,
+      arrowLabel: "transfer",
+    },
+    {
+      x: 250,
+      name: "Leo",
+      note: "receives it before the draw",
+      color: pal.indigo,
+      arrowLabel: "ownership frozen at request",
+      arrowColor: pal.violet,
+    },
+    {
+      x: 419,
+      name: "Leo",
+      note: "same owner, transfers locked",
+      color: pal.violet,
+    },
   ];
   const burnX = 601;
   // The ticket rail: one dotted line proving it is the same ticket throughout.
@@ -1347,12 +1367,14 @@ figures["06-ticket-ownership.svg"] = (() => {
     put(
       ctx,
       arrow(ctx, holder.x + r + 4, baseY, next - r - 6, baseY, {
-        color: isBurn ? pal.green : pal.ink3,
+        color: isBurn ? pal.green : (holder.arrowColor ?? pal.ink3),
         width: isBurn ? 2.3 : 2,
-        label: isBurn ? "burns to redeem" : "transfer",
+        label: isBurn ? "burns to redeem" : (holder.arrowLabel ?? "transfer"),
         labelSize: 9.3,
         labelDy: -8,
-        labelColor: isBurn ? pal.greenDeep : pal.ink3,
+        labelColor: isBurn
+          ? pal.greenDeep
+          : (holder.arrowColor ?? pal.ink3),
       }),
     );
   });
@@ -1384,13 +1406,13 @@ figures["06-ticket-ownership.svg"] = (() => {
     txt(
       26,
       H - 34,
-      "Tickets never freeze: transfers stay open in every status until the moment a ticket burns. Whoever holds the",
+      "Transfers stay open during the sale, then lock completely in Drawing; the selected winning ticket stays locked. Whoever holds the",
       { size: 10.3, weight: 550, color: pal.ink3 },
     ),
   );
   put(
     ctx,
-    txt(26, H - 20, "unburned ticket at redemption time collects; approvals allow transfers, never redemptions.", {
+    txt(26, H - 20, "unburned ticket when the draw is requested collects; approvals allow transfers, never redemptions.", {
       size: 10.3,
       weight: 550,
       color: pal.ink3,
@@ -1916,7 +1938,7 @@ figures["10-nft-awarded-flow.svg"] = (() => {
   );
   return finish(ctx, {
     title: "NFT-awarded money flow",
-    desc: "With 120 tickets sold at 10.00 USDC, the treasury records the fee, the sponsor records post-fee proceeds, and the winning bearer burns the ticket for the NFT.",
+    desc: "With 120 tickets sold at 10.00 USDC, the winning bearer burns the ticket for the NFT; only once delivery is verified onchain are the treasury fee and the sponsor's post-fee proceeds created.",
     height: H,
   });
 })();
@@ -2490,9 +2512,9 @@ figures["15-pull-claim-architecture.svg"] = (() => {
       icon: "gem",
     },
     {
-      sig: "recoverProtocolOwnedClaim()",
+      sig: "enableRefunds()",
       who: "anyone",
-      rule: "sweeps only expired protocol-owned claims to the treasury",
+      rule: "opens full refunds after a missing request, missing callback, or undelivered NFT",
       accent: pal.slate,
       icon: "clock",
     },

@@ -36,38 +36,57 @@ changes made by the 2026-08-13 ETHSkills remediation
    undelivered NFT result falls back to full ticket refunds after 30 days. This is the third
    refund origin, which the archived documents do not have.
 
-## The build pipeline does not currently run
+## Pipeline status
 
-`pnpm docs:whitepaper`, `pnpm docs:whitepaper:figures`, and `pnpm docs:whitepaper:docx` all
-fail at their first step against current Solidity:
+The fact and figure generators have been repaired and now run against current Solidity:
 
-```text
-Error: whitepaper fact validation failed: enum ProtocolOwnedClaim not found
-    at buildFacts (docs/whitepaper/src/protocol-facts.mjs:138)
+```bash
+pnpm --filter @raffle-fun/contracts compile   # artifacts must be current
+pnpm docs:whitepaper:figures                   # regenerates all 21 figures
 ```
 
-`docs/whitepaper/src/protocol-facts.mjs` still parses the removed `ProtocolOwnedClaim` enum
-(line 138) and still requires `recoverProtocolOwnedClaim` in the compiled `Raffle` ABI
-(line 167). Its required-constants list also omits `NFT_REDEMPTION_TIMEOUT`, so it has no
-representation of the delivery-timeout refund path.
+What was fixed:
 
-The pipeline itself is otherwise intact and worth keeping — a 21-figure SVG generator, an A4
-print system, and a PDF validator covering fonts, internal links, bookmarks, horizontal
-overflow, duplicate pages, and page size.
+- `src/protocol-facts.mjs` no longer parses the removed `ProtocolOwnedClaim` enum or
+  requires `recoverProtocolOwnedClaim`. It now **asserts that selector stays absent**,
+  validates `NFT_REDEMPTION_TIMEOUT` and the current deadline getters, and reports the
+  corrected transfer-lock and three-origin refund model. It also derives a 72-day
+  worst-case custody bound from the constants.
+- `src/generate-figures.mjs` had four factually wrong elements, all corrected: a ticket
+  transferred "mid-draw" (impossible under ES-02), a caption reading "Tickets never
+  freeze: transfers stay open in every status", a `recoverProtocolOwnedClaim()` row in the
+  claim-architecture figure, and an NFT-branch caption implying the sponsor and treasury
+  are paid at resolution rather than on verified delivery.
 
-## Regenerating is still an open release blocker
+## Publication is deliberately blocked
+
+`pnpm docs:whitepaper` now refuses to publish, by design:
+
+```text
+Refusing to publish: docs/whitepaper/source/sections/ describes a superseded protocol.
+  - still mentions "recoverProtocolOwnedClaim" (ES-01 deleted this function)
+  - still mentions "ProtocolOwnedClaim" (ES-01 deleted this enum)
+  - still mentions "transferable in every" (ES-02 locks transfers in Drawing)
+  - never describes the NFT-delivery timeout (ES-03, the third refund origin)
+```
+
+Repairing the generators removed the accidental crash that previously stopped the build,
+so `src/build.mjs` now carries an explicit guard instead. Without it the pipeline would
+happily publish a polished PDF whose prose still describes the pre-2026-08-13 protocol,
+which is worse than publishing nothing.
+
+## Remaining work
 
 `ETHSKILLS-REVIEW-2026-08-13.md:103-105` lists regenerating the long-form whitepaper and
-diagrams as required before any onchain release. Archiving the stale outputs does **not**
-close that item. Closing it requires, in order:
+diagrams as required before any onchain release. Archiving the stale outputs and repairing
+the generators does **not** close that item. What remains:
 
-1. repair `docs/whitepaper/src/protocol-facts.mjs` — drop the removed enum and function from
-   its required sets, and add `NFT_REDEMPTION_TIMEOUT`;
-2. rewrite `docs/whitepaper/source/sections/*.md` against
-   [the fact registry](facts/raffle-fun-facts.md);
-3. update `docs/whitepaper/src/generate-figures.mjs` for the current state machine, which
-   has three refund origins rather than two;
-4. correct `docs/whitepaper/README.md`, which still documents the fact generator as parsing a
-   `ProtocolOwnedClaim` enum;
+1. ~~repair `src/protocol-facts.mjs`~~ — **done**;
+2. **rewrite `docs/whitepaper/source/sections/*.md`** (2,619 lines) against
+   [the fact registry](facts/raffle-fun-facts.md) — this is the bulk of the work and the
+   only thing the publication guard is waiting on;
+3. ~~update `src/generate-figures.mjs` for the current state machine~~ — **done**;
+4. ~~correct `docs/whitepaper/README.md`~~ — **done**;
 5. run `pnpm docs:whitepaper` and complete the visual review described in
-   [`whitepaper/BUILD.md`](whitepaper/BUILD.md).
+   [`whitepaper/BUILD.md`](whitepaper/BUILD.md). The PDF validator requires 45-65 A4 pages,
+   so step 2 must produce a document of comparable length to the archived one.

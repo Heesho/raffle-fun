@@ -33,12 +33,25 @@ independent of the authoritative A4 PDF.
 
 ## Fact generation
 
-The facts script parses `RaffleConstants.sol`, parses the `IRaffle.Status` and
-`ProtocolOwnedClaim` enums, and checks required functions in compiled Raffle, Factory,
-and Lens artifacts. Worked examples are calculated with BigInt from those parsed
-constants. The renderer replaces `{{FACT_TOKEN}}` placeholders and fails if any remain.
+The facts script parses `RaffleConstants.sol`, parses the `IRaffle.Status` enum, and
+checks required functions in compiled Raffle, Factory, and Lens artifacts. It also
+asserts that `recoverProtocolOwnedClaim` stays absent from the Raffle ABI, so a
+regenerated whitepaper can never describe the dispatcher that ETHSkills `ES-01` removed.
+Worked examples are calculated with BigInt from those parsed constants. The renderer
+replaces `{{FACT_TOKEN}}` placeholders and fails if any remain.
 
 This avoids a second hand-copied economic constants table in the document pipeline.
+
+Because the script reads compiled artifacts, `artifacts/` must be current. Run
+`pnpm --filter @raffle-fun/contracts compile` first; a stale artifact directory will fail
+the required-function check rather than silently generating outdated facts.
+
+## Publication guard
+
+`src/build.mjs` refuses to publish while `source/sections/` still describes the
+pre-2026-08-13 protocol — the removed recovery dispatcher, tickets "transferable in every"
+status, or a missing NFT-delivery timeout. The check runs before any toolchain detection.
+`pnpm docs:whitepaper:figures` is unaffected and regenerates correct figures.
 
 ## Figures
 
