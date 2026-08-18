@@ -1,6 +1,6 @@
 "use client";
 
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Check,
   CircleDollarSign,
@@ -21,42 +21,44 @@ import {
   isAddress,
   zeroAddress,
   type Address,
+  type ContractFunctionParameters,
   type Hash,
 } from "viem";
 import {
   useAccount,
   usePublicClient,
   useReadContract,
+  useReadContracts,
   useWalletClient,
 } from "wagmi";
 
 import {
-  buyTickets,
+  buyEntries,
   calculatePurchaseAmounts,
   calculateResolutionAmounts,
-  claimSponsorPrize,
-  claimQuote,
-  closeEmptyRaffle,
   enableRefunds,
-  formatQuoteAmount,
+  ENTRY_PRICE,
+  MAX_UINT128,
   raffleAbi,
-  raffleLensAbi,
-  redeemRefundTickets,
-  redeemWinningTicket,
-  RaffleStatus,
+  raffleFactoryAbi,
   raffleStatusLabels,
+  ticketRangeContainsEntry,
+  refundTickets,
+  releaseProtocolFees,
+  releaseSponsorPrize,
+  releaseSponsorProceeds,
+  settleWinningTicket,
   requestDraw,
+  RaffleStatus,
   type ActionContext,
 } from "@raffle-fun/sdk";
 
+import { SandboxPanel } from "@/components/sandbox/sandbox-panel";
 import type { StatusTone } from "@/components/status-pill";
 import { WalletButton } from "@/components/wallet-button";
+import { useNow, useNowMs } from "@/hooks/use-now";
 import { useTokenMetadata } from "@/hooks/use-token-metadata";
 import { isDemoMode } from "@/lib/demo";
-import { SandboxPanel } from "@/components/sandbox/sandbox-panel";
-import { SANDBOX_WETH } from "@/lib/sandbox/adapter";
-import { ticketsOwnedBy } from "@/lib/sandbox/engine";
-import { useSandbox, useSandboxRaffle } from "@/lib/sandbox/store";
 import { formatTokenAmount } from "@/lib/format";
 import {
   configuredChain,
@@ -64,7 +66,10 @@ import {
   explorerTransactionUrl,
   protocolDeployment,
 } from "@/lib/protocol";
-import { isSubgraphConfigured } from "@/lib/subgraph";
+import { SANDBOX_USDC } from "@/lib/sandbox/adapter";
+import { entriesOwnedBy } from "@/lib/sandbox/engine";
+import { useSandbox, useSandboxRaffle } from "@/lib/sandbox/store";
+import { fetchOwnedTicketRanges, isSubgraphConfigured } from "@/lib/subgraph";
 
 import {
   InvalidState,
@@ -72,52 +77,36 @@ import {
   type RaffleViewModel,
 } from "./raffle-view";
 
-type LiveRaffleView = {
-  readonly factoryId: bigint;
+interface LiveRaffleView {
   readonly registered: boolean;
   readonly raffle: Address;
-  readonly status: number;
+  readonly factoryId: bigint;
+  readonly status: RaffleStatus;
   readonly sponsor: Address;
-  readonly sponsorPrizeRecoveryRecipient: Address;
+  readonly sponsorRecipient: Address;
   readonly protocolTreasury: Address;
   readonly quoteToken: Address;
   readonly prizeToken: Address;
   readonly prizeTokenId: bigint;
-  readonly ticketPrice: bigint;
-  readonly minimumTickets: bigint;
-  readonly startTime: bigint;
+  readonly reserveEntries: bigint;
   readonly endTime: bigint;
-  readonly requestGraceDeadline: bigint;
-  readonly drawRequestedAt: bigint;
-  readonly callbackDeadline: bigint;
-  readonly nftRedemptionDeadline: bigint;
-  readonly resolvedAt: bigint;
-  readonly entropySequenceNumber: bigint;
-  readonly totalTickets: bigint;
+  readonly totalEntries: bigint;
+  readonly ticketCount: bigint;
   readonly grossSales: bigint;
   readonly unsettledPot: bigint;
   readonly remainingRefundLiability: bigint;
-  readonly winnerCashLiability: bigint;
-  readonly totalClaimableQuote: bigint;
-  readonly accountedQuoteBalance: bigint;
+  readonly sponsorProceeds: bigint;
+  readonly protocolFees: bigint;
+  readonly vrfRequestId: bigint;
+  readonly drawRequestedAt: bigint;
+  readonly resolvedAt: bigint;
+  readonly winningEntry: bigint;
   readonly winningTicketId: bigint;
-  readonly winningTicketOwner: Address;
-  readonly winningTicketRedeemed: boolean;
   readonly prizeClaimed: boolean;
+  readonly callbackDeadline: bigint;
+  readonly accountedQuoteBalance: bigint;
   readonly accountTicketBalance: bigint;
-  readonly accountQuoteClaim: bigint;
-  readonly accountOwnsWinningTicket: boolean;
-  readonly accountIsPrizeRecoveryRecipient: boolean;
-  readonly entropyFee: bigint;
-  readonly entropyFeeAvailable: boolean;
-  readonly canBuy: boolean;
-  readonly canDraw: boolean;
-  readonly canEnableRefunds: boolean;
-  readonly canRedeemWinningTicket: boolean;
-  readonly canRedeemRefundTickets: boolean;
-  readonly canClaimQuote: boolean;
-  readonly canClaimSponsorPrize: boolean;
-};
+}
 
 type ActionProgress =
   | { readonly kind: "idle" }
@@ -130,33 +119,25 @@ type ActionProgress =
     }
   | { readonly kind: "error"; readonly text: string };
 
-const MAX_QUANTITY = 100;
-const quantityPattern = /^(?:[1-9]|[1-9]\d|100)$/;
+function parsePositiveBigInt(value: string, label: string): bigint {
+  if (!/^[1-9]\d*$/.test(value))
+    throw new Error(`${label} must be a positive integer.`);
+  return BigInt(value);
+}
 
-function parseRefundTicketIds(value: string): readonly bigint[] {
+function parseTicketIds(value: string): readonly bigint[] {
   const values = value
     .split(",")
     .map((part) => part.trim())
-    .filter((part) => part !== "");
+    .filter(Boolean);
   if (values.length === 0 || values.length > 100) {
     throw new Error("Enter between one and 100 ticket IDs.");
   }
-  if (values.some((part) => !/^[1-9]\d*$/.test(part))) {
-    throw new Error("Ticket IDs must be positive integers.");
-  }
-  const ticketIds = values.map(BigInt);
-  if (new Set(ticketIds.map(String)).size !== ticketIds.length) {
+  const ids = values.map((part) => parsePositiveBigInt(part, "Ticket ID"));
+  if (new Set(ids.map(String)).size !== ids.length) {
     throw new Error("Do not include a ticket ID more than once.");
   }
-  return ticketIds;
-}
-
-function resolveDestination(value: string, fallback: Address): Address {
-  const destination = value.trim() === "" ? fallback : value;
-  if (!isAddress(destination) || destination === zeroAddress) {
-    throw new Error("Enter a valid nonzero destination.");
-  }
-  return destination;
+  return ids;
 }
 
 function formatDeadline(timestamp: bigint): string {
@@ -178,29 +159,19 @@ export function RaffleDetail({
 }: {
   readonly raffleAddress: string;
 }) {
-  if (isDemoMode()) {
-    return <SandboxRaffleDetail address={raffleAddress} />;
-  }
-  return <LiveRaffleDetail raffleAddress={raffleAddress} />;
+  return isDemoMode() ? (
+    <SandboxRaffleDetail address={raffleAddress} />
+  ) : (
+    <LiveRaffleDetail raffleAddress={raffleAddress} />
+  );
 }
-
-/* --------------------------------------------------------------- sandbox */
 
 function SandboxRaffleDetail({ address }: { readonly address: string }) {
   const raffle = useSandboxRaffle(address);
   const { sandbox } = useSandbox();
-
-  if (raffle === undefined || sandbox === undefined) {
-    return (
-      <div className="page-shell py-14" role="status">
-        <span className="sr-only">Loading raffle</span>
-        <div className="skeleton h-10 w-72 rounded-full" />
-        <div className="mt-8 grid gap-7 lg:grid-cols-[1fr_23rem]">
-          <div className="skeleton h-[34rem] rounded-3xl" />
-          <div className="skeleton h-96 rounded-3xl" />
-        </div>
-      </div>
-    );
+  const now = useNowMs();
+  if (raffle === undefined || sandbox === undefined || now === undefined) {
+    return <LoadingRaffle />;
   }
 
   const tones: Record<string, StatusTone> = {
@@ -209,41 +180,34 @@ function SandboxRaffleDetail({ address }: { readonly address: string }) {
     NFT_WON: "resolved",
     CASH_WON: "resolved",
     REFUNDING: "warning",
-    CLOSED: "neutral",
   };
-
   const view: RaffleViewModel = {
     address: raffle.id as Address,
     factoryId: raffle.factoryId,
     sponsor: raffle.sponsor as Address,
-    quoteToken: SANDBOX_WETH.address as Address,
+    quoteToken: SANDBOX_USDC.address as Address,
     prizeToken: raffle.prizeToken as Address,
     prizeTokenId: raffle.prizeTokenId,
     prizeName: raffle.prizeName,
     prizeCollection: raffle.prizeCollection,
     prizeImage: raffle.prizeImage,
     prizePixelated: raffle.prizePixelated,
-    ticketPrice: raffle.ticketPrice,
-    minimumTickets: BigInt(raffle.minimumTickets),
-    totalTickets: BigInt(raffle.tickets.length),
+    entryPrice: ENTRY_PRICE,
+    reserveEntries: raffle.reserveEntries,
+    totalEntries: raffle.totalEntries,
     grossSales: raffle.grossSales,
     unsettledPot: raffle.unsettledPot,
-    startTime: BigInt(Math.floor(raffle.startTime / 1000)),
-    endTime: BigInt(Math.floor(raffle.endTime / 1000)),
+    endTime: BigInt(Math.floor(raffle.endTime / 1_000)),
     stateLabel: raffle.status.replaceAll("_", " ").toLowerCase(),
     stateTone: tones[raffle.status] ?? "neutral",
-    isActive: raffle.status === "ACTIVE",
+    isActive: raffle.status === "ACTIVE" && now < raffle.endTime,
+    isRefunding: raffle.status === "REFUNDING",
     outcomeLabel:
-      raffle.status === "NFT_WON" ||
-      raffle.status === "CASH_WON" ||
-      raffle.status === "CLOSED"
+      raffle.status === "NFT_WON" || raffle.status === "CASH_WON"
         ? raffle.status.replaceAll("_", " ").toLowerCase()
         : undefined,
-    winningTicketId:
-      raffle.winningTicketId === null
-        ? undefined
-        : BigInt(raffle.winningTicketId),
-    accountTicketBalance: BigInt(ticketsOwnedBy(raffle, sandbox.player)),
+    winningEntry: raffle.winningEntry ?? undefined,
+    accountEntryBalance: entriesOwnedBy(raffle, sandbox.player),
   };
 
   return (
@@ -251,20 +215,18 @@ function SandboxRaffleDetail({ address }: { readonly address: string }) {
       aside={<SandboxPanel raffle={raffle} />}
       footnote={
         <p className="px-2 text-xs leading-5 text-[var(--ink-3)]">
-          Ticket ownership locks while randomness is pending and for the
-          selected winner after resolution. Refund tickets are transferable.{" "}
+          One ticket represents one purchase range and remains transferable
+          until it is burned during settlement or a refund.{" "}
           <Link className="font-bold underline" href="/docs">
             Read the full mechanics.
           </Link>
         </p>
       }
-      token={SANDBOX_WETH}
+      token={SANDBOX_USDC}
       view={view}
     />
   );
 }
-
-/* ------------------------------------------------------------------ live */
 
 function LiveRaffleDetail({
   raffleAddress,
@@ -276,55 +238,192 @@ function LiveRaffleDetail({
   const { address, chainId, isConnected } = useAccount();
   const publicClient = usePublicClient();
   const wallet = useWalletClient();
+  const currentTime = useNow(1_000);
   const queryClient = useQueryClient();
-  const [quantity, setQuantity] = useState(1);
+  const [entryCountText, setEntryCountText] = useState("20");
   const [recipient, setRecipient] = useState("");
-  const [claimDestination, setClaimDestination] = useState("");
   const [refundTicketIds, setRefundTicketIds] = useState("");
+  const [winningTicketProof, setWinningTicketProof] = useState("");
   const [progress, setProgress] = useState<ActionProgress>({ kind: "idle" });
-
-  const viewQuery = useReadContract({
-    address: protocolDeployment?.raffleLens,
-    abi: raffleLensAbi,
-    functionName: "getRaffleState",
-    args:
-      raffle === undefined
-        ? undefined
-        : [raffle, address === undefined ? zeroAddress : address],
+  const parsedWinningTicketId = /^[1-9]\d*$/.test(winningTicketProof)
+    ? BigInt(winningTicketProof)
+    : undefined;
+  const indexConfigured = isSubgraphConfigured();
+  const ownedTicketQuery = useQuery({
+    queryKey: [
+      "owned-ticket-ranges",
+      raffle?.toLowerCase(),
+      address?.toLowerCase(),
+    ],
+    queryFn: () => fetchOwnedTicketRanges(raffle!, address!),
+    enabled: indexConfigured && raffle !== undefined && address !== undefined,
+    refetchInterval: 15_000,
+  });
+  const winningTicketRangeQuery = useReadContract({
+    address: raffle,
+    abi: raffleAbi,
+    functionName: "ticketRange",
+    args: [parsedWinningTicketId ?? 0n],
     query: {
-      enabled: protocolDeployment !== undefined && raffle !== undefined,
-      refetchInterval: 12_000,
+      enabled: raffle !== undefined && parsedWinningTicketId !== undefined,
     },
   });
 
-  const view = viewQuery.data as LiveRaffleView | undefined;
+  const contracts: readonly ContractFunctionParameters[] =
+    raffle === undefined || protocolDeployment === undefined
+      ? []
+      : ([
+          {
+            address: protocolDeployment.raffleFactory,
+            abi: raffleFactoryAbi,
+            functionName: "isRaffle",
+            args: [raffle],
+          },
+          { address: raffle, abi: raffleAbi, functionName: "raffleId" },
+          { address: raffle, abi: raffleAbi, functionName: "status" },
+          { address: raffle, abi: raffleAbi, functionName: "sponsor" },
+          { address: raffle, abi: raffleAbi, functionName: "sponsorRecipient" },
+          { address: raffle, abi: raffleAbi, functionName: "protocolTreasury" },
+          { address: raffle, abi: raffleAbi, functionName: "quoteToken" },
+          { address: raffle, abi: raffleAbi, functionName: "prizeToken" },
+          { address: raffle, abi: raffleAbi, functionName: "prizeTokenId" },
+          { address: raffle, abi: raffleAbi, functionName: "reserveEntries" },
+          { address: raffle, abi: raffleAbi, functionName: "endTime" },
+          { address: raffle, abi: raffleAbi, functionName: "totalEntries" },
+          { address: raffle, abi: raffleAbi, functionName: "ticketCount" },
+          { address: raffle, abi: raffleAbi, functionName: "grossSales" },
+          { address: raffle, abi: raffleAbi, functionName: "unsettledPot" },
+          {
+            address: raffle,
+            abi: raffleAbi,
+            functionName: "remainingRefundLiability",
+          },
+          {
+            address: raffle,
+            abi: raffleAbi,
+            functionName: "sponsorProceeds",
+          },
+          {
+            address: raffle,
+            abi: raffleAbi,
+            functionName: "protocolFees",
+          },
+          { address: raffle, abi: raffleAbi, functionName: "vrfRequestId" },
+          { address: raffle, abi: raffleAbi, functionName: "drawRequestedAt" },
+          { address: raffle, abi: raffleAbi, functionName: "resolvedAt" },
+          { address: raffle, abi: raffleAbi, functionName: "winningEntry" },
+          { address: raffle, abi: raffleAbi, functionName: "winningTicketId" },
+          { address: raffle, abi: raffleAbi, functionName: "prizeClaimed" },
+          { address: raffle, abi: raffleAbi, functionName: "callbackDeadline" },
+          {
+            address: raffle,
+            abi: raffleAbi,
+            functionName: "accountedQuoteBalance",
+          },
+          {
+            address: raffle,
+            abi: raffleAbi,
+            functionName: "balanceOf",
+            args: [address ?? zeroAddress],
+          },
+        ] as const);
+
+  const viewQuery = useReadContracts({
+    allowFailure: true,
+    contracts,
+    query: { enabled: contracts.length > 0, refetchInterval: 12_000 },
+  });
+
+  const view = useMemo<LiveRaffleView | undefined>(() => {
+    if (raffle === undefined || viewQuery.data === undefined) return undefined;
+    const value = <T,>(index: number): T | undefined => {
+      const result = viewQuery.data[index];
+      return result?.status === "success" ? (result.result as T) : undefined;
+    };
+    const registered = value<boolean>(0);
+    const factoryId = value<bigint>(1);
+    const status = value<number>(2);
+    const sponsor = value<Address>(3);
+    const sponsorRecipient = value<Address>(4);
+    const protocolTreasury = value<Address>(5);
+    const quoteToken = value<Address>(6);
+    const prizeToken = value<Address>(7);
+    const prizeTokenId = value<bigint>(8);
+    if (
+      registered === undefined ||
+      factoryId === undefined ||
+      status === undefined ||
+      sponsor === undefined ||
+      sponsorRecipient === undefined ||
+      protocolTreasury === undefined ||
+      quoteToken === undefined ||
+      prizeToken === undefined ||
+      prizeTokenId === undefined
+    )
+      return undefined;
+    return {
+      registered,
+      raffle,
+      factoryId,
+      status: status as RaffleStatus,
+      sponsor,
+      sponsorRecipient,
+      protocolTreasury,
+      quoteToken,
+      prizeToken,
+      prizeTokenId,
+      reserveEntries: value<bigint>(9) ?? 0n,
+      endTime: value<bigint>(10) ?? 0n,
+      totalEntries: value<bigint>(11) ?? 0n,
+      ticketCount: value<bigint>(12) ?? 0n,
+      grossSales: value<bigint>(13) ?? 0n,
+      unsettledPot: value<bigint>(14) ?? 0n,
+      remainingRefundLiability: value<bigint>(15) ?? 0n,
+      sponsorProceeds: value<bigint>(16) ?? 0n,
+      protocolFees: value<bigint>(17) ?? 0n,
+      vrfRequestId: value<bigint>(18) ?? 0n,
+      drawRequestedAt: value<bigint>(19) ?? 0n,
+      resolvedAt: value<bigint>(20) ?? 0n,
+      winningEntry: value<bigint>(21) ?? 0n,
+      winningTicketId: value<bigint>(22) ?? 0n,
+      prizeClaimed: value<boolean>(23) ?? false,
+      callbackDeadline: value<bigint>(24) ?? 0n,
+      accountedQuoteBalance: value<bigint>(25) ?? 0n,
+      accountTicketBalance: value<bigint>(26) ?? 0n,
+    };
+  }, [raffle, viewQuery.data]);
+
   const tokenMetadata = useTokenMetadata(view?.quoteToken);
-  const parsedQuantity = quantityPattern.test(String(quantity))
-    ? BigInt(quantity)
+  const indexedEntryBalance = useMemo(() => {
+    if (address === undefined || ownedTicketQuery.data === undefined) {
+      return undefined;
+    }
+    if (ownedTicketQuery.data.some((ticket) => ticket.entryCount === null)) {
+      return undefined;
+    }
+    return ownedTicketQuery.data.reduce(
+      (total, ticket) => total + BigInt(ticket.entryCount!),
+      0n,
+    );
+  }, [address, ownedTicketQuery.data]);
+  const indexedWinningTicket = useMemo(() => {
+    if (view === undefined || view.winningEntry === 0n) return undefined;
+    return ownedTicketQuery.data?.find(
+      (ticket) =>
+        ticket.firstEntry !== null &&
+        ticket.lastEntry !== null &&
+        view.winningEntry >= BigInt(ticket.firstEntry) &&
+        view.winningEntry <= BigInt(ticket.lastEntry),
+    );
+  }, [ownedTicketQuery.data, view]);
+  const parsedEntryCount = /^[1-9]\d*$/.test(entryCountText)
+    ? BigInt(entryCountText)
     : undefined;
   const purchaseAmounts = useMemo(() => {
-    if (view === undefined || parsedQuantity === undefined) return undefined;
-    return calculatePurchaseAmounts({
-      ticketPrice: view.ticketPrice,
-      quantity: parsedQuantity,
-    });
-  }, [parsedQuantity, view]);
-
-  async function readLiveView(): Promise<LiveRaffleView> {
-    if (
-      publicClient === undefined ||
-      protocolDeployment === undefined ||
-      raffle === undefined
-    ) {
-      throw new Error("The raffle deployment is not available.");
-    }
-    return (await publicClient.readContract({
-      address: protocolDeployment.raffleLens,
-      abi: raffleLensAbi,
-      functionName: "getRaffleState",
-      args: [raffle, address ?? zeroAddress],
-    })) as LiveRaffleView;
-  }
+    if (parsedEntryCount === undefined || parsedEntryCount > MAX_UINT128)
+      return undefined;
+    return calculatePurchaseAmounts({ entryCount: parsedEntryCount });
+  }, [parsedEntryCount]);
 
   async function finish(hash: Hash) {
     if (publicClient === undefined) return;
@@ -332,13 +431,10 @@ function LiveRaffleDetail({
     await publicClient.waitForTransactionReceipt({ hash });
     await Promise.all([
       viewQuery.refetch(),
+      ...(indexConfigured ? [ownedTicketQuery.refetch()] : []),
       queryClient.invalidateQueries({ queryKey: ["raffles"] }),
     ]);
-    setProgress({
-      kind: "success",
-      hash,
-      indexing: isSubgraphConfigured(),
-    });
+    setProgress({ kind: "success", hash, indexing: isSubgraphConfigured() });
   }
 
   function actionContext() {
@@ -359,13 +455,40 @@ function LiveRaffleDetail({
     } as unknown as ActionContext & { readonly account: Address };
   }
 
+  async function readCore() {
+    if (publicClient === undefined || raffle === undefined)
+      throw new Error("Raffle unavailable.");
+    const [status, endTime, totalEntries] = await Promise.all([
+      publicClient.readContract({
+        address: raffle,
+        abi: raffleAbi,
+        functionName: "status",
+      }),
+      publicClient.readContract({
+        address: raffle,
+        abi: raffleAbi,
+        functionName: "endTime",
+      }),
+      publicClient.readContract({
+        address: raffle,
+        abi: raffleAbi,
+        functionName: "totalEntries",
+      }),
+    ]);
+    return { status: status as RaffleStatus, endTime, totalEntries };
+  }
+
   async function handleBuy() {
     if (
       raffle === undefined ||
-      parsedQuantity === undefined ||
-      purchaseAmounts === undefined
+      parsedEntryCount === undefined ||
+      purchaseAmounts === undefined ||
+      view === undefined
     ) {
-      setProgress({ kind: "error", text: "Enter a quantity from 1 to 100." });
+      setProgress({
+        kind: "error",
+        text: "Enter a positive uint128 entry count.",
+      });
       return;
     }
     setProgress({
@@ -374,28 +497,37 @@ function LiveRaffleDetail({
     });
     try {
       const context = actionContext();
-      const live = await readLiveView();
-      if (!live.canBuy) throw new Error("Ticket sales are not open onchain.");
+      const live = await readCore();
+      const block = await context.publicClient.getBlock();
+      if (
+        live.status !== RaffleStatus.Active ||
+        block.timestamp >= live.endTime
+      ) {
+        throw new Error("Entry sales are not open onchain.");
+      }
+      if (parsedEntryCount > MAX_UINT128 - live.totalEntries) {
+        throw new Error(
+          "That purchase exceeds the remaining uint128 entry range.",
+        );
+      }
       const to =
         recipient.trim() === ""
           ? context.account
           : isAddress(recipient)
             ? recipient
             : undefined;
-      if (to === undefined || to === zeroAddress) {
-        throw new Error("Enter a valid nonzero ticket recipient.");
-      }
+      if (to === undefined || to === zeroAddress)
+        throw new Error("Enter a valid ticket recipient.");
       const allowance = await context.publicClient.readContract({
-        address: live.quoteToken,
+        address: view.quoteToken,
         abi: erc20Abi,
         functionName: "allowance",
         args: [context.account, raffle],
       });
-
       if (allowance < purchaseAmounts.grossAmount) {
         const calls = [
           {
-            to: live.quoteToken,
+            to: view.quoteToken,
             data: encodeFunctionData({
               abi: erc20Abi,
               functionName: "approve",
@@ -406,17 +538,12 @@ function LiveRaffleDetail({
             to: raffle,
             data: encodeFunctionData({
               abi: raffleAbi,
-              functionName: "buyTickets",
-              args: [to, parsedQuantity],
+              functionName: "buyEntries",
+              args: [to, parsedEntryCount],
             }),
           },
         ] as const;
-
         try {
-          setProgress({
-            kind: "pending",
-            text: "Simulating approval and purchase as one wallet batch…",
-          });
           await context.publicClient.simulateCalls({
             account: context.account,
             calls,
@@ -427,16 +554,15 @@ function LiveRaffleDetail({
             experimental_fallback: true,
           });
           setProgress({ kind: "batch", id });
-          await queryClient.invalidateQueries({ queryKey: ["raffles"] });
           return;
         } catch {
           setProgress({
             kind: "pending",
-            text: `Batching is unavailable. Confirm the ${tokenMetadata.symbol} approval first…`,
+            text: `Confirm the ${tokenMetadata.symbol} approval first…`,
           });
           const { request } = await context.publicClient.simulateContract({
             account: context.account,
-            address: live.quoteToken,
+            address: view.quoteToken,
             abi: erc20Abi,
             functionName: "approve",
             args: [raffle, purchaseAmounts.grossAmount],
@@ -448,103 +574,68 @@ function LiveRaffleDetail({
           });
         }
       }
-
-      const latest = await readLiveView();
-      if (!latest.canBuy) {
-        throw new Error(
-          "Ticket sales closed before the purchase could be submitted.",
-        );
-      }
-      setProgress({ kind: "pending", text: "Simulating ticket purchase…" });
-      const hash = await buyTickets(context, raffle, to, parsedQuantity);
-      await finish(hash);
+      setProgress({ kind: "pending", text: "Simulating entry purchase…" });
+      await finish(await buyEntries(context, raffle, to, parsedEntryCount));
     } catch (error) {
       setProgress({
         kind: "error",
-        text:
-          error instanceof Error ? error.message : "Ticket purchase failed.",
+        text: error instanceof Error ? error.message : "Entry purchase failed.",
       });
     }
   }
 
   async function handleAction(
     action:
-      "draw" | "close" | "quote" | "winner" | "sponsor" | "refunds" | "refund",
+      | "draw"
+      | "winner"
+      | "sponsorPrize"
+      | "sponsorProceeds"
+      | "protocolFees"
+      | "refunds"
+      | "refund",
   ) {
-    if (raffle === undefined) return;
+    if (raffle === undefined || view === undefined) return;
     setProgress({ kind: "pending", text: "Checking current onchain state…" });
     try {
       const context = actionContext();
-      const live = await readLiveView();
       let hash: Hash;
       if (action === "draw") {
-        if (!live.canDraw)
-          throw new Error("A draw cannot be requested right now.");
-        if (!live.entropyFeeAvailable)
-          throw new Error("The oracle fee is currently unavailable.");
-        setProgress({
-          kind: "pending",
-          text: `Simulating draw with ${formatQuoteAmount(live.entropyFee, 18)} ETH oracle fee…`,
-        });
-        hash = await requestDraw(context, raffle, live.entropyFee);
+        hash = await requestDraw(context, raffle);
       } else if (action === "refunds") {
-        if (!live.canEnableRefunds) {
-          throw new Error(
-            "The applicable settlement deadline has not expired.",
-          );
-        }
         hash = await enableRefunds(context, raffle);
       } else if (action === "refund") {
-        if (!live.canRedeemRefundTickets) {
-          throw new Error("This raffle is not refunding.");
-        }
-        const ticketIds = parseRefundTicketIds(refundTicketIds);
-        const destination = resolveDestination(
-          claimDestination,
-          context.account,
-        );
-        hash = await redeemRefundTickets(
-          context,
-          raffle,
-          ticketIds,
-          destination,
-        );
-      } else if (action === "close") {
-        const block = await context.publicClient.getBlock();
-        if (live.status !== RaffleStatus.Active || live.totalTickets !== 0n) {
-          throw new Error("This raffle is not eligible for no-sales closure.");
-        }
-        if (
-          block.timestamp < live.endTime &&
-          context.account.toLowerCase() !== live.sponsor.toLowerCase()
-        ) {
-          throw new Error("Only the sponsor can close before the sale end.");
-        }
-        hash = await closeEmptyRaffle(context, raffle);
-      } else if (action === "quote") {
-        if (!live.canClaimQuote)
-          throw new Error("No quote-token claim is available.");
-        const destination = resolveDestination(
-          claimDestination,
-          context.account,
-        );
-        hash = await claimQuote(context, raffle, destination);
+        const ticketIds = parseTicketIds(refundTicketIds);
+        hash = await refundTickets(context, raffle, ticketIds);
+      } else if (action === "sponsorProceeds") {
+        hash = await releaseSponsorProceeds(context, raffle);
+      } else if (action === "protocolFees") {
+        hash = await releaseProtocolFees(context, raffle);
       } else if (action === "winner") {
-        if (!live.canRedeemWinningTicket)
-          throw new Error("This account does not own the winning ticket.");
-        const destination = resolveDestination(
-          claimDestination,
-          context.account,
+        const ticketId = parsePositiveBigInt(
+          winningTicketProof,
+          "Winning ticket ID",
         );
-        hash = await redeemWinningTicket(context, raffle, destination);
+        const [firstEntry, lastEntry] = await context.publicClient.readContract(
+          {
+            address: raffle,
+            abi: raffleAbi,
+            functionName: "ticketRange",
+            args: [ticketId],
+          },
+        );
+        if (
+          !ticketRangeContainsEntry(
+            { firstEntry, lastEntry },
+            view.winningEntry,
+          )
+        ) {
+          throw new Error(
+            "That ticket range does not contain the winning entry.",
+          );
+        }
+        hash = await settleWinningTicket(context, raffle, ticketId);
       } else {
-        if (!live.canClaimSponsorPrize)
-          throw new Error("The sponsor-side NFT recovery is not available.");
-        const destination = resolveDestination(
-          claimDestination,
-          context.account,
-        );
-        hash = await claimSponsorPrize(context, raffle, destination);
+        hash = await releaseSponsorPrize(context, raffle);
       }
       await finish(hash);
     } catch (error) {
@@ -555,42 +646,54 @@ function LiveRaffleDetail({
     }
   }
 
-  if (!validRaffle) {
+  if (!validRaffle)
     return (
       <InvalidState
         title="Invalid raffle address"
         detail="Use a full EVM address."
       />
     );
-  }
   if (protocolDeployment === undefined) {
     return (
       <InvalidState
         title="Protocol not deployed"
-        detail={`There is no verified deployment registered for ${configuredChain.name}, so this address cannot be validated as a canonical raffle.`}
+        detail={`There is no verified deployment registered for ${configuredChain.name}.`}
       />
     );
   }
-  if (viewQuery.isPending) {
-    return (
-      <div className="page-shell py-14" role="status">
-        <span className="sr-only">Loading raffle</span>
-        <div className="skeleton h-10 w-72 rounded-full" />
-        <div className="mt-8 grid gap-7 lg:grid-cols-[1fr_23rem]">
-          <div className="skeleton h-[34rem] rounded-3xl" />
-          <div className="skeleton h-96 rounded-3xl" />
-        </div>
-      </div>
-    );
-  }
-  if (viewQuery.isError || view === undefined) {
+  if (viewQuery.isPending) return <LoadingRaffle />;
+  if (viewQuery.isError || view === undefined || !view.registered) {
     return (
       <InvalidState
         title="Raffle not found"
-        detail="The lens rejected this address or the chain read failed. Only factory-registered raffles are displayed."
+        detail="This address is not registered by the canonical factory, or the direct contract reads failed."
       />
     );
   }
+
+  const now = BigInt(currentTime ?? 0);
+  const canBuy =
+    currentTime !== undefined &&
+    view.status === RaffleStatus.Active &&
+    now < view.endTime;
+  const canDraw =
+    currentTime !== undefined &&
+    view.status === RaffleStatus.Active &&
+    view.totalEntries > 0n &&
+    now >= view.endTime;
+  const canEnableRefunds =
+    (view.status === RaffleStatus.Active &&
+      view.totalEntries === 0n &&
+      ((currentTime !== undefined && now >= view.endTime) ||
+        address?.toLowerCase() === view.sponsor.toLowerCase())) ||
+    (view.status === RaffleStatus.Drawing &&
+      currentTime !== undefined &&
+      view.callbackDeadline > 0n &&
+      now >= view.callbackDeadline);
+  const canReleaseSponsorPrize =
+    !view.prizeClaimed &&
+    (view.status === RaffleStatus.CashWon ||
+      view.status === RaffleStatus.Refunding);
 
   const model: RaffleViewModel = {
     address: view.raffle,
@@ -599,35 +702,31 @@ function LiveRaffleDetail({
     quoteToken: view.quoteToken,
     prizeToken: view.prizeToken,
     prizeTokenId: view.prizeTokenId.toString(),
-    ticketPrice: view.ticketPrice,
-    minimumTickets: view.minimumTickets,
-    totalTickets: view.totalTickets,
+    entryPrice: ENTRY_PRICE,
+    reserveEntries: view.reserveEntries,
+    totalEntries: view.totalEntries,
     grossSales: view.grossSales,
     unsettledPot: view.unsettledPot,
-    startTime: view.startTime,
     endTime: view.endTime,
-    stateLabel: raffleStatusLabels[view.status as RaffleStatus],
-    stateTone: stateTone(view.status as RaffleStatus),
-    isActive: view.status === RaffleStatus.Active,
+    stateLabel: raffleStatusLabels[view.status],
+    stateTone: stateTone(view.status),
+    isActive: canBuy,
+    isRefunding: view.status === RaffleStatus.Refunding,
     outcomeLabel:
       view.status === RaffleStatus.NftWon ||
-      view.status === RaffleStatus.CashWon ||
-      view.status === RaffleStatus.Closed
-        ? raffleStatusLabels[view.status as RaffleStatus]
+      view.status === RaffleStatus.CashWon
+        ? raffleStatusLabels[view.status]
         : undefined,
-    winningTicketId: view.winningTicketId,
-    accountTicketBalance: view.accountTicketBalance,
+    winningEntry: view.winningEntry === 0n ? undefined : view.winningEntry,
+    accountEntryBalance: indexedEntryBalance,
   };
-
   const projectedSettlement =
-    purchaseAmounts === undefined || parsedQuantity === undefined
+    purchaseAmounts === undefined || parsedEntryCount === undefined
       ? undefined
       : calculateResolutionAmounts(
           view.unsettledPot + purchaseAmounts.grossAmount,
-          view.totalTickets + parsedQuantity >= view.minimumTickets,
+          view.totalEntries + parsedEntryCount >= view.reserveEntries,
         );
-
-  const purchaseDisabled = !view.canBuy || progress.kind === "pending";
 
   return (
     <RaffleLayout
@@ -635,16 +734,14 @@ function LiveRaffleDetail({
         <>
           <section className="card p-6">
             <p className="eyebrow">Your action</p>
-            <h2 className="mt-2 text-2xl">Get tickets</h2>
-
-            <QuantityStepper
-              disabled={!view.canBuy}
-              onChange={setQuantity}
-              quantity={quantity}
+            <h2 className="mt-2 text-2xl">Buy entries</h2>
+            <EntryStepper
+              disabled={!canBuy}
+              onChange={setEntryCountText}
+              value={entryCountText}
             />
-
             <label className="mt-4 block">
-              <span className="field-label">Send tickets to (optional)</span>
+              <span className="field-label">Ticket owner (optional)</span>
               <input
                 className="input numeric"
                 onChange={(event) => setRecipient(event.target.value)}
@@ -652,9 +749,16 @@ function LiveRaffleDetail({
                 value={recipient}
               />
             </label>
-
             {purchaseAmounts && projectedSettlement ? (
               <dl className="mt-5 space-y-2 text-sm">
+                <Split
+                  label="Entry price"
+                  value={formatTokenAmount(
+                    ENTRY_PRICE,
+                    tokenMetadata.decimals,
+                    tokenMetadata.symbol,
+                  )}
+                />
                 <Split
                   label="Total paid"
                   strong
@@ -664,143 +768,167 @@ function LiveRaffleDetail({
                     tokenMetadata.symbol,
                   )}
                 />
+                <Split label="Ticket NFTs minted" value="1" />
                 <Split
-                  label="Gross pot after purchase"
-                  value={formatTokenAmount(
-                    view.unsettledPot + purchaseAmounts.grossAmount,
-                    tokenMetadata.decimals,
-                    tokenMetadata.symbol,
-                  )}
-                />
-                <Split
-                  label="Projected settlement fee · 5%"
+                  label="Projected 5% fee"
                   value={formatTokenAmount(
                     projectedSettlement.protocolFee,
                     tokenMetadata.decimals,
                     tokenMetadata.symbol,
                   )}
                 />
-                <Split
-                  label="Projected distributable pot"
-                  value={formatTokenAmount(
-                    projectedSettlement.distributablePot,
-                    tokenMetadata.decimals,
-                    tokenMetadata.symbol,
-                  )}
-                />
               </dl>
             ) : null}
-
             <p className="mt-4 rounded-2xl bg-[var(--yellow-wash)] p-3 text-xs leading-5 text-[var(--ink-soft)]">
-              Purchases add their full amount to the unsettled pot. One 5%
-              protocol fee is calculated from aggregate sales when the raffle
-              resolves.
+              Each purchase gets the next simple ticket ID. Its inclusive entry
+              range is stored separately, and purchase gas does not grow with
+              entry count.
             </p>
-
             <div className="perforation my-5" />
-
             {!isConnected ? (
               <WalletButton full />
             ) : (
               <button
                 className="btn btn-primary w-full"
-                disabled={purchaseDisabled}
+                disabled={
+                  !canBuy ||
+                  purchaseAmounts === undefined ||
+                  progress.kind === "pending"
+                }
                 onClick={handleBuy}
                 type="button"
               >
-                <ShoppingBag aria-hidden size={17} /> Buy tickets
+                <ShoppingBag aria-hidden size={17} /> Buy entries
               </button>
             )}
           </section>
 
           <section className="card p-6">
-            <p className="eyebrow">Settle or claim</p>
-            <label className="mt-4 block">
-              <span className="field-label">
-                Redemption destination (optional)
-              </span>
-              <input
-                className="input numeric"
-                onChange={(event) => setClaimDestination(event.target.value)}
-                placeholder={address ?? "0x…"}
-                value={claimDestination}
-              />
-            </label>
+            <p className="eyebrow">Settlement</p>
             {view.status === RaffleStatus.Refunding ? (
               <label className="mt-4 block">
                 <span className="field-label">
-                  Ticket IDs to burn (comma-separated, max 100)
+                  Ticket IDs to refund (comma-separated, max 100)
                 </span>
                 <input
                   className="input numeric"
                   onChange={(event) => setRefundTicketIds(event.target.value)}
-                  placeholder="1, 2, 3"
+                  placeholder="for example: 1, 3, 4"
                   value={refundTicketIds}
                 />
+                {(ownedTicketQuery.data?.length ?? 0) > 0 ? (
+                  <button
+                    className="field-hint font-bold underline"
+                    onClick={() =>
+                      setRefundTicketIds(
+                        ownedTicketQuery
+                          .data!.slice(0, 100)
+                          .map((ticket) => ticket.ticketId)
+                          .join(", "),
+                      )
+                    }
+                    type="button"
+                  >
+                    Use up to 100 of your indexed tickets
+                  </button>
+                ) : null}
+              </label>
+            ) : null}
+            {view.status === RaffleStatus.NftWon ||
+            view.status === RaffleStatus.CashWon ? (
+              <label className="mt-4 block">
+                <span className="field-label">Winning ticket ID</span>
+                <input
+                  className="input numeric"
+                  onChange={(event) =>
+                    setWinningTicketProof(event.target.value)
+                  }
+                  placeholder="for example: 3"
+                  value={winningTicketProof}
+                />
+                {parsedWinningTicketId !== undefined ? (
+                  <span className="field-hint">
+                    Range:{" "}
+                    {winningTicketRangeQuery.data === undefined
+                      ? "reading from chain…"
+                      : `${winningTicketRangeQuery.data[0].toString()}–${winningTicketRangeQuery.data[1].toString()}`}
+                  </span>
+                ) : null}
+                {indexedWinningTicket !== undefined ? (
+                  <button
+                    className="field-hint font-bold underline"
+                    onClick={() =>
+                      setWinningTicketProof(indexedWinningTicket.ticketId)
+                    }
+                    type="button"
+                  >
+                    Use your indexed winning ticket
+                  </button>
+                ) : null}
               </label>
             ) : null}
             <div className="mt-4 grid gap-2">
               <ActionButton
-                disabled={
-                  !view.canDraw ||
-                  !view.entropyFeeAvailable ||
-                  progress.kind === "pending"
-                }
+                disabled={!canDraw || progress.kind === "pending"}
                 icon={<Dices size={17} />}
-                label={`Request draw · ${formatQuoteAmount(view.entropyFee, 18)} ETH`}
+                label="Request draw · Chainlink fee in ETH"
                 onClick={() => handleAction("draw")}
               />
               <ActionButton
-                disabled={!view.canEnableRefunds || progress.kind === "pending"}
+                disabled={!canEnableRefunds || progress.kind === "pending"}
                 icon={<Undo2 size={17} />}
-                label="Enable refunds after settlement deadline"
+                label={
+                  view.totalEntries === 0n
+                    ? "Finalize empty raffle"
+                    : "Enable full refunds after timeout"
+                }
                 onClick={() => handleAction("refunds")}
               />
               <ActionButton
                 disabled={
-                  view.status !== RaffleStatus.Active ||
-                  view.totalTickets !== 0n ||
-                  progress.kind === "pending"
-                }
-                icon={<Check size={17} />}
-                label="Close no-sales raffle"
-                onClick={() => handleAction("close")}
-              />
-              <ActionButton
-                disabled={
-                  !view.canRedeemRefundTickets ||
+                  view.status !== RaffleStatus.Refunding ||
                   refundTicketIds.trim() === "" ||
                   progress.kind === "pending"
                 }
                 icon={<CircleDollarSign size={17} />}
-                label="Burn tickets & redeem refund"
+                label="Burn tickets & claim refunds"
                 onClick={() => handleAction("refund")}
               />
               <ActionButton
-                disabled={!view.canClaimQuote || progress.kind === "pending"}
+                disabled={
+                  view.sponsorProceeds === 0n || progress.kind === "pending"
+                }
                 icon={<CircleDollarSign size={17} />}
-                label={`Claim ${formatTokenAmount(
-                  view.accountQuoteClaim,
-                  tokenMetadata.decimals,
-                  tokenMetadata.symbol,
-                )}`}
-                onClick={() => handleAction("quote")}
+                label={`Release ${formatTokenAmount(view.sponsorProceeds, tokenMetadata.decimals, tokenMetadata.symbol)} to sponsor`}
+                onClick={() => handleAction("sponsorProceeds")}
               />
               <ActionButton
                 disabled={
-                  !view.canRedeemWinningTicket || progress.kind === "pending"
+                  view.protocolFees === 0n || progress.kind === "pending"
+                }
+                icon={<CircleDollarSign size={17} />}
+                label={`Release ${formatTokenAmount(view.protocolFees, tokenMetadata.decimals, tokenMetadata.symbol)} to treasury`}
+                onClick={() => handleAction("protocolFees")}
+              />
+              <ActionButton
+                disabled={
+                  (view.status !== RaffleStatus.NftWon &&
+                    view.status !== RaffleStatus.CashWon) ||
+                  view.winningTicketId !== 0n ||
+                  winningTicketProof.trim() === "" ||
+                  progress.kind === "pending"
                 }
                 icon={<Gift size={17} />}
-                label="Burn winning ticket & redeem prize"
+                label="Settle winning ticket"
                 onClick={() => handleAction("winner")}
               />
               <ActionButton
                 disabled={
-                  !view.canClaimSponsorPrize || progress.kind === "pending"
+                  !canReleaseSponsorPrize || progress.kind === "pending"
                 }
                 icon={<Gift size={17} />}
-                label="Recover sponsor NFT"
-                onClick={() => handleAction("sponsor")}
+                label="Release NFT to sponsor"
+                onClick={() => handleAction("sponsorPrize")}
               />
             </div>
           </section>
@@ -809,20 +937,16 @@ function LiveRaffleDetail({
             <p className="eyebrow">Recovery & liabilities</p>
             <dl className="mt-4 space-y-2 text-sm">
               <Split
-                label="Request grace deadline"
-                value={formatDeadline(view.requestGraceDeadline)}
+                label="Purchase tickets"
+                value={view.ticketCount.toString()}
               />
               <Split
-                label="Draw requested"
-                value={formatDeadline(view.drawRequestedAt)}
+                label="Your ticket NFTs"
+                value={view.accountTicketBalance.toString()}
               />
               <Split
                 label="Callback deadline"
                 value={formatDeadline(view.callbackDeadline)}
-              />
-              <Split
-                label="NFT redemption deadline"
-                value={formatDeadline(view.nftRedemptionDeadline)}
               />
               <Split
                 label="Remaining refunds"
@@ -833,17 +957,17 @@ function LiveRaffleDetail({
                 )}
               />
               <Split
-                label="Winning cash"
+                label="Sponsor proceeds"
                 value={formatTokenAmount(
-                  view.winnerCashLiability,
+                  view.sponsorProceeds,
                   tokenMetadata.decimals,
                   tokenMetadata.symbol,
                 )}
               />
               <Split
-                label="All quote claims"
+                label="Protocol fees"
                 value={formatTokenAmount(
-                  view.totalClaimableQuote,
+                  view.protocolFees,
                   tokenMetadata.decimals,
                   tokenMetadata.symbol,
                 )}
@@ -858,17 +982,7 @@ function LiveRaffleDetail({
                 )}
               />
             </dl>
-            <p className="mt-4 break-all text-xs leading-5 text-[var(--ink-2)]">
-              Fixed prize recovery: {view.sponsorPrizeRecoveryRecipient}
-            </p>
-            {!view.entropyFeeAvailable && view.canDraw ? (
-              <p className="mt-4 rounded-2xl bg-[var(--amber-wash)] p-3 text-xs font-bold text-[var(--amber-ink)]">
-                The oracle fee read is unavailable. The request grace deadline
-                and permissionless refund path remain visible above.
-              </p>
-            ) : null}
           </section>
-
           {progress.kind !== "idle" ? (
             <ProgressPanel progress={progress} />
           ) : null}
@@ -876,9 +990,9 @@ function LiveRaffleDetail({
       }
       footnote={
         <p className="px-2 text-xs leading-5 text-[var(--ink-3)]">
-          Ticket ownership locks while randomness is pending and for the
-          selected winner after resolution. Refund tickets remain transferable
-          until burn.{" "}
+          Tickets remain transferable until claimed and burned. Anyone may
+          settle directly to the current owner. Sponsor and treasury payments
+          always go to their configured addresses.{" "}
           <Link className="font-bold underline" href="/docs">
             Read the full mechanics.
           </Link>
@@ -890,70 +1004,63 @@ function LiveRaffleDetail({
   );
 }
 
-/* --------------------------------------------------------------- pieces */
-
-function QuantityStepper({
-  quantity,
+function EntryStepper({
+  value,
   onChange,
   disabled = false,
 }: {
-  readonly quantity: number;
-  readonly onChange: (value: number) => void;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
   readonly disabled?: boolean;
 }) {
-  function clamp(value: number) {
-    return Math.min(MAX_QUANTITY, Math.max(1, value));
-  }
-
+  const parsed = /^[1-9]\d*$/.test(value) ? BigInt(value) : 0n;
+  const bump = (delta: bigint) =>
+    onChange((parsed + delta < 1n ? 1n : parsed + delta).toString());
   return (
     <div className="mt-5">
-      <span className="field-label" id="quantity-label">
-        Quantity
+      <span className="field-label" id="entry-count-label">
+        Entries ($1 each)
       </span>
       <div className="flex items-center gap-2">
         <button
-          aria-label="Remove one ticket"
+          aria-label="Remove one entry"
           className="btn btn-outline !size-12 !min-h-0 shrink-0 !p-0"
-          disabled={disabled || quantity <= 1}
-          onClick={() => onChange(clamp(quantity - 1))}
+          disabled={disabled || parsed <= 1n}
+          onClick={() => bump(-1n)}
           type="button"
         >
           <Minus aria-hidden size={18} />
         </button>
         <input
-          aria-labelledby="quantity-label"
+          aria-labelledby="entry-count-label"
           className="input numeric !h-12 text-center !text-lg !font-extrabold"
           disabled={disabled}
           inputMode="numeric"
-          max={MAX_QUANTITY}
-          min={1}
-          onChange={(event) => {
-            const next = Number.parseInt(event.target.value, 10);
-            onChange(Number.isNaN(next) ? 1 : clamp(next));
-          }}
-          type="number"
-          value={quantity}
+          onChange={(event) => onChange(event.target.value)}
+          pattern="[0-9]*"
+          type="text"
+          value={value}
         />
         <button
-          aria-label="Add one ticket"
+          aria-label="Add one entry"
           className="btn btn-outline !size-12 !min-h-0 shrink-0 !p-0"
-          disabled={disabled || quantity >= MAX_QUANTITY}
-          onClick={() => onChange(clamp(quantity + 1))}
+          disabled={disabled || parsed >= MAX_UINT128}
+          onClick={() => bump(1n)}
           type="button"
         >
           <Plus aria-hidden size={18} />
         </button>
       </div>
       <div className="mt-2 flex gap-1.5">
-        {[5, 10, 25].map((preset) => (
+        {[20n, 100n, 1_000n].map((preset) => (
           <button
             className="chip bg-[var(--paper-sunk)] text-[var(--ink-2)] hover:text-[var(--ink)]"
             disabled={disabled}
-            key={preset}
-            onClick={() => onChange(preset)}
+            key={preset.toString()}
+            onClick={() => onChange(preset.toString())}
             type="button"
           >
-            {preset}
+            {preset.toString()}
           </button>
         ))}
       </div>
@@ -995,24 +1102,25 @@ function ActionButton({
 }) {
   return (
     <button
-      className="flex min-h-12 w-full items-center gap-3 rounded-2xl border border-[var(--line)] bg-[var(--paper-raised)] px-4 text-left text-sm font-extrabold transition-colors hover:border-[var(--ink)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[var(--line)]"
+      className="btn btn-outline w-full justify-start text-left"
       disabled={disabled}
       onClick={onClick}
       type="button"
     >
-      {icon} {label}
+      {icon}
+      <span>{label}</span>
     </button>
   );
 }
 
-function ProgressPanel({ progress }: { readonly progress: ActionProgress }) {
+function ProgressPanel({
+  progress,
+}: {
+  readonly progress: Exclude<ActionProgress, { kind: "idle" }>;
+}) {
   return (
-    <section
-      className={`rounded-3xl p-5 text-sm ${
-        progress.kind === "error"
-          ? "bg-[var(--danger-wash)] text-[var(--danger)]"
-          : "card"
-      }`}
+    <div
+      className={`card p-5 text-sm ${progress.kind === "error" ? "border-[var(--danger)] bg-[var(--danger-wash)] text-[var(--danger)]" : ""}`}
       role={progress.kind === "error" ? "alert" : "status"}
     >
       {progress.kind === "pending" ? (
@@ -1021,42 +1129,43 @@ function ProgressPanel({ progress }: { readonly progress: ActionProgress }) {
           {progress.text}
         </p>
       ) : null}
+      {progress.kind === "batch" ? (
+        <p className="font-bold">
+          Wallet batch submitted:{" "}
+          <span className="numeric break-all">{progress.id}</span>. Refresh
+          after it confirms.
+        </p>
+      ) : null}
       {progress.kind === "error" ? (
         <p className="font-bold">{progress.text}</p>
       ) : null}
-      {progress.kind === "batch" ? (
-        <div>
-          <p className="font-extrabold">Wallet batch submitted</p>
-          <p className="numeric mt-1 break-all text-xs text-[var(--ink-2)]">
-            Batch ID: {progress.id}
-          </p>
-          <p className="mt-2 text-xs leading-5 text-[var(--ink-2)]">
-            Your wallet tracks confirmation. Chain and index views refresh
-            automatically.
-          </p>
-        </div>
-      ) : null}
       {progress.kind === "success" ? (
-        <div>
-          <p className="flex items-center gap-2 font-extrabold text-[#0d6b45]">
-            <Check aria-hidden size={17} /> Confirmed onchain
-          </p>
+        <p className="font-bold text-[#0d6b45]">
+          <Check aria-hidden className="mr-1 inline" size={16} /> Confirmed ·{" "}
           <a
-            className="mt-2 inline-flex items-center gap-1 font-bold underline"
+            className="underline"
             href={explorerTransactionUrl(progress.hash)}
             rel="noreferrer"
             target="_blank"
           >
-            View transaction <ExternalLink aria-hidden size={13} />
+            view transaction <ExternalLink className="inline" size={13} />
           </a>
-          {progress.indexing ? (
-            <p className="mt-2 text-xs leading-5 text-[var(--ink-2)]">
-              The index is catching up; direct chain state above already
-              refreshed.
-            </p>
-          ) : null}
-        </div>
+          {progress.indexing ? " · indexing may take a moment" : ""}
+        </p>
       ) : null}
-    </section>
+    </div>
+  );
+}
+
+function LoadingRaffle() {
+  return (
+    <div className="page-shell py-14" role="status">
+      <span className="sr-only">Loading raffle</span>
+      <div className="skeleton h-10 w-72 rounded-full" />
+      <div className="mt-8 grid gap-7 lg:grid-cols-[1fr_23rem]">
+        <div className="skeleton h-[34rem] rounded-3xl" />
+        <div className="skeleton h-96 rounded-3xl" />
+      </div>
+    </div>
   );
 }

@@ -6,6 +6,10 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 /// @title FalseERC20
 /// @notice Adversarial ERC20 that returns false instead of transferring.
 contract FalseERC20 is IERC20 {
+    function decimals() external pure returns (uint8) {
+        return 6;
+    }
+
     /// @inheritdoc IERC20
     uint256 public override totalSupply;
     /// @inheritdoc IERC20

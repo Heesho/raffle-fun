@@ -1,354 +1,504 @@
 {
-  "schema": 1,
-  "source_commit": "5772e54ba89c06646815ed52a881cd8940f094ca",
-  "config": "/Users/hishamel-husseini/Documents/projects/raffle-fun/packages/contracts/audit/current-mutations.json",
-  "generated": 38,
-  "compiled_and_killed": 30,
-  "survived": 8,
+  "schema": 2,
+  "source_commit": "090e29fc5bd481e2e244bbd52a716a7143248d82",
+  "candidate_source": {
+    "algorithm": "sha256",
+    "digest": "54c42b664eb7b74c5a352b70a64a6553b6ba496b40e880c4869c1c8df9178d9a",
+    "file_count": 16
+  },
+  "test_oracle": {
+    "algorithm": "sha256",
+    "digest": "f84324f7d98ddbd83cac39433edefb5a368f5ad36606b5c97f527a2f8a430dd7",
+    "file_count": 8
+  },
+  "config": "packages/contracts/audit/current-mutations.json",
+  "test_command": [
+    "forge",
+    "test",
+    "-q",
+    "--no-match-contract",
+    "EthereumForkTest"
+  ],
+  "baseline": {
+    "classification": "passed",
+    "exit_code": 0,
+    "seconds": 5.56,
+    "stderr_tail": "",
+    "stdout_tail": "Compiling 71 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.52s\n"
+  },
+  "generated": 52,
+  "compiled_and_killed": 52,
+  "survived": 0,
   "compile_errors": 0,
   "invalid": 0,
   "results": [
     {
       "id": "M-01",
-      "description": "remove Drawing transfer lock",
+      "description": "remove uint128 total-entry overflow guard",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 16.975,
+      "seconds": 4.575,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 81 files with Solc 0.8.36\nSolc 0.8.36 finished in 6.06s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.25s\n"
     },
     {
       "id": "M-02",
-      "description": "remove resolved winning-ticket lock",
+      "description": "start the next ticket at the previous last entry",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 16.463,
+      "seconds": 5.008,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 6.19s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.26s\n"
     },
     {
       "id": "M-03",
-      "description": "select zero-based winner",
+      "description": "exclude the final purchased entry from its ticket",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 15.159,
+      "seconds": 3.652,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.90s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.23s\n"
     },
     {
       "id": "M-04",
-      "description": "use wrong winner denominator",
+      "description": "skip the first sequential ticket ID",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 16.747,
+      "seconds": 4.33,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 6.02s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.24s\n"
     },
     {
       "id": "M-05",
-      "description": "remove callback in-flight check",
-      "classification": "survived",
-      "exit_code": 0,
-      "seconds": 17.484,
+      "description": "omit stored range assignment for a new ticket",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.222,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.89s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.23s\n"
     },
     {
       "id": "M-06",
-      "description": "remove callback sequence check",
+      "description": "allow an entry purchase at the exact sale deadline",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 17.528,
+      "seconds": 4.401,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.83s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.21s\n"
     },
     {
       "id": "M-07",
-      "description": "remove callback lifecycle check",
+      "description": "reintroduce a ticket-transfer freeze at the sale deadline",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 16.478,
+      "seconds": 4.51,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.84s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.30s\n"
     },
     {
       "id": "M-08",
-      "description": "change threshold comparison",
+      "description": "allow a draw request before the sale ends",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 17.901,
+      "seconds": 4.333,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 7.39s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.20s\n"
     },
     {
       "id": "M-09",
-      "description": "change callback protocol fee",
+      "description": "allow a sold Active raffle to enter refunds without a draw request",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 20.27,
+      "seconds": 4.264,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 8.01s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.22s\n"
     },
     {
       "id": "M-10",
-      "description": "change cash-winner basis points",
+      "description": "allow Drawing refunds before the callback timeout",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 16.952,
+      "seconds": 4.525,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.95s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.33s\n"
     },
     {
       "id": "M-11",
-      "description": "leave cash unsettled pot uncleared",
+      "description": "allow a final NFT outcome to enter refunds after the callback deadline",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 18.747,
+      "seconds": 4.569,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 6.33s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.25s\n"
     },
     {
       "id": "M-12",
-      "description": "underpay refund by one unit per ticket",
+      "description": "remove Chainlink wrapper callback authentication",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 17.164,
+      "seconds": 4.32,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 6.38s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.23s\n"
     },
     {
       "id": "M-13",
-      "description": "omit refund liability decrement",
+      "description": "remove the synchronous callback in-flight guard",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 14.98,
+      "seconds": 4.509,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 6.07s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.25s\n"
     },
     {
       "id": "M-14",
-      "description": "omit refund ticket burn",
+      "description": "remove the callback lifecycle guard",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 19.251,
+      "seconds": 4.438,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 6.37s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.26s\n"
     },
     {
       "id": "M-15",
-      "description": "check only outgoing sender debit",
+      "description": "remove the callback request-id guard",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 17.947,
+      "seconds": 4.729,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 7.03s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.28s\n"
     },
     {
       "id": "M-16",
-      "description": "check only outgoing recipient credit",
+      "description": "accept malformed callback word counts",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 15.75,
+      "seconds": 4.466,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.79s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.26s\n"
     },
     {
       "id": "M-17",
-      "description": "exclude exact sale start",
+      "description": "select the winning entry with totalEntries plus one",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 17.063,
+      "seconds": 4.436,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 6.80s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.25s\n"
     },
     {
       "id": "M-18",
-      "description": "allow purchase at exact sale end",
+      "description": "reduce fixed Chainlink confirmations from 30 to 29",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 16.777,
+      "seconds": 4.456,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.85s\n"
+      "stdout_tail": "Compiling 10 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.23s\n"
     },
     {
       "id": "M-19",
-      "description": "allow zero-quantity purchase",
+      "description": "require reserve entries to be exceeded rather than met",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 17.636,
+      "seconds": 4.388,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.60s\n"
+      "stdout_tail": "Compiling 10 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.25s\n"
     },
     {
       "id": "M-20",
-      "description": "allow 101-ticket purchase",
-      "classification": "survived",
-      "exit_code": 0,
-      "seconds": 17.684,
+      "description": "reduce the protocol fee from five percent",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.217,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.67s\n"
+      "stdout_tail": "Compiling 10 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.20s\n"
     },
     {
       "id": "M-21",
-      "description": "break sequential first ticket ID",
+      "description": "increase the cash winner gross share above eighty percent",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 17.375,
+      "seconds": 4.37,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.52s\n"
+      "stdout_tail": "Compiling 10 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.21s\n"
     },
     {
       "id": "M-22",
-      "description": "accept incoming quote over-credit",
+      "description": "omit the sponsor proceeds balance created during settlement",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 14.58,
+      "seconds": 4.463,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.80s\n"
+      "stdout_tail": "Compiling 10 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.23s\n"
     },
     {
       "id": "M-23",
-      "description": "omit NFT winner delivery ownership verification",
-      "classification": "survived",
-      "exit_code": 0,
-      "seconds": 16.105,
+      "description": "credit 100 percent rather than 95 percent to the NFT sponsor",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.57,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.57s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.22s\n"
     },
     {
       "id": "M-24",
-      "description": "allow NFT timeout after prize claimed",
+      "description": "leave the gross pot unsettled after winning-ticket settlement",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 16.53,
+      "seconds": 4.775,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.65s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.63s\n"
     },
     {
       "id": "M-25",
-      "description": "allow refund finalization before its deadline",
+      "description": "remove the winning-entry containment proof",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 17.378,
+      "seconds": 5.305,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.67s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.61s\n"
     },
     {
       "id": "M-26",
-      "description": "omit known-protocol ticket destination check",
+      "description": "send an NFT winner's prize to the settlement caller",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 13.079,
+      "seconds": 4.315,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.79s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.24s\n"
     },
     {
       "id": "M-27",
-      "description": "allow Factory ownership renunciation",
+      "description": "send a cash winner's payment to the settlement caller",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 16.947,
+      "seconds": 4.455,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.69s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.24s\n"
     },
     {
       "id": "M-28",
-      "description": "ignore Factory creation pause",
+      "description": "leave the winning ticket live after settlement",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 15.347,
+      "seconds": 4.377,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 12 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.78s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.24s\n"
     },
     {
       "id": "M-29",
-      "description": "reject exact maximum start delay",
-      "classification": "survived",
-      "exit_code": 0,
-      "seconds": 16.285,
+      "description": "record the wrong winning ticket ID",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.616,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 12 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.47s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.27s\n"
     },
     {
       "id": "M-30",
-      "description": "reject exact maximum sale duration",
-      "classification": "survived",
-      "exit_code": 0,
-      "seconds": 14.914,
+      "description": "allow 101 tickets in one refund batch",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.691,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 12 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.62s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.22s\n"
     },
     {
       "id": "M-31",
-      "description": "allow zero ticket price",
+      "description": "allow an empty refund ticket batch",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 19.085,
+      "seconds": 4.253,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 12 files with Solc 0.8.36\nSolc 0.8.36 finished in 6.23s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.21s\n"
     },
     {
       "id": "M-32",
-      "description": "allow zero minimum-ticket threshold",
+      "description": "make each inclusive refund range one entry too small",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 15.69,
+      "seconds": 4.158,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 12 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.85s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.21s\n"
     },
     {
       "id": "M-33",
-      "description": "reject exact maximum metadata length",
-      "classification": "survived",
-      "exit_code": 0,
-      "seconds": 18.068,
+      "description": "refund by ticket quantity instead of weighted entries",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.267,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 12 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.65s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.20s\n"
     },
     {
       "id": "M-34",
-      "description": "omit creation prize owner verification",
+      "description": "omit the weighted refund liability decrement",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 18.547,
+      "seconds": 4.191,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 12 files with Solc 0.8.36\nSolc 0.8.36 finished in 6.89s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.23s\n"
     },
     {
       "id": "M-35",
-      "description": "omit creation Active-status verification",
+      "description": "leave refunded tickets live",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 16.079,
+      "seconds": 4.445,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 12 files with Solc 0.8.36\nSolc 0.8.36 finished in 6.02s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.23s\n"
     },
     {
       "id": "M-36",
-      "description": "Lens permits draw at grace deadline",
-      "classification": "survived",
-      "exit_code": 0,
-      "seconds": 19.131,
+      "description": "allow a caller to refund another current owner's ticket",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.326,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 13 files with Solc 0.8.36\nSolc 0.8.36 finished in 6.18s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.21s\n"
     },
     {
       "id": "M-37",
-      "description": "Lens permits buy at sale end",
-      "classification": "survived",
-      "exit_code": 0,
-      "seconds": 14.792,
+      "description": "omit NFT winner-delivery ownership verification",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.48,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 2 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.15s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.23s\n"
     },
     {
       "id": "M-38",
-      "description": "Lens rejects exact 64-Raffle batch",
+      "description": "omit sponsor prize-delivery ownership verification",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 15.065,
+      "seconds": 4.589,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 2 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.58s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.43s\n"
+    },
+    {
+      "id": "M-39",
+      "description": "omit factory prize escrow owner verification",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.31,
+      "stderr_tail": "",
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.22s\n"
+    },
+    {
+      "id": "M-40",
+      "description": "omit factory clone Active-state verification",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.522,
+      "stderr_tail": "",
+      "stdout_tail": "Compiling 6 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.23s\n"
+    },
+    {
+      "id": "M-41",
+      "description": "allow a clone to be initialized more than once",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.542,
+      "stderr_tail": "",
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.32s\n"
+    },
+    {
+      "id": "M-42",
+      "description": "allow non-factory clone initialization",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.547,
+      "stderr_tail": "",
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.27s\n"
+    },
+    {
+      "id": "M-43",
+      "description": "ignore the factory creation pause",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.45,
+      "stderr_tail": "",
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.23s\n"
+    },
+    {
+      "id": "M-44",
+      "description": "allow a zero reserve threshold",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.436,
+      "stderr_tail": "",
+      "stdout_tail": "Compiling 6 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.23s\n"
+    },
+    {
+      "id": "M-45",
+      "description": "accept a prize contract without ERC721 support",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.341,
+      "stderr_tail": "",
+      "stdout_tail": "Compiling 6 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.21s\n"
+    },
+    {
+      "id": "M-46",
+      "description": "allow an existing raffle clone to be used as a prize token",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.332,
+      "stderr_tail": "",
+      "stdout_tail": "Compiling 6 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.20s\n"
+    },
+    {
+      "id": "M-47",
+      "description": "allow creation with an end time equal to the current block",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.444,
+      "stderr_tail": "",
+      "stdout_tail": "Compiling 6 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.21s\n"
+    },
+    {
+      "id": "M-48",
+      "description": "reject the exact maximum sale duration",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.415,
+      "stderr_tail": "",
+      "stdout_tail": "Compiling 6 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.22s\n"
+    },
+    {
+      "id": "M-49",
+      "description": "accept a quote token with non-six-decimal units",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.43,
+      "stderr_tail": "",
+      "stdout_tail": "Compiling 6 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.21s\n"
+    },
+    {
+      "id": "M-50",
+      "description": "leave the shared implementation initializable",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.444,
+      "stderr_tail": "",
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.25s\n"
+    },
+    {
+      "id": "M-51",
+      "description": "allow a registered raffle clone as an initialization sponsor, recipient, or treasury",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.428,
+      "stderr_tail": "",
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.26s\n"
+    },
+    {
+      "id": "M-52",
+      "description": "allow ticket or fixed release destinations that are registered raffle clones",
+      "classification": "killed",
+      "exit_code": 1,
+      "seconds": 4.414,
+      "stderr_tail": "",
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.23s\n"
     }
   ]
 }

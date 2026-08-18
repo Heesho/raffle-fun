@@ -13,13 +13,13 @@ import {
 } from "react";
 
 import {
-  buyTickets as applyBuy,
-  claimSponsorPrize as applyClaimSponsorPrize,
-  claimQuote as applyClaimQuote,
-  closeEmptyRaffle as applyCloseEmptyRaffle,
+  buyEntries as applyBuy,
+  releaseSponsorPrize as applyReleaseSponsorPrize,
+  releaseSponsorProceeds as applyReleaseSponsorProceeds,
+  releaseProtocolFees as applyReleaseProtocolFees,
   enableRefunds as applyEnableRefunds,
-  redeemRefundTickets as applyRedeemRefundTickets,
-  redeemWinningTicket as applyRedeemWinningTicket,
+  refundTickets as applyRefundTickets,
+  settleWinningTicket as applySettleWinningTicket,
   requestDraw as applyRequestDraw,
   resolveDraw,
   SandboxError,
@@ -29,7 +29,7 @@ import {
 } from "./engine";
 import { createSandbox } from "./seed";
 
-const STORAGE_KEY = "raffle-fun.sandbox.v3";
+const STORAGE_KEY = "raffle-fun.sandbox.tickets-v2";
 
 /** How long the stand-in oracle takes to deliver randomness. */
 export const ORACLE_DELAY_MS = 4_000;
@@ -123,14 +123,17 @@ interface SandboxContextValue {
   readonly sandbox: Sandbox | undefined;
   readonly error: string | undefined;
   readonly clearError: () => void;
-  readonly buyTickets: (raffleId: string, quantity: number) => void;
+  readonly buyEntries: (raffleId: string, entryCount: bigint) => void;
   readonly requestDraw: (raffleId: string) => void;
-  readonly closeEmptyRaffle: (raffleId: string) => void;
   readonly enableRefunds: (raffleId: string) => void;
-  readonly redeemRefundTickets: (raffleId: string) => void;
-  readonly redeemWinningTicket: (raffleId: string) => void;
-  readonly claimSponsorPrize: (raffleId: string) => void;
-  readonly claimQuote: (raffleId: string) => void;
+  readonly refundTickets: (
+    raffleId: string,
+    ticketIds: readonly bigint[],
+  ) => void;
+  readonly settleWinningTicket: (raffleId: string, ticketId: bigint) => void;
+  readonly releaseSponsorPrize: (raffleId: string) => void;
+  readonly releaseSponsorProceeds: (raffleId: string) => void;
+  readonly releaseProtocolFees: (raffleId: string) => void;
   readonly skipToEnd: (raffleId: string) => void;
   readonly reset: () => void;
 }
@@ -169,7 +172,7 @@ export function SandboxProvider({
     }
   }, []);
 
-  // The stand-in Pyth callback: any raffle with a pending request resolves a
+  // The stand-in Chainlink callback: any raffle with a pending request resolves a
   // few seconds later, mirroring the real request/callback split.
   //
   // Timers deliberately survive re-renders. Cancelling them in this effect's
@@ -230,34 +233,28 @@ export function SandboxProvider({
       sandbox,
       error,
       clearError: () => setError(undefined),
-      buyTickets: (raffleId, quantity) =>
-        run((state) => applyBuy(state, raffleId, quantity, Date.now())),
+      buyEntries: (raffleId, entryCount) =>
+        run((state) => applyBuy(state, raffleId, entryCount, Date.now())),
       requestDraw: (raffleId) =>
         run((state) => applyRequestDraw(state, raffleId, Date.now())),
-      closeEmptyRaffle: (raffleId) =>
-        run((state) => applyCloseEmptyRaffle(state, raffleId, Date.now())),
       enableRefunds: (raffleId) =>
         run((state) => applyEnableRefunds(state, raffleId, Date.now())),
-      redeemRefundTickets: (raffleId) =>
-        run((state) => {
-          const raffle = state.raffles.find((entry) => entry.id === raffleId);
-          const batch =
-            raffle?.tickets
-              .filter(
-                (ticket) =>
-                  !ticket.burned &&
-                  ticket.owner.toLowerCase() === state.player.toLowerCase(),
-              )
-              .slice(0, 100)
-              .map((ticket) => ticket.id) ?? [];
-          return applyRedeemRefundTickets(state, raffleId, batch, Date.now());
-        }),
-      redeemWinningTicket: (raffleId) =>
-        run((state) => applyRedeemWinningTicket(state, raffleId, Date.now())),
-      claimSponsorPrize: (raffleId) =>
-        run((state) => applyClaimSponsorPrize(state, raffleId, Date.now())),
-      claimQuote: (raffleId) =>
-        run((state) => applyClaimQuote(state, raffleId, Date.now())),
+      refundTickets: (raffleId, ticketIds) =>
+        run((state) =>
+          applyRefundTickets(state, raffleId, ticketIds, Date.now()),
+        ),
+      settleWinningTicket: (raffleId, ticketId) =>
+        run((state) =>
+          applySettleWinningTicket(state, raffleId, ticketId, Date.now()),
+        ),
+      releaseSponsorPrize: (raffleId) =>
+        run((state) => applyReleaseSponsorPrize(state, raffleId, Date.now())),
+      releaseSponsorProceeds: (raffleId) =>
+        run((state) =>
+          applyReleaseSponsorProceeds(state, raffleId, Date.now()),
+        ),
+      releaseProtocolFees: (raffleId) =>
+        run((state) => applyReleaseProtocolFees(state, raffleId, Date.now())),
       // Pulls a sale deadline into the past so settlement can be demonstrated
       // without waiting out the clock.
       skipToEnd: (raffleId) =>

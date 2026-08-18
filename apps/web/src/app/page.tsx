@@ -7,15 +7,15 @@ import { RaffleDirectory } from "@/features/discover/raffle-directory";
 const steps = [
   {
     title: "Pick a prize",
-    text: "Browse open raffles. Every ticket in one raffle has exactly the same chance.",
+    text: "Browse open raffles. Every $1 entry in one raffle has exactly the same chance.",
   },
   {
-    title: "Buy tickets",
-    text: "The advertised price is the total you pay. Tickets are NFTs you can resell before the draw.",
+    title: "Buy entries",
+    text: "Choose any positive entry count. Each purchase mints one transferable ticket NFT containing that whole entry range.",
   },
   {
     title: "One random draw",
-    text: "Pyth Entropy picks a single winning ticket. Hit the threshold and it wins the NFT; miss it and it wins 80% of the distributable pot.",
+    text: "Chainlink VRF picks one winning entry. Meet the reserve and it wins the NFT; miss it and it wins 80% of gross sales in USDC.",
   },
 ] as const;
 
@@ -70,7 +70,7 @@ function Hero() {
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-[var(--yellow)] opacity-80" />
               <span className="relative inline-flex size-1.5 rounded-full bg-[var(--yellow)]" />
             </span>
-            Permissionless NFT raffles on Base
+            Permissionless NFT raffles on Ethereum
           </span>
 
           <h1 className="mt-6 text-[length:var(--display)] text-white">
@@ -80,9 +80,9 @@ function Hero() {
           </h1>
 
           <p className="mt-6 max-w-[34rem] text-[length:var(--text-md)] leading-relaxed text-white/85">
-            One NFT prize. Equal-chance tickets. A minimum threshold decides
-            whether the winner takes the NFT or 80% of the distributable pot —
-            and every payout is fixed in code before the first ticket sells.
+            One NFT prize. Equal-chance $1 entries. A reserve decides whether
+            the winner takes the NFT or 80% of gross sales in USDC—and every
+            payout is fixed in code before the first entry sells.
           </p>
 
           <div className="mt-9 flex flex-wrap gap-3">
@@ -96,9 +96,9 @@ function Hero() {
 
           <dl className="mt-10 flex flex-wrap gap-x-10 gap-y-4 border-t border-white/20 pt-6">
             {[
-              { term: "Protocol fee", detail: "5% at resolution" },
-              { term: "Randomness", detail: "Pyth Entropy" },
-              { term: "Tickets", detail: "Transferable NFTs" },
+              { term: "Protocol fee", detail: "5% of settled gross" },
+              { term: "Randomness", detail: "Chainlink VRF v2.5" },
+              { term: "Entry tickets", detail: "Transferable ERC-721s" },
             ].map((item) => (
               <div key={item.term}>
                 <dt className="eyebrow">{item.term}</dt>
@@ -139,25 +139,25 @@ function SettlementCard() {
           fill="var(--yellow)"
           icon={<Trophy aria-hidden size={17} />}
           ink="var(--brand-navy)"
-          label="Threshold met"
+          label="Reserve met"
           title="Winner takes the NFT"
         />
         <Outcome
-          detail="The sponsor reclaims the NFT plus 20% of the distributable pot."
+          detail="The sponsor reclaims the NFT and receives 15% of gross sales."
           fill="var(--brand-navy)"
           icon={<Coins aria-hidden size={17} />}
           ink="#ffffff"
-          label="Threshold missed"
-          title="Winner takes 80% cash"
+          label="Reserve missed"
+          title="Winner takes 80% of gross cash"
         />
       </div>
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-[var(--line)] bg-[var(--paper-sunk)] px-6 py-4">
         <p className="text-[length:var(--text-sm)] font-semibold">
-          The ticket price is the total you pay
+          Every entry costs exactly $1 USDC
         </p>
         <p className="numeric text-[length:var(--text-xs)] text-[var(--ink-3)]">
-          One 5% protocol fee at resolution
+          One ticket NFT per purchase
         </p>
       </div>
     </div>
@@ -252,8 +252,8 @@ function HowItWorks() {
 
         <p className="mt-10 flex items-center gap-2 text-[length:var(--text-sm)] text-[var(--ink-3)]">
           <Ticket aria-hidden size={15} />
-          Tickets are ERC-721s — resell yours on any marketplace before the draw
-          closes.
+          Purchase tickets are ERC-721 bearer claims—transfer them at any time
+          until a successful winner claim or refund burns them.
         </p>
       </div>
     </section>

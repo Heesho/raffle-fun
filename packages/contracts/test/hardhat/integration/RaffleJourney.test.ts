@@ -1,66 +1,121 @@
 import assert from "node:assert/strict";
+import path from "node:path";
 import { describe, it } from "node:test";
 
 import { network } from "hardhat";
-import { toHex } from "viem";
-
+import { keccak256 } from "viem";
 import RaffleFunModule from "../../../ignition/modules/RaffleFun.js";
+import { loadDeploymentBuildEvidence } from "../../../scripts/deployment-build-evidence.js";
+import type { DeploymentRecord } from "../../../scripts/deployment-record.js";
 
-describe("Raffle Fun integration", () => {
-  it("deploys the one-USDC factory and read-only lens through Ignition", async () => {
-    const { ignition, viem } = await network.create({ network: "hardhatBase" });
+const ENTRY_PRICE = 1_000_000n;
+
+describe("Raffle Fun sequential-ticket integration", () => {
+  it("deploys only the fixed factory and locked clone implementation", async () => {
+    const { ignition, viem } = await network.create({
+      network: "hardhatEthereum",
+    });
+    const publicClient = await viem.getPublicClient();
     const [owner, treasury] = await viem.getWalletClients();
-    assert.ok(owner);
-    assert.ok(treasury);
+    assert.ok(owner && treasury);
 
     const quote = await viem.deployContract("MockERC20");
-    const entropy = await viem.deployContract("MockEntropyV2");
-    const { raffleFactory, raffleLens } = await ignition.deploy(
-      RaffleFunModule,
-      {
-        parameters: {
-          RaffleFunModule: {
-            quoteToken: quote.address,
-            entropy: entropy.address,
-            protocolTreasury: treasury.account.address,
-            callbackGasLimit: 300_000n,
-            finalFactoryOwner: treasury.account.address,
-          },
+    const vrfWrapper = await viem.deployContract("MockVRFV2PlusWrapper");
+    const { raffleFactory } = await ignition.deploy(RaffleFunModule, {
+      parameters: {
+        RaffleFunModule: {
+          quoteToken: quote.address,
+          vrfWrapper: vrfWrapper.address,
+          protocolTreasury: treasury.account.address,
+          finalFactoryOwner: treasury.account.address,
         },
-        deploymentId: "raffle-fun-integration",
       },
-    );
+      deploymentId: "raffle-fun-sequential-ticket-integration",
+    });
 
     assertAddressEqual(await raffleFactory.read.quoteToken(), quote.address);
-    assertAddressEqual(await raffleFactory.read.entropy(), entropy.address);
+    assertAddressEqual(
+      await raffleFactory.read.vrfWrapper(),
+      vrfWrapper.address,
+    );
     assert.equal(await raffleFactory.read.callbackGasLimit(), 300_000);
-    assertAddressEqual(await raffleLens.read.factory(), raffleFactory.address);
+    assert.equal(await raffleFactory.read.requestConfirmations(), 30);
+    const implementation = await raffleFactory.read.raffleImplementation();
+    const implementationCode = await publicClient.getCode({
+      address: implementation,
+    });
+    assert.ok(implementationCode !== undefined && implementationCode !== "0x");
+    const factoryCode = await publicClient.getCode({
+      address: raffleFactory.address,
+    });
+    assert.ok(factoryCode !== undefined && factoryCode !== "0x");
+    const buildCandidate = {
+      chainId: 1,
+      networkName: "mainnet",
+      deployedAt: "2026-08-18T00:00:00.000Z",
+      validationBlock: 1,
+      validationBlockHash: `0x${"11".repeat(32)}`,
+      deploymentTransactions: {
+        raffleFactory: { hash: `0x${"22".repeat(32)}`, blockNumber: 1 },
+      },
+      runtimeCodeHashes: {
+        quoteToken: `0x${"33".repeat(32)}`,
+        vrfWrapper: `0x${"44".repeat(32)}`,
+        raffleFactory: keccak256(factoryCode),
+        raffleImplementation: keccak256(implementationCode),
+      },
+      deployer: owner.account.address,
+      finalFactoryOwner: treasury.account.address,
+      quoteToken: quote.address,
+      vrfWrapper: vrfWrapper.address,
+      raffleFactory: raffleFactory.address,
+      raffleImplementation: implementation,
+      protocolTreasury: treasury.account.address,
+      callbackGasLimit: 300_000,
+      requestConfirmations: 30,
+      sourceCommit: "9999999999999999999999999999999999999999",
+      verificationStatus: "verified",
+    } as const satisfies DeploymentRecord;
+    const buildEvidence = await loadDeploymentBuildEvidence(
+      path.resolve(import.meta.dirname, "../../../../.."),
+      buildCandidate,
+      buildCandidate.sourceCommit,
+      async () => {},
+    );
+    assert.equal(
+      buildEvidence.expectedRuntimeCodeHashes.raffleFactory,
+      keccak256(factoryCode),
+    );
+    assert.equal(
+      buildEvidence.expectedRuntimeCodeHashes.raffleImplementation,
+      keccak256(implementationCode),
+    );
     assertAddressEqual(
       await raffleFactory.read.pendingOwner(),
       treasury.account.address,
     );
   });
 
-  it("settles a transferable bearer ticket for cash and recovers the NFT", async () => {
+  it("settles an NFT raffle permissionlessly for the current bearer", async () => {
     const { networkHelpers, viem } = await network.create({
-      network: "hardhatBase",
+      network: "hardhatEthereum",
     });
     const publicClient = await viem.getPublicClient();
-    const [owner, sponsor, buyer, buyerTwo, treasury, requester] =
+    const [owner, sponsor, buyer, winner, treasury, requester, settler] =
       await viem.getWalletClients();
-    assert.ok(owner && sponsor && buyer && buyerTwo && treasury && requester);
+    assert.ok(
+      owner && sponsor && buyer && winner && treasury && requester && settler,
+    );
 
     const quote = await viem.deployContract("MockERC20");
     const prize = await viem.deployContract("MockERC721");
-    const entropy = await viem.deployContract("MockEntropyV2");
+    const vrfWrapper = await viem.deployContract("MockVRFV2PlusWrapper");
     const factory = await viem.deployContract("RaffleFactory", [
       quote.address,
-      entropy.address,
+      vrfWrapper.address,
       treasury.account.address,
-      300_000,
       owner.account.address,
     ]);
-    const lens = await viem.deployContract("RaffleLens", [factory.address]);
 
     await wait(publicClient, prize.write.mint([sponsor.account.address, 1n]));
     const sponsorPrize = await viem.getContractAt("MockERC721", prize.address, {
@@ -81,21 +136,22 @@ describe("Raffle Fun integration", () => {
       publicClient,
       sponsorFactory.write.createRaffle([
         {
+          sponsorRecipient: sponsor.account.address,
           prizeToken: prize.address,
           prizeTokenId: 1n,
-          sponsorPrizeRecoveryRecipient: sponsor.account.address,
-          ticketPrice: 1_000_000n,
-          minimumTickets: 3n,
-          startTime: 0n,
+          reserveEntries: 6n,
           endTime,
-          metadataURI: "ipfs://integration-raffle",
         },
       ]),
     );
 
     const raffleAddress = await factory.read.raffleById([1n]);
-    assertAddressEqual(await prize.read.ownerOf([1n]), raffleAddress);
-    assertAddressEqual(await factory.read.quoteToken(), quote.address);
+    const implementation = await factory.read.raffleImplementation();
+    const cloneRuntime = await publicClient.getCode({ address: raffleAddress });
+    assert.equal(
+      cloneRuntime?.toLowerCase(),
+      `0x363d3d373d3d3d363d73${implementation.slice(2)}5af43d82803e903d91602b57fd5bf3`.toLowerCase(),
+    );
     const raffle = await viem.getContractAt("Raffle", raffleAddress);
     const buyerQuote = await viem.getContractAt("MockERC20", quote.address, {
       client: { wallet: buyer },
@@ -105,95 +161,201 @@ describe("Raffle Fun integration", () => {
     });
     await wait(
       publicClient,
-      quote.write.mint([buyer.account.address, 2_000_000n]),
+      quote.write.mint([buyer.account.address, 6n * ENTRY_PRICE]),
     );
     await wait(
       publicClient,
-      buyerQuote.write.approve([raffleAddress, 2_000_000n]),
+      buyerQuote.write.approve([raffleAddress, 6n * ENTRY_PRICE]),
     );
     await wait(
       publicClient,
-      buyerRaffle.write.buyTickets([buyer.account.address, 2n]),
+      buyerRaffle.write.buyEntries([buyer.account.address, 2n]),
     );
     await wait(
       publicClient,
-      buyerRaffle.write.transferFrom([
+      buyerRaffle.write.buyEntries([winner.account.address, 4n]),
+    );
+
+    const firstTicket = 1n;
+    const winningTicket = 2n;
+    assertAddressEqual(
+      await raffle.read.ownerOf([firstTicket]),
+      buyer.account.address,
+    );
+    assertAddressEqual(
+      await raffle.read.ownerOf([winningTicket]),
+      winner.account.address,
+    );
+    assert.deepEqual(await raffle.read.ticketRange([winningTicket]), [3n, 6n]);
+    assert.equal(await raffle.read.totalEntries(), 6n);
+    assert.equal(await raffle.read.ticketCount(), 2n);
+    assert.equal(await raffle.read.grossSales(), 6n * ENTRY_PRICE);
+
+    await networkHelpers.time.increaseTo(endTime);
+    const requesterRaffle = await viem.getContractAt("Raffle", raffleAddress, {
+      client: { wallet: requester },
+    });
+    const fee = await raffle.read.getVrfRequestPrice();
+    await wait(publicClient, requesterRaffle.write.requestDraw({ value: fee }));
+    assert.equal(await raffle.read.status(), 2);
+    await wait(publicClient, vrfWrapper.write.fulfill([1n, 2n]));
+    assert.equal(await raffle.read.status(), 3);
+    assert.equal(await raffle.read.winningEntry(), 3n);
+
+    const winnerRaffle = await viem.getContractAt("Raffle", raffleAddress, {
+      client: { wallet: winner },
+    });
+    await wait(
+      publicClient,
+      winnerRaffle.write.transferFrom([
+        winner.account.address,
         buyer.account.address,
-        buyerTwo.account.address,
-        2n,
+        winningTicket,
       ]),
+    );
+
+    const settlerRaffle = await viem.getContractAt("Raffle", raffleAddress, {
+      client: { wallet: settler },
+    });
+    await wait(
+      publicClient,
+      settlerRaffle.write.settleWinningTicket([winningTicket]),
+    );
+    assertAddressEqual(await prize.read.ownerOf([1n]), buyer.account.address);
+    assert.equal(await raffle.read.protocolFees(), 300_000n);
+    assert.equal(await raffle.read.sponsorProceeds(), 5_700_000n);
+    assert.equal(await raffle.read.unsettledPot(), 0n);
+  });
+
+  it("finalizes cash at 80/5/15 gross and lets each party claim independently", async () => {
+    const { networkHelpers, viem } = await network.create({
+      network: "hardhatEthereum",
+    });
+    const publicClient = await viem.getPublicClient();
+    const [owner, sponsor, buyer, treasury, requester, settler] =
+      await viem.getWalletClients();
+    assert.ok(owner && sponsor && buyer && treasury && requester && settler);
+
+    const quote = await viem.deployContract("MockERC20");
+    const prize = await viem.deployContract("MockERC721");
+    const wrapper = await viem.deployContract("MockVRFV2PlusWrapper");
+    const factory = await viem.deployContract("RaffleFactory", [
+      quote.address,
+      wrapper.address,
+      treasury.account.address,
+      owner.account.address,
+    ]);
+    await wait(publicClient, prize.write.mint([sponsor.account.address, 7n]));
+    const sponsorPrize = await viem.getContractAt("MockERC721", prize.address, {
+      client: { wallet: sponsor },
+    });
+    await wait(
+      publicClient,
+      sponsorPrize.write.setApprovalForAll([factory.address, true]),
+    );
+    const endTime = BigInt(await networkHelpers.time.latest()) + 60n;
+    const sponsorFactory = await viem.getContractAt(
+      "RaffleFactory",
+      factory.address,
+      { client: { wallet: sponsor } },
+    );
+    await wait(
+      publicClient,
+      sponsorFactory.write.createRaffle([
+        {
+          sponsorRecipient: sponsor.account.address,
+          prizeToken: prize.address,
+          prizeTokenId: 7n,
+          reserveEntries: 2n,
+          endTime,
+        },
+      ]),
+    );
+
+    const raffleAddress = await factory.read.raffleById([1n]);
+    const raffle = await viem.getContractAt("Raffle", raffleAddress);
+    const buyerQuote = await viem.getContractAt("MockERC20", quote.address, {
+      client: { wallet: buyer },
+    });
+    const buyerRaffle = await viem.getContractAt("Raffle", raffleAddress, {
+      client: { wallet: buyer },
+    });
+    await wait(
+      publicClient,
+      quote.write.mint([buyer.account.address, ENTRY_PRICE]),
+    );
+    await wait(
+      publicClient,
+      buyerQuote.write.approve([raffleAddress, ENTRY_PRICE]),
+    );
+    await wait(
+      publicClient,
+      buyerRaffle.write.buyEntries([buyer.account.address, 1n]),
     );
 
     await networkHelpers.time.increaseTo(endTime);
     const requesterRaffle = await viem.getContractAt("Raffle", raffleAddress, {
       client: { wallet: requester },
     });
-    const fee = await raffle.read.getEntropyFee();
-    await wait(publicClient, requesterRaffle.write.requestDraw({ value: fee }));
-    assert.equal(await raffle.read.status(), 2);
     await wait(
       publicClient,
-      entropy.write.fulfill([1n, toHex(1n, { size: 32 })]),
+      requesterRaffle.write.requestDraw({
+        value: await raffle.read.getVrfRequestPrice(),
+      }),
     );
-
+    await wait(publicClient, wrapper.write.fulfill([1n, 0n]));
     assert.equal(await raffle.read.status(), 4);
-    assert.equal(await raffle.read.winningTicketId(), 2n);
-    assert.equal(await raffle.read.winnerCashLiability(), 1_520_000n);
-    assert.equal(
-      await raffle.read.claimableQuote([treasury.account.address]),
-      100_000n,
-    );
-    const view = await lens.read.getRaffleState([
-      raffleAddress,
-      buyerTwo.account.address,
-    ]);
-    assert.equal(view.accountOwnsWinningTicket, true);
-    assert.equal(view.canRedeemWinningTicket, true);
+    assert.equal(await raffle.read.unsettledPot(), ENTRY_PRICE);
+    assert.equal(await raffle.read.protocolFees(), 0n);
+    assert.equal(await raffle.read.sponsorProceeds(), 0n);
 
-    const winnerRaffle = await viem.getContractAt("Raffle", raffleAddress, {
-      client: { wallet: buyerTwo },
+    const ticketId = 1n;
+    const settlerRaffle = await viem.getContractAt("Raffle", raffleAddress, {
+      client: { wallet: settler },
     });
-    const winnerBefore = await quote.read.balanceOf([buyerTwo.account.address]);
+    const buyerBefore = await quote.read.balanceOf([buyer.account.address]);
     await wait(
       publicClient,
-      winnerRaffle.write.redeemWinningTicket([buyerTwo.account.address]),
+      settlerRaffle.write.settleWinningTicket([ticketId]),
     );
     assert.equal(
-      (await quote.read.balanceOf([buyerTwo.account.address])) - winnerBefore,
-      1_520_000n,
+      (await quote.read.balanceOf([buyer.account.address])) - buyerBefore,
+      800_000n,
     );
-    await assert.rejects(raffle.read.ownerOf([2n]));
+    assert.equal(await raffle.read.protocolFees(), 50_000n);
+    assert.equal(await raffle.read.sponsorProceeds(), 150_000n);
 
-    const sponsorRaffle = await viem.getContractAt("Raffle", raffleAddress, {
-      client: { wallet: sponsor },
+    const finalizerRaffle = await viem.getContractAt("Raffle", raffleAddress, {
+      client: { wallet: settler },
     });
-    await wait(
-      publicClient,
-      sponsorRaffle.write.claimSponsorPrize([sponsor.account.address]),
+    const sponsorBefore = await quote.read.balanceOf([sponsor.account.address]);
+    await wait(publicClient, finalizerRaffle.write.releaseSponsorProceeds());
+    assert.equal(
+      (await quote.read.balanceOf([sponsor.account.address])) - sponsorBefore,
+      150_000n,
     );
-    assertAddressEqual(await prize.read.ownerOf([1n]), sponsor.account.address);
+    await wait(publicClient, finalizerRaffle.write.releaseSponsorPrize());
+    assertAddressEqual(await prize.read.ownerOf([7n]), sponsor.account.address);
   });
 
-  it("enables refunds once and burns each bearer ticket for exact USDC", async () => {
+  it("refunds the exact weighted entries represented by a ticket batch", async () => {
     const { networkHelpers, viem } = await network.create({
-      network: "hardhatBase",
+      network: "hardhatEthereum",
     });
     const publicClient = await viem.getPublicClient();
-    const [owner, sponsor, buyer, recovery, treasury, finalizer] =
+    const [owner, sponsor, buyer, treasury, finalizer] =
       await viem.getWalletClients();
-    assert.ok(owner && sponsor && buyer && recovery && treasury && finalizer);
+    assert.ok(owner && sponsor && buyer && treasury && finalizer);
 
     const quote = await viem.deployContract("MockERC20");
     const prize = await viem.deployContract("MockERC721");
-    const entropy = await viem.deployContract("MockEntropyV2");
+    const wrapper = await viem.deployContract("MockVRFV2PlusWrapper");
     const factory = await viem.deployContract("RaffleFactory", [
       quote.address,
-      entropy.address,
+      wrapper.address,
       treasury.account.address,
-      300_000,
       owner.account.address,
     ]);
-
     await wait(publicClient, prize.write.mint([sponsor.account.address, 9n]));
     const sponsorPrize = await viem.getContractAt("MockERC721", prize.address, {
       client: { wallet: sponsor },
@@ -212,14 +374,11 @@ describe("Raffle Fun integration", () => {
       publicClient,
       sponsorFactory.write.createRaffle([
         {
+          sponsorRecipient: sponsor.account.address,
           prizeToken: prize.address,
           prizeTokenId: 9n,
-          sponsorPrizeRecoveryRecipient: recovery.account.address,
-          ticketPrice: 1_000_000n,
-          minimumTickets: 2n,
-          startTime: 0n,
+          reserveEntries: 100n,
           endTime,
-          metadataURI: "ipfs://integration-refund",
         },
       ]),
     );
@@ -234,49 +393,46 @@ describe("Raffle Fun integration", () => {
     });
     await wait(
       publicClient,
-      quote.write.mint([buyer.account.address, 2_000_000n]),
+      quote.write.mint([buyer.account.address, 7n * ENTRY_PRICE]),
     );
     await wait(
       publicClient,
-      buyerQuote.write.approve([raffleAddress, 2_000_000n]),
+      buyerQuote.write.approve([raffleAddress, 7n * ENTRY_PRICE]),
     );
     await wait(
       publicClient,
-      buyerRaffle.write.buyTickets([buyer.account.address, 2n]),
+      buyerRaffle.write.buyEntries([buyer.account.address, 2n]),
+    );
+    await wait(
+      publicClient,
+      buyerRaffle.write.buyEntries([buyer.account.address, 5n]),
     );
 
-    await networkHelpers.time.increaseTo(
-      await raffle.read.requestGraceDeadline(),
-    );
     const finalizerRaffle = await viem.getContractAt("Raffle", raffleAddress, {
       client: { wallet: finalizer },
     });
+    await networkHelpers.time.increaseTo(endTime);
+    await wait(
+      publicClient,
+      finalizerRaffle.write.requestDraw({
+        value: await raffle.read.getVrfRequestPrice(),
+      }),
+    );
+    await networkHelpers.time.increaseTo(await raffle.read.callbackDeadline());
     await wait(publicClient, finalizerRaffle.write.enableRefunds());
     assert.equal(await raffle.read.status(), 5);
-    assert.equal(await raffle.read.remainingRefundLiability(), 2_000_000n);
+    assert.equal(
+      await raffle.read.remainingRefundLiability(),
+      7n * ENTRY_PRICE,
+    );
 
     const before = await quote.read.balanceOf([buyer.account.address]);
-    await wait(
-      publicClient,
-      buyerRaffle.write.redeemRefundTickets([[1n, 2n], buyer.account.address]),
-    );
+    await wait(publicClient, buyerRaffle.write.refundTickets([[1n, 2n]]));
     assert.equal(
       (await quote.read.balanceOf([buyer.account.address])) - before,
-      2_000_000n,
+      7n * ENTRY_PRICE,
     );
     assert.equal(await raffle.read.remainingRefundLiability(), 0n);
-
-    const recoveryRaffle = await viem.getContractAt("Raffle", raffleAddress, {
-      client: { wallet: recovery },
-    });
-    await wait(
-      publicClient,
-      recoveryRaffle.write.claimSponsorPrize([recovery.account.address]),
-    );
-    assertAddressEqual(
-      await prize.read.ownerOf([9n]),
-      recovery.account.address,
-    );
   });
 });
 

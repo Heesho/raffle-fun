@@ -1,20 +1,31 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.36;
 
-import {Test} from "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
 
-import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import { Clones } from "@openzeppelin/contracts/proxy/Clones.sol";
+import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import { IERC721Receiver } from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
-import {Raffle} from "../../../src/Raffle.sol";
-import {RaffleFactory} from "../../../src/RaffleFactory.sol";
-import {RaffleLens} from "../../../src/RaffleLens.sol";
-import {IRaffle} from "../../../src/interfaces/IRaffle.sol";
-import {IRaffleFactory} from "../../../src/interfaces/IRaffleFactory.sol";
-import {IRaffleLens} from "../../../src/interfaces/IRaffleLens.sol";
-import {MockERC20} from "../../../src/mocks/MockERC20.sol";
-import {MockERC721} from "../../../src/mocks/MockERC721.sol";
-import {MockEntropyV2} from "../../../src/mocks/MockEntropyV2.sol";
+import { Raffle } from "../../../src/Raffle.sol";
+import { RaffleFactory } from "../../../src/RaffleFactory.sol";
+import { IRaffle } from "../../../src/interfaces/IRaffle.sol";
+import { IRaffleFactory } from "../../../src/interfaces/IRaffleFactory.sol";
+import { MockERC20 } from "../../../src/mocks/MockERC20.sol";
+import { MockERC721 } from "../../../src/mocks/MockERC721.sol";
+import { MockVRFV2PlusWrapper } from "../../../src/mocks/MockVRFV2PlusWrapper.sol";
+
+contract EighteenDecimalToken is ERC20 {
+    constructor() ERC20("Wrong Decimals", "WRONG") { }
+}
+
+contract RevertingDecimalsToken {
+    function decimals() external pure returns (uint8) {
+        revert();
+    }
+}
 
 contract NonERC721 {
     function supportsInterface(bytes4) external pure returns (bool) {
@@ -22,66 +33,82 @@ contract NonERC721 {
     }
 }
 
-contract RevertingERC165 {
-    function supportsInterface(bytes4) external pure returns (bool) {
-        revert();
+contract RejectReceiptReceiver { }
+
+contract RevertingPrize is ERC721 {
+    bool public transfersRevert;
+    bool public transfersNoop;
+
+    constructor() ERC721("Reverting Prize", "RPRIZE") { }
+
+    function mint(address to, uint256 tokenId) external {
+        _mint(to, tokenId);
+    }
+
+    function setTransfersRevert(bool value) external {
+        transfersRevert = value;
+    }
+
+    function setTransfersNoop(bool value) external {
+        transfersNoop = value;
+    }
+
+    function transferFrom(address from, address to, uint256 tokenId) public override {
+        if (transfersRevert) revert("prize transfer failed");
+        if (transfersNoop) return;
+        super.transferFrom(from, to, tokenId);
     }
 }
 
-contract VerificationPrize {
-    address public owner;
-    bool public immutable activatesRaffle;
+contract NoTransferPrize is ERC721 {
+    constructor() ERC721("No Transfer Prize", "NO_TRANSFER") { }
 
-    constructor(address owner_, bool activatesRaffle_) {
-        owner = owner_;
-        activatesRaffle = activatesRaffle_;
+    function mint(address to, uint256 tokenId) external {
+        _mint(to, tokenId);
     }
 
-    function supportsInterface(bytes4 interfaceId) external pure returns (bool) {
-        return interfaceId == type(IERC721).interfaceId;
+    function safeTransferFrom(address, address, uint256, bytes memory) public pure override { }
+}
+
+contract CallbackWithoutTransferPrize is ERC721 {
+    constructor() ERC721("Callback Without Transfer", "FAKE_ESCROW") { }
+
+    function mint(address to, uint256 tokenId) external {
+        _mint(to, tokenId);
     }
 
-    function ownerOf(uint256) external view returns (address) {
-        return owner;
-    }
-
-    function safeTransferFrom(address from, address to, uint256 tokenId) external {
-        require(from == owner, "owner");
-        if (activatesRaffle) {
-            IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, "");
-        } else {
-            owner = to;
-        }
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public override {
+        bytes4 selector = IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, data);
+        require(selector == IERC721Receiver.onERC721Received.selector, "receiver rejected");
     }
 }
 
-contract RejectPrizeReceiver {}
+contract CallbackSkippingPrize is ERC721 {
+    constructor() ERC721("Callback Skipping Prize", "NO_CALLBACK") { }
 
-contract RejectNativeRequester {
+    function mint(address to, uint256 tokenId) external {
+        _mint(to, tokenId);
+    }
+
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory) public override {
+        transferFrom(from, to, tokenId);
+    }
+}
+
+contract RejectNativeRefund {
     function request(Raffle raffle) external payable {
-        raffle.requestDraw{value: msg.value}();
+        raffle.requestDraw{ value: msg.value }();
     }
 
     receive() external payable {
-        revert();
-    }
-}
-
-contract ReturnDataNativeRequester {
-    function request(Raffle raffle) external payable {
-        raffle.requestDraw{value: msg.value}();
-    }
-
-    receive() external payable {
-        assembly ("memory-safe") {
-            return(0, 0x10000)
-        }
+        revert("no native");
     }
 }
 
 contract RaffleTest is Test, IERC721Receiver {
     uint256 internal constant USDC = 1e6;
     uint32 internal constant CALLBACK_GAS_LIMIT = 300_000;
+    uint16 internal constant REQUEST_CONFIRMATIONS = 30;
 
     address internal sponsor = makeAddr("sponsor");
     address internal buyer = makeAddr("buyer");
@@ -91,18 +118,16 @@ contract RaffleTest is Test, IERC721Receiver {
 
     MockERC20 internal quote;
     MockERC721 internal prize;
-    MockEntropyV2 internal entropy;
+    MockVRFV2PlusWrapper internal vrfWrapper;
     RaffleFactory internal factory;
-    RaffleLens internal lens;
     uint256 internal nextPrizeId = 1;
 
     function setUp() public {
         vm.warp(1_000_000);
         quote = new MockERC20();
         prize = new MockERC721();
-        entropy = new MockEntropyV2();
-        factory = new RaffleFactory(address(quote), address(entropy), treasury, CALLBACK_GAS_LIMIT, address(this));
-        lens = new RaffleLens(address(factory));
+        vrfWrapper = new MockVRFV2PlusWrapper();
+        factory = new RaffleFactory(address(quote), address(vrfWrapper), treasury, address(this));
 
         vm.prank(sponsor);
         prize.setApprovalForAll(address(factory), true);
@@ -111,984 +136,948 @@ contract RaffleTest is Test, IERC721Receiver {
         vm.deal(outsider, 100 ether);
     }
 
-    function testFactoryConstructorDeploysAndEscrowsAtomically() public {
-        Raffle raffle = _createDefaultRaffle(100);
+    function testFactoryAtomicallyEscrowsAndCapturesFixedConfiguration() public {
+        Raffle raffle = _create(10);
 
         assertEq(factory.raffleCount(), 1);
         assertEq(factory.raffleById(1), address(raffle));
         assertEq(factory.idByRaffle(address(raffle)), 1);
         assertTrue(factory.isRaffle(address(raffle)));
         assertEq(address(factory.quoteToken()), address(quote));
+        assertEq(factory.callbackGasLimit(), CALLBACK_GAS_LIMIT);
+        assertEq(factory.requestConfirmations(), REQUEST_CONFIRMATIONS);
+
         assertEq(prize.ownerOf(raffle.prizeTokenId()), address(raffle));
         assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Active));
         assertEq(raffle.factory(), address(factory));
         assertEq(raffle.sponsor(), sponsor);
+        assertEq(raffle.sponsorRecipient(), sponsor);
         assertEq(raffle.protocolTreasury(), treasury);
-        assertEq(address(raffle.quoteToken()), address(quote));
+        assertEq(raffle.ENTRY_PRICE(), USDC);
+        assertEq(raffle.requestConfirmations(), REQUEST_CONFIRMATIONS);
     }
 
-    function testRaffleConstructorAuthenticatesConfiguredFactory() public {
-        IRaffle.RaffleParams memory params = _directParams();
-        params.factory = outsider;
+    function testSponsorRecipientIsFixedForProceedsAndReturnedPrize() public {
+        uint256 tokenId = nextPrizeId++;
+        prize.mint(sponsor, tokenId);
+        IRaffleFactory.CreateRaffleParams memory params = IRaffleFactory.CreateRaffleParams({
+            sponsorRecipient: buyerTwo,
+            prizeToken: address(prize),
+            prizeTokenId: tokenId,
+            reserveEntries: 2,
+            endTime: uint64(block.timestamp + 1 days)
+        });
+        vm.prank(sponsor);
+        Raffle raffle = Raffle(payable(factory.createRaffle(params)));
+        uint256 ticketId = _buy(raffle, buyer, 1);
+        _resolve(raffle, 0);
+        raffle.settleWinningTicket(ticketId);
+
+        uint256 before = quote.balanceOf(buyerTwo);
+        vm.prank(outsider);
+        raffle.releaseSponsorProceeds();
+        assertEq(quote.balanceOf(buyerTwo) - before, 150_000);
+
+        vm.prank(outsider);
+        raffle.releaseSponsorPrize();
+        assertEq(prize.ownerOf(tokenId), buyerTwo);
+        assertEq(raffle.sponsor(), sponsor);
+        assertEq(raffle.sponsorRecipient(), buyerTwo);
+    }
+
+    function testFactoryCreatesCanonicalClonesWithIsolatedRangeState() public {
+        Raffle first = _create(1);
+        Raffle second = _create(2);
+        address implementation = factory.raffleImplementation();
+        bytes memory expectedRuntime =
+            abi.encodePacked(hex"363d3d373d3d3d363d73", bytes20(implementation), hex"5af43d82803e903d91602b57fd5bf3");
+
+        assertEq(address(first).code.length, 45);
+        assertEq(address(first).code, expectedRuntime);
+        assertEq(address(second).code, expectedRuntime);
+
+        uint256 ticketId = _buy(first, buyer, 20);
+        assertEq(ticketId, 1);
+        _assertRange(first, ticketId, 1, 20);
+        assertEq(first.totalEntries(), 20);
+        assertEq(first.ticketCount(), 1);
+        assertEq(second.totalEntries(), 0);
+        assertEq(second.ticketCount(), 0);
+    }
+
+    function testImplementationAndCloneInitializationAreLocked() public {
+        Raffle implementation = Raffle(payable(factory.raffleImplementation()));
+        assertTrue(implementation.initialized());
+        assertEq(uint256(implementation.status()), uint256(IRaffle.Status.Refunding));
+
+        IRaffle.RaffleInitParams memory params = _directInitParams();
+        vm.expectRevert(IRaffle.AlreadyInitialized.selector);
+        implementation.initialize(params);
+
+        Raffle unauthorized = Raffle(payable(Clones.clone(address(implementation))));
         vm.expectRevert(IRaffle.OnlyFactory.selector);
-        new Raffle(params);
+        unauthorized.initialize(params);
 
-        params.factory = address(this);
+        vm.prank(address(factory));
+        unauthorized.initialize(params);
+        assertTrue(unauthorized.initialized());
+        assertEq(uint256(unauthorized.status()), uint256(IRaffle.Status.AwaitingPrize));
+        vm.prank(address(factory));
+        vm.expectRevert(IRaffle.AlreadyInitialized.selector);
+        unauthorized.initialize(params);
+    }
+
+    function testCloneInitializationRejectsZeroAndProtocolDestinations() public {
+        Raffle clone = Raffle(payable(Clones.clone(factory.raffleImplementation())));
+        IRaffle.RaffleInitParams memory params = _directInitParams();
+
         params.sponsor = address(0);
-        vm.expectRevert(IRaffle.ZeroAddress.selector);
-        new Raffle(params);
+        _expectInitializationRevert(clone, params, IRaffle.ZeroAddress.selector);
 
-        params = _directParams();
-        params.entropy = address(0);
-        vm.expectRevert(IRaffle.ZeroAddress.selector);
-        new Raffle(params);
+        params = _directInitParams();
+        params.sponsor = address(factory);
+        _expectInitializationRevert(
+            clone, params, abi.encodeWithSelector(IRaffle.UnsafeProtocolDestination.selector, address(factory))
+        );
+
+        params = _directInitParams();
+        params.sponsorRecipient = address(0);
+        _expectInitializationRevert(clone, params, IRaffle.ZeroAddress.selector);
+
+        params = _directInitParams();
+        params.sponsorRecipient = address(quote);
+        _expectInitializationRevert(
+            clone, params, abi.encodeWithSelector(IRaffle.UnsafeProtocolDestination.selector, address(quote))
+        );
+
+        params = _directInitParams();
+        params.protocolTreasury = address(quote);
+        _expectInitializationRevert(
+            clone, params, abi.encodeWithSelector(IRaffle.UnsafeProtocolDestination.selector, address(quote))
+        );
+    }
+
+    function testCloneInitializationRejectsRegisteredRaffleSponsorAndTreasury() public {
+        Raffle registeredRaffle = _create(1);
+        Raffle clone = Raffle(payable(Clones.clone(factory.raffleImplementation())));
+        IRaffle.RaffleInitParams memory params = _directInitParams();
+
+        params.sponsor = address(registeredRaffle);
+        _expectInitializationRevert(
+            clone, params, abi.encodeWithSelector(IRaffle.UnsafeProtocolDestination.selector, address(registeredRaffle))
+        );
+
+        params = _directInitParams();
+        params.sponsorRecipient = address(registeredRaffle);
+        _expectInitializationRevert(
+            clone, params, abi.encodeWithSelector(IRaffle.UnsafeProtocolDestination.selector, address(registeredRaffle))
+        );
+
+        params = _directInitParams();
+        params.protocolTreasury = address(registeredRaffle);
+        _expectInitializationRevert(
+            clone, params, abi.encodeWithSelector(IRaffle.UnsafeProtocolDestination.selector, address(registeredRaffle))
+        );
     }
 
     function testFactoryConstructorAndCreationValidation() public {
         vm.expectRevert(abi.encodeWithSelector(IRaffleFactory.NotContract.selector, address(0)));
-        new RaffleFactory(address(0), address(entropy), treasury, CALLBACK_GAS_LIMIT, address(this));
-
+        new RaffleFactory(address(0), address(vrfWrapper), treasury, address(this));
         vm.expectRevert(abi.encodeWithSelector(IRaffleFactory.NotContract.selector, outsider));
-        new RaffleFactory(outsider, address(entropy), treasury, CALLBACK_GAS_LIMIT, address(this));
-
+        new RaffleFactory(outsider, address(vrfWrapper), treasury, address(this));
         vm.expectRevert(IRaffleFactory.ZeroAddress.selector);
-        new RaffleFactory(address(quote), address(entropy), address(0), CALLBACK_GAS_LIMIT, address(this));
+        new RaffleFactory(address(quote), address(vrfWrapper), address(0), address(this));
 
-        vm.expectRevert(IRaffleFactory.ZeroCallbackGasLimit.selector);
-        new RaffleFactory(address(quote), address(entropy), treasury, 0, address(this));
+        EighteenDecimalToken wrong = new EighteenDecimalToken();
+        vm.expectRevert(abi.encodeWithSelector(IRaffleFactory.InvalidQuoteTokenDecimals.selector, 18, 6));
+        new RaffleFactory(address(wrong), address(vrfWrapper), treasury, address(this));
+
+        RevertingDecimalsToken revertingDecimals = new RevertingDecimalsToken();
+        vm.expectRevert(
+            abi.encodeWithSelector(IRaffleFactory.UnsupportedQuoteToken.selector, address(revertingDecimals))
+        );
+        new RaffleFactory(address(revertingDecimals), address(vrfWrapper), treasury, address(this));
 
         vm.expectRevert(abi.encodeWithSelector(IRaffleFactory.UnsafeProtocolDestination.selector, address(quote)));
-        new RaffleFactory(address(quote), address(entropy), address(quote), CALLBACK_GAS_LIMIT, address(this));
+        new RaffleFactory(address(quote), address(vrfWrapper), address(quote), address(this));
 
-        vm.expectRevert(abi.encodeWithSelector(IRaffleLens.InvalidFactory.selector, address(0)));
-        new RaffleLens(address(0));
-        vm.expectRevert(abi.encodeWithSelector(IRaffleLens.InvalidFactory.selector, outsider));
-        new RaffleLens(outsider);
+        IRaffleFactory.CreateRaffleParams memory params = _validParams(address(prize));
+        params.sponsorRecipient = address(0);
+        _expectCreateRevert(IRaffleFactory.ZeroAddress.selector, params);
 
-        IRaffleFactory.CreateRaffleParams memory params = _validCreateParams(address(prize));
-        params.ticketPrice = 0;
-        _expectCreateRevert(IRaffleFactory.ZeroTicketPrice.selector, params);
-        params = _validCreateParams(address(prize));
-        params.minimumTickets = 0;
-        _expectCreateRevert(IRaffleFactory.ZeroMinimumTickets.selector, params);
-
-        uint256 exactMetadataTokenId = nextPrizeId++;
-        prize.mint(sponsor, exactMetadataTokenId);
-        params = _validCreateParams(address(prize));
-        params.prizeTokenId = exactMetadataTokenId;
-        params.metadataURI = new string(2048);
+        params = _validParams(address(prize));
+        params.sponsorRecipient = address(factory);
         vm.prank(sponsor);
-        Raffle exactMetadata = Raffle(payable(factory.createRaffle(params)));
-        assertEq(bytes(exactMetadata.raffleMetadataURI()).length, 2048);
-
-        params = _validCreateParams(address(prize));
-        params.metadataURI = new string(2049);
-        vm.prank(sponsor);
-        vm.expectRevert(abi.encodeWithSelector(IRaffleFactory.MetadataURITooLong.selector, 2049, 2048));
+        vm.expectRevert(abi.encodeWithSelector(IRaffleFactory.UnsafeProtocolDestination.selector, address(factory)));
         factory.createRaffle(params);
 
-        NonERC721 nonErc721 = new NonERC721();
-        params = _validCreateParams(address(nonErc721));
-        vm.prank(sponsor);
-        vm.expectRevert(abi.encodeWithSelector(IRaffleFactory.UnsupportedPrizeToken.selector, address(nonErc721)));
-        factory.createRaffle(params);
+        params = _validParams(address(prize));
+        params.reserveEntries = 0;
+        _expectCreateRevert(IRaffleFactory.ZeroReserveEntries.selector, params);
 
-        RevertingERC165 revertingErc165 = new RevertingERC165();
-        params = _validCreateParams(address(revertingErc165));
-        vm.prank(sponsor);
-        address revertingToken = address(revertingErc165);
-        vm.expectRevert(abi.encodeWithSelector(IRaffleFactory.UnsupportedPrizeToken.selector, revertingToken));
-        factory.createRaffle(params);
-    }
-
-    function testFactoryEnforcesBoundedSchedulingAndFutureOnlyAdministration() public {
-        IRaffleFactory.CreateRaffleParams memory params = _validCreateParams(address(prize));
-        params.startTime = block.timestamp - 1;
+        params = _validParams(address(prize));
+        params.endTime = uint64(block.timestamp);
         vm.prank(sponsor);
         vm.expectRevert(
-            abi.encodeWithSelector(IRaffleFactory.StartTimeInPast.selector, block.timestamp - 1, block.timestamp)
+            abi.encodeWithSelector(IRaffleFactory.InvalidEndTime.selector, block.timestamp, block.timestamp)
         );
         factory.createRaffle(params);
 
-        uint256 exactStartTokenId = nextPrizeId++;
-        prize.mint(sponsor, exactStartTokenId);
-        params = _validCreateParams(address(prize));
-        params.prizeTokenId = exactStartTokenId;
-        params.startTime = block.timestamp + 7 days;
-        params.endTime = params.startTime + 1 days;
-        vm.prank(sponsor);
-        Raffle exactStart = Raffle(payable(factory.createRaffle(params)));
-        assertEq(exactStart.startTime(), block.timestamp + 7 days);
-
-        params = _validCreateParams(address(prize));
-        params.startTime = block.timestamp + 7 days + 1;
-        params.endTime = params.startTime + 1 days;
-        vm.prank(sponsor);
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                IRaffleFactory.StartTimeTooDistant.selector, params.startTime, block.timestamp + 7 days
-            )
-        );
-        factory.createRaffle(params);
-
-        uint256 exactDurationTokenId = nextPrizeId++;
-        prize.mint(sponsor, exactDurationTokenId);
-        params = _validCreateParams(address(prize));
-        params.prizeTokenId = exactDurationTokenId;
-        params.startTime = block.timestamp;
-        params.endTime = params.startTime + 30 days;
-        vm.prank(sponsor);
-        Raffle exactDuration = Raffle(payable(factory.createRaffle(params)));
-        assertEq(exactDuration.endTime() - exactDuration.startTime(), 30 days);
-
-        params = _validCreateParams(address(prize));
-        params.endTime = params.startTime;
-        vm.prank(sponsor);
-        vm.expectRevert(
-            abi.encodeWithSelector(IRaffleFactory.InvalidEndTime.selector, params.startTime, params.endTime)
-        );
-        factory.createRaffle(params);
-
-        params = _validCreateParams(address(prize));
-        params.endTime = params.startTime + 30 days + 1;
+        params = _validParams(address(prize));
+        params.endTime = uint64(block.timestamp + 30 days + 1);
         vm.prank(sponsor);
         vm.expectRevert(abi.encodeWithSelector(IRaffleFactory.SaleDurationTooLong.selector, 30 days + 1, 30 days));
         factory.createRaffle(params);
 
-        Raffle existing = _createDefaultRaffle(1);
-        factory.setProtocolTreasury(buyerTwo);
-        assertEq(existing.protocolTreasury(), treasury);
-        vm.expectRevert(IRaffleFactory.ZeroAddress.selector);
-        factory.setProtocolTreasury(address(0));
-        factory.setCreationPaused(true);
-        vm.expectRevert(IRaffleFactory.CreationPaused.selector);
+        NonERC721 nonErc721 = new NonERC721();
+        params = _validParams(address(nonErc721));
         vm.prank(sponsor);
-        factory.createRaffle(_validCreateParams(address(prize)));
-        factory.setCreationPaused(false);
-
-        vm.expectRevert(IRaffleFactory.OwnershipRenunciationDisabled.selector);
-        factory.renounceOwnership();
-        assertEq(factory.owner(), address(this));
-    }
-
-    function testFactoryRejectsIncompleteEscrowVerification() public {
-        VerificationPrize fakeOwnership = new VerificationPrize(sponsor, true);
-        IRaffleFactory.CreateRaffleParams memory params = _validCreateParams(address(fakeOwnership));
-        params.prizeTokenId = 77;
-        vm.prank(sponsor);
-        vm.expectPartialRevert(IRaffleFactory.PrizeEscrowVerificationFailed.selector);
+        vm.expectRevert(abi.encodeWithSelector(IRaffleFactory.UnsupportedPrizeToken.selector, address(nonErc721)));
         factory.createRaffle(params);
 
-        VerificationPrize skippedReceiver = new VerificationPrize(sponsor, false);
-        params = _validCreateParams(address(skippedReceiver));
-        params.prizeTokenId = 88;
+        params = _validParams(address(revertingDecimals));
         vm.prank(sponsor);
-        vm.expectPartialRevert(IRaffleFactory.PrizeEscrowVerificationFailed.selector);
+        vm.expectRevert(
+            abi.encodeWithSelector(IRaffleFactory.UnsupportedPrizeToken.selector, address(revertingDecimals))
+        );
         factory.createRaffle(params);
-        assertEq(factory.raffleCount(), 0);
+
+        Raffle existing = _create(1);
+        params = _validParams(address(existing));
+        vm.prank(sponsor);
+        vm.expectRevert(abi.encodeWithSelector(IRaffleFactory.UnsafeProtocolDestination.selector, address(existing)));
+        factory.createRaffle(params);
     }
 
-    function testPrizeTransferFailureRevertsDeploymentAndRegistry() public {
+    function testFactoryAcceptsExactMaximumSaleDuration() public {
         uint256 tokenId = nextPrizeId++;
         prize.mint(sponsor, tokenId);
-        vm.prank(sponsor);
-        prize.setApprovalForAll(address(factory), false);
-        IRaffleFactory.CreateRaffleParams memory params = _validCreateParams(address(prize));
-        params.prizeTokenId = tokenId;
+        IRaffleFactory.CreateRaffleParams memory params = IRaffleFactory.CreateRaffleParams({
+            sponsorRecipient: sponsor,
+            prizeToken: address(prize),
+            prizeTokenId: tokenId,
+            reserveEntries: 1,
+            endTime: uint64(block.timestamp + 30 days)
+        });
 
         vm.prank(sponsor);
-        vm.expectRevert();
+        Raffle raffle = Raffle(payable(factory.createRaffle(params)));
+
+        assertEq(raffle.endTime(), block.timestamp + 30 days);
+        assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Active));
+        assertEq(prize.ownerOf(tokenId), address(raffle));
+    }
+
+    function testFactoryRejectsPrizesThatDoNotEscrowAndActivateExactly() public {
+        NoTransferPrize noTransfer = new NoTransferPrize();
+        noTransfer.mint(sponsor, 1);
+        vm.prank(sponsor);
+        noTransfer.setApprovalForAll(address(factory), true);
+        IRaffleFactory.CreateRaffleParams memory params = _validParams(address(noTransfer));
+        params.prizeTokenId = 1;
+        vm.prank(sponsor);
+        vm.expectPartialRevert(IRaffleFactory.PrizeEscrowVerificationFailed.selector);
         factory.createRaffle(params);
+        assertEq(noTransfer.ownerOf(1), sponsor);
 
-        assertEq(factory.raffleCount(), 0);
-        assertEq(prize.ownerOf(tokenId), sponsor);
-    }
-
-    function testPurchasesMintSequentialTransferableBearerTickets() public {
-        Raffle raffle = _createDefaultRaffle(3);
-        _approveQuote(buyer, raffle);
-
-        vm.prank(buyer);
-        (uint256 first, uint256 last) = raffle.buyTickets(buyer, 3);
-        assertEq(first, 1);
-        assertEq(last, 3);
-        assertEq(raffle.grossSales(), 3 * USDC);
-        assertEq(raffle.accountedQuoteBalance(), 3 * USDC);
-
-        vm.prank(buyer);
-        raffle.transferFrom(buyer, buyerTwo, 2);
-        assertEq(raffle.ownerOf(2), buyerTwo);
-
-        vm.warp(raffle.endTime());
-        vm.prank(outsider);
-        raffle.requestDraw{value: raffle.getEntropyFee()}();
-        vm.prank(buyerTwo);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.TicketTransferLocked.selector, 2, IRaffle.Status.Drawing));
-        raffle.transferFrom(buyerTwo, buyer, 2);
-        assertEq(raffle.ownerOf(2), buyerTwo);
-    }
-
-    function testRegressionSeparatePurchasesContinueSequentialTicketIds() public {
-        Raffle raffle = _createDefaultRaffle(4);
-        _approveQuote(buyer, raffle);
-        _approveQuote(buyerTwo, raffle);
-
-        vm.prank(buyer);
-        (uint256 firstOne, uint256 lastOne) = raffle.buyTickets(buyer, 2);
-        vm.prank(buyerTwo);
-        (uint256 firstTwo, uint256 lastTwo) = raffle.buyTickets(buyerTwo, 2);
-
-        assertEq(firstOne, 1);
-        assertEq(lastOne, 2);
-        assertEq(firstTwo, 3);
-        assertEq(lastTwo, 4);
-        assertEq(raffle.ownerOf(3), buyerTwo);
-        assertEq(raffle.ownerOf(4), buyerTwo);
-        assertEq(raffle.totalTickets(), 4);
-        assertEq(raffle.grossSales(), 4 * USDC);
-    }
-
-    function testPurchaseAndCloseValidationBranches() public {
-        uint256 futureTokenId = nextPrizeId++;
-        prize.mint(sponsor, futureTokenId);
-        IRaffleFactory.CreateRaffleParams memory params = _validCreateParams(address(prize));
-        params.prizeTokenId = futureTokenId;
-        params.startTime = block.timestamp + 1;
-        params.endTime = params.startTime + 1 days;
+        CallbackSkippingPrize noCallback = new CallbackSkippingPrize();
+        noCallback.mint(sponsor, 1);
         vm.prank(sponsor);
-        Raffle future = Raffle(payable(factory.createRaffle(params)));
-        _approveQuote(buyer, future);
-        vm.prank(buyer);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.SaleNotStarted.selector, future.startTime(), block.timestamp));
-        future.buyTickets(buyer, 1);
+        noCallback.setApprovalForAll(address(factory), true);
+        params = _validParams(address(noCallback));
+        params.prizeTokenId = 1;
+        vm.prank(sponsor);
+        vm.expectPartialRevert(IRaffleFactory.PrizeEscrowVerificationFailed.selector);
+        factory.createRaffle(params);
+        assertEq(noCallback.ownerOf(1), sponsor);
 
-        Raffle raffle = _createDefaultRaffle(1);
-        _approveQuote(buyer, raffle);
+        CallbackWithoutTransferPrize fakeEscrow = new CallbackWithoutTransferPrize();
+        fakeEscrow.mint(sponsor, 1);
+        vm.prank(sponsor);
+        fakeEscrow.setApprovalForAll(address(factory), true);
+        params = _validParams(address(fakeEscrow));
+        params.prizeTokenId = 1;
+        vm.prank(sponsor);
+        vm.expectPartialRevert(IRaffleFactory.PrizeEscrowVerificationFailed.selector);
+        factory.createRaffle(params);
+        assertEq(fakeEscrow.ownerOf(1), sponsor);
+    }
+
+    function testFactoryPauseAffectsOnlyFutureRaffles() public {
+        Raffle existing = _create(1);
+        factory.setCreationPaused(true);
+        vm.prank(sponsor);
+        vm.expectRevert(IRaffleFactory.CreationPaused.selector);
+        factory.createRaffle(_validParams(address(prize)));
+
+        _buy(existing, buyer, 1);
+        assertEq(existing.totalEntries(), 1);
+        vm.expectRevert(IRaffleFactory.OwnershipRenunciationDisabled.selector);
+        factory.renounceOwnership();
+    }
+
+    function testPurchaseMintsOneSequentialTicketForAnyEntryCount() public {
+        Raffle raffle = _create(100);
+        _approve(buyer, raffle, type(uint256).max);
+
+        vm.prank(buyer);
+        uint256 firstTicket = raffle.buyEntries(buyer, 20);
+        vm.prank(buyer);
+        uint256 secondTicket = raffle.buyEntries(buyerTwo, 7);
+
+        assertEq(firstTicket, 1);
+        assertEq(secondTicket, 2);
+        _assertRange(raffle, firstTicket, 1, 20);
+        _assertRange(raffle, secondTicket, 21, 27);
+        assertEq(raffle.balanceOf(buyer), 1);
+        assertEq(raffle.balanceOf(buyerTwo), 1);
+        assertEq(raffle.ticketCount(), 2);
+        assertEq(raffle.totalEntries(), 27);
+        assertEq(raffle.grossSales(), 27 * USDC);
+        assertEq(raffle.unsettledPot(), 27 * USDC);
+        assertEq(raffle.accountedQuoteBalance(), 27 * USDC);
+    }
+
+    function testPurchaseMaximumRangeAndOverflowAreAtomic() public {
+        Raffle raffle = _create(type(uint128).max);
+        uint256 amount = uint256(type(uint128).max) * USDC;
+        quote.mint(buyer, amount);
+        _approve(buyer, raffle, type(uint256).max);
+
+        vm.prank(buyer);
+        uint256 ticketId = raffle.buyEntries(buyer, type(uint128).max);
+        assertEq(ticketId, 1);
+        _assertRange(raffle, ticketId, 1, type(uint128).max);
+        assertEq(raffle.totalEntries(), type(uint128).max);
+        assertEq(raffle.ticketCount(), 1);
+
+        uint256 buyerBefore = quote.balanceOf(buyer);
+        vm.prank(buyer);
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.TotalEntriesOverflow.selector, type(uint128).max, uint128(1)));
+        raffle.buyEntries(buyer, 1);
+        assertEq(quote.balanceOf(buyer), buyerBefore);
+        assertEq(raffle.ticketCount(), 1);
+    }
+
+    function testPurchaseValidationAndReceiverRollbackAreAtomic() public {
+        Raffle raffle = _create(10);
+        _approve(buyer, raffle, type(uint256).max);
+
         vm.prank(buyer);
         vm.expectRevert(IRaffle.InvalidRecipient.selector);
-        raffle.buyTickets(address(0), 1);
+        raffle.buyEntries(address(0), 1);
         vm.prank(buyer);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidQuantity.selector, 0, 100));
-        raffle.buyTickets(buyer, 0);
+        vm.expectRevert(IRaffle.ZeroEntryCount.selector);
+        raffle.buyEntries(buyer, 0);
+
+        RejectReceiptReceiver rejecter = new RejectReceiptReceiver();
+        uint256 buyerBefore = quote.balanceOf(buyer);
         vm.prank(buyer);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidQuantity.selector, 101, 100));
-        raffle.buyTickets(buyer, 101);
+        vm.expectRevert();
+        raffle.buyEntries(address(rejecter), 3);
+        assertEq(quote.balanceOf(buyer), buyerBefore);
+        assertEq(quote.balanceOf(address(raffle)), 0);
+        assertEq(raffle.totalEntries(), 0);
+        assertEq(raffle.ticketCount(), 0);
+    }
+
+    function testSaleEndsButTicketsStayTransferableUntilBurned() public {
+        Raffle raffle = _create(2);
+        uint256 firstTicket = _buy(raffle, buyer, 1);
+        uint256 secondTicket = _buy(raffle, buyer, 1);
+
         vm.prank(buyer);
-        raffle.buyTickets(buyer, 1);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.TicketsWereSold.selector, 1));
-        raffle.closeEmptyRaffle();
+        raffle.transferFrom(buyer, buyerTwo, firstTicket);
+        vm.prank(buyer);
+        raffle.setApprovalForAll(outsider, true);
+
         vm.warp(raffle.endTime());
         vm.prank(buyer);
         vm.expectRevert(abi.encodeWithSelector(IRaffle.SaleEnded.selector, raffle.endTime(), block.timestamp));
-        raffle.buyTickets(buyer, 1);
+        raffle.buyEntries(buyer, 1);
 
-        uint256 overflowTokenId = nextPrizeId++;
-        prize.mint(sponsor, overflowTokenId);
-        params = _validCreateParams(address(prize));
-        params.prizeTokenId = overflowTokenId;
-        params.ticketPrice = type(uint256).max;
-        params.startTime = block.timestamp;
-        params.endTime = block.timestamp + 1 days;
-        vm.prank(sponsor);
-        Raffle overflowRaffle = Raffle(payable(factory.createRaffle(params)));
-        vm.prank(buyer);
-        vm.expectRevert(IRaffle.GrossAmountOverflow.selector);
-        overflowRaffle.buyTickets(buyer, 2);
-    }
-
-    function testDrawRequestValidationBranches() public {
-        Raffle beforeEnd = _createDefaultRaffle(1);
-        _buy(beforeEnd, buyer, 1);
-        uint256 beforeEndFee = beforeEnd.getEntropyFee();
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.RaffleNotEnded.selector, beforeEnd.endTime(), block.timestamp));
-        beforeEnd.requestDraw{value: beforeEndFee}();
-
-        Raffle empty = _createDefaultRaffle(1);
-        vm.warp(empty.endTime());
-        uint256 emptyFee = empty.getEntropyFee();
-        vm.expectRevert(IRaffle.NoTicketsSold.selector);
-        empty.requestDraw{value: emptyFee}();
-        vm.warp(empty.requestGraceDeadline());
-        vm.expectRevert(IRaffle.NoTicketsSold.selector);
-        empty.enableRefunds();
-
-        Raffle expired = _createDefaultRaffle(1);
-        _buy(expired, buyer, 1);
-        vm.warp(expired.requestGraceDeadline());
-        uint256 expiredFee = expired.getEntropyFee();
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                IRaffle.DrawRequestWindowExpired.selector, expired.requestGraceDeadline(), block.timestamp
-            )
-        );
-        expired.requestDraw{value: expiredFee}();
-    }
-
-    function testEmptyRaffleClosesEarlyForSponsorAndAfterEndForAnyone() public {
-        Raffle early = _createDefaultRaffle(1);
-        vm.prank(outsider);
-        vm.expectRevert(IRaffle.OnlySponsor.selector);
-        early.closeEmptyRaffle();
-
-        vm.prank(sponsor);
-        early.closeEmptyRaffle();
-        assertEq(uint256(early.status()), uint256(IRaffle.Status.Closed));
-        vm.prank(sponsor);
-        early.claimSponsorPrize(sponsor);
-        assertEq(prize.ownerOf(early.prizeTokenId()), sponsor);
-
-        Raffle ended = _createDefaultRaffle(1);
-        vm.warp(ended.endTime());
-        vm.prank(outsider);
-        ended.closeEmptyRaffle();
-        assertEq(uint256(ended.status()), uint256(IRaffle.Status.Closed));
-    }
-
-    function testEntropyDynamicFeeForwardsExactAndImmediatelyReturnsExcess() public {
-        Raffle raffle = _createDefaultRaffle(1);
-        _buy(raffle, buyer, 1);
-        vm.warp(raffle.endTime());
-        uint256 fee = raffle.getEntropyFee();
-
-        vm.prank(outsider);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.InsufficientEntropyFee.selector, fee, fee - 1));
-        raffle.requestDraw{value: fee - 1}();
-
-        uint256 balanceBefore = outsider.balance;
-        vm.prank(outsider);
-        uint64 sequence = raffle.requestDraw{value: fee + 1 ether}();
-        assertEq(outsider.balance, balanceBefore - fee);
-        assertEq(address(raffle).balance, 0);
-        assertEq(entropy.consumerBySequence(sequence), address(raffle));
-        assertEq(entropy.gasLimitBySequence(sequence), CALLBACK_GAS_LIMIT);
-    }
-
-    function testRejectedImmediateNativeRefundRevertsEntireEntropyRequest() public {
-        Raffle raffle = _createDefaultRaffle(1);
-        _buy(raffle, buyer, 1);
-        vm.warp(raffle.endTime());
-        RejectNativeRequester requester = new RejectNativeRequester();
-        vm.deal(address(requester), 2 ether);
-        uint256 fee = raffle.getEntropyFee();
-
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.NativeRefundFailed.selector, address(requester), 1));
-        requester.request{value: fee + 1}(raffle);
-        assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Active));
-        assertEq(entropy.latestSequenceNumber(), 0);
-    }
-
-    function testImmediateNativeRefundIgnoresOversizedReturnData() public {
-        Raffle raffle = _createDefaultRaffle(1);
-        _buy(raffle, buyer, 1);
-        vm.warp(raffle.endTime());
-        ReturnDataNativeRequester requester = new ReturnDataNativeRequester();
-        vm.deal(address(requester), 2 ether);
-
-        requester.request{value: raffle.getEntropyFee() + 1}(raffle);
-
-        assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Drawing));
-        assertEq(address(raffle).balance, 0);
-    }
-
-    function testOneFunctionEnablesNoRequestAndCallbackTimeoutRefunds() public {
-        Raffle unrequested = _createDefaultRaffle(2);
-        _buy(unrequested, buyer, 2);
-        vm.warp(unrequested.requestGraceDeadline() - 1);
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                IRaffle.RefundsNotAvailable.selector,
-                unrequested.requestGraceDeadline(),
-                unrequested.requestGraceDeadline() - 1
-            )
-        );
-        unrequested.enableRefunds();
-        vm.warp(unrequested.requestGraceDeadline());
-        unrequested.enableRefunds();
-        assertEq(uint256(unrequested.status()), uint256(IRaffle.Status.Refunding));
-        assertEq(unrequested.remainingRefundLiability(), 2 * USDC);
-
-        Raffle timedOut = _createDefaultRaffle(1);
-        _buy(timedOut, buyer, 1);
-        uint64 sequence = _request(timedOut);
-        vm.warp(timedOut.callbackDeadline() - 1);
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                IRaffle.RefundsNotAvailable.selector, timedOut.callbackDeadline(), timedOut.callbackDeadline() - 1
-            )
-        );
-        timedOut.enableRefunds();
-        vm.warp(timedOut.callbackDeadline());
-        timedOut.enableRefunds();
-        assertEq(uint256(timedOut.status()), uint256(IRaffle.Status.Refunding));
-        entropy.fulfill(sequence, bytes32(0));
-        assertEq(uint256(timedOut.status()), uint256(IRaffle.Status.Refunding));
-
-        Raffle callbackWins = _createDefaultRaffle(1);
-        _buy(callbackWins, buyer, 1);
-        uint64 callbackWinsSequence = _request(callbackWins);
-        vm.warp(callbackWins.callbackDeadline() - 1);
-        entropy.fulfill(callbackWinsSequence, bytes32(0));
-        assertEq(uint256(callbackWins.status()), uint256(IRaffle.Status.NftWon));
-        vm.warp(callbackWins.callbackDeadline());
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                IRaffle.RefundsNotAvailable.selector, callbackWins.nftRedemptionDeadline(), block.timestamp
-            )
-        );
-        callbackWins.enableRefunds();
-    }
-
-    function testEnableRefundsRejectsResolvedAndTerminalStatuses() public {
-        Raffle cashWon = _createDefaultRaffle(2);
-        _buy(cashWon, buyer, 1);
-        _resolve(cashWon, bytes32(0));
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidStatus.selector, IRaffle.Status.CashWon));
-        cashWon.enableRefunds();
-
-        Raffle claimedNft = _createDefaultRaffle(1);
-        _buy(claimedNft, buyer, 1);
-        _resolve(claimedNft, bytes32(0));
-        vm.prank(buyer);
-        claimedNft.redeemWinningTicket(buyer);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidStatus.selector, IRaffle.Status.NftWon));
-        claimedNft.enableRefunds();
-
-        Raffle refunding = _createDefaultRaffle(2);
-        _buy(refunding, buyer, 1);
-        vm.warp(refunding.requestGraceDeadline());
-        refunding.enableRefunds();
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidStatus.selector, IRaffle.Status.Refunding));
-        refunding.enableRefunds();
-
-        Raffle closed = _createDefaultRaffle(1);
-        vm.prank(sponsor);
-        closed.closeEmptyRaffle();
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidStatus.selector, IRaffle.Status.Closed));
-        closed.enableRefunds();
-    }
-
-    function testRefundTicketsRemainTransferableAndBurnForExactRefund() public {
-        Raffle raffle = _createDefaultRaffle(3);
-        _buy(raffle, buyer, 3);
-        vm.warp(raffle.requestGraceDeadline());
-        raffle.enableRefunds();
-
-        vm.prank(buyer);
-        raffle.transferFrom(buyer, buyerTwo, 2);
-        assertEq(raffle.ownerOf(2), buyerTwo);
-
-        uint256 buyerBefore = quote.balanceOf(buyer);
-        uint256[] memory buyerIds = new uint256[](2);
-        buyerIds[0] = 1;
-        buyerIds[1] = 3;
-        vm.prank(buyer);
-        raffle.redeemRefundTickets(buyerIds, buyer);
-        assertEq(quote.balanceOf(buyer), buyerBefore + 2 * USDC);
-        assertEq(raffle.remainingRefundLiability(), USDC);
-
-        uint256[] memory buyerTwoIds = new uint256[](1);
-        buyerTwoIds[0] = 2;
         vm.prank(buyerTwo);
-        raffle.redeemRefundTickets(buyerTwoIds, buyerTwo);
-        assertEq(raffle.remainingRefundLiability(), 0);
-        assertEq(raffle.accountedQuoteBalance(), 0);
+        raffle.safeTransferFrom(buyerTwo, buyer, firstTicket);
+        vm.prank(outsider);
+        raffle.transferFrom(buyer, buyerTwo, secondTicket);
 
-        vm.expectRevert();
-        raffle.ownerOf(1);
+        uint256 requestId = _requestAtCurrentTime(raffle);
+        vrfWrapper.fulfill(requestId, 0);
         vm.prank(buyer);
+        raffle.transferFrom(buyer, buyerTwo, firstTicket);
+        vm.prank(outsider);
+        raffle.settleWinningTicket(firstTicket);
         vm.expectRevert();
-        raffle.redeemRefundTickets(buyerIds, buyer);
+        raffle.ownerOf(firstTicket);
     }
 
-    function testRefundRedemptionRequiresActualOwnerAndBoundedBatch() public {
-        Raffle raffle = _createDefaultRaffle(2);
-        _buy(raffle, buyer, 2);
-        vm.warp(raffle.requestGraceDeadline());
+    function testDrawUsesFixedThirtyConfirmationsAndOneWord() public {
+        Raffle raffle = _create(1);
+        _buy(raffle, buyer, 1);
+
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.RaffleNotEnded.selector, raffle.endTime(), block.timestamp));
+        raffle.requestDraw();
+
+        uint256 requestId = _request(raffle);
+        assertEq(vrfWrapper.gasLimitByRequest(requestId), CALLBACK_GAS_LIMIT);
+        assertEq(vrfWrapper.confirmationsByRequest(requestId), REQUEST_CONFIRMATIONS);
+        assertEq(vrfWrapper.wordCountByRequest(requestId), 1);
+        assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Drawing));
+    }
+
+    function testMetadataPriceEstimateAndDrawFailureBoundaries() public {
+        Raffle empty = _create(1);
+        assertEq(empty.name(), "raffle.fun Ticket");
+        assertEq(empty.symbol(), "RAFFLE");
+        assertEq(empty.estimateVrfRequestPrice(37 gwei), vrfWrapper.fee());
+
+        vm.warp(empty.endTime());
+        vm.expectRevert(IRaffle.NoEntriesSold.selector);
+        empty.requestDraw();
+
+        Raffle delayed = _create(1);
+        _buy(delayed, buyer, 1);
+        vm.warp(delayed.endTime() + 365 days);
+        uint256 delayedRequestId = _requestAtCurrentTime(delayed);
+        assertEq(delayed.vrfRequestId(), delayedRequestId);
+        assertEq(uint256(delayed.status()), uint256(IRaffle.Status.Drawing));
+
+        Raffle underfunded = _create(1);
+        _buy(underfunded, buyer, 1);
+        vm.warp(underfunded.endTime());
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.InsufficientVrfFee.selector, vrfWrapper.fee(), 0));
+        underfunded.requestDraw();
+    }
+
+    function testDrawForwardsExactDynamicFeeAndRefundsExcess() public {
+        Raffle raffle = _create(1);
+        _buy(raffle, buyer, 1);
+        vm.warp(raffle.endTime());
+        vrfWrapper.setFee(0.02 ether);
+
+        uint256 beforeBalance = outsider.balance;
+        vm.prank(outsider);
+        raffle.requestDraw{ value: 0.03 ether }();
+        assertEq(outsider.balance, beforeBalance - 0.02 ether);
+
+        Raffle rejectRaffle = _create(1);
+        _buy(rejectRaffle, buyer, 1);
+        vm.warp(rejectRaffle.endTime());
+        RejectNativeRefund rejecter = new RejectNativeRefund();
+        vm.deal(address(rejecter), 0.03 ether);
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.NativeRefundFailed.selector, address(rejecter), 0.01 ether));
+        rejecter.request{ value: 0.03 ether }(rejectRaffle);
+        assertEq(uint256(rejectRaffle.status()), uint256(IRaffle.Status.Active));
+    }
+
+    function testCallbackStoresInclusiveWinningEntryAndSelectsReserveBoundary() public {
+        Raffle cash = _create(11);
+        _buy(cash, buyer, 10);
+        _resolve(cash, type(uint256).max);
+        assertEq(cash.winningEntry(), uint128((type(uint256).max % 10) + 1));
+        assertEq(uint256(cash.status()), uint256(IRaffle.Status.CashWon));
+        assertEq(cash.unsettledPot(), 10 * USDC);
+        assertEq(cash.protocolFees(), 0);
+        assertEq(cash.sponsorProceeds(), 0);
+
+        Raffle nft = _create(10);
+        _buy(nft, buyer, 10);
+        _resolve(nft, 9);
+        assertEq(nft.winningEntry(), 10);
+        assertEq(uint256(nft.status()), uint256(IRaffle.Status.NftWon));
+        assertEq(nft.unsettledPot(), 10 * USDC);
+        assertEq(nft.protocolFees(), 0);
+        assertEq(nft.sponsorProceeds(), 0);
+    }
+
+    function testNftSettlementIsPermissionlessToCurrentTicketOwnerAndProofIsExact() public {
+        Raffle raffle = _create(6);
+        uint256 firstReceipt = _buy(raffle, buyer, 2);
+        uint256 winningReceipt = _buy(raffle, buyerTwo, 4);
+        _resolve(raffle, 2);
+        assertEq(raffle.winningEntry(), 3);
+
+        vm.prank(outsider);
+        vm.expectRevert(
+            abi.encodeWithSelector(IRaffle.TicketDoesNotContainWinningEntry.selector, firstReceipt, uint128(3))
+        );
+        raffle.settleWinningTicket(firstReceipt);
+
+        vm.prank(outsider);
+        raffle.settleWinningTicket(winningReceipt);
+        assertEq(prize.ownerOf(raffle.prizeTokenId()), buyerTwo);
+        assertEq(raffle.winningTicketId(), winningReceipt);
+        assertEq(raffle.protocolFees(), 300_000);
+        assertEq(raffle.sponsorProceeds(), 5_700_000);
+        assertEq(raffle.unsettledPot(), 0);
+    }
+
+    function testNftSettlementAlwaysPaysCurrentTicketOwner() public {
+        Raffle raffle = _create(1);
+        uint256 receiptId = _buy(raffle, buyer, 1);
+        _resolve(raffle, 0);
+
+        vm.prank(buyer);
+        raffle.transferFrom(buyer, buyerTwo, receiptId);
+        vm.prank(outsider);
+        raffle.settleWinningTicket(receiptId);
+        assertEq(prize.ownerOf(raffle.prizeTokenId()), buyerTwo);
+    }
+
+    function testPrizeDeliveryFailureLeavesPotAndReceiptButNeverEnablesRefundsAfterValidDraw() public {
+        RevertingPrize hostilePrize = new RevertingPrize();
+        hostilePrize.mint(sponsor, 1);
+        vm.prank(sponsor);
+        hostilePrize.setApprovalForAll(address(factory), true);
+        Raffle raffle = _createWithPrize(address(hostilePrize), 1, 1);
+        uint256 receiptId = _buy(raffle, buyer, 1);
+        _resolve(raffle, 0);
+        hostilePrize.setTransfersRevert(true);
+
+        vm.prank(outsider);
+        vm.expectRevert("prize transfer failed");
+        raffle.settleWinningTicket(receiptId);
+        assertEq(raffle.ownerOf(receiptId), buyer);
+        assertEq(raffle.unsettledPot(), USDC);
+        assertEq(raffle.protocolFees(), 0);
+        assertEq(raffle.sponsorProceeds(), 0);
+        assertFalse(raffle.prizeClaimed());
+
+        vm.warp(block.timestamp + 365 days);
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidStatus.selector, IRaffle.Status.NftWon));
         raffle.enableRefunds();
 
-        uint256[] memory one = new uint256[](1);
-        one[0] = 1;
+        hostilePrize.setTransfersRevert(false);
+        raffle.settleWinningTicket(receiptId);
+        assertEq(hostilePrize.ownerOf(1), buyer);
+    }
+
+    function testNonCompliantPrizeCannotPassPostDeliveryVerification() public {
+        RevertingPrize hostileNft = new RevertingPrize();
+        hostileNft.mint(sponsor, 1);
+        vm.prank(sponsor);
+        hostileNft.setApprovalForAll(address(factory), true);
+        Raffle nft = _createWithPrize(address(hostileNft), 1, 1);
+        uint256 receiptId = _buy(nft, buyer, 1);
+        _resolve(nft, 0);
+        hostileNft.setTransfersNoop(true);
+
         vm.prank(outsider);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.NotTicketOwner.selector, 1, outsider, buyer));
-        raffle.redeemRefundTickets(one, outsider);
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.PrizeDeliveryVerificationFailed.selector, buyer));
+        nft.settleWinningTicket(receiptId);
+        assertEq(hostileNft.ownerOf(1), address(nft));
+
+        RevertingPrize hostileCash = new RevertingPrize();
+        hostileCash.mint(sponsor, 2);
+        vm.prank(sponsor);
+        hostileCash.setApprovalForAll(address(factory), true);
+        Raffle cash = _createWithPrize(address(hostileCash), 2, 2);
+        _buy(cash, buyer, 1);
+        _resolve(cash, 0);
+        hostileCash.setTransfersNoop(true);
+
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.PrizeDeliveryVerificationFailed.selector, sponsor));
+        cash.releaseSponsorPrize();
+        assertEq(hostileCash.ownerOf(2), address(cash));
+    }
+
+    function testCashCallbackIsFinalAndPermissionlessSettlementPaysCurrentOwnerOnce() public {
+        Raffle raffle = _create(2);
+        uint256 receiptId = _buy(raffle, buyer, 1);
+        _resolve(raffle, 0);
+
+        assertEq(raffle.unsettledPot(), USDC);
+        assertEq(raffle.protocolFees(), 0);
+        assertEq(raffle.sponsorProceeds(), 0);
+        vm.warp(block.timestamp + 365 days);
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidStatus.selector, IRaffle.Status.CashWon));
+        raffle.enableRefunds();
+
+        uint256 before = quote.balanceOf(buyer);
+        vm.prank(outsider);
+        assertEq(raffle.settleWinningTicket(receiptId), 800_000);
+        assertEq(quote.balanceOf(buyer) - before, 800_000);
+        assertEq(raffle.protocolFees(), 50_000);
+        assertEq(raffle.sponsorProceeds(), 150_000);
+        vm.expectRevert();
+        raffle.ownerOf(receiptId);
+
+        Raffle transferred = _create(2);
+        uint256 transferredReceipt = _buy(transferred, buyer, 1);
+        _resolve(transferred, 0);
+        vm.prank(buyer);
+        transferred.transferFrom(buyer, buyerTwo, transferredReceipt);
+        before = quote.balanceOf(buyerTwo);
+        vm.prank(outsider);
+        transferred.settleWinningTicket(transferredReceipt);
+        assertEq(quote.balanceOf(buyerTwo) - before, 800_000);
+    }
+
+    function testCashSponsorPrizeRecoveryIsPermissionlessToFixedRecipient() public {
+        Raffle unavailable = _create(1);
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.SponsorPrizeUnavailable.selector, IRaffle.Status.Active));
+        unavailable.releaseSponsorPrize();
+
+        Raffle raffle = _create(2);
+        _buy(raffle, buyer, 1);
+        _resolve(raffle, 0);
+
+        vm.prank(outsider);
+        raffle.releaseSponsorPrize();
+        assertEq(prize.ownerOf(raffle.prizeTokenId()), sponsor);
+        assertEq(raffle.unsettledPot(), USDC);
+        assertEq(raffle.sponsorProceeds(), 0);
+        vm.expectRevert(IRaffle.PrizeAlreadyClaimed.selector);
+        raffle.releaseSponsorPrize();
+    }
+
+    function testRegisteredRaffleCannotReceiveTicketsAndSettlementCannotBeRedirected() public {
+        Raffle registeredDestination = _create(1);
+        Raffle nftRaffle = _create(1);
+        uint256 nftReceipt = _buy(nftRaffle, buyer, 1);
+
+        vm.prank(buyer);
+        vm.expectRevert(
+            abi.encodeWithSelector(IRaffle.UnsafeProtocolDestination.selector, address(registeredDestination))
+        );
+        nftRaffle.transferFrom(buyer, address(registeredDestination), nftReceipt);
+
+        _resolve(nftRaffle, 0);
+        vm.prank(outsider);
+        nftRaffle.settleWinningTicket(nftReceipt);
+        assertEq(prize.ownerOf(nftRaffle.prizeTokenId()), buyer);
+
+        Raffle cashRaffle = _create(2);
+        uint256 cashReceipt = _buy(cashRaffle, buyer, 1);
+        _resolve(cashRaffle, 0);
+        vm.prank(outsider);
+        cashRaffle.settleWinningTicket(cashReceipt);
+        vm.prank(outsider);
+        cashRaffle.releaseSponsorPrize();
+        assertEq(prize.ownerOf(cashRaffle.prizeTokenId()), sponsor);
+    }
+
+    function testFixedProceedsArePermissionlesslyReleasedToConfiguredRecipients() public {
+        Raffle cash = _create(2);
+        uint256 ticketId = _buy(cash, buyer, 1);
+        _resolve(cash, 0);
+        cash.settleWinningTicket(ticketId);
+
+        uint256 sponsorBefore = quote.balanceOf(sponsor);
+        uint256 treasuryBefore = quote.balanceOf(treasury);
+        vm.prank(outsider);
+        assertEq(cash.releaseSponsorProceeds(), 150_000);
+        vm.prank(outsider);
+        assertEq(cash.releaseProtocolFees(), 50_000);
+        assertEq(quote.balanceOf(sponsor) - sponsorBefore, 150_000);
+        assertEq(quote.balanceOf(treasury) - treasuryBefore, 50_000);
+        vm.expectRevert(IRaffle.NoSponsorProceeds.selector);
+        cash.releaseSponsorProceeds();
+        vm.expectRevert(IRaffle.NoProtocolFees.selector);
+        cash.releaseProtocolFees();
+
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidStatus.selector, IRaffle.Status.CashWon));
+        cash.buyEntries(buyer, 1);
+
+        uint256 cashPrizeId = cash.prizeTokenId();
+        vm.expectPartialRevert(IRaffle.UnexpectedPrize.selector);
+        cash.onERC721Received(address(factory), sponsor, cashPrizeId, "");
+    }
+
+    function testNonEmptyRaffleMustRequestDrawAndOnlyAcceptedCallbackTimeoutRefunds() public {
+        Raffle noRequest = _create(10);
+        _buy(noRequest, buyer, 3);
+        vm.warp(noRequest.endTime() + 365 days);
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidStatus.selector, IRaffle.Status.Active));
+        noRequest.enableRefunds();
+        uint256 lateRequest = _requestAtCurrentTime(noRequest);
+        vrfWrapper.fulfill(lateRequest, 0);
+        assertEq(uint256(noRequest.status()), uint256(IRaffle.Status.CashWon));
+
+        Raffle noCallback = _create(10);
+        uint256 noCallbackReceipt = _buy(noCallback, buyer, 5);
+        uint256 sequence = _request(noCallback);
+        vm.warp(noCallback.callbackDeadline());
+        noCallback.enableRefunds();
+        vrfWrapper.fulfill(sequence, 0);
+        assertEq(uint256(noCallback.status()), uint256(IRaffle.Status.Refunding));
+        assertEq(noCallback.winningEntry(), 0);
+        assertEq(noCallback.remainingRefundLiability(), 5 * USDC);
+        vm.prank(buyer);
+        noCallback.refundTickets(_single(noCallbackReceipt));
+    }
+
+    function testAcceptedDrawCannotRefundBeforeCallbackDeadlineAndValidNftOutcomeNeverRefunds() public {
+        Raffle drawing = _create(1);
+        _buy(drawing, buyer, 1);
+        _request(drawing);
+        vm.expectRevert(
+            abi.encodeWithSelector(IRaffle.RefundsNotAvailable.selector, drawing.callbackDeadline(), block.timestamp)
+        );
+        drawing.enableRefunds();
+
+        Raffle nftWon = _create(1);
+        _buy(nftWon, buyer, 1);
+        _resolve(nftWon, 0);
+        vm.warp(block.timestamp + 365 days);
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidStatus.selector, IRaffle.Status.NftWon));
+        nftWon.enableRefunds();
+    }
+
+    function testCallbackDeadlineRaceIsFirstIncludedAndValidNftSettlesForever() public {
+        Raffle callbackFirst = _create(1);
+        uint256 firstReceipt = _buy(callbackFirst, buyer, 1);
+        uint256 firstSequence = _request(callbackFirst);
+        vm.warp(callbackFirst.callbackDeadline());
+        vrfWrapper.fulfill(firstSequence, 0);
+        assertEq(uint256(callbackFirst.status()), uint256(IRaffle.Status.NftWon));
+
+        Raffle refundFirst = _create(1);
+        _buy(refundFirst, buyer, 1);
+        uint256 secondSequence = _request(refundFirst);
+        vm.warp(refundFirst.callbackDeadline());
+        refundFirst.enableRefunds();
+        vrfWrapper.fulfill(secondSequence, 0);
+        assertEq(refundFirst.winningEntry(), 0);
+
+        vm.warp(block.timestamp + 365 days);
+        vm.prank(outsider);
+        callbackFirst.settleWinningTicket(firstReceipt);
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidStatus.selector, IRaffle.Status.NftWon));
+        callbackFirst.enableRefunds();
+    }
+
+    function testWeightedRefundBatchPaysExactRangesAndConsumesOnce() public {
+        Raffle raffle = _create(100);
+        uint256 first = _buy(raffle, buyer, 2);
+        uint256 second = _buy(raffle, buyer, 7);
+        _request(raffle);
+        vm.warp(raffle.callbackDeadline());
+        raffle.enableRefunds();
+
+        uint256[] memory ids = new uint256[](2);
+        ids[0] = first;
+        ids[1] = second;
+        uint256 before = quote.balanceOf(buyer);
+        vm.prank(buyer);
+        assertEq(raffle.refundTickets(ids), 9 * USDC);
+        assertEq(quote.balanceOf(buyer) - before, 9 * USDC);
+        assertEq(raffle.remainingRefundLiability(), 0);
+        assertEq(raffle.balanceOf(buyer), 0);
+        vm.expectRevert();
+        raffle.ownerOf(first);
+        vm.expectRevert();
+        raffle.ownerOf(second);
+        vm.prank(buyer);
+        vm.expectRevert();
+        raffle.refundTickets(ids);
+    }
+
+    function testRefundBatchValidationAndMixedOwnershipAreAtomic() public {
+        Raffle raffle = _create(100);
+        uint256 first = _buy(raffle, buyer, 2);
+        uint256 second = _buy(raffle, buyerTwo, 3);
+        _request(raffle);
+        vm.warp(raffle.callbackDeadline());
+        raffle.enableRefunds();
 
         uint256[] memory empty = new uint256[](0);
         vm.prank(buyer);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidQuantity.selector, 0, 100));
-        raffle.redeemRefundTickets(empty, buyer);
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidTicketBatchSize.selector, 0, 100));
+        raffle.refundTickets(empty);
 
-        uint256[] memory tooMany = new uint256[](101);
+        uint256[] memory oversized = new uint256[](101);
         vm.prank(buyer);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidQuantity.selector, 101, 100));
-        raffle.redeemRefundTickets(tooMany, buyer);
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidTicketBatchSize.selector, 101, 100));
+        raffle.refundTickets(oversized);
+
+        uint256[] memory mixed = new uint256[](2);
+        mixed[0] = first;
+        mixed[1] = second;
+        vm.prank(buyer);
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.NotTicketOwner.selector, second, buyer, buyerTwo));
+        raffle.refundTickets(mixed);
+        assertEq(raffle.ownerOf(first), buyer);
+        assertEq(raffle.ownerOf(second), buyerTwo);
+        assertEq(raffle.remainingRefundLiability(), 5 * USDC);
     }
 
-    function testNftWinnerBurnsBearerTicketAndProtocolReceivesFivePercent() public {
-        Raffle raffle = _createDefaultRaffle(2);
-        _buy(raffle, buyer, 2);
-        vm.prank(buyer);
-        raffle.transferFrom(buyer, buyerTwo, 2);
-
-        uint64 sequence = _request(raffle);
-        vm.expectEmit(true, true, true, true, address(raffle));
-        emit IRaffle.RaffleResolved(sequence, 2, IRaffle.Status.NftWon, 100_000, 0, 1_900_000);
-        entropy.fulfill(sequence, bytes32(uint256(1)));
-
-        assertEq(uint256(raffle.status()), uint256(IRaffle.Status.NftWon));
-        assertEq(raffle.winningTicketId(), 2);
-        assertEq(raffle.claimableQuote(treasury), 0);
-        assertEq(raffle.claimableQuote(sponsor), 0);
-        assertEq(raffle.unsettledPot(), 2 * USDC);
-
-        vm.prank(buyerTwo);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.TicketTransferLocked.selector, 2, IRaffle.Status.NftWon));
-        raffle.transferFrom(buyerTwo, buyer, 2);
-        vm.prank(buyerTwo);
-        raffle.redeemWinningTicket(buyerTwo);
-        assertEq(prize.ownerOf(raffle.prizeTokenId()), buyerTwo);
-        assertTrue(raffle.winningTicketRedeemed());
-        assertEq(raffle.claimableQuote(treasury), 100_000);
-        assertEq(raffle.claimableQuote(sponsor), 1_900_000);
-        assertEq(raffle.unsettledPot(), 0);
-
-        vm.prank(treasury);
-        raffle.claimQuote(treasury);
+    function testEmptyRaffleUsesRefundingWithoutClosedState() public {
+        Raffle sponsorCancelled = _create(1);
         vm.prank(sponsor);
-        raffle.claimQuote(sponsor);
-        assertEq(raffle.accountedQuoteBalance(), 0);
-    }
+        sponsorCancelled.enableRefunds();
+        assertEq(uint256(sponsorCancelled.status()), uint256(IRaffle.Status.Refunding));
+        assertEq(sponsorCancelled.remainingRefundLiability(), 0);
+        vm.prank(outsider);
+        sponsorCancelled.releaseSponsorPrize();
 
-    function testUnredeemedNftResultFallsBackToFullTicketRefunds() public {
-        Raffle raffle = _createDefaultRaffle(1);
-        _buy(raffle, buyer, 1);
-        _resolve(raffle, bytes32(0));
-
-        assertEq(raffle.nftRedemptionDeadline(), raffle.resolvedAt() + 30 days);
-        vm.warp(raffle.nftRedemptionDeadline() - 1);
+        Raffle anyoneAfterEnd = _create(1);
+        vm.prank(outsider);
         vm.expectRevert(
-            abi.encodeWithSelector(
-                IRaffle.RefundsNotAvailable.selector, raffle.nftRedemptionDeadline(), block.timestamp
-            )
+            abi.encodeWithSelector(IRaffle.RefundsNotAvailable.selector, anyoneAfterEnd.endTime(), block.timestamp)
         );
-        raffle.enableRefunds();
-
-        vm.warp(raffle.nftRedemptionDeadline());
-        raffle.enableRefunds();
-        assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Refunding));
-        assertEq(raffle.remainingRefundLiability(), USDC);
-        assertEq(raffle.claimableQuote(treasury), 0);
-        assertEq(raffle.claimableQuote(sponsor), 0);
-
-        vm.prank(buyer);
-        raffle.transferFrom(buyer, buyerTwo, 1);
-        uint256[] memory ticketIds = new uint256[](1);
-        ticketIds[0] = 1;
-        vm.prank(buyerTwo);
-        raffle.redeemRefundTickets(ticketIds, buyerTwo);
-        assertEq(raffle.remainingRefundLiability(), 0);
-    }
-
-    function testCashWinnerBurnsBearerTicketAndFeeStillApplies() public {
-        Raffle raffle = _createDefaultRaffle(100);
-        _buy(raffle, buyer, 80);
-        _resolve(raffle, bytes32(0));
-
-        assertEq(uint256(raffle.status()), uint256(IRaffle.Status.CashWon));
-        assertEq(raffle.claimableQuote(treasury), 4 * USDC);
-        assertEq(raffle.winnerCashLiability(), 60_800_000);
-        assertEq(raffle.claimableQuote(sponsor), 15_200_000);
-        assertEq(raffle.accountedQuoteBalance(), 80 * USDC);
-
-        uint256 buyerBefore = quote.balanceOf(buyer);
-        vm.prank(buyer);
-        raffle.redeemWinningTicket(buyer);
-        assertEq(quote.balanceOf(buyer), buyerBefore + 60_800_000);
-        assertEq(raffle.winnerCashLiability(), 0);
-
-        vm.prank(sponsor);
-        raffle.claimSponsorPrize(sponsor);
-        assertEq(prize.ownerOf(raffle.prizeTokenId()), sponsor);
-    }
-
-    function testSponsorPrizeRecoveryExistsOnlyForCashRefundAndClosed() public {
-        Raffle nftWon = _createDefaultRaffle(1);
-        _buy(nftWon, buyer, 1);
-        _resolve(nftWon, bytes32(0));
-        vm.prank(sponsor);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.SponsorPrizeUnavailable.selector, IRaffle.Status.NftWon));
-        nftWon.claimSponsorPrize(sponsor);
-
-        Raffle refunding = _createDefaultRaffle(2);
-        _buy(refunding, buyer, 1);
-        vm.warp(refunding.requestGraceDeadline());
-        refunding.enableRefunds();
+        anyoneAfterEnd.enableRefunds();
+        vm.warp(anyoneAfterEnd.endTime());
         vm.prank(outsider);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.OnlyPrizeRecoveryRecipient.selector, outsider, sponsor));
-        refunding.claimSponsorPrize(outsider);
-        vm.prank(sponsor);
-        refunding.claimSponsorPrize(sponsor);
-        assertEq(prize.ownerOf(refunding.prizeTokenId()), sponsor);
-    }
-
-    function testBearerSettlementAndQuoteClaimValidationBranches() public {
-        Raffle active = _createDefaultRaffle(1);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidStatus.selector, IRaffle.Status.Active));
-        active.redeemWinningTicket(buyer);
-
-        _buy(active, buyer, 1);
-        _resolve(active, bytes32(0));
-        vm.prank(buyer);
-        vm.expectRevert(IRaffle.ZeroAddress.selector);
-        active.redeemWinningTicket(address(0));
+        anyoneAfterEnd.enableRefunds();
         vm.prank(outsider);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.NotTicketOwner.selector, 1, outsider, buyer));
-        active.redeemWinningTicket(outsider);
-        vm.prank(buyer);
-        active.redeemWinningTicket(buyer);
-
-        vm.prank(sponsor);
-        vm.expectRevert(IRaffle.ZeroAddress.selector);
-        active.claimQuote(address(0));
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.NoQuoteClaim.selector, outsider));
-        active.claimQuoteFor(outsider);
-        vm.prank(sponsor);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidQuoteDestination.selector, address(active)));
-        active.claimQuote(address(active));
-        assertGt(active.claimableQuote(sponsor), 0);
-
-        Raffle refunding = _createDefaultRaffle(2);
-        _buy(refunding, buyer, 1);
-        vm.warp(refunding.requestGraceDeadline());
-        refunding.enableRefunds();
-        uint256[] memory ticketIds = new uint256[](1);
-        ticketIds[0] = 1;
-        vm.prank(buyer);
-        vm.expectRevert(IRaffle.ZeroAddress.selector);
-        refunding.redeemRefundTickets(ticketIds, address(0));
-
-        Raffle closed = _createDefaultRaffle(1);
-        vm.prank(sponsor);
-        closed.closeEmptyRaffle();
-        vm.prank(sponsor);
-        vm.expectRevert(IRaffle.ZeroAddress.selector);
-        closed.claimSponsorPrize(address(0));
-        vm.prank(sponsor);
-        closed.claimSponsorPrize(sponsor);
-        vm.prank(sponsor);
-        vm.expectRevert(IRaffle.PrizeAlreadyClaimed.selector);
-        closed.claimSponsorPrize(sponsor);
+        anyoneAfterEnd.releaseSponsorPrize();
     }
 
-    function testViewsMetadataUnexpectedPrizeAndNativeRejection() public {
-        Raffle raffle = _createDefaultRaffle(2);
-        assertLt(raffle.totalTickets(), raffle.minimumTickets());
-        _buy(raffle, buyer, 2);
-        assertGe(raffle.totalTickets(), raffle.minimumTickets());
-        assertEq(raffle.balanceOf(buyer), raffle.totalTickets());
-        assertEq(raffle.balanceOf(outsider), 0);
-        assertEq(raffle.tokenURI(1), "ipfs://raffle");
-        vm.expectRevert();
-        raffle.tokenURI(3);
-
-        uint256 prizeId = raffle.prizeTokenId();
-        vm.prank(outsider);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.UnexpectedPrize.selector, outsider, prizeId, sponsor, outsider));
-        raffle.onERC721Received(outsider, sponsor, prizeId, "");
-
-        vm.deal(outsider, 1);
-        vm.prank(outsider);
-        (bool success, bytes memory result) = address(raffle).call{value: 1}("");
-        assertFalse(success);
-        assertEq(bytes4(result), Raffle.DirectNativeTransfer.selector);
-    }
-
-    function testRejectedWinningAndSponsorPrizeDestinationsPreserveClaims() public {
-        RejectPrizeReceiver rejecter = new RejectPrizeReceiver();
-        Raffle nftWon = _createDefaultRaffle(1);
-        _buy(nftWon, buyer, 1);
-        _resolve(nftWon, bytes32(0));
-        vm.prank(buyer);
-        vm.expectRevert();
-        nftWon.redeemWinningTicket(address(rejecter));
-        assertEq(nftWon.ownerOf(1), buyer);
-        assertFalse(nftWon.prizeClaimed());
-
-        Raffle closed = _createDefaultRaffle(1);
-        vm.prank(sponsor);
-        closed.closeEmptyRaffle();
-        vm.prank(sponsor);
-        vm.expectRevert();
-        closed.claimSponsorPrize(address(rejecter));
-        assertFalse(closed.prizeClaimed());
-    }
-
-    function testWrongDuplicateAndLateCallbacksAreHarmless() public {
-        Raffle raffle = _createDefaultRaffle(1);
+    function testWrongDuplicateMalformedAndUnauthorizedCallbacksAreHarmless() public {
+        Raffle raffle = _create(1);
         _buy(raffle, buyer, 1);
-        uint64 sequence = _request(raffle);
-        entropy.fulfillAs(sequence, sequence + 1, bytes32(0));
-        assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Drawing));
-        entropy.fulfill(sequence, bytes32(0));
-        assertEq(uint256(raffle.status()), uint256(IRaffle.Status.NftWon));
-        entropy.fulfill(sequence, bytes32(uint256(123)));
-        assertEq(raffle.winningTicketId(), 1);
-    }
+        uint256 sequence = _request(raffle);
 
-    function testLensReportsBearerActionsAndHandlesEntropyFeeFailure() public {
-        Raffle raffle = _createDefaultRaffle(100);
-        _buy(raffle, buyer, 1);
-        _resolve(raffle, bytes32(0));
-
-        IRaffleLens.RaffleView memory viewData = lens.getRaffleState(address(raffle), buyer);
-        assertEq(uint256(viewData.status), uint256(IRaffle.Status.CashWon));
-        assertEq(viewData.winningTicketOwner, buyer);
-        assertTrue(viewData.accountOwnsWinningTicket);
-        assertTrue(viewData.canRedeemWinningTicket);
-        assertEq(viewData.winnerCashLiability, 760_000);
-
-        entropy.setFeeReadReverts(true);
-        viewData = lens.getRaffleState(address(raffle), address(0));
-        assertFalse(viewData.entropyFeeAvailable);
-        address[] memory oneRaffle = new address[](1);
-        oneRaffle[0] = address(raffle);
-        IRaffleLens.RaffleView[] memory batch = lens.getRaffleStates(oneRaffle, buyer);
-        assertEq(batch.length, 1);
-        assertEq(batch[0].raffle, address(raffle));
-
-        vm.expectRevert(abi.encodeWithSelector(IRaffleLens.UnregisteredRaffle.selector, outsider));
-        lens.getRaffleState(outsider, buyer);
-        address[] memory oversized = new address[](65);
-        vm.expectRevert(abi.encodeWithSelector(IRaffleLens.BatchTooLarge.selector, 65, 64));
-        lens.getRaffleStates(oversized, buyer);
-
-        entropy.setFeeReadReverts(false);
-        Raffle drawing = _createDefaultRaffle(2);
-        _buy(drawing, buyer, 1);
-        _request(drawing);
-        viewData = lens.getRaffleState(address(drawing), buyer);
-        assertFalse(viewData.canEnableRefunds);
-        vm.warp(drawing.callbackDeadline());
-        viewData = lens.getRaffleState(address(drawing), buyer);
-        assertTrue(viewData.canEnableRefunds);
-        assertEq(viewData.nftRedemptionDeadline, 0);
-    }
-
-    function testLensExactSaleAndRequestGraceBoundariesMatchRaffle() public {
-        Raffle raffle = _createDefaultRaffle(1);
-        IRaffleLens.RaffleView memory viewData = lens.getRaffleState(address(raffle), buyer);
-        assertTrue(viewData.canBuy);
-
-        _buy(raffle, buyer, 1);
-        vm.warp(raffle.endTime());
-        viewData = lens.getRaffleState(address(raffle), buyer);
-        assertFalse(viewData.canBuy);
-        assertTrue(viewData.canDraw);
-
-        vm.warp(raffle.requestGraceDeadline());
-        viewData = lens.getRaffleState(address(raffle), buyer);
-        assertFalse(viewData.canDraw);
-        assertTrue(viewData.canEnableRefunds);
+        uint256[] memory words = new uint256[](1);
         vm.expectRevert(
-            abi.encodeWithSelector(
-                IRaffle.DrawRequestWindowExpired.selector, raffle.requestGraceDeadline(), block.timestamp
-            )
+            abi.encodeWithSelector(IRaffle.OnlyVRFWrapperCanFulfill.selector, address(this), address(vrfWrapper))
         );
-        raffle.requestDraw();
+        raffle.rawFulfillRandomWords(sequence, words);
+
+        vrfWrapper.fulfillAs(sequence, sequence + 1, 99);
+        assertEq(raffle.winningEntry(), 0);
+        vrfWrapper.fulfill(sequence, 0);
+        assertEq(raffle.winningEntry(), 1);
+        vrfWrapper.fulfill(sequence, 99);
+        assertEq(raffle.winningEntry(), 1);
     }
 
-    function testDirectDonationDoesNotAlterLiabilities() public {
-        Raffle raffle = _createDefaultRaffle(1);
+    function testDonationsAndForcedNativeDoNotAlterQuoteAccounting() public {
+        Raffle raffle = _create(1);
         _buy(raffle, buyer, 1);
         quote.mint(address(raffle), 5 * USDC);
         assertEq(raffle.accountedQuoteBalance(), USDC);
-        assertEq(quote.balanceOf(address(raffle)) - raffle.accountedQuoteBalance(), 5 * USDC);
-        assertGe(quote.balanceOf(address(raffle)), raffle.accountedQuoteBalance());
-    }
+        assertEq(quote.balanceOf(address(raffle)), 6 * USDC);
 
-    function testGasBoundedPurchaseRefundAndLensBatches() public {
-        uint256 tokenId = nextPrizeId++;
-        prize.mint(sponsor, tokenId);
-        IRaffleFactory.CreateRaffleParams memory params = _validCreateParams(address(prize));
-        params.prizeTokenId = tokenId;
-        params.minimumTickets = 101;
-        vm.prank(sponsor);
-        uint256 gasBefore = gasleft();
-        Raffle eoaRaffle = Raffle(payable(factory.createRaffle(params)));
-        emit log_named_uint("factory raffle creation gas", gasBefore - gasleft());
-
-        _approveQuote(buyer, eoaRaffle);
-        vm.prank(buyer);
-        gasBefore = gasleft();
-        eoaRaffle.buyTickets(buyer, 100);
-        uint256 eoaPurchaseGas = gasBefore - gasleft();
-        emit log_named_uint("100 ticket EOA purchase gas", eoaPurchaseGas);
-        assertLt(eoaPurchaseGas, 16_777_216);
-
-        Raffle receiverRaffle = _createDefaultRaffle(101);
-        _approveQuote(buyer, receiverRaffle);
-        vm.prank(buyer);
-        gasBefore = gasleft();
-        receiverRaffle.buyTickets(address(this), 100);
-        uint256 receiverPurchaseGas = gasBefore - gasleft();
-        emit log_named_uint("100 ticket receiver purchase gas", receiverPurchaseGas);
-        assertLt(receiverPurchaseGas, 16_777_216);
-
-        vm.warp(eoaRaffle.requestGraceDeadline());
-        gasBefore = gasleft();
-        eoaRaffle.enableRefunds();
-        emit log_named_uint("missing request refund finalization gas", gasBefore - gasleft());
-
-        uint256[] memory ticketIds = new uint256[](100);
-        for (uint256 index; index < ticketIds.length; ++index) {
-            ticketIds[index] = index + 1;
-        }
-        vm.prank(buyer);
-        gasBefore = gasleft();
-        eoaRaffle.redeemRefundTickets(ticketIds, buyer);
-        uint256 refundBatchGas = gasBefore - gasleft();
-        emit log_named_uint("100 ticket refund redemption gas", refundBatchGas);
-        assertLt(refundBatchGas, 16_777_216);
-
-        address[] memory batch = new address[](64);
-        for (uint256 index; index < batch.length; ++index) {
-            batch[index] = address(receiverRaffle);
-        }
-        gasBefore = gasleft();
-        lens.getRaffleStates(batch, buyer);
-        emit log_named_uint("64 raffle lens read gas", gasBefore - gasleft());
-    }
-
-    function testGasBoundedSettlementAndClaims() public {
-        Raffle raffle = _createDefaultRaffle(1);
-        _buy(raffle, buyer, 1);
-        vm.warp(raffle.endTime());
+        vm.deal(outsider, 1);
         vm.prank(outsider);
-        uint256 gasBefore = gasleft();
-        uint64 sequence = raffle.requestDraw{value: raffle.getEntropyFee()}();
-        emit log_named_uint("draw request gas", gasBefore - gasleft());
-
-        gasBefore = gasleft();
-        entropy.fulfill(sequence, bytes32(0));
-        emit log_named_uint("oracle fulfillment transaction gas", gasBefore - gasleft());
-
-        vm.prank(buyer);
-        gasBefore = gasleft();
-        raffle.redeemWinningTicket(buyer);
-        emit log_named_uint("winning NFT redemption gas", gasBefore - gasleft());
-
-        vm.prank(treasury);
-        gasBefore = gasleft();
-        raffle.claimQuote(treasury);
-        emit log_named_uint("quote claim gas", gasBefore - gasleft());
-
-        vm.prank(sponsor);
-        gasBefore = gasleft();
-        raffle.claimQuote(sponsor);
-        emit log_named_uint("sponsor quote claim gas", gasBefore - gasleft());
-
-        Raffle timeout = _createDefaultRaffle(2);
-        _buy(timeout, buyer, 1);
-        _request(timeout);
-        vm.warp(timeout.callbackDeadline());
-        gasBefore = gasleft();
-        timeout.enableRefunds();
-        emit log_named_uint("callback timeout refund finalization gas", gasBefore - gasleft());
-
-        vm.prank(sponsor);
-        gasBefore = gasleft();
-        timeout.claimSponsorPrize(sponsor);
-        emit log_named_uint("sponsor prize recovery gas", gasBefore - gasleft());
+        (bool success,) = address(raffle).call{ value: 1 }("");
+        assertFalse(success);
+        assertEq(raffle.accountedQuoteBalance(), USDC);
     }
 
-    function testGasFactorySingleLensRefundCashAndClaimFor() public {
-        uint256 gasBefore = gasleft();
-        new RaffleFactory(address(quote), address(entropy), treasury, CALLBACK_GAS_LIMIT, address(this));
-        emit log_named_uint("factory construction gas", gasBefore - gasleft());
+    function testBothCallbackBranchesStayBelowGasBudget() public {
+        Raffle nft = _create(1);
+        _buy(nft, buyer, 1);
+        _resolve(nft, 0);
+        uint256 nftGas = vrfWrapper.lastCallbackGasUsed();
 
-        Raffle refunding = _createDefaultRaffle(2);
-        _buy(refunding, buyer, 1);
-        gasBefore = gasleft();
-        lens.getRaffleState(address(refunding), buyer);
-        emit log_named_uint("single raffle lens read gas", gasBefore - gasleft());
-
-        vm.warp(refunding.requestGraceDeadline());
-        refunding.enableRefunds();
-        uint256[] memory ticketIds = new uint256[](1);
-        ticketIds[0] = 1;
-        vm.prank(buyer);
-        gasBefore = gasleft();
-        refunding.redeemRefundTickets(ticketIds, buyer);
-        emit log_named_uint("one ticket refund redemption gas", gasBefore - gasleft());
-
-        Raffle cash = _createDefaultRaffle(2);
+        Raffle cash = _create(2);
         _buy(cash, buyer, 1);
-        _resolve(cash, bytes32(0));
+        _resolve(cash, 0);
+        uint256 cashGas = vrfWrapper.lastCallbackGasUsed();
+
+        emit log_named_uint("NFT callback gas", nftGas);
+        emit log_named_uint("cash callback gas", cashGas);
+        assertLt(nftGas, uint256(CALLBACK_GAS_LIMIT) * 80 / 100);
+        assertLt(cashGas, uint256(CALLBACK_GAS_LIMIT) * 80 / 100);
+    }
+
+    function testCallbackGasDoesNotScaleWithReceiptCount() public {
+        Raffle oneReceipt = _create(100);
+        Raffle oneHundredReceipts = _create(100);
+        _approve(buyer, oneReceipt, type(uint256).max);
+        _approve(buyer, oneHundredReceipts, type(uint256).max);
+
+        vm.prank(buyer);
+        oneReceipt.buyEntries(buyer, 100);
+        for (uint256 index; index < 100; ++index) {
+            vm.prank(buyer);
+            oneHundredReceipts.buyEntries(buyer, 1);
+        }
+
+        _resolve(oneReceipt, 99);
+        uint256 oneReceiptGas = vrfWrapper.lastCallbackGasUsed();
+        _resolve(oneHundredReceipts, 99);
+        uint256 oneHundredReceiptGas = vrfWrapper.lastCallbackGasUsed();
+
+        assertEq(oneReceipt.winningEntry(), oneHundredReceipts.winningEntry());
+        assertLt(_absoluteDifference(oneReceiptGas, oneHundredReceiptGas), 5000);
+    }
+
+    function testPurchaseAndRefundGasDoNotScaleWithEntriesInsideReceipt() public {
+        Raffle small = _create(type(uint128).max);
+        Raffle large = _create(type(uint128).max);
+        uint128 largeCount = 1_000_000_000;
+        quote.mint(buyer, uint256(largeCount) * USDC);
+        _approve(buyer, small, type(uint256).max);
+        _approve(buyer, large, type(uint256).max);
+
+        vm.prank(buyer);
+        uint256 gasBefore = gasleft();
+        uint256 smallId = small.buyEntries(buyer, 1);
+        uint256 smallGas = gasBefore - gasleft();
         vm.prank(buyer);
         gasBefore = gasleft();
-        cash.redeemWinningTicket(buyer);
-        emit log_named_uint("winning cash redemption gas", gasBefore - gasleft());
+        uint256 largeId = large.buyEntries(buyer, largeCount);
+        uint256 largeGas = gasBefore - gasleft();
 
+        assertLt(smallGas, 300_000);
+        assertLt(largeGas, 300_000);
+        assertLt(_absoluteDifference(smallGas, largeGas), 30_000);
+
+        _request(small);
+        _request(large);
+        vm.warp(small.callbackDeadline());
+        small.enableRefunds();
+        large.enableRefunds();
+        vm.prank(buyer);
         gasBefore = gasleft();
-        cash.claimQuoteFor(treasury);
-        emit log_named_uint("fixed destination claim-for gas", gasBefore - gasleft());
+        small.refundTickets(_single(smallId));
+        smallGas = gasBefore - gasleft();
+        vm.prank(buyer);
+        gasBefore = gasleft();
+        large.refundTickets(_single(largeId));
+        largeGas = gasBefore - gasleft();
+        assertLt(_absoluteDifference(smallGas, largeGas), 20_000);
     }
 
-    function testCallbackGasHasSafetyMargin() public {
-        Raffle raffle = _createDefaultRaffle(1);
-        _buy(raffle, buyer, 1);
-        _resolve(raffle, bytes32(0));
-        emit log_named_uint("callback gas used", entropy.lastCallbackGasUsed());
-        assertLt(entropy.lastCallbackGasUsed(), uint256(CALLBACK_GAS_LIMIT) * 80 / 100);
+    function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
+        return IERC721Receiver.onERC721Received.selector;
     }
 
-    function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4 selector) {
-        selector = IERC721Receiver.onERC721Received.selector;
-    }
-
-    function _createDefaultRaffle(uint256 minimumTickets) internal returns (Raffle raffle) {
+    function _create(uint128 reserveEntries) internal returns (Raffle raffle) {
         uint256 tokenId = nextPrizeId++;
         prize.mint(sponsor, tokenId);
-        IRaffleFactory.CreateRaffleParams memory params = _validCreateParams(address(prize));
-        params.prizeTokenId = tokenId;
-        params.minimumTickets = minimumTickets;
+        raffle = _createWithPrize(address(prize), tokenId, reserveEntries);
+    }
+
+    function _createWithPrize(address prizeToken, uint256 tokenId, uint128 reserveEntries)
+        internal
+        returns (Raffle raffle)
+    {
+        IRaffleFactory.CreateRaffleParams memory params = IRaffleFactory.CreateRaffleParams({
+            sponsorRecipient: sponsor,
+            prizeToken: prizeToken,
+            prizeTokenId: tokenId,
+            reserveEntries: reserveEntries,
+            endTime: uint64(block.timestamp + 1 days)
+        });
         vm.prank(sponsor);
         raffle = Raffle(payable(factory.createRaffle(params)));
     }
 
-    function _validCreateParams(address prizeToken)
-        internal
-        view
-        returns (IRaffleFactory.CreateRaffleParams memory params)
-    {
+    function _validParams(address prizeToken) internal view returns (IRaffleFactory.CreateRaffleParams memory params) {
         params = IRaffleFactory.CreateRaffleParams({
+            sponsorRecipient: sponsor,
             prizeToken: prizeToken,
             prizeTokenId: nextPrizeId,
-            sponsorPrizeRecoveryRecipient: address(0),
-            ticketPrice: USDC,
-            minimumTickets: 100,
-            startTime: block.timestamp,
-            endTime: block.timestamp + 1 days,
-            metadataURI: "ipfs://raffle"
+            reserveEntries: 100,
+            endTime: uint64(block.timestamp + 1 days)
         });
     }
 
-    function _directParams() internal view returns (IRaffle.RaffleParams memory params) {
-        params = IRaffle.RaffleParams({
-            factory: address(this),
+    function _directInitParams() internal view returns (IRaffle.RaffleInitParams memory params) {
+        params = IRaffle.RaffleInitParams({
             sponsor: sponsor,
-            sponsorPrizeRecoveryRecipient: sponsor,
+            sponsorRecipient: sponsor,
             protocolTreasury: treasury,
-            quoteToken: address(quote),
-            entropy: address(entropy),
             prizeToken: address(prize),
             prizeTokenId: 1,
             raffleId: 1,
-            ticketPrice: USDC,
-            minimumTickets: 1,
-            startTime: block.timestamp,
-            endTime: block.timestamp + 1 days,
-            callbackGasLimit: CALLBACK_GAS_LIMIT,
-            metadataURI: "ipfs://raffle"
+            reserveEntries: 1,
+            endTime: uint64(block.timestamp + 1 days)
         });
     }
 
@@ -1098,25 +1087,60 @@ contract RaffleTest is Test, IERC721Receiver {
         factory.createRaffle(params);
     }
 
-    function _approveQuote(address account, Raffle raffle) internal {
-        vm.prank(account);
-        quote.approve(address(raffle), type(uint256).max);
+    function _expectInitializationRevert(Raffle raffle, IRaffle.RaffleInitParams memory params, bytes4 selector)
+        internal
+    {
+        vm.prank(address(factory));
+        vm.expectRevert(selector);
+        raffle.initialize(params);
     }
 
-    function _buy(Raffle raffle, address account, uint256 quantity) internal {
-        _approveQuote(account, raffle);
-        vm.prank(account);
-        raffle.buyTickets(account, quantity);
+    function _expectInitializationRevert(Raffle raffle, IRaffle.RaffleInitParams memory params, bytes memory reason)
+        internal
+    {
+        vm.prank(address(factory));
+        vm.expectRevert(reason);
+        raffle.initialize(params);
     }
 
-    function _request(Raffle raffle) internal returns (uint64 sequence) {
+    function _approve(address account, Raffle raffle, uint256 amount) internal {
+        vm.prank(account);
+        quote.approve(address(raffle), amount);
+    }
+
+    function _buy(Raffle raffle, address account, uint128 entries) internal returns (uint256 receiptId) {
+        _approve(account, raffle, type(uint256).max);
+        vm.prank(account);
+        receiptId = raffle.buyEntries(account, entries);
+    }
+
+    function _request(Raffle raffle) internal returns (uint256 requestId) {
         vm.warp(raffle.endTime());
-        vm.prank(outsider);
-        sequence = raffle.requestDraw{value: raffle.getEntropyFee()}();
+        requestId = _requestAtCurrentTime(raffle);
     }
 
-    function _resolve(Raffle raffle, bytes32 random) internal {
-        uint64 sequence = _request(raffle);
-        entropy.fulfill(sequence, random);
+    function _requestAtCurrentTime(Raffle raffle) internal returns (uint256 requestId) {
+        vm.prank(outsider);
+        requestId = raffle.requestDraw{ value: raffle.getVrfRequestPrice() }();
+    }
+
+    function _resolve(Raffle raffle, uint256 randomWord) internal {
+        uint256 requestId = _request(raffle);
+        vrfWrapper.fulfill(requestId, randomWord);
+    }
+
+    function _assertRange(Raffle raffle, uint256 ticketId, uint128 first, uint128 last) internal view {
+        (uint128 actualFirst, uint128 actualLast) = raffle.ticketRange(ticketId);
+        assertEq(actualFirst, first);
+        assertEq(actualLast, last);
+    }
+
+    function _single(uint256 receiptId) internal pure returns (uint256[] memory ids) {
+        ids = new uint256[](1);
+        ids[0] = receiptId;
+    }
+
+    function _absoluteDifference(uint256 left, uint256 right) internal pure returns (uint256 difference) {
+        difference = left > right ? left - right : right - left;
     }
 }

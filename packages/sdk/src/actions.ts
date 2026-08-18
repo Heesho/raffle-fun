@@ -2,8 +2,11 @@ import type { Account, Address, Hash, PublicClient, WalletClient } from "viem";
 
 import { raffleAbi, raffleFactoryAbi } from "./abis/generated.js";
 import {
-  MAX_REFUND_REDEMPTION_BATCH_SIZE,
-  MAX_TICKETS_PER_PURCHASE,
+  MAX_REFUND_TICKET_BATCH_SIZE,
+  MAX_UINT128,
+  MAX_UINT64,
+  validateEntryCount,
+  validateTicketId,
 } from "./math/economics.js";
 import type { CreateRaffleParams } from "./types/protocol.js";
 
@@ -18,6 +21,7 @@ export async function createRaffle(
   factory: Address,
   params: CreateRaffleParams,
 ): Promise<Hash> {
+  validateCreateRaffleParams(params);
   const { request } = await context.publicClient.simulateContract({
     account: context.account,
     address: factory,
@@ -28,43 +32,45 @@ export async function createRaffle(
   return context.walletClient.writeContract(request);
 }
 
-export async function buyTickets(
+export async function buyEntries(
   context: ActionContext,
   raffle: Address,
   recipient: Address,
-  quantity: bigint,
+  entryCount: bigint,
 ): Promise<Hash> {
-  validatePurchaseQuantity(quantity);
+  validateEntryCount(entryCount);
   const { request } = await context.publicClient.simulateContract({
     account: context.account,
     address: raffle,
     abi: raffleAbi,
-    functionName: "buyTickets",
-    args: [recipient, quantity],
+    functionName: "buyEntries",
+    args: [recipient, entryCount],
   });
   return context.walletClient.writeContract(request);
-}
-
-/** Rejects ticket quantities outside the contract's per-purchase bounds before any RPC call. */
-export function validatePurchaseQuantity(quantity: bigint): void {
-  if (quantity <= 0n || quantity > MAX_TICKETS_PER_PURCHASE) {
-    throw new RangeError(
-      `quantity must be between 1 and ${MAX_TICKETS_PER_PURCHASE.toString()}`,
-    );
-  }
 }
 
 export async function requestDraw(
   context: ActionContext,
   raffle: Address,
-  entropyFee: bigint,
 ): Promise<Hash> {
+  const estimatedFees = await context.publicClient.estimateFeesPerGas({
+    chain: context.publicClient.chain,
+    type: "eip1559",
+  });
+  const requestGasPriceWei = estimatedFees.maxFeePerGas;
+  const vrfRequestPrice = await context.publicClient.readContract({
+    address: raffle,
+    abi: raffleAbi,
+    functionName: "estimateVrfRequestPrice",
+    args: [requestGasPriceWei],
+  });
   const { request } = await context.publicClient.simulateContract({
     account: context.account,
     address: raffle,
     abi: raffleAbi,
     functionName: "requestDraw",
-    value: entropyFee,
+    value: vrfRequestPrice,
+    maxFeePerGas: requestGasPriceWei,
   });
   return context.walletClient.writeContract(request);
 }
@@ -82,24 +88,39 @@ export async function enableRefunds(
   return context.walletClient.writeContract(request);
 }
 
-export async function redeemRefundTickets(
+export async function refundTickets(
   context: ActionContext,
   raffle: Address,
   ticketIds: readonly bigint[],
-  to: Address,
 ): Promise<Hash> {
   validateRefundTicketIds(ticketIds);
   const { request } = await context.publicClient.simulateContract({
     account: context.account,
     address: raffle,
     abi: raffleAbi,
-    functionName: "redeemRefundTickets",
-    args: [ticketIds, to],
+    functionName: "refundTickets",
+    args: [ticketIds],
   });
   return context.walletClient.writeContract(request);
 }
 
-export async function closeEmptyRaffle(
+export async function settleWinningTicket(
+  context: ActionContext,
+  raffle: Address,
+  ticketId: bigint,
+): Promise<Hash> {
+  validateTicketId(ticketId);
+  const { request } = await context.publicClient.simulateContract({
+    account: context.account,
+    address: raffle,
+    abi: raffleAbi,
+    functionName: "settleWinningTicket",
+    args: [ticketId],
+  });
+  return context.walletClient.writeContract(request);
+}
+
+export async function releaseSponsorPrize(
   context: ActionContext,
   raffle: Address,
 ): Promise<Hash> {
@@ -107,92 +128,68 @@ export async function closeEmptyRaffle(
     account: context.account,
     address: raffle,
     abi: raffleAbi,
-    functionName: "closeEmptyRaffle",
+    functionName: "releaseSponsorPrize",
   });
   return context.walletClient.writeContract(request);
 }
 
-export async function redeemWinningTicket(
+export async function releaseSponsorProceeds(
   context: ActionContext,
   raffle: Address,
-  to: Address,
 ): Promise<Hash> {
   const { request } = await context.publicClient.simulateContract({
     account: context.account,
     address: raffle,
     abi: raffleAbi,
-    functionName: "redeemWinningTicket",
-    args: [to],
+    functionName: "releaseSponsorProceeds",
   });
   return context.walletClient.writeContract(request);
 }
 
-export async function claimSponsorPrize(
+export async function releaseProtocolFees(
   context: ActionContext,
   raffle: Address,
-  to: Address,
 ): Promise<Hash> {
   const { request } = await context.publicClient.simulateContract({
     account: context.account,
     address: raffle,
     abi: raffleAbi,
-    functionName: "claimSponsorPrize",
-    args: [to],
+    functionName: "releaseProtocolFees",
   });
   return context.walletClient.writeContract(request);
 }
 
-export async function claimQuote(
-  context: ActionContext,
-  raffle: Address,
-  to: Address,
-): Promise<Hash> {
-  const { request } = await context.publicClient.simulateContract({
-    account: context.account,
-    address: raffle,
-    abi: raffleAbi,
-    functionName: "claimQuote",
-    args: [to],
-  });
-  return context.walletClient.writeContract(request);
-}
-
-export async function claimQuoteFor(
-  context: ActionContext,
-  raffle: Address,
-  account: Address,
-): Promise<Hash> {
-  const { request } = await context.publicClient.simulateContract({
-    account: context.account,
-    address: raffle,
-    abi: raffleAbi,
-    functionName: "claimQuoteFor",
-    args: [account],
-  });
-  return context.walletClient.writeContract(request);
+export function validateCreateRaffleParams(params: CreateRaffleParams): void {
+  if (params.prizeTokenId < 0n || params.prizeTokenId > (1n << 256n) - 1n) {
+    throw new RangeError("prizeTokenId must fit uint256");
+  }
+  if (params.reserveEntries <= 0n || params.reserveEntries > MAX_UINT128) {
+    throw new RangeError("reserveEntries must be between 1 and uint128 max");
+  }
+  if (params.endTime <= 0n || params.endTime > MAX_UINT64) {
+    throw new RangeError("endTime must be between 1 and uint64 max");
+  }
 }
 
 /**
  * Rejects refund batches that cannot succeed atomically onchain.
  *
- * Duplicate bearer-ticket IDs would make the second burn revert, so detecting them before simulation produces a
- * deterministic SDK error and avoids an unnecessary RPC request.
+ * Duplicate ticket IDs would make the second burn revert. Ticket IDs are
+ * sequential ERC-721 identifiers; their entry ranges live in contract storage.
  */
 export function validateRefundTicketIds(ticketIds: readonly bigint[]): void {
   if (
     ticketIds.length === 0 ||
-    BigInt(ticketIds.length) > MAX_REFUND_REDEMPTION_BATCH_SIZE
+    BigInt(ticketIds.length) > MAX_REFUND_TICKET_BATCH_SIZE
   ) {
     throw new RangeError(
-      `refundTicketIds must contain between 1 and ${MAX_REFUND_REDEMPTION_BATCH_SIZE.toString()} entries`,
+      `ticketIds must contain between 1 and ${MAX_REFUND_TICKET_BATCH_SIZE.toString()} tickets`,
     );
   }
 
   const seen = new Set<bigint>();
   for (const ticketId of ticketIds) {
-    if (ticketId <= 0n) {
-      throw new RangeError("refund ticket IDs must be positive");
-    }
+    validateTicketId(ticketId);
     if (seen.has(ticketId)) {
       throw new RangeError(
         `duplicate refund ticket ID: ${ticketId.toString()}`,
@@ -201,3 +198,5 @@ export function validateRefundTicketIds(ticketIds: readonly bigint[]): void {
     seen.add(ticketId);
   }
 }
+
+export { validateEntryCount } from "./math/economics.js";

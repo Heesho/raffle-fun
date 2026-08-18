@@ -1,60 +1,122 @@
-# Current-Commit Residual Risks and Release Blockers
+# Current residual risks and release blockers
 
-This ledger applies to source commit `5772e54ba89c06646815ed52a881cd8940f094ca` and the 2026-08-16 internal campaign worktree. It is intentionally non-conclusive: internal testing cannot establish safety, an audit, formal verification, trustlessness, or production readiness.
+This ledger applies to the uncommitted Ethereum v1 candidate. It distinguishes risks
+the contract deliberately contains from work still required before mainnet. Passing
+internal tests does not make any item safe for unlimited value.
 
-## Unresolved external trust assumptions
+## Protocol and dependency risks
 
-1. **Entropy selective reveal (High):** a provider that learns the result before reveal can withhold an unfavorable result and permit full refunds. Simplified maximum option advantage is `G/4` at 50% ticket ownership. Authentication, ticket locks, and timeout tests do not solve it.
-2. **Entropy and Base liveness:** provider, sequencer, RPC, or network censorship can delay request/callback/finalization. Timeouts preserve buyer recovery paths but not prompt or unbiased resolution.
-3. **Circle USDC policy:** proxy upgrades, pauses, freezes, and sender/receiver blocklists can suspend purchases, claims, or refunds. Exact deltas preserve accounting when calls revert; they do not guarantee availability.
-4. **Prize behavior:** an ERC-721 can pause, freeze, burn, upgrade, lie about ownership/interface support, or become incapable after escrow. Delayed proceeds and refunds protect quote buyers, but cannot guarantee prize delivery/recovery.
-5. **Key/counterparty capability:** Factory owner key loss while paused can permanently stop new creation. Treasury/recovery accounts or arbitrary ticket holders can lose execution capability. Two-step ownership and destination checks reduce, not remove, this risk.
+### VRF availability and configuration
 
-## Accepted design limitations
+The configured Chainlink VRF v2.5 wrapper and coordinator are external dependencies.
+An outage, configuration change, gas-pricing change, coordinator failure, or prolonged
+censorship can prevent a callback. The contract cannot switch providers or raise its
+immutable 300,000 callback limit. Buyers can enable full refunds two days after an
+accepted request, but that recovers entry value rather than producing the intended
+draw. A callback and timeout finalization remain a first-included transaction race at
+and after the deadline.
 
-- Cross-Factory raffle-ticket prizes and other dynamically frozen ERC-721s can become stranded. Buyer quote funds remain refundable after the NFT timeout.
-- Future code-less and arbitrary incapable destinations cannot be rejected reliably. Bearer holders are responsible for destination capability.
-- Losing tickets survive successful settlement as transferable souvenirs; UIs/markets must not imply continuing economic value.
-- Direct quote donations, forced native currency, and unrelated forced NFTs are unaccounted and have no rescue function.
-- Lifecycle transitions require transactions; deadlines do not execute themselves. First valid transaction at callback/NFT timeout wins.
-- Modulo bias is nonzero for counts not dividing `2^256`, but the absolute per-ticket probability difference is exactly `2^-256`.
-- Factory creation uses ordinary `CREATE`; address prediction depends on nonce and is not a supported guarantee.
-- Lens/subgraph/UI availability and freshness are not authorization.
+Mitigation before release: independently verify the exact wrapper/coordinator,
+supported confirmation range, pricing behavior, callback gas margin, and operational
+status on release day; monitor every request and deadline; document who funds and
+triggers requests.
 
-## Unchecked release blockers
+### Chain reorganization and transaction ordering
 
-- [ ] Rebase/reconcile the campaign changes onto the now-four-commit-newer `origin/main` and rerun affected documentation, formatting, and aggregate gates; this evidence reviews `5772e54`, not remote `d293735`.
-- [ ] Obtain a fresh independent external review of the exact release commit and resolved deployment configuration.
-- [ ] Decide, disclose, and operationally mitigate/accept Pyth provider selective reveal; pin and monitor the provider.
-- [ ] Expand the completed 38/38 current-source sample to event fields, every status/deadline comparison, interaction-order changes, and broad Gambit operators when available.
-- [ ] Restore/install the repository's Halmos-equivalent setup; record fresh path counts, feasible success paths, and vacuity warnings.
-- [ ] Add durable external-fuzzer reachability counters for cash, NFT, missed request, callback timeout, and NFT-delivery timeout branches.
-- [ ] Strengthen deployment validation for expected runtime identity, exact block hash/staleness, proxy implementation identity, and Lens binding; retain the passing pending-ownership, treasury, pause, and decimals policy checks.
-- [ ] Decide whether to index `EntropyCallbackIgnored`; add subgraph mapping tests or explicitly designate raw logs as the source.
-- [ ] Publish a versioned current public spec/whitepaper; retain old reports with their reviewed commits and superseded labels.
-- [ ] Resolve pre-existing formatting gates (`pnpm format:check`, `forge fmt --check`) without rewriting historical evidence deceptively.
-- [ ] Review the remaining Low `elliptic <=6.6.1` advisory when upstream publishes a patched version or dependency path changes.
-- [ ] Make `pnpm contracts:slither` reliably find the pinned executable in CI; repair the Semgrep X.509 store and Aderyn macOS crash if those tools remain required gates.
-- [ ] Re-run all gates on a clean final release commit and verify generated artifacts/ABIs have no diff.
-- [ ] Repeat size gate: Factory currently has only 309 runtime bytes of EIP-170 margin.
-- [ ] Perform deployment rehearsal and rollback/monitoring/keeper runbooks without broadcasting from this campaign.
+Thirty confirmations materially reduces ordinary reorganization risk but does not
+create a mathematical finality guarantee. Ethereum validators/builders also determine
+transaction ordering near sale and timeout boundaries. Purchases, draw requests,
+callbacks, and refund finalizers follow exact timestamp gates and first-included
+semantics.
 
-## Evidence limitations
+### USDC issuer and proxy controls
 
-- Current tests cover exact boundaries, malicious token/NFT behaviors, multi-Raffle isolation, and terminal drains extensively, but finite tests do not enumerate all EVM states.
-- The independent Python model is abstract. It does not import production formulas, but it is neither an EVM-equivalent interpreter nor a formal proof.
-- Slither returned zero detector findings; Aderyn findings were manually dispositioned, then the tool crashed; Semgrep did not start. Static tools have false negatives/positives.
-- Pinned fork observations are tied to exact blocks. Latest-head observations are ephemeral and may change after this report.
-- External fuzzing exceeded 100,000 calls per cash/NFT harness and Medusa exceeded 500,000, but retained corpus/coverage does not prove semantic branch completeness.
-- Compiler differentials show consistent tests/layout under the tested configurations only; alternative settings are not endorsed for deployment.
+The production design assumes the intended six-decimal USDC deployment transfers
+exactly and does not rebase. Circle can upgrade, pause, or blocklist through external
+issuer controls. A pause or blocklist can leave individual payouts unavailable.
+Exact-balance checks prevent silent accounting loss but cannot restore liveness. A
+consistently lying or malicious token is unsupported.
 
-## Owner-facing decisions
+### Prize behavior
 
-1. **Randomness:** prefer a reviewed/pinned provider plus monitoring immediately; separately evaluate a non-selectively-abortable composed source or alternative RNG. Do not market the current design as trustless.
-2. **Prize eligibility:** document nested raffle tickets, upgradeable/freezeable NFTs, and arbitrary malicious ERC-721s as unsupported/high risk. A universal on-chain capability test is impossible.
-3. **Operational finalization:** operate public monitoring/keepers for request, callback, and NFT-delivery deadlines while preserving permissionless calls.
-4. **Release discipline:** prioritize the mutation/symbolic/deployment/off-chain gaps above new protocol features. Any production Solidity fix needs a deterministic red regression and another full fuzz/invariant/size/fork/component run.
+The factory checks ERC-721 interface support, exact escrow, and ownership
+postconditions, but it cannot prove future behavior. Upgradeable, pausable,
+transfer-restricted, burned, or dishonest prize contracts can block winner delivery.
+A valid random result is final, so a broken prize can block settlement and keep the
+quote pot escrowed indefinitely. A malicious NFT able to lie consistently about
+ownership is outside the supported model. Prize admission and collection review are
+therefore material launch controls, not optional metadata checks.
 
-## Production-change statement
+Winner delivery uses unsafe ERC-721 `transferFrom` intentionally so a contract ticket
+owner cannot veto fixed-owner delivery. A winner contract that cannot later transfer
+the NFT may strand its own prize. Frontends must warn contract recipients before a
+ticket is acquired.
 
-No production Solidity changed in this campaign. The only fixed items are test instrumentation/reachability, SDK local validation, and a dependency resolution. Consequently there is no claim that an on-chain defect was patched.
+### Credential-owner reachability
+
+Cash and NFT winner settlement are permissionless and fixed to the current ticket owner,
+but refund redemption is owner-only because burning the bearer credential must be
+authorized by that owner. A ticket held by a destroyed, incapable, or inaccessible
+contract can therefore leave its refund permanently unclaimed. The protocol cannot
+infer future code or key availability.
+
+### No economic value cap
+
+The contracts intentionally impose no dollar-denominated or gross-sales ceiling.
+That avoids artificial protocol limits but means exposure can grow far beyond the
+internal assurance level. The `uint128` entry domain is only a machine bound, not a
+risk control. If launch governance requires a cap, it must be implemented onchain
+before the final audit; a frontend-only cap is bypassable.
+
+### Immutable implementation
+
+Each raffle clone is non-upgradeable. This removes upgrade-admin seizure risk but also
+means a discovered bug cannot be patched in place. The factory can pause only new
+creation; existing raffles must finish under their deployed code. Incident response is
+frontend warnings, monitoring, voluntary user behavior, and migration to a new factory.
+
+### Modulo mapping
+
+`(randomWord % totalEntries) + 1` has mathematically nonzero modulo bias unless the
+entry count divides `2^256`. The absolute per-entry probability difference is
+`2^-256`, negligible for realistic entry counts, but the design should not be marketed
+as perfectly uniform.
+
+### Irrecoverable surplus and unrelated assets
+
+Forced native currency, excess quote donations, and unrelated NFTs sent with unsafe
+transfer paths have no rescue mechanism. They are excluded from liabilities. This is
+intentional surface-area reduction and should be disclosed.
+
+## Operational and integration risks
+
+- The factory owner and protocol treasury must be independently reviewed contract
+  wallets with tested signer, recovery, module, and monitoring policies.
+- Deployment records, source verification, runtime hashes, owner acceptance, and
+  official dependency addresses must be checked against a finalized release-day block.
+- The subgraph is eventually consistent and non-authoritative. Ticket ownership and
+  every write must be read/simulated against Ethereum.
+- Large values must remain `bigint` end to end. A JavaScript `number` conversion can
+  silently corrupt uncapped `uint128` counts.
+- The old generated whitepaper is a historical Base/Pyth design and must not be
+  published as the current protocol.
+- Raffles and prize promotions can trigger gaming, lottery, consumer, sanctions, tax,
+  privacy, and advertising obligations that differ by jurisdiction.
+
+## Mainnet blockers
+
+1. Create and freeze the exact final source commit and lockfile.
+2. Rerun every build, test, invariant, fuzz, static, ABI, deployment, SDK, subgraph,
+   web, fork, gas, and dependency gate from a clean checkout of that SHA.
+3. Obtain an independent audit of that exact commit and resolve every Critical/High
+   and supported-asset Medium finding.
+4. Complete a monitored Sepolia soak across NFT success, cash success, empty raffle,
+   the callback timeout, both deadline orderings, weighted partial/full refunds, contract
+   ticket owners, and failed/retried prize delivery.
+5. Deploy and drill monitoring, incident response, frontend-disable, and new-factory
+   migration procedures.
+6. Complete legal review and a written value-limit/go-no-go decision.
+7. Verify production owner/treasury wallets, Chainlink/USDC dependencies, source,
+   runtime bytecode, and signed deployment record before enabling writes.
+
+Until those items are complete, the candidate is audit-ready—not mainnet-ready.

@@ -4,7 +4,7 @@ import { erc20Abi, type Address } from "viem";
 import { useReadContracts } from "wagmi";
 
 import { isDemoMode } from "@/lib/demo";
-import { SANDBOX_WETH } from "@/lib/sandbox/adapter";
+import { SANDBOX_USDC } from "@/lib/sandbox/adapter";
 
 export interface TokenMetadata {
   readonly symbol: string;
@@ -13,8 +13,8 @@ export interface TokenMetadata {
 
 export function useTokenMetadata(token: Address | undefined): TokenMetadata {
   const demo =
-    isDemoMode() && token?.toLowerCase() === SANDBOX_WETH.address
-      ? SANDBOX_WETH
+    isDemoMode() && token?.toLowerCase() === SANDBOX_USDC.address
+      ? SANDBOX_USDC
       : undefined;
   const query = useReadContracts({
     allowFailure: true,
@@ -40,11 +40,11 @@ export function useTokenMetadata(token: Address | undefined): TokenMetadata {
       symbolResult?.status === "success" &&
       typeof symbolResult.result === "string"
         ? symbolResult.result.slice(0, 16)
-        : "ERC20",
+        : "USDC",
     decimals:
       decimalsResult?.status === "success" &&
       typeof decimalsResult.result === "number"
         ? decimalsResult.result
-        : undefined,
+        : 6,
   };
 }

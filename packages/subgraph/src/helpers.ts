@@ -23,8 +23,7 @@ export function getOrCreateProtocol(factory: Address): Protocol {
     protocol.nftWonCount = BigInt.zero();
     protocol.cashWonCount = BigInt.zero();
     protocol.refundingCount = BigInt.zero();
-    protocol.closedCount = BigInt.zero();
-    protocol.totalTickets = BigInt.zero();
+    protocol.totalEntries = BigInt.zero();
     protocol.save();
   }
   return protocol;
@@ -34,7 +33,7 @@ export function getOrCreateAccount(address: Address): Account {
   let account = Account.load(address);
   if (account == null) {
     account = new Account(address);
-    account.ticketsBought = BigInt.zero();
+    account.entriesBought = BigInt.zero();
     account.ticketsCurrentlyOwned = BigInt.zero();
     account.rafflesSponsored = BigInt.zero();
     account.save();
@@ -97,7 +96,7 @@ export function getOrCreateRaffleAccount(
     participation = new RaffleAccount(id);
     participation.raffle = raffle.id;
     participation.account = address;
-    participation.ticketsBought = BigInt.zero();
+    participation.entriesBought = BigInt.zero();
     participation.ticketsCurrentlyOwned = BigInt.zero();
     participation.grossSpent = BigInt.zero();
     participation.quoteClaimed = BigInt.zero();
@@ -112,33 +111,32 @@ export function eventId(event: ethereum.Event): string {
   return event.transaction.hash.toHexString() + "-" + event.logIndex.toString();
 }
 
-export function ticketId(raffle: Bytes, tokenId: BigInt): string {
-  return raffle.toHexString() + "-" + tokenId.toString();
+export function ticketEntityId(raffle: Bytes, ticketId: BigInt): string {
+  return raffle.toHexString() + "-" + ticketId.toString();
 }
 
 export function updatePurchaseDayData(
   raffle: Raffle,
   event: ethereum.Event,
-  tickets: BigInt,
+  entries: BigInt,
   gross: BigInt,
 ): void {
   const day = event.block.timestamp.div(SECONDS_PER_DAY);
   const dayStart = day.times(SECONDS_PER_DAY);
-  const protocolId = raffle.protocol;
   const protocolDayId = raffle.quoteTokenStats + "-" + day.toString();
   let protocolDay = ProtocolDayData.load(protocolDayId);
   if (protocolDay == null) {
     protocolDay = new ProtocolDayData(protocolDayId);
-    protocolDay.protocol = protocolId;
+    protocolDay.protocol = raffle.protocol;
     protocolDay.quoteToken = raffle.quoteTokenStats;
     protocolDay.dayStart = dayStart;
-    protocolDay.tickets = BigInt.zero();
+    protocolDay.entries = BigInt.zero();
     protocolDay.grossVolume = BigInt.zero();
     protocolDay.settledVolume = BigInt.zero();
     protocolDay.protocolFees = BigInt.zero();
     protocolDay.resolutions = BigInt.zero();
   }
-  protocolDay.tickets = protocolDay.tickets.plus(tickets);
+  protocolDay.entries = protocolDay.entries.plus(entries);
   protocolDay.grossVolume = protocolDay.grossVolume.plus(gross);
   protocolDay.save();
 
@@ -148,10 +146,10 @@ export function updatePurchaseDayData(
     raffleDay = new RaffleDayData(raffleDayId);
     raffleDay.raffle = raffle.id;
     raffleDay.dayStart = dayStart;
-    raffleDay.tickets = BigInt.zero();
+    raffleDay.entries = BigInt.zero();
     raffleDay.grossVolume = BigInt.zero();
   }
-  raffleDay.tickets = raffleDay.tickets.plus(tickets);
+  raffleDay.entries = raffleDay.entries.plus(entries);
   raffleDay.grossVolume = raffleDay.grossVolume.plus(gross);
   raffleDay.save();
 }

@@ -1,27 +1,27 @@
-import { thresholdScale } from "@/lib/economics";
+import { reserveScale } from "@/lib/economics";
 import { Trophy } from "lucide-react";
 
 /**
- * Progress toward the NFT threshold.
+ * Progress toward the NFT reserve.
  *
- * The track keeps headroom past the threshold so the flip point reads as a
+ * The track keeps headroom past the reserve so the flip point reads as a
  * line the fill is travelling towards, and any overshoot stays visible as a
  * distinct segment instead of a bar that is simply "full".
  */
 export function ThresholdBar({
   total,
-  minimum,
+  reserve,
   size = "sm",
   showLabel = false,
 }: {
   readonly total: bigint;
-  readonly minimum: bigint;
+  readonly reserve: bigint;
   readonly size?: "sm" | "lg";
   readonly showLabel?: boolean;
 }) {
-  const { fillPercent, markerPercent, overshootPercent, met } = thresholdScale(
+  const { fillPercent, markerPercent, overshootPercent, met } = reserveScale(
     total,
-    minimum,
+    reserve,
   );
 
   const large = size === "lg";
@@ -30,14 +30,14 @@ export function ThresholdBar({
     <div className={showLabel ? "pt-7" : undefined}>
       <div className="relative">
         <div
-          aria-label={`${total} of ${minimum} tickets toward the NFT threshold`}
-          aria-valuemax={Number(total > minimum ? total : minimum)}
+          aria-label={`${total.toString()} of ${reserve.toString()} entries toward the NFT reserve`}
+          aria-valuemax={100}
           aria-valuemin={0}
-          aria-valuenow={Number(total)}
+          aria-valuenow={Math.min(100, fillPercent)}
           className={`progress-track ${large ? "!h-4" : ""}`}
           role="progressbar"
         >
-          {/* Sales up to the threshold. */}
+          {/* Sales up to the reserve. */}
           <div
             className="progress-fill"
             data-met={met}
@@ -79,7 +79,7 @@ export function ThresholdBar({
                 <Trophy aria-hidden size={11} /> NFT unlocked
               </span>
             ) : (
-              `NFT at ${minimum.toString()}`
+              `NFT at ${reserve.toString()}`
             )}
           </span>
         ) : null}

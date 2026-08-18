@@ -14,7 +14,7 @@ import { type Address } from "viem";
 
 import { useTokenMetadata } from "@/hooks/use-token-metadata";
 import { isDemoMode } from "@/lib/demo";
-import { SANDBOX_WETH, toIndexedActivity } from "@/lib/sandbox/adapter";
+import { SANDBOX_USDC, toIndexedActivity } from "@/lib/sandbox/adapter";
 import { useSandbox } from "@/lib/sandbox/store";
 import { formatDateTime, formatTokenAmount, shortAddress } from "@/lib/format";
 import { explorerTransactionUrl } from "@/lib/protocol";
@@ -26,7 +26,7 @@ import {
 
 const activityMeta = {
   PURCHASE: {
-    label: "Tickets purchased",
+    label: "Entries purchased",
     icon: Ticket,
     tint: "var(--pink-wash)",
     ink: "var(--pink-deep)",
@@ -132,13 +132,13 @@ export function ActivityFeed() {
 function ActivityRow({ activity }: { readonly activity: IndexedActivity }) {
   const token = activity.quoteToken as Address | null;
   const onchainMetadata = useTokenMetadata(
-    token?.toLowerCase() === SANDBOX_WETH.address
+    token?.toLowerCase() === SANDBOX_USDC.address
       ? undefined
       : (token ?? undefined),
   );
   const tokenMetadata =
-    token?.toLowerCase() === SANDBOX_WETH.address
-      ? SANDBOX_WETH
+    token?.toLowerCase() === SANDBOX_USDC.address
+      ? SANDBOX_USDC
       : onchainMetadata;
   const meta = activityMeta[activity.kind];
   const Icon = meta.icon;

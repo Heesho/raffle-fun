@@ -15,7 +15,6 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
   decodeEventLog,
-  erc20Abi,
   erc721Abi,
   isAddress,
   type Address,
@@ -25,43 +24,44 @@ import {
   useAccount,
   usePublicClient,
   useReadContract,
-  useReadContracts,
   useWalletClient,
 } from "wagmi";
 import { z } from "zod";
 
 import {
+  calculateResolutionAmounts,
   createRaffle,
-  formatQuoteAmount,
+  ENTRY_PRICE,
   MAX_SALE_DURATION_SECONDS,
-  MAX_START_DELAY_SECONDS,
-  parseQuoteAmount,
+  MAX_UINT128,
   raffleFactoryAbi,
   type ActionContext,
 } from "@raffle-fun/sdk";
 
 import { WalletButton } from "@/components/wallet-button";
+import { formatTokenAmount } from "@/lib/format";
+import { fetchSafeNftMetadata, type SafeNftMetadata } from "@/lib/nft-metadata";
 import {
   configuredChain,
   explorerTransactionUrl,
   protocolDeployment,
 } from "@/lib/protocol";
-import { fetchSafeNftMetadata, type SafeNftMetadata } from "@/lib/nft-metadata";
 
 const formSchema = z.object({
+  sponsorRecipient: z
+    .string()
+    .refine(
+      (value) => value === "" || isAddress(value),
+      "Enter a valid sponsor payment address.",
+    ),
   prizeToken: z.string().refine(isAddress, "Enter a valid ERC721 address."),
   prizeTokenId: z
     .string()
     .regex(/^(0|[1-9]\d*)$/, "Use a nonnegative token ID."),
-  ticketPrice: z
+  reserveEntries: z
     .string()
-    .regex(/^(?:0|[1-9]\d*)(?:\.\d+)?$/, "Enter a positive token amount."),
-  minimumTickets: z
-    .string()
-    .regex(/^[1-9]\d*$/, "Minimum tickets must be at least one."),
-  startTime: z.string().min(1, "Choose a start time."),
+    .regex(/^[1-9]\d*$/, "Reserve entries must be at least one."),
   endTime: z.string().min(1, "Choose an end time."),
-  metadataURI: z.string().max(2_048, "Metadata URI is too long."),
 });
 
 type FormField = keyof z.infer<typeof formSchema>;
@@ -71,12 +71,6 @@ type ProgressState =
   | { readonly kind: "pending"; readonly message: string }
   | { readonly kind: "success"; readonly hash: Hash; readonly raffle?: Address }
   | { readonly kind: "error"; readonly message: string };
-
-interface QuoteTokenOption {
-  readonly address: Address;
-  readonly symbol: string;
-  readonly decimals: number;
-}
 
 function initialDate(hoursFromNow: number): string {
   const date = new Date(Date.now() + hoursFromNow * 3_600_000);
@@ -89,16 +83,12 @@ export function CreateRaffleForm() {
   const publicClient = usePublicClient();
   const wallet = useWalletClient();
   const [form, setForm] = useState({
+    sponsorRecipient: "",
     prizeToken: "",
     prizeTokenId: "",
-    ticketPrice: "1",
-    minimumTickets: "100",
-    startTime: initialDate(1),
+    reserveEntries: "100000",
     endTime: initialDate(24 * 7),
-    metadataURI: "",
   });
-  // Validation is only surfaced once a field has been visited or the sponsor
-  // has tried to submit. Showing every rule up front reads as failure.
   const [touched, setTouched] = useState<ReadonlySet<FormField>>(new Set());
   const [attempted, setAttempted] = useState(false);
   const [metadata, setMetadata] = useState<SafeNftMetadata>();
@@ -110,88 +100,34 @@ export function CreateRaffleForm() {
   const [approved, setApproved] = useState(false);
 
   const deployed = protocolDeployment !== undefined;
-
-  const quoteTokenAddressQuery = useReadContract({
+  const quoteTokenQuery = useReadContract({
     address: protocolDeployment?.raffleFactory,
     abi: raffleFactoryAbi,
     functionName: "quoteToken",
-    query: { enabled: deployed, staleTime: 30_000 },
+    query: { enabled: deployed, staleTime: 300_000 },
   });
-  const quoteTokenAddress =
-    typeof quoteTokenAddressQuery.data === "string" &&
-    isAddress(quoteTokenAddressQuery.data)
-      ? quoteTokenAddressQuery.data
+  const quoteToken =
+    typeof quoteTokenQuery.data === "string" && isAddress(quoteTokenQuery.data)
+      ? quoteTokenQuery.data
       : undefined;
-  const quoteTokenDetailsQuery = useReadContracts({
-    allowFailure: true,
-    contracts:
-      quoteTokenAddress === undefined
-        ? []
-        : [
-            {
-              address: quoteTokenAddress,
-              abi: erc20Abi,
-              functionName: "symbol" as const,
-            },
-            {
-              address: quoteTokenAddress,
-              abi: erc20Abi,
-              functionName: "decimals" as const,
-            },
-          ],
-    query: {
-      enabled: quoteTokenAddress !== undefined,
-      staleTime: 30_000,
-    },
-  });
-  const selectedQuoteToken = useMemo<QuoteTokenOption | undefined>(() => {
-    if (quoteTokenAddress === undefined) return undefined;
-    const details = quoteTokenDetailsQuery.data ?? [];
-    const symbol = details[0];
-    const decimals = details[1];
-    if (decimals?.status !== "success" || typeof decimals.result !== "number") {
-      return undefined;
-    }
-    return {
-      address: quoteTokenAddress,
-      symbol:
-        symbol?.status === "success" && typeof symbol.result === "string"
-          ? symbol.result.slice(0, 16)
-          : `${quoteTokenAddress.slice(0, 6)}…${quoteTokenAddress.slice(-4)}`,
-      decimals: decimals.result,
-    };
-  }, [quoteTokenAddress, quoteTokenDetailsQuery.data]);
+
   const parsed = useMemo(
     () =>
       formSchema
         .superRefine((value, context) => {
-          if (selectedQuoteToken === undefined) {
-            context.addIssue({
-              code: "custom",
-              path: ["ticketPrice"],
-              message: "The factory USDC configuration is not readable.",
-            });
-            return;
-          }
-          try {
-            if (
-              parseQuoteAmount(
-                value.ticketPrice,
-                selectedQuoteToken.decimals,
-              ) <= 0n
-            ) {
-              throw new Error("zero price");
+          if (/^[1-9]\d*$/.test(value.reserveEntries)) {
+            const reserve = BigInt(value.reserveEntries);
+            if (reserve > MAX_UINT128) {
+              context.addIssue({
+                code: "custom",
+                path: ["reserveEntries"],
+                message: "Reserve entries must fit uint128.",
+              });
             }
-          } catch {
-            context.addIssue({
-              code: "custom",
-              path: ["ticketPrice"],
-              message: `Enter a positive ${selectedQuoteToken.symbol} amount with at most ${selectedQuoteToken.decimals} decimals.`,
-            });
           }
         })
         .safeParse(form),
-    [form, selectedQuoteToken],
+    [form],
   );
 
   const issues = useMemo(() => {
@@ -216,6 +152,13 @@ export function CreateRaffleForm() {
       prizeToken: parsed.data.prizeToken as Address,
       prizeTokenId: BigInt(parsed.data.prizeTokenId),
     };
+  }, [parsed]);
+  const reserveEconomics = useMemo(() => {
+    if (!parsed.success) return undefined;
+    return calculateResolutionAmounts(
+      BigInt(parsed.data.reserveEntries) * ENTRY_PRICE,
+      true,
+    );
   }, [parsed]);
 
   function update(key: FormField, value: string) {
@@ -327,8 +270,7 @@ export function CreateRaffleForm() {
       wallet.data === undefined ||
       address === undefined ||
       protocolDeployment === undefined ||
-      target === undefined ||
-      selectedQuoteToken === undefined
+      target === undefined
     ) {
       setProgress({
         kind: "error",
@@ -374,23 +316,15 @@ export function CreateRaffleForm() {
       ) {
         throw new Error("Approve the factory to escrow this NFT first.");
       }
-      const startTime = BigInt(
-        Math.floor(new Date(parsed.data.startTime).getTime() / 1000),
-      );
+
       const endTime = BigInt(
-        Math.floor(new Date(parsed.data.endTime).getTime() / 1000),
+        Math.floor(new Date(parsed.data.endTime).getTime() / 1_000),
       );
-      if (startTime < latestBlock.timestamp) {
-        throw new Error("Start time is now in the past. Choose a later time.");
+      if (endTime <= latestBlock.timestamp) {
+        throw new Error("End time must be in the future.");
       }
-      if (endTime <= startTime) {
-        throw new Error("End time must be after the start time.");
-      }
-      if (startTime > latestBlock.timestamp + MAX_START_DELAY_SECONDS) {
-        throw new Error("Start time must be within seven days of creation.");
-      }
-      if (endTime - startTime > MAX_SALE_DURATION_SECONDS) {
-        throw new Error("Ticket sales cannot run longer than 30 days.");
+      if (endTime - latestBlock.timestamp > MAX_SALE_DURATION_SECONDS) {
+        throw new Error("Entry sales cannot run longer than 30 days.");
       }
 
       setProgress({ kind: "pending", message: "Simulating raffle creation…" });
@@ -402,22 +336,19 @@ export function CreateRaffleForm() {
         } as unknown as ActionContext,
         protocolDeployment.raffleFactory,
         {
+          sponsorRecipient:
+            parsed.data.sponsorRecipient === ""
+              ? address
+              : (parsed.data.sponsorRecipient as Address),
           prizeToken: target.prizeToken,
           prizeTokenId: target.prizeTokenId,
-          sponsorPrizeRecoveryRecipient: address,
-          ticketPrice: parseQuoteAmount(
-            parsed.data.ticketPrice,
-            selectedQuoteToken.decimals,
-          ),
-          minimumTickets: BigInt(parsed.data.minimumTickets),
-          startTime,
+          reserveEntries: BigInt(parsed.data.reserveEntries),
           endTime,
-          metadataURI: parsed.data.metadataURI,
         },
       );
       setProgress({
         kind: "pending",
-        message: "Escrowing prize and creating tickets…",
+        message: "Escrowing prize and opening entry sales…",
       });
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
       let raffle: Address | undefined;
@@ -452,21 +383,6 @@ export function CreateRaffleForm() {
     chainId === protocolDeployment?.chainId &&
     parsed.success;
 
-  const impliedTarget = (() => {
-    if (selectedQuoteToken === undefined) return undefined;
-    if (!/^\d+(\.\d+)?$/.test(form.ticketPrice)) return undefined;
-    if (!/^[1-9]\d*$/.test(form.minimumTickets)) return undefined;
-    try {
-      return formatQuoteAmount(
-        parseQuoteAmount(form.ticketPrice, selectedQuoteToken.decimals) *
-          BigInt(form.minimumTickets),
-        selectedQuoteToken.decimals,
-      );
-    } catch {
-      return undefined;
-    }
-  })();
-
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_22rem]">
       <div className="space-y-5">
@@ -475,8 +391,8 @@ export function CreateRaffleForm() {
             <Info aria-hidden className="mt-0.5 shrink-0" size={18} />
             <p>
               <strong>No deployment on {configuredChain.name} yet.</strong> You
-              can walk through the whole flow, but creating a raffle stays
-              disabled until a canonical factory is registered for this network.
+              can review the flow, but creation stays disabled until its
+              canonical factory is registered.
             </p>
           </div>
         ) : null}
@@ -518,7 +434,7 @@ export function CreateRaffleForm() {
             ) : (
               <ShieldCheck aria-hidden size={17} />
             )}
-            Verify ownership & metadata
+            Verify ownership &amp; metadata
           </button>
           {metadataError ? (
             <p className="field-error" role="alert">
@@ -553,77 +469,61 @@ export function CreateRaffleForm() {
 
         <FormSection
           done={
-            selectedQuoteToken !== undefined &&
-            issues.get("ticketPrice") === undefined
+            issues.get("reserveEntries") === undefined &&
+            issues.get("sponsorRecipient") === undefined
           }
           number="2"
-          title="Set the ticket economics"
+          title="Set the NFT reserve"
         >
           <div className="mb-4 rounded-2xl bg-[var(--paper-sunk)] p-4">
-            <span className="field-label">Factory payment token</span>
-            <p className="numeric mt-1 text-sm font-bold">
-              {selectedQuoteToken === undefined
-                ? "USDC configuration unavailable"
-                : `${selectedQuoteToken.symbol} · ${selectedQuoteToken.address.slice(0, 6)}…${selectedQuoteToken.address.slice(-4)}`}
-            </p>
+            <span className="field-label">Entry price</span>
+            <p className="numeric mt-1 text-lg font-extrabold">$1 USDC</p>
             <span className="field-hint">
-              Every raffle from this factory uses the same immutable USDC token.
+              Fixed in the protocol. One purchase may bundle any number of
+              entries into one ticket.
             </span>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field
-              error={errorFor("ticketPrice")}
-              label={`Gross ticket price (${selectedQuoteToken?.symbol ?? "token"})`}
-              onBlur={() => markTouched("ticketPrice")}
-              onChange={(value) => update("ticketPrice", value)}
-              placeholder="1.00"
-              value={form.ticketPrice}
-            />
-            <Field
-              error={errorFor("minimumTickets")}
-              label="Minimum tickets"
-              onBlur={() => markTouched("minimumTickets")}
-              onChange={(value) => update("minimumTickets", value)}
-              placeholder="100"
-              value={form.minimumTickets}
-            />
-          </div>
+          <Field
+            error={errorFor("reserveEntries")}
+            label="Reserve entries (equal to USDC gross target)"
+            onBlur={() => markTouched("reserveEntries")}
+            onChange={(value) => update("reserveEntries", value)}
+            placeholder="100000"
+            value={form.reserveEntries}
+          />
           <p className="field-hint">
-            Exactly the minimum counts as met. There is no cap: a high threshold
-            simply makes the NFT branch less likely and never changes the
-            fallback split.
+            Equality meets the reserve. Sales remain uncapped and continue until
+            the deadline.
           </p>
+          <div className="mt-5">
+            <Field
+              error={errorFor("sponsorRecipient")}
+              label="Sponsor payout address (optional)"
+              onBlur={() => markTouched("sponsorRecipient")}
+              onChange={(value) => update("sponsorRecipient", value)}
+              placeholder={address ?? "Defaults to the connected sponsor"}
+              value={form.sponsorRecipient}
+            />
+            <p className="field-hint">
+              Sponsor USDC proceeds and any returned NFT always go to this fixed
+              address. Leave blank to use the connected wallet.
+            </p>
+          </div>
         </FormSection>
 
-        <FormSection done number="3" title="Choose the sale window">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field
-              error={errorFor("startTime")}
-              label="Starts"
-              onBlur={() => markTouched("startTime")}
-              onChange={(value) => update("startTime", value)}
-              type="datetime-local"
-              value={form.startTime}
-            />
-            <Field
-              error={errorFor("endTime")}
-              label="Ends"
-              onBlur={() => markTouched("endTime")}
-              onChange={(value) => update("endTime", value)}
-              type="datetime-local"
-              value={form.endTime}
-            />
-          </div>
-          <div className="mt-4">
-            <Field
-              error={errorFor("metadataURI")}
-              label="Raffle metadata URI (optional)"
-              onBlur={() => markTouched("metadataURI")}
-              onChange={(value) => update("metadataURI", value)}
-              placeholder="ipfs://…"
-              value={form.metadataURI}
-            />
-          </div>
+        <FormSection done number="3" title="Choose the sale deadline">
+          <Field
+            error={errorFor("endTime")}
+            label="Ends"
+            onBlur={() => markTouched("endTime")}
+            onChange={(value) => update("endTime", value)}
+            type="datetime-local"
+            value={form.endTime}
+          />
+          <p className="field-hint">
+            Sales begin immediately after atomic NFT escrow and may run for at
+            most 30 days.
+          </p>
         </FormSection>
 
         <FormSection number="4" title="Approve and create">
@@ -658,11 +558,7 @@ export function CreateRaffleForm() {
           </div>
           {progress.kind !== "idle" ? (
             <div
-              className={`mt-5 rounded-2xl p-4 text-sm ${
-                progress.kind === "error"
-                  ? "bg-[var(--danger-wash)] text-[var(--danger)]"
-                  : "bg-[var(--paper-sunk)]"
-              }`}
+              className={`mt-5 rounded-2xl p-4 text-sm ${progress.kind === "error" ? "bg-[var(--danger-wash)] text-[var(--danger)]" : "bg-[var(--paper-sunk)]"}`}
               role={progress.kind === "error" ? "alert" : "status"}
             >
               {progress.kind === "pending" ? (
@@ -713,18 +609,18 @@ export function CreateRaffleForm() {
         <div className="card overflow-hidden">
           <div className="panel-ink p-6">
             <p className="eyebrow !text-[var(--sky)]">Review economics</p>
-            <h2 className="mt-2 text-2xl">One threshold, no ambiguity.</h2>
+            <h2 className="mt-2 text-2xl">One reserve, no ambiguity.</h2>
           </div>
           <div className="space-y-4 p-6">
             <OutcomeCard
               tint="var(--yellow-wash)"
-              label="Threshold met"
-              text="The winning ticket holder claims the NFT. You claim the distributable pot after the 5% settlement fee."
+              label="Reserve met"
+              text="The winning entry receives the NFT. After successful delivery, you claim 95% of gross and the treasury claims 5%."
             />
             <OutcomeCard
               tint="var(--sky-wash)"
-              label="Threshold missed"
-              text="You reclaim the NFT plus 20% of the distributable pot. The winner claims 80%."
+              label="Reserve missed"
+              text="The winning entry receives 80% of gross sales. You recover the NFT plus 15% of gross, and the protocol receives 5%."
             />
             <div className="perforation !my-5" />
             <dl className="space-y-2 text-sm">
@@ -733,8 +629,8 @@ export function CreateRaffleForm() {
                 <dd className="font-extrabold">5% of gross</dd>
               </div>
               <div className="flex items-center justify-between">
-                <dt className="text-[var(--ink-2)]">Fee timing</dt>
-                <dd className="font-extrabold">At resolution</dd>
+                <dt className="text-[var(--ink-2)]">Sale starts</dt>
+                <dd className="font-extrabold">Immediately</dd>
               </div>
             </dl>
             <p className="flex items-start gap-2 rounded-2xl bg-[var(--paper-sunk)] p-3 text-xs leading-5 text-[var(--ink-2)]">
@@ -744,20 +640,28 @@ export function CreateRaffleForm() {
                 size={16}
               />
               <span>
-                At {form.ticketPrice || "—"}{" "}
-                {selectedQuoteToken?.symbol ?? "tokens"} ×{" "}
-                {form.minimumTickets || "0"} tickets, the implied gross minimum
-                target is{" "}
                 <strong className="numeric">
-                  {impliedTarget ?? "—"}{" "}
-                  {selectedQuoteToken?.symbol ?? "tokens"}
-                </strong>
-                .
+                  {form.reserveEntries || "—"} entries
+                </strong>{" "}
+                is the same as a{" "}
+                <strong className="numeric">
+                  ${form.reserveEntries || "—"} USDC
+                </strong>{" "}
+                gross reserve.
               </span>
             </p>
-            <p className="text-xs leading-5 text-[var(--ink-faint)]">
-              The minimum selects the NFT branch but does not stop sales.
-              Tickets remain available until the fixed closing time.
+            {reserveEconomics ? (
+              <p className="rounded-2xl bg-[var(--yellow-wash)] p-3 text-xs leading-5 text-[var(--ink-2)]">
+                If the raffle ends at exactly that reserve, you receive{" "}
+                <strong>
+                  {formatTokenAmount(reserveEconomics.sponsorAmount, 6, "USDC")}
+                </strong>{" "}
+                after the 5% protocol fee. The reserve is a gross sales
+                threshold, not your net payout.
+              </p>
+            ) : null}
+            <p className="numeric break-all text-xs leading-5 text-[var(--ink-faint)]">
+              Factory USDC: {quoteToken ?? "unavailable"}
             </p>
           </div>
         </div>
@@ -781,11 +685,7 @@ function FormSection({
     <section className="card p-6 md:p-7">
       <div className="mb-6 flex items-center gap-3">
         <span
-          className={`grid size-8 shrink-0 place-items-center rounded-full text-sm font-extrabold ${
-            done
-              ? "bg-[var(--grass)] text-white"
-              : "bg-[var(--yellow)] text-[var(--ink)]"
-          }`}
+          className={`grid size-8 shrink-0 place-items-center rounded-full text-sm font-extrabold ${done ? "bg-[var(--grass)] text-white" : "bg-[var(--yellow)] text-[var(--ink)]"}`}
         >
           {done ? <Check aria-hidden size={16} /> : number}
         </span>

@@ -9,56 +9,58 @@ import {
   getOrCreateQuoteTokenStats,
 } from "./helpers";
 
+const ONE = BigInt.fromI32(1);
+const ENTRY_PRICE = BigInt.fromI32(1_000_000);
+
 export function handleRaffleCreated(event: RaffleCreated): void {
   if (Raffle.load(event.params.raffle) != null) return;
+
   const protocol = getOrCreateProtocol(event.address);
-  protocol.raffleCount = protocol.raffleCount.plus(BigInt.fromI32(1));
-  protocol.activeCount = protocol.activeCount.plus(BigInt.fromI32(1));
+  protocol.raffleCount = protocol.raffleCount.plus(ONE);
+  protocol.activeCount = protocol.activeCount.plus(ONE);
   protocol.save();
 
   const sponsor = getOrCreateAccount(event.params.sponsor);
-  sponsor.rafflesSponsored = sponsor.rafflesSponsored.plus(BigInt.fromI32(1));
+  sponsor.rafflesSponsored = sponsor.rafflesSponsored.plus(ONE);
   sponsor.save();
-  getOrCreateAccount(event.params.sponsorPrizeRecoveryRecipient);
-  getOrCreateAccount(event.params.protocolTreasury);
+  const sponsorRecipient = getOrCreateAccount(event.params.sponsorRecipient);
+  const treasury = getOrCreateAccount(event.params.protocolTreasury);
+
   const quoteTokenStats = getOrCreateQuoteTokenStats(
     protocol,
     event.params.quoteToken,
   );
-  quoteTokenStats.raffleCount = quoteTokenStats.raffleCount.plus(
-    BigInt.fromI32(1),
-  );
+  quoteTokenStats.raffleCount = quoteTokenStats.raffleCount.plus(ONE);
   quoteTokenStats.save();
 
   const raffle = new Raffle(event.params.raffle);
   raffle.protocol = protocol.id;
   raffle.factoryId = event.params.raffleId;
   raffle.sponsor = sponsor.id;
-  raffle.sponsorPrizeRecoveryRecipient =
-    event.params.sponsorPrizeRecoveryRecipient;
-  raffle.protocolTreasury = event.params.protocolTreasury;
+  raffle.sponsorRecipient = sponsorRecipient.id;
+  raffle.protocolTreasury = treasury.id;
   raffle.quoteToken = event.params.quoteToken;
   raffle.quoteTokenStats = quoteTokenStats.id;
   raffle.prizeToken = event.params.prizeToken;
   raffle.prizeTokenId = event.params.prizeTokenId;
-  raffle.metadataURI = event.params.metadataURI;
-  raffle.ticketPrice = event.params.ticketPrice;
-  raffle.minimumTickets = event.params.minimumTickets;
-  raffle.startTime = event.params.startTime;
+  raffle.entryPrice = ENTRY_PRICE;
+  raffle.reserveEntries = event.params.reserveEntries;
   raffle.endTime = event.params.endTime;
-  raffle.requestGraceDeadline = event.params.requestGraceDeadline;
-  raffle.status = "AWAITING_PRIZE";
-  raffle.totalTickets = BigInt.zero();
+  // RaffleCreated is emitted only after the factory verifies prize escrow.
+  raffle.status = "ACTIVE";
+  raffle.totalEntries = BigInt.zero();
+  raffle.ticketCount = BigInt.zero();
   raffle.grossSales = BigInt.zero();
   raffle.unsettledPot = BigInt.zero();
   raffle.remainingRefundLiability = BigInt.zero();
-  raffle.winnerCashLiability = BigInt.zero();
-  raffle.totalClaimableQuote = BigInt.zero();
+  raffle.sponsorProceeds = BigInt.zero();
+  raffle.protocolFees = BigInt.zero();
   raffle.totalRefundRedeemed = BigInt.zero();
   raffle.totalProtocolFees = BigInt.zero();
   raffle.quoteClaimed = BigInt.zero();
+  raffle.ignoredVrfCallbackCount = BigInt.zero();
   raffle.prizeClaimed = false;
-  raffle.winningTicketRedeemed = false;
+  raffle.winningTicketSettled = false;
   raffle.createdTxHash = event.transaction.hash;
   raffle.createdBlock = event.block.number;
   raffle.createdTimestamp = event.block.timestamp;

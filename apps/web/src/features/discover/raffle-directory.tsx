@@ -5,14 +5,13 @@ import { Flame, PlugZap, Search, Ticket, X } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import { CountUp } from "@/components/count-up";
 import { LiveTicker } from "@/components/live-ticker";
 import { RaffleCard, RaffleCardSkeleton } from "@/components/raffle-card";
 import { useNow } from "@/hooks/use-now";
 import { isDemoMode } from "@/lib/demo";
 import { toIndexedRaffle } from "@/lib/sandbox/adapter";
 import { useSandbox } from "@/lib/sandbox/store";
-import { ticketsToThreshold } from "@/lib/economics";
+import { entriesToReserve } from "@/lib/economics";
 import { fetchRaffles, isSubgraphConfigured } from "@/lib/subgraph";
 import type { IndexedRaffle } from "@/lib/subgraph";
 
@@ -22,18 +21,21 @@ const filters = [
   { value: "DRAWING", label: "Drawing" },
   { value: "SETTLED", label: "Settled" },
   { value: "REFUNDING", label: "Refunding" },
-  { value: "CLOSED", label: "Closed" },
 ] as const;
 
 const sorts = [
   { value: "ENDING", label: "Ending soonest" },
   { value: "CLOSEST", label: "Closest to the NFT" },
   { value: "NEWEST", label: "Newest" },
-  { value: "POPULAR", label: "Most tickets sold" },
+  { value: "POPULAR", label: "Most entries sold" },
 ] as const;
 
 type Filter = (typeof filters)[number]["value"];
 type Sort = (typeof sorts)[number]["value"];
+
+function compareBigints(left: bigint, right: bigint): number {
+  return left < right ? -1 : left > right ? 1 : 0;
+}
 
 export function RaffleDirectory() {
   const [filter, setFilter] = useState<Filter>("ALL");
@@ -84,20 +86,24 @@ export function RaffleDirectory() {
     return [...matched].sort((a, b) => {
       // Open raffles always lead; a settled one is not "ending soonest".
       if (rank(a) !== rank(b)) return rank(a) - rank(b);
-      if (sort === "ENDING") return Number(a.endTime) - Number(b.endTime);
-      if (sort === "NEWEST") return Number(b.factoryId) - Number(a.factoryId);
-      if (sort === "POPULAR") {
-        return Number(b.totalTickets) - Number(a.totalTickets);
+      if (sort === "ENDING") {
+        return compareBigints(BigInt(a.endTime), BigInt(b.endTime));
       }
-      const left = ticketsToThreshold(
-        BigInt(a.totalTickets),
-        BigInt(a.minimumTickets),
+      if (sort === "NEWEST") {
+        return compareBigints(BigInt(b.factoryId), BigInt(a.factoryId));
+      }
+      if (sort === "POPULAR") {
+        return compareBigints(BigInt(b.totalEntries), BigInt(a.totalEntries));
+      }
+      const left = entriesToReserve(
+        BigInt(a.totalEntries),
+        BigInt(a.reserveEntries),
       );
-      const right = ticketsToThreshold(
-        BigInt(b.totalTickets),
-        BigInt(b.minimumTickets),
+      const right = entriesToReserve(
+        BigInt(b.totalEntries),
+        BigInt(b.reserveEntries),
       );
-      return Number(left) - Number(right);
+      return compareBigints(left, right);
     });
   }, [all, filter, search, sort]);
 
@@ -113,9 +119,9 @@ export function RaffleDirectory() {
   const stats = useMemo(() => {
     return {
       live: all.filter((raffle) => raffle.state === "ACTIVE").length,
-      tickets: all.reduce(
-        (sum, raffle) => sum + Number(raffle.totalTickets),
-        0,
+      entries: all.reduce(
+        (sum, raffle) => sum + BigInt(raffle.totalEntries),
+        0n,
       ),
       endingToday:
         now === undefined
@@ -151,7 +157,7 @@ export function RaffleDirectory() {
             id="raffles-heading"
             className="mt-2 text-[length:var(--text-3xl)]"
           >
-            Find your ticket
+            Find a raffle
           </h2>
           {all.length > 0 ? (
             <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[length:var(--text-sm)] text-[var(--ink-3)]">
@@ -167,11 +173,10 @@ export function RaffleDirectory() {
               </span>
               <span aria-hidden>·</span>
               <span>
-                <CountUp
-                  className="font-semibold text-[var(--ink)]"
-                  value={stats.tickets}
-                />{" "}
-                tickets sold
+                <span className="numeric font-semibold text-[var(--ink)]">
+                  {stats.entries.toString()}
+                </span>{" "}
+                entries sold
               </span>
               {stats.endingToday > 0 ? (
                 <>
@@ -242,7 +247,9 @@ export function RaffleDirectory() {
           const count =
             option.value === "ALL"
               ? all.length
-              : (counts.get(option.value) ?? 0);
+              : option.value === "SETTLED"
+                ? (counts.get("NFT_WON") ?? 0) + (counts.get("CASH_WON") ?? 0)
+                : (counts.get(option.value) ?? 0);
           return (
             <button
               aria-pressed={selected}

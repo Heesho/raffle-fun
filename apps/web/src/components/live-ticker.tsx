@@ -6,7 +6,7 @@ import Link from "next/link";
 import { type Address } from "viem";
 
 import { isDemoMode } from "@/lib/demo";
-import { SANDBOX_WETH, toIndexedActivity } from "@/lib/sandbox/adapter";
+import { SANDBOX_USDC, toIndexedActivity } from "@/lib/sandbox/adapter";
 import { useSandbox } from "@/lib/sandbox/store";
 import { formatTokenAmount, shortAddress } from "@/lib/format";
 import {
@@ -21,7 +21,7 @@ import {
  * happening right now, so it sits directly above the raffle grid.
  */
 const kinds = {
-  PURCHASE: { label: "bought", icon: Ticket },
+  PURCHASE: { label: "bought entries for", icon: Ticket },
   RESOLUTION: { label: "drew a winner", icon: Dices },
   QUOTE_CLAIM: { label: "claimed", icon: CircleDollarSign },
   PRIZE_CLAIM: { label: "claimed the NFT", icon: Gift },
@@ -103,10 +103,7 @@ function TickerPill({
 }) {
   const kind = kinds[event.kind];
   const Icon = kind.icon;
-  const token =
-    event.quoteToken?.toLowerCase() === SANDBOX_WETH.address
-      ? SANDBOX_WETH
-      : undefined;
+  const token = event.quoteToken === null ? undefined : SANDBOX_USDC;
   const amount =
     event.amount !== null && token !== undefined
       ? formatTokenAmount(BigInt(event.amount), token.decimals, token.symbol)

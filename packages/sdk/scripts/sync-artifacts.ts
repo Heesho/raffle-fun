@@ -22,10 +22,6 @@ const contracts = {
     repositoryRoot,
     "packages/contracts/artifacts/src/RaffleFactory.sol/RaffleFactory.json",
   ),
-  raffleLens: resolve(
-    repositoryRoot,
-    "packages/contracts/artifacts/src/RaffleLens.sol/RaffleLens.json",
-  ),
 } as const;
 
 const artifacts = await Promise.all(
@@ -53,12 +49,7 @@ const generatedPath = resolve(sdkDirectory, "src/abis/generated.ts");
 await verifyOrWrite(generatedPath, generatedSource);
 
 for (const [name, abi] of artifacts) {
-  const contractName =
-    name === "raffle"
-      ? "Raffle"
-      : name === "raffleFactory"
-        ? "RaffleFactory"
-        : "RaffleLens";
+  const contractName = name === "raffle" ? "Raffle" : "RaffleFactory";
   const subgraphPath = resolve(
     repositoryRoot,
     `packages/subgraph/abis/${contractName}.json`,

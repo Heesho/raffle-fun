@@ -15,36 +15,34 @@ import { encodeFunctionData, isAddress, type Address } from "viem";
 import {
   useAccount,
   usePublicClient,
-  useReadContract,
+  useReadContracts,
   useWalletClient,
 } from "wagmi";
 
-import { raffleAbi, raffleLensAbi } from "@raffle-fun/sdk";
+import { raffleAbi, RaffleStatus } from "@raffle-fun/sdk";
 
 import { PrizeArt } from "@/components/prize-art";
 import { RaffleCard, RaffleCardSkeleton } from "@/components/raffle-card";
 import { WalletButton } from "@/components/wallet-button";
 import { isDemoMode } from "@/lib/demo";
 import { toIndexedRaffle } from "@/lib/sandbox/adapter";
-import { ticketsOwnedBy } from "@/lib/sandbox/engine";
+import { entriesOwnedBy } from "@/lib/sandbox/engine";
 import { useSandbox } from "@/lib/sandbox/store";
 import { shortAddress } from "@/lib/format";
-import { protocolDeployment } from "@/lib/protocol";
 import { fetchProfileRaffles, isSubgraphConfigured } from "@/lib/subgraph";
-import type { IndexedRaffle } from "@/lib/subgraph";
+import type { IndexedRaffle, IndexedTicket } from "@/lib/subgraph";
 
 type LiveClaim = {
   readonly raffle: Address;
-  readonly quoteToken: Address;
-  readonly accountQuoteClaim: bigint;
-  readonly canClaimQuote: boolean;
-  readonly canRedeemWinningTicket: boolean;
-  readonly canClaimSponsorPrize: boolean;
+  readonly canReleaseSponsorProceeds: boolean;
+  readonly canReleaseProtocolFees: boolean;
+  readonly canReleaseSponsorPrize: boolean;
 };
 
 type ProfileData = {
   readonly sponsored: readonly IndexedRaffle[];
   readonly positions: readonly IndexedRaffle[];
+  readonly tickets: readonly IndexedTicket[];
 };
 
 export function ProfileView({
@@ -72,13 +70,29 @@ export function ProfileView({
     if (!demo || sandbox === undefined || profile === undefined)
       return undefined;
     const key = profile.toLowerCase();
+    const tickets = sandbox.raffles.flatMap((raffle) => {
+      const indexedRaffle = toIndexedRaffle(raffle);
+      return raffle.tickets
+        .filter(
+          (ticket) => !ticket.burned && ticket.owner.toLowerCase() === key,
+        )
+        .map((ticket) => ({
+          id: `${raffle.id}-${ticket.id.toString()}`,
+          raffle: indexedRaffle,
+          ticketId: ticket.id.toString(),
+          firstEntry: ticket.firstEntry.toString(),
+          lastEntry: ticket.lastEntry.toString(),
+          entryCount: (ticket.lastEntry - ticket.firstEntry + 1n).toString(),
+        }));
+    });
     return {
       sponsored: sandbox.raffles
         .filter((raffle) => raffle.sponsor.toLowerCase() === key)
         .map(toIndexedRaffle),
       positions: sandbox.raffles
-        .filter((raffle) => ticketsOwnedBy(raffle, profile) > 0)
+        .filter((raffle) => entriesOwnedBy(raffle, profile) > 0n)
         .map(toIndexedRaffle),
+      tickets,
     };
   }, [demo, profile, sandbox]);
 
@@ -97,76 +111,138 @@ export function ProfileView({
     ];
     return [...new Map(all.map((raffle) => [raffle.id, raffle])).values()];
   }, [profileQuery.data]);
-  const raffleAddresses = raffles.map((raffle) => raffle.id as Address);
-
-  const liveQuery = useReadContract({
-    address: protocolDeployment?.raffleLens,
-    abi: raffleLensAbi,
-    functionName: "getRaffleStates",
-    args:
-      profile === undefined || raffleAddresses.length === 0
-        ? undefined
-        : [raffleAddresses, profile],
+  const raffleAddresses = useMemo(
+    () => raffles.map((raffle) => raffle.id as Address),
+    [raffles],
+  );
+  const liveClaimContracts = useMemo(
+    () =>
+      profile === undefined
+        ? []
+        : raffleAddresses.flatMap((raffle) => [
+            {
+              address: raffle,
+              abi: raffleAbi,
+              functionName: "sponsorRecipient" as const,
+            },
+            {
+              address: raffle,
+              abi: raffleAbi,
+              functionName: "protocolTreasury" as const,
+            },
+            {
+              address: raffle,
+              abi: raffleAbi,
+              functionName: "sponsorProceeds" as const,
+            },
+            {
+              address: raffle,
+              abi: raffleAbi,
+              functionName: "protocolFees" as const,
+            },
+            {
+              address: raffle,
+              abi: raffleAbi,
+              functionName: "status" as const,
+            },
+            {
+              address: raffle,
+              abi: raffleAbi,
+              functionName: "prizeClaimed" as const,
+            },
+          ]),
+    [profile, raffleAddresses],
+  );
+  const liveQuery = useReadContracts({
+    contracts: liveClaimContracts,
     query: {
-      enabled:
-        protocolDeployment !== undefined &&
-        profile !== undefined &&
-        raffleAddresses.length > 0,
+      enabled: !demo && profile !== undefined && raffleAddresses.length > 0,
     },
   });
 
-  const liveClaims = (liveQuery.data ?? []) as readonly LiveClaim[];
-  const claimableQuoteCount = liveClaims.filter(
-    (item) => item.canClaimQuote,
-  ).length;
-  const claimableTokenCount = new Set(
-    liveClaims
-      .filter((item) => item.canClaimQuote)
-      .map((item) => item.quoteToken.toLowerCase()),
-  ).size;
+  const liveClaims = useMemo<readonly LiveClaim[]>(() => {
+    if (profile === undefined) return [];
+    const reads = liveQuery.data ?? [];
+    return raffleAddresses.map((raffle, raffleIndex) => {
+      const offset = raffleIndex * 6;
+      const sponsorRecipient = reads[offset]?.result as Address | undefined;
+      const treasury = reads[offset + 1]?.result as Address | undefined;
+      const sponsorProceeds = (reads[offset + 2]?.result ?? 0n) as bigint;
+      const protocolFees = (reads[offset + 3]?.result ?? 0n) as bigint;
+      const status = Number(reads[offset + 4]?.result ?? -1);
+      const prizeClaimed = (reads[offset + 5]?.result ?? true) as boolean;
+      return {
+        raffle,
+        canReleaseSponsorProceeds:
+          sponsorRecipient?.toLowerCase() === profile.toLowerCase() &&
+          sponsorProceeds > 0n,
+        canReleaseProtocolFees:
+          treasury?.toLowerCase() === profile.toLowerCase() &&
+          protocolFees > 0n,
+        canReleaseSponsorPrize:
+          sponsorRecipient?.toLowerCase() === profile.toLowerCase() &&
+          !prizeClaimed &&
+          (status === RaffleStatus.CashWon ||
+            status === RaffleStatus.Refunding),
+      };
+    });
+  }, [liveQuery.data, profile, raffleAddresses]);
+  const releasableProceeds = liveClaims.reduce(
+    (count, item) =>
+      count +
+      Number(item.canReleaseSponsorProceeds) +
+      Number(item.canReleaseProtocolFees),
+    0,
+  );
   const claimablePrizes = liveClaims.filter(
-    (item) => item.canRedeemWinningTicket || item.canClaimSponsorPrize,
+    (item) => item.canReleaseSponsorPrize,
   ).length;
+  const indexedTickets = profileQuery.data?.tickets ?? [];
+  const indexedEntriesComplete = indexedTickets.every(
+    (ticket) => ticket.entryCount !== null,
+  );
+  const indexedEntries = indexedTickets.reduce(
+    (total, ticket) =>
+      ticket.entryCount === null ? total : total + BigInt(ticket.entryCount),
+    0n,
+  );
   const connectedProfile =
     address !== undefined &&
     profile !== undefined &&
     address.toLowerCase() === profile.toLowerCase();
   const batchCalls = liveClaims.flatMap((item) => [
-    ...(item.canClaimQuote
+    ...(item.canReleaseSponsorProceeds
       ? [
           {
             to: item.raffle,
-            kind: "quote" as const,
+            kind: "sponsorProceeds" as const,
             data: encodeFunctionData({
               abi: raffleAbi,
-              functionName: "claimQuoteFor",
-              args: [profile!],
+              functionName: "releaseSponsorProceeds",
             }),
           },
         ]
       : []),
-    ...(item.canRedeemWinningTicket && connectedProfile
+    ...(item.canReleaseProtocolFees
       ? [
           {
             to: item.raffle,
-            kind: "winner" as const,
+            kind: "protocolFees" as const,
             data: encodeFunctionData({
               abi: raffleAbi,
-              functionName: "redeemWinningTicket",
-              args: [profile!],
+              functionName: "releaseProtocolFees",
             }),
           },
         ]
       : []),
-    ...(item.canClaimSponsorPrize && connectedProfile
+    ...(item.canReleaseSponsorPrize
       ? [
           {
             to: item.raffle,
-            kind: "sponsor" as const,
+            kind: "sponsorPrize" as const,
             data: encodeFunctionData({
               abi: raffleAbi,
-              functionName: "claimSponsorPrize",
-              args: [profile!],
+              functionName: "releaseSponsorPrize",
             }),
           },
         ]
@@ -200,22 +276,20 @@ export function ProfileView({
       try {
         for (const call of batchCalls) {
           let hash: `0x${string}`;
-          if (call.kind === "quote") {
+          if (call.kind === "sponsorProceeds") {
             const { request } = await publicClient.simulateContract({
               account: address,
               address: call.to,
               abi: raffleAbi,
-              functionName: "claimQuoteFor",
-              args: [profile],
+              functionName: "releaseSponsorProceeds",
             });
             hash = await wallet.data.writeContract(request);
-          } else if (call.kind === "winner") {
+          } else if (call.kind === "protocolFees") {
             const { request } = await publicClient.simulateContract({
               account: address,
               address: call.to,
               abi: raffleAbi,
-              functionName: "redeemWinningTicket",
-              args: [profile],
+              functionName: "releaseProtocolFees",
             });
             hash = await wallet.data.writeContract(request);
           } else {
@@ -223,8 +297,7 @@ export function ProfileView({
               account: address,
               address: call.to,
               abi: raffleAbi,
-              functionName: "claimSponsorPrize",
-              args: [profile],
+              functionName: "releaseSponsorPrize",
             });
             hash = await wallet.data.writeContract(request);
           }
@@ -287,21 +360,27 @@ export function ProfileView({
         />
         <Summary
           icon={<Ticket aria-hidden size={19} />}
-          label="Open positions"
-          value={(profileQuery.data?.positions.length ?? 0).toString()}
+          label="Tickets held"
+          value={
+            indexedTickets.length === 0
+              ? "0"
+              : indexedEntriesComplete
+                ? `${indexedTickets.length} · ${indexedEntries.toString()} entries`
+                : `${indexedTickets.length} · entries unavailable`
+          }
         />
         <Summary
           icon={<WalletCards aria-hidden size={19} />}
           label="Payouts to claim"
           value={
-            claimableQuoteCount === 0
+            releasableProceeds === 0
               ? "0"
-              : `${claimableQuoteCount} · ${claimableTokenCount} token${claimableTokenCount === 1 ? "" : "s"}`
+              : `${releasableProceeds} USDC release${releasableProceeds === 1 ? "" : "s"}`
           }
         />
         <Summary
           icon={<Trophy aria-hidden size={19} />}
-          label="Prizes to claim"
+          label="Sponsor NFTs to recover"
           value={claimablePrizes.toString()}
         />
       </div>
@@ -356,10 +435,56 @@ export function ProfileView({
           }
           text={
             demo || configured
-              ? "This account has not sponsored a raffle or bought a ticket yet."
+              ? "This account has not sponsored a raffle or bought an entry ticket yet."
               : "Configure a subgraph endpoint to discover positions. No sample history is shown."
           }
         />
+      ) : null}
+
+      {indexedTickets.length > 0 ? (
+        <section className="mt-14">
+          <p className="eyebrow">Indexed entry tickets</p>
+          <h2 className="mt-2 text-3xl md:text-4xl">Your ticket ranges</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--ink-2)]">
+            These ranges help you find the ticket ID to supply for settlement or
+            refunds. The raffle contract&apos;s current owner check remains
+            authoritative.
+          </p>
+          <div className="card mt-7 divide-y divide-[var(--line)] overflow-hidden">
+            {indexedTickets.map((ticket) => (
+              <div
+                className="grid gap-3 p-5 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_auto] md:items-center"
+                key={ticket.id}
+              >
+                <div className="min-w-0">
+                  <p className="eyebrow">Ticket ID</p>
+                  <p className="numeric mt-1 break-all text-xs font-bold">
+                    {ticket.ticketId}
+                  </p>
+                </div>
+                <div>
+                  <p className="eyebrow">Inclusive entry range</p>
+                  <p className="numeric mt-1 font-extrabold">
+                    {ticket.firstEntry === null || ticket.lastEntry === null
+                      ? "Indexing…"
+                      : `${ticket.firstEntry}–${ticket.lastEntry}`}
+                  </p>
+                  <p className="mt-1 text-xs text-[var(--ink-3)]">
+                    {ticket.entryCount === null
+                      ? "Entry count unavailable"
+                      : `${ticket.entryCount} entr${ticket.entryCount === "1" ? "y" : "ies"}`}
+                  </p>
+                </div>
+                <Link
+                  className="btn btn-outline"
+                  href={`/raffle/${ticket.raffle.id}`}
+                >
+                  Open raffle
+                </Link>
+              </div>
+            ))}
+          </div>
+        </section>
       ) : null}
 
       {profileQuery.data?.sponsored.length ? (
@@ -376,7 +501,7 @@ export function ProfileView({
 
       {profileQuery.data?.positions.length ? (
         <section className="mt-14">
-          <p className="eyebrow">Tickets currently held</p>
+          <p className="eyebrow">Entry tickets currently held</p>
           <h2 className="mt-2 text-3xl md:text-4xl">Positions & wins</h2>
           <div className="mt-7 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {profileQuery.data.positions.map((raffle) => (

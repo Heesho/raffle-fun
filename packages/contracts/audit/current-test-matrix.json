@@ -1,166 +1,110 @@
 {
-  "schema": 1,
-  "sourceCommit": "5772e54ba89c06646815ed52a881cd8940f094ca",
-  "campaignDate": "2026-08-16",
+  "schema": 2,
+  "sourceCommit": "090e29fc5bd481e2e244bbd52a716a7143248d82",
+  "campaignDate": "2026-08-18",
+  "candidateStatus": "uncommitted-worktree",
   "internalEvidenceOnly": true,
   "suites": [
     {
-      "id": "foundry-canonical-final",
-      "command": "forge test --summary",
+      "id": "foundry-default",
       "status": "passed",
-      "tests": { "passed": 94, "failed": 0, "skipped": 1 }
+      "passed": 72,
+      "failed": 0,
+      "rpcGatedSkipped": 1,
+      "fuzzProperties": 8,
+      "fuzzRunsPerProperty": 1000,
+      "invariantProperties": 7,
+      "invariantRuns": 256,
+      "invariantDepth": 64,
+      "handlerReverts": 0
+    },
+    {
+      "id": "foundry-audit",
+      "status": "passed",
+      "fuzzProperties": 8,
+      "fuzzRunsPerProperty": 100000,
+      "invariantProperties": 7,
+      "invariantRuns": 1000,
+      "invariantDepth": 256
     },
     {
       "id": "foundry-audit-strict",
-      "command": "FOUNDRY_PROFILE=audit_strict forge test -q",
       "status": "passed",
-      "fuzzRuns": 10000,
+      "fuzzProperties": 8,
+      "fuzzRunsPerProperty": 10000,
+      "invariantProperties": 7,
       "invariantRuns": 1000,
       "invariantDepth": 256,
-      "failOnRevert": true
+      "failOnRevert": true,
+      "handlerReverts": 0
     },
     {
-      "id": "foundry-audit-release-full-suite-extra",
-      "command": "FOUNDRY_PROFILE=audit_release forge test -q",
-      "status": "stopped-incomplete",
-      "elapsed": "01:15:50",
-      "exitCode": 130,
-      "countedAsPass": false,
-      "fuzzRuns": 100000,
-      "invariantRuns": 5000,
-      "invariantDepth": 512,
-      "failOnRevert": true
-    },
-    {
-      "id": "foundry-audit-release-strict-target",
-      "command": "FOUNDRY_PROFILE=audit_release forge test --match-contract RaffleStrictInvariantTest -q",
+      "id": "production-coverage",
       "status": "passed",
-      "exitCode": 0,
-      "properties": 4,
-      "totalHandlerCalls": 10240000,
-      "invariantRuns": 5000,
-      "invariantDepth": 512,
-      "failOnRevert": true
-    },
-    {
-      "id": "compiler-differentials",
-      "status": "passed",
-      "configurations": ["canonical", "via-ir", "optimizer-disabled", "prague"]
-    },
-    {
-      "id": "production-coverage-final",
-      "status": "passed",
-      "linesPercent": 99.74,
-      "branchesPercent": 95.51,
+      "linesPercent": 100.0,
+      "branchesPercent": 94.12,
       "functionsPercent": 100.0
     },
     {
       "id": "python-independent-model",
       "status": "passed",
-      "passed": 8,
-      "failed": 0,
-      "seeds": ["0x524146464c45", "0x20260816"],
-      "randomizedSequencesPerSeed": 2000
-    },
-    {
-      "id": "echidna-cash",
-      "status": "passed",
-      "seed": 20260816,
-      "calls": 100164,
-      "corpus": 16,
-      "uniqueInstructions": 13467,
-      "properties": 6
-    },
-    {
-      "id": "echidna-nft",
-      "status": "passed",
-      "seed": 20260817,
-      "calls": 100250,
-      "corpus": 17,
-      "uniqueInstructions": 13966,
-      "properties": 6
-    },
-    {
-      "id": "medusa-cash",
-      "status": "passed",
-      "calls": 518329,
-      "branches": 1221,
-      "corpus": 33,
-      "properties": 23,
-      "deterministicSeedAvailable": false
-    },
-    {
-      "id": "medusa-nft",
-      "status": "passed",
-      "calls": 529570,
-      "branches": 1266,
-      "corpus": 37,
-      "properties": 23,
-      "deterministicSeedAvailable": false
-    },
-    {
-      "id": "current-source-mutation",
-      "status": "passed-after-regressions",
-      "defined": 38,
-      "initialKilled": 30,
-      "initialSurvivors": 8,
-      "finalKilled": 38,
-      "finalSurvivors": 0,
-      "compileErrors": 0,
-      "invalidDefinitions": 0
-    },
-    {
-      "id": "fork-pinned",
-      "status": "passed",
-      "passed": 2,
-      "failed": 0,
-      "skippedNonselected": 2,
-      "blocks": { "base": 49752968, "baseSepolia": 45263498 }
-    },
-    {
-      "id": "fork-latest-observational",
-      "status": "passed-observational",
-      "passed": 2,
-      "failed": 0,
-      "skippedNonselected": 2,
-      "observedBlocks": { "base": 50044137, "baseSepolia": 45554666 }
-    },
-    {
-      "id": "hardhat",
-      "status": "passed",
-      "passed": 9,
+      "passed": 11,
       "failed": 0
     },
     {
+      "id": "current-source-mutation",
+      "status": "passed",
+      "defined": 52,
+      "killed": 52,
+      "survived": 0,
+      "compileErrors": 0,
+      "invalidDefinitions": 0,
+      "candidateSha256": "54c42b664eb7b74c5a352b70a64a6553b6ba496b40e880c4869c1c8df9178d9a",
+      "oracleSha256": "f84324f7d98ddbd83cac39433edefb5a368f5ad36606b5c97f527a2f8a430dd7"
+    },
+    {
+      "id": "deterministic-gas",
+      "status": "passed",
+      "passed": 57,
+      "failed": 0,
+      "rpcGatedSkipped": 1,
+      "snapshotCheck": "passed"
+    },
+    { "id": "hardhat", "status": "passed", "passed": 22, "failed": 0 },
+    {
       "id": "sdk",
       "status": "passed",
-      "passed": 10,
+      "passed": 14,
       "failed": 0,
       "abiSync": "passed"
     },
     {
       "id": "subgraph",
-      "status": "passed-with-observability-gap",
-      "passed": 6,
+      "status": "passed",
+      "passed": 7,
       "failed": 0,
       "codegen": "passed",
       "build": "passed"
     },
     {
       "id": "web",
-      "status": "passed-existing-suite",
+      "status": "passed",
       "passed": 15,
-      "failed": 0
+      "failed": 0,
+      "productionBuild": "passed"
     },
     {
-      "id": "halmos",
-      "status": "blocked",
-      "error": "zsh:1: command not found: halmos"
+      "id": "slither",
+      "status": "passed",
+      "contracts": 47,
+      "detectors": 64,
+      "results": 0
     },
-    {
-      "id": "semgrep",
-      "status": "blocked",
-      "error": "Failed to create system store X509 authenticator: ca-certs: empty trust anchors"
-    }
+    { "id": "gitleaks-worktree", "status": "passed", "leaks": 0 },
+    { "id": "gitleaks-history", "status": "passed", "commits": 25, "leaks": 0 },
+    { "id": "ethereum-fork", "status": "pending-rpc-backed-run" },
+    { "id": "echidna", "status": "pending-executable-unavailable" },
+    { "id": "medusa", "status": "pending-executable-unavailable" },
+    { "id": "halmos", "status": "pending-executable-unavailable" }
   ]
 }

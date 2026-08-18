@@ -1,84 +1,54 @@
 {
-  "schema": 1,
-  "source_commit": "5772e54ba89c06646815ed52a881cd8940f094ca",
-  "config": "/Users/hishamel-husseini/Documents/projects/raffle-fun/packages/contracts/audit/current-mutations.json",
-  "generated": 8,
-  "compiled_and_killed": 8,
+  "schema": 2,
+  "source_commit": "090e29fc5bd481e2e244bbd52a716a7143248d82",
+  "candidate_source": {
+    "algorithm": "sha256",
+    "digest": "54c42b664eb7b74c5a352b70a64a6553b6ba496b40e880c4869c1c8df9178d9a",
+    "file_count": 16
+  },
+  "test_oracle": {
+    "algorithm": "sha256",
+    "digest": "f84324f7d98ddbd83cac39433edefb5a368f5ad36606b5c97f527a2f8a430dd7",
+    "file_count": 8
+  },
+  "config": "packages/contracts/audit/current-mutations.json",
+  "test_command": [
+    "forge",
+    "test",
+    "-q",
+    "--no-match-contract",
+    "EthereumForkTest"
+  ],
+  "baseline": {
+    "classification": "passed",
+    "exit_code": 0,
+    "seconds": 4.517,
+    "stderr_tail": "",
+    "stdout_tail": "Compiling 71 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.33s\n"
+  },
+  "generated": 2,
+  "compiled_and_killed": 2,
   "survived": 0,
   "compile_errors": 0,
   "invalid": 0,
   "results": [
     {
-      "id": "M-05",
-      "description": "remove callback in-flight check",
+      "id": "M-24",
+      "description": "leave the gross pot unsettled after winning-ticket settlement",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 14.388,
+      "seconds": 4.137,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 81 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.98s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.26s\n"
     },
     {
-      "id": "M-20",
-      "description": "allow 101-ticket purchase",
+      "id": "M-28",
+      "description": "leave the winning ticket live after settlement",
       "classification": "killed",
       "exit_code": 1,
-      "seconds": 16.972,
+      "seconds": 4.201,
       "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.78s\n"
-    },
-    {
-      "id": "M-23",
-      "description": "omit NFT winner delivery ownership verification",
-      "classification": "killed",
-      "exit_code": 1,
-      "seconds": 17.285,
-      "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.90s\n"
-    },
-    {
-      "id": "M-29",
-      "description": "reject exact maximum start delay",
-      "classification": "killed",
-      "exit_code": 1,
-      "seconds": 16.6,
-      "stderr_tail": "",
-      "stdout_tail": "Compiling 16 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.80s\n"
-    },
-    {
-      "id": "M-30",
-      "description": "reject exact maximum sale duration",
-      "classification": "killed",
-      "exit_code": 1,
-      "seconds": 15.857,
-      "stderr_tail": "",
-      "stdout_tail": "Compiling 12 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.90s\n"
-    },
-    {
-      "id": "M-33",
-      "description": "reject exact maximum metadata length",
-      "classification": "killed",
-      "exit_code": 1,
-      "seconds": 17.638,
-      "stderr_tail": "",
-      "stdout_tail": "Compiling 12 files with Solc 0.8.36\nSolc 0.8.36 finished in 5.89s\n"
-    },
-    {
-      "id": "M-36",
-      "description": "Lens permits draw at grace deadline",
-      "classification": "killed",
-      "exit_code": 1,
-      "seconds": 17.023,
-      "stderr_tail": "",
-      "stdout_tail": "Compiling 13 files with Solc 0.8.36\nSolc 0.8.36 finished in 6.09s\n"
-    },
-    {
-      "id": "M-37",
-      "description": "Lens permits buy at sale end",
-      "classification": "killed",
-      "exit_code": 1,
-      "seconds": 11.601,
-      "stderr_tail": "",
-      "stdout_tail": "Compiling 2 files with Solc 0.8.36\nSolc 0.8.36 finished in 1.96s\n"
+      "stdout_tail": "Compiling 9 files with Solc 0.8.36\nSolc 0.8.36 finished in 2.22s\n"
     }
   ]
 }

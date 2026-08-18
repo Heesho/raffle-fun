@@ -1,12 +1,12 @@
-import { base, baseSepolia, foundry } from "viem/chains";
+import { foundry, mainnet, sepolia } from "viem/chains";
 
-export const supportedChains = [baseSepolia, base, foundry] as const;
+export const supportedChains = [sepolia, mainnet, foundry] as const;
 
-export const productionChains = [baseSepolia, base] as const;
+export const productionChains = [sepolia, mainnet] as const;
 
 export type SupportedChainId = (typeof supportedChains)[number]["id"];
 
-export const defaultDevelopmentChain = baseSepolia;
+export const defaultDevelopmentChain = sepolia;
 
 export function isSupportedChainId(
   chainId: number,

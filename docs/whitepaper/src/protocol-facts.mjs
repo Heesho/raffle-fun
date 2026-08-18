@@ -1,12 +1,30 @@
 #!/usr/bin/env node
 
 import { execFileSync } from "node:child_process";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "../../..");
+const whitepaperSourceRoot = resolve(root, "docs/whitepaper/source");
+const publicationCorpus = [
+  readFileSync(resolve(whitepaperSourceRoot, "template.html"), "utf8"),
+  ...readdirSync(resolve(whitepaperSourceRoot, "sections"))
+    .filter((name) => name.endsWith(".md"))
+    .map((name) =>
+      readFileSync(resolve(whitepaperSourceRoot, "sections", name), "utf8"),
+    ),
+].join("\n");
+if (
+  /Pyth Entropy|RaffleLens|Base Sepolia|Base mainnet|buyTickets|ticketPrice/.test(
+    publicationCorpus,
+  )
+) {
+  throw new Error(
+    "Refusing to generate whitepaper facts or figures from the retired Base/Pyth/per-ticket source. See docs/WHITEPAPER.md.",
+  );
+}
 const constantsPath = resolve(
   root,
   "packages/contracts/src/libraries/RaffleConstants.sol",

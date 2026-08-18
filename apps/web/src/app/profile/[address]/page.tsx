@@ -4,8 +4,7 @@ import { ProfileView } from "@/features/profile/profile-view";
 
 export const metadata: Metadata = {
   title: "Profile",
-  description:
-    "Sponsored raffles, ticket positions, wins, and live claimability.",
+  description: "Sponsored raffles, entry tickets, wins, and live claimability.",
 };
 
 export default async function ProfilePage({

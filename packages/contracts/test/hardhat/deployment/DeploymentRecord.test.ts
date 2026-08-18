@@ -10,20 +10,39 @@ import {
 } from "../../../scripts/deployment-record.js";
 
 const record = {
-  chainId: 84_532,
-  networkName: "base-sepolia",
+  chainId: 11_155_111,
+  networkName: "sepolia",
   deployedAt: "2026-07-30T00:00:00.000Z",
-  deploymentBlock: 1,
+  validationBlock: 1,
+  validationBlockHash:
+    "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  deploymentTransactions: {
+    raffleFactory: {
+      hash: "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      blockNumber: 1,
+    },
+  },
+  runtimeCodeHashes: {
+    quoteToken:
+      "0x0101010101010101010101010101010101010101010101010101010101010101",
+    vrfWrapper:
+      "0x0202020202020202020202020202020202020202020202020202020202020202",
+    raffleFactory:
+      "0x0303030303030303030303030303030303030303030303030303030303030303",
+    raffleImplementation:
+      "0x0404040404040404040404040404040404040404040404040404040404040404",
+  },
   deployer: "0x1111111111111111111111111111111111111111",
   finalFactoryOwner: "0x2222222222222222222222222222222222222222",
   quoteToken: "0x3333333333333333333333333333333333333333",
-  entropy: "0x4444444444444444444444444444444444444444",
+  vrfWrapper: "0x4444444444444444444444444444444444444444",
   raffleFactory: "0x6666666666666666666666666666666666666666",
-  raffleLens: "0x7777777777777777777777777777777777777777",
+  raffleImplementation: "0x5555555555555555555555555555555555555555",
   protocolTreasury: "0x8888888888888888888888888888888888888888",
   callbackGasLimit: 300_000,
+  requestConfirmations: 30,
   sourceCommit: "9999999999999999999999999999999999999999",
-  verificationStatus: "unverified",
+  verificationStatus: "verified",
 } as const;
 
 describe("deployment record", () => {
@@ -32,7 +51,7 @@ describe("deployment record", () => {
     const destination = await writeDeploymentRecord(record, directory);
     assert.equal(
       destination,
-      path.join(directory, "deployments", "84532.json"),
+      path.join(directory, "deployments", "11155111.json"),
     );
     assert.deepEqual(JSON.parse(await readFile(destination, "utf8")), record);
   });
@@ -45,18 +64,27 @@ describe("deployment record", () => {
       }),
     );
     assert.throws(() =>
-      deploymentRecordSchema.parse({ ...record, networkName: "base" }),
+      deploymentRecordSchema.parse({ ...record, networkName: "mainnet" }),
     );
     assert.throws(() =>
       deploymentRecordSchema.parse({
         ...record,
-        callbackGasLimit: 4_294_967_296,
+        callbackGasLimit: 299_999,
+      }),
+    );
+    assert.throws(() =>
+      deploymentRecordSchema.parse({ ...record, requestConfirmations: 29 }),
+    );
+    assert.throws(() =>
+      deploymentRecordSchema.parse({
+        ...record,
+        verificationStatus: "unverified",
       }),
     );
     assert.throws(() =>
       deploymentRecordSchema.parse({
         ...record,
-        raffleLens: record.raffleFactory,
+        raffleImplementation: record.raffleFactory,
       }),
     );
   });

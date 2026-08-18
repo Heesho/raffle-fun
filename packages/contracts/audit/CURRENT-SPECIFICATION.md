@@ -1,156 +1,129 @@
-# Current-Commit Protocol Specification
+# Current protocol specification
 
-**Evidence identity:** source-derived from commit `5772e54ba89c06646815ed52a881cd8940f094ca` on `main`, then reconciled with repository documentation on 2026-08-16. The tests and dependency lock may be changed by the campaign, but no production Solidity was changed. Historical audit reports are not evidence for this commit.
+Status: normative security-review summary for the uncommitted Ethereum v1 candidate.
+Production Solidity and interfaces are authoritative if this document conflicts with code.
 
-## Scope and source priority
+## Contract graph and fixed configuration
 
-The normative source order used here is current production Solidity and interfaces, current generated artifacts, then non-superseded operational documentation. The complete whitepaper and several historical audit files describe older settlement and transfer rules; their explicit superseded/historical labels are honored. They are not an oracle for current behavior.
+`RaffleFactory` deploys one locked `Raffle` implementation and creates canonical,
+non-upgradeable ERC-1167 clones. Its two-step owner may pause future creation only.
+Every clone shares the factory's immutable six-decimal quote token, Chainlink VRF v2.5
+native direct-funding wrapper, protocol treasury, 300,000 callback gas limit, and 30
+request confirmations.
 
-The production graph contains three non-upgradeable contracts:
+Each raffle fixes its sponsor, immutable `sponsorRecipient`, prize contract and token ID,
+reserve entry count, and exclusive sale end. The sponsor is `msg.sender` at creation;
+the recipient may be a different operational or cold wallet. There is no Lens, raffle
+administrator, upgrade path, generic call, rescue function, variable entry price, or
+protocol-level gross-value cap.
 
-- `RaffleFactory`: ordinary `CREATE` deployment and registry, immutable quote token/Entropy/callback gas, future-only pause and treasury policy.
-- `Raffle`: one immutable configuration, one escrowed ERC-721 prize, ERC-721 bearer tickets, exact quote liabilities, one Entropy v2 request, no administrator.
-- `RaffleLens`: registry-authenticated, bounded, read-only aggregation. Its booleans are convenience data, never authorization.
+## Creation, entries, and tickets
 
-There are no proxies, clones, initializers, upgrade paths, `CREATE2` guarantees, arbitrary calls, settlement overrides, generic rescue functions, or controls over an existing Raffle.
+Creation clones, initializes, registers, escrows the exact NFT, and verifies custody and
+`Active` status in one atomic transaction. Each entry costs exactly `1_000_000` raw quote
+units. `buyEntries(recipient, entryCount)` collects `entryCount` dollars and mints one
+ERC-721 ticket with a sequential ID. A separate mapping stores that ticket's inclusive
+`uint128` entry range. Ranges start at one and partition all sold entries without gaps.
 
-## Authority and mutability
+Unburned tickets remain transferable in every status. Current `ownerOf(ticketId)` is the
+bearer credential at settlement or refund time. Purchase and winning-ticket verification
+are O(1) in entry count; refunds loop over at most 100 supplied ticket IDs.
 
-```mermaid
-flowchart TD
-  O["Factory owner"] -->|"future creation pause; future treasury"| F["RaffleFactory"]
-  S["Sponsor"] -->|"create + exact prize deposit"| F
-  F -->|"ordinary CREATE; atomic register/deposit/verify"| R1["Raffle N"]
-  F --> R2["Raffle N+1"]
-  E["Pyth Entropy v2"] -->|"authenticated callback"| R1
-  U["Ticket owners / permissionless callers"] -->|"buy, transfer, request, finalize, redeem, claim"| R1
-  L["RaffleLens"] -->|"registry-authenticated reads only"| R1
-  F -. "cannot mutate existing configuration or status" .-> R1
+## Lifecycle and liveness
+
+```text
+0 AwaitingPrize
+1 Active
+2 Drawing
+3 NftWon
+4 CashWon
+5 Refunding
 ```
-
-Factory ownership is two-step and cannot be renounced. Compromise changes creation availability and the treasury captured by later Raffles only. Existing Raffles retain immutable sponsor, recovery recipient, treasury, quote token, Entropy, prize, schedule, threshold, callback gas, and economics.
-
-## Construction and lifecycle
-
-The Factory validates contract dependencies and sponsor-controlled bounds, deploys a Raffle in `AwaitingPrize`, writes the three registry indexes, emits `RaffleCreated`, safe-transfers the configured prize, verifies `ownerOf(prizeTokenId) == raffle`, and verifies `status == Active`. Any failure reverts deployment, indexes, count, event, and transfer.
-
-Status ordinals are `AwaitingPrize=0`, `Active=1`, `Drawing=2`, `NftWon=3`, `CashWon=4`, `Refunding=5`, `Closed=6`.
 
 ```mermaid
 stateDiagram-v2
-  [*] --> AwaitingPrize: constructor
-  AwaitingPrize --> Active: exact factory-operated prize deposit
-  Active --> Drawing: requestDraw after end and before grace deadline
-  Active --> Refunding: tickets sold; grace deadline reached
-  Active --> Closed: no tickets; sponsor early or anyone at/after end
-  Drawing --> NftWon: matching authenticated callback; threshold met
-  Drawing --> CashWon: matching authenticated callback; threshold missed
-  Drawing --> Refunding: callback deadline reached first
-  NftWon --> Refunding: delivery deadline reached before verified delivery
+  [*] --> AwaitingPrize: clone initialization
+  AwaitingPrize --> Active: exact prize deposit
+  Active --> Drawing: permissionless request after end
+  Active --> Refunding: empty raffle closed
+  Drawing --> NftWon: valid callback; reserve met
+  Drawing --> CashWon: valid callback; reserve missed
+  Drawing --> Refunding: callback timeout
 ```
 
-Time never mutates status by itself. It only changes whether a call is permitted. Exact boundaries are:
+Sales require `now < endTime`. For a nonempty raffle, `requestDraw` remains callable
+forever from `endTime` until the first successful request; inactivity cannot enable
+refunds. A request enters `Drawing` before calling the wrapper. If no valid callback
+arrives within two days of the accepted request, anyone may enable full refunds. At the
+deadline, callback and refund transactions follow first-valid-included ordering.
 
-- Sale: `startTime <= now < endTime`.
-- Draw: `endTime <= now < endTime + 3 days`, with at least one ticket.
-- Missed-request refund: `now >= endTime + 3 days`.
-- Callback-timeout refund: `now >= drawRequestedAt + 2 days`.
-- NFT-delivery-timeout refund: `now >= resolvedAt + 30 days` while `NftWon` and not claimed.
-- Empty close: sponsor at any `Active` time with zero sales; anyone when `now >= endTime`.
+A valid callback records only `winningEntry`, `resolvedAt`, and the final `NftWon` or
+`CashWon` status. Neither resolved status can later enter refunds. An empty raffle can
+enter zero-liability `Refunding` immediately through the sponsor or after `endTime`
+through anyone.
 
-At a timeout timestamp, the callback or winner delivery may still be valid until `enableRefunds` changes status. Inclusion order decides: a valid callback/delivery first makes the timeout finalizer invalid; finalization first makes a late callback ignored or delivery invalid. At the request-grace timestamp, `requestDraw` is invalid and refund finalization is valid, so there is no overlap. A purchase at `endTime` is invalid; empty close is valid.
+## Randomness
 
-`Refunding` remains the status after the last refund; `Closed` is exclusively the zero-sale path. Resolution fields are historical data after an NFT-timeout fallback.
-
-## Tickets as bearer credentials
-
-Tickets are sequential IDs starting at one. A purchase mints 1–100 safe ERC-721s and is atomic with the exact quote receipt. `grossSales == ticketPrice * totalTickets` because successful burns do not reduce cumulative sales.
-
-Current owner—not an approved address or operator—is the economic claimant. The winning ticket burns for the NFT or cash. Each refundable ticket burns once for exactly `ticketPrice`; refund batches contain 1–100 IDs and are all-or-nothing. Burns clear approvals under ERC-721 behavior, and any later failed token/NFT interaction reverts the burn and liability changes.
-
-All ticket transfers are frozen in `Drawing`. In `NftWon` and `CashWon`, only the selected winner is frozen; losing tickets remain transferable and may persist as souvenirs. In `Refunding`, outstanding tickets remain transferable until redeemed. All safe-transfer overloads route through the overridden `transferFrom`, so operators and overloads do not bypass locks.
-
-Transfers reject the Raffle, its Factory, quote token, Entropy, prize collection, and already registered sibling Raffles. Constructor-fixed recovery and treasury destinations use a similar check. The contract cannot infer future capabilities: an arbitrary code-less address, a later-deployed contract, or an incapable third-party contract may still hold a credential. This is a bearer-asset limitation.
-
-## Assets and liabilities
-
-```mermaid
-flowchart LR
-  B["Buyer USDC"] -->|"exact debit/credit; 1..100 tickets"| R["Raffle quote escrow"]
-  SP["Sponsor ERC-721"] -->|"atomic factory deposit"| R
-  R -->|"verified NFT delivery; burn winner"| W["Winning owner"]
-  R -->|"cash delivery; burn winner"| W
-  R -->|"burn each ticket"| RF["Refund owners"]
-  R -->|"pull claims"| S["Sponsor"]
-  R -->|"pull claim"| T["Captured treasury"]
-  R -->|"CashWon / Refunding / Closed"| PR["Fixed prize recovery recipient"]
-```
-
-For gross pot `G`, integer arithmetic is:
+Any account may pay the live native wrapper price for one word. Exact fee is forwarded
+and excess is returned atomically. Only the immutable wrapper is authorized. In-flight,
+wrong-request, malformed, stale, and duplicate callbacks are ignored with an event.
 
 ```text
-fee = floor(G * 500 / 10_000)
-distributable = G - fee
-cashWinner = floor(distributable * 8_000 / 10_000)
-cashSponsor = distributable - cashWinner
+winningEntry = (randomWord % totalEntries) + 1
+result = totalEntries >= reserveEntries ? NftWon : CashWon
 ```
 
-On NFT success, quote proceeds remain `unsettledPot` until the prize is transferred and `ownerOf` verifies the destination. Only then are fee and sponsor pull claims credited. On cash success the callback clears `unsettledPot`, records winner cash, and credits sponsor and treasury. On every refund origin there is no protocol fee or sponsor quote claim; the whole unsettled pot becomes per-ticket refund liability. In `CashWon`, `Refunding`, and `Closed`, the fixed recovery recipient may claim the NFT once.
+The callback never searches tickets, loops over entries, transfers a token, or calls a
+user. Its fixed gas-unit limit does not cap Ethereum's gas price; the wrapper's live
+native quote changes with gas pricing.
 
-The authoritative identity is:
+## Settlement and fixed destinations
+
+`settleWinningTicket(ticketId)` is permissionless. The contract proves the supplied
+range contains `winningEntry`, reads its current owner, burns the ticket, and always
+delivers to that owner. There is no caller-selected destination.
+
+For gross sales `G`:
+
+```text
+protocolFee = floor(G * 500 / 10_000)
+cashWinner  = floor(G * 8_000 / 10_000)
+```
+
+- `NftWon`: verified NFT delivery to the ticket owner; record `G - protocolFee` as
+  `sponsorProceeds` and `protocolFee` as `protocolFees`.
+- `CashWon`: pay `cashWinner` directly to the ticket owner; record `G - protocolFee -
+cashWinner` for the sponsor and `protocolFee` for the protocol. The sponsor prize is
+  independently releasable.
+- `Refunding`: the current owner calls `refundTickets`, burns one to 100 owned tickets,
+  and receives exactly their aggregate entry count times one USDC.
+
+Anyone may call `releaseSponsorProceeds`, `releaseProtocolFees`, or
+`releaseSponsorPrize`. They always pay the immutable `sponsorRecipient` or
+`protocolTreasury`; the caller cannot redirect value.
+
+NFT delivery deliberately uses ERC-721 `transferFrom` plus `ownerOf` verification so a
+contract recipient cannot veto fixed delivery by rejecting a receiver callback. A
+noncompliant prize contract remains outside the supported-asset model.
+
+## Accounting
 
 ```text
 accountedQuoteBalance
   = unsettledPot
   + remainingRefundLiability
-  + winnerCashLiability
-  + totalClaimableQuote
+  + sponsorProceeds
+  + protocolFees
 ```
 
-A supported quote token must maintain `balanceOf(raffle) >= accountedQuoteBalance`. Incoming purchases require the exact raffle balance delta. Outgoing payments require both exact raffle debit and exact recipient credit. Effects and burns occur before interactions under `nonReentrant`, and a failed check reverts them. Direct donations are surplus, do not become liabilities, and have no rescue path.
+Incoming and outgoing quote transfers verify exact sender and recipient balance deltas.
+Effects and burns occur before external interactions under reentrancy guards; a revert
+restores the whole transaction. Direct quote donations are unaccounted surplus and have
+no rescue path.
 
-The supported quote asset is a six-decimal, non-rebasing, exact-transfer USDC deployment. Taxes, rebates, rebases, false/no-return anomalies, lying/reentrant `balanceOf`, proxy policy changes, pauses, and blacklists are either rejected atomically when detectable or may suspend progress. A fully malicious token or NFT can lie consistently; the protocol cannot make such an asset honest.
+## Trust boundary
 
-## External calls and reentrancy
-
-```mermaid
-flowchart TD
-  F["Factory.createRaffle nonReentrant"] --> C["new Raffle"]
-  F --> D["prize.safeTransferFrom"]
-  D --> H["Raffle.onERC721Received"]
-  F --> V["prize.ownerOf + status verification"]
-  B["Raffle.buyTickets nonReentrant"] --> BI["quote balance/transferFrom/balance"]
-  B --> M["up to 100 safe-mint receiver hooks"]
-  Q["Raffle.requestDraw nonReentrant"] --> EF["Entropy fee + requestV2"]
-  EF --> IC["synchronous callback ignored while in flight"]
-  Q --> NR["unbounded-gas native excess refund; failure reverts request"]
-  CB["authenticated entropyCallback"] --> ST["bounded storage + events only"]
-  W["winner/recovery nonReentrant"] --> NT["prize safe transfer + optional ownerOf verification"]
-  P["quote payout nonReentrant"] --> QT["balance/transfer/balance exactness"]
-```
-
-All asset-moving public entry points are guarded. Receiver hooks may interact with siblings, but cannot reenter the same guarded operation. The Entropy callback authenticates the configured Entropy wrapper, rejects in-flight, wrong-state, and wrong-sequence attempts by emitting `EntropyCallbackIgnored`, and makes no token/user call.
-
-## Randomness
-
-`requestDraw` reads `getFeeV2(callbackGasLimit)`, forwards exactly that fee to `requestV2`, records its sequence, and returns all excess native value or reverts the entire request. Status changes to `Drawing` and `_requestInFlight` is set before the request call. Forced native currency is unaccounted and irrelevant.
-
-A valid callback selects `(uint256(randomNumber) % totalTickets) + 1`. For `M=2^256`, writing `M=qN+r`, the first `r` zero-based residues occur `q+1` times and the rest `q` times. The per-ticket absolute probability difference is exactly `1/M` (`8.636168555094444625e-78`). Examples:
-
-|               `N` |             `r` | maximum relative advantage over a low residue |
-| ----------------: | --------------: | --------------------------------------------: |
-|                 3 |               1 |                            `2.5908505665e-77` |
-|                10 |               6 |                            `8.6361685551e-77` |
-|               100 |              36 |                            `8.6361685551e-76` |
-|         1,000,000 |         639,936 |                            `8.6361685551e-72` |
-|     4,294,967,295 |               1 |                            `3.7092061498e-68` |
-|     4,294,967,296 |               0 |                                          zero |
-| 1,000,000,000,000 | 913,129,639,936 |                            `8.6361685551e-66` |
-
-Modulo bias is mathematically nonzero except when `N` divides `2^256`, but negligible for plausible counts. This does not address the material provider selective-reveal assumption.
-
-## Bounds and metadata
-
-Factory start delay is at most 7 days, sale duration at most 30 days, metadata URI at most 2,048 bytes, ticket price and threshold nonzero, and callback gas nonzero. Purchase and refund loops are capped at 100; Lens batches are capped at 64. Settlement and callback never iterate over historical ticket count.
-
-Metadata is untrusted text. The contracts do not interpret it. Frontends/indexers must not treat it as authorization or render it as trusted HTML.
+Correctness assumes available exact-transfer official USDC, an honest standards-compliant
+ERC-721 prize, Ethereum inclusion/finality, and the configured Chainlink wrapper and
+coordinator. Existing clones cannot be patched. Release blockers and accepted external
+risks are tracked in `CURRENT-RESIDUAL-RISKS.md` and `RELEASE-CHECKLIST.md`.

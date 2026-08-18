@@ -1,12 +1,17 @@
 import type { IndexedActivity, IndexedRaffle } from "@/lib/subgraph";
 
-import type { Sandbox, SandboxEvent, SandboxRaffle } from "./engine";
+import {
+  ENTRY_PRICE,
+  type Sandbox,
+  type SandboxEvent,
+  type SandboxRaffle,
+} from "./engine";
 
-/** The sandbox quote token. Every sandbox raffle is priced in WETH. */
-export const SANDBOX_WETH = {
-  address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-  symbol: "WETH",
-  decimals: 18,
+/** The sandbox mirrors the production factory's fixed six-decimal USDC. */
+export const SANDBOX_USDC = {
+  address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  symbol: "USDC",
+  decimals: 6,
 } as const;
 
 /**
@@ -18,7 +23,7 @@ export function toIndexedRaffle(raffle: SandboxRaffle): IndexedRaffle {
     id: raffle.id,
     factoryId: raffle.factoryId,
     sponsor: raffle.sponsor,
-    quoteToken: SANDBOX_WETH.address,
+    quoteToken: SANDBOX_USDC.address,
     quoteTokenVerified: true,
     prizeToken: raffle.prizeToken,
     prizeTokenId: raffle.prizeTokenId,
@@ -26,25 +31,21 @@ export function toIndexedRaffle(raffle: SandboxRaffle): IndexedRaffle {
     prizeName: raffle.prizeName,
     prizeImage: raffle.prizeImage,
     prizePixelated: raffle.prizePixelated,
-    metadataURI: "",
-    ticketPrice: raffle.ticketPrice.toString(),
-    minimumTickets: String(raffle.minimumTickets),
-    startTime: String(Math.floor(raffle.startTime / 1000)),
+    entryPrice: ENTRY_PRICE.toString(),
+    reserveEntries: raffle.reserveEntries.toString(),
     endTime: String(Math.floor(raffle.endTime / 1000)),
     state: raffle.status,
     outcome:
-      raffle.status === "NFT_WON" ||
-      raffle.status === "CASH_WON" ||
-      raffle.status === "CLOSED"
+      raffle.status === "NFT_WON" || raffle.status === "CASH_WON"
         ? raffle.status
         : "NONE",
-    totalTickets: String(raffle.tickets.length),
+    totalEntries: raffle.totalEntries.toString(),
+    ticketCount: raffle.tickets.length.toString(),
     grossSales: raffle.grossSales.toString(),
     unsettledPot: raffle.unsettledPot.toString(),
-    winner:
-      raffle.winningTicketId === null
-        ? null
-        : (raffle.tickets[raffle.winningTicketId - 1]?.owner ?? null),
+    remainingRefundLiability: raffle.remainingRefundLiability.toString(),
+    winningEntry: raffle.winningEntry?.toString() ?? null,
+    winningTicketId: raffle.winningTicketId?.toString() ?? null,
   };
 }
 
@@ -54,29 +55,38 @@ const activityKinds: Record<
 > = {
   PURCHASE: "PURCHASE",
   RESOLVED: "RESOLUTION",
-  QUOTE_CLAIM: "QUOTE_CLAIM",
-  PRIZE_CLAIM: "PRIZE_CLAIM",
+  SPONSOR_PROCEEDS_RELEASED: "QUOTE_CLAIM",
+  PROTOCOL_FEES_RELEASED: "QUOTE_CLAIM",
+  SPONSOR_PRIZE_RELEASED: "PRIZE_CLAIM",
   DRAW_REQUESTED: undefined,
-  CLOSED: undefined,
   REFUNDS_ENABLED: undefined,
   REFUND_REDEEMED: "QUOTE_CLAIM",
-  WINNING_REDEEMED: "QUOTE_CLAIM",
+  WINNING_SETTLED: undefined,
 };
 
 export function toIndexedActivity(
   sandbox: Sandbox,
 ): readonly IndexedActivity[] {
   return sandbox.log.flatMap((event) => {
-    const kind = activityKinds[event.kind];
+    const raffle = sandbox.raffles.find(
+      (candidate) => candidate.id === event.raffleId,
+    );
+    const kind =
+      event.kind === "WINNING_SETTLED"
+        ? raffle?.status === "NFT_WON"
+          ? "PRIZE_CLAIM"
+          : "QUOTE_CLAIM"
+        : activityKinds[event.kind];
     if (kind === undefined) return [];
+    const amount = event.kind === "RESOLVED" ? null : event.amount;
     return [
       {
         id: event.id,
         kind,
         raffle: event.raffleId,
-        account: event.account,
-        amount: event.amount === null ? null : event.amount.toString(),
-        quoteToken: event.amount === null ? null : SANDBOX_WETH.address,
+        account: event.kind === "RESOLVED" ? null : event.account,
+        amount: amount === null ? null : amount.toString(),
+        quoteToken: amount === null ? null : SANDBOX_USDC.address,
         timestamp: String(Math.floor(event.at / 1000)),
         transactionHash: `0x${event.id
           .replace(/[^a-f0-9]/gi, "")

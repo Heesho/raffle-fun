@@ -1,19 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.36;
 
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import {IEntropyV2} from "@pythnetwork/entropy-sdk-solidity/IEntropyV2.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+
+import { IChainlinkVRFV2PlusWrapper } from "./IChainlinkVRFV2PlusWrapper.sol";
 
 /**
- * @title raffle.fun Raffle Escrow and Bearer Ticket Interface
+ * @title raffle.fun Raffle Interface
  * @author Heesho
- * @notice Defines a constructor-deployed raffle whose tickets burn to redeem the winning asset or their own refund.
- * @dev The current ticket owner is the claim owner. Ownership freezes while randomness is pending, and the selected
- *      ticket remains locked after resolution so advance knowledge or stale marketplace approvals cannot redirect
- *      the award. Refundable tickets are transferable until they burn for their purchase-price refund. Supported quote
- *      tokens are non-rebasing exact-transfer ERC-20s. Supported prizes are honest, standards-compliant ERC-721s.
- * @custom:version 2.0.0
+ * @notice Defines one autonomous NFT raffle using fixed-price USDC entries and one transferable ERC-721 ticket per
+ *         purchase.
+ * @dev Ticket IDs are sequential. Each ticket stores one inclusive uint128 entry range and remains a bearer claim
+ *      until it is atomically burned for a prize or refund. Supported quote tokens are exact-transfer, non-rebasing
+ *      six-decimal ERC-20s. Supported prizes are honest, standards-compliant ERC-721s.
+ * @custom:version 1.0.0
  */
 interface IRaffle {
     /// @notice The single authoritative lifecycle and economic result.
@@ -23,122 +24,74 @@ interface IRaffle {
         Drawing,
         NftWon,
         CashWon,
-        Refunding,
-        Closed
+        Refunding
     }
 
     /**
-     * @notice Complete immutable raffle configuration supplied by the canonical factory constructor call.
-     * @param factory Canonical factory deploying and registering this raffle.
-     * @param sponsor Prize depositor and successful sponsor-cash recipient.
-     * @param sponsorPrizeRecoveryRecipient Fixed sponsor-side NFT recovery account.
-     * @param protocolTreasury Treasury captured for this raffle.
-     * @param quoteToken Factory-wide exact-transfer USDC deployment.
-     * @param entropy Pyth Entropy v2 deployment.
+     * @notice Complete clone-specific configuration supplied once by the canonical factory.
+     * @param sponsor Prize depositor and empty-raffle cancellation authority.
+     * @param sponsorRecipient Immutable recipient of all sponsor quote proceeds and returned prizes.
+     * @param protocolTreasury Treasury captured by this immutable factory.
      * @param prizeToken Standards-compliant ERC-721 prize contract.
      * @param prizeTokenId Escrowed prize token ID.
      * @param raffleId Canonical factory identifier.
-     * @param ticketPrice Raw USDC units per ticket.
-     * @param minimumTickets Threshold selecting NFT versus cash outcome after a successful draw.
-     * @param startTime Inclusive ticket-sale start.
-     * @param endTime Exclusive ticket-sale end.
-     * @param callbackGasLimit Gas limit supplied to Entropy v2.
-     * @param metadataURI Raffle and souvenir-ticket metadata URI.
+     * @param reserveEntries Entry threshold selecting the NFT rather than cash outcome.
+     * @param endTime Exclusive sale end; the sale begins when the prize is deposited during creation.
      */
-    struct RaffleParams {
-        address factory;
+    struct RaffleInitParams {
         address sponsor;
-        address sponsorPrizeRecoveryRecipient;
+        address sponsorRecipient;
         address protocolTreasury;
-        address quoteToken;
-        address entropy;
         address prizeToken;
         uint256 prizeTokenId;
         uint256 raffleId;
-        uint256 ticketPrice;
-        uint256 minimumTickets;
-        uint256 startTime;
-        uint256 endTime;
-        uint32 callbackGasLimit;
-        string metadataURI;
+        uint128 reserveEntries;
+        uint64 endTime;
     }
 
-    /// @notice Raised when construction is not performed by the configured factory.
     error OnlyFactory();
-    /// @notice Raised when a required account or destination is zero.
+    error AlreadyInitialized();
     error ZeroAddress();
-    /// @notice Raised when an action requires another lifecycle status.
     error InvalidStatus(Status actual);
-    /// @notice Raised when the factory-operated safe deposit differs from the configured prize.
     error UnexpectedPrize(address token, uint256 tokenId, address from, address operator);
-    /// @notice Raised when a purchase precedes the inclusive start timestamp.
-    error SaleNotStarted(uint256 startTime, uint256 currentTime);
-    /// @notice Raised when a purchase occurs at or after the exclusive end timestamp.
     error SaleEnded(uint256 endTime, uint256 currentTime);
-    /// @notice Raised when a ticket recipient is zero.
     error InvalidRecipient();
-    /// @notice Raised when a purchase or redemption batch is empty or exceeds its explicit bound.
-    error InvalidQuantity(uint256 quantity, uint256 maximum);
-    /// @notice Raised when purchase multiplication would overflow.
-    error GrossAmountOverflow();
-    /// @notice Raised when an incoming quote transfer does not credit the exact advertised amount.
+    error ZeroEntryCount();
+    error TotalEntriesOverflow(uint128 totalEntries, uint128 requestedEntries);
+    error InvalidTicketBatchSize(uint256 quantity, uint256 maximum);
     error UnsupportedQuoteToken(uint256 expectedAmount, uint256 receivedAmount);
-    /// @notice Raised when an outgoing quote transfer does not debit and credit the exact liability amount.
     error UnsupportedQuoteTokenTransfer(uint256 expectedAmount, uint256 debitedAmount, uint256 creditedAmount);
-    /// @notice Raised when a quote payment targets a known protocol contract that cannot recover the payment.
     error InvalidQuoteDestination(address destination);
-    /// @notice Raised when an early empty-raffle closure is attempted by anyone other than the sponsor.
-    error OnlySponsor();
-    /// @notice Raised when an empty-raffle action is attempted after a ticket sale.
-    error TicketsWereSold(uint256 totalTickets);
-    /// @notice Raised when an end-dependent action is attempted before sale end.
+    error OnlySponsor(address caller, address sponsor);
     error RaffleNotEnded(uint256 endTime, uint256 currentTime);
-    /// @notice Raised when a draw or refund action requires at least one ticket.
-    error NoTicketsSold();
-    /// @notice Raised when a draw request is attempted at or after the request-grace deadline.
-    error DrawRequestWindowExpired(uint256 deadline, uint256 currentTime);
-    /// @notice Raised when refunds are enabled before the applicable oracle-liveness deadline.
+    error NoEntriesSold();
     error RefundsNotAvailable(uint256 deadline, uint256 currentTime);
-    /// @notice Raised when less than the current Entropy fee is supplied.
-    error InsufficientEntropyFee(uint256 requiredFee, uint256 suppliedValue);
-    /// @notice Raised when immediate return of excess Entropy payment fails.
+    error InsufficientVrfFee(uint256 requiredFee, uint256 suppliedValue);
     error NativeRefundFailed(address recipient, uint256 amount);
-    /// @notice Raised when an account has no ordinary quote-token claim.
-    error NoQuoteClaim(address account);
-    /// @notice Raised when a bearer or fixed claimant would become a known non-callable protocol address.
+    error OnlyVRFWrapperCanFulfill(address have, address want);
+    error NoSponsorProceeds();
+    error NoProtocolFees();
     error UnsafeProtocolDestination(address destination);
-    /// @notice Raised when ticket ownership is fixed during the draw or for the selected winning credential.
-    error TicketTransferLocked(uint256 ticketId, Status status);
-    /// @notice Raised when the caller does not own the ticket being redeemed.
     error NotTicketOwner(uint256 ticketId, address caller, address owner);
-    /// @notice Raised when sponsor-side NFT recovery is unavailable for the current result.
+    error TicketDoesNotContainWinningEntry(uint256 ticketId, uint128 winningEntry);
     error SponsorPrizeUnavailable(Status status);
-    /// @notice Raised when anyone other than the immutable recovery recipient attempts sponsor-side NFT recovery.
-    error OnlyPrizeRecoveryRecipient(address caller, address recipient);
-    /// @notice Raised when the configured prize already left escrow.
     error PrizeAlreadyClaimed();
-    /// @notice Raised when a prize transfer reports success without assigning the NFT to the requested recipient.
     error PrizeDeliveryVerificationFailed(address recipient);
 
-    /// @notice Emitted after the exact configured prize enters escrow and activates ticket sales.
     event PrizeDeposited(address indexed prizeToken, uint256 indexed prizeTokenId, address indexed sponsor);
 
-    /// @notice Emitted once per bounded multi-ticket purchase after exact-transfer verification.
-    event TicketsPurchased(
+    event TicketPurchased(
         address indexed buyer,
         address indexed recipient,
-        uint256 quantity,
-        uint256 firstTicketId,
-        uint256 lastTicketId,
+        uint256 indexed ticketId,
+        uint128 firstEntry,
+        uint128 lastEntry,
+        uint128 entryCount,
         uint256 grossAmount
     );
 
-    /// @notice Emitted when a raffle with no ticket sales closes and exposes sponsor-side prize recovery.
-    event EmptyRaffleClosed(address indexed caller, address indexed prizeRecoveryRecipient);
-
-    /// @notice Emitted when the single Entropy v2 request is accepted and any overpayment is returned immediately.
     event DrawRequested(
-        uint64 indexed sequenceNumber,
+        uint256 indexed requestId,
         address indexed requester,
         uint256 fee,
         uint256 excessReturned,
@@ -146,140 +99,95 @@ interface IRaffle {
         uint256 callbackDeadline
     );
 
-    /// @notice Emitted when a wrong-sequence, in-flight, stale, or duplicate callback is ignored without reverting.
-    event EntropyCallbackIgnored(uint64 indexed receivedSequence, uint64 indexed expectedSequence, Status status);
+    event VrfCallbackIgnored(uint256 indexed receivedRequestId, uint256 indexed expectedRequestId, Status status);
 
-    /// @notice Emitted when verified randomness selects the bearer winning ticket and successful economic branch.
-    event RaffleResolved(
-        uint64 indexed sequenceNumber,
-        uint256 indexed winningTicketId,
+    event RaffleResolved(uint256 indexed requestId, uint128 indexed winningEntry, Status indexed result);
+
+    event RefundsEnabled(address indexed finalizer, uint256 remainingRefundLiability);
+
+    event WinningTicketSettled(
+        uint256 indexed ticketId,
+        address indexed winner,
         Status indexed result,
+        uint256 cashAmount,
         uint256 protocolFee,
-        uint256 winnerCashAmount,
-        uint256 sponsorCashAmount
+        uint256 sponsorAmount
     );
 
-    /// @notice Emitted when either oracle-liveness deadline makes every outstanding ticket refundable.
-    event RefundsEnabled(address indexed finalizer, bool indexed requestWasAccepted, uint256 remainingRefundLiability);
-
-    /// @notice Emitted when the winning bearer ticket burns for the NFT or cash award.
-    event WinningTicketRedeemed(
-        uint256 indexed ticketId, address indexed owner, address indexed to, Status result, uint256 cashAmount
+    event TicketsRefunded(
+        address indexed owner,
+        uint256 ticketQuantity,
+        uint256 entryQuantity,
+        uint256 amount,
+        uint256 remainingRefundLiability
     );
 
-    /// @notice Emitted when refundable bearer tickets burn for their aggregate purchase-price refund.
-    event RefundTicketsRedeemed(
-        address indexed owner, address indexed to, uint256 quantity, uint256 amount, uint256 remainingRefundLiability
+    event SponsorProceedsReleased(address indexed caller, address indexed recipient, uint256 amount);
+    event ProtocolFeesReleased(address indexed caller, address indexed treasury, uint256 amount);
+
+    event SponsorPrizeReleased(
+        address indexed caller, address indexed recipient, address indexed prizeToken, uint256 prizeTokenId
     );
 
-    /// @notice Emitted after an exact ordinary quote-token claim succeeds.
-    event QuoteClaimed(address indexed account, address indexed to, uint256 amount);
+    function initialize(RaffleInitParams calldata params) external;
 
-    /// @notice Emitted after the recovery recipient withdraws the NFT from a cash, refund, or empty result.
-    event SponsorPrizeClaimed(
-        address indexed recipient, address indexed to, address indexed prizeToken, uint256 prizeTokenId
-    );
+    /// @notice Buys any positive number of entries and mints one sequential ticket containing their inclusive range.
+    function buyEntries(address recipient, uint128 entryCount) external returns (uint256 ticketId);
 
-    /// @notice Purchases and safely mints a bounded quantity of sequential bearer tickets.
-    function buyTickets(address recipient, uint256 quantity)
-        external
-        returns (uint256 firstTicketId, uint256 lastTicketId);
+    function getVrfRequestPrice() external view returns (uint256 fee);
+    function estimateVrfRequestPrice(uint256 requestGasPriceWei) external view returns (uint256 fee);
+    function requestDraw() external payable returns (uint256 requestId);
+    function rawFulfillRandomWords(uint256 requestId, uint256[] memory randomWords) external;
 
-    /// @notice Closes a zero-sales raffle; only the sponsor may do so before the configured end.
-    function closeEmptyRaffle() external;
-
-    /// @notice Returns the current Entropy v2 fee for the configured callback gas limit.
-    function getEntropyFee() external view returns (uint256 fee);
-
-    /// @notice Submits the sole draw request and immediately returns any native overpayment.
-    function requestDraw() external payable returns (uint64 sequenceNumber);
-
-    /// @notice Enables bearer-ticket refunds after either oracle-liveness deadline.
+    /**
+     * @notice Enables full refunds only after an accepted draw request misses its callback deadline, or closes an
+     *         empty raffle immediately for the sponsor and after sale end for anyone.
+     */
     function enableRefunds() external;
 
-    /// @notice Burns the caller-owned winning ticket for its NFT or cash award.
-    function redeemWinningTicket(address to) external returns (uint256 cashAmount);
+    /**
+     * @notice Settles with the ticket containing the winning entry. Anyone may execute; delivery always goes to the
+     *         current bearer, and the ticket is burned atomically with successful settlement.
+     */
+    function settleWinningTicket(uint256 ticketId) external returns (uint256 cashAmount);
 
-    /// @notice Burns a bounded batch of caller-owned tickets for their aggregate exact refund.
-    function redeemRefundTickets(uint256[] calldata ticketIds, address to) external returns (uint256 amount);
-    /// @notice Pays the caller's ordinary quote claim to a chosen destination.
-    function claimQuote(address to) external returns (uint256 amount);
+    function refundTickets(uint256[] calldata ticketIds) external returns (uint256 amount);
+    function releaseSponsorProceeds() external returns (uint256 amount);
+    function releaseProtocolFees() external returns (uint256 amount);
+    function releaseSponsorPrize() external;
 
-    /// @notice Pays another account's ordinary quote claim only to that same account.
-    function claimQuoteFor(address account) external returns (uint256 amount);
-
-    /// @notice Lets the immutable recovery recipient withdraw the NFT after cash, refund, or empty settlement.
-    function claimSponsorPrize(address to) external;
-
-    /// @notice Returns `endTime + DRAW_REQUEST_GRACE_PERIOD`.
-    function requestGraceDeadline() external view returns (uint256 deadline);
-
-    /// @notice Returns the callback deadline, or zero before a request is accepted.
+    function ticketRange(uint256 ticketId) external view returns (uint128 firstEntry, uint128 lastEntry);
     function callbackDeadline() external view returns (uint256 deadline);
-
-    /// @notice Returns the NFT delivery deadline, or zero unless the result is an unredeemed NFT win.
-    function nftRedemptionDeadline() external view returns (uint256 deadline);
-
-    /// @notice Returns whether the winning ticket has already burned for its award.
-    function winningTicketRedeemed() external view returns (bool redeemed);
-
-    /// @notice Returns all quote liabilities held by the raffle.
     function accountedQuoteBalance() external view returns (uint256 amount);
 
-    /// @notice Returns the canonical factory that constructed and registered this raffle.
+    function ENTRY_PRICE() external view returns (uint256 price);
+    function callbackGasLimit() external view returns (uint32 gasLimit);
+    function requestConfirmations() external view returns (uint16 confirmations);
     function factory() external view returns (address);
-    /// @notice Returns the immutable sponsor and successful sponsor-cash recipient.
     function sponsor() external view returns (address);
-    /// @notice Returns the immutable sponsor-side NFT recovery account.
-    function sponsorPrizeRecoveryRecipient() external view returns (address);
-    /// @notice Returns the treasury captured when this raffle was created.
+    function sponsorRecipient() external view returns (address);
     function protocolTreasury() external view returns (address);
-    /// @notice Returns the exact-transfer quote token used for purchases and settlements.
     function quoteToken() external view returns (IERC20);
-    /// @notice Returns the immutable Pyth Entropy v2 deployment.
-    function entropy() external view returns (IEntropyV2);
-    /// @notice Returns the configured prize collection.
+    function vrfWrapper() external view returns (IChainlinkVRFV2PlusWrapper);
     function prizeToken() external view returns (IERC721);
-    /// @notice Returns the configured prize token ID.
     function prizeTokenId() external view returns (uint256);
-    /// @notice Returns the canonical factory-assigned identifier.
     function raffleId() external view returns (uint256);
-    /// @notice Returns the price of one ticket in raw quote-token units.
-    function ticketPrice() external view returns (uint256);
-    /// @notice Returns the sold-ticket threshold selecting NFT rather than cash settlement.
-    function minimumTickets() external view returns (uint256);
-    /// @notice Returns the inclusive sale start timestamp.
-    function startTime() external view returns (uint256);
-    /// @notice Returns the exclusive sale end timestamp.
-    function endTime() external view returns (uint256);
-    /// @notice Returns the callback gas limit used consistently for Entropy fee quotes and requests.
-    function callbackGasLimit() external view returns (uint32);
-    /// @notice Returns the total number of tickets ever minted.
-    function totalTickets() external view returns (uint256);
-    /// @notice Returns cumulative gross ticket sales without subtracting later settlement.
+    function reserveEntries() external view returns (uint128);
+    function endTime() external view returns (uint64);
+    function totalEntries() external view returns (uint128);
+    function ticketCount() external view returns (uint128);
+    /// @notice Returns `totalEntries * ENTRY_PRICE`; no redundant gross-sales value is stored.
     function grossSales() external view returns (uint256);
-    /// @notice Returns sales awaiting either successful draw settlement or refund finalization.
     function unsettledPot() external view returns (uint256);
-    /// @notice Returns the exact aggregate value of refundable tickets not yet burned.
     function remainingRefundLiability() external view returns (uint256);
-    /// @notice Returns the cash award reserved for the unredeemed winning ticket.
-    function winnerCashLiability() external view returns (uint256);
-    /// @notice Returns aggregate sponsor and treasury pull claims.
-    function totalClaimableQuote() external view returns (uint256);
-    /// @notice Returns the accepted Entropy sequence, or zero before a request.
-    function entropySequenceNumber() external view returns (uint64);
-    /// @notice Returns the timestamp at which Entropy accepted the request, or zero before one.
-    function drawRequestedAt() external view returns (uint256);
-    /// @notice Returns the timestamp at which authenticated randomness resolved the raffle.
-    function resolvedAt() external view returns (uint256);
-    /// @notice Returns the selected winning ticket, or zero before successful resolution.
+    function sponsorProceeds() external view returns (uint256);
+    function protocolFees() external view returns (uint256);
+    function vrfRequestId() external view returns (uint256);
+    function drawRequestedAt() external view returns (uint64);
+    function resolvedAt() external view returns (uint64);
+    function winningEntry() external view returns (uint128);
     function winningTicketId() external view returns (uint256);
-    /// @notice Returns the single authoritative lifecycle and economic result.
     function status() external view returns (Status);
-    /// @notice Returns an account's ordinary sponsor or treasury quote claim.
-    function claimableQuote(address account) external view returns (uint256);
-    /// @notice Returns whether the configured prize has left escrow through a supported settlement path.
     function prizeClaimed() external view returns (bool);
-    /// @notice Returns the immutable metadata URI shared by the raffle tickets.
-    function raffleMetadataURI() external view returns (string memory);
+    function initialized() external view returns (bool);
 }

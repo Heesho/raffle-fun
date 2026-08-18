@@ -1,48 +1,75 @@
 # Lifecycle
 
-`IRaffle.Status` is the only lifecycle and outcome representation.
+`IRaffle.Status` is the only lifecycle and economic-result representation.
 
 ```mermaid
 stateDiagram-v2
-  [*] --> AwaitingPrize: constructor
-  AwaitingPrize --> Active: exact NFT deposit
+  [*] --> AwaitingPrize: factory-only initialize
+  AwaitingPrize --> Active: exact prize deposit
   Active --> Drawing: requestDraw
-  Active --> Refunding: request grace expires
-  Active --> Closed: zero-ticket close
-  Drawing --> NftWon: callback and threshold met
-  Drawing --> CashWon: callback and threshold missed
+  Active --> Refunding: empty raffle closed
+  Drawing --> NftWon: callback and reserve met
+  Drawing --> CashWon: callback and reserve missed
   Drawing --> Refunding: callback timeout
-  NftWon --> Refunding: NFT redemption timeout
 ```
 
-| Status          | Meaning                                                           | Available terminal asset paths                                                    |
-| --------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `AwaitingPrize` | Constructor deployment exists only inside the factory transaction | exact factory-operated deposit or whole transaction reverts                       |
-| `Active`        | Tickets may be purchased during the configured window             | draw, refund enablement after grace, or empty close                               |
-| `Drawing`       | One Pyth Entropy v2 sequence is pending                           | matching callback or permissionless timeout refund                                |
-| `NftWon`        | A request-time ticket was selected above the threshold            | its fixed owner burns it for the NFT, or all tickets refund after 30 days         |
-| `CashWon`       | A winning ticket was selected below the threshold                 | its current owner burns it for cash; recovery recipient claims NFT                |
-| `Refunding`     | Oracle liveness deadline expired                                  | each current owner burns tickets for exact refunds; recovery recipient claims NFT |
-| `Closed`        | Zero tickets sold and no draw exists                              | recovery recipient claims NFT                                                     |
+| Status          | Meaning                                            | Available progress                                               |
+| --------------- | -------------------------------------------------- | ---------------------------------------------------------------- |
+| `AwaitingPrize` | clone initialized inside creation                  | exact factory-operated prize deposit; otherwise creation reverts |
+| `Active`        | prize escrowed; purchases allowed before `endTime` | purchase, draw after end, or close an empty raffle               |
+| `Drawing`       | one Chainlink request accepted                     | matching callback or callback-timeout refunds                    |
+| `NftWon`        | reserve met; winning entry recorded                | settle ticket, then release sponsor/protocol balances            |
+| `CashWon`       | reserve missed; winning entry recorded             | settle ticket; independently return sponsor prize                |
+| `Refunding`     | full-refund or empty-raffle result                 | ticket refunds and sponsor prize return                          |
 
-All transfers freeze in `Drawing`, fixing ownership before the provider can know the
-winner. The selected ticket stays locked in `NftWon` or `CashWon`; nonwinning tickets
-may move. Refund tickets are transferable again in `Refunding`. Approval is not enough
-to redeem: the caller must be the actual owner.
+There is no separate `Closed` or `Completed` state. One-time burns,
+`prizeClaimed`, and zeroed liabilities record consumption while preserving the
+economic result.
 
-Ticket and payout destinations reject the ticket's own raffle, its factory, quote
-token, Entropy contract, configured prize contract, and every registered sibling
-raffle. Future code-less addresses remain an explicit unsupported destination risk;
-there is no cross-raffle claim dispatcher whose address can be captured through
-permissionless factory creation.
+## Sale and bearer ownership
 
-`Closed` is reached by `closeEmptyRaffle`. Before `endTime`, only the sponsor may call
-it. At or after `endTime`, anyone may call it. The immutable
-`sponsorPrizeRecoveryRecipient` performs the later NFT withdrawal.
+Purchases require `status == Active` and `block.timestamp < endTime`. The end is
+exclusive. An unburned ticket remains transferable in every status. Approvals do not
+authorize settlement: ownership is read from `ownerOf(ticketId)` at execution time.
+If a transfer and claim compete, normal Ethereum transaction ordering decides which
+valid action executes first.
 
-`enableRefunds` covers both oracle failures. From `Active`, it becomes callable at
-`endTime + 3 days` when no request succeeded. From `Drawing`, it becomes callable two
-days after the accepted request. From an unredeemed `NftWon`, it becomes callable 30
-days after resolution while the full gross pot is still escrowed. A callback and its
-two-day timeout transaction can both be valid at the boundary; the first included
-transition wins and the other becomes harmless.
+## Draw request
+
+`requestDraw` requires:
+
+- `status == Active`;
+- at least one entry;
+- `block.timestamp >= endTime`;
+- enough ETH for the current native Chainlink fee.
+
+The call records `Drawing` before contacting the wrapper and stores exactly one
+request ID. It cannot be rerun. There is no post-sale request deadline: a nonempty
+raffle remains `Active` until someone successfully pays Chainlink and moves it forward.
+
+## Refund transitions
+
+`enableRefunds` has one oracle-liveness branch plus the empty case:
+
+- accepted request, no result: at `drawRequestedAt + 2 days`;
+- zero sales: sponsor before end, anyone at or after end.
+
+Every nonempty transition moves the entire `unsettledPot` to
+`remainingRefundLiability`; it never creates a fee. The empty transition has zero
+liability.
+
+Callbacks do not reject only because the callback deadline has passed. At the boundary,
+fulfillment and `enableRefunds` race; the first included valid transition wins and makes
+the other invalid. Once a valid callback records `NftWon` or `CashWon`, refunds can never
+be enabled.
+
+Both resolved statuses are final. Settlement pays an 80% cash winner in `CashWon` or
+delivers the NFT in `NftWon`, while recording the fixed sponsor and protocol balances.
+
+## Consumption
+
+The winning ticket is burned after its range proves `winningEntry`. NFT and cash
+settlement are permissionless and always pay the current owner. Refund calls burn one
+to 100 caller-owned tickets and pay their aggregate entry value to that owner. Sponsor
+proceeds, protocol fees, and sponsor prize return are independent fixed-recipient
+releases that anyone may execute.

@@ -2,11 +2,7 @@ import type { Address } from "viem";
 
 import { getDeployment, type SupportedChainId } from "@raffle-fun/config";
 
-import {
-  raffleAbi,
-  raffleFactoryAbi,
-  raffleLensAbi,
-} from "./abis/generated.js";
+import { raffleAbi, raffleFactoryAbi } from "./abis/generated.js";
 
 export function getProtocolContracts(chainId: SupportedChainId) {
   const deployment = getDeployment(chainId);
@@ -14,10 +10,6 @@ export function getProtocolContracts(chainId: SupportedChainId) {
     raffleFactory: {
       address: deployment.raffleFactory,
       abi: raffleFactoryAbi,
-    },
-    raffleLens: {
-      address: deployment.raffleLens,
-      abi: raffleLensAbi,
     },
   } as const;
 }

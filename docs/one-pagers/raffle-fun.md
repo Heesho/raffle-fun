@@ -1,101 +1,60 @@
-# raffle.fun at a Glance
+# raffle.fun at a glance
 
-**Your NFT either sells at your price, or it earns while it waits.**
+raffle.fun is an Ethereum raffle for one NFT. The sponsor chooses a deadline and a
+reserve price. Every raffle number costs exactly 1 USDC.
 
-NFTs are hard to sell. You list at the price you actually want, and the listing sits there —
-earning nothing, doing nothing — until someone finally meets it or you give up and cut.
+## One purchase, one NFT ticket
 
-raffle.fun changes what happens during the waiting. You name your price and open it up for a
-fixed period. People buy tickets. When the period ends there are exactly two outcomes, and
-**you are paid in both of them**.
+A buyer chooses how many numbers to buy:
 
-## The two outcomes
+- 1 USDC mints one ticket containing one number;
+- 20 USDC mints one ticket containing 20 consecutive numbers;
+- any positive amount still mints only one ticket.
+
+The ticket is an ERC-721 bearer claim and can move in any raffle state until a
+successful winner settlement or refund burns it.
+
+## Two successful outcomes
 
 ```mermaid
 flowchart TD
-  A["You own an NFT<br/>you would sell at the right price"]
-  B["Name your price<br/>ticket price x how many must sell"]
-  C["People buy tickets<br/>for a fixed period you choose"]
-  D{"Did ticket sales<br/>reach your price?"}
-  E["SOLD<br/>one ticket wins the NFT<br/>you receive 95% of everything sold"]
-  F["KEPT<br/>the NFT comes straight back to you<br/>you keep 19% of everything sold<br/>one ticket wins the rest of the cash"]
+  A["Sponsor escrows an NFT<br/>and sets a reserve in $1 entries"]
+  B["Buyers receive range tickets"]
+  C{"Entries sold<br/>at least the reserve?"}
+  D["NFT result<br/>ticket owner gets NFT<br/>sponsor gets 95% USDC<br/>protocol gets 5%"]
+  E["Cash result<br/>sponsor gets NFT + 15% of gross<br/>ticket owner gets 80% of gross<br/>protocol gets 5% of gross"]
   A --> B
   B --> C
-  C --> D
-  D -->|"yes, price met"| E
-  D -->|"no, fell short"| F
-  F -.->|"run it again"| B
+  C -->|"yes, including equality"| D
+  C -->|"no"| E
 ```
 
-Say you want **10,000 USDC** for an NFT, so you offer 1,000 tickets at 10 USDC each.
+If a sponsor sets a 2,000,000-entry reserve, there is no separate protocol cap. The
+raffle does not sell out: it accepts entries until the deadline, and equality meets
+the reserve.
 
-| Tickets sold | What happens        |     You receive | Who gets the NFT  |
-| ------------ | ------------------- | --------------: | ----------------- |
-| 400          | fell short          |    **760 USDC** | you keep it       |
-| 999          | fell short          |  **1,898 USDC** | you keep it       |
-| 1,000        | price met           |  **9,500 USDC** | one ticket holder |
-| 1,500        | price met, oversold | **14,250 USDC** | one ticket holder |
-| 0            | nobody showed up    |         nothing | you keep it       |
+If the reserve is missed, the sponsor receives the NFT back plus 15% of gross sales.
+The randomly selected ticket receives 80% of gross sales, and the protocol receives
+the remaining 5%.
 
-**Fall short and you keep the NFT and 19% of whatever sold.** Then run it again. That is the
-yield: you are paid for waiting, which a normal listing pays you nothing for.
+## Verifiable and bounded
 
-**Hit your price and you have sold** — at your number, to a buyer who never had to write a
-five-figure cheque. Nothing caps the upside above your price, so a sale that runs hot pays
-you more.
+After the deadline, anyone may pay Chainlink VRF v2.5's ETH fee to request one random
+word. The contract selects one entry from `1..totalEntries`. Because each ticket
+stores its own first and last number, proving the winner takes constant work—there is
+no search through all buyers.
 
-If you think in options: you are writing a covered call on your own NFT and keeping the
-premium.
+The permissionless draw request stays available until someone calls it. If Chainlink
+does not return within two days after accepting a request, anyone can open full,
+fee-free refunds. Each ticket refunds its number of entries at 1 USDC each. A valid
+callback is final and has no later refund path.
 
-## What ticket buyers get
+## What the operator cannot do
 
-A real shot at an NFT for a small fixed amount instead of its full price. Tickets are
-themselves NFTs, so they sit in your wallet and can be traded while the sale is open.
-Whoever holds the winning ticket claims the prize — the protocol never looks at who bought
-it. If the sale falls short, the drawn ticket still wins **80% of the pot** in cash.
+Every raffle is a fixed, non-upgradeable ERC-1167 clone with no owner or rescue key.
+The factory owner may pause only future creation. It cannot change a running raffle,
+choose a winner, redirect a prize, or seize its pot.
 
-The winner is drawn using Pyth Entropy, an external randomness service. The instant the draw
-is requested every ticket freezes, so nobody who learns the result early can go and buy the
-winning ticket.
-
-## If something goes wrong
-
-Nobody can walk off with the money. The NFT is locked in the contract before a single ticket
-sells, and if the draw never completes or the prize cannot be delivered, **every ticket
-refunds exactly what it cost** and no fee is taken. Three separate deadlines trigger this,
-and **anyone** can trigger them — nobody is waiting on us to show up.
-
-## Fee and control
-
-The protocol takes **5%**, and only when a sale actually resolves. Failed draws and refunds
-cost nothing. Once your sale exists, nobody — including us — can change its price, deadline
-or prize, cancel it, pick the winner, or touch the money. There is no admin key on it.
-
-## Key risks
-
-- **The randomness provider is trusted.** It can see the result before publishing it. If it
-  held tickets, its edge peaks at a quarter of the pot. Documented, **unresolved**, rated
-  High severity by the project itself.
-- **Your NFT is locked** for the whole sale period. You cannot pull it out early.
-- **Tickets are bearer assets.** Send one to a wallet you cannot use and the claim is gone.
-  No admin can reverse it.
-- **USDC and Base are trusted.** Circle can freeze funds; Base can delay or censor.
-- **Smart-contract risk.** Never independently audited, never run in production.
-- **Losing tickets stay tradable** after a sale ends, though they are worth nothing.
-- **Legal and gaming rules vary** by jurisdiction. No legal review has been done.
-- **Nothing is private.** Every purchase, transfer and payout is public.
-
-## Status
-
-| Item                  | Status                                                                                                                                                                                                                             |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Protocol**          | Pre-release. The release checklist states verbatim "not release-ready".                                                                                                                                                            |
-| **Deployment**        | **Not deployed.** No deployment record exists for any public network.                                                                                                                                                              |
-| **Internal review**   | An internal adversarial campaign has been completed — fuzzing, invariants, differential models, Echidna, Medusa, Halmos, mutation testing, pinned Base forks. The maintainers state this is evidence, not proof, and not an audit. |
-| **Independent audit** | **None.** The most recent review is self-administered and describes itself as "not an independent audit".                                                                                                                          |
-| **Source commit**     | `5772e54ba89c06646815ed52a881cd8940f094ca`                                                                                                                                                                                         |
-
-_raffle.fun must not be described as audited, trustless, provably fair, guaranteed, live or
-production-ready. Nothing here is financial advice. Every claim traces to
-[`docs/facts/raffle-fun-facts.md`](../facts/raffle-fun-facts.md), which cites the exact
-contract, function and test behind it._
+This candidate v1 is not deployed or independently audited. Chainlink, Ethereum,
+USDC issuer controls, the NFT collection, wallet safety, and applicable gambling or
+promotional-law requirements remain external risks.

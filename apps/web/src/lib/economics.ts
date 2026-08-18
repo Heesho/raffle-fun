@@ -1,65 +1,63 @@
-/** The winner's share of the distributable pot when the threshold is missed. */
-export const WINNER_CASH_SHARE_PERCENT = 80n;
+export const ENTRY_PRICE = 1_000_000n;
 export const PROTOCOL_FEE_PERCENT = 5n;
+export const CASH_WINNER_PERCENT_OF_GROSS = 80n;
 
 export function distributablePot(grossPot: bigint): bigint {
   return grossPot - (grossPot * PROTOCOL_FEE_PERCENT) / 100n;
 }
 
+/** Below reserve, the winning ticket receives 80% of gross sales. */
 export function cashToWinner(grossPot: bigint): bigint {
-  return (distributablePot(grossPot) * WINNER_CASH_SHARE_PERCENT) / 100n;
+  return (grossPot * CASH_WINNER_PERCENT_OF_GROSS) / 100n;
 }
 
+/** Below reserve, the sponsor receives the exact remainder after winner and fee, plus the NFT. */
 export function cashToSponsor(grossPot: bigint): bigint {
-  return distributablePot(grossPot) - cashToWinner(grossPot);
+  const distributable = distributablePot(grossPot);
+  return distributable - cashToWinner(grossPot);
 }
 
-export function ticketsToThreshold(total: bigint, minimum: bigint): bigint {
-  return total >= minimum ? 0n : minimum - total;
+export function entriesToReserve(total: bigint, reserve: bigint): bigint {
+  return total >= reserve ? 0n : reserve - total;
 }
 
-export interface ThresholdScale {
-  /** Percent of the track filled by tickets sold. */
+export interface ReserveScale {
+  /** Percent of the track filled by entries sold. */
   readonly fillPercent: number;
   /** Percent of the track at which the prize flips to the NFT. */
   readonly markerPercent: number;
-  /** Percent of the track filled beyond the threshold, if oversold. */
+  /** Percent of the track filled beyond the reserve, if oversold. */
   readonly overshootPercent: number;
   readonly met: boolean;
 }
 
 /**
- * Lays out the threshold track.
- *
- * Sales are uncapped, so the track always keeps headroom past the threshold.
- * Scaling to `max(sold, minimum)` instead would pin the flip point to the
- * right edge in every under-sold raffle — exactly the case where a buyer most
- * needs to see how far away it is — and make an exactly-met raffle read as an
- * ordinary full bar.
+ * Lays out the reserve track without converting uncapped entry counts to
+ * JavaScript numbers. Only the final bounded basis-point ratios are converted.
  */
-export function thresholdScale(total: bigint, minimum: bigint): ThresholdScale {
-  const sold = Number(total);
-  const target = Number(minimum);
-  if (target <= 0) {
+export function reserveScale(total: bigint, reserve: bigint): ReserveScale {
+  if (reserve <= 0n) {
     return {
-      fillPercent: sold > 0 ? 100 : 0,
+      fillPercent: total > 0n ? 100 : 0,
       markerPercent: 0,
       overshootPercent: 0,
       met: true,
     };
   }
 
-  // Headroom keeps the marker around 78% of the track when under-sold, and
-  // grows once sales run past it so the overshoot stays visible.
-  const scale = Math.max(target * 1.28, sold * 1.08);
-  const clamp = (value: number) => Math.min(100, Math.max(0, value));
-  const markerPercent = clamp((target / scale) * 100);
-  const fillPercent = clamp((sold / scale) * 100);
+  const reserveHeadroom = (reserve * 128n + 99n) / 100n;
+  const salesHeadroom = (total * 108n + 99n) / 100n;
+  const scale =
+    reserveHeadroom > salesHeadroom ? reserveHeadroom : salesHeadroom;
+  const percent = (value: bigint) =>
+    Number((value * 10_000n) / (scale === 0n ? 1n : scale)) / 100;
+  const markerPercent = Math.min(100, percent(reserve));
+  const fillPercent = Math.min(100, percent(total));
 
   return {
     fillPercent,
     markerPercent,
     overshootPercent: Math.max(0, fillPercent - markerPercent),
-    met: total >= minimum,
+    met: total >= reserve,
   };
 }

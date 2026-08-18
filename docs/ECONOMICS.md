@@ -1,52 +1,123 @@
 # Economics and accounting
 
-Every factory is bound to one immutable exact-transfer USDC contract. `ticketPrice`
-is the total paid per ticket; no fee is added at checkout.
+Every v1 factory is bound to one immutable six-decimal quote token. A production
+Ethereum factory must use official USDC.
 
-For every successfully delivered prize or cash result:
+## Fixed entry price and uncapped reserve
+
+One raffle number always costs exactly:
 
 ```text
-protocol fee       = floor(grossSales × 500 / 10_000)
-distributable pot  = grossSales − protocol fee
+ENTRY_PRICE = 1_000_000 raw USDC = 1 USDC
 ```
 
-If `totalTickets >= minimumTickets`, the callback records the winner but leaves the
-gross pot unsettled. The winning ticket's NFT redemption and the creation of the
-sponsor/treasury pull claims happen atomically. If delivery is not completed within 30
-days, all tickets become refundable and no fee or sponsor proceeds are created.
+A purchase of `n` entries transfers `n * ENTRY_PRICE` and mints one ticket
+covering `n` consecutive numbers. The contract has no economic maximum price,
+maximum total, or sale sell-out. `uint128` bounds entry counts only as an unreachable
+machine limit.
 
-If the threshold is missed:
+The sponsor sets `reserveEntries` before creation. Because each entry is one dollar,
+the reserve is the gross sales threshold in whole USDC. It is not the sponsor's net
+payout: at exactly the reserve, the sponsor receives 95% after the protocol fee.
+Equality counts as success:
 
 ```text
-winning ticket cash = floor(distributable pot × 8_000 / 10_000)
-sponsor cash        = distributable pot − winning ticket cash
+totalEntries >= reserveEntries  => NFT result
+totalEntries <  reserveEntries  => cash result
 ```
 
-The recovery recipient also withdraws the NFT. Assigning the division remainder to
-the sponsor makes the split conserve value exactly.
-
-Example with 80 tickets at 1 USDC and a 100-ticket threshold:
-
-| Recipient                  |     Amount |
-| -------------------------- | ---------: |
-| Protocol treasury          |  4.00 USDC |
-| Winning ticket             | 60.80 USDC |
-| Sponsor                    | 15.20 USDC |
-| Sponsor recovery recipient |        NFT |
-
-Refunding charges no protocol fee and awards no sponsor proceeds. Each outstanding
-ticket burns for exactly one `ticketPrice`, so the complete gross pot remains
-attributable without an all-ticket loop.
-
-The contract's accounted balance is always:
+If the sponsor wants a particular net amount `ask`, the corresponding gross reserve is:
 
 ```text
-unsettledPot
+reserveEntries = ceil(ask / 0.95 USDC)
+```
+
+## Successful-result fee
+
+```text
+protocolFee = floor(grossSales * 500 / 10_000)
+netPot      = grossSales - protocolFee
+cashWinner  = floor(grossSales * 8_000 / 10_000)
+cashSponsor = grossSales - protocolFee - cashWinner
+```
+
+The fee is 5% of aggregate gross sales and is calculated once, avoiding
+per-purchase rounding.
+
+### NFT result
+
+The callback records only the result and winning entry. When anyone later settles the
+winning ticket, the current owner receives the NFT and that same transaction records:
+
+```text
+protocolFees    = protocolFee
+sponsorProceeds = netPot
+winner cash     = 0
+```
+
+### Cash result
+
+The callback records only the result and winning entry. When anyone later settles the
+winning ticket, its current owner receives the cash and the transaction records:
+
+```text
+protocolFees      = protocolFee
+winner direct pay = cashWinner
+sponsorProceeds   = cashSponsor
+```
+
+The sponsor also receives the NFT back. Assigning the subtraction remainder to the
+sponsor conserves every raw quote-token unit. The cash result is final and never
+changes to refunds.
+
+### Examples
+
+With 100 entries and a reserve of 100:
+
+| Recipient         |  Result |
+| ----------------- | ------: |
+| winning ticket    |     NFT |
+| protocol treasury |  5 USDC |
+| sponsor           | 95 USDC |
+
+With 80 entries and a reserve of 100:
+
+| Recipient         |        Result |
+| ----------------- | ------------: |
+| winning ticket    |       64 USDC |
+| protocol treasury |        4 USDC |
+| sponsor           | 12 USDC + NFT |
+
+## Refunds
+
+Only two paths enter refunds: an empty raffle, or an accepted draw request that receives
+no valid callback within two days. A sold raffle waiting for a draw request does not
+expire; `requestDraw` remains callable. A valid callback is final. Refunds charge no fee.
+Each ticket refunds:
+
+```text
+(lastEntry - firstEntry + 1) * ENTRY_PRICE
+```
+
+A refund call accepts at most 100 tickets, but a ticket can represent any positive
+entry count. Duplicate, nonexistent, or foreign tickets revert the entire batch.
+
+## Conservation
+
+At every supported state:
+
+```text
+accountedQuoteBalance
+  = unsettledPot
   + remainingRefundLiability
-  + winnerCashLiability
-  + totalClaimableQuote
+  + sponsorProceeds
+  + protocolFees
 ```
 
-Direct token donations are reported as surplus and never become raffle liabilities.
-Incoming and outgoing transfers verify exact balance deltas; fee-on-transfer,
-rebasing, or otherwise non-exact tokens are unsupported.
+The contract's actual quote balance must be at least that amount. Purchases and
+outgoing transfers verify both expected balance deltas. Direct token donations are
+unaccounted surplus and cannot be swept or converted into claims.
+
+USDC issuer pauses, blacklists, upgrades, or other transfer failures may delay or
+prevent individual payments. Exact-delta checking prevents silent underpayment but
+cannot force an unavailable token to transfer.

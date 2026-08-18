@@ -4,27 +4,22 @@ pragma solidity 0.8.36;
 import { Script } from "forge-std/Script.sol";
 
 import { RaffleFactory } from "../src/RaffleFactory.sol";
-import { RaffleLens } from "../src/RaffleLens.sol";
 
 /// @title DeployRaffleFun
 /// @notice Independent local/debug deployment that mirrors Ignition constructor inputs.
 /// @dev Ignition remains the only production source of truth. This script deliberately
 ///      starts two-step ownership transfer but cannot impersonate the configured Safe.
 contract DeployRaffleFun is Script {
-    /// @notice Deploys the single-USDC factory and lens and starts Safe ownership transfer.
-    function run() external returns (RaffleFactory factory, RaffleLens lens) {
+    /// @notice Deploys the single-USDC factory and starts Safe ownership transfer.
+    function run() external returns (RaffleFactory factory) {
         uint256 deployerKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
         address quoteToken = vm.envAddress("QUOTE_TOKEN");
-        address entropy = vm.envAddress("ENTROPY");
+        address vrfWrapper = vm.envAddress("VRF_WRAPPER");
         address treasury = vm.envAddress("PROTOCOL_TREASURY");
         address finalOwner = vm.envAddress("FACTORY_OWNER");
-        uint256 configuredCallbackGasLimit = vm.envOr("CALLBACK_GAS_LIMIT", uint256(300_000));
-        require(configuredCallbackGasLimit <= type(uint32).max, "CALLBACK_GAS_LIMIT exceeds uint32");
-        uint32 callbackGasLimit = uint32(configuredCallbackGasLimit);
 
         vm.startBroadcast(deployerKey);
-        factory = new RaffleFactory(quoteToken, entropy, treasury, callbackGasLimit, vm.addr(deployerKey));
-        lens = new RaffleLens(address(factory));
+        factory = new RaffleFactory(quoteToken, vrfWrapper, treasury, vm.addr(deployerKey));
         factory.transferOwnership(finalOwner);
         vm.stopBroadcast();
     }

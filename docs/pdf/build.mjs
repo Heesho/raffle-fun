@@ -140,6 +140,18 @@ const root = resolve(here, "../..");
 const outDir = resolve(root, "output/pdf");
 const workDir = resolve(root, "docs/pdf/.build");
 
+const factRegistry = readFileSync(
+  resolve(root, "docs/facts/raffle-fun-facts.md"),
+  "utf8",
+);
+if (
+  /Historical snapshot|Pyth Entropy|RaffleLens|Base Sepolia/.test(factRegistry)
+) {
+  throw new Error(
+    "Refusing to publish PDFs while the fact registry and technical whitepaper describe the retired protocol. See docs/WHITEPAPER.md.",
+  );
+}
+
 const chrome =
   process.env.CHROME ||
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";

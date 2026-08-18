@@ -13,20 +13,19 @@
     "test:foundry": "forge test",
     "test:hardhat": "hardhat test nodejs",
     "coverage": "forge coverage --report lcov --no-match-coverage '^(script/|src/mocks/|test/)' && node scripts/check-coverage.mjs",
-    "gas": "forge snapshot --check",
-    "gas:update": "forge snapshot",
+    "gas": "forge snapshot --check -j 1 --no-match-test '^(testFuzz|invariant)'",
+    "gas:update": "forge snapshot -j 1 --no-match-test '^(testFuzz|invariant)'",
     "fmt": "forge fmt",
     "fmt:check": "forge fmt --check",
     "lint": "solhint 'src/**/*.sol' 'test/**/*.sol'",
     "typecheck": "tsc --noEmit",
     "slither": "slither . --config-file slither.config.json",
-    "deploy:base-sepolia": "hardhat ignition deploy ignition/modules/RaffleFun.ts --network baseSepolia",
-    "verify:base-sepolia": "hardhat ignition verify chain-84532",
+    "deploy:sepolia": "hardhat ignition deploy ignition/modules/RaffleFun.ts --network sepolia",
+    "verify:sepolia": "hardhat ignition verify chain-11155111",
     "deployment:write": "tsx scripts/write-deployment.ts"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "5.6.1",
-    "@pythnetwork/entropy-sdk-solidity": "2.2.1"
+    "@openzeppelin/contracts": "5.6.1"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-ignition": "3.1.8",

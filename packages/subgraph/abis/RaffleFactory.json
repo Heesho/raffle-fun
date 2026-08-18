@@ -8,18 +8,13 @@
       },
       {
         "internalType": "address",
-        "name": "entropy_",
+        "name": "vrfWrapper_",
         "type": "address"
       },
       {
         "internalType": "address",
         "name": "protocolTreasury_",
         "type": "address"
-      },
-      {
-        "internalType": "uint32",
-        "name": "callbackGasLimit_",
-        "type": "uint32"
       },
       {
         "internalType": "address",
@@ -36,10 +31,31 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "FailedDeployment",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "startTime",
+        "name": "balance",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "needed",
+        "type": "uint256"
+      }
+    ],
+    "name": "InsufficientBalance",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "currentTime",
         "type": "uint256"
       },
       {
@@ -54,17 +70,17 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "actualLength",
-        "type": "uint256"
+        "internalType": "uint8",
+        "name": "actualDecimals",
+        "type": "uint8"
       },
       {
-        "internalType": "uint256",
-        "name": "maximumLength",
-        "type": "uint256"
+        "internalType": "uint8",
+        "name": "requiredDecimals",
+        "type": "uint8"
       }
     ],
-    "name": "MetadataURITooLong",
+    "name": "InvalidQuoteTokenDecimals",
     "type": "error"
   },
   {
@@ -150,38 +166,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "startTime",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "currentTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "StartTimeInPast",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "startTime",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "maximumStartTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "StartTimeTooDistant",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "destination",
         "type": "address"
@@ -202,23 +186,24 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "quoteToken",
+        "type": "address"
+      }
+    ],
+    "name": "UnsupportedQuoteToken",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "ZeroAddress",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "ZeroCallbackGasLimit",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ZeroMinimumTickets",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ZeroTicketPrice",
+    "name": "ZeroReserveEntries",
     "type": "error"
   },
   {
@@ -283,25 +268,6 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "address",
-        "name": "previousTreasury",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newTreasury",
-        "type": "address"
-      }
-    ],
-    "name": "ProtocolTreasuryUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
         "internalType": "uint256",
         "name": "raffleId",
         "type": "uint256"
@@ -321,7 +287,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "sponsorPrizeRecoveryRecipient",
+        "name": "sponsorRecipient",
         "type": "address"
       },
       {
@@ -350,39 +316,15 @@
       },
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "ticketPrice",
-        "type": "uint256"
+        "internalType": "uint128",
+        "name": "reserveEntries",
+        "type": "uint128"
       },
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "minimumTickets",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "startTime",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
+        "internalType": "uint64",
         "name": "endTime",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "requestGraceDeadline",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "metadataURI",
-        "type": "string"
+        "type": "uint64"
       }
     ],
     "name": "RaffleCreated",
@@ -414,6 +356,11 @@
         "components": [
           {
             "internalType": "address",
+            "name": "sponsorRecipient",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
             "name": "prizeToken",
             "type": "address"
           },
@@ -423,34 +370,14 @@
             "type": "uint256"
           },
           {
-            "internalType": "address",
-            "name": "sponsorPrizeRecoveryRecipient",
-            "type": "address"
+            "internalType": "uint128",
+            "name": "reserveEntries",
+            "type": "uint128"
           },
           {
-            "internalType": "uint256",
-            "name": "ticketPrice",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "minimumTickets",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "startTime",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
+            "internalType": "uint64",
             "name": "endTime",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "metadataURI",
-            "type": "string"
+            "type": "uint64"
           }
         ],
         "internalType": "struct IRaffleFactory.CreateRaffleParams",
@@ -477,19 +404,6 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "entropy",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -619,9 +533,35 @@
   },
   {
     "inputs": [],
+    "name": "raffleImplementation",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "renounceOwnership",
     "outputs": [],
     "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "requestConfirmations",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -641,19 +581,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "newTreasury",
-        "type": "address"
-      }
-    ],
-    "name": "setProtocolTreasury",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "newOwner",
         "type": "address"
       }
@@ -661,6 +588,19 @@
     "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "vrfWrapper",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   }
 ]

@@ -14,7 +14,7 @@ import {
 export const metadata: Metadata = {
   title: "Mechanics and risks",
   description:
-    "A plain-language guide to raffles economics, randomness, claims, admin powers, and risks.",
+    "A plain-language guide to raffle economics, randomness, settlement, admin powers, and risks.",
 };
 
 export default function DocsPage() {
@@ -40,7 +40,7 @@ export default function DocsPage() {
             ["#mechanic", "Mechanic"],
             ["#economics", "Economics"],
             ["#randomness", "Randomness"],
-            ["#transfers", "Tickets"],
+            ["#transfers", "Entries & tickets"],
             ["#trust", "Trust & risks"],
           ].map(([href, label]) => (
             <a
@@ -56,62 +56,60 @@ export default function DocsPage() {
         <section className="mt-20 scroll-mt-8" id="mechanic">
           <DocHeading
             eyebrow="The mechanic"
-            title="One prize. Equal tickets. One immutable threshold."
-            text="A sponsor deposits exactly one ERC721. Every purchased ticket is a unique ERC721 with the same chance of winning. The sale starts inclusively and ends exclusively."
+            title="One prize. Equal $1 entries. One immutable reserve."
+            text="A sponsor deposits exactly one ERC721. Sales begin immediately, every entry has the same chance, and each purchase mints one ERC721 ticket containing an inclusive range of entry numbers."
           />
           <div className="mt-8 grid gap-4 md:grid-cols-[1fr_auto_1fr_auto_1fr] md:items-center">
             <Step
               icon={<Gift />}
               number="1"
               title="Prize escrowed"
-              text="The factory constructor-deploys an independent raffle and deposits the exact NFT atomically."
+              text="The factory deploys and initializes a fixed-implementation minimal clone, then deposits the exact NFT atomically."
             />
             <ArrowDown className="mx-auto md:-rotate-90" aria-hidden />
             <Step
               icon={<Ticket />}
               number="2"
-              title="Tickets sold"
-              text="Each purchase adds its full gross amount to the unsettled pot. Sales remain open until the fixed end time."
+              title="$1 entries sold"
+              text="Any positive entry count is bought in one O(1) purchase. The ticket gets the next sequential ID and its range is stored separately; sales remain open until the fixed end time."
             />
             <ArrowDown className="mx-auto md:-rotate-90" aria-hidden />
             <Step
               icon={<Dices />}
               number="3"
               title="One random draw"
-              text="After close, Pyth Entropy chooses ticket 1 through the last ticket inclusively."
+              text="After close, Chainlink VRF chooses one entry from 1 through totalEntries inclusively."
             />
           </div>
           <div className="mt-5 grid gap-5 md:grid-cols-2">
             <Outcome
               className="bg-[var(--yellow-wash)]"
-              label="total tickets ≥ minimum"
-              title="Threshold met"
+              label="totalEntries ≥ reserveEntries"
+              title="Reserve met"
               items={[
-                "Winning ticket holder claims the NFT",
-                "Protocol receives 5% of aggregate gross sales",
-                "Sponsor claims the remaining 95%",
+                "The winning ticket delivers the NFT",
+                "Successful delivery earns the protocol 5% of gross sales",
+                "Anyone can release the remaining 95% to the sponsor’s fixed recipient",
               ]}
             />
             <Outcome
               className="bg-[var(--sky-wash)]"
-              label="total tickets < minimum"
+              label="totalEntries < reserveEntries"
               title="Cash fallback"
               items={[
-                "Winner claims 80% of the distributable pot",
-                "Sponsor claims 20%; fixed recovery recipient claims the NFT",
-                "The aggregate protocol fee is 5%",
+                "The winning ticket receives 80% of gross sales in USDC",
+                "The protocol receives 5%",
+                "The sponsor recovers the NFT and receives 15% of gross sales",
               ]}
             />
           </div>
           <div className="card mt-5 p-6">
-            <h3 className="text-2xl">If nobody buys a ticket</h3>
+            <h3 className="text-2xl">If nobody buys an entry</h3>
             <p className="mt-3 text-sm leading-6 text-[var(--ink-2)]">
-              Anyone can close the raffle after its end without requesting
-              randomness. The fixed recovery recipient claims the NFT and no
-              quote-token payouts are created. A sponsor may also cancel at any
-              point while zero tickets have sold. Once ticket 1 is sold the
-              prize is locked: it can only reach the winner or return to the
-              recovery recipient through settlement.
+              The sponsor can put an empty raffle into Refunding immediately;
+              anyone can do so after its sale deadline. Refund liability is
+              zero, and anyone can return the NFT to the sponsor’s fixed
+              recipient.
             </p>
           </div>
           <div className="mt-5 rounded-2xl bg-[var(--amber-wash)] p-6">
@@ -119,11 +117,14 @@ export default function DocsPage() {
               If randomness is unavailable
             </h3>
             <p className="mt-3 text-sm leading-6 text-[var(--amber-ink)]">
-              Anyone can open refunds if no request succeeds within three days
-              after the sale, or if an accepted request has no callback for two
-              days. No winner, sponsor proceeds, or protocol fee is awarded.
-              Each current bearer burns a bounded batch of tickets for exactly
-              one ticket price each, and the recovery recipient claims the NFT.
+              A nonempty raffle waits until someone calls the permissionless
+              draw function; that call never expires. If an accepted request has
+              no callback for two days, anyone can open full refunds. No sponsor
+              proceeds or protocol fee is earned. Current owners burn up to 100
+              tickets per call and receive $1 USDC for every entry in each
+              stored range; anyone can return the NFT to the sponsor’s fixed
+              recipient. Any valid callback is final and has no later refund
+              timeout.
             </p>
           </div>
         </section>
@@ -131,12 +132,12 @@ export default function DocsPage() {
         <section className="mt-24 scroll-mt-8" id="economics">
           <DocHeading
             eyebrow="Exact economics"
-            title="The ticket price is all you pay."
-            text="One 5% fee is calculated from aggregate gross sales when the raffle resolves. It is deducted from the pot, never added at checkout. Every rounding remainder stays with the sponsor side of the cash split."
+            title="Every entry is exactly $1 USDC."
+            text="One 5% fee is deducted from aggregate gross sales, never added at checkout. In the cash branch it is earned at resolution; in the NFT branch it is earned only after verified prize delivery."
           />
           <div className="card mt-8 overflow-hidden">
             <div className="grid gap-1 bg-[var(--ink)] p-6 text-white sm:grid-cols-3">
-              <Formula label="Gross pot" value="all ticket revenue" />
+              <Formula label="Gross pot" value="$1 × totalEntries" />
               <Formula label="Protocol" value="floor(gross pot × 5%)" />
               <Formula label="Distributable" value="gross pot − protocol" />
             </div>
@@ -149,81 +150,83 @@ export default function DocsPage() {
                   ["Winner", "NFT"],
                   ["Sponsor", "114.00 USDC"],
                 ]}
-                title="Threshold met: 120 / 100"
+                title="Reserve met: 120 / 100"
               />
               <Example
                 rows={[
                   ["Gross sales", "80.00 USDC"],
                   ["Protocol fee", "4.00 USDC"],
                   ["Distributable pot", "76.00 USDC"],
-                  ["Winner", "60.80 USDC"],
-                  ["Sponsor", "NFT + 15.20 USDC"],
+                  ["Winner", "64.00 USDC"],
+                  ["Sponsor", "NFT + 12.00 USDC"],
                 ]}
-                title="Threshold missed: 80 / 100"
+                title="Reserve missed: 80 / 100"
               />
             </div>
           </div>
           <p className="mt-5 rounded-2xl card p-5 text-sm leading-6">
-            The fee is not allocated during individual purchases. Resolution
-            calculates it once from the complete gross pot, then creates the
-            treasury, winner, and sponsor pull claims.
+            Purchases never allocate fees. A cash result creates the treasury,
+            outcome and winning entry only. Settling the winning ticket
+            allocates sponsor and protocol balances and pays or delivers the
+            winner’s asset.
           </p>
         </section>
 
         <section className="mt-24 scroll-mt-8" id="randomness">
           <DocHeading
-            eyebrow="Randomness & claims"
+            eyebrow="Randomness & settlement"
             title="The callback decides; it never sends assets."
-            text="A raffle permits exactly one Entropy v2 request. Resolution stores the winning ticket and bounded liabilities, then stops. The callback never transfers an NFT, quote token, or native currency."
+            text="A raffle permits exactly one Chainlink VRF v2.5 request with 30 confirmations. Resolution stores only the winning entry and result, then stops. The callback never searches tickets or transfers assets."
           />
           <div className="mt-8 grid gap-5 md:grid-cols-3">
             <RiskCard
               icon={<Dices />}
               title="Verifiable draw"
-              text="Pyth Entropy combines committed randomness and delivers the requested sequence to the same independent raffle."
+              text="Chainlink VRF delivers proof-backed randomness to the same independent raffle through the authenticated direct-funding wrapper."
             />
             <RiskCard
               icon={<LockKeyhole />}
-              title="Bearer ticket"
-              text="Ticket ownership locks once randomness is requested, and the selected ticket remains locked until redemption or refund fallback."
+              title="Ticket proof"
+              text="The caller supplies a ticket ID. Its separately stored first and last entries prove in O(1) whether it contains the winning entry."
             />
             <RiskCard
               icon={<CircleDollarSign />}
-              title="Pull-based claims"
-              text="Recipients choose a nonzero destination at claim time. A failed transfer rolls back and can be retried."
+              title="Fixed destinations"
+              text="Anyone may execute settlement and releases, but winners, the sponsor, and the treasury always receive assets at their recorded addresses."
             />
           </div>
           <p className="mt-5 text-sm leading-6 text-[var(--ink-2)]">
-            Oracle delivery is not instantaneous and no replacement sequence is
+            Oracle delivery is not instantaneous and no replacement request is
             allowed. At the callback deadline, a callback and timeout
             transaction may both be valid; the first included terminal action
             wins. A timeout opens refunds, while late callbacks after failure
-            are ignored.
+            are ignored. Anyone may settle the winner, and delivery always goes
+            to the current ticket owner.
           </p>
         </section>
 
         <section className="mt-24 scroll-mt-8" id="transfers">
           <DocHeading
-            eyebrow="Ticket ownership"
-            title="Ownership fixes both winners and refunds."
-            text="Tickets lock while randomness is pending and the selected winner stays locked after resolution. In refunds, current owners burn transferable tickets for their exact purchase prices."
+            eyebrow="Entries & ticket ownership"
+            title="Ranges keep large purchases simple."
+            text="A ticket can represent one entry or an enormous contiguous range. It remains transferable in every raffle state until successful winner settlement or a refund burns it."
           />
           <div className="card mt-8 grid gap-5 p-6 sm:grid-cols-3">
             <Fact
               title="Odds"
-              text="Your balance ÷ all sold tickets. Every ticket ID from 1 through totalTickets is eligible."
+              text="Your entries ÷ totalEntries. Every entry from 1 through totalEntries is eligible, without minting or iterating once per entry."
             />
             <Fact
-              title="One-ticket case"
-              text="Ticket #1 wins. There is no zero modulo and no off-by-one exclusion."
+              title="One-entry case"
+              text="Entry #1 wins. There is no zero modulo and no off-by-one exclusion."
             />
             <Fact
-              title="High threshold"
+              title="High reserve"
               text="It cannot make the raffle insolvent. It only changes which settlement branch is more likely."
             />
             <Fact
               title="No sales cap"
-              text="Meeting the minimum does not close sales. Tickets remain available until the published end time, and the sponsor may earn above the target."
+              text="Meeting the reserve does not close sales. Entries remain available until the published end time. The only technical total is uint128, not a meaningful product cap."
             />
           </div>
         </section>
@@ -232,7 +235,7 @@ export default function DocsPage() {
           <DocHeading
             eyebrow="Trust model"
             title="Know what code can—and cannot—protect."
-            text="Existing raffles are non-upgradeable. Factory administration affects only future creation pause and treasury selection—not an active raffle’s USDC, economics, winner, or recovery paths."
+            text="Existing raffles are non-upgradeable ERC-1167 clones. The factory owner can only pause or resume future creation; the treasury and protocol dependencies are immutable."
           />
           <div className="mt-8 grid gap-5 lg:grid-cols-2">
             <div className="card p-7">
@@ -241,8 +244,8 @@ export default function DocsPage() {
                 <h3 className="text-2xl">Factory owner can</h3>
               </div>
               <ul className="mt-5 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--ink-2)]">
-                <li>Change the treasury captured by newly created raffles</li>
                 <li>Pause creation of new raffles</li>
+                <li>Resume creation of new raffles</li>
                 <li>Transfer two-step factory ownership</li>
               </ul>
             </div>
@@ -252,12 +255,17 @@ export default function DocsPage() {
                 <h3 className="text-2xl">Factory owner cannot</h3>
               </div>
               <ul className="mt-5 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--ink-2)]">
-                <li>Change existing economics, fees, timing, or threshold</li>
+                <li>
+                  Change any raffle’s reserve, fee, timing, or quote token
+                </li>
+                <li>
+                  Change the factory treasury, implementation, or VRF wrapper
+                </li>
                 <li>
                   Choose a winner, request another result, or upgrade a raffle
                 </li>
-                <li>Seize the prize, settlement pot, or user claims</li>
-                <li>Pause an existing raffle or its claims</li>
+                <li>Seize the prize, settlement pot, or user balances</li>
+                <li>Pause an existing raffle or its settlement</li>
               </ul>
             </div>
           </div>

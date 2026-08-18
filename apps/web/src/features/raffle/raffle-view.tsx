@@ -21,12 +21,12 @@ import {
   cashToSponsor,
   cashToWinner,
   distributablePot,
-  ticketsToThreshold,
+  entriesToReserve,
 } from "@/lib/economics";
 import { formatDateTime, formatTokenAmount, shortAddress } from "@/lib/format";
 import { explorerAddressUrl } from "@/lib/protocol";
 
-/** The shape both the live lens read and the demo fixtures normalize into. */
+/** The shape both direct raffle reads and the demo fixtures normalize into. */
 export interface RaffleViewModel {
   readonly address: Address;
   readonly factoryId: string;
@@ -36,19 +36,19 @@ export interface RaffleViewModel {
   readonly prizeTokenId: string;
   readonly prizeName?: string;
   readonly prizeCollection?: string;
-  readonly ticketPrice: bigint;
-  readonly minimumTickets: bigint;
-  readonly totalTickets: bigint;
+  readonly entryPrice: bigint;
+  readonly reserveEntries: bigint;
+  readonly totalEntries: bigint;
   readonly grossSales: bigint;
   readonly unsettledPot: bigint;
-  readonly startTime: bigint;
   readonly endTime: bigint;
   readonly stateLabel: string;
   readonly stateTone: StatusTone;
   readonly isActive: boolean;
+  readonly isRefunding: boolean;
   readonly outcomeLabel?: string;
-  readonly winningTicketId?: bigint;
-  readonly accountTicketBalance?: bigint;
+  readonly winningEntry?: bigint;
+  readonly accountEntryBalance?: bigint;
   readonly prizeImage?: string;
   readonly prizePixelated?: boolean;
 }
@@ -71,14 +71,15 @@ export function RaffleLayout({
   readonly aside: ReactNode;
   readonly footnote?: ReactNode;
 }) {
-  const thresholdMet = view.totalTickets >= view.minimumTickets;
-  const remaining = ticketsToThreshold(view.totalTickets, view.minimumTickets);
-  const thresholdTarget = view.ticketPrice * view.minimumTickets;
+  const reserveMet = view.totalEntries >= view.reserveEntries;
+  const remaining = entriesToReserve(view.totalEntries, view.reserveEntries);
+  const reserveTarget = view.entryPrice * view.reserveEntries;
   const settlementGross =
     view.unsettledPot === 0n ? view.grossSales : view.unsettledPot;
   const distributable = distributablePot(settlementGross);
   const winnerCash = cashToWinner(settlementGross);
   const sponsorCash = cashToSponsor(settlementGross);
+  const protocolFee = settlementGross - distributable;
   const countdown = useCountdown(view.endTime);
   const amount = (value: bigint) =>
     formatTokenAmount(value, token.decimals, token.symbol);
@@ -129,13 +130,13 @@ export function RaffleLayout({
               <div className="grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-4">
                 <Metric
                   icon={<CircleDollarSign size={16} />}
-                  label="Ticket price"
-                  value={amount(view.ticketPrice)}
+                  label="Entry price"
+                  value={amount(view.entryPrice)}
                 />
                 <Metric
                   icon={<Users size={16} />}
-                  label="Tickets sold"
-                  value={view.totalTickets.toString()}
+                  label="Entries sold"
+                  value={view.totalEntries.toString()}
                 />
                 <Metric
                   icon={<Clock3 size={16} />}
@@ -150,8 +151,12 @@ export function RaffleLayout({
                 />
                 <Metric
                   icon={<Ticket size={16} />}
-                  label="Your tickets"
-                  value={(view.accountTicketBalance ?? 0n).toString()}
+                  label="Your entries"
+                  value={
+                    view.accountEntryBalance === undefined
+                      ? "—"
+                      : view.accountEntryBalance.toString()
+                  }
                 />
               </div>
             </section>
@@ -160,91 +165,138 @@ export function RaffleLayout({
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <p className="eyebrow">
-                    {view.outcomeLabel
-                      ? "Final result"
-                      : "If the sale ended now"}
+                    {view.isRefunding
+                      ? "Refund outcome"
+                      : view.outcomeLabel
+                        ? "Final result"
+                        : view.isActive
+                          ? "If the sale ended now"
+                          : "Current settlement branch"}
                   </p>
                   <h2 className="mt-2 text-2xl md:text-3xl">
-                    {thresholdMet
-                      ? "The winner takes the NFT"
-                      : `The winner takes ${amount(winnerCash)}`}
+                    {view.isRefunding
+                      ? "Full ticket refunds are open"
+                      : reserveMet
+                        ? "The winner takes the NFT"
+                        : `The winner takes ${amount(winnerCash)}`}
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-[var(--ink-2)]">
-                    {thresholdMet
-                      ? `The threshold is met, so the sponsor claims the ${amount(distributable)} distributable pot instead of the NFT.`
-                      : `${remaining.toString()} more ticket${remaining === 1n ? "" : "s"} flips the prize from the cash pot to the NFT.`}
+                    {view.isRefunding
+                      ? "Each ticket returns $1 USDC per entry in its stored range. No protocol fee or sponsor cash is earned."
+                      : reserveMet
+                        ? `The reserve is met, so the sponsor claims the ${amount(distributable)} distributable pot after NFT delivery.`
+                        : `${remaining.toString()} more entr${remaining === 1n ? "y" : "ies"} flips the prize from the cash pot to the NFT.`}
                   </p>
                 </div>
               </div>
 
               <div className="mt-7">
                 <ThresholdBar
-                  minimum={view.minimumTickets}
+                  reserve={view.reserveEntries}
                   size="lg"
-                  total={view.totalTickets}
+                  total={view.totalEntries}
                 />
                 <div className="mt-2.5 flex items-center justify-between text-[length:var(--text-xs)]">
                   <span className="numeric font-semibold text-[var(--ink)]">
-                    {view.totalTickets.toString()} sold
+                    {view.totalEntries.toString()} sold
                   </span>
                   <span className="text-[var(--ink-3)]">
-                    {thresholdMet
-                      ? `NFT unlocked · ${(view.totalTickets - view.minimumTickets).toString()} past the threshold`
-                      : `NFT at ${view.minimumTickets.toString()} · ${remaining.toString()} to the flip`}
+                    {reserveMet
+                      ? `NFT unlocked · ${(view.totalEntries - view.reserveEntries).toString()} past the reserve`
+                      : `NFT at ${view.reserveEntries.toString()} · ${remaining.toString()} to the flip`}
                   </span>
                 </div>
               </div>
 
-              <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <Stat
-                  label="Cash pot (winner 80%)"
-                  value={amount(winnerCash)}
-                />
-                <Stat label="Sponsor 20%" value={amount(sponsorCash)} />
-                <Stat
-                  label="Distributable after 5%"
-                  value={amount(distributable)}
-                />
-                <Stat label="Gross target" value={amount(thresholdTarget)} />
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                {view.isRefunding ? (
+                  <>
+                    <Stat
+                      label="Full refund liability"
+                      value={amount(view.grossSales)}
+                    />
+                    <Stat label="Protocol fee" value={amount(0n)} />
+                    <Stat label="Sponsor cash" value={amount(0n)} />
+                  </>
+                ) : reserveMet ? (
+                  <>
+                    <Stat
+                      label="Sponsor proceeds (95%)"
+                      value={amount(distributable)}
+                    />
+                    <Stat
+                      label="Protocol fee (5%)"
+                      value={amount(protocolFee)}
+                    />
+                    <Stat label="Gross reserve" value={amount(reserveTarget)} />
+                  </>
+                ) : (
+                  <>
+                    <Stat
+                      label="Cash winner (80% of gross)"
+                      value={amount(winnerCash)}
+                    />
+                    <Stat
+                      label="Sponsor yield (15% of gross)"
+                      value={amount(sponsorCash)}
+                    />
+                    <Stat
+                      label="Protocol fee (5%)"
+                      value={amount(protocolFee)}
+                    />
+                  </>
+                )}
               </div>
               <p className="mt-4 text-xs leading-5 text-[var(--ink-3)]">
                 These figures reflect {amount(view.grossSales)} of gross sales
-                so far. They move with every ticket and are not a guarantee
-                while the sale is open.
+                so far. They move with every entry and are not a guarantee while
+                the sale is open.
               </p>
             </section>
 
             <section>
               <p className="eyebrow">Settlement branches</p>
               <h2 className="mt-2 text-2xl md:text-3xl">
-                What the winner receives
+                {view.isRefunding
+                  ? "What ticket owners receive"
+                  : "What the winner receives"}
               </h2>
-              <div className="mt-5 grid gap-4 md:grid-cols-2">
-                <OutcomePanel
-                  active={thresholdMet && view.outcomeLabel === undefined}
-                  headline={`at ${view.minimumTickets.toString()}+ tickets`}
-                  icon={<Trophy aria-hidden size={19} />}
-                  label="At or above threshold"
-                  text="A 5% protocol fee is allocated at resolution. The sponsor claims the remaining distributable pot."
-                  tint="var(--yellow-wash)"
-                  title="Winner claims the NFT"
-                />
-                <OutcomePanel
-                  active={!thresholdMet && view.outcomeLabel === undefined}
-                  headline={`${amount(winnerCash)} today`}
-                  icon={<CircleDollarSign aria-hidden size={19} />}
-                  label={`Below ${view.minimumTickets.toString()} tickets`}
-                  text="The sponsor reclaims the NFT and receives the remaining 20% of the distributable pot."
-                  tint="var(--sky-wash)"
-                  title="Winner claims 80% cash"
-                />
-              </div>
+              {view.isRefunding ? (
+                <div className="mt-5 rounded-2xl bg-[var(--sky-wash)] p-5">
+                  <p className="font-extrabold">$1 USDC per entry</p>
+                  <p className="mt-2 text-sm leading-6 text-[var(--ink-2)]">
+                    The current owner supplies up to 100 ticket IDs, burns them,
+                    and receives the value of every entry in those ranges. The
+                    sponsor separately recovers the NFT.
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-5 grid gap-4 md:grid-cols-2">
+                  <OutcomePanel
+                    active={reserveMet && view.outcomeLabel === undefined}
+                    headline={`at ${view.reserveEntries.toString()}+ entries`}
+                    icon={<Trophy aria-hidden size={19} />}
+                    label="At or above reserve"
+                    text="On verified NFT delivery, 5% goes to the protocol and the sponsor can claim the remaining 95%."
+                    tint="var(--yellow-wash)"
+                    title="Winner claims the NFT"
+                  />
+                  <OutcomePanel
+                    active={!reserveMet && view.outcomeLabel === undefined}
+                    headline={`${amount(winnerCash)} today`}
+                    icon={<CircleDollarSign aria-hidden size={19} />}
+                    label={`Below ${view.reserveEntries.toString()} entries`}
+                    text={`The sponsor reclaims the NFT plus ${amount(sponsorCash)} (15% of gross). The winning entry receives ${amount(winnerCash)} (80% of gross).`}
+                    tint="var(--sky-wash)"
+                    title="Winner claims 80% of gross"
+                  />
+                </div>
+              )}
               {view.outcomeLabel ? (
                 <p className="mt-4 rounded-2xl bg-[var(--sky-wash)] p-4 text-sm font-extrabold text-[#1c5fa8]">
                   Settled: {view.outcomeLabel}
-                  {view.winningTicketId !== undefined &&
-                  view.winningTicketId > 0n
-                    ? ` · Ticket #${view.winningTicketId.toString()} won`
+                  {view.winningEntry !== undefined && view.winningEntry > 0n
+                    ? ` · Entry #${view.winningEntry.toString()} won`
                     : ""}
                 </p>
               ) : null}
@@ -273,7 +325,6 @@ export function RaffleLayout({
                   label="Payment token"
                   value={`${token.symbol} · ${shortAddress(view.quoteToken)}`}
                 />
-                <Detail label="Starts" value={formatDateTime(view.startTime)} />
                 <Detail label="Ends" value={formatDateTime(view.endTime)} />
               </dl>
             </section>
@@ -294,11 +345,11 @@ export function RaffleLayout({
           <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--line)] bg-[color-mix(in_srgb,var(--paper)_92%,transparent)] px-4 py-3 backdrop-blur-xl lg:hidden">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="eyebrow">Ticket</p>
-                <p className="figure mt-0.5">{amount(view.ticketPrice)}</p>
+                <p className="eyebrow">Entry</p>
+                <p className="figure mt-0.5">{amount(view.entryPrice)}</p>
               </div>
               <a className="btn btn-primary" href="#raffle-action">
-                Buy tickets
+                Buy entries
               </a>
             </div>
           </div>

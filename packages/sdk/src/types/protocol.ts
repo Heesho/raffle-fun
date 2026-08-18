@@ -1,3 +1,5 @@
+import type { Address } from "viem";
+
 export enum RaffleStatus {
   AwaitingPrize,
   Active,
@@ -5,7 +7,6 @@ export enum RaffleStatus {
   NftWon,
   CashWon,
   Refunding,
-  Closed,
 }
 
 export const raffleStatusLabels = {
@@ -15,16 +16,12 @@ export const raffleStatusLabels = {
   [RaffleStatus.NftWon]: "NFT won",
   [RaffleStatus.CashWon]: "Cash won",
   [RaffleStatus.Refunding]: "Refunding",
-  [RaffleStatus.Closed]: "Closed",
 } as const satisfies Record<RaffleStatus, string>;
 
 export interface CreateRaffleParams {
-  readonly prizeToken: `0x${string}`;
+  readonly sponsorRecipient: Address;
+  readonly prizeToken: Address;
   readonly prizeTokenId: bigint;
-  readonly sponsorPrizeRecoveryRecipient: `0x${string}`;
-  readonly ticketPrice: bigint;
-  readonly minimumTickets: bigint;
-  readonly startTime: bigint;
+  readonly reserveEntries: bigint;
   readonly endTime: bigint;
-  readonly metadataURI: string;
 }

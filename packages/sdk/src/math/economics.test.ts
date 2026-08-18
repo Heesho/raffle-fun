@@ -1,37 +1,39 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  ENTRY_PRICE,
+  MAX_UINT128,
   calculatePurchaseAmounts,
   calculateRefundAmounts,
   calculateResolutionAmounts,
+  reserveProgress,
+  ticketRangeContainsEntry,
 } from "./economics.js";
 import { formatQuoteAmount, parseQuoteAmount } from "./quote.js";
 
 describe("protocol economics", () => {
-  it("matches the 120-ticket threshold-met worked example", () => {
-    const purchase = calculatePurchaseAmounts({
-      ticketPrice: 1_000_000n,
-      quantity: 120n,
-    });
-    expect(purchase).toEqual({ grossAmount: 120_000_000n });
-    expect(calculateResolutionAmounts(purchase.grossAmount, true)).toEqual({
-      protocolFee: 6_000_000n,
-      distributablePot: 114_000_000n,
-      winnerCashAmount: 0n,
-      sponsorCashAmount: 114_000_000n,
+  it("uses the fixed one-dollar entry price", () => {
+    expect(ENTRY_PRICE).toBe(1_000_000n);
+    expect(calculatePurchaseAmounts({ entryCount: 120n })).toEqual({
+      grossAmount: 120_000_000n,
     });
   });
 
-  it("matches the 80-ticket cash-fallback worked example", () => {
-    const purchase = calculatePurchaseAmounts({
-      ticketPrice: 1_000_000n,
-      quantity: 80n,
+  it("settles a reserve-met NFT result as 5 percent protocol and 95 percent sponsor", () => {
+    expect(calculateResolutionAmounts(120_000_000n, true)).toEqual({
+      protocolFee: 6_000_000n,
+      distributablePot: 114_000_000n,
+      winnerCashAmount: 0n,
+      sponsorAmount: 114_000_000n,
     });
-    expect(calculateResolutionAmounts(purchase.grossAmount, false)).toEqual({
+  });
+
+  it("settles a below-reserve result as 80/5/15 of gross", () => {
+    expect(calculateResolutionAmounts(80_000_000n, false)).toEqual({
       protocolFee: 4_000_000n,
       distributablePot: 76_000_000n,
-      winnerCashAmount: 60_800_000n,
-      sponsorCashAmount: 15_200_000n,
+      winnerCashAmount: 64_000_000n,
+      sponsorAmount: 12_000_000n,
     });
   });
 
@@ -41,21 +43,11 @@ describe("protocol economics", () => {
     expect(settlement.distributablePot).toBe(19n);
   });
 
-  it("assigns all 80/20 rounding remainder to the sponsor", () => {
-    const resolution = calculateResolutionAmounts(8n, false);
-    expect(resolution.protocolFee).toBe(0n);
-    expect(resolution.distributablePot).toBe(8n);
-    expect(resolution.winnerCashAmount).toBe(6n);
-    expect(resolution.sponsorCashAmount).toBe(2n);
-    expect(resolution.winnerCashAmount + resolution.sponsorCashAmount).toBe(8n);
-  });
-
-  it("conserves gross sales exactly across partial ticket-burn refunds", () => {
+  it("conserves gross sales exactly across partial ticket refunds", () => {
     expect(
       calculateRefundAmounts({
-        ticketPrice: 1_000_000n,
-        totalTickets: 80n,
-        redeemedTickets: 31n,
+        totalEntries: 80n,
+        redeemedEntries: 31n,
       }),
     ).toEqual({
       grossRefundLiability: 80_000_000n,
@@ -63,6 +55,23 @@ describe("protocol economics", () => {
       remainingRefundLiability: 49_000_000n,
       protocolFee: 0n,
     });
+  });
+
+  it("keeps uint128 entry values and progress in bigint space", () => {
+    expect(() =>
+      calculatePurchaseAmounts({ entryCount: MAX_UINT128 }),
+    ).not.toThrow();
+    expect(() =>
+      calculatePurchaseAmounts({ entryCount: MAX_UINT128 + 1n }),
+    ).toThrow(/uint128/);
+    expect(reserveProgress(MAX_UINT128, MAX_UINT128)).toBe(10_000n);
+  });
+
+  it("checks an explicit ticket range without enumerating its entries", () => {
+    const range = { firstEntry: 21n, lastEntry: 40n };
+    expect(ticketRangeContainsEntry(range, 21n)).toBe(true);
+    expect(ticketRangeContainsEntry(range, 40n)).toBe(true);
+    expect(ticketRangeContainsEntry(range, 41n)).toBe(false);
   });
 
   it("parses and formats quote units without floating point", () => {

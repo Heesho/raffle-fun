@@ -17,13 +17,13 @@ export const deploymentEnvSchema = z.object({
   DEPLOYER_PRIVATE_KEY: privateKeySchema,
   PROTOCOL_TREASURY: addressSchema,
   FACTORY_OWNER: addressSchema,
-  BASE_SEPOLIA_RPC_URL: rpcUrlSchema.optional(),
-  BASE_RPC_URL: rpcUrlSchema.optional(),
-  BASESCAN_API_KEY: z.string().min(1).optional(),
+  SEPOLIA_RPC_URL: rpcUrlSchema.optional(),
+  ETHEREUM_RPC_URL: rpcUrlSchema.optional(),
+  ETHERSCAN_API_KEY: z.string().min(1).optional(),
 });
 
 export const publicWebEnvSchema = z.object({
-  NEXT_PUBLIC_CHAIN_ID: z.coerce.number().int().positive().default(84_532),
+  NEXT_PUBLIC_CHAIN_ID: z.coerce.number().int().positive().default(11_155_111),
   NEXT_PUBLIC_RPC_URL: rpcUrlSchema,
   NEXT_PUBLIC_SUBGRAPH_URL: z.url(),
   NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: z.string().min(1),

@@ -11,30 +11,51 @@ const address = z
     "zero address is not a deployment value",
   );
 
+// Persist hashes in the same canonical form returned by Ethereum JSON-RPC so
+// record comparisons cannot fail solely because of mixed-case hex digits.
+const bytes32 = z.string().regex(/^0x[a-f0-9]{64}$/);
+const deploymentTransaction = z
+  .object({
+    hash: bytes32,
+    blockNumber: z.number().int().positive(),
+  })
+  .strict();
+
 export const deploymentRecordSchema = z
   .object({
-    chainId: z.union([z.literal(84_532), z.literal(8_453)]),
-    networkName: z.union([z.literal("base-sepolia"), z.literal("base")]),
+    chainId: z.union([z.literal(11_155_111), z.literal(1)]),
+    networkName: z.union([z.literal("sepolia"), z.literal("mainnet")]),
     deployedAt: z.iso.datetime(),
-    deploymentBlock: z.number().int().positive(),
+    validationBlock: z.number().int().positive(),
+    validationBlockHash: bytes32,
+    deploymentTransactions: z
+      .object({
+        raffleFactory: deploymentTransaction,
+      })
+      .strict(),
+    runtimeCodeHashes: z
+      .object({
+        quoteToken: bytes32,
+        vrfWrapper: bytes32,
+        raffleFactory: bytes32,
+        raffleImplementation: bytes32,
+      })
+      .strict(),
     deployer: address,
     finalFactoryOwner: address,
     quoteToken: address,
-    entropy: address,
+    vrfWrapper: address,
     raffleFactory: address,
-    raffleLens: address,
+    raffleImplementation: address,
     protocolTreasury: address,
-    callbackGasLimit: z.number().int().positive().max(4_294_967_295),
+    callbackGasLimit: z.literal(300_000),
+    requestConfirmations: z.literal(30),
     sourceCommit: z.string().regex(/^[a-fA-F0-9]{40}$/),
-    verificationStatus: z.union([
-      z.literal("unverified"),
-      z.literal("partial"),
-      z.literal("verified"),
-    ]),
+    verificationStatus: z.literal("verified"),
   })
   .strict()
   .superRefine((record, context) => {
-    const expected = record.chainId === 84_532 ? "base-sepolia" : "base";
+    const expected = record.chainId === 11_155_111 ? "sepolia" : "mainnet";
     if (record.networkName !== expected) {
       context.addIssue({
         code: "custom",
@@ -45,9 +66,9 @@ export const deploymentRecordSchema = z
     const uniqueProtocolAddresses = new Set(
       [
         record.quoteToken,
-        record.entropy,
+        record.vrfWrapper,
         record.raffleFactory,
-        record.raffleLens,
+        record.raffleImplementation,
         record.protocolTreasury,
       ].map((value) => value.toLowerCase()),
     );
@@ -56,6 +77,17 @@ export const deploymentRecordSchema = z
         code: "custom",
         path: ["raffleFactory"],
         message: "protocol dependency and treasury addresses must be distinct",
+      });
+    }
+    if (
+      record.validationBlock <
+      record.deploymentTransactions.raffleFactory.blockNumber
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["validationBlock"],
+        message:
+          "validation block must not precede the factory deployment transaction",
       });
     }
   });

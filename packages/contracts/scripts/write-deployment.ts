@@ -1,14 +1,20 @@
+import { execFile } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import { promisify } from "node:util";
 
 import { createPublicClient, http } from "viem";
 
+import { loadDeploymentBuildEvidence } from "./deployment-build-evidence.js";
 import {
   deploymentRecordSchema,
   writeDeploymentRecord,
 } from "./deployment-record.js";
+import { createEtherscanSourceVerifier } from "./deployment-source-verification.js";
 import { validateDeploymentOnchain } from "./deployment-validation.js";
+
+const execFileAsync = promisify(execFile);
 
 const inputPath = process.argv[2];
 if (inputPath === undefined) {
@@ -20,10 +26,86 @@ if (inputPath === undefined) {
 const candidate = deploymentRecordSchema.parse(
   JSON.parse(await readFile(path.resolve(inputPath), "utf8")),
 );
+const repositoryRoot = path.resolve(import.meta.dirname, "../../..");
+const contractsRoot = path.join(repositoryRoot, "packages", "contracts");
+const [{ stdout: sourceCommitOutput }, { stdout: worktreeStatus }] =
+  await Promise.all([
+    execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: repositoryRoot,
+      encoding: "utf8",
+    }),
+    execFileAsync(
+      "git",
+      ["status", "--porcelain=v1", "--untracked-files=all"],
+      {
+        cwd: repositoryRoot,
+        encoding: "utf8",
+      },
+    ),
+  ]);
+const sourceCommit = sourceCommitOutput.trim();
+if (worktreeStatus.trim() !== "") {
+  throw new Error(
+    "Deployment publication requires a completely clean worktree, including no untracked files.",
+  );
+}
+if (candidate.sourceCommit.toLowerCase() !== sourceCommit.toLowerCase()) {
+  throw new Error(
+    `candidate sourceCommit ${candidate.sourceCommit} does not match clean HEAD ${sourceCommit}.`,
+  );
+}
+
+const hardhatBinary = path.join(
+  contractsRoot,
+  "node_modules",
+  ".bin",
+  "hardhat",
+);
+await execFileAsync(hardhatBinary, ["compile", "--force"], {
+  cwd: contractsRoot,
+  encoding: "utf8",
+  maxBuffer: 10 * 1024 * 1024,
+});
+const [{ stdout: postCompileCommit }, { stdout: postCompileStatus }] =
+  await Promise.all([
+    execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: repositoryRoot,
+      encoding: "utf8",
+    }),
+    execFileAsync(
+      "git",
+      ["status", "--porcelain=v1", "--untracked-files=all"],
+      {
+        cwd: repositoryRoot,
+        encoding: "utf8",
+      },
+    ),
+  ]);
+if (
+  postCompileCommit.trim().toLowerCase() !== sourceCommit.toLowerCase() ||
+  postCompileStatus.trim() !== ""
+) {
+  throw new Error(
+    "Source commit or worktree changed while compiling release artifacts; aborting deployment publication.",
+  );
+}
+
+const etherscanApiKey = process.env.ETHERSCAN_API_KEY;
+if (etherscanApiKey === undefined) {
+  throw new Error(
+    "ETHERSCAN_API_KEY is required to verify published Factory and implementation source independently.",
+  );
+}
+const evidence = await loadDeploymentBuildEvidence(
+  repositoryRoot,
+  candidate,
+  sourceCommit,
+  createEtherscanSourceVerifier(etherscanApiKey),
+);
 const rpcUrl =
-  candidate.chainId === 84_532
-    ? process.env.BASE_SEPOLIA_RPC_URL
-    : process.env.BASE_RPC_URL;
+  candidate.chainId === 11_155_111
+    ? process.env.SEPOLIA_RPC_URL
+    : process.env.ETHEREUM_RPC_URL;
 if (rpcUrl === undefined) {
   throw new Error(
     "The matching network RPC URL is required for bytecode checks.",
@@ -31,8 +113,26 @@ if (rpcUrl === undefined) {
 }
 
 const client = createPublicClient({ transport: http(rpcUrl) });
-await validateDeploymentOnchain(client, candidate);
+await validateDeploymentOnchain(client, candidate, evidence);
 
-const repositoryRoot = path.resolve(import.meta.dirname, "../../..");
+const [{ stdout: finalCommit }, { stdout: finalStatus }] = await Promise.all([
+  execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: repositoryRoot,
+    encoding: "utf8",
+  }),
+  execFileAsync("git", ["status", "--porcelain=v1", "--untracked-files=all"], {
+    cwd: repositoryRoot,
+    encoding: "utf8",
+  }),
+]);
+if (
+  finalCommit.trim().toLowerCase() !== sourceCommit.toLowerCase() ||
+  finalStatus.trim() !== ""
+) {
+  throw new Error(
+    "Source commit or worktree changed during deployment validation; refusing to write a record.",
+  );
+}
+
 const destination = await writeDeploymentRecord(candidate, repositoryRoot);
 process.stdout.write(`Wrote verified deployment record: ${destination}\n`);

@@ -1,5 +1,11 @@
 # raffle.fun: A Technical Whitepaper
 
+> **Historical snapshot:** This document describes the pre-migration Base/Pyth design at
+> the commits listed below. It is not the current Ethereum/Chainlink VRF specification.
+> Use the production Solidity plus the current
+> [`RANDOMNESS.md`](../RANDOMNESS.md) and [`DEPLOYMENT.md`](../DEPLOYMENT.md) runbooks for
+> the migrated design.
+
 **An immutable, administrator-free NFT raffle protocol with bearer ERC-721 tickets,
 oracle-bounded liveness, and three-origin refund fallback.**
 

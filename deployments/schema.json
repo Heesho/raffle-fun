@@ -7,45 +7,90 @@
     "chainId",
     "networkName",
     "deployedAt",
-    "deploymentBlock",
+    "validationBlock",
+    "validationBlockHash",
+    "deploymentTransactions",
+    "runtimeCodeHashes",
     "deployer",
     "finalFactoryOwner",
     "quoteToken",
-    "entropy",
+    "vrfWrapper",
     "raffleFactory",
-    "raffleLens",
+    "raffleImplementation",
     "protocolTreasury",
     "callbackGasLimit",
+    "requestConfirmations",
     "sourceCommit",
     "verificationStatus"
   ],
   "properties": {
-    "chainId": { "type": "integer", "enum": [8453, 84532] },
+    "chainId": { "type": "integer", "enum": [1, 11155111] },
     "networkName": {
       "type": "string",
-      "enum": ["base", "base-sepolia"]
+      "enum": ["mainnet", "sepolia"]
     },
     "deployedAt": { "type": "string", "format": "date-time" },
-    "deploymentBlock": { "type": "integer", "minimum": 1 },
+    "validationBlock": { "type": "integer", "minimum": 1 },
+    "validationBlockHash": { "$ref": "#/$defs/bytes32" },
+    "deploymentTransactions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["raffleFactory"],
+      "properties": {
+        "raffleFactory": { "$ref": "#/$defs/deploymentTransaction" }
+      }
+    },
+    "runtimeCodeHashes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "quoteToken",
+        "vrfWrapper",
+        "raffleFactory",
+        "raffleImplementation"
+      ],
+      "properties": {
+        "quoteToken": { "$ref": "#/$defs/bytes32" },
+        "vrfWrapper": { "$ref": "#/$defs/bytes32" },
+        "raffleFactory": { "$ref": "#/$defs/bytes32" },
+        "raffleImplementation": { "$ref": "#/$defs/bytes32" }
+      }
+    },
     "deployer": { "$ref": "#/$defs/address" },
     "finalFactoryOwner": { "$ref": "#/$defs/address" },
     "quoteToken": { "$ref": "#/$defs/address" },
-    "entropy": { "$ref": "#/$defs/address" },
+    "vrfWrapper": { "$ref": "#/$defs/address" },
     "raffleFactory": { "$ref": "#/$defs/address" },
-    "raffleLens": { "$ref": "#/$defs/address" },
+    "raffleImplementation": { "$ref": "#/$defs/address" },
     "protocolTreasury": { "$ref": "#/$defs/address" },
     "callbackGasLimit": {
       "type": "integer",
-      "minimum": 1,
-      "maximum": 4294967295
+      "const": 300000
+    },
+    "requestConfirmations": {
+      "type": "integer",
+      "const": 30
     },
     "sourceCommit": { "type": "string", "pattern": "^[a-fA-F0-9]{40}$" },
     "verificationStatus": {
       "type": "string",
-      "enum": ["unverified", "partial", "verified"]
+      "const": "verified"
     }
   },
   "$defs": {
+    "deploymentTransaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hash", "blockNumber"],
+      "properties": {
+        "hash": { "$ref": "#/$defs/bytes32" },
+        "blockNumber": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "bytes32": {
+      "type": "string",
+      "pattern": "^0x[a-f0-9]{64}$"
+    },
     "address": {
       "type": "string",
       "pattern": "^0x[a-fA-F0-9]{40}$",

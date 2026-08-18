@@ -4,7 +4,7 @@ schema:
 dataSources:
   - kind: ethereum
     name: RaffleFactory
-    network: base-sepolia
+    network: sepolia
     source:
       abi: RaffleFactory
       startBlock: 0
@@ -21,13 +21,13 @@ dataSources:
         - name: RaffleFactory
           file: ./abis/RaffleFactory.json
       eventHandlers:
-        - event: RaffleCreated(indexed uint256,indexed address,indexed address,address,address,uint256,address,address,uint256,uint256,uint256,uint256,uint256,string)
+        - event: RaffleCreated(indexed uint256,indexed address,indexed address,address,address,uint256,address,address,uint128,uint64)
           handler: handleRaffleCreated
       file: ./src/factory.ts
 templates:
   - kind: ethereum/contract
     name: Raffle
-    network: base-sepolia
+    network: sepolia
     source:
       abi: Raffle
     mapping:
@@ -41,12 +41,13 @@ templates:
         - Ticket
         - Purchase
         - DrawRequest
+        - IgnoredVrfCallback
         - Resolution
         - RefundEnable
         - RefundRedemption
-        - WinningRedemption
-        - QuoteClaim
-        - SponsorPrizeClaim
+        - WinningSettlement
+        - ProceedsRelease
+        - SponsorPrizeRelease
         - RaffleTransfer
         - ProtocolDayData
         - RaffleDayData
@@ -54,26 +55,26 @@ templates:
         - name: Raffle
           file: ./abis/Raffle.json
       eventHandlers:
-        - event: PrizeDeposited(indexed address,indexed uint256,indexed address)
-          handler: handlePrizeDeposited
-        - event: TicketsPurchased(indexed address,indexed address,uint256,uint256,uint256,uint256)
-          handler: handleTicketsPurchased
+        - event: TicketPurchased(indexed address,indexed address,indexed uint256,uint128,uint128,uint128,uint256)
+          handler: handleTicketPurchased
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
-        - event: DrawRequested(indexed uint64,indexed address,uint256,uint256,uint256,uint256)
+        - event: DrawRequested(indexed uint256,indexed address,uint256,uint256,uint256,uint256)
           handler: handleDrawRequested
-        - event: RaffleResolved(indexed uint64,indexed uint256,indexed uint8,uint256,uint256,uint256)
+        - event: VrfCallbackIgnored(indexed uint256,indexed uint256,uint8)
+          handler: handleVrfCallbackIgnored
+        - event: RaffleResolved(indexed uint256,indexed uint128,indexed uint8)
           handler: handleRaffleResolved
-        - event: QuoteClaimed(indexed address,indexed address,uint256)
-          handler: handleQuoteClaimed
-        - event: RefundsEnabled(indexed address,indexed bool,uint256)
+        - event: RefundsEnabled(indexed address,uint256)
           handler: handleRefundsEnabled
-        - event: RefundTicketsRedeemed(indexed address,indexed address,uint256,uint256,uint256)
-          handler: handleRefundTicketsRedeemed
-        - event: WinningTicketRedeemed(indexed uint256,indexed address,indexed address,uint8,uint256)
-          handler: handleWinningTicketRedeemed
-        - event: SponsorPrizeClaimed(indexed address,indexed address,indexed address,uint256)
-          handler: handleSponsorPrizeClaimed
-        - event: EmptyRaffleClosed(indexed address,indexed address)
-          handler: handleEmptyRaffleClosed
+        - event: TicketsRefunded(indexed address,uint256,uint256,uint256,uint256)
+          handler: handleTicketsRefunded
+        - event: WinningTicketSettled(indexed uint256,indexed address,indexed uint8,uint256,uint256,uint256)
+          handler: handleWinningTicketSettled
+        - event: SponsorProceedsReleased(indexed address,indexed address,uint256)
+          handler: handleSponsorProceedsReleased
+        - event: ProtocolFeesReleased(indexed address,indexed address,uint256)
+          handler: handleProtocolFeesReleased
+        - event: SponsorPrizeReleased(indexed address,indexed address,indexed address,uint256)
+          handler: handleSponsorPrizeReleased
       file: ./src/raffle.ts

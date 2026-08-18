@@ -5,7 +5,7 @@ import { RaffleDetail } from "@/features/raffle/raffle-detail";
 export const metadata: Metadata = {
   title: "Raffle detail",
   description:
-    "Inspect live raffle economics, buy tickets, request settlement, and claim payouts.",
+    "Inspect live raffle economics, buy $1 entries, prove ticket ranges, and settle payouts.",
 };
 
 export default async function RafflePage({

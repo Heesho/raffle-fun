@@ -4,14 +4,13 @@ import { ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-import { CountUp } from "@/components/count-up";
 import { PrizeArt } from "@/components/prize-art";
 import { StatusPill, type StatusTone } from "@/components/status-pill";
 import { ThresholdBar } from "@/components/threshold-bar";
 import { useCountdown } from "@/hooks/use-countdown";
 import { useNow } from "@/hooks/use-now";
 import { useTokenMetadata } from "@/hooks/use-token-metadata";
-import { cashToWinner, ticketsToThreshold } from "@/lib/economics";
+import { cashToWinner, entriesToReserve } from "@/lib/economics";
 import { formatTokenAmount, shortAddress } from "@/lib/format";
 import type { IndexedRaffle } from "@/lib/subgraph";
 
@@ -21,36 +20,37 @@ const stateTones: Record<string, StatusTone> = {
   NFT_WON: "resolved",
   CASH_WON: "resolved",
   REFUNDING: "warning",
-  CLOSED: "neutral",
 };
 
 const ctaLabels: Record<string, string> = {
-  ACTIVE: "Buy tickets",
+  ACTIVE: "Buy entries",
   DRAWING: "Watch the draw",
   NFT_WON: "See the result",
   CASH_WON: "See the result",
   REFUNDING: "Redeem refund",
-  CLOSED: "View raffle",
 };
 
 /** Under an hour left reads as urgent. */
 const URGENT_SECONDS = 3_600;
 
 export function RaffleCard({ raffle }: { readonly raffle: IndexedRaffle }) {
-  const total = BigInt(raffle.totalTickets);
-  const minimum = BigInt(raffle.minimumTickets);
-  const thresholdMet = total >= minimum;
-  const remaining = ticketsToThreshold(total, minimum);
+  const total = BigInt(raffle.totalEntries);
+  const reserve = BigInt(raffle.reserveEntries);
+  const reserveMet = total >= reserve;
+  const remaining = entriesToReserve(total, reserve);
   const unsettledPot = BigInt(raffle.unsettledPot);
   const settlementGross =
     unsettledPot === 0n ? BigInt(raffle.grossSales) : unsettledPot;
-  const pot = cashToWinner(settlementGross);
+  const refunding = raffle.state === "REFUNDING";
+  const pot = refunding
+    ? BigInt(raffle.remainingRefundLiability)
+    : cashToWinner(settlementGross);
   const address = raffle.id as `0x${string}`;
   const tokenMetadata = useTokenMetadata(raffle.quoteToken as `0x${string}`);
   const countdown = useCountdown(BigInt(raffle.endTime));
   const isActive = raffle.state === "ACTIVE";
   const stateLabel = raffle.state.replaceAll("_", " ").toLowerCase();
-  const flashing = useChangeFlash(raffle.totalTickets);
+  const flashing = useChangeFlash(raffle.totalEntries);
   const now = useNow();
   const secondsLeft =
     now === undefined ? undefined : Number(raffle.endTime) - now;
@@ -97,10 +97,10 @@ export function RaffleCard({ raffle }: { readonly raffle: IndexedRaffle }) {
             </h3>
           </div>
           <div className="shrink-0 text-right">
-            <p className="eyebrow">Ticket</p>
+            <p className="eyebrow">Per entry</p>
             <p className="figure mt-1 text-[length:var(--text-lg)]">
               {formatTokenAmount(
-                BigInt(raffle.ticketPrice),
+                BigInt(raffle.entryPrice),
                 tokenMetadata.decimals,
                 tokenMetadata.symbol,
               )}
@@ -111,26 +111,29 @@ export function RaffleCard({ raffle }: { readonly raffle: IndexedRaffle }) {
         <div className="mt-4">
           <div className="mb-1.5 flex items-baseline justify-between gap-3 text-[length:var(--text-xs)]">
             <span className="font-semibold text-[var(--ink-2)]">
-              <CountUp
-                className={flashing ? "text-[var(--pink-ink)]" : ""}
-                value={Number(raffle.totalTickets)}
-              />{" "}
+              <span
+                className={`numeric ${flashing ? "text-[var(--pink-ink)]" : ""}`}
+              >
+                {total.toString()}
+              </span>{" "}
               sold
             </span>
             <span className="text-[var(--ink-3)]">
-              {thresholdMet
+              {reserveMet
                 ? "NFT unlocked"
-                : `NFT at ${minimum.toString()} · ${remaining.toString()} to go`}
+                : `NFT at ${reserve.toString()} · ${remaining.toString()} to go`}
             </span>
           </div>
-          <ThresholdBar minimum={minimum} total={total} />
+          <ThresholdBar reserve={reserve} total={total} />
         </div>
 
         {/* The two facts that decide whether to buy: what the pot pays right
             now, and how long there is to act. */}
         <div className="mt-4 flex items-end justify-between gap-3 border-t border-[var(--line)] pt-3">
           <div className="min-w-0">
-            <p className="eyebrow">Cash pot</p>
+            <p className="eyebrow">
+              {refunding ? "Refunds remaining" : "Cash pot"}
+            </p>
             <p className="figure mt-0.5 truncate text-[length:var(--text-base)]">
               {formatTokenAmount(
                 pot,
@@ -161,7 +164,7 @@ export function RaffleCard({ raffle }: { readonly raffle: IndexedRaffle }) {
 
         {isActive && !closed ? (
           <p className="mt-3 text-[length:var(--text-xs)] text-[var(--ink-3)]">
-            One ticket ≈{" "}
+            One entry ≈{" "}
             <span className="numeric font-semibold text-[var(--ink-2)]">
               1 in {(total + 1n).toString()}
             </span>{" "}
@@ -179,7 +182,7 @@ export function RaffleCard({ raffle }: { readonly raffle: IndexedRaffle }) {
             href={`/raffle/${address}`}
           >
             {/* A raffle stays ACTIVE after its sale window shuts, until
-                someone pays for randomness — so "Buy tickets" would be a lie
+                someone pays for randomness — so "Buy entries" would be a lie
                 for the gap in between. */}
             {isActive && closed
               ? "Awaiting the draw"

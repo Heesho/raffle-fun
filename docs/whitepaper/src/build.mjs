@@ -8,18 +8,7 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "../../..");
 
-/**
- * Refuses to publish while the chapter sources still describe the pre-2026-08-13 model.
- *
- * The fact generator used to abort the build here by accident, because it parsed an enum
- * that ES-01 deleted. Repairing the generator removed that accidental brake, so the check
- * is now explicit. It runs before any toolchain detection so an author is never asked to
- * install Chrome or pypdf only to be told the content is stale.
- *
- * The prose must not name the removed recovery dispatcher, must not claim tickets are
- * transferable in every status (ES-02), and must describe the NFT-delivery timeout that
- * opens the third refund origin (ES-03).
- */
+/** Refuses to publish until every chapter has been migrated to the current Ethereum v1. */
 function requireCurrentSectionSources() {
   const dir = resolve(root, "docs/whitepaper/source/sections");
   const corpus = readdirSync(dir)
@@ -27,35 +16,39 @@ function requireCurrentSectionSources() {
     .map((name) => readFileSync(resolve(dir, name), "utf8"))
     .join("\n");
 
-  const removed = [
-    ["recoverProtocolOwnedClaim", "ES-01 deleted this function"],
-    ["ProtocolOwnedClaim", "ES-01 deleted this enum"],
-    ["transferable in every", "ES-02 locks transfers in Drawing"],
-  ].filter(([needle]) => corpus.includes(needle));
+  const retiredTerms = [
+    "Pyth Entropy",
+    "RaffleLens",
+    "Base Sepolia",
+    "Base mainnet",
+    "buyTickets",
+    "ticketPrice",
+    "minimumTickets",
+    "winningTicketId",
+    "sponsorCash",
+    "Closed",
+  ].filter((term) => corpus.includes(term));
+  const missingCurrentMechanics = [
+    ["Chainlink VRF", /Chainlink VRF/i],
+    ["sequential range tickets", /sequential[^\n]*ticket|stored[^\n]*range/i],
+    ["winningEntry", /winningEntry/],
+    ["5% treasury / 95% result economics", /5%[^\n]*95%|95%[^\n]*5%/],
+  ].filter(([, pattern]) => !pattern.test(corpus));
 
-  const missingTimeout =
-    !/nftRedemptionDeadline|NFT[- ]delivery timeout|NFT redemption timeout/i.test(
-      corpus,
-    );
-
-  if (removed.length === 0 && !missingTimeout) return;
+  if (retiredTerms.length === 0 && missingCurrentMechanics.length === 0) return;
 
   const problems = [
-    ...removed.map(([needle, why]) => `still mentions "${needle}" (${why})`),
-    ...(missingTimeout
-      ? [
-          "never describes the NFT-delivery timeout (ES-03, the third refund origin)",
-        ]
-      : []),
+    ...retiredTerms.map((term) => `still mentions retired term "${term}"`),
+    ...missingCurrentMechanics.map(([label]) => `does not describe ${label}`),
   ];
   throw new Error(
     [
-      "Refusing to publish: docs/whitepaper/source/sections/ describes a superseded protocol.",
+      "Refusing to publish: the whitepaper chapters still describe a retired protocol design.",
       ...problems.map((problem) => `  - ${problem}`),
       "",
-      "Rewrite the chapter sources against docs/facts/raffle-fun-facts.md first.",
+      "Rewrite the chapters against the current Solidity and docs/ before regenerating any output.",
       "See docs/WHITEPAPER.md for the full repair checklist.",
-      "`pnpm docs:whitepaper:figures` still works and regenerates correct figures.",
+      "Do not publish the historical Markdown, figures, DOCX, or PDF as v1 documentation.",
     ].join("\n"),
   );
 }

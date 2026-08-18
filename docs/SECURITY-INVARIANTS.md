@@ -1,161 +1,160 @@
 # Security invariants
 
-Review date: 2026-08-09. This catalog is for the constructor-deployed, single-USDC,
-transferable bearer-ticket protocol in the reviewed worktree. It contains 110
-practical invariants. The attached clone-era list is reconciled at the end rather than
-being represented as if it applied to different code.
+This catalog applies to the Ethereum/Chainlink, fixed-price, ERC-1167 v1 in the
+current worktree. It is a review map, not a proof or an independent audit.
 
 Evidence tags:
 
-- `U`: Foundry unit/boundary test;
-- `A`: Foundry adversarial/regression test;
+- `U`: deterministic Foundry unit or boundary test;
+- `A`: adversarial or regression test;
 - `F`: Foundry fuzz property;
-- `I`: broad or multi-actor stateful invariant;
-- `S`: strict fail-on-revert invariant;
-- `E`: Echidna/Medusa independent property;
-- `H`: Halmos focused symbolic check;
-- `K`: pinned Base fork test;
-- `X`: SDK, subgraph, frontend, deployment, or static check.
+- `I`: stateful Foundry invariant;
+- `E`: Echidna property;
+- `K`: Ethereum mainnet/Sepolia fork test;
+- `X`: SDK, subgraph, deployment, frontend, or static check.
 
-## Factory, construction, and immutable authority
+## Factory and initialization
 
-1. A raffle constructor accepts only its declared factory caller. `U`
-2. Every canonical raffle is an ordinary non-upgradeable `CREATE` deployment. `U/X`
-3. Creation, registration, exact prize deposit, activation, and verification are one reverting transaction. `U/A`
-4. A failed prize transfer rolls back the deployment, count, and registry. `U/A`
-5. A failed ownership or activation postcondition rolls back the complete creation. `U`
-6. No successfully registered raffle remains in `AwaitingPrize`. `U/I`
-7. Factory IDs begin at one and map bijectively to registered raffle addresses. `U/I`
-8. The factory quote token is immutable and contains runtime code. `U/X`
-9. The factory Entropy dependency is immutable and contains runtime code. `U/X/K`
-10. Callback gas is immutable, nonzero, and identical in fee and request calls. `U/A/K`
-11. Ticket price and minimum threshold are nonzero. `U`
-12. A scheduled start cannot precede the creation timestamp. `U`
-13. Start delay is at most seven days. `U`
-14. Sale duration is positive and at most 30 days. `U`
-15. Metadata is at most 2,048 bytes. `U`
-16. Prize admission requires a deployed contract reporting ERC-721 support. `U/A`
-17. Factory creation pause affects only future creation. `U/I`
-18. Treasury updates affect only subsequently created raffles. `U/I`
-19. Ownership transfer is OpenZeppelin `Ownable2Step`; only the owner changes future policy. `U/X`
-20. No factory owner action can change an existing raffle's assets, deadlines, winner, dependencies, or claims. `U/I/S`
+1. The factory deploys one implementation and its constructor permanently locks
+   initialization. `U`
+2. Every registered raffle is a canonical ERC-1167 clone of that immutable
+   implementation. `U/X`
+3. Initialization is callable only once and only by the factory. `U/A`
+4. Clone creation, registry writes, prize transfer, ownership verification, and
+   activation are one atomic transaction. `U/A/I`
+5. A failed prize transfer, receiver check, ownership check, or activation check
+   leaves no registered raffle. `U/A`
+6. Successful clones begin in `Active`; no usable clone remains in
+   `AwaitingPrize`. `U/I`
+7. Clone storage and asset custody are isolated. `U/I`
+8. Factory IDs begin at one and map bijectively to registered raffle addresses.
+   `U/I/X`
+9. The quote token, VRF wrapper, treasury, implementation, entry price, callback
+   gas, confirmations, fee rate, and timeouts cannot change for an existing raffle.
+   `U/I/X`
+10. The factory owner can only pause future creation; ownership renunciation is
+    disabled. `U/X`
+11. A prize must be a deployed ERC-721 contract and must not be a known protocol
+    destination. `U/A`
+12. The reserve is positive and the sale ends in `(now, now + 30 days]`. `U/F`
+13. The quote token reports six decimals; production deployment validation pins the
+    intended USDC and Chainlink wrapper. `U/K/X`
 
-## Prize custody
+## Entry ranges and ticket ownership
 
-21. The receiver activates only for the exact prize contract and token ID. `U/A`
-22. The prize sender must be the immutable sponsor. `U/A`
-23. The prize operator must be the canonical factory. `U/A`
-24. A duplicate or unrelated safe NFT deposit cannot activate or mutate a raffle. `U/A`
-25. An unrelated unsafe NFT transfer changes no configured-prize accounting. `A`
-26. A supported prize remains owned by the raffle until one terminal claim succeeds. `I/S/E`
-27. The configured prize leaves escrow at most once. `U/A/I/S/E/H`
-28. A reverting prize receiver restores the ticket, claimant, and `prizeClaimed` state. `U/A`
-29. NFT-winner redemption burns the winning credential before its external transfer. `A/H`
-30. Sponsor-side recovery marks the claim before its external transfer. `U/A/I`
-31. `NftWon` assigns the NFT only to the winning-ticket owner fixed at draw request. `U/F/I`
-32. `CashWon`, `Refunding`, and `Closed` expose the NFT only to the immutable recovery recipient. `U/I`
-33. The recovery recipient may choose a different nonzero safe NFT destination. `U`
-34. Factory owner and treasury have no prize seizure or rescue selector. `X/I`
-35. Prize recovery is independent of quote claims and refund-ticket burns. `U/I`
-
-## Sales and bearer tickets
-
-36. Sale start is inclusive and sale end is exclusive. `U/F`
-37. Purchases before start or at/after end revert atomically. `U`
-38. Purchase quantity is between one and 100. `U/F`
-39. The ticket recipient is nonzero. `U`
-40. Gross multiplication is checked before token interaction. `U/F`
-41. Incoming quote credit equals `ticketPrice * quantity` exactly. `U/A/F`
-42. A failed, false-returning, taxed, or reentrant payment cannot mint tickets or liabilities. `A`
-43. A rejecting or reentrant ticket receiver rolls back payment and every tentative mint. `A`
-44. Ticket IDs begin at one, remain contiguous, and never repeat. `U/F/I/E`
-45. Separate purchases continue from `totalTickets + 1`. `U`
-46. `totalTickets` equals all tickets ever issued and `grossSales = ticketPrice * totalTickets`. `F/I/S/E`
-47. Every unburned ticket has exactly one nonzero owner. `U/I/E`
-48. Ticket transfers freeze in `Drawing`; the selected ticket remains locked in `NftWon` and `CashWon`. `U/A/F/I`
-49. Refund tickets are transferable in `Refunding`, and every award or refund right is consumed by burning. `U/F/H`
-50. A zero-sales raffle closes only by the sponsor before end or permissionlessly at/after end. `U/I`
+14. One successful purchase mints exactly one ERC-721 ticket, regardless of the
+    number of entries bought. `U/F/I/E`
+15. Ticket IDs begin at one and increase by exactly one; each ID maps to a separately
+    stored inclusive `{firstEntry,lastEntry}` range. `U/F/I/E`
+16. The first range begins at one; later ranges are contiguous, non-overlapping,
+    and cover every sold entry exactly once. `U/F/I/E`
+17. A purchase accepts any positive `uint128` count that does not overflow the
+    cumulative `uint128 totalEntries`; there is no business-level per-ticket cap.
+    `U/F`
+18. The incoming quote balance delta equals `entryCount * 1_000_000` exactly before
+    the ticket is minted. `U/A/F`
+19. False-returning, taxed, rebasing-at-transfer, or reentrant payment behavior
+    cannot create an unfunded ticket or liability. `A`
+20. A rejecting or reentrant ticket receiver rolls back the payment and mint. `A`
+21. Purchases are valid before `endTime` and invalid at or after it. `U/F`
+22. Every unburned ticket remains transferable before and after `endTime`, including
+    while drawing and after resolution. `U/A/F/I`
+23. Winner and refund rights follow live `ownerOf(ticketId)` bearer ownership; a
+    successful claim burns the ticket atomically. `U/F/I`
+24. Tickets cannot be transferred to the raffle, factory, implementation, quote
+    token, VRF wrapper, prize contract, or a registered sibling raffle. `U/A`
 
 ## Randomness and lifecycle
 
-51. Status follows one monotonic enum and no terminal result returns to `Active` or `Drawing`. `I/S/E`
-52. A draw requires at least one ticket and cannot precede sale end. `U/A`
-53. A request succeeds at `endTime` and before, but not at, the three-day grace deadline. `U`
-54. A raffle completes at most one Entropy request. `I/S/E`
-55. Fee-read or request reverts leave the raffle `Active` and preserve deadline recovery. `A`
-56. Exact fee payment succeeds; insufficient payment reverts. `U/A/K`
-57. Native overpayment is returned immediately without copying unbounded requester returndata, or the request rolls back. `U/A`
-58. Direct native transfers revert and forced native value creates no liability. `U/I`
-59. Status becomes `Drawing` and the in-flight guard is set before the oracle call. `A`
-60. A synchronous callback cannot settle before the returned sequence is stored. `A`
-61. Only the immutable Entropy wrapper can enter the callback. `U/A/K`
-62. Wrong sender, wrong sequence, in-flight, stale, duplicate, and post-failure callbacks cannot settle. `U/A/H`
-63. Sequence zero or reuse cannot create a second request or resolution within a raffle. `A`
-64. The callback performs bounded storage work and no token, prize, treasury, or recipient call. `A/X`
-65. Winning ID is `(random mod totalTickets) + 1`, never zero or above sold range. `F/I/S/E/H`
-66. One ticket always selects ticket one and the final sold ticket is reachable. `U/F/H`
-67. Modulo bias is nonzero in general and documented rather than described as perfect uniformity. `X`
-68. Missing-request refunds become available exactly at `end + 3 days`. `U/I`
-69. Callback-timeout refunds become available exactly at `drawRequestedAt + 2 days`. `U/I/H`
-70. Callback-first and callback-timeout-first ordering are mutually exclusive; an unredeemed NFT result can later enter refunds. `U/I/S/H`
+25. Status ordinals are exactly `AwaitingPrize`, `Active`, `Drawing`, `NftWon`,
+    `CashWon`, and `Refunding`; there is no `Closed` state. `U/I/X`
+26. A draw requires at least one entry, `now >= endTime`, and
+    `now < endTime + 3 days`. `U/A/F`
+27. A raffle accepts at most one VRF request. `U/A/I/E`
+28. `requestDraw` quotes and forwards one native-funded request with one word,
+    300,000 callback gas, and 30 confirmations. `U/A/K/X`
+29. Insufficient fee, fee-read failure, wrapper failure, or failed excess refund
+    rolls the complete request back to `Active`. `U/A`
+30. Direct native transfers revert; forced native value is not an economic
+    liability. `U/A/I`
+31. Only the immutable wrapper may call `rawFulfillRandomWords`. `U/A/K`
+32. A synchronous, wrong-ID, malformed, stale, or duplicate callback cannot settle
+    the raffle. `U/A`
+33. A valid callback stores one winning entry and terminal result without searching
+    tickets, looping over entries, or calling a token, prize, or user. `U/A/X`
+34. The winning entry is `(randomWord % totalEntries) + 1`, always inside the sold
+    range. `U/F/I/E`
+35. Exactly one minted ticket range contains a resolved winning entry. `F/I/E`
+36. The callback chooses `NftWon` when `totalEntries >= reserveEntries`; equality is
+    an NFT result. Otherwise it chooses `CashWon`. `U/F`
+37. A sold `Active` raffle remains drawable forever after `endTime`; inactivity alone
+    cannot enable refunds. `U/I`
+38. Missing-callback refunds become available at `drawRequestedAt + 2 days`. `U/I`
+39. At the callback/refund deadline race, the first valid included transaction wins and
+    the other path cannot also create liability. `U/I`
+40. An empty raffle enters `Refunding` with zero quote liability: the sponsor may do
+    so before the end, and anyone may do so at or after the end. `U/I`
 
-## Settlement and quote conservation
+## Settlement and accounting
 
-71. Cash resolution charges `floor(grossSales * 500 / 10,000)` immediately; an NFT result charges it only after successful prize delivery. `U/F/I/S/E`
-72. Missing request, callback timeout, and NFT delivery timeout charge no fee or sponsor proceeds. `U/A/I/E`
-73. Threshold equality selects `NftWon`; threshold minus one selects `CashWon`. `U/F`
-74. `NftWon` keeps gross quote unsettled until exact prize delivery atomically assigns post-fee quote to the sponsor. `U/A/F`
-75. `CashWon` assigns floor 80% of post-fee quote to the winning ticket and the remainder to the sponsor. `U/F`
-76. Fee plus sponsor plus winner liabilities conserve every gross unit in successful branches. `F/I/E`
-77. Every refund path moves the complete unsettled gross pot to `remainingRefundLiability`. `U/A/I/S/E`
-78. Each refund ticket burns for exactly one ticket price. `U/F/H`
-79. Refund redemption accepts one to 100 caller-owned IDs and no unbounded loop. `U/F/I`
-80. Duplicate, invalid, or foreign refund IDs revert the whole batch and restore tentative burns. `U/A`
-81. Refund tickets can be redeemed in arbitrary order and by independent owners. `U/I`
-82. Winning cash can be consumed at most once by the current winning-ticket owner. `U/F/H`
-83. Sponsor and treasury claims are pull liabilities and can be consumed at most once. `U/I/S/E`
-84. `claimQuoteFor` is permissionless but can pay only the fixed account itself. `U/A`
-85. A claimant may direct its own quote claim to another nonzero destination. `U`
-86. A quote payment to any known protocol contract is rejected and preserves the ticket or claim. `U/A`
-87. Exact outgoing raffle debit and recipient credit are both verified. `U/A`
-88. A failing, taxed, surcharged, blacklisted, or paused outgoing token transfer restores all effects. `A`
-89. `accountedQuoteBalance = unsettledPot + remainingRefundLiability + winnerCashLiability + totalClaimableQuote`. `F/I/S/E`
-90. Supported quote-token balance is never below accounted liabilities; donations create only surplus. `U/F/I/S/E`
+42. `grossSales == totalEntries * ENTRY_PRICE`; burns never reduce historical sales.
+    `F/I/E`
+43. `accountedQuoteBalance` equals unsettled pot plus refund liability plus sponsor
+    proceeds plus protocol fees. `F/I/E`
+44. The raffle's supported quote-token balance never falls below accounted
+    liabilities; donations are surplus and create no claim. `U/F/I/E`
+45. A cash callback records only the result and winner entry. Winning-ticket settlement
+    pays 80% of gross to its owner and records `floor(gross * 5%)` for the treasury plus
+    the exact remainder for the sponsor. `U/F/I`
+46. An NFT callback records only the result and winner entry. Winning-ticket settlement
+    delivers the NFT, then records 5% for the treasury and 95% for the sponsor. `U/A/F/I`
+47. Every refund branch charges no fee and moves the complete unsettled pot into
+    weighted ticket refunds. `U/A/F/I/E`
+48. Winner proof is O(1): ownership plus inclusive range containment. `U/F/I`
+49. NFT and cash settlement are permissionless and always deliver to the current ticket
+    owner. `U/A/F`
+50. Successful winner settlement burns the winning ticket and consumes its asset
+    liability exactly once. `U/A/I/E`
+51. Failed quote or prize delivery restores the ticket, ownership, liabilities, and
+    claim markers atomically. `U/A`
+52. NFT winner delivery uses `transferFrom` plus an `ownerOf` postcondition so a
+    non-receiver contract owner cannot veto fixed-recipient settlement. `U/A`
+53. Refund value is the sum of the inclusive entry counts in the caller-owned
+    tickets times one USDC. `U/F/I/E`
+54. A refund call handles 1–100 tickets; duplicate, invalid, or mixed-owner batches
+    revert atomically. `U/A/F`
+55. Refund batch complexity depends on ticket count, never on the entries represented
+    by those tickets. `U/A/X`
+56. Sponsor prize recovery is available only in `CashWon` or `Refunding`, is
+    independent of quote settlement, and consumes the prize once. `U/A/I/E`
+57. Sponsor and treasury quote balances are independent fixed-recipient liabilities;
+    anyone may trigger payment only to the recorded recipient. `U/A/I`
+58. Outgoing quote transfers verify both exact raffle debit and exact recipient
+    credit; failures restore all effects. `U/A`
+59. Known protocol destinations cannot receive tickets, quote payouts, or claimed
+    prizes. `U/A`
+60. No factory-owner or treasury function can seize, redirect, rescue, or mutate an
+    existing raffle's assets or result. `U/I/X`
 
-## Protocol destinations, integrations, and operations
+## Off-chain consistency
 
-91. A ticket cannot be transferred to its own raffle. `A`
-92. A ticket cannot be transferred to its factory, quote token, Entropy contract, or configured prize contract. `A`
-93. A ticket cannot be transferred to an already registered sibling raffle. `A`
-94. OpenZeppelin safe-transfer overloads route through the same protocol-destination rejection. `A`
-95. The newly constructed raffle cannot be its own fixed recovery recipient. `A`
-96. The newly constructed raffle cannot be its own treasury. `A`
-97. Factory treasury configuration rejects the factory, quote token, Entropy, and registered raffles. `A`
-98. No registered raffle exposes a cross-raffle claim dispatcher that a predicted-address captor can abuse. `A`
-99. Tickets and fixed claims assigned to a future code-less address remain an explicit unsupported destination risk. `A/X`
-100.  A captured future raffle cannot invoke the removed recovery selector or redirect an earlier claim. `A`
-101.  Arbitrary user-selected non-callable contracts remain an explicit bearer-transfer risk, not a claimed solved case. `X`
-102.  Lens rejects unregistered targets before forwarding reads. `U/X`
-103.  Lens batch length is at most 64 and fields match authoritative contract state. `U/X`
-104.  Entropy fee-read failure cannot hide non-fee state or refund availability in Lens. `U/X`
-105.  SDK ABI, status enum, deadline arithmetic, and economic arithmetic match Solidity. `X`
-106.  SDK rejects duplicate, nonpositive, empty, and oversized refund batches before simulation. `X`
-107.  Every first-party wallet write is simulated against live chain state; the subgraph is non-authoritative. `X`
-108.  Subgraph handlers reconstruct bearer transfers, burns, liabilities, fees, and one terminal result without duplicate entities. `X`
-109.  Deployment records fail closed on chain, code, official USDC/Entropy, USDC decimals/pause, completed Safe ownership, contract treasury, immutables, and Lens mismatch. `X/K`
-110.  No checked-in deployment record or placeholder enables public writes; public deployment and ownership transfer require an external reviewed release procedure. `X`
+61. SDK arithmetic uses `bigint`, validates sequential ticket IDs and stored
+    `uint128` entry ranges, and uses the same NFT 5/95, cash 80/5/15 gross, and
+    full-refund economics. `X`
+62. The subgraph creates one ticket entity per purchase and never loops over entries.
+    `X`
+63. The subgraph is discovery data only; writes and ownership-sensitive actions are
+    simulated against chain state. `X`
+64. Deployment validation checks chain identity, finalized block/hash, code hashes,
+    official dependencies, six-decimal quote behavior, implementation locking,
+    constants, ownership acceptance, and verified source requirements. `K/X`
+65. No checked-in deployment record enables public mainnet writes. `X`
 
-## Reconciliation of the clone-era 342-item list
+## Explicit assumptions
 
-The following requested groups are not applicable to this code and were not
-reintroduced: shared implementation locks, EIP-1167 clone initialization, CREATE2
-salts/address prediction, quote-token allowlisting/removal/caps, refund credit/souvenir
-state, native pull-refund liabilities, `claimPrizeFor`, and a
-100-entry Lens batch. Their replacement invariants are respectively constructor
-authentication/atomic registration, one immutable factory-wide token, draw-time
-transfer locking plus transferable refund burns, immediate native excess rollback,
-recovery-recipient initiated prize claims, and a 64-entry Lens bound.
-
-This catalog is evidence organization, not formal verification. External asset,
-oracle, chain, sequencer, key-management, legal, and operational assumptions remain in
-the threat model and audit residual-risk report.
+These invariants assume an honest standards-compliant ERC-721 prize, an exact-transfer
+non-rebasing USDC deployment, correct Chainlink VRF wrapper/coordinator operation,
+normal Ethereum consensus, and reachable credential owners. Upgradeable/freezeable
+assets, future-code destinations, blocklists, key loss, oracle outage, transaction
+censorship, and legal/operational failures remain external risks. See
+`docs/THREAT-MODEL.md` and `packages/contracts/audit/CURRENT-RESIDUAL-RISKS.md`.

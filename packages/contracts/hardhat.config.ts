@@ -18,7 +18,7 @@ export default defineConfig({
         settings: {
           optimizer: {
             enabled: true,
-            runs: 1_000,
+            runs: 200,
           },
           evmVersion: "cancun",
         },
@@ -28,7 +28,7 @@ export default defineConfig({
         settings: {
           optimizer: {
             enabled: true,
-            runs: 1_000,
+            runs: 200,
           },
           evmVersion: "cancun",
         },
@@ -36,23 +36,23 @@ export default defineConfig({
     },
   },
   networks: {
-    hardhatBase: {
+    hardhatEthereum: {
       type: "edr-simulated",
-      chainType: "op",
+      chainType: "l1",
       chainId: 31_337,
     },
-    baseSepolia: {
+    sepolia: {
       type: "http",
-      chainType: "op",
-      chainId: 84_532,
-      url: configVariable("BASE_SEPOLIA_RPC_URL"),
+      chainType: "l1",
+      chainId: 11_155_111,
+      url: configVariable("SEPOLIA_RPC_URL"),
       accounts: [configVariable("DEPLOYER_PRIVATE_KEY")],
     },
-    base: {
+    mainnet: {
       type: "http",
-      chainType: "op",
-      chainId: 8_453,
-      url: configVariable("BASE_RPC_URL"),
+      chainType: "l1",
+      chainId: 1,
+      url: configVariable("ETHEREUM_RPC_URL"),
       accounts: [configVariable("DEPLOYER_PRIVATE_KEY")],
     },
   },

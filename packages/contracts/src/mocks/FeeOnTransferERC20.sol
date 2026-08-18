@@ -10,6 +10,10 @@ contract FeeOnTransferERC20 is ERC20 {
     /// @notice Creates the adversarial test token.
     constructor() ERC20("Fee Token", "FEE") { }
 
+    function decimals() public pure override returns (uint8) {
+        return 6;
+    }
+
     /// @notice Mints adversarial test balances.
     /// @param to Recipient.
     /// @param amount Amount.

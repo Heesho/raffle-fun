@@ -2,78 +2,95 @@
 
 ## Status and scope
 
-Raffle Fun v2 has completed an internal adversarial hardening campaign and remains
-independently unaudited. Fuzzing, invariants, differential models, mutation testing,
-static analysis, fork checks, and internal code review are defense-in-depth measures;
-none is an independent audit or a claim of production safety. The internal evidence is
-recorded in [`packages/contracts/audit/INTERNAL-AUDIT.md`](packages/contracts/audit/INTERNAL-AUDIT.md).
+The candidate raffle.fun v1 is not deployed, independently audited, or approved for
+production. The current ERC-1167/range-ticket design is a rewrite, so audit reports
+for older full-deployment, Lens, Pyth, Base, per-ticket, or different economic designs
+are historical evidence only.
 
 In scope:
 
-- `packages/contracts/src/Raffle.sol`
-- `packages/contracts/src/RaffleFactory.sol`
-- `packages/contracts/src/RaffleLens.sol`
-- first-party interfaces/libraries
-- deployment configuration that can change the deployed bytecode or ownership
-- SDK/web behavior that can construct unsafe transaction parameters
-- subgraph bugs that materially misrepresent financial state
+- `packages/contracts/src/Raffle.sol`;
+- `packages/contracts/src/RaffleFactory.sol`;
+- first-party production interfaces and libraries;
+- deployment configuration and validation;
+- SDK or web behavior that can construct unsafe transactions;
+- subgraph behavior that materially misrepresents financial state.
 
-Mocks, test-only forced-native behavior, development infrastructure, and already
-disclosed dependency vulnerabilities are out of bounty scope unless they demonstrate
-an exploitable production impact.
+Mocks, local test infrastructure, and unrelated forced asset donations are out of
+scope unless they demonstrate production impact.
 
 ## Private disclosure
 
 Do not publish an unpatched vulnerability in an issue, pull request, social post, or
-public chat. Send a minimal report to the repository maintainers through GitHub's
-private vulnerability reporting feature. Include:
+public chat. Use the repository's GitHub private vulnerability reporting feature.
+Include:
 
-- affected commit and component;
+- the affected commit and component;
 - impact and required preconditions;
-- reproducible steps or a focused test;
+- focused reproduction steps or a test;
 - whether funds, prize custody, randomness, or liveness are affected;
-- any proposed remediation, if available.
+- a proposed remediation, if available.
 
-Do not include private keys, credentials, or unrelated personal data. Maintainers
-should acknowledge a complete report within 5 business days, provide a triage status
-within 10 business days, and coordinate disclosure after a fix. These are targets,
-not a guarantee.
+Do not include private keys, credentials, or unrelated personal data. Maintainers aim
+to acknowledge a complete report within five business days and provide a triage
+status within ten business days.
 
 ## Safe research
 
-Use local networks or accounts/assets you control. Do not:
+Use local networks or accounts and assets you control. Do not:
 
 - access another person's wallet or data;
-- disrupt a live oracle, RPC, indexer, or UI;
-- exploit a production deployment to prove impact;
-- retain, transfer, or destroy user assets.
+- disrupt a live oracle, RPC, indexer, or application;
+- exploit a public deployment to prove impact;
+- retain, move, burn, or destroy another person's assets.
 
-## Dependency posture
+## Security model
 
-The dependency tree is pinned and audited in CI. As of 2026-08-09, `pnpm audit`
-reports no critical, high, or moderate findings. One low-severity advisory remains in
-the development-only Hardhat verification path through `elliptic@6.6.1`; although the
-advisory identifies `6.6.2` as patched, npm still publishes `6.6.1` as the latest
-release. It is not bundled into the contracts or web runtime and must be upgraded when
-the upstream package is available.
+Every raffle is a fixed-target ERC-1167 clone. Its implementation and dependencies
+cannot be upgraded. The factory's two-step owner can pause only future creation; it
+cannot change, pause, settle, or rescue an existing raffle.
 
-The Graph CLI still declares the abandoned `decompress` package. The workspace
-replaces it with the maintained, security-patched `@xhmikosr/decompress` fork while
-preserving the dependency name expected by the CLI.
+The intended bounded paths are:
+
+- anyone may request the one draw at any time after sale end;
+- anyone may enable refunds if an accepted request misses its two-day callback deadline;
+- anyone may settle a winning NFT or cash ticket to its current owner;
+- each refund owner burns up to 100 tickets per call for their exact entry value;
+- sponsor and treasury balances are independent fixed-recipient liabilities;
+- anyone may release either balance only to its immutable recipient.
+
+Tickets remain transferable bearer claims until burned. One ticket may contain any
+positive `uint128`-bounded entry range, but purchase, callback, and winner proof do
+not loop over entries.
+
+## Supported recovery envelope
+
+The quote-token property assumes the configured official six-decimal USDC remains
+available, non-rebasing, and exact-transfer. Incoming and outgoing balance deltas are
+verified. Issuer pauses and blacklists can still prevent transfer.
+
+Prize custody assumes a standards-compliant ERC-721 whose `ownerOf` and transfer
+behavior remain honest. A malicious or upgraded collection can lie, freeze, burn, or
+misdirect its NFT. The NFT-success pot is not released until delivery is verified;
+after 30 days it can instead become full buyer refunds. That protects the USDC pot,
+but cannot force a broken prize out of escrow.
+
+Winner NFT delivery uses `transferFrom` plus an ownership postcondition rather than
+`safeTransferFrom`. This prevents a contract owner from vetoing permissionless
+delivery through a receiver callback, but the recipient contract must itself be able
+to manage an ERC-721 received without that callback.
+
+The contracts cannot guarantee recovery from a halted or reorganized chain, universal
+censorship, a broken Chainlink wrapper, lost keys, unsupported recipient contracts,
+or unrelated NFTs and USDC sent directly to a raffle. There is no administrator
+rescue function.
 
 ## Operational response
 
 Existing raffles cannot be upgraded or paused. If a vulnerability is confirmed,
-maintainers can pause creation, warn users, remove the frontend deployment, and deploy
-a new factory version, but cannot rewrite the economics or seize assets in existing
-raffles. Existing raffles retain their permissionless empty closure, draw, oracle
-deadline, bounded ticket-burn refund, bearer-prize, and pull-claim paths.
+maintainers may pause future creation, warn users, remove first-party UI exposure, and
+deploy a new factory. Those actions cannot rewrite existing raffles or seize their
+assets.
 
-## Supported recovery envelope
-
-The protocol's recovery property applies only to a standards-compliant ERC721 whose
-ownership and safe transfers remain honest, and the factory-wide exact-transfer,
-non-rebasing USDC whose transfers remain available. The contracts cannot guarantee
-recovery against malicious or upgraded assets, pauses/freezes/blacklists/burns, a
-halted or reorganized chain, lost keys, or unrelated NFTs forced in through unsafe
-`transferFrom`. No administrator rescue function exists for those cases.
+See the [threat model](docs/THREAT-MODEL.md), [security invariants](docs/SECURITY-INVARIANTS.md),
+and [release checklist](packages/contracts/audit/RELEASE-CHECKLIST.md).

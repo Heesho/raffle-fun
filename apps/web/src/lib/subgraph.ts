@@ -7,7 +7,7 @@ export interface IndexedRaffle {
   readonly factoryId: string;
   readonly sponsor: string;
   readonly quoteToken: string;
-  /** Retained for shared cards; the factory-wide token is always canonical. */
+  /** The factory fixes one verified six-decimal quote token for every raffle. */
   readonly quoteTokenVerified: true;
   readonly prizeToken: string;
   readonly prizeTokenId: string;
@@ -15,17 +15,30 @@ export interface IndexedRaffle {
   readonly prizeName?: string;
   readonly prizeImage?: string;
   readonly prizePixelated?: boolean;
-  readonly metadataURI: string;
-  readonly ticketPrice: string;
-  readonly minimumTickets: string;
-  readonly startTime: string;
+  readonly entryPrice: string;
+  readonly reserveEntries: string;
   readonly endTime: string;
   readonly state: string;
   readonly outcome: string;
-  readonly totalTickets: string;
+  readonly totalEntries: string;
+  readonly ticketCount: string;
   readonly grossSales: string;
   readonly unsettledPot: string;
-  readonly winner: string | null;
+  readonly remainingRefundLiability: string;
+  readonly winningEntry: string | null;
+  readonly winningTicketId: string | null;
+}
+
+export interface IndexedTicketRange {
+  readonly id: string;
+  readonly ticketId: string;
+  readonly firstEntry: string | null;
+  readonly lastEntry: string | null;
+  readonly entryCount: string | null;
+}
+
+export interface IndexedTicket extends IndexedTicketRange {
+  readonly raffle: IndexedRaffle;
 }
 
 export interface IndexedActivity {
@@ -43,19 +56,23 @@ const raffleFields = gql`
   fragment RaffleFields on Raffle {
     id
     factoryId
-    sponsor
+    sponsor {
+      id
+    }
     quoteToken
     prizeToken
     prizeTokenId
-    metadataURI
-    ticketPrice
-    minimumTickets
-    startTime
+    entryPrice
+    reserveEntries
     endTime
     status
-    totalTickets
+    totalEntries
+    ticketCount
     grossSales
     unsettledPot
+    remainingRefundLiability
+    winningEntry
+    winningTicketId
   }
 `;
 
@@ -84,13 +101,39 @@ const profileQuery = gql`
     ) {
       ...RaffleFields
     }
-    positions: raffleAccounts(
+    positions: tickets(
       first: $first
-      where: { account: $address, ticketsCurrentlyOwned_gt: "0" }
+      where: { currentOwner: $address, burned: false }
     ) {
+      id
+      ticketId
+      firstEntry
+      lastEntry
+      entryCount
       raffle {
         ...RaffleFields
       }
+    }
+  }
+`;
+
+const ownedTicketRangesQuery = gql`
+  query OwnedTicketRanges(
+    $raffle: Bytes!
+    $owner: Bytes!
+    $first: Int!
+    $skip: Int!
+  ) {
+    tickets(
+      first: $first
+      skip: $skip
+      where: { raffle: $raffle, currentOwner: $owner, burned: false }
+    ) {
+      id
+      ticketId
+      firstEntry
+      lastEntry
+      entryCount
     }
   }
 `;
@@ -119,20 +162,20 @@ const activityQuery = gql`
       timestamp
       transactionHash
     }
-    quoteClaims(first: $first, orderBy: timestamp, orderDirection: desc) {
+    proceedsReleases(first: $first, orderBy: timestamp, orderDirection: desc) {
       id
       raffle {
         id
         quoteToken
       }
-      account {
+      recipient {
         id
       }
       amount
       timestamp
       transactionHash
     }
-    sponsorPrizeClaims(
+    sponsorPrizeReleases(
       first: $first
       orderBy: timestamp
       orderDirection: desc
@@ -162,22 +205,34 @@ export function isSubgraphConfigured(): boolean {
   return webEnv.NEXT_PUBLIC_SUBGRAPH_URL !== undefined;
 }
 
-type IndexedRaffleRow = Omit<
-  IndexedRaffle,
-  "quoteTokenVerified" | "state" | "outcome" | "winner"
-> & { readonly status: string };
+interface IndexedRaffleRow {
+  readonly id: string;
+  readonly factoryId: string;
+  readonly sponsor: { readonly id: string };
+  readonly quoteToken: string;
+  readonly prizeToken: string;
+  readonly prizeTokenId: string;
+  readonly entryPrice: string;
+  readonly reserveEntries: string;
+  readonly endTime: string;
+  readonly status: string;
+  readonly totalEntries: string;
+  readonly ticketCount: string;
+  readonly grossSales: string;
+  readonly unsettledPot: string;
+  readonly remainingRefundLiability: string;
+  readonly winningEntry: string | null;
+  readonly winningTicketId: string | null;
+}
 
 function normalizeRaffle(row: IndexedRaffleRow): IndexedRaffle {
-  const { status, ...raffle } = row;
+  const { sponsor, status, ...raffle } = row;
   return {
     ...raffle,
+    sponsor: sponsor.id,
     quoteTokenVerified: true,
     state: status,
-    outcome:
-      status === "NFT_WON" || status === "CASH_WON" || status === "CLOSED"
-        ? status
-        : "NONE",
-    winner: null,
+    outcome: status === "NFT_WON" || status === "CASH_WON" ? status : "NONE",
   };
 }
 
@@ -192,15 +247,59 @@ export async function fetchRaffles(): Promise<readonly IndexedRaffle[]> {
 export async function fetchProfileRaffles(address: `0x${string}`): Promise<{
   readonly sponsored: readonly IndexedRaffle[];
   readonly positions: readonly IndexedRaffle[];
+  readonly tickets: readonly IndexedTicket[];
 }> {
   const data = await client().request<{
     sponsored: IndexedRaffleRow[];
-    positions: { raffle: IndexedRaffleRow }[];
+    positions: Array<{
+      id: string;
+      raffle: IndexedRaffleRow;
+      ticketId: string;
+      firstEntry: string | null;
+      lastEntry: string | null;
+      entryCount: string | null;
+    }>;
   }>(profileQuery, { address: address.toLowerCase(), first: 100 });
+  const tickets = data.positions.map(({ raffle, ...ticket }) => ({
+    ...ticket,
+    raffle: normalizeRaffle(raffle),
+  }));
   return {
     sponsored: data.sponsored.map(normalizeRaffle),
-    positions: data.positions.map(({ raffle }) => normalizeRaffle(raffle)),
+    positions: [
+      ...new Map(
+        tickets.map((ticket) => [ticket.raffle.id, ticket.raffle]),
+      ).values(),
+    ],
+    tickets,
   };
+}
+
+/**
+ * Index-assisted ownership discovery for one raffle. Settlement still checks
+ * `ownerOf` directly; this function only discovers ticket IDs and stored ranges.
+ * Pagination is by ticket, never by entry.
+ */
+export async function fetchOwnedTicketRanges(
+  raffle: `0x${string}`,
+  owner: `0x${string}`,
+): Promise<readonly IndexedTicketRange[]> {
+  const pageSize = 500;
+  const tickets: IndexedTicketRange[] = [];
+  let skip = 0;
+  for (;;) {
+    const page = await client().request<{
+      tickets: IndexedTicketRange[];
+    }>(ownedTicketRangesQuery, {
+      raffle: raffle.toLowerCase(),
+      owner: owner.toLowerCase(),
+      first: pageSize,
+      skip,
+    });
+    tickets.push(...page.tickets);
+    if (page.tickets.length < pageSize) return tickets;
+    skip += page.tickets.length;
+  }
 }
 
 export async function fetchActivity(): Promise<readonly IndexedActivity[]> {
@@ -210,7 +309,6 @@ export async function fetchActivity(): Promise<readonly IndexedActivity[]> {
     timestamp: string;
     transactionHash: string;
     buyer?: { id: string };
-    account?: { id: string };
     recipient?: { id: string };
     grossAmount?: string;
     amount?: string;
@@ -218,8 +316,8 @@ export async function fetchActivity(): Promise<readonly IndexedActivity[]> {
   const data = await client().request<{
     purchases: EventRow[];
     resolutions: EventRow[];
-    quoteClaims: EventRow[];
-    sponsorPrizeClaims: EventRow[];
+    proceedsReleases: EventRow[];
+    sponsorPrizeReleases: EventRow[];
   }>(activityQuery, { first: 50 });
 
   const normalize = (
@@ -230,7 +328,7 @@ export async function fetchActivity(): Promise<readonly IndexedActivity[]> {
       id: row.id,
       kind,
       raffle: row.raffle.id,
-      account: row.buyer?.id ?? row.account?.id ?? row.recipient?.id ?? null,
+      account: row.buyer?.id ?? row.recipient?.id ?? null,
       amount: row.grossAmount ?? row.amount ?? null,
       quoteToken:
         (row.grossAmount ?? row.amount) === undefined
@@ -243,8 +341,8 @@ export async function fetchActivity(): Promise<readonly IndexedActivity[]> {
   return [
     ...normalize(data.purchases, "PURCHASE"),
     ...normalize(data.resolutions, "RESOLUTION"),
-    ...normalize(data.quoteClaims, "QUOTE_CLAIM"),
-    ...normalize(data.sponsorPrizeClaims, "PRIZE_CLAIM"),
+    ...normalize(data.proceedsReleases, "QUOTE_CLAIM"),
+    ...normalize(data.sponsorPrizeReleases, "PRIZE_CLAIM"),
   ]
     .sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
     .slice(0, 100);

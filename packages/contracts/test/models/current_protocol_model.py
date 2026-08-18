@@ -1,8 +1,7 @@
-"""Independent raffle.fun arithmetic, lifecycle, ownership, and randomness model.
+"""Independent model for the fixed-price sequential-ticket raffle protocol.
 
-This module intentionally imports no Solidity artifacts, generated ABI, SDK helper, or
-production constant. Values are supplied by tests so a production constant mutation
-cannot silently mutate this oracle with it.
+This module imports no Solidity artifact, generated ABI, SDK helper, or production
+constant. Tests supply the economic constants independently.
 """
 
 from dataclasses import dataclass, field
@@ -16,34 +15,37 @@ class Status(Enum):
     NFT_WON = auto()
     CASH_WON = auto()
     REFUNDING = auto()
-    CLOSED = auto()
 
 
 @dataclass(frozen=True)
 class Split:
     fee: int
-    distributable: int
     winner_cash: int
     sponsor_cash: int
 
 
-def split_gross(gross: int, *, threshold_met: bool) -> Split:
+def split_gross(gross: int, *, nft_won: bool) -> Split:
     if gross < 0:
         raise ValueError("negative gross")
     fee = gross * 5 // 100
     distributable = gross - fee
-    winner_cash = 0 if threshold_met else distributable * 4 // 5
-    return Split(fee, distributable, winner_cash, distributable - winner_cash)
+    winner_cash = 0 if nft_won else gross * 80 // 100
+    return Split(
+        fee=fee,
+        winner_cash=winner_cash,
+        sponsor_cash=distributable if nft_won else distributable - winner_cash,
+    )
 
 
-def modulo_bias(ticket_count: int) -> dict[str, Fraction | int]:
-    """Exact direct-modulo distribution over a uniform 256-bit word."""
-    if ticket_count <= 0:
-        raise ValueError("ticket_count must be positive")
+def modulo_bias(entry_count: int) -> dict[str, Fraction | int]:
+    if entry_count <= 0:
+        raise ValueError("entry_count must be positive")
     domain = 1 << 256
-    quotient, heavy_residues = divmod(domain, ticket_count)
-    ideal = Fraction(1, ticket_count)
-    heavy_probability = Fraction(quotient + 1, domain) if heavy_residues else ideal
+    quotient, heavy_residues = divmod(domain, entry_count)
+    ideal = Fraction(1, entry_count)
+    heavy_probability = (
+        Fraction(quotient + 1, domain) if heavy_residues else ideal
+    )
     light_probability = Fraction(quotient, domain)
     return {
         "domain": domain,
@@ -56,131 +58,152 @@ def modulo_bias(ticket_count: int) -> dict[str, Fraction | int]:
     }
 
 
-def selective_reveal(
-    *, tickets_owned: int, total_tickets: int, ticket_price: int, award_value: int
-) -> dict[str, Fraction]:
-    """One-attempt provider payoff when unfavorable outcomes time out to refunds.
+@dataclass
+class Ticket:
+    first: int
+    last: int
+    owner: str
+    consumed: bool = False
 
-    Payoffs are net of the provider's ticket payment. The model excludes gas and the
-    native oracle fee, which can be subtracted separately by the requester/provider.
-    """
-    if not 0 < tickets_owned <= total_tickets:
-        raise ValueError("provider must own a positive in-range ticket count")
-    if ticket_price < 0 or award_value < 0:
-        raise ValueError("negative value")
-    ownership = Fraction(tickets_owned, total_tickets)
-    stake = tickets_owned * ticket_price
-    honest = ownership * award_value - stake
-    selective = ownership * (award_value - stake)
-    return {
-        "ownership_fraction": ownership,
-        "honest_expected_net": honest,
-        "selective_expected_net": selective,
-        "expected_advantage": selective - honest,
-        "favorable_probability": ownership,
-        "timeout_probability": 1 - ownership,
-        "expected_attempts_until_favorable": 1 / ownership,
-    }
+    @property
+    def entries(self) -> int:
+        return self.last - self.first + 1
 
 
 @dataclass
 class Model:
-    price: int
-    threshold: int
+    entry_price: int
+    reserve_entries: int
     status: Status = Status.ACTIVE
-    owners: dict[int, str] = field(default_factory=dict)
-    approvals: dict[int, str] = field(default_factory=dict)
-    total: int = 0
+    sale_ended: bool = False
+    tickets: dict[int, Ticket] = field(default_factory=dict)
+    ticket_order: list[int] = field(default_factory=list)
+    total_entries: int = 0
     gross: int = 0
     unsettled: int = 0
     refund_liability: int = 0
     winner_cash: int = 0
     sponsor_claim: int = 0
     treasury_claim: int = 0
+    winning_entry: int = 0
     winning_ticket: int = 0
-    resolved: bool = False
     prize_claimed: bool = False
     quote_paid: int = 0
 
-    def buy(self, owner: str, quantity: int) -> list[int]:
-        if self.status is not Status.ACTIVE or not 1 <= quantity <= 100:
+    def buy(self, owner: str, entries: int) -> int:
+        if (
+            self.status is not Status.ACTIVE
+            or self.sale_ended
+            or not owner
+            or entries <= 0
+        ):
             raise ValueError("invalid purchase")
-        ids = list(range(self.total + 1, self.total + quantity + 1))
-        for ticket_id in ids:
-            self.owners[ticket_id] = owner
-        self.total += quantity
-        amount = self.price * quantity
+        if self.total_entries + entries >= 1 << 128:
+            raise ValueError("entry overflow")
+        first = self.total_entries + 1
+        last = self.total_entries + entries
+        ticket_id = len(self.ticket_order) + 1
+        self.tickets[ticket_id] = Ticket(first, last, owner)
+        self.ticket_order.append(ticket_id)
+        self.total_entries = last
+        amount = entries * self.entry_price
         self.gross += amount
         self.unsettled += amount
-        return ids
+        return ticket_id
 
     def transfer(self, ticket_id: int, sender: str, recipient: str) -> None:
-        if self.owners.get(ticket_id) != sender:
-            raise ValueError("not owner")
-        if self.status is Status.DRAWING:
-            raise ValueError("drawing lock")
-        if self.status in (Status.NFT_WON, Status.CASH_WON) and ticket_id == self.winning_ticket:
-            raise ValueError("winner lock")
-        self.owners[ticket_id] = recipient
-        self.approvals.pop(ticket_id, None)
+        ticket = self._live(ticket_id)
+        if ticket.owner != sender or not recipient:
+            raise ValueError("invalid transfer")
+        ticket.owner = recipient
+
+    def end_sale(self) -> None:
+        self.sale_ended = True
 
     def request(self) -> None:
-        if self.status is not Status.ACTIVE or self.total == 0:
+        if (
+            self.status is not Status.ACTIVE
+            or not self.sale_ended
+            or self.total_entries == 0
+        ):
             raise ValueError("invalid request")
         self.status = Status.DRAWING
 
     def callback(self, random_word: int) -> None:
         if self.status is not Status.DRAWING:
             return
-        self.winning_ticket = random_word % self.total + 1
-        self.resolved = True
-        split = split_gross(self.gross, threshold_met=self.total >= self.threshold)
-        if self.total >= self.threshold:
+        if random_word < 0:
+            raise ValueError("negative random word")
+        self.winning_entry = random_word % self.total_entries + 1
+        split = split_gross(
+            self.gross, nft_won=self.total_entries >= self.reserve_entries
+        )
+        if self.total_entries >= self.reserve_entries:
             self.status = Status.NFT_WON
         else:
             self.status = Status.CASH_WON
             self.unsettled = 0
             self.winner_cash = split.winner_cash
-            self.sponsor_claim += split.sponsor_cash
             self.treasury_claim += split.fee
+            self.sponsor_claim += split.sponsor_cash
 
-    def enable_refunds(self) -> None:
+    def claim_winner(self, ticket_id: int, *, caller: str, to: str) -> int:
+        if self.status not in (Status.NFT_WON, Status.CASH_WON):
+            raise ValueError("invalid winner state")
+        if not to:
+            raise ValueError("invalid destination")
+        ticket = self._live(ticket_id)
+        if not ticket.first <= self.winning_entry <= ticket.last:
+            raise ValueError("wrong ticket")
+        if caller != ticket.owner and to != ticket.owner:
+            raise ValueError("third party cannot redirect")
+        ticket.consumed = True
+        self.winning_ticket = ticket_id
+        if self.status is Status.NFT_WON:
+            split = split_gross(self.gross, nft_won=True)
+            self.prize_claimed = True
+            self.unsettled = 0
+            self.treasury_claim += split.fee
+            self.sponsor_claim += split.sponsor_cash
+            return 0
+        amount, self.winner_cash = self.winner_cash, 0
+        self.quote_paid += amount
+        return amount
+
+    def enable_refunds(
+        self, *, timeout_elapsed: bool = False, sponsor_empty_cancel: bool = False
+    ) -> None:
         if self.status not in (Status.ACTIVE, Status.DRAWING, Status.NFT_WON):
             raise ValueError("invalid refund origin")
+        immediate_empty_cancel = (
+            self.status is Status.ACTIVE
+            and self.total_entries == 0
+            and sponsor_empty_cancel
+        )
+        if not timeout_elapsed and not immediate_empty_cancel:
+            raise ValueError("refund timeout not elapsed")
         self.status = Status.REFUNDING
         self.refund_liability = self.unsettled
         self.unsettled = 0
 
-    def redeem_winner(self, caller: str) -> int:
-        if self.status not in (Status.NFT_WON, Status.CASH_WON):
-            raise ValueError("invalid winner state")
-        if self.owners.get(self.winning_ticket) != caller:
-            raise ValueError("not owner")
-        del self.owners[self.winning_ticket]
-        self.approvals.pop(self.winning_ticket, None)
-        if self.status is Status.NFT_WON:
-            self.prize_claimed = True
-            split = split_gross(self.gross, threshold_met=True)
-            self.unsettled = 0
-            self.sponsor_claim += split.sponsor_cash
-            self.treasury_claim += split.fee
-            return 0
-        amount = self.winner_cash
-        self.winner_cash = 0
-        self.quote_paid += amount
-        return amount
-
-    def redeem_refunds(self, caller: str, ticket_ids: list[int]) -> int:
-        if self.status is not Status.REFUNDING or not 1 <= len(ticket_ids) <= 100:
+    def refund_tickets(
+        self, ticket_ids: list[int], *, caller: str, to: str
+    ) -> int:
+        if (
+            self.status is not Status.REFUNDING
+            or not to
+            or not 1 <= len(ticket_ids) <= 100
+        ):
             raise ValueError("invalid refund")
         if len(set(ticket_ids)) != len(ticket_ids):
             raise ValueError("duplicate")
-        if any(self.owners.get(ticket_id) != caller for ticket_id in ticket_ids):
+        tickets = [self._live(ticket_id) for ticket_id in ticket_ids]
+        if any(ticket.owner != caller for ticket in tickets):
             raise ValueError("not owner")
-        for ticket_id in ticket_ids:
-            del self.owners[ticket_id]
-            self.approvals.pop(ticket_id, None)
-        amount = self.price * len(ticket_ids)
+        entries = sum(ticket.entries for ticket in tickets)
+        for ticket in tickets:
+            ticket.consumed = True
+        amount = entries * self.entry_price
         self.refund_liability -= amount
         self.quote_paid += amount
         return amount
@@ -197,6 +220,13 @@ class Model:
         self.quote_paid += amount
         return amount
 
+    def recover_sponsor_prize(self) -> None:
+        if self.status not in (Status.CASH_WON, Status.REFUNDING):
+            raise ValueError("prize unavailable")
+        if self.prize_claimed:
+            raise ValueError("already claimed")
+        self.prize_claimed = True
+
     @property
     def accounted(self) -> int:
         return (
@@ -207,7 +237,30 @@ class Model:
             + self.treasury_claim
         )
 
-    def assert_conservation(self) -> None:
-        assert self.gross == self.accounted + self.quote_paid
-        assert self.gross == self.price * self.total
+    def containing_tickets(self, entry: int) -> list[int]:
+        return [
+            ticket_id
+            for ticket_id in self.ticket_order
+            if self.tickets[ticket_id].first
+            <= entry
+            <= self.tickets[ticket_id].last
+        ]
 
+    def assert_invariants(self) -> None:
+        expected_first = 1
+        for expected_ticket_id, ticket_id in enumerate(self.ticket_order, start=1):
+            ticket = self.tickets[ticket_id]
+            assert ticket_id == expected_ticket_id
+            assert ticket.first == expected_first
+            expected_first = ticket.last + 1
+        assert expected_first - 1 == self.total_entries
+        assert self.gross == self.entry_price * self.total_entries
+        assert self.gross == self.accounted + self.quote_paid
+        if self.winning_entry:
+            assert len(self.containing_tickets(self.winning_entry)) == 1
+
+    def _live(self, ticket_id: int) -> Ticket:
+        ticket = self.tickets.get(ticket_id)
+        if ticket is None or ticket.consumed:
+            raise ValueError("missing ticket")
+        return ticket

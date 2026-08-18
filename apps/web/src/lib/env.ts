@@ -23,13 +23,13 @@ const webEnvironmentSchema = z
       .number()
       .int()
       .refine(
-        (value) => value === 84_532 || value === 8_453 || value === 31_337,
+        (value) => value === 11_155_111 || value === 1 || value === 31_337,
         {
           message:
-            "must be Base Sepolia (84532), Base (8453), or local Anvil (31337)",
+            "must be Ethereum Sepolia (11155111), Ethereum mainnet (1), or local Anvil (31337)",
         },
       )
-      .default(84_532),
+      .default(11_155_111),
     NEXT_PUBLIC_RPC_URL: optionalHttpUrl,
     NEXT_PUBLIC_SUBGRAPH_URL: optionalHttpUrl,
     NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: optionalString,
@@ -56,7 +56,7 @@ const result = webEnvironmentSchema.safeParse(candidate);
 export const webEnv = result.success
   ? result.data
   : {
-      NEXT_PUBLIC_CHAIN_ID: 84_532 as const,
+      NEXT_PUBLIC_CHAIN_ID: 11_155_111 as const,
       NEXT_PUBLIC_RPC_URL: undefined,
       NEXT_PUBLIC_SUBGRAPH_URL: undefined,
       NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: undefined,

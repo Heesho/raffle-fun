@@ -1,5 +1,9 @@
 # raffle.fun internal fact registry
 
+> **Historical snapshot:** This registry is pinned to the pre-migration Base/Pyth commit
+> below. It does not describe the current Ethereum/Chainlink VRF worktree and must be
+> regenerated before publication or release decisions.
+
 **Purpose.** This is the internal source-of-truth register behind the three public
 raffle.fun documents. Every substantive claim in the one-pager, the layman's article,
 and the technical whitepaper must trace to a Fact ID here. It exists so that a public

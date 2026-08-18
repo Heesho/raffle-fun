@@ -1,272 +1,378 @@
 {
-  "schema": 1,
-  "seed": 20260816,
+  "schema": 2,
+  "seed": 20260818,
+  "candidate": "Ethereum v1 fixed-price sequential range-ticket protocol",
+  "test_command": [
+    "forge",
+    "test",
+    "-q",
+    "--no-match-contract",
+    "EthereumForkTest"
+  ],
   "mutants": [
     {
       "id": "M-01",
-      "description": "remove Drawing transfer lock",
+      "description": "remove uint128 total-entry overflow guard",
       "path": "src/Raffle.sol",
-      "before": "if (currentStatus == Status.Drawing || resultLocksTicket) {",
-      "after": "if (resultLocksTicket) {"
+      "before": "if (entryCount > type(uint128).max - totalEntries) {\n            revert TotalEntriesOverflow(totalEntries, entryCount);\n        }",
+      "after": "if (false) {\n            revert TotalEntriesOverflow(totalEntries, entryCount);\n        }"
     },
     {
       "id": "M-02",
-      "description": "remove resolved winning-ticket lock",
+      "description": "start the next ticket at the previous last entry",
       "path": "src/Raffle.sol",
-      "before": "bool resultLocksTicket =\n            (currentStatus == Status.NftWon || currentStatus == Status.CashWon) && tokenId == winningTicketId;",
-      "after": "bool resultLocksTicket = false;"
+      "before": "uint128 firstEntry = totalEntries + 1;",
+      "after": "uint128 firstEntry = totalEntries;"
     },
     {
       "id": "M-03",
-      "description": "select zero-based winner",
+      "description": "exclude the final purchased entry from its ticket",
       "path": "src/Raffle.sol",
-      "before": "uint256 resolvedTicketId = (uint256(randomNumber) % totalTickets) + 1;",
-      "after": "uint256 resolvedTicketId = uint256(randomNumber) % totalTickets;"
+      "before": "uint128 lastEntry = totalEntries + entryCount;",
+      "after": "uint128 lastEntry = totalEntries + entryCount - 1;"
     },
     {
       "id": "M-04",
-      "description": "use wrong winner denominator",
+      "description": "skip the first sequential ticket ID",
       "path": "src/Raffle.sol",
-      "before": "uint256 resolvedTicketId = (uint256(randomNumber) % totalTickets) + 1;",
-      "after": "uint256 resolvedTicketId = (uint256(randomNumber) % (totalTickets + 1)) + 1;"
+      "before": "ticketId = uint256(ticketCount) + 1;",
+      "after": "ticketId = uint256(ticketCount) + 2;"
     },
     {
       "id": "M-05",
-      "description": "remove callback in-flight check",
+      "description": "omit stored range assignment for a new ticket",
       "path": "src/Raffle.sol",
-      "before": "if (_requestInFlight || status != Status.Drawing || sequence != entropySequenceNumber) {",
-      "after": "if (status != Status.Drawing || sequence != entropySequenceNumber) {"
+      "before": "        _ticketRanges[ticketId] = TicketRange({ firstEntry: firstEntry, lastEntry: lastEntry });\n",
+      "after": ""
     },
     {
       "id": "M-06",
-      "description": "remove callback sequence check",
-      "path": "src/Raffle.sol",
-      "before": "if (_requestInFlight || status != Status.Drawing || sequence != entropySequenceNumber) {",
-      "after": "if (_requestInFlight || status != Status.Drawing) {"
-    },
-    {
-      "id": "M-07",
-      "description": "remove callback lifecycle check",
-      "path": "src/Raffle.sol",
-      "before": "if (_requestInFlight || status != Status.Drawing || sequence != entropySequenceNumber) {",
-      "after": "if (_requestInFlight || sequence != entropySequenceNumber) {"
-    },
-    {
-      "id": "M-08",
-      "description": "change threshold comparison",
-      "path": "src/Raffle.sol",
-      "before": "if (totalTickets >= minimumTickets) {",
-      "after": "if (totalTickets > minimumTickets) {"
-    },
-    {
-      "id": "M-09",
-      "description": "change callback protocol fee",
-      "path": "src/Raffle.sol",
-      "before": "uint256 protocolFee = Math.mulDiv(grossPot, RaffleConstants.PROTOCOL_FEE_BPS, RaffleConstants.BPS);\n        uint256 distributablePot = grossPot - protocolFee;",
-      "after": "uint256 protocolFee = Math.mulDiv(grossPot, RaffleConstants.PROTOCOL_FEE_BPS - 1, RaffleConstants.BPS);\n        uint256 distributablePot = grossPot - protocolFee;"
-    },
-    {
-      "id": "M-10",
-      "description": "change cash-winner basis points",
-      "path": "src/Raffle.sol",
-      "before": "Math.mulDiv(distributablePot, RaffleConstants.CASH_WINNER_BPS, RaffleConstants.BPS);",
-      "after": "Math.mulDiv(distributablePot, RaffleConstants.CASH_WINNER_BPS - 1, RaffleConstants.BPS);"
-    },
-    {
-      "id": "M-11",
-      "description": "leave cash unsettled pot uncleared",
-      "path": "src/Raffle.sol",
-      "before": "status = Status.CashWon;\n            unsettledPot = 0;",
-      "after": "status = Status.CashWon;"
-    },
-    {
-      "id": "M-12",
-      "description": "underpay refund by one unit per ticket",
-      "path": "src/Raffle.sol",
-      "before": "amount = ticketPrice * quantity;\n        remainingRefundLiability -= amount;",
-      "after": "amount = (ticketPrice - 1) * quantity;\n        remainingRefundLiability -= amount;"
-    },
-    {
-      "id": "M-13",
-      "description": "omit refund liability decrement",
-      "path": "src/Raffle.sol",
-      "before": "amount = ticketPrice * quantity;\n        remainingRefundLiability -= amount;",
-      "after": "amount = ticketPrice * quantity;"
-    },
-    {
-      "id": "M-14",
-      "description": "omit refund ticket burn",
-      "path": "src/Raffle.sol",
-      "before": "if (msg.sender != owner) revert NotTicketOwner(ticketId, msg.sender, owner);\n            _burn(ticketId);\n        }\n\n        amount = ticketPrice * quantity;",
-      "after": "if (msg.sender != owner) revert NotTicketOwner(ticketId, msg.sender, owner);\n        }\n\n        amount = ticketPrice * quantity;"
-    },
-    {
-      "id": "M-15",
-      "description": "check only outgoing sender debit",
-      "path": "src/Raffle.sol",
-      "before": "if (debitedAmount != amount || creditedAmount != amount) {",
-      "after": "if (debitedAmount != amount) {"
-    },
-    {
-      "id": "M-16",
-      "description": "check only outgoing recipient credit",
-      "path": "src/Raffle.sol",
-      "before": "if (debitedAmount != amount || creditedAmount != amount) {",
-      "after": "if (creditedAmount != amount) {"
-    },
-    {
-      "id": "M-17",
-      "description": "exclude exact sale start",
-      "path": "src/Raffle.sol",
-      "before": "if (block.timestamp < startTime) revert SaleNotStarted(startTime, block.timestamp);",
-      "after": "if (block.timestamp <= startTime) revert SaleNotStarted(startTime, block.timestamp);"
-    },
-    {
-      "id": "M-18",
-      "description": "allow purchase at exact sale end",
+      "description": "allow an entry purchase at the exact sale deadline",
       "path": "src/Raffle.sol",
       "before": "if (block.timestamp >= endTime) revert SaleEnded(endTime, block.timestamp);",
       "after": "if (block.timestamp > endTime) revert SaleEnded(endTime, block.timestamp);"
     },
     {
-      "id": "M-19",
-      "description": "allow zero-quantity purchase",
+      "id": "M-07",
+      "description": "reintroduce a ticket-transfer freeze at the sale deadline",
       "path": "src/Raffle.sol",
-      "before": "if (quantity == 0 || quantity > RaffleConstants.MAX_TICKETS_PER_PURCHASE) {",
-      "after": "if (quantity > RaffleConstants.MAX_TICKETS_PER_PURCHASE) {"
+      "before": "        if (to != address(0) && _isKnownProtocolDestination(to)) revert UnsafeProtocolDestination(to);\n",
+      "after": "        if (to != address(0) && block.timestamp >= endTime) revert SaleEnded(endTime, block.timestamp);\n        if (to != address(0) && _isKnownProtocolDestination(to)) revert UnsafeProtocolDestination(to);\n"
+    },
+    {
+      "id": "M-08",
+      "description": "allow a draw request before the sale ends",
+      "path": "src/Raffle.sol",
+      "before": "if (block.timestamp < endTime) revert RaffleNotEnded(endTime, block.timestamp);",
+      "after": "if (false) revert RaffleNotEnded(endTime, block.timestamp);"
+    },
+    {
+      "id": "M-09",
+      "description": "allow a sold Active raffle to enter refunds without a draw request",
+      "path": "src/Raffle.sol",
+      "before": "if (totalEntries != 0) revert InvalidStatus(status);",
+      "after": "if (false) revert InvalidStatus(status);"
+    },
+    {
+      "id": "M-10",
+      "description": "allow Drawing refunds before the callback timeout",
+      "path": "src/Raffle.sol",
+      "before": "} else if (status == Status.Drawing) {\n            deadline = callbackDeadline();\n            if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);",
+      "after": "} else if (status == Status.Drawing) {\n            deadline = callbackDeadline();"
+    },
+    {
+      "id": "M-11",
+      "description": "allow a final NFT outcome to enter refunds after the callback deadline",
+      "path": "src/Raffle.sol",
+      "before": "} else if (status == Status.Drawing) {",
+      "after": "} else if (status == Status.Drawing || status == Status.NftWon) {"
+    },
+    {
+      "id": "M-12",
+      "description": "remove Chainlink wrapper callback authentication",
+      "path": "src/Raffle.sol",
+      "before": "if (msg.sender != wrapperAddress) revert OnlyVRFWrapperCanFulfill(msg.sender, wrapperAddress);",
+      "after": "if (false) revert OnlyVRFWrapperCanFulfill(msg.sender, wrapperAddress);"
+    },
+    {
+      "id": "M-13",
+      "description": "remove the synchronous callback in-flight guard",
+      "path": "src/Raffle.sol",
+      "before": "if (_requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1) {",
+      "after": "if (status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1) {"
+    },
+    {
+      "id": "M-14",
+      "description": "remove the callback lifecycle guard",
+      "path": "src/Raffle.sol",
+      "before": "if (_requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1) {",
+      "after": "if (_requestInFlight || requestId != vrfRequestId || randomWords.length != 1) {"
+    },
+    {
+      "id": "M-15",
+      "description": "remove the callback request-id guard",
+      "path": "src/Raffle.sol",
+      "before": "if (_requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1) {",
+      "after": "if (_requestInFlight || status != Status.Drawing || randomWords.length != 1) {"
+    },
+    {
+      "id": "M-16",
+      "description": "accept malformed callback word counts",
+      "path": "src/Raffle.sol",
+      "before": "if (_requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1) {",
+      "after": "if (_requestInFlight || status != Status.Drawing || requestId != vrfRequestId) {"
+    },
+    {
+      "id": "M-17",
+      "description": "select the winning entry with totalEntries plus one",
+      "path": "src/Raffle.sol",
+      "before": "uint128 resolvedEntry = uint128((randomWords[0] % uint256(totalEntries)) + 1);",
+      "after": "uint128 resolvedEntry = uint128((randomWords[0] % (uint256(totalEntries) + 1)) + 1);"
+    },
+    {
+      "id": "M-18",
+      "description": "reduce fixed Chainlink confirmations from 30 to 29",
+      "path": "src/libraries/RaffleConstants.sol",
+      "before": "uint16 internal constant VRF_REQUEST_CONFIRMATIONS = 30;",
+      "after": "uint16 internal constant VRF_REQUEST_CONFIRMATIONS = 29;"
+    },
+    {
+      "id": "M-19",
+      "description": "require reserve entries to be exceeded rather than met",
+      "path": "src/Raffle.sol",
+      "before": "status = totalEntries >= reserveEntries ? Status.NftWon : Status.CashWon;",
+      "after": "status = totalEntries > reserveEntries ? Status.NftWon : Status.CashWon;"
     },
     {
       "id": "M-20",
-      "description": "allow 101-ticket purchase",
-      "path": "src/Raffle.sol",
-      "before": "if (quantity == 0 || quantity > RaffleConstants.MAX_TICKETS_PER_PURCHASE) {",
-      "after": "if (quantity == 0 || quantity > RaffleConstants.MAX_TICKETS_PER_PURCHASE + 1) {"
+      "description": "reduce the protocol fee from five percent",
+      "path": "src/libraries/RaffleConstants.sol",
+      "before": "uint256 internal constant PROTOCOL_FEE_BPS = 500;",
+      "after": "uint256 internal constant PROTOCOL_FEE_BPS = 499;"
     },
     {
       "id": "M-21",
-      "description": "break sequential first ticket ID",
-      "path": "src/Raffle.sol",
-      "before": "firstTicketId = totalTickets + 1;",
-      "after": "firstTicketId = 1;"
+      "description": "increase the cash winner gross share above eighty percent",
+      "path": "src/libraries/RaffleConstants.sol",
+      "before": "uint256 internal constant CASH_WINNER_BPS = 8000;",
+      "after": "uint256 internal constant CASH_WINNER_BPS = 8001;"
     },
     {
       "id": "M-22",
-      "description": "accept incoming quote over-credit",
+      "description": "omit the sponsor proceeds balance created during settlement",
       "path": "src/Raffle.sol",
-      "before": "if (receivedAmount != grossAmount) revert UnsupportedQuoteToken(grossAmount, receivedAmount);",
-      "after": "if (receivedAmount < grossAmount) revert UnsupportedQuoteToken(grossAmount, receivedAmount);"
-    },
-    {
-      "id": "M-23",
-      "description": "omit NFT winner delivery ownership verification",
-      "path": "src/Raffle.sol",
-      "before": "if (prizeToken.ownerOf(prizeTokenId) != to) revert PrizeDeliveryVerificationFailed(to);",
+      "before": "        sponsorProceeds = sponsorAmount;\n",
       "after": ""
     },
     {
-      "id": "M-24",
-      "description": "allow NFT timeout after prize claimed",
+      "id": "M-23",
+      "description": "credit 100 percent rather than 95 percent to the NFT sponsor",
       "path": "src/Raffle.sol",
-      "before": "} else if (status == Status.NftWon && !prizeClaimed) {",
-      "after": "} else if (status == Status.NftWon) {"
+      "before": "sponsorAmount = grossPot - protocolFee;",
+      "after": "sponsorAmount = grossPot;"
+    },
+    {
+      "id": "M-24",
+      "description": "leave the gross pot unsettled after winning-ticket settlement",
+      "path": "src/Raffle.sol",
+      "before": "winningTicketId = ticketId;\n        unsettledPot = 0;",
+      "after": "winningTicketId = ticketId;\n        unsettledPot = grossPot;"
     },
     {
       "id": "M-25",
-      "description": "allow refund finalization before its deadline",
+      "description": "remove the winning-entry containment proof",
       "path": "src/Raffle.sol",
-      "before": "if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);",
+      "before": "        _requireWinningTicket(ticketId);\n",
       "after": ""
     },
     {
       "id": "M-26",
-      "description": "omit known-protocol ticket destination check",
+      "description": "send an NFT winner's prize to the settlement caller",
       "path": "src/Raffle.sol",
-      "before": "if (to != address(0) && _isKnownProtocolDestination(to)) revert UnsafeProtocolDestination(to);",
-      "after": ""
+      "before": "prizeToken.transferFrom(address(this), winner, prizeTokenId);\n            if (prizeToken.ownerOf(prizeTokenId) != winner) revert PrizeDeliveryVerificationFailed(winner);",
+      "after": "prizeToken.transferFrom(address(this), msg.sender, prizeTokenId);\n            if (prizeToken.ownerOf(prizeTokenId) != msg.sender) revert PrizeDeliveryVerificationFailed(msg.sender);"
     },
     {
       "id": "M-27",
-      "description": "allow Factory ownership renunciation",
-      "path": "src/RaffleFactory.sol",
-      "before": "function renounceOwnership() public pure override {\n        revert OwnershipRenunciationDisabled();\n    }",
-      "after": "function renounceOwnership() public override {\n        super.renounceOwnership();\n    }"
+      "description": "send a cash winner's payment to the settlement caller",
+      "path": "src/Raffle.sol",
+      "before": "            _transferQuoteExact(winner, cashAmount);\n",
+      "after": "            _transferQuoteExact(msg.sender, cashAmount);\n"
     },
     {
       "id": "M-28",
-      "description": "ignore Factory creation pause",
-      "path": "src/RaffleFactory.sol",
-      "before": "if (creationPaused) revert CreationPaused();",
-      "after": ""
+      "description": "leave the winning ticket live after settlement",
+      "path": "src/Raffle.sol",
+      "before": "        protocolFees = protocolFee;\n        _burn(ticketId);",
+      "after": "        protocolFees = protocolFee;"
     },
     {
       "id": "M-29",
-      "description": "reject exact maximum start delay",
-      "path": "src/RaffleFactory.sol",
-      "before": "if (normalizedStartTime > maximumStartTime) {",
-      "after": "if (normalizedStartTime >= maximumStartTime) {"
+      "description": "record the wrong winning ticket ID",
+      "path": "src/Raffle.sol",
+      "before": "winningTicketId = ticketId;",
+      "after": "winningTicketId = ticketId + 1;"
     },
     {
       "id": "M-30",
-      "description": "reject exact maximum sale duration",
-      "path": "src/RaffleFactory.sol",
-      "before": "if (saleDuration > RaffleConstants.MAX_SALE_DURATION) {",
-      "after": "if (saleDuration >= RaffleConstants.MAX_SALE_DURATION) {"
+      "description": "allow 101 tickets in one refund batch",
+      "path": "src/Raffle.sol",
+      "before": "ticketQuantity > RaffleConstants.MAX_REFUND_TICKET_BATCH_SIZE",
+      "after": "ticketQuantity > RaffleConstants.MAX_REFUND_TICKET_BATCH_SIZE + 1"
     },
     {
       "id": "M-31",
-      "description": "allow zero ticket price",
-      "path": "src/RaffleFactory.sol",
-      "before": "if (params.ticketPrice == 0) revert ZeroTicketPrice();",
-      "after": ""
+      "description": "allow an empty refund ticket batch",
+      "path": "src/Raffle.sol",
+      "before": "if (ticketQuantity == 0 || ticketQuantity > RaffleConstants.MAX_REFUND_TICKET_BATCH_SIZE) {",
+      "after": "if (ticketQuantity > RaffleConstants.MAX_REFUND_TICKET_BATCH_SIZE) {"
     },
     {
       "id": "M-32",
-      "description": "allow zero minimum-ticket threshold",
-      "path": "src/RaffleFactory.sol",
-      "before": "if (params.minimumTickets == 0) revert ZeroMinimumTickets();",
-      "after": ""
+      "description": "make each inclusive refund range one entry too small",
+      "path": "src/Raffle.sol",
+      "before": "aggregateEntries += uint256(lastEntry) - uint256(firstEntry) + 1;",
+      "after": "aggregateEntries += uint256(lastEntry) - uint256(firstEntry);"
     },
     {
       "id": "M-33",
-      "description": "reject exact maximum metadata length",
-      "path": "src/RaffleFactory.sol",
-      "before": "if (metadataLength > RaffleConstants.MAX_METADATA_URI_LENGTH) {",
-      "after": "if (metadataLength >= RaffleConstants.MAX_METADATA_URI_LENGTH) {"
+      "description": "refund by ticket quantity instead of weighted entries",
+      "path": "src/Raffle.sol",
+      "before": "amount = aggregateEntries * ENTRY_PRICE;",
+      "after": "amount = ticketQuantity * ENTRY_PRICE;"
     },
     {
       "id": "M-34",
-      "description": "omit creation prize owner verification",
+      "description": "omit the weighted refund liability decrement",
+      "path": "src/Raffle.sol",
+      "before": "amount = aggregateEntries * ENTRY_PRICE;\n        remainingRefundLiability -= amount;",
+      "after": "amount = aggregateEntries * ENTRY_PRICE;"
+    },
+    {
+      "id": "M-35",
+      "description": "leave refunded tickets live",
+      "path": "src/Raffle.sol",
+      "before": "aggregateEntries += uint256(lastEntry) - uint256(firstEntry) + 1;\n            _burn(ticketId);",
+      "after": "aggregateEntries += uint256(lastEntry) - uint256(firstEntry) + 1;"
+    },
+    {
+      "id": "M-36",
+      "description": "allow a caller to refund another current owner's ticket",
+      "path": "src/Raffle.sol",
+      "before": "if (msg.sender != owner) revert NotTicketOwner(ticketId, msg.sender, owner);",
+      "after": "if (false) revert NotTicketOwner(ticketId, msg.sender, owner);"
+    },
+    {
+      "id": "M-37",
+      "description": "omit NFT winner-delivery ownership verification",
+      "path": "src/Raffle.sol",
+      "before": "prizeToken.transferFrom(address(this), winner, prizeTokenId);\n            if (prizeToken.ownerOf(prizeTokenId) != winner) revert PrizeDeliveryVerificationFailed(winner);",
+      "after": "prizeToken.transferFrom(address(this), winner, prizeTokenId);"
+    },
+    {
+      "id": "M-38",
+      "description": "omit sponsor prize-delivery ownership verification",
+      "path": "src/Raffle.sol",
+      "before": "prizeToken.transferFrom(address(this), recipient, prizeTokenId);\n        if (prizeToken.ownerOf(prizeTokenId) != recipient) revert PrizeDeliveryVerificationFailed(recipient);",
+      "after": "prizeToken.transferFrom(address(this), recipient, prizeTokenId);"
+    },
+    {
+      "id": "M-39",
+      "description": "omit factory prize escrow owner verification",
       "path": "src/RaffleFactory.sol",
       "before": "if (IERC721(params.prizeToken).ownerOf(params.prizeTokenId) != raffle) {",
       "after": "if (false) {"
     },
     {
-      "id": "M-35",
-      "description": "omit creation Active-status verification",
+      "id": "M-40",
+      "description": "omit factory clone Active-state verification",
       "path": "src/RaffleFactory.sol",
       "before": "if (IRaffle(raffle).status() != IRaffle.Status.Active) {",
       "after": "if (false) {"
     },
     {
-      "id": "M-36",
-      "description": "Lens permits draw at grace deadline",
-      "path": "src/RaffleLens.sol",
-      "before": "&& block.timestamp < raffleView.requestGraceDeadline && raffleView.totalTickets != 0;",
-      "after": "&& block.timestamp <= raffleView.requestGraceDeadline && raffleView.totalTickets != 0;"
+      "id": "M-41",
+      "description": "allow a clone to be initialized more than once",
+      "path": "src/Raffle.sol",
+      "before": "if (initialized) revert AlreadyInitialized();",
+      "after": "if (false) revert AlreadyInitialized();"
     },
     {
-      "id": "M-37",
-      "description": "Lens permits buy at sale end",
-      "path": "src/RaffleLens.sol",
-      "before": "&& block.timestamp < raffleView.endTime;",
-      "after": "&& block.timestamp <= raffleView.endTime;"
+      "id": "M-42",
+      "description": "allow non-factory clone initialization",
+      "path": "src/Raffle.sol",
+      "before": "if (msg.sender != factory) revert OnlyFactory();",
+      "after": "if (false) revert OnlyFactory();"
     },
     {
-      "id": "M-38",
-      "description": "Lens rejects exact 64-Raffle batch",
-      "path": "src/RaffleLens.sol",
-      "before": "if (length > MAX_BATCH_SIZE) revert BatchTooLarge(length, MAX_BATCH_SIZE);",
-      "after": "if (length >= MAX_BATCH_SIZE) revert BatchTooLarge(length, MAX_BATCH_SIZE);"
+      "id": "M-43",
+      "description": "ignore the factory creation pause",
+      "path": "src/RaffleFactory.sol",
+      "before": "if (creationPaused) revert CreationPaused();",
+      "after": "if (false) revert CreationPaused();"
+    },
+    {
+      "id": "M-44",
+      "description": "allow a zero reserve threshold",
+      "path": "src/RaffleFactory.sol",
+      "before": "if (params.reserveEntries == 0) revert ZeroReserveEntries();",
+      "after": "if (false) revert ZeroReserveEntries();"
+    },
+    {
+      "id": "M-45",
+      "description": "accept a prize contract without ERC721 support",
+      "path": "src/RaffleFactory.sol",
+      "before": "if (!supports721) revert UnsupportedPrizeToken(params.prizeToken);",
+      "after": "if (false) revert UnsupportedPrizeToken(params.prizeToken);"
+    },
+    {
+      "id": "M-46",
+      "description": "allow an existing raffle clone to be used as a prize token",
+      "path": "src/RaffleFactory.sol",
+      "before": "|| params.prizeToken == raffleImplementation || isRaffle[params.prizeToken]",
+      "after": "|| params.prizeToken == raffleImplementation"
+    },
+    {
+      "id": "M-47",
+      "description": "allow creation with an end time equal to the current block",
+      "path": "src/RaffleFactory.sol",
+      "before": "if (params.endTime <= currentTime) revert InvalidEndTime(currentTime, params.endTime);",
+      "after": "if (params.endTime < currentTime) revert InvalidEndTime(currentTime, params.endTime);"
+    },
+    {
+      "id": "M-48",
+      "description": "reject the exact maximum sale duration",
+      "path": "src/RaffleFactory.sol",
+      "before": "if (saleDuration > RaffleConstants.MAX_SALE_DURATION) {",
+      "after": "if (saleDuration >= RaffleConstants.MAX_SALE_DURATION) {"
+    },
+    {
+      "id": "M-49",
+      "description": "accept a quote token with non-six-decimal units",
+      "path": "src/RaffleFactory.sol",
+      "before": "if (quoteDecimals != RaffleConstants.QUOTE_TOKEN_DECIMALS) {\n            revert InvalidQuoteTokenDecimals(quoteDecimals, RaffleConstants.QUOTE_TOKEN_DECIMALS);\n        }",
+      "after": "if (false) {\n            revert InvalidQuoteTokenDecimals(quoteDecimals, RaffleConstants.QUOTE_TOKEN_DECIMALS);\n        }"
+    },
+    {
+      "id": "M-50",
+      "description": "leave the shared implementation initializable",
+      "path": "src/Raffle.sol",
+      "before": "initialized = true;\n        status = Status.Refunding;",
+      "after": "initialized = false;\n        status = Status.Refunding;"
+    },
+    {
+      "id": "M-51",
+      "description": "allow a registered raffle clone as an initialization sponsor, recipient, or treasury",
+      "path": "src/Raffle.sol",
+      "before": "function _isInitializationProtocolDestination(address destination, address prizeToken_)\n        private\n        view\n        returns (bool unsafeDestination)\n    {\n        IRaffleFactory canonicalFactory = IRaffleFactory(factory);\n        unsafeDestination = destination == address(this) || destination == factory || destination == address(quoteToken)\n            || destination == address(vrfWrapper) || destination == prizeToken_\n            || destination == canonicalFactory.raffleImplementation();\n        if (!unsafeDestination && destination.code.length != 0) {\n            unsafeDestination = canonicalFactory.isRaffle(destination);\n        }\n    }",
+      "after": "function _isInitializationProtocolDestination(address destination, address prizeToken_)\n        private\n        view\n        returns (bool unsafeDestination)\n    {\n        IRaffleFactory canonicalFactory = IRaffleFactory(factory);\n        unsafeDestination = destination == address(this) || destination == factory || destination == address(quoteToken)\n            || destination == address(vrfWrapper) || destination == prizeToken_\n            || destination == canonicalFactory.raffleImplementation();\n    }"
+    },
+    {
+      "id": "M-52",
+      "description": "allow ticket or fixed release destinations that are registered raffle clones",
+      "path": "src/Raffle.sol",
+      "before": "function _isKnownProtocolDestination(address destination) private view returns (bool unsafeDestination) {\n        IRaffleFactory canonicalFactory = IRaffleFactory(factory);\n        unsafeDestination = destination == address(this) || destination == factory || destination == address(quoteToken)\n            || destination == address(vrfWrapper) || destination == address(prizeToken)\n            || destination == canonicalFactory.raffleImplementation();\n        if (!unsafeDestination && destination.code.length != 0) {\n            unsafeDestination = canonicalFactory.isRaffle(destination);\n        }\n    }",
+      "after": "function _isKnownProtocolDestination(address destination) private view returns (bool unsafeDestination) {\n        IRaffleFactory canonicalFactory = IRaffleFactory(factory);\n        unsafeDestination = destination == address(this) || destination == factory || destination == address(quoteToken)\n            || destination == address(vrfWrapper) || destination == address(prizeToken)\n            || destination == canonicalFactory.raffleImplementation();\n    }"
     }
   ]
 }

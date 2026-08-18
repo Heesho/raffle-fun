@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import { formatTokenAmount, shortAddress } from "@/lib/format";
-import { SANDBOX_WETH } from "@/lib/sandbox/adapter";
+import { SANDBOX_USDC } from "@/lib/sandbox/adapter";
 import { useSandbox } from "@/lib/sandbox/store";
 
 /**
@@ -56,9 +56,9 @@ export function SandboxWalletButton({
         <span className="size-2 rounded-full bg-[var(--grass)]" />
         <span className="numeric hidden sm:inline">
           {formatTokenAmount(
-            sandbox.wallet.weth,
-            SANDBOX_WETH.decimals,
-            SANDBOX_WETH.symbol,
+            sandbox.wallet.usdc,
+            SANDBOX_USDC.decimals,
+            SANDBOX_USDC.symbol,
           )}
         </span>
         <span className="numeric text-[var(--ink-2)]">
@@ -80,9 +80,9 @@ export function SandboxWalletButton({
             <p className="eyebrow">Balance</p>
             <p className="numeric mt-1 text-lg font-extrabold">
               {formatTokenAmount(
-                sandbox.wallet.weth,
-                SANDBOX_WETH.decimals,
-                SANDBOX_WETH.symbol,
+                sandbox.wallet.usdc,
+                SANDBOX_USDC.decimals,
+                SANDBOX_USDC.symbol,
               )}
             </p>
             <p className="numeric mt-0.5 text-xs font-bold text-[var(--ink-2)]">
