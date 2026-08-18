@@ -5,8 +5,8 @@ generated artifacts, and operational configuration proposed for release. Interna
 review does not replace an independent audit or operational approval.
 
 > **Current status — 2026-08-18:** internally audit-ready; **not mainnet-ready**.
-> The v1 worktree has strong green internal evidence, but it is uncommitted, one
-> RPC-gated fork case is skipped, the evidence is not tied to a final SHA, and no
+> The v1 candidate is committed and merged to `main`, but it is not yet designated as
+> a signed final release, one RPC-gated fork case is skipped, and no
 > independent audit, Sepolia soak, live deployment, operations approval, or legal
 > approval exists.
 
@@ -58,8 +58,8 @@ review does not replace an independent audit or operational approval.
 
 - [x] Foundry: 72 passed, 0 failed, excluding one RPC-gated fork skip.
 - [x] Foundry fuzz: 8 properties at 1,000 cases each.
-- [x] Audit-profile Foundry fuzz: 8 properties at 100,000 cases each on the current
-      worktree.
+- [x] Audit-profile Foundry fuzz: 8 properties at 100,000 cases each on the committed
+      candidate source.
 - [x] Stateful invariant: 7 properties at 16,384 calls each with zero handler reverts.
 - [x] Audit-depth invariant: 7 properties at 256,000 calls each.
 - [x] Strict invariant: 7 properties at 256,000 calls each with `fail_on_revert` and
@@ -76,8 +76,8 @@ review does not replace an independent audit or operational approval.
 - [x] Current Gitleaks runs: tracked candidate and 25-commit history both exit 0 with no
       leaks.
 - [ ] Reproduce coverage on the exact final SHA.
-- [x] Run aggregate formatting, lint, typecheck, build, and test gates on the current
-      worktree after implementation edits settled.
+- [x] Run aggregate formatting, lint, typecheck, build, and test gates after
+      implementation edits settled.
 - [ ] Run high-count final fuzz/invariant campaigns on the exact final SHA.
 - [ ] Execute the compiled Echidna harness with retained corpus and branch-reachability
       review.

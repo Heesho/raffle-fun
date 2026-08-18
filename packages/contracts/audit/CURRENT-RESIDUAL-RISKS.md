@@ -1,6 +1,6 @@
 # Current residual risks and release blockers
 
-This ledger applies to the uncommitted Ethereum v1 candidate. It distinguishes risks
+This ledger applies to the committed Ethereum v1 audit candidate. It distinguishes risks
 the contract deliberately contains from work still required before mainnet. Passing
 internal tests does not make any item safe for unlimited value.
 

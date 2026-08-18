@@ -1,6 +1,6 @@
 # Current protocol specification
 
-Status: normative security-review summary for the uncommitted Ethereum v1 candidate.
+Status: normative security-review summary for the committed Ethereum v1 audit candidate.
 Production Solidity and interfaces are authoritative if this document conflicts with code.
 
 ## Contract graph and fixed configuration

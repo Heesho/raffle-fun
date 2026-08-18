@@ -6,7 +6,7 @@ independent audit.
 
 ## Candidate identity and isolation
 
-- source commit at campaign start: `090e29fc5bd481e2e244bbd52a716a7143248d82`
+- source commit at campaign start: `92eccb4beda71175dfeab4fa2282fbcfaab075c4`
 - candidate source SHA-256: `54c42b664eb7b74c5a352b70a64a6553b6ba496b40e880c4869c1c8df9178d9a`
 - candidate source files: 16 Solidity files under `packages/contracts/src`
 - Foundry oracle SHA-256: `f84324f7d98ddbd83cac39433edefb5a368f5ad36606b5c97f527a2f8a430dd7`

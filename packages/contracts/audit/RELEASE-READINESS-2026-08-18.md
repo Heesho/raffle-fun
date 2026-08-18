@@ -17,14 +17,15 @@ publication, push, or pull request is authorized by this report.
 | Item                  | Value                                                     |
 | --------------------- | --------------------------------------------------------- |
 | repository            | `/Users/hishamel-husseini/Documents/projects/raffle-fun`  |
-| baseline `HEAD`       | `090e29fc5bd481e2e244bbd52a716a7143248d82`                |
-| candidate             | dirty worktree on `main`; final SHA does not yet exist    |
+| implementation SHA    | `92eccb4beda71175dfeab4fa2282fbcfaab075c4`                |
+| evidence SHA          | `e9e0e730c17c07b21e911aa0c02804336e4f146b`                |
+| candidate             | committed and merged to `main`; not designated as release |
 | protocol name/version | raffle.fun v1                                             |
 | target                | Ethereum mainnet after a required Sepolia release process |
 | production status     | not deployed                                              |
 
-Because the reviewed candidate is uncommitted, this report identifies a worktree
-state, not a reproducible release artifact. A final commit may differ and must be
+The reviewed implementation is now a reproducible commit. It is an audit candidate,
+not a designated or signed final release artifact; any later release commit must be
 reviewed and tested independently.
 
 ## v1 design reviewed
@@ -79,8 +80,8 @@ Foundry additionally reports eight fuzz properties passing both 1,000-case defau
 The strict profile enabled `fail_on_revert` and completed with zero handler reverts.
 
 Fresh production-only coverage is 100.00% lines, 100.00% functions, and 94.12%
-branches. It remains worktree evidence and must be reproduced after the final SHA is
-frozen.
+branches. It remains internal candidate evidence and must be reproduced from a clean
+checkout after the final release SHA is frozen.
 
 Slither exits 0 across 47 contracts and 64 detectors with no result and an empty triage
 database. The fixed-clone initialization heuristic has one exact, documented source
@@ -109,8 +110,8 @@ independently audited, and internal tests and models have false negatives.
 
 ## Why mainnet remains blocked
 
-1. **No immutable release artifact.** The source and lockfile are uncommitted and no
-   final SHA, build provenance, or signed artifact manifest exists.
+1. **No signed final release artifact.** The candidate is committed, but no final
+   release designation, build provenance bundle, or signed artifact manifest exists.
 2. **No clean final reproduction.** Aggregate formatting, lint, typecheck, build,
    deterministic/adversarial tests, high-count fuzz/invariants, coverage,
    mutation, static analysis, dependencies, signatures, secrets, ABI drift, bytecode
@@ -139,8 +140,8 @@ independently audited, and internal tests and models have false negatives.
   assumptions, not guaranteed fulfillment or mathematical finality.
 - USDC issuer/proxy controls can pause or block transfers. Exact accounting cannot
   restore external token liveness.
-- A malicious or later-restricted ERC-721 can block delivery and strand the NFT even
-  though the quote pot becomes refundable.
+- A malicious or later-restricted ERC-721 can block delivery and strand the NFT branch;
+  a valid callback is final and never reopens refunds.
 - A destroyed or incapable ticket-owning contract can make its owner-only refund
   unreachable.
 - Immutable clones remove upgrade-admin seizure risk but cannot be patched after

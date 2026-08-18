@@ -4,15 +4,16 @@ This record covers the active Ethereum v1 range-ticket candidate. It is an inter
 security campaign, not an independent audit and not a mainnet authorization.
 
 > **Decision:** internally audit-ready for independent review; **not mainnet-ready**.
-> The candidate is an uncommitted worktree, has no live deployment, and has not
+> The candidate is committed and merged to `main`, has no live deployment, and has not
 > completed the release blockers in `RELEASE-CHECKLIST.md`.
 
 ## Candidate identity and scope
 
 | Item               | Current value                                                                             |
 | ------------------ | ----------------------------------------------------------------------------------------- |
-| baseline `HEAD`    | `090e29fc5bd481e2e244bbd52a716a7143248d82`                                                |
-| candidate identity | dirty worktree on `main`; no final release SHA or lockfile attestation                    |
+| implementation SHA | `92eccb4beda71175dfeab4fa2282fbcfaab075c4`                                                |
+| evidence SHA       | `e9e0e730c17c07b21e911aa0c02804336e4f146b`                                                |
+| candidate identity | committed audit candidate on `main`; not yet designated or attested as a final release    |
 | target chain       | Ethereum mainnet, with Sepolia required before mainnet                                    |
 | architecture       | one immutable `RaffleFactory`, one locked implementation, fixed-target ERC-1167 clones    |
 | quote asset        | factory-fixed six-decimal token; production binding intended to be official USDC          |
@@ -49,8 +50,9 @@ deployment, or upgrade path for existing raffles.
 
 ## Verified evidence
 
-These are the latest reported results for the active v1 worktree. They must all be
-repeated from a clean checkout of the final release SHA.
+These are the latest reported results for the committed v1 audit candidate. The
+mutation campaign was repeated from the clean implementation SHA; the complete gate
+set must still be reproduced from a clean checkout of the eventual release SHA.
 
 | Gate                                                       |                                                Result |
 | ---------------------------------------------------------- | ----------------------------------------------------: |
@@ -75,7 +77,7 @@ and the 256,000-call/property audit and strict profiles. The strict profile enab
 declared, hand-selected compiling set; it is not an exhaustive mutation-space claim.
 
 Fresh production-only coverage is 100.00% lines, 100.00% functions, and 94.12%
-branches. It must still be reproduced after the worktree is frozen at the final SHA.
+branches. It must still be reproduced from a clean checkout of the eventual release SHA.
 
 Slither exits 0 across 47 contracts and 64 detectors with 0 results and an empty triage
 database. The fixed-clone initialization heuristic is suppressed only at the exact

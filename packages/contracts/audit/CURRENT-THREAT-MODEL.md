@@ -1,7 +1,7 @@
 # Current audit threat model
 
-This file fixes the adversary and trust assumptions used for review of the uncommitted
-Ethereum v1 candidate. The maintained public explanation is
+This file fixes the adversary and trust assumptions used for review of the committed
+Ethereum v1 audit candidate. The maintained public explanation is
 `docs/THREAT-MODEL.md`; the code is authoritative.
 
 ## Security objective

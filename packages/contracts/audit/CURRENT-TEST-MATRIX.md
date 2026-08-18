@@ -1,8 +1,9 @@
 # Current v1 test matrix — 2026-08-18
 
-Candidate: uncommitted Ethereum v1 range-ticket worktree. This matrix describes the
-latest internal evidence. It is not an independent audit and must be rerun from the
-clean final release SHA.
+Candidate: committed Ethereum v1 range-ticket audit candidate. The implementation is
+`92eccb4beda71175dfeab4fa2282fbcfaab075c4`; mutation evidence was committed in
+`e9e0e730c17c07b21e911aa0c02804336e4f146b`. This matrix is internal evidence, not an
+independent audit, and the complete gate set must be rerun from the clean final release SHA.
 
 ## Latest verified totals
 
@@ -18,7 +19,7 @@ clean final release SHA.
 | SDK                 |                      14 passed, 0 failed | v1 actions, bigint validation, and economics                      |
 | web                 |                      15 passed, 0 failed | v1 UI/sandbox behavior                                            |
 | subgraph            |                       7 passed, 0 failed | includes ignored-VRF-callback indexing                            |
-| production coverage | 100.00% lines/functions, 94.12% branches | fresh worktree result; reproduce on final SHA                     |
+| production coverage | 100.00% lines/functions, 94.12% branches | committed candidate result; reproduce on final release SHA        |
 | Slither             |    47 contracts, 64 detectors, 0 results | empty triage database; one exact source annotation is documented  |
 | Gitleaks            |                                  0 leaks | tracked candidate and 25-commit history scans                     |
 
@@ -28,11 +29,11 @@ the 256,000-call/property audit and strict profiles. The strict profile enables
 `fail_on_revert` and completed with zero handler reverts.
 
 Fresh production-only coverage is 100.00% lines, 100.00% functions, and 94.12%
-branches. Reproduction on the exact final SHA remains required for release.
+branches. Reproduction from a clean checkout of the exact final release SHA remains required.
 
 Slither exits 0 with no results and an empty triage database. One exact source annotation
 documents the fixed-clone initialization heuristic without globally disabling its
-detector. Gitleaks also exits 0 for the current worktree and 25-commit history.
+detector. Gitleaks also exits 0 for the committed candidate and 25-commit history.
 
 ## Lifecycle and authorization
 

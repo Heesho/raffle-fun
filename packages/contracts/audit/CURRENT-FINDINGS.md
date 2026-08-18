@@ -1,6 +1,6 @@
 # Current v1 findings — 2026-08-18
 
-This ledger applies only to the active, uncommitted Ethereum v1 range-ticket
+This ledger applies only to the active, committed Ethereum v1 range-ticket audit
 candidate. It records an internal review, not an independent audit. Passing tests and
 an empty open-defect column do not establish that no undiscovered defect exists.
 
@@ -129,9 +129,9 @@ a reproduced production defect:
 
 | ID        | Gap                                                             | Required closure                                                                                                                                                             |
 | --------- | --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| V1-REL-01 | No final immutable candidate identity                           | Commit source and lockfile; record the final SHA and build hashes.                                                                                                           |
+| V1-REL-01 | No signed final release artifact                                | Designate the exact release SHA and record lockfile, toolchain, build, dependency, and signed artifact hashes.                                                               |
 | V1-REL-02 | Current evidence was not reproduced from a clean final checkout | Rerun every contract, integration, formatting, build, analysis, dependency, signature, secret, ABI, size, gas, and deployment gate.                                          |
-| V1-REL-03 | Current coverage is fresh but not tied to a final SHA           | Reproduce 100.00% lines/functions and at least 94.12% branches on the frozen final SHA.                                                                                      |
+| V1-REL-03 | Coverage was not reproduced from a clean release checkout       | Reproduce 100.00% lines/functions and at least 94.12% branches on the frozen final SHA.                                                                                      |
 | V1-REL-04 | Reported fork case skipped without RPC                          | Run pinned and latest-head Ethereum mainnet and Sepolia forks against the exact final SHA.                                                                                   |
 | V1-REL-05 | Current external-fuzzer runtime evidence is absent              | Execute the compiled Echidna harness with a retained corpus and explicit branch-reachability review.                                                                         |
 | V1-REL-06 | No independent audit of this exact v1                           | Review the final SHA and all internally fixed findings; resolve every Critical/High and supported-asset Medium.                                                              |
