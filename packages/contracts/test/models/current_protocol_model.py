@@ -87,6 +87,7 @@ class Model:
     treasury_claim: int = 0
     winning_entry: int = 0
     winning_ticket: int = 0
+    winner_recipient: str = ""
     prize_claimed: bool = False
     quote_paid: int = 0
 
@@ -147,18 +148,15 @@ class Model:
             self.treasury_claim += split.fee
             self.sponsor_claim += split.sponsor_cash
 
-    def claim_winner(self, ticket_id: int, *, caller: str, to: str) -> int:
+    def claim_winner(self, ticket_id: int, *, caller: str) -> int:
         if self.status not in (Status.NFT_WON, Status.CASH_WON):
             raise ValueError("invalid winner state")
-        if not to:
-            raise ValueError("invalid destination")
         ticket = self._live(ticket_id)
         if not ticket.first <= self.winning_entry <= ticket.last:
             raise ValueError("wrong ticket")
-        if caller != ticket.owner and to != ticket.owner:
-            raise ValueError("third party cannot redirect")
         ticket.consumed = True
         self.winning_ticket = ticket_id
+        self.winner_recipient = ticket.owner
         if self.status is Status.NFT_WON:
             split = split_gross(self.gross, nft_won=True)
             self.prize_claimed = True
@@ -173,25 +171,24 @@ class Model:
     def enable_refunds(
         self, *, timeout_elapsed: bool = False, sponsor_empty_cancel: bool = False
     ) -> None:
-        if self.status not in (Status.ACTIVE, Status.DRAWING, Status.NFT_WON):
-            raise ValueError("invalid refund origin")
-        immediate_empty_cancel = (
-            self.status is Status.ACTIVE
-            and self.total_entries == 0
-            and sponsor_empty_cancel
-        )
-        if not timeout_elapsed and not immediate_empty_cancel:
-            raise ValueError("refund timeout not elapsed")
+        if self.status is Status.ACTIVE:
+            empty_can_close = self.total_entries == 0 and (
+                sponsor_empty_cancel or self.sale_ended
+            )
+            if not empty_can_close:
+                raise ValueError("sold raffle must request randomness")
+        elif self.status is Status.DRAWING:
+            if not timeout_elapsed:
+                raise ValueError("callback timeout not elapsed")
+        else:
+            raise ValueError("valid callback result is final")
         self.status = Status.REFUNDING
         self.refund_liability = self.unsettled
         self.unsettled = 0
 
-    def refund_tickets(
-        self, ticket_ids: list[int], *, caller: str, to: str
-    ) -> int:
+    def refund_tickets(self, ticket_ids: list[int], *, caller: str) -> int:
         if (
             self.status is not Status.REFUNDING
-            or not to
             or not 1 <= len(ticket_ids) <= 100
         ):
             raise ValueError("invalid refund")

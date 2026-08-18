@@ -28,18 +28,20 @@ class CurrentProtocolModelTest(unittest.TestCase):
         model.request()
         model.callback(0)
         model.transfer(ticket, "bob", "carol")
-        model.claim_winner(ticket, caller="keeper", to="carol")
+        model.claim_winner(ticket, caller="keeper")
+        self.assertEqual(model.winner_recipient, "carol")
 
     def test_refund_right_follows_ticket_transfer(self) -> None:
         model = Model(entry_price=1_000_000, reserve_entries=10)
         ticket = model.buy("alice", 4)
         model.end_sale()
+        model.request()
         model.enable_refunds(timeout_elapsed=True)
         model.transfer(ticket, "alice", "bob")
         with self.assertRaises(ValueError):
-            model.refund_tickets([ticket], caller="alice", to="alice")
+            model.refund_tickets([ticket], caller="alice")
         self.assertEqual(
-            model.refund_tickets([ticket], caller="bob", to="bob"),
+            model.refund_tickets([ticket], caller="bob"),
             4_000_000,
         )
         model.assert_invariants()
@@ -71,49 +73,47 @@ class CurrentProtocolModelTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             model.enable_refunds(timeout_elapsed=True)
         self.assertEqual(
-            model.claim_winner(ticket, caller="keeper", to="alice"), 800_000
+            model.claim_winner(ticket, caller="keeper"), 800_000
+        )
+        self.assertEqual(model.winner_recipient, "alice")
+        model.assert_invariants()
+
+    def test_winner_settlement_is_permissionless_to_current_owner(self) -> None:
+        model = Model(entry_price=1_000_000, reserve_entries=1)
+        ticket = model.buy("alice", 1)
+        model.end_sale()
+        model.request()
+        model.callback(0)
+        model.claim_winner(ticket, caller="keeper")
+        self.assertEqual(model.winner_recipient, "alice")
+        model.assert_invariants()
+
+    def test_only_accepted_callback_timeout_preserves_full_weighted_refunds(self) -> None:
+        model = Model(entry_price=1_000_000, reserve_entries=3)
+        first = model.buy("alice", 2)
+        second = model.buy("alice", 5)
+        model.end_sale()
+        with self.assertRaises(ValueError):
+            model.enable_refunds(timeout_elapsed=True)
+        model.request()
+        with self.assertRaises(ValueError):
+            model.enable_refunds()
+        model.enable_refunds(timeout_elapsed=True)
+        self.assertEqual(model.refund_liability, 7_000_000)
+        self.assertEqual(
+            model.refund_tickets([first, second], caller="alice"),
+            7_000_000,
         )
         model.assert_invariants()
 
-    def test_third_party_cannot_redirect_but_current_bearer_can(self) -> None:
-        third_party = Model(entry_price=1_000_000, reserve_entries=1)
-        ticket = third_party.buy("alice", 1)
-        third_party.end_sale()
-        third_party.request()
-        third_party.callback(0)
-        with self.assertRaises(ValueError):
-            third_party.claim_winner(ticket, caller="keeper", to="mallory")
-        third_party.claim_winner(ticket, caller="keeper", to="alice")
-
-        owner = Model(entry_price=1_000_000, reserve_entries=1)
-        ticket = owner.buy("alice", 1)
-        owner.end_sale()
-        owner.request()
-        owner.callback(0)
-        owner.claim_winner(ticket, caller="alice", to="bob")
-        owner.assert_invariants()
-
-    def test_all_timeout_origins_preserve_full_weighted_refunds(self) -> None:
-        for origin in (Status.ACTIVE, Status.DRAWING, Status.NFT_WON):
-            model = Model(entry_price=1_000_000, reserve_entries=3)
-            first = model.buy("alice", 2)
-            second = model.buy("alice", 5)
-            model.end_sale()
-            if origin is not Status.ACTIVE:
-                model.request()
-            if origin is Status.NFT_WON:
-                model.callback(0)
+        for reserve in (1, 2):
+            resolved = Model(entry_price=1_000_000, reserve_entries=reserve)
+            resolved.buy("alice", 1)
+            resolved.end_sale()
+            resolved.request()
+            resolved.callback(0)
             with self.assertRaises(ValueError):
-                model.enable_refunds()
-            model.enable_refunds(timeout_elapsed=True)
-            self.assertEqual(model.refund_liability, 7_000_000)
-            self.assertEqual(
-                model.refund_tickets(
-                    [first, second], caller="alice", to="recipient"
-                ),
-                7_000_000,
-            )
-            model.assert_invariants()
+                resolved.enable_refunds(timeout_elapsed=True)
 
     def test_purchase_partition_does_not_change_entry_or_economics(self) -> None:
         one = Model(entry_price=1_000_000, reserve_entries=101)
@@ -148,20 +148,14 @@ class CurrentProtocolModelTest(unittest.TestCase):
                     model.callback(rng.getrandbits(256))
                     if model.status is Status.NFT_WON:
                         winner = model.containing_tickets(model.winning_entry)[0]
-                        model.claim_winner(
-                            winner, caller="keeper", to="alice"
-                        )
+                        model.claim_winner(winner, caller="keeper")
                     else:
                         winner = model.containing_tickets(model.winning_entry)[0]
-                        model.claim_winner(
-                            winner, caller="keeper", to="alice"
-                        )
+                        model.claim_winner(winner, caller="keeper")
                         model.recover_sponsor_prize()
                 else:
                     model.enable_refunds(timeout_elapsed=True)
-                    model.refund_tickets(
-                        tickets, caller="alice", to="alice"
-                    )
+                    model.refund_tickets(tickets, caller="alice")
                     model.recover_sponsor_prize()
                 for account in ("sponsor", "treasury"):
                     try:
@@ -194,6 +188,11 @@ class CurrentProtocolModelTest(unittest.TestCase):
         model.enable_refunds(sponsor_empty_cancel=True)
         self.assertEqual(model.status, Status.REFUNDING)
         self.assertEqual(model.refund_liability, 0)
+
+        ended = Model(entry_price=1_000_000, reserve_entries=1)
+        ended.end_sale()
+        ended.enable_refunds()
+        self.assertEqual(ended.status, Status.REFUNDING)
 
 
 if __name__ == "__main__":
