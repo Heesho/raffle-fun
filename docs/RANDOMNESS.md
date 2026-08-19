@@ -1,8 +1,10 @@
 # Chainlink VRF v2.5
 
-Each sold raffle accepts one request any time after `endTime`. Any account may pay the
-request's ETH cost; the raffle pot does not reimburse it. There is no request deadline,
-so a nonempty raffle cannot fall into refunds merely because nobody has called yet.
+Each sold raffle accepts one request in the half-open interval
+`[endTime, drawRequestDeadline())`, where `drawRequestDeadline()` is exactly two days
+after `endTime`. Any account may pay the request's ETH cost; the raffle pot does not
+reimburse it. If no request succeeds before the deadline, anyone may move the sold
+`Active` raffle into full refunds.
 
 ## Request
 
@@ -46,10 +48,13 @@ settle before the wrapper returns the request ID.
 - `status == Drawing`;
 - the returned request ID equals `vrfRequestId`;
 - the request is no longer in flight;
-- exactly one random word.
+- exactly one random word;
+- `block.timestamp < callbackDeadline()`.
 
-Wrong, malformed, synchronous, stale, late-after-another-transition, or duplicate
-callbacks emit `VrfCallbackIgnored` and do not mutate settlement.
+Only wrapper-authenticated calls whose calldata ABI-decodes reach these checks.
+Synchronous, wrong-ID, wrong-word-count, stale, duplicate, and deadline-expired calls
+emit `VrfCallbackIgnored` and do not mutate settlement. Unauthorized callers revert,
+and calldata that cannot ABI-decode reverts before the ignore logic.
 
 The callback computes:
 
@@ -63,11 +68,19 @@ branches below 80% of the fixed callback limit.
 
 ## Liveness and ordering
 
-If no matching callback settles within two days of an accepted request, anyone can
-enable full refunds. A valid callback can still win the inclusion race at the timeout
-boundary; once either transition executes, the other cannot overwrite it. A valid NFT
-or cash result is final and has no later refund timeout. External settlement keeps all
-ERC-20 and ERC-721 behavior out of the VRF callback.
+Let `D = endTime + 2 days` and `C = drawRequestedAt + 2 days`. Requests are valid only
+before `D`; sold-`Active` refunds are valid at and after `D`. Matching callbacks are
+valid only before `C`; `Drawing` refunds are valid at and after `C`. The equality cases
+are deliberately disjoint: a callback at `C` is ignored even when no refund transaction
+has yet executed. A valid earlier NFT or cash result is final and has no later refund
+timeout. Winning-ticket settlement is also transfer-free; all ERC-20 and ERC-721
+behavior occurs in independent later release calls.
+
+A request included at `D - 1` gives Chainlink a fresh two-day callback window, placing
+the last nominal callback/refund boundary just under four days after sale end. This is a
+bounded liveness tradeoff, not an automatic state transition. Censorship or a
+reorganization that removes a request or callback after its respective cutoff prevents
+replay and leaves the refund path as the supported recovery outcome.
 
 ## Security assumptions
 

@@ -11,6 +11,7 @@ import {
 
 const ONE = BigInt.fromI32(1);
 const ENTRY_PRICE = BigInt.fromI32(1_000_000);
+const DRAW_REQUEST_TIMEOUT = BigInt.fromI32(172800);
 
 export function handleRaffleCreated(event: RaffleCreated): void {
   if (Raffle.load(event.params.raffle) != null) return;
@@ -46,6 +47,7 @@ export function handleRaffleCreated(event: RaffleCreated): void {
   raffle.entryPrice = ENTRY_PRICE;
   raffle.reserveEntries = event.params.reserveEntries;
   raffle.endTime = event.params.endTime;
+  raffle.drawRequestDeadline = event.params.endTime.plus(DRAW_REQUEST_TIMEOUT);
   // RaffleCreated is emitted only after the factory verifies prize escrow.
   raffle.status = "ACTIVE";
   raffle.totalEntries = BigInt.zero();
@@ -53,6 +55,7 @@ export function handleRaffleCreated(event: RaffleCreated): void {
   raffle.grossSales = BigInt.zero();
   raffle.unsettledPot = BigInt.zero();
   raffle.remainingRefundLiability = BigInt.zero();
+  raffle.winnerProceeds = BigInt.zero();
   raffle.sponsorProceeds = BigInt.zero();
   raffle.protocolFees = BigInt.zero();
   raffle.totalRefundRedeemed = BigInt.zero();

@@ -87,6 +87,18 @@ contract RaffleHandler is Test, IERC721Receiver {
         _observe();
     }
 
+    function warpToDrawRequestDeadline() external {
+        uint256 deadline = raffle.drawRequestDeadline();
+        if (block.timestamp < deadline) vm.warp(deadline);
+        _observe();
+    }
+
+    function warpToLastDrawRequestSecond() external {
+        uint256 deadline = raffle.drawRequestDeadline();
+        if (block.timestamp < deadline - 1) vm.warp(deadline - 1);
+        _observe();
+    }
+
     function warpToCallbackDeadline() external {
         uint256 deadline = raffle.callbackDeadline();
         if (deadline != 0 && block.timestamp < deadline) vm.warp(deadline);
@@ -102,6 +114,7 @@ contract RaffleHandler is Test, IERC721Receiver {
     function requestDraw() external {
         if (
             raffle.status() != IRaffle.Status.Active || raffle.totalEntries() == 0 || block.timestamp < raffle.endTime()
+                || block.timestamp >= raffle.drawRequestDeadline()
         ) {
             return;
         }
@@ -116,8 +129,11 @@ contract RaffleHandler is Test, IERC721Receiver {
     function fulfill(uint256 randomWord) external {
         if (raffle.status() != IRaffle.Status.Drawing) return;
         try vrfWrapper.fulfill(raffle.vrfRequestId(), randomWord) {
-            ++ghostResolutionCount;
-            if (raffle.status() == IRaffle.Status.CashWon) ghostCashResolved = true;
+            IRaffle.Status result = raffle.status();
+            if (result == IRaffle.Status.NftWon || result == IRaffle.Status.CashWon) {
+                ++ghostResolutionCount;
+                if (result == IRaffle.Status.CashWon) ghostCashResolved = true;
+            }
         } catch { }
         _observe();
     }
@@ -131,6 +147,10 @@ contract RaffleHandler is Test, IERC721Receiver {
     function enableRefunds() external {
         IRaffle.Status current = raffle.status();
         bool ready = current == IRaffle.Status.Active && raffle.totalEntries() == 0;
+        ready = ready
+            || (current == IRaffle.Status.Active
+                && raffle.totalEntries() != 0
+                && block.timestamp >= raffle.drawRequestDeadline());
         ready = ready || (current == IRaffle.Status.Drawing && block.timestamp >= raffle.callbackDeadline());
         if (!ready) return;
         try raffle.enableRefunds() {
@@ -149,11 +169,23 @@ contract RaffleHandler is Test, IERC721Receiver {
         } catch {
             return;
         }
-        try raffle.settleWinningTicket(receiptId) returns (uint256 amount) {
-            ghostQuotePaidOut += amount;
-            ghostWinnerPaidOut += amount;
+        try raffle.settleWinningTicket(receiptId) returns (uint256) {
             ++ghostWinnerRedemptions;
         } catch { }
+        _observe();
+    }
+
+    function releaseWinnerClaim() external {
+        IRaffle.Status current = raffle.status();
+        if (current == IRaffle.Status.CashWon && raffle.winnerProceeds() != 0) {
+            try raffle.releaseWinnerProceeds() returns (uint256 amount) {
+                ghostQuotePaidOut += amount;
+                ghostWinnerPaidOut += amount;
+            } catch { }
+        } else if (current == IRaffle.Status.NftWon && raffle.winnerRecipient() != address(0) && !raffle.prizeClaimed())
+        {
+            try raffle.releaseWinnerPrize() { } catch { }
+        }
         _observe();
     }
 

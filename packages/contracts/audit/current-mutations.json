@@ -68,10 +68,10 @@
     },
     {
       "id": "M-09",
-      "description": "allow a sold Active raffle to enter refunds without a draw request",
+      "description": "disable the sold Active draw-request-timeout refund path",
       "path": "src/Raffle.sol",
-      "before": "if (totalEntries != 0) revert InvalidStatus(status);",
-      "after": "if (false) revert InvalidStatus(status);"
+      "before": "            } else {\n                deadline = drawRequestDeadline();\n                if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);\n            }\n",
+      "after": "            } else {\n                revert InvalidStatus(status);\n            }\n"
     },
     {
       "id": "M-10",
@@ -82,10 +82,10 @@
     },
     {
       "id": "M-11",
-      "description": "allow a final NFT outcome to enter refunds after the callback deadline",
+      "description": "accept an authenticated callback at or after the callback deadline",
       "path": "src/Raffle.sol",
-      "before": "} else if (status == Status.Drawing) {",
-      "after": "} else if (status == Status.Drawing || status == Status.NftWon) {"
+      "before": "                || block.timestamp >= callbackDeadline()\n",
+      "after": ""
     },
     {
       "id": "M-12",
@@ -98,29 +98,29 @@
       "id": "M-13",
       "description": "remove the synchronous callback in-flight guard",
       "path": "src/Raffle.sol",
-      "before": "if (_requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1) {",
-      "after": "if (status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1) {"
+      "before": "_requestInFlight || status != Status.Drawing",
+      "after": "status != Status.Drawing"
     },
     {
       "id": "M-14",
       "description": "remove the callback lifecycle guard",
       "path": "src/Raffle.sol",
-      "before": "if (_requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1) {",
-      "after": "if (_requestInFlight || requestId != vrfRequestId || randomWords.length != 1) {"
+      "before": "status != Status.Drawing || requestId != vrfRequestId",
+      "after": "requestId != vrfRequestId"
     },
     {
       "id": "M-15",
       "description": "remove the callback request-id guard",
       "path": "src/Raffle.sol",
-      "before": "if (_requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1) {",
-      "after": "if (_requestInFlight || status != Status.Drawing || randomWords.length != 1) {"
+      "before": "requestId != vrfRequestId || randomWords.length != 1",
+      "after": "randomWords.length != 1"
     },
     {
       "id": "M-16",
-      "description": "accept malformed callback word counts",
+      "description": "accept ABI-decodable wrong callback word counts",
       "path": "src/Raffle.sol",
-      "before": "if (_requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1) {",
-      "after": "if (_requestInFlight || status != Status.Drawing || requestId != vrfRequestId) {"
+      "before": " || randomWords.length != 1\n                || block.timestamp >= callbackDeadline()",
+      "after": " || block.timestamp >= callbackDeadline()"
     },
     {
       "id": "M-17",
@@ -131,10 +131,10 @@
     },
     {
       "id": "M-18",
-      "description": "reduce fixed Chainlink confirmations from 30 to 29",
-      "path": "src/libraries/RaffleConstants.sol",
-      "before": "uint16 internal constant VRF_REQUEST_CONFIRMATIONS = 30;",
-      "after": "uint16 internal constant VRF_REQUEST_CONFIRMATIONS = 29;"
+      "description": "allow a draw request at or after the draw-request deadline",
+      "path": "src/Raffle.sol",
+      "before": "if (block.timestamp >= requestDeadline) {\n            revert DrawRequestWindowExpired(requestDeadline, block.timestamp);\n        }",
+      "after": "if (false) {\n            revert DrawRequestWindowExpired(requestDeadline, block.timestamp);\n        }"
     },
     {
       "id": "M-19",
@@ -175,8 +175,8 @@
       "id": "M-24",
       "description": "leave the gross pot unsettled after winning-ticket settlement",
       "path": "src/Raffle.sol",
-      "before": "winningTicketId = ticketId;\n        unsettledPot = 0;",
-      "after": "winningTicketId = ticketId;\n        unsettledPot = grossPot;"
+      "before": "winningTicketId = ticketId;\n        winnerRecipient = winner;\n        unsettledPot = 0;",
+      "after": "winningTicketId = ticketId;\n        winnerRecipient = winner;\n        unsettledPot = grossPot;"
     },
     {
       "id": "M-25",
@@ -187,17 +187,17 @@
     },
     {
       "id": "M-26",
-      "description": "send an NFT winner's prize to the settlement caller",
+      "description": "send an NFT winner's prize to the release caller",
       "path": "src/Raffle.sol",
-      "before": "prizeToken.transferFrom(address(this), winner, prizeTokenId);\n            if (prizeToken.ownerOf(prizeTokenId) != winner) revert PrizeDeliveryVerificationFailed(winner);",
-      "after": "prizeToken.transferFrom(address(this), msg.sender, prizeTokenId);\n            if (prizeToken.ownerOf(prizeTokenId) != msg.sender) revert PrizeDeliveryVerificationFailed(msg.sender);"
+      "before": "prizeToken.transferFrom(address(this), recipient, prizeTokenId);\n        if (prizeToken.ownerOf(prizeTokenId) != recipient) revert PrizeDeliveryVerificationFailed(recipient);\n        emit WinnerPrizeReleased(msg.sender, recipient, address(prizeToken), prizeTokenId);",
+      "after": "prizeToken.transferFrom(address(this), msg.sender, prizeTokenId);\n        if (prizeToken.ownerOf(prizeTokenId) != msg.sender) revert PrizeDeliveryVerificationFailed(msg.sender);\n        emit WinnerPrizeReleased(msg.sender, msg.sender, address(prizeToken), prizeTokenId);"
     },
     {
       "id": "M-27",
-      "description": "send a cash winner's payment to the settlement caller",
+      "description": "send a cash winner's proceeds to the release caller",
       "path": "src/Raffle.sol",
-      "before": "            _transferQuoteExact(winner, cashAmount);\n",
-      "after": "            _transferQuoteExact(msg.sender, cashAmount);\n"
+      "before": "_transferQuoteExact(recipient, amount);\n        emit WinnerProceedsReleased(msg.sender, recipient, amount);",
+      "after": "_transferQuoteExact(msg.sender, amount);\n        emit WinnerProceedsReleased(msg.sender, msg.sender, amount);"
     },
     {
       "id": "M-28",
@@ -266,15 +266,15 @@
       "id": "M-37",
       "description": "omit NFT winner-delivery ownership verification",
       "path": "src/Raffle.sol",
-      "before": "prizeToken.transferFrom(address(this), winner, prizeTokenId);\n            if (prizeToken.ownerOf(prizeTokenId) != winner) revert PrizeDeliveryVerificationFailed(winner);",
-      "after": "prizeToken.transferFrom(address(this), winner, prizeTokenId);"
+      "before": "if (prizeToken.ownerOf(prizeTokenId) != recipient) revert PrizeDeliveryVerificationFailed(recipient);\n        emit WinnerPrizeReleased(msg.sender, recipient, address(prizeToken), prizeTokenId);",
+      "after": "emit WinnerPrizeReleased(msg.sender, recipient, address(prizeToken), prizeTokenId);"
     },
     {
       "id": "M-38",
       "description": "omit sponsor prize-delivery ownership verification",
       "path": "src/Raffle.sol",
-      "before": "prizeToken.transferFrom(address(this), recipient, prizeTokenId);\n        if (prizeToken.ownerOf(prizeTokenId) != recipient) revert PrizeDeliveryVerificationFailed(recipient);",
-      "after": "prizeToken.transferFrom(address(this), recipient, prizeTokenId);"
+      "before": "if (prizeToken.ownerOf(prizeTokenId) != recipient) revert PrizeDeliveryVerificationFailed(recipient);\n        emit SponsorPrizeReleased(msg.sender, recipient, address(prizeToken), prizeTokenId);",
+      "after": "emit SponsorPrizeReleased(msg.sender, recipient, address(prizeToken), prizeTokenId);"
     },
     {
       "id": "M-39",

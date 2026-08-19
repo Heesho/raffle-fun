@@ -534,13 +534,30 @@ contract RaffleTest is Test, IERC721Receiver {
         vm.warp(empty.endTime());
         vm.expectRevert(IRaffle.NoEntriesSold.selector);
         empty.requestDraw();
+        vm.warp(empty.drawRequestDeadline());
+        vm.expectRevert(IRaffle.NoEntriesSold.selector);
+        empty.requestDraw();
 
         Raffle delayed = _create(1);
         _buy(delayed, buyer, 1);
-        vm.warp(delayed.endTime() + 365 days);
-        uint256 delayedRequestId = _requestAtCurrentTime(delayed);
-        assertEq(delayed.vrfRequestId(), delayedRequestId);
-        assertEq(uint256(delayed.status()), uint256(IRaffle.Status.Drawing));
+        assertEq(delayed.drawRequestDeadline(), delayed.endTime() + 2 days);
+        vm.warp(delayed.drawRequestDeadline());
+        uint256 delayedFee = vrfWrapper.fee();
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IRaffle.DrawRequestWindowExpired.selector, delayed.drawRequestDeadline(), block.timestamp
+            )
+        );
+        delayed.requestDraw{ value: delayedFee }();
+        assertEq(delayed.vrfRequestId(), 0);
+        assertEq(uint256(delayed.status()), uint256(IRaffle.Status.Active));
+        vm.warp(delayed.drawRequestDeadline() + 1);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IRaffle.DrawRequestWindowExpired.selector, delayed.drawRequestDeadline(), block.timestamp
+            )
+        );
+        delayed.requestDraw{ value: delayedFee }();
 
         Raffle underfunded = _create(1);
         _buy(underfunded, buyer, 1);
@@ -605,14 +622,21 @@ contract RaffleTest is Test, IERC721Receiver {
 
         vm.prank(outsider);
         raffle.settleWinningTicket(winningReceipt);
-        assertEq(prize.ownerOf(raffle.prizeTokenId()), buyerTwo);
+        assertEq(prize.ownerOf(raffle.prizeTokenId()), address(raffle));
+        assertEq(raffle.winnerRecipient(), buyerTwo);
+        assertFalse(raffle.prizeClaimed());
         assertEq(raffle.winningTicketId(), winningReceipt);
         assertEq(raffle.protocolFees(), 300_000);
         assertEq(raffle.sponsorProceeds(), 5_700_000);
         assertEq(raffle.unsettledPot(), 0);
+
+        vm.prank(outsider);
+        raffle.releaseWinnerPrize();
+        assertEq(prize.ownerOf(raffle.prizeTokenId()), buyerTwo);
+        assertTrue(raffle.prizeClaimed());
     }
 
-    function testNftSettlementAlwaysPaysCurrentTicketOwner() public {
+    function testNftSettlementSnapshotsCurrentTicketOwnerBeforeRelease() public {
         Raffle raffle = _create(1);
         uint256 receiptId = _buy(raffle, buyer, 1);
         _resolve(raffle, 0);
@@ -621,10 +645,14 @@ contract RaffleTest is Test, IERC721Receiver {
         raffle.transferFrom(buyer, buyerTwo, receiptId);
         vm.prank(outsider);
         raffle.settleWinningTicket(receiptId);
+        assertEq(raffle.winnerRecipient(), buyerTwo);
+        assertEq(prize.ownerOf(raffle.prizeTokenId()), address(raffle));
+        vm.prank(outsider);
+        raffle.releaseWinnerPrize();
         assertEq(prize.ownerOf(raffle.prizeTokenId()), buyerTwo);
     }
 
-    function testPrizeDeliveryFailureLeavesPotAndReceiptButNeverEnablesRefundsAfterValidDraw() public {
+    function testPrizeDeliveryFailureBlocksOnlyWinnerPrizeAndNotSettlementOrCashClaims() public {
         RevertingPrize hostilePrize = new RevertingPrize();
         hostilePrize.mint(sponsor, 1);
         vm.prank(sponsor);
@@ -635,20 +663,32 @@ contract RaffleTest is Test, IERC721Receiver {
         hostilePrize.setTransfersRevert(true);
 
         vm.prank(outsider);
-        vm.expectRevert("prize transfer failed");
         raffle.settleWinningTicket(receiptId);
-        assertEq(raffle.ownerOf(receiptId), buyer);
-        assertEq(raffle.unsettledPot(), USDC);
-        assertEq(raffle.protocolFees(), 0);
-        assertEq(raffle.sponsorProceeds(), 0);
+        vm.expectRevert();
+        raffle.ownerOf(receiptId);
+        assertEq(raffle.unsettledPot(), 0);
+        assertEq(raffle.protocolFees(), 50_000);
+        assertEq(raffle.sponsorProceeds(), 950_000);
         assertFalse(raffle.prizeClaimed());
+
+        vm.expectRevert("prize transfer failed");
+        raffle.releaseWinnerPrize();
+        assertEq(raffle.protocolFees(), 50_000);
+        assertEq(raffle.sponsorProceeds(), 950_000);
+
+        uint256 sponsorBefore = quote.balanceOf(sponsor);
+        uint256 treasuryBefore = quote.balanceOf(treasury);
+        raffle.releaseSponsorProceeds();
+        raffle.releaseProtocolFees();
+        assertEq(quote.balanceOf(sponsor) - sponsorBefore, 950_000);
+        assertEq(quote.balanceOf(treasury) - treasuryBefore, 50_000);
 
         vm.warp(block.timestamp + 365 days);
         vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidStatus.selector, IRaffle.Status.NftWon));
         raffle.enableRefunds();
 
         hostilePrize.setTransfersRevert(false);
-        raffle.settleWinningTicket(receiptId);
+        raffle.releaseWinnerPrize();
         assertEq(hostilePrize.ownerOf(1), buyer);
     }
 
@@ -663,8 +703,9 @@ contract RaffleTest is Test, IERC721Receiver {
         hostileNft.setTransfersNoop(true);
 
         vm.prank(outsider);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.PrizeDeliveryVerificationFailed.selector, buyer));
         nft.settleWinningTicket(receiptId);
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.PrizeDeliveryVerificationFailed.selector, buyer));
+        nft.releaseWinnerPrize();
         assertEq(hostileNft.ownerOf(1), address(nft));
 
         RevertingPrize hostileCash = new RevertingPrize();
@@ -681,7 +722,7 @@ contract RaffleTest is Test, IERC721Receiver {
         assertEq(hostileCash.ownerOf(2), address(cash));
     }
 
-    function testCashCallbackIsFinalAndPermissionlessSettlementPaysCurrentOwnerOnce() public {
+    function testCashSettlementSnapshotsCurrentOwnerAndReleasesOnce() public {
         Raffle raffle = _create(2);
         uint256 receiptId = _buy(raffle, buyer, 1);
         _resolve(raffle, 0);
@@ -696,11 +737,20 @@ contract RaffleTest is Test, IERC721Receiver {
         uint256 before = quote.balanceOf(buyer);
         vm.prank(outsider);
         assertEq(raffle.settleWinningTicket(receiptId), 800_000);
-        assertEq(quote.balanceOf(buyer) - before, 800_000);
+        assertEq(quote.balanceOf(buyer) - before, 0);
+        assertEq(raffle.winnerRecipient(), buyer);
+        assertEq(raffle.winnerProceeds(), 800_000);
         assertEq(raffle.protocolFees(), 50_000);
         assertEq(raffle.sponsorProceeds(), 150_000);
         vm.expectRevert();
         raffle.ownerOf(receiptId);
+
+        vm.prank(outsider);
+        assertEq(raffle.releaseWinnerProceeds(), 800_000);
+        assertEq(quote.balanceOf(buyer) - before, 800_000);
+        assertEq(raffle.winnerProceeds(), 0);
+        vm.expectRevert(IRaffle.NoWinnerProceeds.selector);
+        raffle.releaseWinnerProceeds();
 
         Raffle transferred = _create(2);
         uint256 transferredReceipt = _buy(transferred, buyer, 1);
@@ -710,6 +760,10 @@ contract RaffleTest is Test, IERC721Receiver {
         before = quote.balanceOf(buyerTwo);
         vm.prank(outsider);
         transferred.settleWinningTicket(transferredReceipt);
+        assertEq(transferred.winnerRecipient(), buyerTwo);
+        assertEq(quote.balanceOf(buyerTwo) - before, 0);
+        vm.prank(outsider);
+        transferred.releaseWinnerProceeds();
         assertEq(quote.balanceOf(buyerTwo) - before, 800_000);
     }
 
@@ -745,6 +799,8 @@ contract RaffleTest is Test, IERC721Receiver {
         _resolve(nftRaffle, 0);
         vm.prank(outsider);
         nftRaffle.settleWinningTicket(nftReceipt);
+        vm.prank(outsider);
+        nftRaffle.releaseWinnerPrize();
         assertEq(prize.ownerOf(nftRaffle.prizeTokenId()), buyer);
 
         Raffle cashRaffle = _create(2);
@@ -757,6 +813,41 @@ contract RaffleTest is Test, IERC721Receiver {
         assertEq(prize.ownerOf(cashRaffle.prizeTokenId()), sponsor);
     }
 
+    function testFutureCanonicalCloneCanBrickOnlyItsOwnWinnerClaim() public {
+        Raffle cash = _create(2);
+        uint256 ticketId = _buy(cash, buyer, 1);
+        _resolve(cash, 0);
+
+        address futureClone = vm.computeCreateAddress(address(factory), factory.raffleCount() + 2);
+        assertEq(futureClone.code.length, 0);
+        assertFalse(factory.isRaffle(futureClone));
+
+        vm.prank(buyer);
+        cash.transferFrom(buyer, futureClone, ticketId);
+        Raffle materializedClone = _create(1);
+        assertEq(address(materializedClone), futureClone);
+        assertTrue(factory.isRaffle(futureClone));
+
+        cash.settleWinningTicket(ticketId);
+        assertEq(cash.winnerRecipient(), futureClone);
+        assertEq(cash.winnerProceeds(), 800_000);
+        assertEq(cash.sponsorProceeds(), 150_000);
+        assertEq(cash.protocolFees(), 50_000);
+        assertEq(cash.accountedQuoteBalance(), USDC);
+
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidQuoteDestination.selector, futureClone));
+        cash.releaseWinnerProceeds();
+        assertEq(cash.winnerProceeds(), 800_000);
+
+        uint256 sponsorBefore = quote.balanceOf(sponsor);
+        uint256 treasuryBefore = quote.balanceOf(treasury);
+        cash.releaseSponsorProceeds();
+        cash.releaseProtocolFees();
+        assertEq(quote.balanceOf(sponsor) - sponsorBefore, 150_000);
+        assertEq(quote.balanceOf(treasury) - treasuryBefore, 50_000);
+        assertEq(cash.accountedQuoteBalance(), 800_000);
+    }
+
     function testFixedProceedsArePermissionlesslyReleasedToConfiguredRecipients() public {
         Raffle cash = _create(2);
         uint256 ticketId = _buy(cash, buyer, 1);
@@ -765,12 +856,18 @@ contract RaffleTest is Test, IERC721Receiver {
 
         uint256 sponsorBefore = quote.balanceOf(sponsor);
         uint256 treasuryBefore = quote.balanceOf(treasury);
+        uint256 winnerBefore = quote.balanceOf(buyer);
+        vm.prank(outsider);
+        assertEq(cash.releaseWinnerProceeds(), 800_000);
         vm.prank(outsider);
         assertEq(cash.releaseSponsorProceeds(), 150_000);
         vm.prank(outsider);
         assertEq(cash.releaseProtocolFees(), 50_000);
+        assertEq(quote.balanceOf(buyer) - winnerBefore, 800_000);
         assertEq(quote.balanceOf(sponsor) - sponsorBefore, 150_000);
         assertEq(quote.balanceOf(treasury) - treasuryBefore, 50_000);
+        vm.expectRevert(IRaffle.NoWinnerProceeds.selector);
+        cash.releaseWinnerProceeds();
         vm.expectRevert(IRaffle.NoSponsorProceeds.selector);
         cash.releaseSponsorProceeds();
         vm.expectRevert(IRaffle.NoProtocolFees.selector);
@@ -784,15 +881,49 @@ contract RaffleTest is Test, IERC721Receiver {
         cash.onERC721Received(address(factory), sponsor, cashPrizeId, "");
     }
 
-    function testNonEmptyRaffleMustRequestDrawAndOnlyAcceptedCallbackTimeoutRefunds() public {
+    function testSoldRaffleHasHardRequestAndCallbackRefundDeadlines() public {
         Raffle noRequest = _create(10);
-        _buy(noRequest, buyer, 3);
-        vm.warp(noRequest.endTime() + 365 days);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidStatus.selector, IRaffle.Status.Active));
+        uint256 noRequestReceipt = _buy(noRequest, buyer, 3);
+        uint256 requestDeadline = noRequest.drawRequestDeadline();
+        vm.warp(requestDeadline - 1);
+        vm.prank(sponsor);
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.RefundsNotAvailable.selector, requestDeadline, block.timestamp));
         noRequest.enableRefunds();
-        uint256 lateRequest = _requestAtCurrentTime(noRequest);
-        vrfWrapper.fulfill(lateRequest, 0);
-        assertEq(uint256(noRequest.status()), uint256(IRaffle.Status.CashWon));
+        vm.warp(requestDeadline);
+        uint256 requestFee = vrfWrapper.fee();
+        vm.expectRevert(
+            abi.encodeWithSelector(IRaffle.DrawRequestWindowExpired.selector, requestDeadline, block.timestamp)
+        );
+        noRequest.requestDraw{ value: requestFee }();
+        noRequest.enableRefunds();
+        assertEq(uint256(noRequest.status()), uint256(IRaffle.Status.Refunding));
+        assertEq(noRequest.unsettledPot(), 0);
+        assertEq(noRequest.remainingRefundLiability(), 3 * USDC);
+        assertEq(noRequest.winnerProceeds(), 0);
+        assertEq(noRequest.sponsorProceeds(), 0);
+        assertEq(noRequest.protocolFees(), 0);
+        vm.prank(outsider);
+        noRequest.releaseSponsorPrize();
+        assertEq(prize.ownerOf(noRequest.prizeTokenId()), sponsor);
+        vm.prank(buyer);
+        noRequest.refundTickets(_single(noRequestReceipt));
+
+        Raffle lastMomentRequest = _create(10);
+        _buy(lastMomentRequest, buyer, 3);
+        vm.warp(lastMomentRequest.drawRequestDeadline() - 1);
+        uint256 lastMomentSequence = _requestAtCurrentTime(lastMomentRequest);
+        assertEq(lastMomentRequest.drawRequestedAt(), lastMomentRequest.drawRequestDeadline() - 1);
+        assertEq(lastMomentRequest.callbackDeadline(), block.timestamp + 2 days);
+        vm.warp(lastMomentRequest.drawRequestDeadline());
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IRaffle.RefundsNotAvailable.selector, lastMomentRequest.callbackDeadline(), block.timestamp
+            )
+        );
+        lastMomentRequest.enableRefunds();
+        vm.warp(lastMomentRequest.callbackDeadline() - 1);
+        vrfWrapper.fulfill(lastMomentSequence, 0);
+        assertEq(uint256(lastMomentRequest.status()), uint256(IRaffle.Status.CashWon));
 
         Raffle noCallback = _create(10);
         uint256 noCallbackReceipt = _buy(noCallback, buyer, 5);
@@ -824,13 +955,27 @@ contract RaffleTest is Test, IERC721Receiver {
         nftWon.enableRefunds();
     }
 
-    function testCallbackDeadlineRaceIsFirstIncludedAndValidNftSettlesForever() public {
-        Raffle callbackFirst = _create(1);
-        uint256 firstReceipt = _buy(callbackFirst, buyer, 1);
-        uint256 firstSequence = _request(callbackFirst);
-        vm.warp(callbackFirst.callbackDeadline());
-        vrfWrapper.fulfill(firstSequence, 0);
-        assertEq(uint256(callbackFirst.status()), uint256(IRaffle.Status.NftWon));
+    function testCallbackDeadlineIsHardAtEqualityRegardlessOfOrdering() public {
+        Raffle callbackBeforeDeadline = _create(1);
+        _buy(callbackBeforeDeadline, buyer, 1);
+        uint256 beforeDeadlineSequence = _request(callbackBeforeDeadline);
+        vm.warp(callbackBeforeDeadline.callbackDeadline() - 1);
+        vrfWrapper.fulfill(beforeDeadlineSequence, 0);
+        assertEq(uint256(callbackBeforeDeadline.status()), uint256(IRaffle.Status.NftWon));
+
+        Raffle callbackAtDeadline = _create(1);
+        _buy(callbackAtDeadline, buyer, 1);
+        uint256 atDeadlineSequence = _request(callbackAtDeadline);
+        vm.warp(callbackAtDeadline.callbackDeadline());
+        vrfWrapper.fulfill(atDeadlineSequence, 0);
+        assertEq(uint256(callbackAtDeadline.status()), uint256(IRaffle.Status.Drawing));
+        assertEq(callbackAtDeadline.winningEntry(), 0);
+        vm.warp(callbackAtDeadline.callbackDeadline() + 1);
+        vrfWrapper.fulfill(atDeadlineSequence, 0);
+        assertEq(uint256(callbackAtDeadline.status()), uint256(IRaffle.Status.Drawing));
+        assertEq(callbackAtDeadline.winningEntry(), 0);
+        callbackAtDeadline.enableRefunds();
+        assertEq(uint256(callbackAtDeadline.status()), uint256(IRaffle.Status.Refunding));
 
         Raffle refundFirst = _create(1);
         _buy(refundFirst, buyer, 1);
@@ -839,12 +984,7 @@ contract RaffleTest is Test, IERC721Receiver {
         refundFirst.enableRefunds();
         vrfWrapper.fulfill(secondSequence, 0);
         assertEq(refundFirst.winningEntry(), 0);
-
-        vm.warp(block.timestamp + 365 days);
-        vm.prank(outsider);
-        callbackFirst.settleWinningTicket(firstReceipt);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.InvalidStatus.selector, IRaffle.Status.NftWon));
-        callbackFirst.enableRefunds();
+        assertEq(uint256(refundFirst.status()), uint256(IRaffle.Status.Refunding));
     }
 
     function testWeightedRefundBatchPaysExactRangesAndConsumesOnce() public {
@@ -925,8 +1065,8 @@ contract RaffleTest is Test, IERC721Receiver {
     }
 
     function testWrongDuplicateMalformedAndUnauthorizedCallbacksAreHarmless() public {
-        Raffle raffle = _create(1);
-        _buy(raffle, buyer, 1);
+        Raffle raffle = _create(2);
+        _buy(raffle, buyer, 2);
         uint256 sequence = _request(raffle);
 
         uint256[] memory words = new uint256[](1);
@@ -939,7 +1079,7 @@ contract RaffleTest is Test, IERC721Receiver {
         assertEq(raffle.winningEntry(), 0);
         vrfWrapper.fulfill(sequence, 0);
         assertEq(raffle.winningEntry(), 1);
-        vrfWrapper.fulfill(sequence, 99);
+        vrfWrapper.fulfill(sequence, 1);
         assertEq(raffle.winningEntry(), 1);
     }
 

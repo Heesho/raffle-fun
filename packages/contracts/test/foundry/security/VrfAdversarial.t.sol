@@ -34,21 +34,35 @@ contract VrfAdversarialTest is Test {
         vm.deal(address(this), 100 ether);
     }
 
-    function testFeeReadAndRequestFailuresRollBackToActive() public {
+    function testFeeReadAndRequestFailuresRollBackToActiveThenRefundAtDeadline() public {
         Raffle raffle = _preparedRaffle();
-        vm.warp(raffle.endTime());
+        uint256 requestDeadline = raffle.drawRequestDeadline();
+        vm.warp(requestDeadline - 1);
 
         wrapper.configureFailures(true, false, true, false);
         vm.expectRevert(AdversarialVRFV2PlusWrapper.FeeReadFailed.selector);
         raffle.requestDraw();
         assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Active));
+        assertEq(raffle.drawRequestedAt(), 0);
 
         wrapper.configureFailures(false, true, true, false);
         uint256 fee = wrapper.quotedFee();
         vm.expectRevert(AdversarialVRFV2PlusWrapper.RequestFailed.selector);
         raffle.requestDraw{ value: fee }();
         assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Active));
+        assertEq(raffle.drawRequestedAt(), 0);
         assertEq(raffle.vrfRequestId(), 0);
+
+        vm.warp(requestDeadline);
+        vm.expectRevert(
+            abi.encodeWithSelector(IRaffle.DrawRequestWindowExpired.selector, requestDeadline, block.timestamp)
+        );
+        raffle.requestDraw{ value: fee }();
+
+        raffle.enableRefunds();
+        assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Refunding));
+        assertEq(raffle.unsettledPot(), 0);
+        assertEq(raffle.remainingRefundLiability(), 1e6);
     }
 
     function testQuotedFeeCanChangeWithoutConsumingRequest() public {
@@ -123,6 +137,24 @@ contract VrfAdversarialTest is Test {
         vm.warp(raffle.callbackDeadline());
         raffle.enableRefunds();
         assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Refunding));
+        assertEq(raffle.remainingRefundLiability(), 1e6);
+    }
+
+    function testAuthenticatedValidCallbackAtDeadlineIsIgnoredBeforeRefunds() public {
+        Raffle raffle = _preparedRaffle();
+        vm.warp(raffle.endTime());
+        uint256 requestId = raffle.requestDraw{ value: raffle.getVrfRequestPrice() }();
+
+        vm.warp(raffle.callbackDeadline());
+        wrapper.fulfill(requestId, 0);
+        assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Drawing));
+        assertEq(raffle.winningEntry(), 0);
+        assertEq(raffle.resolvedAt(), 0);
+        assertEq(raffle.unsettledPot(), 1e6);
+
+        raffle.enableRefunds();
+        assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Refunding));
+        assertEq(raffle.unsettledPot(), 0);
         assertEq(raffle.remainingRefundLiability(), 1e6);
     }
 

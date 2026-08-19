@@ -35,7 +35,9 @@ the reserve.
 
 If the reserve is missed, the sponsor receives the NFT back plus 15% of gross sales.
 The randomly selected ticket receives 80% of gross sales, and the protocol receives
-the remaining 5%.
+the remaining 5%. Settlement records these fixed entitlements first; winner, sponsor,
+and protocol assets are released separately so one failed recipient cannot block the
+others.
 
 ## Verifiable and bounded
 
@@ -44,10 +46,12 @@ word. The contract selects one entry from `1..totalEntries`. Because each ticket
 stores its own first and last number, proving the winner takes constant work—there is
 no search through all buyers.
 
-The permissionless draw request stays available until someone calls it. If Chainlink
-does not return within two days after accepting a request, anyone can open full,
-fee-free refunds. Each ticket refunds its number of entries at 1 USDC each. A valid
-callback is final and has no later refund path.
+The permissionless draw request is available for two days after sale end. If no
+request is accepted by that hard deadline, anyone can open full, fee-free refunds. An
+accepted request gets its own two-day callback window; Chainlink callbacks at or after
+that deadline are ignored and refunds become available. Each ticket refunds its
+number of entries at 1 USDC each. A request made in the final second can make the
+maximum nominal path just under four days.
 
 ## What the operator cannot do
 

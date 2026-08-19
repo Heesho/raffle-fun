@@ -66,8 +66,8 @@ abstract contract RaffleEchidnaBase is IERC721Receiver {
 
     function requestDraw() external {
         if (
-            raffle.status() != IRaffle.Status.Active || raffle.totalEntries() == 0
-                || block.timestamp < raffle.endTime()
+            raffle.status() != IRaffle.Status.Active || raffle.totalEntries() == 0 || block.timestamp < raffle.endTime()
+                || block.timestamp >= raffle.drawRequestDeadline()
         ) {
             return;
         }
@@ -84,6 +84,10 @@ abstract contract RaffleEchidnaBase is IERC721Receiver {
     function enableRefunds() external {
         IRaffle.Status current = raffle.status();
         bool ready = current == IRaffle.Status.Active && raffle.totalEntries() == 0;
+        ready = ready
+            || (current == IRaffle.Status.Active
+                && raffle.totalEntries() != 0
+                && block.timestamp >= raffle.drawRequestDeadline());
         ready = ready || (current == IRaffle.Status.Drawing && block.timestamp >= raffle.callbackDeadline());
         if (!ready) return;
         try raffle.enableRefunds() { } catch { }
@@ -96,10 +100,25 @@ abstract contract RaffleEchidnaBase is IERC721Receiver {
         uint256 receiptId = receiptIds[receiptSeed % receiptIds.length];
         try raffle.ownerOf(receiptId) returns (address owner) {
             if (owner != address(this)) return;
-            try raffle.settleWinningTicket(receiptId) returns (uint256 amount) {
-                ghostPaidOut += amount;
-            } catch { }
+            try raffle.settleWinningTicket(receiptId) { } catch { }
         } catch { }
+        _observe();
+    }
+
+    function releaseWinnerProceeds() external {
+        if (raffle.winnerProceeds() == 0) return;
+        try raffle.releaseWinnerProceeds() returns (uint256 amount) {
+            ghostPaidOut += amount;
+        } catch { }
+        _observe();
+    }
+
+    function releaseWinnerPrize() external {
+        if (raffle.status() != IRaffle.Status.NftWon || raffle.winnerRecipient() == address(0) || raffle.prizeClaimed())
+        {
+            return;
+        }
+        try raffle.releaseWinnerPrize() { } catch { }
         _observe();
     }
 
@@ -157,8 +176,8 @@ abstract contract RaffleEchidnaBase is IERC721Receiver {
     }
 
     function echidna_sales_and_liabilities_are_exact() external view returns (bool) {
-        uint256 liabilities = raffle.unsettledPot() + raffle.remainingRefundLiability() + raffle.sponsorProceeds()
-            + raffle.protocolFees();
+        uint256 liabilities = raffle.unsettledPot() + raffle.remainingRefundLiability() + raffle.winnerProceeds()
+            + raffle.sponsorProceeds() + raffle.protocolFees();
         return raffle.grossSales() == uint256(raffle.totalEntries()) * ENTRY_PRICE
             && raffle.accountedQuoteBalance() == liabilities && quote.balanceOf(address(raffle)) >= liabilities
             && raffle.grossSales() == quote.balanceOf(address(raffle)) + ghostPaidOut;
@@ -172,6 +191,17 @@ abstract contract RaffleEchidnaBase is IERC721Receiver {
     function echidna_prize_custody_matches_claim_marker() external view returns (bool) {
         if (raffle.prizeClaimed()) return prize.ownerOf(1) != address(raffle);
         return prize.ownerOf(1) == address(raffle);
+    }
+
+    function echidna_draw_and_callback_deadlines_are_ordered() external view returns (bool) {
+        if (raffle.drawRequestDeadline() != uint256(raffle.endTime()) + 2 days) return false;
+        uint256 requestedAt = raffle.drawRequestedAt();
+        if (requestedAt != 0) {
+            if (requestedAt < raffle.endTime() || requestedAt >= raffle.drawRequestDeadline()) return false;
+            if (raffle.callbackDeadline() != requestedAt + 2 days) return false;
+        }
+        uint256 resolvedAt = raffle.resolvedAt();
+        return resolvedAt == 0 || (resolvedAt >= requestedAt && resolvedAt < raffle.callbackDeadline());
     }
 
     function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {

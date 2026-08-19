@@ -63,7 +63,7 @@ contract ReentrantPrizeERC721 is ERC721, IERC721Receiver {
         reentryBlocked = false;
     }
 
-    /// @notice Arms reentry from the unsafe winner-delivery `transferFrom` hook.
+    /// @notice Arms reentry from the winner-prize release `transferFrom` hook.
     function armWinnerTransfer(IRaffle raffle_, uint256 ticketId_, address winner_) external {
         _armSettlement(AttackKind.WinnerTransfer, raffle_, ticketId_, winner_);
     }
@@ -73,7 +73,7 @@ contract ReentrantPrizeERC721 is ERC721, IERC721Receiver {
         _armSettlement(AttackKind.SponsorSafeTransfer, raffle_, ticketId_, winner_);
     }
 
-    /// @notice Attempts settlement reentry before an unsafe NFT-winner transfer completes.
+    /// @notice Attempts settlement reentry before a winner-prize release completes.
     function transferFrom(address from, address to, uint256 tokenId) public override {
         if (
             attackEnabled && (attackKind == AttackKind.WinnerTransfer || attackKind == AttackKind.SponsorSafeTransfer)

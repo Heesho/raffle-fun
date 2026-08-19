@@ -36,7 +36,7 @@ class CurrentProtocolModelTest(unittest.TestCase):
         ticket = model.buy("alice", 4)
         model.end_sale()
         model.request()
-        model.enable_refunds(timeout_elapsed=True)
+        model.enable_refunds(callback_timeout_elapsed=True)
         model.transfer(ticket, "alice", "bob")
         with self.assertRaises(ValueError):
             model.refund_tickets([ticket], caller="alice")
@@ -67,15 +67,19 @@ class CurrentProtocolModelTest(unittest.TestCase):
         model.end_sale()
         model.request()
         model.callback(0)
-        self.assertEqual(model.treasury_claim, 50_000)
-        self.assertEqual(model.winner_cash, 800_000)
-        self.assertEqual(model.sponsor_claim, 150_000)
+        self.assertEqual(model.treasury_claim, 0)
+        self.assertEqual(model.winner_cash, 0)
+        self.assertEqual(model.sponsor_claim, 0)
         with self.assertRaises(ValueError):
-            model.enable_refunds(timeout_elapsed=True)
+            model.enable_refunds(callback_timeout_elapsed=True)
         self.assertEqual(
             model.claim_winner(ticket, caller="keeper"), 800_000
         )
+        self.assertEqual(model.treasury_claim, 50_000)
+        self.assertEqual(model.winner_cash, 800_000)
+        self.assertEqual(model.sponsor_claim, 150_000)
         self.assertEqual(model.winner_recipient, "alice")
+        self.assertEqual(model.release_winner_cash(), 800_000)
         model.assert_invariants()
 
     def test_winner_settlement_is_permissionless_to_current_owner(self) -> None:
@@ -88,17 +92,33 @@ class CurrentProtocolModelTest(unittest.TestCase):
         self.assertEqual(model.winner_recipient, "alice")
         model.assert_invariants()
 
-    def test_only_accepted_callback_timeout_preserves_full_weighted_refunds(self) -> None:
+    def test_request_and_callback_timeouts_preserve_full_weighted_refunds(self) -> None:
+        no_request = Model(entry_price=1_000_000, reserve_entries=3)
+        first = no_request.buy("alice", 2)
+        second = no_request.buy("alice", 5)
+        no_request.end_sale()
+        with self.assertRaises(ValueError):
+            no_request.enable_refunds()
+        with self.assertRaises(ValueError):
+            no_request.request(request_deadline_reached=True)
+        no_request.enable_refunds(request_timeout_elapsed=True)
+        self.assertEqual(no_request.refund_liability, 7_000_000)
+        self.assertEqual(
+            no_request.refund_tickets([first, second], caller="alice"),
+            7_000_000,
+        )
+        no_request.assert_invariants()
+
         model = Model(entry_price=1_000_000, reserve_entries=3)
         first = model.buy("alice", 2)
         second = model.buy("alice", 5)
         model.end_sale()
-        with self.assertRaises(ValueError):
-            model.enable_refunds(timeout_elapsed=True)
         model.request()
         with self.assertRaises(ValueError):
             model.enable_refunds()
-        model.enable_refunds(timeout_elapsed=True)
+        model.callback(0, callback_deadline_reached=True)
+        self.assertEqual(model.status, Status.DRAWING)
+        model.enable_refunds(callback_timeout_elapsed=True)
         self.assertEqual(model.refund_liability, 7_000_000)
         self.assertEqual(
             model.refund_tickets([first, second], caller="alice"),
@@ -113,7 +133,7 @@ class CurrentProtocolModelTest(unittest.TestCase):
             resolved.request()
             resolved.callback(0)
             with self.assertRaises(ValueError):
-                resolved.enable_refunds(timeout_elapsed=True)
+                resolved.enable_refunds(callback_timeout_elapsed=True)
 
     def test_purchase_partition_does_not_change_entry_or_economics(self) -> None:
         one = Model(entry_price=1_000_000, reserve_entries=101)
@@ -149,12 +169,14 @@ class CurrentProtocolModelTest(unittest.TestCase):
                     if model.status is Status.NFT_WON:
                         winner = model.containing_tickets(model.winning_entry)[0]
                         model.claim_winner(winner, caller="keeper")
+                        model.release_winner_prize()
                     else:
                         winner = model.containing_tickets(model.winning_entry)[0]
                         model.claim_winner(winner, caller="keeper")
+                        model.release_winner_cash()
                         model.recover_sponsor_prize()
                 else:
-                    model.enable_refunds(timeout_elapsed=True)
+                    model.enable_refunds(callback_timeout_elapsed=True)
                     model.refund_tickets(tickets, caller="alice")
                     model.recover_sponsor_prize()
                 for account in ("sponsor", "treasury"):

@@ -66,27 +66,29 @@ This is why entry count does not create a gas-limit problem:
 ## If the reserve is met
 
 The selected ticket wins the NFT. The USDC pot does not leave merely because the
-callback picked a winner. It stays unsettled until the NFT actually transfers and the
-contract verifies the new owner.
+callback picked a winner. A later settlement proves the ticket, snapshots its current
+owner, burns it, and records every claim without transferring an asset.
 
-Once delivery succeeds:
+Settlement records:
 
 - the protocol records a 5% balance for its immutable treasury;
 - the protocol records a 95% balance for the sponsor's immutable recipient;
-- the winning ticket is burned.
+- the winning ticket is burned and its owner becomes the fixed NFT recipient.
 
-Anyone may settle to the current ticket owner, so a winner does not need to be online.
-Delivery uses a raw ERC-721 transfer plus an ownership check, which prevents a contract
-owner from blocking fixed delivery
-by rejecting a receiver callback.
+Anyone may settle or release the fixed claims, so a winner does not need to be online.
+The NFT, sponsor proceeds, and protocol fee are released in separate transactions. NFT
+delivery uses a raw ERC-721 transfer plus an ownership check, which prevents a contract
+owner from blocking fixed delivery by rejecting a receiver callback. A broken winner
+destination can block only its own NFT release, not settlement or either quote claim.
 
 ## If the reserve is missed
 
-Gross sales are split directly: the selected ticket receives 80%, the protocol
-treasury receives 5%, and the sponsor receives the exact 15% remainder plus the NFT.
+Gross sales are split into fixed claims: the selected ticket owner receives 80%, the
+protocol treasury receives 5%, and the sponsor receives the exact 15% remainder plus
+the NFT.
 
-Cash settlement follows the same authority rule: anyone may deliver to the current
-owner. The cash result is final; it does not later
+Cash settlement follows the same authority rule: anyone may snapshot the current owner,
+then anyone may release each fixed claim. The cash result is final; it does not later
 turn into refunds because winner inactivity affects no other participant.
 
 For example, suppose 80 entries sell against a 100-entry reserve:
@@ -98,9 +100,11 @@ For example, suppose 80 entries sell against a 100-entry reserve:
 
 ## If the process stalls
 
-The draw request remains available after sale end until someone calls it. Full,
-fee-free refunds become available only if an accepted request receives no usable
-callback within two days. A valid callback is final and has no later refund timeout.
+The draw request is available for two days after sale end. If nobody gets a request
+accepted by that hard deadline, anyone can open full, fee-free refunds. If a request
+is accepted, Chainlink gets a fresh two-day callback window; a callback received at or
+after that second deadline is ignored and refunds are available instead. A request in
+the final second can therefore make the maximum nominal path just under four days.
 
 Each ticket refunds `number of entries × 1 USDC`. A 20-number ticket therefore
 refunds 20 USDC in one burn. The sponsor can reclaim the NFT independently.
@@ -108,9 +112,9 @@ refunds 20 USDC in one burn. The sponsor can reclaim the NFT independently.
 A zero-sale raffle uses the same `Refunding` state with zero liability. Its sponsor
 may finalize it early, or anyone may finalize it after the deadline.
 
-At the callback timeout boundary, a valid callback may race the refund transaction.
-Ethereum orders the transactions, and the first valid transition makes the other path
-unavailable.
+The callback boundary is deterministic: only a wrapper-authenticated callback before
+the deadline can resolve the raffle. At the deadline and afterward, an ABI-decodable
+callback is ignored even if `enableRefunds` has not yet been called.
 
 ## What is and is not guaranteed
 

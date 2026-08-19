@@ -12,6 +12,7 @@ import { useNow } from "@/hooks/use-now";
 import { useTokenMetadata } from "@/hooks/use-token-metadata";
 import { cashToWinner, entriesToReserve } from "@/lib/economics";
 import { formatTokenAmount, shortAddress } from "@/lib/format";
+import { activeRafflePhase } from "@/lib/raffle-discovery";
 import type { IndexedRaffle } from "@/lib/subgraph";
 
 const stateTones: Record<string, StatusTone> = {
@@ -42,21 +43,54 @@ export function RaffleCard({ raffle }: { readonly raffle: IndexedRaffle }) {
   const settlementGross =
     unsettledPot === 0n ? BigInt(raffle.grossSales) : unsettledPot;
   const refunding = raffle.state === "REFUNDING";
-  const pot = refunding
-    ? BigInt(raffle.remainingRefundLiability)
-    : cashToWinner(settlementGross);
   const address = raffle.id as `0x${string}`;
   const tokenMetadata = useTokenMetadata(raffle.quoteToken as `0x${string}`);
-  const countdown = useCountdown(BigInt(raffle.endTime));
-  const isActive = raffle.state === "ACTIVE";
-  const stateLabel = raffle.state.replaceAll("_", " ").toLowerCase();
-  const flashing = useChangeFlash(raffle.totalEntries);
   const now = useNow();
+  const activePhase = activeRafflePhase(raffle, now);
+  const live = activePhase === "LIVE";
+  const awaitingDraw = activePhase === "AWAITING_DRAW";
+  const refundReady = activePhase === "REFUND_READY";
+  const activeCountdownDeadline = awaitingDraw
+    ? BigInt(raffle.drawRequestDeadline)
+    : BigInt(raffle.endTime);
+  const countdown = useCountdown(activeCountdownDeadline);
+  const stateLabel = live
+    ? "live"
+    : awaitingDraw
+      ? "awaiting draw"
+      : refundReady
+        ? "refund ready"
+        : raffle.state.replaceAll("_", " ").toLowerCase();
+  const pot = refunding
+    ? BigInt(raffle.remainingRefundLiability)
+    : refundReady
+      ? settlementGross
+      : cashToWinner(settlementGross);
+  const flashing = useChangeFlash(raffle.totalEntries);
   const secondsLeft =
     now === undefined ? undefined : Number(raffle.endTime) - now;
-  const closed = secondsLeft !== undefined && secondsLeft <= 0;
-  const urgent =
-    isActive && !closed && (secondsLeft ?? Infinity) < URGENT_SECONDS;
+  const urgent = live && (secondsLeft ?? Infinity) < URGENT_SECONDS;
+  const timingLabel = live
+    ? "Closes in"
+    : awaitingDraw
+      ? "Draw window"
+      : refundReady
+        ? "Next step"
+        : raffle.state === "ACTIVE"
+          ? "Sale"
+          : "Outcome";
+  const timingValue =
+    live || awaitingDraw
+      ? countdown === ""
+        ? "—"
+        : countdown
+      : refundReady
+        ? "Enable refunds"
+        : raffle.state === "ACTIVE"
+          ? "—"
+          : raffle.outcome === "NONE"
+            ? stateLabel
+            : raffle.outcome.replaceAll("_", " ").toLowerCase();
 
   return (
     <article className="card card-link flex flex-col overflow-hidden">
@@ -72,8 +106,12 @@ export function RaffleCard({ raffle }: { readonly raffle: IndexedRaffle }) {
             looking for it. */}
         <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
           <StatusPill
-            pulse={isActive && !closed}
-            tone={stateTones[raffle.state] ?? "neutral"}
+            pulse={live}
+            tone={
+              awaitingDraw || refundReady
+                ? "warning"
+                : (stateTones[raffle.state] ?? "neutral")
+            }
           >
             {stateLabel}
           </StatusPill>
@@ -132,7 +170,11 @@ export function RaffleCard({ raffle }: { readonly raffle: IndexedRaffle }) {
         <div className="mt-4 flex items-end justify-between gap-3 border-t border-[var(--line)] pt-3">
           <div className="min-w-0">
             <p className="eyebrow">
-              {refunding ? "Refunds remaining" : "Cash pot"}
+              {refunding
+                ? "Refunds remaining"
+                : refundReady
+                  ? "Full refund pot"
+                  : "Cash pot"}
             </p>
             <p className="figure mt-0.5 truncate text-[length:var(--text-base)]">
               {formatTokenAmount(
@@ -143,26 +185,18 @@ export function RaffleCard({ raffle }: { readonly raffle: IndexedRaffle }) {
             </p>
           </div>
           <div className="min-w-0 text-right">
-            <p className="eyebrow">
-              {isActive ? (closed ? "Sale" : "Closes in") : "Outcome"}
-            </p>
+            <p className="eyebrow">{timingLabel}</p>
             <p
               className={`figure mt-0.5 truncate text-[length:var(--text-base)] ${
                 urgent ? "text-[var(--pink-ink)]" : ""
               }`}
             >
-              {isActive
-                ? countdown === ""
-                  ? "—"
-                  : countdown
-                : raffle.outcome === "NONE"
-                  ? stateLabel
-                  : raffle.outcome.replaceAll("_", " ").toLowerCase()}
+              {timingValue}
             </p>
           </div>
         </div>
 
-        {isActive && !closed ? (
+        {live ? (
           <p className="mt-3 text-[length:var(--text-xs)] text-[var(--ink-3)]">
             One entry ≈{" "}
             <span className="numeric font-semibold text-[var(--ink-2)]">
@@ -176,17 +210,16 @@ export function RaffleCard({ raffle }: { readonly raffle: IndexedRaffle }) {
             the button to the bottom so a row of cards lines up. */}
         <div className="mt-auto pt-4">
           <Link
-            className={`btn w-full ${
-              isActive && !closed ? "btn-primary" : "btn-outline"
-            }`}
+            className={`btn w-full ${live ? "btn-primary" : "btn-outline"}`}
             href={`/raffle/${address}`}
           >
-            {/* A raffle stays ACTIVE after its sale window shuts, until
-                someone pays for randomness — so "Buy entries" would be a lie
-                for the gap in between. */}
-            {isActive && closed
-              ? "Awaiting the draw"
-              : (ctaLabels[raffle.state] ?? "View raffle")}
+            {refundReady
+              ? "Enable full refunds"
+              : awaitingDraw
+                ? "Awaiting the draw"
+                : activePhase === "PENDING_TIME"
+                  ? "View raffle"
+                  : (ctaLabels[raffle.state] ?? "View raffle")}
           </Link>
         </div>
       </div>

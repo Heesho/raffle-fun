@@ -9,9 +9,9 @@ Ethereum v1 audit candidate. The maintained public explanation is
 For an honest standards-compliant ERC-721 prize and available exact-transfer official
 USDC, no unauthorized party can select the winner, seize or duplicate a supported
 asset, create an unfunded liability, redirect a fixed recipient's balance, or make work
-scale with total entries. Sold raffles require a permissionless draw request; once a
-request is accepted they have a bounded path to a result or full quote refund, subject
-to external asset and chain availability.
+scale with total entries. Sold raffles have a bounded two-day request window followed,
+if a request succeeds, by a bounded two-day callback window. Each has an exact full-
+refund recovery boundary, subject to external asset and chain availability.
 
 ## In-scope adversaries
 
@@ -22,9 +22,11 @@ to external asset and chain availability.
 - false-returning, fee-on-transfer, over-crediting, under-crediting, or reentrant quote
   tokens at the contract boundary;
 - prizes that revert, no-op, reenter, or report unexpected ownership;
-- unauthorized, wrong-ID, synchronous, duplicate, malformed, stale, or missing VRF
+- unauthorized or undecodable VRF calls; wrapper-authenticated ABI-decodable wrong-ID,
+  synchronous, duplicate, wrong-word-count, stale, deadline-expired, or missing VRF
   callbacks;
-- transaction reordering at every sale, callback, settlement, and timeout boundary;
+- transaction ordering, censorship, and reorganization at every sale, request,
+  callback, settlement, and timeout boundary;
 - duplicated, foreign, malformed, maximum-range, or maximum-batch ticket inputs;
 - protocol-destination and cross-raffle credential sinks;
 - stale or malicious indexer/frontend data.
@@ -41,9 +43,12 @@ to external asset and chain availability.
   owner-only refund action;
 - independently reviewed deployment configuration and verified bytecode.
 
-The contract has timeout recovery for an accepted randomness request that receives no
-valid callback. It does not have a post-result timeout: a valid result is final and the
-prize must remain within the supported ERC-721 trust boundary.
+The contract has timeout recovery both when no request is included before
+`drawRequestDeadline()` and when an accepted request receives no valid callback before
+`callbackDeadline()`. Requests/callbacks require `block.timestamp` strictly below their
+cutoff and refunds open at the cutoff. A valid earlier result is final and the prize must
+remain within the supported ERC-721 trust boundary. A request at the last valid second
+can place the final nominal boundary almost four days after sale end.
 
 ## Authority review
 
@@ -66,9 +71,11 @@ Review and test must cover:
    isolation, and atomic prize escrow;
 2. sequential ticket creation, stored-range arithmetic, `uint128` overflow, ERC-721
    hooks, and bearer transfers across lifecycle boundaries;
-3. wrapper fee quoting, unlimited post-sale request availability, native value flow,
-   request reentrancy, callback authentication, request matching, malformed words, gas
-   boundedness, and the callback/refund deadline race;
+3. wrapper fee quoting, the exact `[endTime, drawRequestDeadline())` request window,
+   sold-`Active` refunds at the request deadline, native value flow, request reentrancy,
+   callback authentication, ABI-decodability, request matching, malformed words, gas
+   boundedness, callbacks strictly before `callbackDeadline()`, refunds at the callback
+   deadline, and the last-valid-second request path;
 4. reserve equality, callback-only resolution, constant-time winner proof, fixed
    current-owner settlement, immutable sponsor/treasury destinations, and prize postconditions;
 5. NFT-branch 5/95, cash-branch 80/5/15 gross, and full-refund conservation;
@@ -86,3 +93,7 @@ website availability, malicious tokens that lie consistently, malicious consensu
 Chainlink cryptographic compromise, and future issuer/provider governance are not
 solved by this code. They remain launch and operational risks in
 `CURRENT-RESIDUAL-RISKS.md`.
+
+Because both deadlines are hard inclusion cutoffs, censorship or a reorganization that
+removes an otherwise valid request or callback after its cutoff prevents replay and can
+force the refund outcome. This is a residual chain-liveness risk, not an equality race.

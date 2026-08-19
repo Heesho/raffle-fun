@@ -120,6 +120,32 @@ export async function settleWinningTicket(
   return context.walletClient.writeContract(request);
 }
 
+export async function releaseWinnerProceeds(
+  context: ActionContext,
+  raffle: Address,
+): Promise<Hash> {
+  const { request } = await context.publicClient.simulateContract({
+    account: context.account,
+    address: raffle,
+    abi: raffleAbi,
+    functionName: "releaseWinnerProceeds",
+  });
+  return context.walletClient.writeContract(request);
+}
+
+export async function releaseWinnerPrize(
+  context: ActionContext,
+  raffle: Address,
+): Promise<Hash> {
+  const { request } = await context.publicClient.simulateContract({
+    account: context.account,
+    address: raffle,
+    abi: raffleAbi,
+    functionName: "releaseWinnerPrize",
+  });
+  return context.walletClient.writeContract(request);
+}
+
 export async function releaseSponsorPrize(
   context: ActionContext,
   raffle: Address,

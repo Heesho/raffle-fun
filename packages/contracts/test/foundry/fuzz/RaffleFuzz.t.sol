@@ -117,6 +117,9 @@ contract RaffleFuzzTest is Test {
         raffle.settleWinningTicket(losingId);
 
         raffle.settleWinningTicket(winningId);
+        assertEq(raffle.winnerRecipient(), winner);
+        assertEq(prize.ownerOf(raffle.prizeTokenId()), address(raffle));
+        raffle.releaseWinnerPrize();
         assertEq(prize.ownerOf(raffle.prizeTokenId()), winner);
     }
 
@@ -157,9 +160,15 @@ contract RaffleFuzzTest is Test {
 
         uint256 winnerBefore = quote.balanceOf(buyer);
         raffle.settleWinningTicket(ticketId);
-        assertEq(quote.balanceOf(buyer) - winnerBefore, winnerCash);
+        assertEq(quote.balanceOf(buyer) - winnerBefore, 0);
+        assertEq(raffle.winnerProceeds(), winnerCash);
         assertEq(raffle.protocolFees(), fee);
         assertEq(raffle.sponsorProceeds(), sponsorCash);
+        assertEq(raffle.accountedQuoteBalance(), gross);
+
+        raffle.releaseWinnerProceeds();
+        assertEq(quote.balanceOf(buyer) - winnerBefore, winnerCash);
+        assertEq(raffle.winnerProceeds(), 0);
         assertEq(raffle.accountedQuoteBalance(), fee + sponsorCash);
     }
 
@@ -186,6 +195,27 @@ contract RaffleFuzzTest is Test {
         raffle.refundTickets(_single(receiptId));
     }
 
+    function testFuzzNoRequestTimeoutPaysFullWeightedRange(uint64 entrySeed) public {
+        uint128 entries = uint128(bound(uint256(entrySeed), 1, type(uint32).max));
+        Raffle raffle = _create(type(uint128).max);
+        uint256 gross = uint256(entries) * ENTRY_PRICE;
+        _fundAndApprove(raffle, gross);
+        vm.prank(buyer);
+        uint256 receiptId = raffle.buyEntries(buyer, entries);
+
+        vm.warp(raffle.drawRequestDeadline());
+        raffle.enableRefunds();
+        assertEq(raffle.unsettledPot(), 0);
+        assertEq(raffle.remainingRefundLiability(), gross);
+        assertEq(raffle.accountedQuoteBalance(), gross);
+
+        uint256 before = quote.balanceOf(buyer);
+        vm.prank(buyer);
+        assertEq(raffle.refundTickets(_single(receiptId)), gross);
+        assertEq(quote.balanceOf(buyer) - before, gross);
+        assertEq(raffle.remainingRefundLiability(), 0);
+    }
+
     function testFuzzPostResolutionBearerCanReceivePermissionlessNftSettlement(uint64 entrySeed) public {
         uint128 entries = uint128(bound(uint256(entrySeed), 1, type(uint32).max));
         Raffle raffle = _create(entries);
@@ -197,6 +227,9 @@ contract RaffleFuzzTest is Test {
         raffle.transferFrom(buyer, recipient, receiptId);
         vm.prank(requester);
         raffle.settleWinningTicket(receiptId);
+        assertEq(raffle.winnerRecipient(), recipient);
+        vm.prank(requester);
+        raffle.releaseWinnerPrize();
         assertEq(prize.ownerOf(raffle.prizeTokenId()), recipient);
     }
 

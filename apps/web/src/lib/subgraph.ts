@@ -18,6 +18,8 @@ export interface IndexedRaffle {
   readonly entryPrice: string;
   readonly reserveEntries: string;
   readonly endTime: string;
+  readonly drawRequestDeadline: string;
+  readonly callbackDeadline: string | null;
   readonly state: string;
   readonly outcome: string;
   readonly totalEntries: string;
@@ -65,6 +67,8 @@ const raffleFields = gql`
     entryPrice
     reserveEntries
     endTime
+    drawRequestDeadline
+    callbackDeadline
     status
     totalEntries
     ticketCount
@@ -98,6 +102,14 @@ const profileQuery = gql`
       orderBy: createdTimestamp
       orderDirection: desc
       where: { sponsor: $address }
+    ) {
+      ...RaffleFields
+    }
+    winnerClaims: raffles(
+      first: $first
+      orderBy: createdTimestamp
+      orderDirection: desc
+      where: { winnerRecipient: $address }
     ) {
       ...RaffleFields
     }
@@ -191,6 +203,22 @@ const activityQuery = gql`
       timestamp
       transactionHash
     }
+    winnerPrizeReleases(
+      first: $first
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      id
+      raffle {
+        id
+        quoteToken
+      }
+      recipient {
+        id
+      }
+      timestamp
+      transactionHash
+    }
   }
 `;
 
@@ -215,6 +243,8 @@ interface IndexedRaffleRow {
   readonly entryPrice: string;
   readonly reserveEntries: string;
   readonly endTime: string;
+  readonly drawRequestDeadline: string;
+  readonly callbackDeadline: string | null;
   readonly status: string;
   readonly totalEntries: string;
   readonly ticketCount: string;
@@ -251,6 +281,7 @@ export async function fetchProfileRaffles(address: `0x${string}`): Promise<{
 }> {
   const data = await client().request<{
     sponsored: IndexedRaffleRow[];
+    winnerClaims: IndexedRaffleRow[];
     positions: Array<{
       id: string;
       raffle: IndexedRaffleRow;
@@ -268,7 +299,10 @@ export async function fetchProfileRaffles(address: `0x${string}`): Promise<{
     sponsored: data.sponsored.map(normalizeRaffle),
     positions: [
       ...new Map(
-        tickets.map((ticket) => [ticket.raffle.id, ticket.raffle]),
+        [
+          ...tickets.map((ticket) => ticket.raffle),
+          ...data.winnerClaims.map(normalizeRaffle),
+        ].map((raffle) => [raffle.id, raffle]),
       ).values(),
     ],
     tickets,
@@ -318,6 +352,7 @@ export async function fetchActivity(): Promise<readonly IndexedActivity[]> {
     resolutions: EventRow[];
     proceedsReleases: EventRow[];
     sponsorPrizeReleases: EventRow[];
+    winnerPrizeReleases: EventRow[];
   }>(activityQuery, { first: 50 });
 
   const normalize = (
@@ -343,6 +378,7 @@ export async function fetchActivity(): Promise<readonly IndexedActivity[]> {
     ...normalize(data.resolutions, "RESOLUTION"),
     ...normalize(data.proceedsReleases, "QUOTE_CLAIM"),
     ...normalize(data.sponsorPrizeReleases, "PRIZE_CLAIM"),
+    ...normalize(data.winnerPrizeReleases, "PRIZE_CLAIM"),
   ]
     .sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
     .slice(0, 100);

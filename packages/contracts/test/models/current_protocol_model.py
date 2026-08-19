@@ -121,32 +121,26 @@ class Model:
     def end_sale(self) -> None:
         self.sale_ended = True
 
-    def request(self) -> None:
+    def request(self, *, request_deadline_reached: bool = False) -> None:
         if (
             self.status is not Status.ACTIVE
             or not self.sale_ended
             or self.total_entries == 0
+            or request_deadline_reached
         ):
             raise ValueError("invalid request")
         self.status = Status.DRAWING
 
-    def callback(self, random_word: int) -> None:
-        if self.status is not Status.DRAWING:
+    def callback(self, random_word: int, *, callback_deadline_reached: bool = False) -> None:
+        if self.status is not Status.DRAWING or callback_deadline_reached:
             return
         if random_word < 0:
             raise ValueError("negative random word")
         self.winning_entry = random_word % self.total_entries + 1
-        split = split_gross(
-            self.gross, nft_won=self.total_entries >= self.reserve_entries
-        )
         if self.total_entries >= self.reserve_entries:
             self.status = Status.NFT_WON
         else:
             self.status = Status.CASH_WON
-            self.unsettled = 0
-            self.winner_cash = split.winner_cash
-            self.treasury_claim += split.fee
-            self.sponsor_claim += split.sponsor_cash
 
     def claim_winner(self, ticket_id: int, *, caller: str) -> int:
         if self.status not in (Status.NFT_WON, Status.CASH_WON):
@@ -157,28 +151,47 @@ class Model:
         ticket.consumed = True
         self.winning_ticket = ticket_id
         self.winner_recipient = ticket.owner
+        split = split_gross(self.gross, nft_won=self.status is Status.NFT_WON)
+        self.unsettled = 0
+        self.treasury_claim += split.fee
+        self.sponsor_claim += split.sponsor_cash
         if self.status is Status.NFT_WON:
-            split = split_gross(self.gross, nft_won=True)
-            self.prize_claimed = True
-            self.unsettled = 0
-            self.treasury_claim += split.fee
-            self.sponsor_claim += split.sponsor_cash
             return 0
+        self.winner_cash = split.winner_cash
+        return split.winner_cash
+
+    def release_winner_cash(self) -> int:
+        if not self.winner_recipient or self.winner_cash == 0:
+            raise ValueError("empty winner claim")
         amount, self.winner_cash = self.winner_cash, 0
         self.quote_paid += amount
         return amount
 
+    def release_winner_prize(self) -> None:
+        if (
+            self.status is not Status.NFT_WON
+            or not self.winner_recipient
+            or self.prize_claimed
+        ):
+            raise ValueError("winner prize unavailable")
+        self.prize_claimed = True
+
     def enable_refunds(
-        self, *, timeout_elapsed: bool = False, sponsor_empty_cancel: bool = False
+        self,
+        *,
+        request_timeout_elapsed: bool = False,
+        callback_timeout_elapsed: bool = False,
+        sponsor_empty_cancel: bool = False,
     ) -> None:
         if self.status is Status.ACTIVE:
             empty_can_close = self.total_entries == 0 and (
                 sponsor_empty_cancel or self.sale_ended
             )
-            if not empty_can_close:
-                raise ValueError("sold raffle must request randomness")
+            sold_can_close = self.total_entries != 0 and request_timeout_elapsed
+            if not empty_can_close and not sold_can_close:
+                raise ValueError("draw request timeout not elapsed")
         elif self.status is Status.DRAWING:
-            if not timeout_elapsed:
+            if not callback_timeout_elapsed:
                 raise ValueError("callback timeout not elapsed")
         else:
             raise ValueError("valid callback result is final")

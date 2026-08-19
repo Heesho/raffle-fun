@@ -2,8 +2,11 @@ import { describe, expect, it } from "vitest";
 
 import {
   buyEntries,
+  releaseWinnerPrize,
+  releaseWinnerProceeds,
   releaseSponsorPrize,
   enableRefunds,
+  DRAW_REQUEST_TIMEOUT_MS,
   ENTRY_PRICE,
   ticketContainingEntry,
   refundTickets,
@@ -41,6 +44,8 @@ function raffle(overrides: Partial<SandboxRaffle> = {}): SandboxRaffle {
     grossSales: 0n,
     unsettledPot: 0n,
     remainingRefundLiability: 0n,
+    winnerRecipient: null,
+    winnerProceeds: 0n,
     sponsorProceeds: 0n,
     protocolFees: 0n,
     winningEntry: null,
@@ -92,6 +97,39 @@ describe("sandbox sequential-ticket settlement", () => {
     expect(state.wallet.usdc).toBe(usdcBefore);
   });
 
+  it("closes draw requests and opens sold-raffle refunds at the request deadline", () => {
+    const sold = buyEntries(sandbox(), "0xraffle", 4n, 100);
+    const deadline = sold.raffles[0]!.endTime + DRAW_REQUEST_TIMEOUT_MS;
+
+    expect(() => enableRefunds(sold, "0xraffle", deadline - 1)).toThrow(
+      SandboxError,
+    );
+    expect(() => requestDraw(sold, "0xraffle", deadline)).toThrow(SandboxError);
+
+    const refunding = enableRefunds(sold, "0xraffle", deadline);
+    expect(refunding.raffles[0]!.status).toBe("REFUNDING");
+    expect(refunding.raffles[0]!.remainingRefundLiability).toBe(
+      4n * ENTRY_PRICE,
+    );
+
+    const lastMoment = requestDraw(sold, "0xraffle", deadline - 1);
+    expect(lastMoment.raffles[0]!.status).toBe("DRAWING");
+  });
+
+  it("ignores callbacks at the hard callback deadline", () => {
+    let state = buyEntries(sandbox(), "0xraffle", 4n, 100);
+    state = requestDraw(state, "0xraffle", 1_000);
+    const deadline = state.raffles[0]!.callbackDeadline!;
+
+    const ignored = resolveDraw(state, "0xraffle", deadline);
+    expect(ignored).toBe(state);
+    expect(ignored.raffles[0]!.status).toBe("DRAWING");
+    expect(ignored.raffles[0]!.winningEntry).toBeNull();
+
+    state = enableRefunds(ignored, "0xraffle", deadline);
+    expect(state.raffles[0]!.status).toBe("REFUNDING");
+  });
+
   it("splits cash as 80/5/15 of gross", () => {
     let state = buyEntries(sandbox(), "0xraffle", 4n, 100);
     state = requestDraw(state, "0xraffle", 1_000);
@@ -108,9 +146,14 @@ describe("sandbox sequential-ticket settlement", () => {
     const ticket = ticketContainingEntry(resolved, resolved.winningEntry!)!;
     const before = state.wallet.usdc;
     state = settleWinningTicket(state, "0xraffle", ticket.id, 1_010);
-    expect(state.wallet.usdc).toBe(before + winnerCash);
+    expect(state.wallet.usdc).toBe(before);
+    expect(state.raffles[0]!.winnerRecipient).toBe(PLAYER);
+    expect(state.raffles[0]!.winnerProceeds).toBe(winnerCash);
     expect(state.raffles[0]!.sponsorProceeds).toBe(sponsorCash);
     expect(state.raffles[0]!.protocolFees).toBe(fee);
+    state = releaseWinnerProceeds(state, "0xraffle", 1_011);
+    expect(state.wallet.usdc).toBe(before + winnerCash);
+    expect(state.raffles[0]!.winnerProceeds).toBe(0n);
   });
 
   it("settles an NFT win and only then credits sponsor proceeds", () => {
@@ -123,6 +166,9 @@ describe("sandbox sequential-ticket settlement", () => {
     expect(resolved.sponsorProceeds).toBe(0n);
     const ticket = ticketContainingEntry(resolved, resolved.winningEntry!)!;
     state = settleWinningTicket(state, "0xraffle", ticket.id, 1_010);
+    expect(state.wallet.nfts).toEqual([]);
+    expect(state.raffles[0]!.winnerRecipient).toBe(PLAYER);
+    state = releaseWinnerPrize(state, "0xraffle", 1_011);
     expect(state.wallet.nfts).toEqual(["0xraffle"]);
     expect(state.raffles[0]!.sponsorProceeds).toBe(
       (ENTRY_PRICE * 12n * 95n) / 100n,

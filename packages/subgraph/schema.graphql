@@ -49,6 +49,7 @@ type Raffle @entity(immutable: false) {
   entryPrice: BigInt!
   reserveEntries: BigInt!
   endTime: BigInt!
+  drawRequestDeadline: BigInt!
   drawRequestedAt: BigInt
   callbackDeadline: BigInt
   status: RaffleStatus!
@@ -57,6 +58,8 @@ type Raffle @entity(immutable: false) {
   grossSales: BigInt!
   unsettledPot: BigInt!
   remainingRefundLiability: BigInt!
+  winnerRecipient: Account
+  winnerProceeds: BigInt!
   sponsorProceeds: BigInt!
   protocolFees: BigInt!
   totalRefundRedeemed: BigInt!
@@ -230,6 +233,7 @@ type WinningSettlement @entity(immutable: true) {
 }
 
 enum ProceedsKind {
+  WINNER
   SPONSOR
   PROTOCOL
 }
@@ -248,6 +252,19 @@ type ProceedsRelease @entity(immutable: true) {
 }
 
 type SponsorPrizeRelease @entity(immutable: true) {
+  id: String!
+  raffle: Raffle!
+  caller: Account!
+  recipient: Account!
+  prizeToken: Bytes!
+  prizeTokenId: BigInt!
+  transactionHash: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  logIndex: BigInt!
+}
+
+type WinnerPrizeRelease @entity(immutable: true) {
   id: String!
   raffle: Raffle!
   caller: Account!

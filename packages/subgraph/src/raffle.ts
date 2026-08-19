@@ -11,6 +11,8 @@ import {
   SponsorPrizeReleased,
   Transfer,
   VrfCallbackIgnored,
+  WinnerPrizeReleased,
+  WinnerProceedsReleased,
   WinningTicketSettled,
 } from "../generated/templates/Raffle/Raffle";
 import {
@@ -27,6 +29,7 @@ import {
   RefundRedemption,
   Resolution,
   SponsorPrizeRelease,
+  WinnerPrizeRelease,
   WinningSettlement,
 } from "../generated/schema";
 import {
@@ -384,7 +387,9 @@ export function handleWinningTicketSettled(event: WinningTicketSettled): void {
   const winner = getOrCreateAccount(event.params.winner);
   raffle.winningTicketId = event.params.ticketId;
   raffle.winningTicketSettled = true;
+  raffle.winnerRecipient = winner.id;
   raffle.unsettledPot = BigInt.zero();
+  raffle.winnerProceeds = raffle.winnerProceeds.plus(event.params.cashAmount);
   raffle.sponsorProceeds = raffle.sponsorProceeds.plus(
     event.params.sponsorAmount,
   );
@@ -392,11 +397,6 @@ export function handleWinningTicketSettled(event: WinningTicketSettled): void {
   raffle.totalProtocolFees = raffle.totalProtocolFees.plus(
     event.params.protocolFee,
   );
-  if (event.params.result == 3) {
-    raffle.prizeClaimed = true;
-    raffle.prizeDestination = event.params.winner;
-    raffle.prizeClaimedTxHash = event.transaction.hash;
-  }
   raffle.save();
 
   const ticket = Ticket.load(ticketEntityId(raffle.id, event.params.ticketId));
@@ -427,28 +427,7 @@ export function handleWinningTicketSettled(event: WinningTicketSettled): void {
     quoteToken.settledVolume = quoteToken.settledVolume
       .plus(event.params.cashAmount)
       .plus(event.params.sponsorAmount);
-    if (event.params.cashAmount.gt(BigInt.zero())) {
-      quoteToken.winnerCashRedeemed = quoteToken.winnerCashRedeemed.plus(
-        event.params.cashAmount,
-      );
-      const stats = getOrCreateAccountTokenStats(
-        quoteToken,
-        event.params.winner,
-      );
-      stats.winnerCashRedeemed = stats.winnerCashRedeemed.plus(
-        event.params.cashAmount,
-      );
-      stats.save();
-    }
     quoteToken.save();
-  }
-
-  if (event.params.cashAmount.gt(BigInt.zero())) {
-    const participation = getOrCreateRaffleAccount(raffle, event.params.winner);
-    participation.winnerCashRedeemed = participation.winnerCashRedeemed.plus(
-      event.params.cashAmount,
-    );
-    participation.save();
   }
 
   updateSettlementDayData(
@@ -471,7 +450,9 @@ function recordProceedsRelease(
   const caller = getOrCreateAccount(callerAddress);
   const recipient = getOrCreateAccount(recipientAddress);
   raffle.quoteClaimed = raffle.quoteClaimed.plus(amount);
-  if (kind == "SPONSOR")
+  if (kind == "WINNER")
+    raffle.winnerProceeds = raffle.winnerProceeds.minus(amount);
+  else if (kind == "SPONSOR")
     raffle.sponsorProceeds = raffle.sponsorProceeds.minus(amount);
   else raffle.protocolFees = raffle.protocolFees.minus(amount);
   raffle.save();
@@ -481,12 +462,21 @@ function recordProceedsRelease(
     quoteToken.quoteClaimed = quoteToken.quoteClaimed.plus(amount);
     const stats = getOrCreateAccountTokenStats(quoteToken, recipientAddress);
     stats.quoteClaimed = stats.quoteClaimed.plus(amount);
+    if (kind == "WINNER") {
+      quoteToken.winnerCashRedeemed =
+        quoteToken.winnerCashRedeemed.plus(amount);
+      stats.winnerCashRedeemed = stats.winnerCashRedeemed.plus(amount);
+    }
     stats.save();
     quoteToken.save();
   }
 
   const participation = getOrCreateRaffleAccount(raffle, recipientAddress);
   participation.quoteClaimed = participation.quoteClaimed.plus(amount);
+  if (kind == "WINNER") {
+    participation.winnerCashRedeemed =
+      participation.winnerCashRedeemed.plus(amount);
+  }
   participation.save();
 
   const release = new ProceedsRelease(id);
@@ -500,6 +490,23 @@ function recordProceedsRelease(
   release.timestamp = event.block.timestamp;
   release.logIndex = event.logIndex;
   release.save();
+}
+
+export function handleWinnerProceedsReleased(
+  event: WinnerProceedsReleased,
+): void {
+  const raffle = Raffle.load(event.address);
+  const id = eventId(event);
+  if (raffle == null || ProceedsRelease.load(id) != null) return;
+  recordProceedsRelease(
+    raffle,
+    id,
+    event.params.caller,
+    event.params.recipient,
+    event.params.amount,
+    "WINNER",
+    event,
+  );
 }
 
 export function handleSponsorProceedsReleased(
@@ -547,6 +554,31 @@ export function handleSponsorPrizeReleased(event: SponsorPrizeReleased): void {
   raffle.save();
 
   const release = new SponsorPrizeRelease(releaseId);
+  release.raffle = raffle.id;
+  release.caller = caller.id;
+  release.recipient = recipient.id;
+  release.prizeToken = event.params.prizeToken;
+  release.prizeTokenId = event.params.prizeTokenId;
+  release.transactionHash = event.transaction.hash;
+  release.blockNumber = event.block.number;
+  release.timestamp = event.block.timestamp;
+  release.logIndex = event.logIndex;
+  release.save();
+}
+
+export function handleWinnerPrizeReleased(event: WinnerPrizeReleased): void {
+  const raffle = Raffle.load(event.address);
+  const releaseId = eventId(event);
+  if (raffle == null || WinnerPrizeRelease.load(releaseId) != null) return;
+
+  const caller = getOrCreateAccount(event.params.caller);
+  const recipient = getOrCreateAccount(event.params.recipient);
+  raffle.prizeClaimed = true;
+  raffle.prizeDestination = event.params.recipient;
+  raffle.prizeClaimedTxHash = event.transaction.hash;
+  raffle.save();
+
+  const release = new WinnerPrizeRelease(releaseId);
   release.raffle = raffle.id;
   release.caller = caller.id;
   release.recipient = recipient.id;

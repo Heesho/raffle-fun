@@ -23,6 +23,7 @@ entry price            1 USDC
 protocol fee           5%
 callback gas           300,000
 request confirmations  30
+draw request timeout    2 days after sale end
 callback timeout       2 days
 max sale duration      30 days
 max refund batch       100 tickets
@@ -43,7 +44,8 @@ release block.
 - reviewed contract-wallet treasury and final factory owner on mainnet;
 - completed `Ownable2Step` acceptance before a record is published;
 - exact source verification for factory and implementation;
-- successful Sepolia soak of both result branches and the callback timeout;
+- successful Sepolia soak of both result branches, the no-request refund path, and
+  the callback timeout;
 - legal and compliance approval for every intended market and user flow;
 - monitoring, keeper, incident-response, and frontend-disable procedures rehearsed.
 

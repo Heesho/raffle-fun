@@ -47,7 +47,7 @@ per-purchase rounding.
 ### NFT result
 
 The callback records only the result and winning entry. When anyone later settles the
-winning ticket, the current owner receives the NFT and that same transaction records:
+winning ticket, the contract records its current owner as the fixed NFT recipient and:
 
 ```text
 protocolFees    = protocolFee
@@ -58,12 +58,12 @@ winner cash     = 0
 ### Cash result
 
 The callback records only the result and winning entry. When anyone later settles the
-winning ticket, its current owner receives the cash and the transaction records:
+winning ticket, the transaction records:
 
 ```text
-protocolFees      = protocolFee
-winner direct pay = cashWinner
-sponsorProceeds   = cashSponsor
+protocolFees    = protocolFee
+winnerProceeds = cashWinner
+sponsorProceeds = cashSponsor
 ```
 
 The sponsor also receives the NFT back. Assigning the subtraction remainder to the
@@ -90,10 +90,11 @@ With 80 entries and a reserve of 100:
 
 ## Refunds
 
-Only two paths enter refunds: an empty raffle, or an accepted draw request that receives
-no valid callback within two days. A sold raffle waiting for a draw request does not
-expire; `requestDraw` remains callable. A valid callback is final. Refunds charge no fee.
-Each ticket refunds:
+Three paths enter refunds: an empty raffle, a sold raffle with no request by
+`endTime + 2 days`, or an accepted draw request with no valid callback before
+`drawRequestedAt + 2 days`. The request and callback windows exclude their respective
+deadlines; both refund transitions include them. A valid earlier callback is final.
+Refunds charge no fee. Each ticket refunds:
 
 ```text
 (lastEntry - firstEntry + 1) * ENTRY_PRICE
@@ -110,6 +111,7 @@ At every supported state:
 accountedQuoteBalance
   = unsettledPot
   + remainingRefundLiability
+  + winnerProceeds
   + sponsorProceeds
   + protocolFees
 ```

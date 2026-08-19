@@ -10,6 +10,10 @@ review does not replace an independent audit or operational approval.
 > independent audit, Sepolia soak, live deployment, operations approval, or legal
 > approval exists.
 
+> **Evidence freshness:** checked numerical results below are preserved for the recorded
+> pre-remediation candidate. They do not validate the later hard request/callback
+> boundaries; all affected gates remain open until rerun on the final remediated SHA.
+
 ## Source identity and reproducibility
 
 - [x] Production contracts, interfaces, ABIs, and user-facing protocol references use
@@ -34,19 +38,26 @@ review does not replace an independent audit or operational approval.
 - [x] One ticket contains a self-contained inclusive `uint128` entry range.
 - [x] `totalEntries` and `ticketCount` are separate and tested through extreme ranges.
 - [x] Tickets remain transferable in every status until settlement/refund burns them.
-- [x] A delayed draw request remains permissionless forever and cannot itself trigger refunds.
-- [x] A missing callback reaches full refunds at the exact two-day boundary.
+- [ ] Prove `requestDraw` succeeds exactly in `[endTime, drawRequestDeadline())`.
+- [ ] Prove a sold `Active` raffle rejects refunds before `drawRequestDeadline()`,
+      opens refunds at that deadline, and cannot request at or after it.
+- [ ] Prove an authenticated, ABI-decodable matching callback resolves only before
+      `callbackDeadline()`, is ignored at and after it, and refunds open at the deadline.
+- [ ] Prove a request at the last valid second receives a fresh two-day callback window,
+      placing the last nominal boundary almost four days after sale end.
 - [x] Both valid resolution branches are final and have no refund timeout.
-- [x] The callback/refund race is mutually exclusive under first-valid inclusion.
 - [x] Cash settlement is 80% winner / 5% treasury / 15% sponsor of gross.
-- [x] NFT settlement releases 5% treasury / 95% sponsor only after verified delivery.
+- [x] NFT settlement records 5% treasury / 95% sponsor without external delivery;
+      the winner-prize release verifies delivery independently and cannot roll back
+      those quote claims.
 - [x] Winner settlement is permissionless and cannot redirect delivery from the current owner.
 - [x] Sponsor and protocol releases are permissionless but always use immutable recipients.
 - [x] Every refund pays the stored entry count at the fixed price exactly once.
 - [x] Exact inbound/outbound quote accounting, prize custody, and failed-transfer
       rollback are covered with adversarial assets and non-reentrancy regressions.
-- [x] Wrapper authentication, request matching, synchronous/repeated/malformed callback
-      behavior, and callback gas boundedness are exercised.
+- [x] Wrapper authentication, request matching, authenticated ABI-decodable
+      synchronous/repeated/wrong-word-count behavior, unauthorized/undecodable reverts,
+      and callback gas boundedness are exercised for the recorded candidate.
 - [x] Sponsor, treasury, and runtime destinations reject known protocol sinks.
 - [x] Factory authority is limited to pausing future creation.
 - [x] Current internal finding disposition is recorded in `CURRENT-FINDINGS.md`.
@@ -76,8 +87,8 @@ review does not replace an independent audit or operational approval.
 - [x] Current Gitleaks runs: tracked candidate and 25-commit history both exit 0 with no
       leaks.
 - [ ] Reproduce coverage on the exact final SHA.
-- [x] Run aggregate formatting, lint, typecheck, build, and test gates after
-      implementation edits settled.
+- [ ] Run aggregate formatting, lint, typecheck, build, and test gates after the timeout
+      remediation edits settle.
 - [ ] Run high-count final fuzz/invariant campaigns on the exact final SHA.
 - [ ] Execute the compiled Echidna harness with retained corpus and branch-reachability
       review.
@@ -107,6 +118,8 @@ review does not replace an independent audit or operational approval.
       rejects absent/nonempty `SimilarMatch` evidence.
 - [x] Ignored VRF callback events are indexed and tested for operational visibility.
 - [x] The ignored-callback Low was independently confirmed closed.
+- [ ] Confirm generated SDK/subgraph ABIs, action gates, indexed deadline state, live UI,
+      and sandbox behavior agree with both hard deadline getters and equality cases.
 - [x] Missing or wrong-chain deployment configuration disables live web writes.
 - [x] Confirm the final deployment-validator fixes in a separate internal security
       review pass.
@@ -140,8 +153,8 @@ review does not replace an independent audit or operational approval.
 - [ ] Decide and approve the launch value policy. The contracts enforce no economic
       ceiling; a frontend limit is not a security boundary.
 - [ ] Deploy dashboards and alerts for creation, draw requests, ignored callbacks,
-      timeouts, outcomes, settlements, refund liabilities, solvency, pause, and
-      ownership.
+      separate request/callback deadline queues, outcomes, settlements, refund
+      liabilities, solvency, pause, and ownership.
 - [ ] Staff and drill monitoring, incident-response, frontend-disable, disclosure, and
       new-factory migration procedures.
 - [ ] Establish and test private disclosure and bug-bounty processes.

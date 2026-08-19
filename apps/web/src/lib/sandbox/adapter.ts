@@ -1,6 +1,7 @@
 import type { IndexedActivity, IndexedRaffle } from "@/lib/subgraph";
 
 import {
+  drawRequestDeadline,
   ENTRY_PRICE,
   type Sandbox,
   type SandboxEvent,
@@ -34,6 +35,11 @@ export function toIndexedRaffle(raffle: SandboxRaffle): IndexedRaffle {
     entryPrice: ENTRY_PRICE.toString(),
     reserveEntries: raffle.reserveEntries.toString(),
     endTime: String(Math.floor(raffle.endTime / 1000)),
+    drawRequestDeadline: String(Math.floor(drawRequestDeadline(raffle) / 1000)),
+    callbackDeadline:
+      raffle.callbackDeadline === null
+        ? null
+        : String(Math.floor(raffle.callbackDeadline / 1000)),
     state: raffle.status,
     outcome:
       raffle.status === "NFT_WON" || raffle.status === "CASH_WON"
@@ -57,6 +63,8 @@ const activityKinds: Record<
   RESOLVED: "RESOLUTION",
   SPONSOR_PROCEEDS_RELEASED: "QUOTE_CLAIM",
   PROTOCOL_FEES_RELEASED: "QUOTE_CLAIM",
+  WINNER_PROCEEDS_RELEASED: "QUOTE_CLAIM",
+  WINNER_PRIZE_RELEASED: "PRIZE_CLAIM",
   SPONSOR_PRIZE_RELEASED: "PRIZE_CLAIM",
   DRAW_REQUESTED: undefined,
   REFUNDS_ENABLED: undefined,
@@ -68,15 +76,7 @@ export function toIndexedActivity(
   sandbox: Sandbox,
 ): readonly IndexedActivity[] {
   return sandbox.log.flatMap((event) => {
-    const raffle = sandbox.raffles.find(
-      (candidate) => candidate.id === event.raffleId,
-    );
-    const kind =
-      event.kind === "WINNING_SETTLED"
-        ? raffle?.status === "NFT_WON"
-          ? "PRIZE_CLAIM"
-          : "QUOTE_CLAIM"
-        : activityKinds[event.kind];
+    const kind = activityKinds[event.kind];
     if (kind === undefined) return [];
     const amount = event.kind === "RESOLVED" ? null : event.amount;
     return [

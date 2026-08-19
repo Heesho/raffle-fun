@@ -14,6 +14,8 @@ import {
 
 import {
   buyEntries as applyBuy,
+  releaseWinnerPrize as applyReleaseWinnerPrize,
+  releaseWinnerProceeds as applyReleaseWinnerProceeds,
   releaseSponsorPrize as applyReleaseSponsorPrize,
   releaseSponsorProceeds as applyReleaseSponsorProceeds,
   releaseProtocolFees as applyReleaseProtocolFees,
@@ -131,6 +133,8 @@ interface SandboxContextValue {
     ticketIds: readonly bigint[],
   ) => void;
   readonly settleWinningTicket: (raffleId: string, ticketId: bigint) => void;
+  readonly releaseWinnerPrize: (raffleId: string) => void;
+  readonly releaseWinnerProceeds: (raffleId: string) => void;
   readonly releaseSponsorPrize: (raffleId: string) => void;
   readonly releaseSponsorProceeds: (raffleId: string) => void;
   readonly releaseProtocolFees: (raffleId: string) => void;
@@ -247,6 +251,10 @@ export function SandboxProvider({
         run((state) =>
           applySettleWinningTicket(state, raffleId, ticketId, Date.now()),
         ),
+      releaseWinnerPrize: (raffleId) =>
+        run((state) => applyReleaseWinnerPrize(state, raffleId, Date.now())),
+      releaseWinnerProceeds: (raffleId) =>
+        run((state) => applyReleaseWinnerProceeds(state, raffleId, Date.now())),
       releaseSponsorPrize: (raffleId) =>
         run((state) => applyReleaseSponsorPrize(state, raffleId, Date.now())),
       releaseSponsorProceeds: (raffleId) =>

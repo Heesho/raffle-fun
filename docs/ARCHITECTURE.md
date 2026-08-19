@@ -75,6 +75,7 @@ not share balances or mutable state with another raffle. Quote liabilities obey:
 accountedQuoteBalance
   = unsettledPot
   + remainingRefundLiability
+  + winnerProceeds
   + sponsorProceeds
   + protocolFees
 ```
@@ -84,8 +85,18 @@ destinations are rejected for tickets and payouts. Arbitrary future addresses an
 unrelated contracts cannot be proven safe onchain and remain user/deployment risks.
 
 The Chainlink callback authenticates the immutable wrapper and performs storage work
-only. ERC-20 transfers, ERC-721 delivery, refunds, and fixed-recipient releases occur later in
-independent non-reentrant calls.
+only. Winning-ticket settlement also performs storage work only: it snapshots the
+bearer, burns the ticket, and records isolated winner, sponsor, and protocol claims.
+ERC-20 transfers, ERC-721 delivery, and refunds occur later in independent
+non-reentrant calls, so one failed recipient cannot roll back another recipient's claim.
+
+Liveness is bounded by two hard, non-overlapping time windows. A sold raffle accepts a
+draw request in `[endTime, drawRequestDeadline())`, with refunds available at the
+request deadline if no request succeeded. An accepted request resolves only through an
+authenticated, ABI-decodable callback included before `callbackDeadline()`; at and
+after that deadline the callback is ignored and refunds are available. A request at the
+last valid second therefore places the last nominal boundary almost four days after
+sale end. Censorship or a reorganization across either cutoff can force refunds.
 
 ## Offchain layers
 

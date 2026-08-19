@@ -6,6 +6,7 @@ export const MAX_UINT128 = (1n << 128n) - 1n;
 export const MAX_UINT64 = (1n << 64n) - 1n;
 export const MAX_REFUND_TICKET_BATCH_SIZE = 100n;
 export const MAX_SALE_DURATION_SECONDS = 30n * 24n * 60n * 60n;
+export const DRAW_REQUEST_TIMEOUT_SECONDS = 2n * 24n * 60n * 60n;
 export const DRAW_CALLBACK_TIMEOUT_SECONDS = 2n * 24n * 60n * 60n;
 
 export interface PurchaseAmounts {

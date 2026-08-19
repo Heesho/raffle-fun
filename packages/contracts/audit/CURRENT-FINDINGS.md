@@ -10,6 +10,10 @@ an empty open-defect column do not establish that no undiscovered defect exists.
 > internal security-review pass. The candidate remains
 > **not mainnet-ready** because the release gates below are incomplete.
 
+> The later hard request/callback-boundary remediation changes the recorded candidate.
+> It is not covered by the historical counts or closure statements in this ledger and
+> must be independently reviewed and rerun before it can be part of a release claim.
+
 ## Severity summary
 
 | Severity      | Open production defects | Fixed and internally re-reviewed |   Accepted/external risks |
@@ -127,17 +131,17 @@ final release SHA.
 The following are open and block mainnet even though none is presently classified as
 a reproduced production defect:
 
-| ID        | Gap                                                             | Required closure                                                                                                                                                             |
-| --------- | --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| V1-REL-01 | No signed final release artifact                                | Designate the exact release SHA and record lockfile, toolchain, build, dependency, and signed artifact hashes.                                                               |
-| V1-REL-02 | Current evidence was not reproduced from a clean final checkout | Rerun every contract, integration, formatting, build, analysis, dependency, signature, secret, ABI, size, gas, and deployment gate.                                          |
-| V1-REL-03 | Coverage was not reproduced from a clean release checkout       | Reproduce 100.00% lines/functions and at least 94.12% branches on the frozen final SHA.                                                                                      |
-| V1-REL-04 | Reported fork case skipped without RPC                          | Run pinned and latest-head Ethereum mainnet and Sepolia forks against the exact final SHA.                                                                                   |
-| V1-REL-05 | Current external-fuzzer runtime evidence is absent              | Execute the compiled Echidna harness with a retained corpus and explicit branch-reachability review.                                                                         |
-| V1-REL-06 | No independent audit of this exact v1                           | Review the final SHA and all internally fixed findings; resolve every Critical/High and supported-asset Medium.                                                              |
-| V1-REL-07 | No monitored Sepolia soak or operational drill                  | Exercise every terminal branch, timeout, ordering race, contract-owner case, weighted refund, and failed/retried delivery while monitors and incident procedures are active. |
-| V1-REL-08 | Production identities and dependencies are unapproved           | Review owner/treasury Safes and verify official USDC, wrapper, coordinator, verified source, runtime, clone target, ownership acceptance, and signed deployment record.      |
-| V1-REL-09 | Launch policy and legal approval are incomplete                 | Decide supported value policy, complete jurisdiction-specific review, and record a written go/no-go decision.                                                                |
+| ID        | Gap                                                             | Required closure                                                                                                                                                                                                                            |
+| --------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| V1-REL-01 | No signed final release artifact                                | Designate the exact release SHA and record lockfile, toolchain, build, dependency, and signed artifact hashes.                                                                                                                              |
+| V1-REL-02 | Current evidence was not reproduced from a clean final checkout | Rerun every contract, integration, formatting, build, analysis, dependency, signature, secret, ABI, size, gas, and deployment gate.                                                                                                         |
+| V1-REL-03 | Coverage was not reproduced from a clean release checkout       | Reproduce 100.00% lines/functions and at least 94.12% branches on the frozen final SHA.                                                                                                                                                     |
+| V1-REL-04 | Reported fork case skipped without RPC                          | Run pinned and latest-head Ethereum mainnet and Sepolia forks against the exact final SHA.                                                                                                                                                  |
+| V1-REL-05 | Current external-fuzzer runtime evidence is absent              | Execute the compiled Echidna harness with a retained corpus and explicit branch-reachability review.                                                                                                                                        |
+| V1-REL-06 | No independent audit of this exact v1                           | Review the final SHA and all internally fixed findings; resolve every Critical/High and supported-asset Medium.                                                                                                                             |
+| V1-REL-07 | No monitored Sepolia soak or operational drill                  | Exercise every terminal branch, exact request/callback cutoff, last-valid-second request, both timeout-refund origins, contract-owner case, weighted refund, and failed/retried delivery while monitors and incident procedures are active. |
+| V1-REL-08 | Production identities and dependencies are unapproved           | Review owner/treasury Safes and verify official USDC, wrapper, coordinator, verified source, runtime, clone target, ownership acceptance, and signed deployment record.                                                                     |
+| V1-REL-09 | Launch policy and legal approval are incomplete                 | Decide supported value policy, complete jurisdiction-specific review, and record a written go/no-go decision.                                                                                                                               |
 
 Current static and secret-scanning evidence is green: Slither exits 0 with 0 results
 across 47 contracts and 64 detectors, and its triage database is empty; Gitleaks exits 0
@@ -149,12 +153,15 @@ SHA.
 These are intentional or external limits, not closed by the internal test suite:
 
 - Chainlink VRF, its wrapper/coordinator, Ethereum liveness, confirmation behavior,
-  transaction ordering, and timeout races remain external assumptions.
+  and transaction inclusion remain external assumptions. Requests and callbacks must
+  be included before hard cutoffs; censorship or a reorganization that removes one
+  after its cutoff can force refunds.
 - Official USDC retains issuer, proxy, pause, and blocklist controls. Exact-delta checks
   prevent silent accounting drift but cannot guarantee transfer liveness.
 - A future-hostile, upgradeable, pausable, transfer-restricted, or consistently lying
-  ERC-721 can prevent settlement after a valid result. There is intentionally no
-  post-result refund path, so the quote pot may remain escrowed with the prize.
+  ERC-721 can prevent release of the winner's prize after a valid result. Settlement
+  still records the terminal quote allocations, so the sponsor and treasury claims
+  remain independently releasable; there is intentionally no post-result refund path.
 - A destroyed or incapable ticket-owning contract can make its owner-only refund
   unreachable.
 - Existing clones are immutable. A discovered defect cannot be patched in place; the

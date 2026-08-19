@@ -21,8 +21,8 @@ import { RaffleConstants } from "./libraries/RaffleConstants.sol";
  * @dev Ticket IDs are sequential and map to one inclusive `[firstEntry,lastEntry]` uint128 range. Purchases, Chainlink
  *      callbacks, and winner proofs are O(1) in entry count. Tickets remain transferable bearer claims until burned for
  *      settlement or refund. Each raffle is a fixed, non-upgradeable ERC-1167 clone with no administrator or rescue
- *      path. Winners have fixed bearer destinations, while sponsor and protocol proceeds use fixed-recipient pull
- *      balances that anyone may release.
+ *      path. Settlement snapshots the winning bearer and creates isolated fixed-recipient pull claims; it never makes
+ *      an external asset transfer. Anyone may release winner, sponsor, and protocol claims to their fixed recipients.
  * @custom:version 1.0.0
  */
 contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
@@ -55,6 +55,8 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
     uint128 public override ticketCount;
     uint256 public override unsettledPot;
     uint256 public override remainingRefundLiability;
+    address public override winnerRecipient;
+    uint256 public override winnerProceeds;
     uint256 public override sponsorProceeds;
     uint256 public override protocolFees;
     uint256 public override vrfRequestId;
@@ -181,6 +183,10 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
         _requireStatus(Status.Active);
         if (block.timestamp < endTime) revert RaffleNotEnded(endTime, block.timestamp);
         if (totalEntries == 0) revert NoEntriesSold();
+        uint256 requestDeadline = drawRequestDeadline();
+        if (block.timestamp >= requestDeadline) {
+            revert DrawRequestWindowExpired(requestDeadline, block.timestamp);
+        }
 
         uint256 fee = getVrfRequestPrice();
         if (msg.value < fee) revert InsufficientVrfFee(fee, msg.value);
@@ -212,10 +218,14 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
         uint256 deadline;
 
         if (status == Status.Active) {
-            if (totalEntries != 0) revert InvalidStatus(status);
-            deadline = endTime;
-            if (msg.sender != sponsor && block.timestamp < deadline) {
-                revert RefundsNotAvailable(deadline, block.timestamp);
+            if (totalEntries == 0) {
+                deadline = endTime;
+                if (msg.sender != sponsor && block.timestamp < deadline) {
+                    revert RefundsNotAvailable(deadline, block.timestamp);
+                }
+            } else {
+                deadline = drawRequestDeadline();
+                if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
             }
         } else if (status == Status.Drawing) {
             deadline = callbackDeadline();
@@ -244,25 +254,18 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
 
         if (result == Status.NftWon) {
             sponsorAmount = grossPot - protocolFee;
-            prizeClaimed = true;
         } else {
             cashAmount = Math.mulDiv(grossPot, RaffleConstants.CASH_WINNER_BPS, RaffleConstants.BPS);
             sponsorAmount = grossPot - protocolFee - cashAmount;
+            winnerProceeds = cashAmount;
         }
 
         winningTicketId = ticketId;
+        winnerRecipient = winner;
         unsettledPot = 0;
         sponsorProceeds = sponsorAmount;
         protocolFees = protocolFee;
         _burn(ticketId);
-
-        if (result == Status.NftWon) {
-            // Deliberately avoids an ERC721Receiver callback so a contract winner cannot veto permissionless delivery.
-            prizeToken.transferFrom(address(this), winner, prizeTokenId);
-            if (prizeToken.ownerOf(prizeTokenId) != winner) revert PrizeDeliveryVerificationFailed(winner);
-        } else {
-            _transferQuoteExact(winner, cashAmount);
-        }
 
         emit WinningTicketSettled(ticketId, winner, result, cashAmount, protocolFee, sponsorAmount);
     }
@@ -291,6 +294,32 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
         _transferQuoteExact(msg.sender, amount);
         uint256 liabilityAfter = remainingRefundLiability;
         emit TicketsRefunded(msg.sender, ticketQuantity, aggregateEntries, amount, liabilityAfter);
+    }
+
+    /// @inheritdoc IRaffle
+    function releaseWinnerProceeds() external override nonReentrant returns (uint256 amount) {
+        amount = winnerProceeds;
+        if (amount == 0) revert NoWinnerProceeds();
+        winnerProceeds = 0;
+        address recipient = winnerRecipient;
+        _transferQuoteExact(recipient, amount);
+        emit WinnerProceedsReleased(msg.sender, recipient, amount);
+    }
+
+    /// @inheritdoc IRaffle
+    function releaseWinnerPrize() external override nonReentrant {
+        Status currentStatus = status;
+        address recipient = winnerRecipient;
+        if (currentStatus != Status.NftWon || recipient == address(0)) {
+            revert WinnerPrizeUnavailable(currentStatus);
+        }
+        if (prizeClaimed) revert PrizeAlreadyClaimed();
+
+        prizeClaimed = true;
+        // Deliberately avoids an ERC721Receiver callback so a contract winner cannot veto permissionless delivery.
+        prizeToken.transferFrom(address(this), recipient, prizeTokenId);
+        if (prizeToken.ownerOf(prizeTokenId) != recipient) revert PrizeDeliveryVerificationFailed(recipient);
+        emit WinnerPrizeReleased(msg.sender, recipient, address(prizeToken), prizeTokenId);
     }
 
     /// @inheritdoc IRaffle
@@ -336,13 +365,18 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
     }
 
     /// @inheritdoc IRaffle
+    function drawRequestDeadline() public view override returns (uint256 deadline) {
+        deadline = uint256(endTime) + RaffleConstants.DRAW_REQUEST_TIMEOUT;
+    }
+
+    /// @inheritdoc IRaffle
     function callbackDeadline() public view override returns (uint256 deadline) {
         if (drawRequestedAt != 0) deadline = uint256(drawRequestedAt) + RaffleConstants.DRAW_CALLBACK_TIMEOUT;
     }
 
     /// @inheritdoc IRaffle
     function accountedQuoteBalance() public view override returns (uint256 amount) {
-        amount = unsettledPot + remainingRefundLiability + sponsorProceeds + protocolFees;
+        amount = unsettledPot + remainingRefundLiability + winnerProceeds + sponsorProceeds + protocolFees;
     }
 
     /// @inheritdoc IRaffle
@@ -392,11 +426,16 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
     }
 
     /**
-     * @dev Authenticated randomness selects only an entry. No ticket search, loop, user call, or token transfer
-     *      occurs. Wrong-request, in-flight, stale, malformed, and duplicate callbacks are ignored for liveness.
+     * @dev Authenticated randomness selects only an entry. No ticket search, loop, user call, or token transfer occurs.
+     *      In-flight, late, wrong-request, duplicate, and ABI-decodable wrong-length callbacks are ignored
+     *      for liveness;
+     *      malformed ABI calldata reverts during Solidity decoding before this handler runs.
      */
     function _fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) private {
-        if (_requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1) {
+        if (
+            _requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1
+                || block.timestamp >= callbackDeadline()
+        ) {
             emit VrfCallbackIgnored(requestId, vrfRequestId, status);
             return;
         }

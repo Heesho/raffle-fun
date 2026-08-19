@@ -12,8 +12,9 @@ v1 protocol. It is not deployed and has not completed an independent audit.
    the exact prize, and verifies the deposit atomically.
 3. A buyer chooses any positive entry count, pays that many USDC, and receives one
    ERC-721 ticket containing a contiguous range of raffle numbers.
-4. At the sale deadline, sales stop. Tickets remain transferable bearer claims. Anyone may then
-   pay Chainlink's native direct-funding fee to request the one draw.
+4. At the sale deadline, sales stop. Tickets remain transferable bearer claims. Until
+   `endTime + 2 days`, anyone may pay Chainlink's native direct-funding fee to request
+   the one draw. If no request succeeds before that deadline, anyone may enable full refunds.
 5. The authenticated callback records one winning entry. The ticket whose stored range
    contains that entry proves the winner without a search or per-entry storage.
 
@@ -47,11 +48,13 @@ protocolFee = floor(grossSales * 500 / 10_000)
 netPot      = grossSales - protocolFee
 ```
 
-The Chainlink callback only records the result and winning entry. Settlement later burns
-the winning ticket and atomically allocates the pot. For an NFT result, the NFT goes to
-the current ticket owner and 95% / 5% sponsor and protocol balances are recorded. For a
-cash result, 80% goes directly to the current ticket owner, 15% is recorded for the
-sponsor, 5% for the protocol, and the sponsor can independently recover the NFT.
+The Chainlink callback only records the result and winning entry. Settlement later
+snapshots the current ticket owner, burns the winning ticket, and atomically records
+every claim without transferring an asset. For an NFT result, the winner receives a
+fixed NFT claim and 95% / 5% sponsor and protocol balances are recorded. For a cash
+result, 80% is recorded for the winner, 15% for the sponsor, 5% for the protocol, and
+the sponsor can independently recover the NFT. Each asset is released separately, so
+one failed recipient cannot roll back anyone else's claim.
 
 Full refunds charge no fee. Refund execution is bounded by submitted tickets, not
 their entry counts, and accepts at most 100 tickets per transaction.
@@ -62,6 +65,7 @@ The accounting identity is:
 accountedQuoteBalance
   = unsettledPot
   + remainingRefundLiability
+  + winnerProceeds
   + sponsorProceeds
   + protocolFees
 ```
@@ -72,8 +76,8 @@ accountedQuoteBalance
 stateDiagram-v2
   [*] --> AwaitingPrize
   AwaitingPrize --> Active: exact NFT escrow
-  Active --> Drawing: requestDraw after end
-  Active --> Refunding: empty raffle closed
+  Active --> Drawing: requestDraw in [end, request deadline)
+  Active --> Refunding: empty raffle or request deadline
   Drawing --> NftWon: reserve met
   Drawing --> CashWon: reserve missed
   Drawing --> Refunding: callback timeout
@@ -89,23 +93,30 @@ An empty raffle enters `Refunding` with zero liability: the sponsor may do this 
 the end, or anyone may do it at or after the end. Anyone can then return the NFT to the
 immutable sponsor recipient.
 
-A nonempty raffle never expires while waiting for someone to request randomness:
-`requestDraw` remains callable after the sale until one request succeeds. After a request
-is accepted, a fixed two-day callback deadline applies. If no valid callback arrives by
-then, anyone may enable full refunds. At that boundary, a callback and refund transaction
-can race; the first valid transaction included on Ethereum fixes the result. A valid
-callback is final and never later changes into refunds.
+A nonempty raffle has two strict liveness windows. `requestDraw` is callable from
+`endTime` inclusive until `drawRequestDeadline() = endTime + 2 days` exclusive. At and
+after that deadline, a sold raffle that is still `Active` can enter full refunds and can
+no longer request randomness. An accepted request gets its own two-day callback window:
+callbacks are accepted strictly before `callbackDeadline()`, while refunds open at the
+deadline. A callback included at or after that boundary is ignored, even if no refund
+transaction has executed yet. A valid earlier callback is final and never later changes
+into refunds.
+
+A request included at the last valid second extends the callback window to almost four
+days after sale end. These timestamp bounds require chain inclusion: censorship or a
+reorganization that removes a request or callback after its cutoff can force the refund
+branch.
 
 ## Settlement authority
 
 An unburned ticket is a transferable bearer claim. Anyone may settle the winning ticket,
-but the NFT or cash always goes to its current owner. The winning ticket is burned exactly
-once. Refunds are owner-only, burn the submitted tickets, and always pay that owner.
-Anyone may release sponsor proceeds, protocol fees, or the sponsor prize, but each release
-always pays its immutable recipient.
+which snapshots its current owner as the fixed winner recipient and burns the ticket
+exactly once. Anyone may then release the winner's cash or NFT, sponsor proceeds,
+protocol fees, or sponsor prize, but each release always pays its recorded recipient.
+Refunds are owner-only, burn the submitted tickets, and always pay that owner.
 
 NFT winner delivery deliberately uses ERC-721 `transferFrom`, followed by an
-`ownerOf` postcondition, so a contract winner cannot veto fixed-owner settlement by
+`ownerOf` postcondition, so a contract winner cannot veto its fixed-recipient release by
 rejecting an ERC-721 receiver callback.
 
 ## Architecture and authority
@@ -122,9 +133,11 @@ function. Factory ownership cannot change an existing raffle.
 
 The callback requests one word with a fixed 300,000 gas-unit limit and 30 confirmations.
 That is an execution limit, not a gas-price cap: the native request quote changes with
-gas prices. The callback performs bounded storage work only: no ticket loop, ERC-20 transfer, ERC-721
-transfer, or user callback. Wrong, malformed, stale, synchronous, or duplicate
-callbacks cannot settle a raffle.
+gas prices. The callback performs bounded storage work only: no ticket loop, ERC-20
+transfer, ERC-721 transfer, or user callback. Only wrapper-authenticated, ABI-decodable
+calls reach the ignore logic. Synchronous, wrong-request, wrong-word-count, duplicate,
+stale, and deadline-expired callbacks cannot settle a raffle; unauthorized calls and
+malformed calldata revert at the authentication or ABI boundary.
 
 See [architecture](docs/ARCHITECTURE.md), [lifecycle](docs/STATE-MACHINE.md),
 [economics](docs/ECONOMICS.md), [randomness](docs/RANDOMNESS.md), and the
@@ -140,7 +153,8 @@ otherwise non-exact quote tokens are unsupported.
 Prize safety assumes an honest, standards-compliant ERC-721 whose `ownerOf` and
 transfers remain available. A malicious or upgraded collection can lie, freeze, burn,
 or refuse to move its NFT. A valid Chainlink result is final, so a broken prize contract
-can block settlement; no contract can force a noncompliant NFT to leave escrow.
+can block its own NFT release, but it cannot roll back recorded quote claims; no contract
+can force a noncompliant NFT to leave escrow.
 
 Chainlink VRF, Ethereum inclusion, USDC issuer controls, the prize collection, and
 user key custody remain external dependencies. Thirty confirmations reduce reorg risk

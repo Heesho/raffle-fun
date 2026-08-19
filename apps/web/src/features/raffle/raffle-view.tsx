@@ -46,6 +46,7 @@ export interface RaffleViewModel {
   readonly stateTone: StatusTone;
   readonly isActive: boolean;
   readonly isRefunding: boolean;
+  readonly refundReady: boolean;
   readonly outcomeLabel?: string;
   readonly winningEntry?: bigint;
   readonly accountEntryBalance?: bigint;
@@ -80,6 +81,7 @@ export function RaffleLayout({
   const winnerCash = cashToWinner(settlementGross);
   const sponsorCash = cashToSponsor(settlementGross);
   const protocolFee = settlementGross - distributable;
+  const refundOutcome = view.isRefunding || view.refundReady;
   const countdown = useCountdown(view.endTime);
   const amount = (value: bigint) =>
     formatTokenAmount(value, token.decimals, token.symbol);
@@ -165,7 +167,7 @@ export function RaffleLayout({
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <p className="eyebrow">
-                    {view.isRefunding
+                    {refundOutcome
                       ? "Refund outcome"
                       : view.outcomeLabel
                         ? "Final result"
@@ -174,17 +176,17 @@ export function RaffleLayout({
                           : "Current settlement branch"}
                   </p>
                   <h2 className="mt-2 text-2xl md:text-3xl">
-                    {view.isRefunding
+                    {refundOutcome
                       ? "Full ticket refunds are open"
                       : reserveMet
                         ? "The winner takes the NFT"
                         : `The winner takes ${amount(winnerCash)}`}
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-[var(--ink-2)]">
-                    {view.isRefunding
+                    {refundOutcome
                       ? "Each ticket returns $1 USDC per entry in its stored range. No protocol fee or sponsor cash is earned."
                       : reserveMet
-                        ? `The reserve is met, so the sponsor claims the ${amount(distributable)} distributable pot after NFT delivery.`
+                        ? `The reserve is met, so settlement records the ${amount(distributable)} sponsor claim independently of winner NFT delivery.`
                         : `${remaining.toString()} more entr${remaining === 1n ? "y" : "ies"} flips the prize from the cash pot to the NFT.`}
                   </p>
                 </div>
@@ -209,7 +211,7 @@ export function RaffleLayout({
               </div>
 
               <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                {view.isRefunding ? (
+                {refundOutcome ? (
                   <>
                     <Stat
                       label="Full refund liability"
@@ -257,11 +259,11 @@ export function RaffleLayout({
             <section>
               <p className="eyebrow">Settlement branches</p>
               <h2 className="mt-2 text-2xl md:text-3xl">
-                {view.isRefunding
+                {refundOutcome
                   ? "What ticket owners receive"
                   : "What the winner receives"}
               </h2>
-              {view.isRefunding ? (
+              {refundOutcome ? (
                 <div className="mt-5 rounded-2xl bg-[var(--sky-wash)] p-5">
                   <p className="font-extrabold">$1 USDC per entry</p>
                   <p className="mt-2 text-sm leading-6 text-[var(--ink-2)]">
@@ -277,7 +279,7 @@ export function RaffleLayout({
                     headline={`at ${view.reserveEntries.toString()}+ entries`}
                     icon={<Trophy aria-hidden size={19} />}
                     label="At or above reserve"
-                    text="On verified NFT delivery, 5% goes to the protocol and the sponsor can claim the remaining 95%."
+                    text="Settlement records 5% for the protocol and 95% for the sponsor; winner NFT delivery is a separate release."
                     tint="var(--yellow-wash)"
                     title="Winner claims the NFT"
                   />

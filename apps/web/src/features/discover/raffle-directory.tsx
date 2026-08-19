@@ -12,13 +12,16 @@ import { isDemoMode } from "@/lib/demo";
 import { toIndexedRaffle } from "@/lib/sandbox/adapter";
 import { useSandbox } from "@/lib/sandbox/store";
 import { entriesToReserve } from "@/lib/economics";
+import { activeRafflePhase } from "@/lib/raffle-discovery";
 import { fetchRaffles, isSubgraphConfigured } from "@/lib/subgraph";
 import type { IndexedRaffle } from "@/lib/subgraph";
 
 const filters = [
   { value: "ALL", label: "All" },
-  { value: "ACTIVE", label: "Live" },
+  { value: "LIVE", label: "Live" },
+  { value: "AWAITING_DRAW", label: "Awaiting draw" },
   { value: "DRAWING", label: "Drawing" },
+  { value: "REFUND_READY", label: "Refund ready" },
   { value: "SETTLED", label: "Settled" },
   { value: "REFUNDING", label: "Refunding" },
 ] as const;
@@ -37,12 +40,48 @@ function compareBigints(left: bigint, right: bigint): number {
   return left < right ? -1 : left > right ? 1 : 0;
 }
 
+function matchesFilter(
+  raffle: IndexedRaffle,
+  filter: Filter,
+  now: number | undefined,
+): boolean {
+  if (filter === "ALL") return true;
+  const activePhase = activeRafflePhase(raffle, now);
+  if (filter === "LIVE") return activePhase === "LIVE";
+  if (filter === "AWAITING_DRAW") return activePhase === "AWAITING_DRAW";
+  if (filter === "REFUND_READY") return activePhase === "REFUND_READY";
+  if (filter === "DRAWING") {
+    return raffle.state === "DRAWING" && activePhase !== "REFUND_READY";
+  }
+  if (filter === "SETTLED") {
+    return raffle.state === "NFT_WON" || raffle.state === "CASH_WON";
+  }
+  return raffle.state === filter;
+}
+
+function discoveryRank(raffle: IndexedRaffle, now: number | undefined): number {
+  const activePhase = activeRafflePhase(raffle, now);
+  if (
+    activePhase === "LIVE" ||
+    (activePhase === "PENDING_TIME" && raffle.state === "ACTIVE")
+  )
+    return 0;
+  if (
+    activePhase === "AWAITING_DRAW" ||
+    (raffle.state === "DRAWING" && activePhase !== "REFUND_READY")
+  )
+    return 1;
+  if (activePhase === "REFUND_READY" || raffle.state === "REFUNDING") return 2;
+  return 3;
+}
+
 export function RaffleDirectory() {
   const [filter, setFilter] = useState<Filter>("ALL");
   const [sort, setSort] = useState<Sort>("ENDING");
   const [search, setSearch] = useState("");
   const demo = isDemoMode();
   const configured = isSubgraphConfigured();
+  const now = useNow();
 
   const query = useQuery<readonly IndexedRaffle[]>({
     queryKey: ["raffles"],
@@ -61,11 +100,7 @@ export function RaffleDirectory() {
   const raffles = useMemo(() => {
     const value = search.trim().toLowerCase();
     const matched = all.filter((raffle) => {
-      const matchesState =
-        filter === "ALL" ||
-        raffle.state === filter ||
-        (filter === "SETTLED" &&
-          (raffle.state === "NFT_WON" || raffle.state === "CASH_WON"));
+      const matchesState = matchesFilter(raffle, filter, now);
       const matchesSearch =
         value === "" ||
         [
@@ -80,12 +115,11 @@ export function RaffleDirectory() {
       return matchesState && matchesSearch;
     });
 
-    const rank = (raffle: IndexedRaffle) =>
-      raffle.state === "ACTIVE" ? 0 : raffle.state === "DRAWING" ? 1 : 2;
-
     return [...matched].sort((a, b) => {
-      // Open raffles always lead; a settled one is not "ending soonest".
-      if (rank(a) !== rank(b)) return rank(a) - rank(b);
+      // Open raffles lead, followed by in-flight draws and refund actions.
+      const leftRank = discoveryRank(a, now);
+      const rightRank = discoveryRank(b, now);
+      if (leftRank !== rightRank) return leftRank - rightRank;
       if (sort === "ENDING") {
         return compareBigints(BigInt(a.endTime), BigInt(b.endTime));
       }
@@ -105,20 +139,24 @@ export function RaffleDirectory() {
       );
       return compareBigints(left, right);
     });
-  }, [all, filter, search, sort]);
+  }, [all, filter, now, search, sort]);
 
   const counts = useMemo(() => {
-    const map = new Map<string, number>();
-    for (const raffle of all) {
-      map.set(raffle.state, (map.get(raffle.state) ?? 0) + 1);
+    const map = new Map<Filter, number>();
+    for (const option of filters) {
+      if (option.value === "ALL") continue;
+      map.set(
+        option.value,
+        all.filter((raffle) => matchesFilter(raffle, option.value, now)).length,
+      );
     }
     return map;
-  }, [all]);
+  }, [all, now]);
 
-  const now = useNow();
   const stats = useMemo(() => {
     return {
-      live: all.filter((raffle) => raffle.state === "ACTIVE").length,
+      live: all.filter((raffle) => activeRafflePhase(raffle, now) === "LIVE")
+        .length,
       entries: all.reduce(
         (sum, raffle) => sum + BigInt(raffle.totalEntries),
         0n,
@@ -128,7 +166,7 @@ export function RaffleDirectory() {
           ? 0
           : all.filter(
               (raffle) =>
-                raffle.state === "ACTIVE" &&
+                activeRafflePhase(raffle, now) === "LIVE" &&
                 Number(raffle.endTime) - now < 86_400,
             ).length,
     };
@@ -247,9 +285,7 @@ export function RaffleDirectory() {
           const count =
             option.value === "ALL"
               ? all.length
-              : option.value === "SETTLED"
-                ? (counts.get("NFT_WON") ?? 0) + (counts.get("CASH_WON") ?? 0)
-                : (counts.get(option.value) ?? 0);
+              : (counts.get(option.value) ?? 0);
           return (
             <button
               aria-pressed={selected}

@@ -24,11 +24,11 @@ individual ticket's range with `winningEntry` directly.
 Primary mutable entities include:
 
 - `Protocol`, `QuoteTokenStats`, and daily aggregates;
-- `Raffle` with the six-state enum and four quote-liability buckets;
+- `Raffle` with the six-state enum and five quote-liability buckets;
 - `Ticket`, `Purchase`, and `RaffleTransfer`;
 - account and raffle-participation aggregates;
 - `DrawRequest`, `Resolution`, and `RefundEnable`;
-- refund, winning, quote, and sponsor-prize redemption history.
+- refund, winning settlement, winner/sponsor/protocol release, and prize-release history.
 
 All integer amounts and ticket IDs remain Graph `BigInt`; they are never cast
 through JavaScript `Number`.
@@ -50,4 +50,6 @@ pnpm --filter @raffle-fun/subgraph test
 ```
 
 The manifest is generated from a validated deployment record. No placeholder
-deployment address is accepted.
+deployment address is accepted. `WinningTicketSettled` records the fixed winner and
+allocated liabilities; `WinnerProceedsReleased` and `WinnerPrizeReleased` record later
+delivery independently.

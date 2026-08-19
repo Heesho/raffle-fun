@@ -50,21 +50,24 @@ contract RaffleInvariantTest is StdInvariant, Test {
         quote.mint(handler.alternateOwner(), 1_000_000 * ENTRY_PRICE);
         handler.configure(raffle);
 
-        bytes4[] memory selectors = new bytes4[](14);
+        bytes4[] memory selectors = new bytes4[](17);
         selectors[0] = handler.buy.selector;
         selectors[1] = handler.transferBeforeOrAfterEnd.selector;
         selectors[2] = handler.warpToEnd.selector;
-        selectors[3] = handler.warpToCallbackDeadline.selector;
-        selectors[4] = handler.warpFarPastEnd.selector;
-        selectors[5] = handler.requestDraw.selector;
-        selectors[6] = handler.fulfill.selector;
-        selectors[7] = handler.wrongCallback.selector;
-        selectors[8] = handler.enableRefunds.selector;
-        selectors[9] = handler.settleCandidateWinner.selector;
-        selectors[10] = handler.redeemRefund.selector;
-        selectors[11] = handler.releaseProceeds.selector;
-        selectors[12] = handler.donate.selector;
-        selectors[13] = handler.releaseSponsorPrize.selector;
+        selectors[3] = handler.warpToDrawRequestDeadline.selector;
+        selectors[4] = handler.warpToLastDrawRequestSecond.selector;
+        selectors[5] = handler.warpToCallbackDeadline.selector;
+        selectors[6] = handler.warpFarPastEnd.selector;
+        selectors[7] = handler.requestDraw.selector;
+        selectors[8] = handler.fulfill.selector;
+        selectors[9] = handler.wrongCallback.selector;
+        selectors[10] = handler.enableRefunds.selector;
+        selectors[11] = handler.settleCandidateWinner.selector;
+        selectors[12] = handler.redeemRefund.selector;
+        selectors[13] = handler.releaseProceeds.selector;
+        selectors[14] = handler.donate.selector;
+        selectors[15] = handler.releaseSponsorPrize.selector;
+        selectors[16] = handler.releaseWinnerClaim.selector;
         targetContract(address(handler));
         targetSelector(FuzzSelector({ addr: address(handler), selectors: selectors }));
     }
@@ -112,6 +115,21 @@ contract RaffleInvariantTest is StdInvariant, Test {
         }
     }
 
+    function invariantDrawAndCallbackDeadlinesAreHardAndOrdered() public view {
+        assertEq(raffle.drawRequestDeadline(), uint256(raffle.endTime()) + 2 days);
+        uint256 requestedAt = raffle.drawRequestedAt();
+        if (requestedAt != 0) {
+            assertGe(requestedAt, raffle.endTime());
+            assertLt(requestedAt, raffle.drawRequestDeadline());
+            assertEq(raffle.callbackDeadline(), requestedAt + 2 days);
+        }
+        uint256 resolvedAt = raffle.resolvedAt();
+        if (resolvedAt != 0) {
+            assertGe(resolvedAt, requestedAt);
+            assertLt(resolvedAt, raffle.callbackDeadline());
+        }
+    }
+
     function invariantQuoteAccountingIsExactAndSolvent() public view {
         assertEq(raffle.grossSales(), handler.ghostGrossPaid());
         assertEq(
@@ -120,7 +138,8 @@ contract RaffleInvariantTest is StdInvariant, Test {
         );
         assertEq(
             raffle.accountedQuoteBalance(),
-            raffle.unsettledPot() + raffle.remainingRefundLiability() + raffle.sponsorProceeds() + raffle.protocolFees()
+            raffle.unsettledPot() + raffle.remainingRefundLiability() + raffle.winnerProceeds()
+                + raffle.sponsorProceeds() + raffle.protocolFees()
         );
         assertGe(quote.balanceOf(address(raffle)), raffle.accountedQuoteBalance());
     }
@@ -135,7 +154,7 @@ contract RaffleInvariantTest is StdInvariant, Test {
                 assertEq(raffle.protocolFees(), 0);
             } else {
                 assertEq(raffle.unsettledPot(), 0);
-                assertEq(handler.ghostWinnerPaidOut(), raffle.grossSales() * 8000 / 10_000);
+                assertEq(raffle.winnerProceeds() + handler.ghostWinnerPaidOut(), raffle.grossSales() * 8000 / 10_000);
                 assertEq(raffle.sponsorProceeds() + handler.ghostSponsorPaidOut(), raffle.grossSales() * 1500 / 10_000);
                 assertEq(raffle.protocolFees() + handler.ghostProtocolPaidOut(), fee);
             }

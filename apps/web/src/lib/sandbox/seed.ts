@@ -52,6 +52,8 @@ function raffle(
     | "grossSales"
     | "unsettledPot"
     | "remainingRefundLiability"
+    | "winnerRecipient"
+    | "winnerProceeds"
     | "sponsorProceeds"
     | "protocolFees"
     | "winningEntry"
@@ -77,6 +79,8 @@ function raffle(
     grossSales: gross,
     unsettledPot: gross,
     remainingRefundLiability: 0n,
+    winnerRecipient: null,
+    winnerProceeds: 0n,
     sponsorProceeds: 0n,
     protocolFees: 0n,
     winningEntry: null,

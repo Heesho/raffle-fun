@@ -48,6 +48,7 @@ templates:
         - WinningSettlement
         - ProceedsRelease
         - SponsorPrizeRelease
+        - WinnerPrizeRelease
         - RaffleTransfer
         - ProtocolDayData
         - RaffleDayData
@@ -71,6 +72,10 @@ templates:
           handler: handleTicketsRefunded
         - event: WinningTicketSettled(indexed uint256,indexed address,indexed uint8,uint256,uint256,uint256)
           handler: handleWinningTicketSettled
+        - event: WinnerProceedsReleased(indexed address,indexed address,uint256)
+          handler: handleWinnerProceedsReleased
+        - event: WinnerPrizeReleased(indexed address,indexed address,indexed address,uint256)
+          handler: handleWinnerPrizeReleased
         - event: SponsorProceedsReleased(indexed address,indexed address,uint256)
           handler: handleSponsorProceedsReleased
         - event: ProtocolFeesReleased(indexed address,indexed address,uint256)

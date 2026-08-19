@@ -5,6 +5,13 @@ Candidate: committed Ethereum v1 range-ticket audit candidate. The implementatio
 `e9e0e730c17c07b21e911aa0c02804336e4f146b`. This matrix is internal evidence, not an
 independent audit, and the complete gate set must be rerun from the clean final release SHA.
 
+> The totals below are preserved evidence for the recorded pre-remediation SHAs. They
+> do not validate the later hard request/callback-boundary change; affected rows require
+> a clean rerun against the final remediated SHA.
+
+In the lifecycle rows, `D = drawRequestDeadline() = endTime + 2 days` and
+`C = callbackDeadline() = drawRequestedAt + 2 days`.
+
 ## Latest verified totals
 
 | Layer               |                                   Result | Freshness / limitation                                            |
@@ -37,19 +44,20 @@ detector. Gitleaks also exits 0 for the committed candidate and 25-commit histor
 
 ## Lifecycle and authorization
 
-| Property                                          | Required evidence                                                                   | Current evidence                        |
-| ------------------------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------- |
-| Locked implementation and one-time initialization | direct implementation and clone reinitialization reject                             | Foundry unit/security                   |
-| Atomic creation                                   | clone registration, initialization, prize escrow, and activation roll back together | Foundry unit/security + Hardhat journey |
-| Future-only pause                                 | creation rejects while existing raffles remain operable                             | Foundry unit + deployment tests         |
-| Immediate sale and maximum duration               | sale begins at creation and cannot exceed 30 days                                   | Foundry boundary + mutation             |
-| Bearer ownership                                  | tickets transfer before close, while drawing, and after resolution until burned     | Foundry unit/fuzz/invariant             |
-| Delayed draw request                              | sold raffle stays drawable indefinitely and cannot refund                           | Foundry unit + model                    |
-| Missing callback                                  | exact two-day boundary enters full refunds                                          | Foundry unit + model                    |
-| Result finality                                   | neither resolved branch can later enter refunds                                     | Foundry unit + model                    |
-| Cash callback finality                            | no later refund transition                                                          | Foundry unit/invariant/model            |
-| Callback/refund race                              | both transaction orderings are mutually exclusive                                   | Foundry unit/invariant/model            |
-| Empty raffle                                      | zero-liability `Refunding`; sponsor recovery preserved                              | Foundry unit                            |
+| Property                                          | Required evidence                                                                   | Current evidence                                            |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Locked implementation and one-time initialization | direct implementation and clone reinitialization reject                             | Foundry unit/security                                       |
+| Atomic creation                                   | clone registration, initialization, prize escrow, and activation roll back together | Foundry unit/security + Hardhat journey                     |
+| Future-only pause                                 | creation rejects while existing raffles remain operable                             | Foundry unit + deployment tests                             |
+| Immediate sale and maximum duration               | sale begins at creation and cannot exceed 30 days                                   | Foundry boundary + mutation                                 |
+| Bearer ownership                                  | tickets transfer before close, while drawing, and after resolution until burned     | Foundry unit/fuzz/invariant                                 |
+| Draw-request window                               | request succeeds exactly in `[endTime, drawRequestDeadline())`                      | Foundry unit + model; remediated-SHA rerun required         |
+| Missing request                                   | sold `Active` refund rejects before `D` and opens at `D`; request rejects at `D`    | Foundry unit + model; remediated-SHA rerun required         |
+| Missing callback                                  | callback resolves before `C`; at `C` it is ignored and refunds open                 | Foundry unit + model; remediated-SHA rerun required         |
+| Result finality                                   | neither resolved branch can later enter refunds                                     | Foundry unit + model                                        |
+| Cash callback finality                            | no later refund transition                                                          | Foundry unit/invariant/model                                |
+| Last-valid-second request                         | request at `D - 1` gives a fresh two-day callback window, almost four days from end | Foundry unit/invariant/model; remediated-SHA rerun required |
+| Empty raffle                                      | zero-liability `Refunding`; sponsor recovery preserved                              | Foundry unit                                                |
 
 ## Range tickets and complexity
 
@@ -67,18 +75,18 @@ detector. Gitleaks also exits 0 for the committed candidate and 25-commit histor
 
 ## Chainlink VRF
 
-| Property                   | Required evidence                                                       | Current evidence                                            |
-| -------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------- |
-| Fixed parameters           | 300,000 callback gas, 30 confirmations, one word, native payment        | Foundry unit + Hardhat journey                              |
-| Dynamic native request fee | insufficient, exact, overpayment, price change, refund failure          | Foundry unit + adversarial wrapper                          |
-| Wrapper authentication     | unauthorized raw callback rejects                                       | Foundry unit; RPC-backed fork pending                       |
-| In-flight defense          | synchronous valid/wrong/duplicate/zero-ID attempts cannot resolve early | adversarial wrapper + mutation                              |
-| Request matching           | wrong, stale, repeated, malformed, and duplicate callbacks are harmless | Foundry unit/security/invariant                             |
-| Request atomicity          | price/request failures cannot leave a persisted drawing request         | adversarial wrapper                                         |
-| Callback boundedness       | both terminal branches remain below the mock 300,000 budget             | Foundry gas regression                                      |
-| Winner formula             | result is always within `[1,totalEntries]`; last entry is reachable     | Foundry unit/fuzz/invariant + model                         |
-| Live configuration bound   | callback + wrapper + EIP-150 overhead fits coordinator maximum          | Hardhat boundary regression; release-day live check pending |
-| Ignored-callback telemetry | immutable diagnostic entity and aggregate counter                       | subgraph mapping test + independent closure review          |
+| Property                   | Required evidence                                                                                                                                                   | Current evidence                                               |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Fixed parameters           | 300,000 callback gas, 30 confirmations, one word, native payment                                                                                                    | Foundry unit + Hardhat journey                                 |
+| Dynamic native request fee | insufficient, exact, overpayment, price change, refund failure                                                                                                      | Foundry unit + adversarial wrapper                             |
+| Wrapper authentication     | unauthorized raw callback rejects                                                                                                                                   | Foundry unit; RPC-backed fork pending                          |
+| In-flight defense          | synchronous valid/wrong/duplicate/zero-ID attempts cannot resolve early                                                                                             | adversarial wrapper + mutation                                 |
+| Request matching           | authenticated ABI-decodable wrong, stale, repeated, wrong-word-count, duplicate, and deadline-expired callbacks are harmless; unauthorized/undecodable calls revert | Foundry unit/security/invariant; remediated-SHA rerun required |
+| Request atomicity          | price/request failures cannot leave a persisted drawing request                                                                                                     | adversarial wrapper                                            |
+| Callback boundedness       | both terminal branches remain below the mock 300,000 budget                                                                                                         | Foundry gas regression                                         |
+| Winner formula             | result is always within `[1,totalEntries]`; last entry is reachable                                                                                                 | Foundry unit/fuzz/invariant + model                            |
+| Live configuration bound   | callback + wrapper + EIP-150 overhead fits coordinator maximum                                                                                                      | Hardhat boundary regression; release-day live check pending    |
+| Ignored-callback telemetry | immutable diagnostic entity and aggregate counter                                                                                                                   | subgraph mapping test + independent closure review             |
 
 ## Economics and settlement
 

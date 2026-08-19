@@ -11,7 +11,13 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { encodeFunctionData, isAddress, type Address } from "viem";
+import {
+  encodeFunctionData,
+  isAddress,
+  type Abi,
+  type Address,
+  type ContractFunctionParameters,
+} from "viem";
 import {
   useAccount,
   usePublicClient,
@@ -32,8 +38,21 @@ import { shortAddress } from "@/lib/format";
 import { fetchProfileRaffles, isSubgraphConfigured } from "@/lib/subgraph";
 import type { IndexedRaffle, IndexedTicket } from "@/lib/subgraph";
 
+// Widen only high-cardinality batch reads so TypeScript does not expand the
+// complete generated function union for every item.
+const batchRaffleAbi: Abi = raffleAbi;
+
+function raffleRead(
+  address: Address,
+  functionName: string,
+): ContractFunctionParameters {
+  return { address, abi: batchRaffleAbi, functionName };
+}
+
 type LiveClaim = {
   readonly raffle: Address;
+  readonly canReleaseWinnerProceeds: boolean;
+  readonly canReleaseWinnerPrize: boolean;
   readonly canReleaseSponsorProceeds: boolean;
   readonly canReleaseProtocolFees: boolean;
   readonly canReleaseSponsorPrize: boolean;
@@ -90,7 +109,11 @@ export function ProfileView({
         .filter((raffle) => raffle.sponsor.toLowerCase() === key)
         .map(toIndexedRaffle),
       positions: sandbox.raffles
-        .filter((raffle) => entriesOwnedBy(raffle, profile) > 0n)
+        .filter(
+          (raffle) =>
+            entriesOwnedBy(raffle, profile) > 0n ||
+            raffle.winnerRecipient?.toLowerCase() === key,
+        )
         .map(toIndexedRaffle),
       tickets,
     };
@@ -115,41 +138,19 @@ export function ProfileView({
     () => raffles.map((raffle) => raffle.id as Address),
     [raffles],
   );
-  const liveClaimContracts = useMemo(
+  const liveClaimContracts = useMemo<readonly ContractFunctionParameters[]>(
     () =>
       profile === undefined
         ? []
         : raffleAddresses.flatMap((raffle) => [
-            {
-              address: raffle,
-              abi: raffleAbi,
-              functionName: "sponsorRecipient" as const,
-            },
-            {
-              address: raffle,
-              abi: raffleAbi,
-              functionName: "protocolTreasury" as const,
-            },
-            {
-              address: raffle,
-              abi: raffleAbi,
-              functionName: "sponsorProceeds" as const,
-            },
-            {
-              address: raffle,
-              abi: raffleAbi,
-              functionName: "protocolFees" as const,
-            },
-            {
-              address: raffle,
-              abi: raffleAbi,
-              functionName: "status" as const,
-            },
-            {
-              address: raffle,
-              abi: raffleAbi,
-              functionName: "prizeClaimed" as const,
-            },
+            raffleRead(raffle, "sponsorRecipient"),
+            raffleRead(raffle, "protocolTreasury"),
+            raffleRead(raffle, "winnerRecipient"),
+            raffleRead(raffle, "sponsorProceeds"),
+            raffleRead(raffle, "protocolFees"),
+            raffleRead(raffle, "winnerProceeds"),
+            raffleRead(raffle, "status"),
+            raffleRead(raffle, "prizeClaimed"),
           ]),
     [profile, raffleAddresses],
   );
@@ -164,15 +165,24 @@ export function ProfileView({
     if (profile === undefined) return [];
     const reads = liveQuery.data ?? [];
     return raffleAddresses.map((raffle, raffleIndex) => {
-      const offset = raffleIndex * 6;
+      const offset = raffleIndex * 8;
       const sponsorRecipient = reads[offset]?.result as Address | undefined;
       const treasury = reads[offset + 1]?.result as Address | undefined;
-      const sponsorProceeds = (reads[offset + 2]?.result ?? 0n) as bigint;
-      const protocolFees = (reads[offset + 3]?.result ?? 0n) as bigint;
-      const status = Number(reads[offset + 4]?.result ?? -1);
-      const prizeClaimed = (reads[offset + 5]?.result ?? true) as boolean;
+      const winnerRecipient = reads[offset + 2]?.result as Address | undefined;
+      const sponsorProceeds = (reads[offset + 3]?.result ?? 0n) as bigint;
+      const protocolFees = (reads[offset + 4]?.result ?? 0n) as bigint;
+      const winnerProceeds = (reads[offset + 5]?.result ?? 0n) as bigint;
+      const status = Number(reads[offset + 6]?.result ?? -1);
+      const prizeClaimed = (reads[offset + 7]?.result ?? true) as boolean;
       return {
         raffle,
+        canReleaseWinnerProceeds:
+          winnerRecipient?.toLowerCase() === profile.toLowerCase() &&
+          winnerProceeds > 0n,
+        canReleaseWinnerPrize:
+          winnerRecipient?.toLowerCase() === profile.toLowerCase() &&
+          !prizeClaimed &&
+          status === RaffleStatus.NftWon,
         canReleaseSponsorProceeds:
           sponsorRecipient?.toLowerCase() === profile.toLowerCase() &&
           sponsorProceeds > 0n,
@@ -190,12 +200,13 @@ export function ProfileView({
   const releasableProceeds = liveClaims.reduce(
     (count, item) =>
       count +
+      Number(item.canReleaseWinnerProceeds) +
       Number(item.canReleaseSponsorProceeds) +
       Number(item.canReleaseProtocolFees),
     0,
   );
   const claimablePrizes = liveClaims.filter(
-    (item) => item.canReleaseSponsorPrize,
+    (item) => item.canReleaseWinnerPrize || item.canReleaseSponsorPrize,
   ).length;
   const indexedTickets = profileQuery.data?.tickets ?? [];
   const indexedEntriesComplete = indexedTickets.every(
@@ -211,6 +222,30 @@ export function ProfileView({
     profile !== undefined &&
     address.toLowerCase() === profile.toLowerCase();
   const batchCalls = liveClaims.flatMap((item) => [
+    ...(item.canReleaseWinnerProceeds
+      ? [
+          {
+            to: item.raffle,
+            kind: "winnerProceeds" as const,
+            data: encodeFunctionData({
+              abi: raffleAbi,
+              functionName: "releaseWinnerProceeds",
+            }),
+          },
+        ]
+      : []),
+    ...(item.canReleaseWinnerPrize
+      ? [
+          {
+            to: item.raffle,
+            kind: "winnerPrize" as const,
+            data: encodeFunctionData({
+              abi: raffleAbi,
+              functionName: "releaseWinnerPrize",
+            }),
+          },
+        ]
+      : []),
     ...(item.canReleaseSponsorProceeds
       ? [
           {
@@ -276,7 +311,23 @@ export function ProfileView({
       try {
         for (const call of batchCalls) {
           let hash: `0x${string}`;
-          if (call.kind === "sponsorProceeds") {
+          if (call.kind === "winnerProceeds") {
+            const { request } = await publicClient.simulateContract({
+              account: address,
+              address: call.to,
+              abi: raffleAbi,
+              functionName: "releaseWinnerProceeds",
+            });
+            hash = await wallet.data.writeContract(request);
+          } else if (call.kind === "winnerPrize") {
+            const { request } = await publicClient.simulateContract({
+              account: address,
+              address: call.to,
+              abi: raffleAbi,
+              functionName: "releaseWinnerPrize",
+            });
+            hash = await wallet.data.writeContract(request);
+          } else if (call.kind === "sponsorProceeds") {
             const { request } = await publicClient.simulateContract({
               account: address,
               address: call.to,
@@ -380,7 +431,7 @@ export function ProfileView({
         />
         <Summary
           icon={<Trophy aria-hidden size={19} />}
-          label="Sponsor NFTs to recover"
+          label="NFT prizes to claim"
           value={claimablePrizes.toString()}
         />
       </div>
@@ -501,7 +552,7 @@ export function ProfileView({
 
       {profileQuery.data?.positions.length ? (
         <section className="mt-14">
-          <p className="eyebrow">Entry tickets currently held</p>
+          <p className="eyebrow">Entry positions and settled wins</p>
           <h2 className="mt-2 text-3xl md:text-4xl">Positions & wins</h2>
           <div className="mt-7 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {profileQuery.data.positions.map((raffle) => (

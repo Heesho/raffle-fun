@@ -20,6 +20,7 @@ library RaffleConstants {
     uint256 internal constant MAX_REFUND_TICKET_BATCH_SIZE = 100;
 
     uint256 internal constant MAX_SALE_DURATION = 30 days;
+    uint256 internal constant DRAW_REQUEST_TIMEOUT = 2 days;
     uint256 internal constant DRAW_CALLBACK_TIMEOUT = 2 days;
 
     uint32 internal constant VRF_CALLBACK_GAS_LIMIT = 300_000;

@@ -20,6 +20,7 @@ import {
   erc20Abi,
   isAddress,
   zeroAddress,
+  type Abi,
   type Address,
   type ContractFunctionParameters,
   type Hash,
@@ -45,6 +46,8 @@ import {
   ticketRangeContainsEntry,
   refundTickets,
   releaseProtocolFees,
+  releaseWinnerPrize,
+  releaseWinnerProceeds,
   releaseSponsorPrize,
   releaseSponsorProceeds,
   settleWinningTicket,
@@ -56,7 +59,7 @@ import {
 import { SandboxPanel } from "@/components/sandbox/sandbox-panel";
 import type { StatusTone } from "@/components/status-pill";
 import { WalletButton } from "@/components/wallet-button";
-import { useNow, useNowMs } from "@/hooks/use-now";
+import { useNowMs } from "@/hooks/use-now";
 import { useTokenMetadata } from "@/hooks/use-token-metadata";
 import { isDemoMode } from "@/lib/demo";
 import { formatTokenAmount } from "@/lib/format";
@@ -67,7 +70,7 @@ import {
   protocolDeployment,
 } from "@/lib/protocol";
 import { SANDBOX_USDC } from "@/lib/sandbox/adapter";
-import { entriesOwnedBy } from "@/lib/sandbox/engine";
+import { drawRequestDeadline, entriesOwnedBy } from "@/lib/sandbox/engine";
 import { useSandbox, useSandboxRaffle } from "@/lib/sandbox/store";
 import { fetchOwnedTicketRanges, isSubgraphConfigured } from "@/lib/subgraph";
 
@@ -76,6 +79,20 @@ import {
   RaffleLayout,
   type RaffleViewModel,
 } from "./raffle-view";
+
+// Widen only high-cardinality batch reads so TypeScript does not expand the
+// complete generated function union for every item.
+const batchRaffleAbi: Abi = raffleAbi;
+
+function raffleRead(
+  address: Address,
+  functionName: string,
+  args?: readonly unknown[],
+): ContractFunctionParameters {
+  return args === undefined
+    ? { address, abi: batchRaffleAbi, functionName }
+    : { address, abi: batchRaffleAbi, functionName, args };
+}
 
 interface LiveRaffleView {
   readonly registered: boolean;
@@ -90,11 +107,14 @@ interface LiveRaffleView {
   readonly prizeTokenId: bigint;
   readonly reserveEntries: bigint;
   readonly endTime: bigint;
+  readonly drawRequestDeadline: bigint;
   readonly totalEntries: bigint;
   readonly ticketCount: bigint;
   readonly grossSales: bigint;
   readonly unsettledPot: bigint;
   readonly remainingRefundLiability: bigint;
+  readonly winnerRecipient: Address;
+  readonly winnerProceeds: bigint;
   readonly sponsorProceeds: bigint;
   readonly protocolFees: bigint;
   readonly vrfRequestId: bigint;
@@ -181,6 +201,13 @@ function SandboxRaffleDetail({ address }: { readonly address: string }) {
     CASH_WON: "resolved",
     REFUNDING: "warning",
   };
+  const refundReady =
+    (raffle.status === "ACTIVE" &&
+      ((raffle.totalEntries === 0n && now >= raffle.endTime) ||
+        (raffle.totalEntries > 0n && now >= drawRequestDeadline(raffle)))) ||
+    (raffle.status === "DRAWING" &&
+      raffle.callbackDeadline !== null &&
+      now >= raffle.callbackDeadline);
   const view: RaffleViewModel = {
     address: raffle.id as Address,
     factoryId: raffle.factoryId,
@@ -198,10 +225,13 @@ function SandboxRaffleDetail({ address }: { readonly address: string }) {
     grossSales: raffle.grossSales,
     unsettledPot: raffle.unsettledPot,
     endTime: BigInt(Math.floor(raffle.endTime / 1_000)),
-    stateLabel: raffle.status.replaceAll("_", " ").toLowerCase(),
-    stateTone: tones[raffle.status] ?? "neutral",
+    stateLabel: refundReady
+      ? "refund ready"
+      : raffle.status.replaceAll("_", " ").toLowerCase(),
+    stateTone: refundReady ? "warning" : (tones[raffle.status] ?? "neutral"),
     isActive: raffle.status === "ACTIVE" && now < raffle.endTime,
     isRefunding: raffle.status === "REFUNDING",
+    refundReady,
     outcomeLabel:
       raffle.status === "NFT_WON" || raffle.status === "CASH_WON"
         ? raffle.status.replaceAll("_", " ").toLowerCase()
@@ -238,8 +268,14 @@ function LiveRaffleDetail({
   const { address, chainId, isConnected } = useAccount();
   const publicClient = usePublicClient();
   const wallet = useWalletClient();
-  const currentTime = useNow(1_000);
   const queryClient = useQueryClient();
+  const latestBlockTimeQuery = useQuery({
+    queryKey: ["latest-block-time", configuredChainId],
+    queryFn: async () => (await publicClient!.getBlock()).timestamp,
+    enabled: publicClient !== undefined,
+    refetchInterval: 12_000,
+  });
+  const currentTime = latestBlockTimeQuery.data;
   const [entryCountText, setEntryCountText] = useState("20");
   const [recipient, setRecipient] = useState("");
   const [refundTicketIds, setRefundTicketIds] = useState("");
@@ -272,61 +308,43 @@ function LiveRaffleDetail({
   const contracts: readonly ContractFunctionParameters[] =
     raffle === undefined || protocolDeployment === undefined
       ? []
-      : ([
+      : [
           {
             address: protocolDeployment.raffleFactory,
             abi: raffleFactoryAbi,
             functionName: "isRaffle",
             args: [raffle],
           },
-          { address: raffle, abi: raffleAbi, functionName: "raffleId" },
-          { address: raffle, abi: raffleAbi, functionName: "status" },
-          { address: raffle, abi: raffleAbi, functionName: "sponsor" },
-          { address: raffle, abi: raffleAbi, functionName: "sponsorRecipient" },
-          { address: raffle, abi: raffleAbi, functionName: "protocolTreasury" },
-          { address: raffle, abi: raffleAbi, functionName: "quoteToken" },
-          { address: raffle, abi: raffleAbi, functionName: "prizeToken" },
-          { address: raffle, abi: raffleAbi, functionName: "prizeTokenId" },
-          { address: raffle, abi: raffleAbi, functionName: "reserveEntries" },
-          { address: raffle, abi: raffleAbi, functionName: "endTime" },
-          { address: raffle, abi: raffleAbi, functionName: "totalEntries" },
-          { address: raffle, abi: raffleAbi, functionName: "ticketCount" },
-          { address: raffle, abi: raffleAbi, functionName: "grossSales" },
-          { address: raffle, abi: raffleAbi, functionName: "unsettledPot" },
-          {
-            address: raffle,
-            abi: raffleAbi,
-            functionName: "remainingRefundLiability",
-          },
-          {
-            address: raffle,
-            abi: raffleAbi,
-            functionName: "sponsorProceeds",
-          },
-          {
-            address: raffle,
-            abi: raffleAbi,
-            functionName: "protocolFees",
-          },
-          { address: raffle, abi: raffleAbi, functionName: "vrfRequestId" },
-          { address: raffle, abi: raffleAbi, functionName: "drawRequestedAt" },
-          { address: raffle, abi: raffleAbi, functionName: "resolvedAt" },
-          { address: raffle, abi: raffleAbi, functionName: "winningEntry" },
-          { address: raffle, abi: raffleAbi, functionName: "winningTicketId" },
-          { address: raffle, abi: raffleAbi, functionName: "prizeClaimed" },
-          { address: raffle, abi: raffleAbi, functionName: "callbackDeadline" },
-          {
-            address: raffle,
-            abi: raffleAbi,
-            functionName: "accountedQuoteBalance",
-          },
-          {
-            address: raffle,
-            abi: raffleAbi,
-            functionName: "balanceOf",
-            args: [address ?? zeroAddress],
-          },
-        ] as const);
+          raffleRead(raffle, "raffleId"),
+          raffleRead(raffle, "status"),
+          raffleRead(raffle, "sponsor"),
+          raffleRead(raffle, "sponsorRecipient"),
+          raffleRead(raffle, "protocolTreasury"),
+          raffleRead(raffle, "quoteToken"),
+          raffleRead(raffle, "prizeToken"),
+          raffleRead(raffle, "prizeTokenId"),
+          raffleRead(raffle, "reserveEntries"),
+          raffleRead(raffle, "endTime"),
+          raffleRead(raffle, "drawRequestDeadline"),
+          raffleRead(raffle, "totalEntries"),
+          raffleRead(raffle, "ticketCount"),
+          raffleRead(raffle, "grossSales"),
+          raffleRead(raffle, "unsettledPot"),
+          raffleRead(raffle, "remainingRefundLiability"),
+          raffleRead(raffle, "winnerRecipient"),
+          raffleRead(raffle, "winnerProceeds"),
+          raffleRead(raffle, "sponsorProceeds"),
+          raffleRead(raffle, "protocolFees"),
+          raffleRead(raffle, "vrfRequestId"),
+          raffleRead(raffle, "drawRequestedAt"),
+          raffleRead(raffle, "resolvedAt"),
+          raffleRead(raffle, "winningEntry"),
+          raffleRead(raffle, "winningTicketId"),
+          raffleRead(raffle, "prizeClaimed"),
+          raffleRead(raffle, "callbackDeadline"),
+          raffleRead(raffle, "accountedQuoteBalance"),
+          raffleRead(raffle, "balanceOf", [address ?? zeroAddress]),
+        ];
 
   const viewQuery = useReadContracts({
     allowFailure: true,
@@ -340,6 +358,19 @@ function LiveRaffleDetail({
       const result = viewQuery.data[index];
       return result?.status === "success" ? (result.result as T) : undefined;
     };
+    // Every contract read that drives state, economics, or write eligibility must
+    // succeed together. A partial multicall is not a zero-valued protocol state.
+    if (
+      viewQuery.data.length < 29 ||
+      viewQuery.data
+        .slice(0, 29)
+        .some(
+          (result) =>
+            result?.status !== "success" || result.result === undefined,
+        )
+    ) {
+      return undefined;
+    }
     const registered = value<boolean>(0);
     const factoryId = value<bigint>(1);
     const status = value<number>(2);
@@ -374,22 +405,25 @@ function LiveRaffleDetail({
       prizeTokenId,
       reserveEntries: value<bigint>(9) ?? 0n,
       endTime: value<bigint>(10) ?? 0n,
-      totalEntries: value<bigint>(11) ?? 0n,
-      ticketCount: value<bigint>(12) ?? 0n,
-      grossSales: value<bigint>(13) ?? 0n,
-      unsettledPot: value<bigint>(14) ?? 0n,
-      remainingRefundLiability: value<bigint>(15) ?? 0n,
-      sponsorProceeds: value<bigint>(16) ?? 0n,
-      protocolFees: value<bigint>(17) ?? 0n,
-      vrfRequestId: value<bigint>(18) ?? 0n,
-      drawRequestedAt: value<bigint>(19) ?? 0n,
-      resolvedAt: value<bigint>(20) ?? 0n,
-      winningEntry: value<bigint>(21) ?? 0n,
-      winningTicketId: value<bigint>(22) ?? 0n,
-      prizeClaimed: value<boolean>(23) ?? false,
-      callbackDeadline: value<bigint>(24) ?? 0n,
-      accountedQuoteBalance: value<bigint>(25) ?? 0n,
-      accountTicketBalance: value<bigint>(26) ?? 0n,
+      drawRequestDeadline: value<bigint>(11) ?? 0n,
+      totalEntries: value<bigint>(12) ?? 0n,
+      ticketCount: value<bigint>(13) ?? 0n,
+      grossSales: value<bigint>(14) ?? 0n,
+      unsettledPot: value<bigint>(15) ?? 0n,
+      remainingRefundLiability: value<bigint>(16) ?? 0n,
+      winnerRecipient: value<Address>(17) ?? zeroAddress,
+      winnerProceeds: value<bigint>(18) ?? 0n,
+      sponsorProceeds: value<bigint>(19) ?? 0n,
+      protocolFees: value<bigint>(20) ?? 0n,
+      vrfRequestId: value<bigint>(21) ?? 0n,
+      drawRequestedAt: value<bigint>(22) ?? 0n,
+      resolvedAt: value<bigint>(23) ?? 0n,
+      winningEntry: value<bigint>(24) ?? 0n,
+      winningTicketId: value<bigint>(25) ?? 0n,
+      prizeClaimed: value<boolean>(26) ?? false,
+      callbackDeadline: value<bigint>(27) ?? 0n,
+      accountedQuoteBalance: value<bigint>(28) ?? 0n,
+      accountTicketBalance: value<bigint>(29) ?? 0n,
     };
   }, [raffle, viewQuery.data]);
 
@@ -475,7 +509,11 @@ function LiveRaffleDetail({
         functionName: "totalEntries",
       }),
     ]);
-    return { status: status as RaffleStatus, endTime, totalEntries };
+    return {
+      status: status as RaffleStatus,
+      endTime: endTime as bigint,
+      totalEntries: totalEntries as bigint,
+    };
   }
 
   async function handleBuy() {
@@ -588,6 +626,8 @@ function LiveRaffleDetail({
     action:
       | "draw"
       | "winner"
+      | "winnerProceeds"
+      | "winnerPrize"
       | "sponsorPrize"
       | "sponsorProceeds"
       | "protocolFees"
@@ -610,19 +650,22 @@ function LiveRaffleDetail({
         hash = await releaseSponsorProceeds(context, raffle);
       } else if (action === "protocolFees") {
         hash = await releaseProtocolFees(context, raffle);
+      } else if (action === "winnerProceeds") {
+        hash = await releaseWinnerProceeds(context, raffle);
+      } else if (action === "winnerPrize") {
+        hash = await releaseWinnerPrize(context, raffle);
       } else if (action === "winner") {
         const ticketId = parsePositiveBigInt(
           winningTicketProof,
           "Winning ticket ID",
         );
-        const [firstEntry, lastEntry] = await context.publicClient.readContract(
-          {
+        const [firstEntry, lastEntry] =
+          (await context.publicClient.readContract({
             address: raffle,
             abi: raffleAbi,
             functionName: "ticketRange",
             args: [ticketId],
-          },
-        );
+          })) as readonly [bigint, bigint];
         if (
           !ticketRangeContainsEntry(
             { firstEntry, lastEntry },
@@ -671,7 +714,7 @@ function LiveRaffleDetail({
     );
   }
 
-  const now = BigInt(currentTime ?? 0);
+  const now = currentTime ?? 0n;
   const canBuy =
     currentTime !== undefined &&
     view.status === RaffleStatus.Active &&
@@ -680,16 +723,29 @@ function LiveRaffleDetail({
     currentTime !== undefined &&
     view.status === RaffleStatus.Active &&
     view.totalEntries > 0n &&
-    now >= view.endTime;
+    now >= view.endTime &&
+    now < view.drawRequestDeadline;
   const canEnableRefunds =
     (view.status === RaffleStatus.Active &&
       view.totalEntries === 0n &&
       ((currentTime !== undefined && now >= view.endTime) ||
         address?.toLowerCase() === view.sponsor.toLowerCase())) ||
+    (view.status === RaffleStatus.Active &&
+      view.totalEntries > 0n &&
+      currentTime !== undefined &&
+      now >= view.drawRequestDeadline) ||
     (view.status === RaffleStatus.Drawing &&
       currentTime !== undefined &&
       view.callbackDeadline > 0n &&
       now >= view.callbackDeadline);
+  const refundReady =
+    currentTime !== undefined &&
+    ((view.status === RaffleStatus.Active &&
+      ((view.totalEntries === 0n && now >= view.endTime) ||
+        (view.totalEntries > 0n && now >= view.drawRequestDeadline))) ||
+      (view.status === RaffleStatus.Drawing &&
+        view.callbackDeadline > 0n &&
+        now >= view.callbackDeadline));
   const canReleaseSponsorPrize =
     !view.prizeClaimed &&
     (view.status === RaffleStatus.CashWon ||
@@ -708,10 +764,11 @@ function LiveRaffleDetail({
     grossSales: view.grossSales,
     unsettledPot: view.unsettledPot,
     endTime: view.endTime,
-    stateLabel: raffleStatusLabels[view.status],
-    stateTone: stateTone(view.status),
+    stateLabel: refundReady ? "refund ready" : raffleStatusLabels[view.status],
+    stateTone: refundReady ? "warning" : stateTone(view.status),
     isActive: canBuy,
     isRefunding: view.status === RaffleStatus.Refunding,
+    refundReady,
     outcomeLabel:
       view.status === RaffleStatus.NftWon ||
       view.status === RaffleStatus.CashWon
@@ -851,7 +908,7 @@ function LiveRaffleDetail({
                     Range:{" "}
                     {winningTicketRangeQuery.data === undefined
                       ? "reading from chain…"
-                      : `${winningTicketRangeQuery.data[0].toString()}–${winningTicketRangeQuery.data[1].toString()}`}
+                      : `${(winningTicketRangeQuery.data as readonly [bigint, bigint])[0].toString()}–${(winningTicketRangeQuery.data as readonly [bigint, bigint])[1].toString()}`}
                   </span>
                 ) : null}
                 {indexedWinningTicket !== undefined ? (
@@ -893,6 +950,26 @@ function LiveRaffleDetail({
                 icon={<CircleDollarSign size={17} />}
                 label="Burn tickets & claim refunds"
                 onClick={() => handleAction("refund")}
+              />
+              <ActionButton
+                disabled={
+                  view.winnerProceeds === 0n || progress.kind === "pending"
+                }
+                icon={<CircleDollarSign size={17} />}
+                label={`Release ${formatTokenAmount(view.winnerProceeds, tokenMetadata.decimals, tokenMetadata.symbol)} to winner`}
+                onClick={() => handleAction("winnerProceeds")}
+              />
+              <ActionButton
+                disabled={
+                  view.status !== RaffleStatus.NftWon ||
+                  view.winningTicketId === 0n ||
+                  view.winnerRecipient === zeroAddress ||
+                  view.prizeClaimed ||
+                  progress.kind === "pending"
+                }
+                icon={<Gift size={17} />}
+                label="Release NFT to winner"
+                onClick={() => handleAction("winnerPrize")}
               />
               <ActionButton
                 disabled={
@@ -945,6 +1022,10 @@ function LiveRaffleDetail({
                 value={view.accountTicketBalance.toString()}
               />
               <Split
+                label="Draw request deadline"
+                value={formatDeadline(view.drawRequestDeadline)}
+              />
+              <Split
                 label="Callback deadline"
                 value={formatDeadline(view.callbackDeadline)}
               />
@@ -952,6 +1033,14 @@ function LiveRaffleDetail({
                 label="Remaining refunds"
                 value={formatTokenAmount(
                   view.remainingRefundLiability,
+                  tokenMetadata.decimals,
+                  tokenMetadata.symbol,
+                )}
+              />
+              <Split
+                label="Winner proceeds"
+                value={formatTokenAmount(
+                  view.winnerProceeds,
                   tokenMetadata.decimals,
                   tokenMetadata.symbol,
                 )}

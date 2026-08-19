@@ -87,9 +87,9 @@ export default function DocsPage() {
               label="totalEntries ≥ reserveEntries"
               title="Reserve met"
               items={[
-                "The winning ticket delivers the NFT",
-                "Successful delivery earns the protocol 5% of gross sales",
-                "Anyone can release the remaining 95% to the sponsor’s fixed recipient",
+                "Settlement records the NFT for the current winning ticket owner",
+                "Settlement records 5% of gross sales for the protocol",
+                "Settlement records the remaining 95% for the sponsor’s fixed recipient",
               ]}
             />
             <Outcome
@@ -97,9 +97,9 @@ export default function DocsPage() {
               label="totalEntries < reserveEntries"
               title="Cash fallback"
               items={[
-                "The winning ticket receives 80% of gross sales in USDC",
-                "The protocol receives 5%",
-                "The sponsor recovers the NFT and receives 15% of gross sales",
+                "Settlement records 80% of gross sales for the winning ticket owner",
+                "Settlement records 5% for the protocol",
+                "Settlement records 15% plus the NFT for the sponsor",
               ]}
             />
           </div>
@@ -117,14 +117,16 @@ export default function DocsPage() {
               If randomness is unavailable
             </h3>
             <p className="mt-3 text-sm leading-6 text-[var(--amber-ink)]">
-              A nonempty raffle waits until someone calls the permissionless
-              draw function; that call never expires. If an accepted request has
-              no callback for two days, anyone can open full refunds. No sponsor
-              proceeds or protocol fee is earned. Current owners burn up to 100
-              tickets per call and receive $1 USDC for every entry in each
-              stored range; anyone can return the NFT to the sponsor’s fixed
-              recipient. Any valid callback is final and has no later refund
-              timeout.
+              A sold raffle accepts a permissionless draw request from sale end
+              until its request deadline two days later. If none succeeds before
+              that hard cutoff, anyone can open full refunds. An accepted
+              request gets a fresh two-day callback window; callbacks resolve
+              only before its callback deadline, and refunds open at that
+              deadline. No sponsor proceeds or protocol fee is earned. Current
+              owners burn up to 100 tickets per call and receive $1 USDC for
+              every entry in each stored range; anyone can return the NFT to the
+              sponsor’s fixed recipient. Any valid earlier callback is final and
+              has no later refund timeout.
             </p>
           </div>
         </section>
@@ -133,7 +135,7 @@ export default function DocsPage() {
           <DocHeading
             eyebrow="Exact economics"
             title="Every entry is exactly $1 USDC."
-            text="One 5% fee is deducted from aggregate gross sales, never added at checkout. In the cash branch it is earned at resolution; in the NFT branch it is earned only after verified prize delivery."
+            text="One 5% fee is deducted from aggregate gross sales, never added at checkout. It is recorded when the winning ticket settles, alongside the winner and sponsor claims; every asset is released independently afterward."
           />
           <div className="card mt-8 overflow-hidden">
             <div className="grid gap-1 bg-[var(--ink)] p-6 text-white sm:grid-cols-3">
@@ -197,11 +199,15 @@ export default function DocsPage() {
           </div>
           <p className="mt-5 text-sm leading-6 text-[var(--ink-2)]">
             Oracle delivery is not instantaneous and no replacement request is
-            allowed. At the callback deadline, a callback and timeout
-            transaction may both be valid; the first included terminal action
-            wins. A timeout opens refunds, while late callbacks after failure
-            are ignored. Anyone may settle the winner, and delivery always goes
-            to the current ticket owner.
+            allowed. Draw requests must be included before the two-day request
+            cutoff. A request at the last valid second starts a fresh two-day
+            callback window, so the maximum nominal wait is almost four days
+            after sale end. Matching callbacks resolve only before their
+            callback deadline; at the deadline they are ignored and refunds are
+            available, even if nobody has opened refunds yet. Only
+            wrapper-authenticated, ABI-decodable calls reach that ignore logic.
+            Anyone may settle the winner, and delivery always goes to the
+            recorded winner recipient.
           </p>
         </section>
 
@@ -288,9 +294,10 @@ export default function DocsPage() {
                 otherwise prevent later claims.
               </li>
               <li>
-                Deadlines recover protocol liveness, but cannot overcome a
-                halted/reorganized chain, censorship of all recovery calls, or
-                lost keys.
+                Deadlines bound protocol liveness, but cannot overcome a halted
+                chain, censorship of recovery calls, or lost keys. A
+                reorganization or censorship that prevents a request or callback
+                from being included before its hard cutoff can force refunds.
               </li>
               <li>
                 The subgraph can lag or fail. Direct chain state is

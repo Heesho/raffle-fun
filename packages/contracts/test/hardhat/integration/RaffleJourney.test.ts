@@ -221,6 +221,13 @@ describe("Raffle Fun sequential-ticket integration", () => {
       publicClient,
       settlerRaffle.write.settleWinningTicket([winningTicket]),
     );
+    assertAddressEqual(
+      await raffle.read.winnerRecipient(),
+      buyer.account.address,
+    );
+    assert.equal(await raffle.read.prizeClaimed(), false);
+    assertAddressEqual(await prize.read.ownerOf([1n]), raffleAddress);
+    await wait(publicClient, settlerRaffle.write.releaseWinnerPrize());
     assertAddressEqual(await prize.read.ownerOf([1n]), buyer.account.address);
     assert.equal(await raffle.read.protocolFees(), 300_000n);
     assert.equal(await raffle.read.sponsorProceeds(), 5_700_000n);
@@ -320,8 +327,19 @@ describe("Raffle Fun sequential-ticket integration", () => {
     );
     assert.equal(
       (await quote.read.balanceOf([buyer.account.address])) - buyerBefore,
+      0n,
+    );
+    assertAddressEqual(
+      await raffle.read.winnerRecipient(),
+      buyer.account.address,
+    );
+    assert.equal(await raffle.read.winnerProceeds(), 800_000n);
+    await wait(publicClient, settlerRaffle.write.releaseWinnerProceeds());
+    assert.equal(
+      (await quote.read.balanceOf([buyer.account.address])) - buyerBefore,
       800_000n,
     );
+    assert.equal(await raffle.read.winnerProceeds(), 0n);
     assert.equal(await raffle.read.protocolFees(), 50_000n);
     assert.equal(await raffle.read.sponsorProceeds(), 150_000n);
 
@@ -338,7 +356,7 @@ describe("Raffle Fun sequential-ticket integration", () => {
     assertAddressEqual(await prize.read.ownerOf([7n]), sponsor.account.address);
   });
 
-  it("refunds the exact weighted entries represented by a ticket batch", async () => {
+  it("refunds weighted tickets when no draw request is accepted by the hard deadline", async () => {
     const { networkHelpers, viem } = await network.create({
       network: "hardhatEthereum",
     });
@@ -411,14 +429,9 @@ describe("Raffle Fun sequential-ticket integration", () => {
     const finalizerRaffle = await viem.getContractAt("Raffle", raffleAddress, {
       client: { wallet: finalizer },
     });
-    await networkHelpers.time.increaseTo(endTime);
-    await wait(
-      publicClient,
-      finalizerRaffle.write.requestDraw({
-        value: await raffle.read.getVrfRequestPrice(),
-      }),
+    await networkHelpers.time.increaseTo(
+      await raffle.read.drawRequestDeadline(),
     );
-    await networkHelpers.time.increaseTo(await raffle.read.callbackDeadline());
     await wait(publicClient, finalizerRaffle.write.enableRefunds());
     assert.equal(await raffle.read.status(), 5);
     assert.equal(
@@ -433,6 +446,8 @@ describe("Raffle Fun sequential-ticket integration", () => {
       7n * ENTRY_PRICE,
     );
     assert.equal(await raffle.read.remainingRefundLiability(), 0n);
+    await wait(publicClient, finalizerRaffle.write.releaseSponsorPrize());
+    assertAddressEqual(await prize.read.ownerOf([9n]), sponsor.account.address);
   });
 });
 

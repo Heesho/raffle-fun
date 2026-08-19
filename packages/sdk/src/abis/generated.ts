@@ -30,6 +30,22 @@ export const raffleAbi = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "currentTime",
+        type: "uint256",
+      },
+    ],
+    name: "DrawRequestWindowExpired",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "sender",
         type: "address",
@@ -218,6 +234,11 @@ export const raffleAbi = [
   {
     inputs: [],
     name: "NoSponsorProceeds",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "NoWinnerProceeds",
     type: "error",
   },
   {
@@ -473,6 +494,17 @@ export const raffleAbi = [
       },
     ],
     name: "UnsupportedQuoteTokenTransfer",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "enum IRaffle.Status",
+        name: "status",
+        type: "uint8",
+      },
+    ],
+    name: "WinnerPrizeUnavailable",
     type: "error",
   },
   {
@@ -869,6 +901,62 @@ export const raffleAbi = [
     inputs: [
       {
         indexed: true,
+        internalType: "address",
+        name: "caller",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "recipient",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "prizeToken",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "prizeTokenId",
+        type: "uint256",
+      },
+    ],
+    name: "WinnerPrizeReleased",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "caller",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "recipient",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "WinnerProceedsReleased",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
         internalType: "uint256",
         name: "ticketId",
         type: "uint256",
@@ -1015,6 +1103,19 @@ export const raffleAbi = [
         internalType: "uint32",
         name: "",
         type: "uint32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "drawRequestDeadline",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -1451,6 +1552,26 @@ export const raffleAbi = [
   },
   {
     inputs: [],
+    name: "releaseWinnerPrize",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "releaseWinnerProceeds",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "remainingRefundLiability",
     outputs: [
       {
@@ -1810,6 +1931,32 @@ export const raffleAbi = [
     outputs: [
       {
         internalType: "contract IChainlinkVRFV2PlusWrapper",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "winnerProceeds",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "winnerRecipient",
+    outputs: [
+      {
+        internalType: "address",
         name: "",
         type: "address",
       },

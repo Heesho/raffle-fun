@@ -184,6 +184,8 @@ function SettlePanel({
     enableRefunds,
     refundTickets,
     settleWinningTicket,
+    releaseWinnerPrize,
+    releaseWinnerProceeds,
     releaseSponsorPrize,
     releaseSponsorProceeds,
     releaseProtocolFees,
@@ -203,6 +205,10 @@ function SettlePanel({
     winningTicket.owner.toLowerCase() === sandbox.player.toLowerCase();
   const sponsorPrizeAvailable =
     !raffle.prizeClaimed && (raffle.status === "CASH_WON" || refunding);
+  const winnerPrizeAvailable =
+    !raffle.prizeClaimed &&
+    raffle.status === "NFT_WON" &&
+    raffle.winnerRecipient !== null;
   const refundableTickets = refunding
     ? ticketsOwnedBy(raffle, sandbox.player)
     : [];
@@ -380,6 +386,25 @@ function SettlePanel({
             type="button"
           >
             <CircleDollarSign aria-hidden size={17} /> Claim ticket refunds
+          </button>
+        ) : null}
+        {winnerPrizeAvailable ? (
+          <button
+            className="btn btn-primary w-full"
+            onClick={() => releaseWinnerPrize(raffle.id)}
+            type="button"
+          >
+            <Gift aria-hidden size={17} /> Release NFT to winner
+          </button>
+        ) : null}
+        {raffle.winnerProceeds > 0n ? (
+          <button
+            className="btn btn-primary w-full"
+            onClick={() => releaseWinnerProceeds(raffle.id)}
+            type="button"
+          >
+            <CircleDollarSign aria-hidden size={17} /> Release{" "}
+            {amount(raffle.winnerProceeds)} to winner
           </button>
         ) : null}
         {sponsorPrizeAvailable ? (

@@ -27,30 +27,30 @@ collections. Keep every prize and entry value deliberately low.
 
 ## Required scenarios
 
-| Scenario                | Required evidence                                                                                                                           |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Range purchase          | sequential IDs and stored 1-entry/multi-entry ranges are exact and contiguous; cost is exactly 1 USDC per entry                             |
-| Bearer transfer         | ticket transfers work before close, while drawing, and after resolution; successful settlement burns the ticket exactly once                |
-| NFT result              | equality meets reserve; correct range proves winner; third party delivers to current owner; 5%/95% balances appear only after delivery      |
-| Cash result             | below-reserve resolution; settlement pays 80% to winner and records 5%/15%; fixed sponsor recipient independently receives cash and NFT     |
-| Empty raffle            | sponsor enters zero-liability `Refunding` before end and anyone can do so at/after end                                                      |
-| Delayed request         | request remains available well after sale end; a keeper or any account can still move the raffle into `Drawing`                             |
-| Callback absence        | staging wrapper accepts but does not fulfill; exact two-day boundary enables full refunds                                                   |
-| Callback rejection      | staging wrapper sends synchronous, wrong-ID, malformed, duplicate, and stale callbacks without unsafe mutation                              |
-| NFT transfer failure    | adversarial collection reverts or lies on delivery; pot, ticket, and recorded result remain intact under the supported-asset trust boundary |
-| Deadline race           | valid callback versus callback timeout demonstrates first-included semantics                                                                |
-| Outgoing failure        | adversarial quote token proves failed winner/refund/claim transfer restores ticket and liabilities                                          |
-| Operational controls    | contract wallet pauses/resumes future creation; frontend write kill switch and keeper actions are rehearsed                                 |
-| Degraded infrastructure | direct chain reads and calldata instructions remain usable while subgraph or one RPC is unavailable                                         |
+| Scenario                | Required evidence                                                                                                                                                                     |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Range purchase          | sequential IDs and stored 1-entry/multi-entry ranges are exact and contiguous; cost is exactly 1 USDC per entry                                                                       |
+| Bearer transfer         | ticket transfers work before close, while drawing, and after resolution; successful settlement burns the ticket exactly once                                                          |
+| NFT result              | equality meets reserve; settlement snapshots winner and records 5%/95%; winner NFT and both quote claims release independently                                                        |
+| Cash result             | below-reserve settlement records 80%/5%/15%; winner cash, sponsor cash, protocol fee, and sponsor NFT release independently                                                           |
+| Empty raffle            | sponsor enters zero-liability `Refunding` before end and anyone can do so at/after end                                                                                                |
+| Request boundary        | request at `drawRequestDeadline() - 1` succeeds; request at the deadline fails; a sold `Active` raffle can enter refunds at the deadline                                              |
+| Callback absence        | staging wrapper accepts but does not fulfill; refunds open exactly at `callbackDeadline()`                                                                                            |
+| Callback rejection      | staging wrapper sends synchronous, wrong-ID, duplicate, stale, and deadline-expired ABI-decodable callbacks without unsafe mutation; unauthorized or undecodable calls revert earlier |
+| NFT transfer failure    | adversarial collection reverts or lies on release; winner NFT remains pending while settlement and both quote claims remain usable                                                    |
+| Callback boundary       | matching callback at `callbackDeadline() - 1` resolves; at the deadline it is ignored and refunds are available                                                                       |
+| Outgoing failure        | adversarial quote token proves a failed winner/sponsor/protocol release restores only that claim and leaves all other claims usable                                                   |
+| Operational controls    | contract wallet pauses/resumes future creation; frontend write kill switch and keeper actions are rehearsed                                                                           |
+| Degraded infrastructure | direct chain reads and calldata instructions remain usable while subgraph or one RPC is unavailable                                                                                   |
 
 For every scenario retain chain ID, block and transaction hashes, addresses, decoded
 events, before/after state, actual balances and liabilities, ticket ranges, monitor
 alert/acknowledgement, and expected versus observed behavior.
 
-The official-wrapper candidate cannot manufacture absence or malformed callbacks.
-Those behaviors are demonstrated on source-identical staging clones whose only
-difference is the adversarial dependency; the live candidate is separately monitored
-for real request/fulfillment correlation.
+The official-wrapper candidate cannot manufacture absence, wrong-word-count callbacks,
+or undecodable callback calldata. Those behaviors are demonstrated on source-identical
+staging clones whose only difference is the adversarial dependency; the live candidate
+is separately monitored for real request/fulfillment correlation.
 
 ## Exit gate
 
@@ -60,11 +60,18 @@ The soak passes only with:
 - no unresolved P0/P1 incident or missed acknowledgement objective;
 - every official draw correlated to Chainlink request and fulfillment evidence;
 - no callback gas failure and approved headroom for the exact release bytecode;
-- the empty path, callback-timeout refunds, delayed-request liveness, and both successful outcomes exercised;
+- the empty path, exact request and callback boundaries, the last-valid-second request,
+  both refund origins, and both successful outcomes exercised;
 - complete monitoring reconciliation, contract-wallet pause, UI-disable, and incident
   drills by the people who will operate mainnet;
 - every code or configuration change independently reviewed and its soak impact
   documented.
+
+The last-valid-second request gives the wrapper a fresh two-day callback window, so the
+last nominal callback/refund boundary is almost four days after sale end. Evidence must
+also cover the operational consequence of censorship or a reorganization removing a
+request or callback after its cutoff: it cannot be replayed and the supported recovery
+outcome is refunds.
 
 Changing Solidity, compiler, dependencies, wrapper, USDC, implementation, constants,
 owner/treasury, ABI generation, or deployment procedure invalidates affected evidence

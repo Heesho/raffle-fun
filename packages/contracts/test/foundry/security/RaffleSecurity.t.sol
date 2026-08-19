@@ -104,7 +104,7 @@ contract RaffleSecurityTest is Test {
         assertEq(hostile.balanceOf(address(raffle)), USDC);
     }
 
-    function testReentrantQuoteTokenCannotNestOutboundSettlement() public {
+    function testReentrantQuoteTokenCannotNestWinnerWithdrawal() public {
         ReentrantERC20 hostile = new ReentrantERC20();
         RaffleFactory hostileFactory = _factoryWithQuote(address(hostile));
         vm.prank(sponsor);
@@ -121,6 +121,8 @@ contract RaffleSecurityTest is Test {
         hostile.armOutbound(address(raffle));
         vm.prank(buyer);
         raffle.settleWinningTicket(receiptId);
+        assertFalse(hostile.reentryBlocked());
+        raffle.releaseWinnerProceeds();
         assertTrue(hostile.reentryBlocked());
         assertEq(raffle.unsettledPot(), 0);
     }
@@ -189,18 +191,25 @@ contract RaffleSecurityTest is Test {
 
         hostile.setTransferMode(AdversarialOutboundERC20.TransferMode.RecipientFee);
         vm.prank(buyer);
-        vm.expectRevert();
         raffle.settleWinningTicket(receiptId);
-        assertEq(raffle.ownerOf(receiptId), buyer);
-        assertEq(raffle.unsettledPot(), USDC);
-        assertEq(raffle.sponsorProceeds(), 0);
-        assertEq(raffle.protocolFees(), 0);
+        vm.expectRevert();
+        raffle.ownerOf(receiptId);
+        assertEq(raffle.unsettledPot(), 0);
+        assertEq(raffle.winnerProceeds(), 800_000);
+        assertEq(raffle.sponsorProceeds(), 150_000);
+        assertEq(raffle.protocolFees(), 50_000);
         assertEq(hostile.balanceOf(address(raffle)), USDC);
+
+        vm.expectRevert();
+        raffle.releaseWinnerProceeds();
+        assertEq(raffle.winnerProceeds(), 800_000);
+        assertEq(raffle.sponsorProceeds(), 150_000);
+        assertEq(raffle.protocolFees(), 50_000);
 
         hostile.setTransferMode(AdversarialOutboundERC20.TransferMode.Exact);
         vm.prank(buyer);
-        raffle.settleWinningTicket(receiptId);
-        assertEq(raffle.unsettledPot(), 0);
+        raffle.releaseWinnerProceeds();
+        assertEq(raffle.winnerProceeds(), 0);
     }
 
     function testFactoryReentrancyDuringPrizeEscrowIsBlockedAtomically() public {
@@ -242,6 +251,9 @@ contract RaffleSecurityTest is Test {
         hostilePrize.armWinnerTransfer(IRaffle(address(raffle)), receiptId, buyer);
         vm.prank(outsider);
         raffle.settleWinningTicket(receiptId);
+        assertEq(hostilePrize.reentryAttempts(), 0);
+        vm.prank(outsider);
+        raffle.releaseWinnerPrize();
 
         assertTrue(hostilePrize.reentryBlocked());
         assertEq(hostilePrize.reentryAttempts(), 1);
@@ -286,7 +298,7 @@ contract RaffleSecurityTest is Test {
         vm.prank(buyer);
         raffle.settleWinningTicket(receiptId);
         assertEq(raffle.unsettledPot(), 0);
-        assertEq(raffle.accountedQuoteBalance(), 200_000);
+        assertEq(raffle.accountedQuoteBalance(), USDC);
     }
 
     function testProtocolDestinationsCannotReceiveReceiptsOrPayouts() public {
@@ -309,6 +321,8 @@ contract RaffleSecurityTest is Test {
         _resolve(raffle, 0);
         vm.prank(outsider);
         raffle.settleWinningTicket(receiptId);
+        vm.prank(outsider);
+        raffle.releaseWinnerPrize();
         assertEq(prize.ownerOf(raffle.prizeTokenId()), buyer);
     }
 
@@ -349,7 +363,7 @@ contract RaffleSecurityTest is Test {
         vm.expectRevert();
         raffle.releaseProtocolFees();
         assertEq(raffle.protocolFees(), treasuryClaim);
-        assertEq(raffle.accountedQuoteBalance(), 200_000);
+        assertEq(raffle.accountedQuoteBalance(), USDC);
     }
 
     function _create(RaffleFactory selectedFactory, address prizeAddress, uint128 reserve)

@@ -17,6 +17,8 @@ import {
   RefundsEnabled,
   Transfer,
   VrfCallbackIgnored,
+  WinnerPrizeReleased,
+  WinnerProceedsReleased,
   WinningTicketSettled,
 } from "../generated/templates/Raffle/Raffle";
 import { handleRaffleCreated } from "../src/factory";
@@ -28,6 +30,8 @@ import {
   handleRefundsEnabled,
   handleTransfer,
   handleVrfCallbackIgnored,
+  handleWinnerPrizeReleased,
+  handleWinnerProceedsReleased,
   handleWinningTicketSettled,
 } from "../src/raffle";
 import { ticketEntityId } from "../src/helpers";
@@ -61,6 +65,12 @@ describe("Raffle mappings", () => {
     assert.fieldEquals("Raffle", RAFFLE.toHexString(), "status", "ACTIVE");
     assert.fieldEquals("Raffle", RAFFLE.toHexString(), "entryPrice", "1000000");
     assert.fieldEquals("Raffle", RAFFLE.toHexString(), "reserveEntries", "100");
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "drawRequestDeadline",
+      "174800",
+    );
     assert.fieldEquals(
       "Raffle",
       RAFFLE.toHexString(),
@@ -142,6 +152,18 @@ describe("Raffle mappings", () => {
     assert.fieldEquals(
       "Raffle",
       RAFFLE.toHexString(),
+      "winnerProceeds",
+      "16000000",
+    );
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "winnerRecipient",
+      RECIPIENT.toHexString(),
+    );
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
       "sponsorProceeds",
       "3000000",
     );
@@ -165,6 +187,22 @@ describe("Raffle mappings", () => {
       "true",
     );
     assert.entityCount("WinningSettlement", 1);
+
+    const release = createWinnerProceedsReleasedEvent();
+    handleWinnerProceedsReleased(release);
+    assert.fieldEquals("Raffle", RAFFLE.toHexString(), "winnerProceeds", "0");
+    assert.fieldEquals(
+      "QuoteTokenStats",
+      FACTORY.toHexString() + "-" + QUOTE.toHexString(),
+      "winnerCashRedeemed",
+      "16000000",
+    );
+    assert.fieldEquals(
+      "ProceedsRelease",
+      release.transaction.hash.toHexString() + "-9",
+      "kind",
+      "WINNER",
+    );
   });
 
   test("ignored VRF callbacks are indexed for operational alerts", () => {
@@ -187,7 +225,7 @@ describe("Raffle mappings", () => {
     assert.fieldEquals("IgnoredVrfCallback", id, "status", "DRAWING");
   });
 
-  test("NFT settlement accounts the fee only after prize delivery", () => {
+  test("NFT settlement allocates fees before isolated prize delivery", () => {
     createPurchasedRaffle();
     handleTransfer(createTransferEvent(BUYER, RECIPIENT, TICKET_ID, 4));
     handleDrawRequested(createDrawRequestedEvent());
@@ -223,6 +261,12 @@ describe("Raffle mappings", () => {
       "totalProtocolFees",
       "1000000",
     );
+    assert.fieldEquals("Raffle", RAFFLE.toHexString(), "prizeClaimed", "false");
+
+    const release = createWinnerPrizeReleasedEvent();
+    handleWinnerPrizeReleased(release);
+    assert.fieldEquals("Raffle", RAFFLE.toHexString(), "prizeClaimed", "true");
+    assert.entityCount("WinnerPrizeRelease", 1);
   });
 
   test("refund redemption records ticket and entry quantities separately", () => {
@@ -372,6 +416,29 @@ function createWinningSettlementEvent(result: i32): WinningTicketSettled {
   pushUnsigned(event, "cashAmount", result == 4 ? 16_000_000 : 0);
   pushUnsigned(event, "protocolFee", 1_000_000);
   pushUnsigned(event, "sponsorAmount", result == 3 ? 19_000_000 : 3_000_000);
+  return event;
+}
+
+function createWinnerProceedsReleasedEvent(): WinnerProceedsReleased {
+  const event = changetype<WinnerProceedsReleased>(newMockEvent());
+  event.address = RAFFLE;
+  event.logIndex = BigInt.fromI32(9);
+  event.parameters = new Array();
+  pushAddress(event, "caller", BUYER);
+  pushAddress(event, "recipient", RECIPIENT);
+  pushUnsigned(event, "amount", 16_000_000);
+  return event;
+}
+
+function createWinnerPrizeReleasedEvent(): WinnerPrizeReleased {
+  const event = changetype<WinnerPrizeReleased>(newMockEvent());
+  event.address = RAFFLE;
+  event.logIndex = BigInt.fromI32(9);
+  event.parameters = new Array();
+  pushAddress(event, "caller", BUYER);
+  pushAddress(event, "recipient", RECIPIENT);
+  pushAddress(event, "prizeToken", PRIZE);
+  pushUnsigned(event, "prizeTokenId", 42);
   return event;
 }
 

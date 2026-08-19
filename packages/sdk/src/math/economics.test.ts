@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  DRAW_CALLBACK_TIMEOUT_SECONDS,
+  DRAW_REQUEST_TIMEOUT_SECONDS,
   ENTRY_PRICE,
+  MAX_SALE_DURATION_SECONDS,
   MAX_UINT128,
   calculatePurchaseAmounts,
   calculateRefundAmounts,
@@ -12,6 +15,12 @@ import {
 import { formatQuoteAmount, parseQuoteAmount } from "./quote.js";
 
 describe("protocol economics", () => {
+  it("mirrors the fixed sale and draw timeout constants", () => {
+    expect(MAX_SALE_DURATION_SECONDS).toBe(30n * 24n * 60n * 60n);
+    expect(DRAW_REQUEST_TIMEOUT_SECONDS).toBe(2n * 24n * 60n * 60n);
+    expect(DRAW_CALLBACK_TIMEOUT_SECONDS).toBe(2n * 24n * 60n * 60n);
+  });
+
   it("uses the fixed one-dollar entry price", () => {
     expect(ENTRY_PRICE).toBe(1_000_000n);
     expect(calculatePurchaseAmounts({ entryCount: 120n })).toEqual({

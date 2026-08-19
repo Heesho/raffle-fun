@@ -7,6 +7,11 @@ security campaign, not an independent audit and not a mainnet authorization.
 > The candidate is committed and merged to `main`, has no live deployment, and has not
 > completed the release blockers in `RELEASE-CHECKLIST.md`.
 
+> **Timeout-remediation evidence notice:** the numerical results below are preserved
+> evidence for the recorded candidate SHAs. The later hard request/callback-boundary
+> remediation changes protocol behavior and is not validated by those totals. Its final
+> source identity and every affected gate must be regenerated before release.
+
 ## Candidate identity and scope
 
 | Item               | Current value                                                                             |
@@ -32,16 +37,26 @@ deployment, or upgrade path for existing raffles.
   Refund iteration is bounded by at most 100 submitted ticket IDs.
 - Tickets remain transferable bearer claims in every status until settlement or a
   refund burns them.
-- The callback authenticates the wrapper and request, handles synchronous, malformed,
-  stale, duplicate, and wrong-request callbacks, and stores only the winning entry and
-  terminal economic branch.
-- Reserve equality selects the NFT branch. Winning-ticket settlement delivers the NFT
-  and records 5% for the treasury and 95% for the sponsor. A valid result is final.
-- A missed reserve selects the final cash branch: 80% of gross to the winner, 5% to
-  the treasury, and 15% to the sponsor, who also recovers the NFT. There is no cash-branch
-  refund timeout.
-- Winner settlement is permissionless and fixed to the current ticket owner. The
-  supplied ticket ID must contain the winning entry.
+- A sold raffle accepts a request only in `[endTime, drawRequestDeadline())`; if no
+  request succeeds, refunds open at the request deadline. An accepted request resolves
+  only through a callback before `callbackDeadline()`; refunds open and callbacks are
+  ignored at that deadline. A last-valid-second request can place the final nominal
+  boundary almost four days after sale end.
+- The callback authenticates the wrapper and request. Authenticated, ABI-decodable
+  synchronous, wrong-word-count, stale, duplicate, wrong-request, and deadline-expired
+  callbacks are ignored when they fail qualification; unauthorized or undecodable calls
+  revert earlier. A valid callback stores only the winning entry and terminal economic
+  branch.
+- Reserve equality selects the NFT branch. Winning-ticket settlement snapshots the
+  current ticket owner and records 5% for the treasury and 95% for the sponsor. The
+  winner's NFT is released separately to that fixed recipient. A valid result is final.
+- A missed reserve selects the final cash branch: settlement records 80% of gross for
+  the fixed winner, 5% for the treasury, and 15% for the sponsor. The winner proceeds
+  and sponsor prize are released separately, so one failed recipient cannot roll back
+  another recipient's allocation. There is no cash-branch refund timeout.
+- Winner settlement is permissionless and transfer-free. The supplied ticket ID must
+  contain the winning entry, and the current ticket owner is snapshotted as the fixed
+  winner recipient before the ticket is burned.
 - Refund value is derived from the ticket's stored inclusive range. Exact
   inbound and outbound quote-token deltas, non-reentrancy, fixed-recipient releases, prize custody,
   and post-transfer ownership are exercised against adversarial assets.
@@ -50,9 +65,10 @@ deployment, or upgrade path for existing raffles.
 
 ## Verified evidence
 
-These are the latest reported results for the committed v1 audit candidate. The
-mutation campaign was repeated from the clean implementation SHA; the complete gate
-set must still be reproduced from a clean checkout of the eventual release SHA.
+These are the latest reported results for the recorded pre-remediation v1 audit
+candidate. The mutation campaign was repeated from the clean implementation SHA; none
+of these totals establishes coverage of the later timeout remediation. The complete
+gate set must be reproduced from a clean checkout of the eventual release SHA.
 
 | Gate                                                       |                                                Result |
 | ---------------------------------------------------------- | ----------------------------------------------------: |
@@ -135,8 +151,9 @@ complete disposition.
    USDC and Chainlink wrapper/coordinator configuration, and validate exact verified
    source/runtime bytecode and ownership acceptance.
 5. Deploy to Sepolia first and complete the monitored soak for NFT success, cash
-   success, empty raffles, the callback timeout, both deadline orderings, weighted refunds,
-   contract owners, and failed/retried prize delivery.
+   success, empty raffles, exact request/callback boundaries, a last-valid-second
+   request, both timeout-refund origins, weighted refunds, contract owners, and
+   failed/retried prize delivery.
 6. Deploy and drill monitoring, incident response, frontend-disable, disclosure, and
    new-factory migration procedures.
 7. Complete jurisdiction-specific legal review, decide the supported launch-value
