@@ -16,17 +16,17 @@ No administrator may alter an existing raffle, choose its winner, or seize its a
 | Admin rewrite                        | fixed-target clone; no upgrade, raffle owner, rescue, or settlement override           |
 | Sponsor cancels after sales          | no sold-raffle cancellation path                                                       |
 | Unbounded entry work                 | one stored range per ticket; purchase, callback, and winner proof are O(1)             |
-| Ownership changes around draw        | live `ownerOf` bearer semantics; claim burns atomically                                |
+| Ownership changes around draw        | live `ownerOf` bearer semantics; owner redemption burns atomically                     |
 | Missing draw caller                  | permissionless full refunds at `endTime + 2 days`                                      |
 | Missing callback                     | permissionless full refunds two days after the accepted request                        |
-| Broken winner delivery               | settlement is transfer-free; failure affects only the winner's later release           |
+| Broken winner delivery               | accounting-only settlement; failed redemption restores ticket and claim                |
 | Fake or replayed randomness          | immutable-wrapper authentication, request match, one-way status                        |
 | Callback griefing                    | callback performs storage only and no user or token calls                              |
 | Cash branch diverts sponsor value    | fixed gross split: 80% winner / 5% protocol / 15% sponsor                              |
-| Double settlement                    | winning and refund tickets burn; claims zero before their individual transfers         |
+| Double settlement or redemption      | one-time markers; winner/refund tickets burn atomically with payment                   |
 | Taxed or rebasing quote token        | exact inbound and outbound balance-delta verification                                  |
 | One claimant blocks another          | separate winner, sponsor, treasury, and refund paths                                   |
-| Contract winner rejects NFT callback | fixed-owner delivery uses `transferFrom` plus ownership verification                   |
+| Contract winner rejects NFT callback | owner redemption uses `transferFrom` plus ownership verification                       |
 | Protocol sink receives claim         | known factory, raffle, implementation, token, wrapper, and prize destinations rejected |
 
 ## Adversaries
@@ -48,9 +48,11 @@ the supported-asset assumptions.
 
 ERC-165 admission cannot prove honest future behavior. A malicious or upgradeable
 collection may lie about ownership, reenter, freeze, burn, or misdirect a prize. The
-post-transfer ownership check prevents a no-op or misdirected release from committing.
-A noncompliant NFT can block the winner's prize release indefinitely, but settlement
-and the independent quote claims remain available.
+post-transfer ownership check prevents a no-op or misdirected redemption from committing.
+A noncompliant NFT can block winner redemption indefinitely, but failed delivery
+restores the ticket, redemption markers, and any settlement performed inside that
+transaction. Anyone can settle separately so sponsor and treasury quote claims remain
+available while the winning ticket stays transferable and unburned.
 
 ### USDC
 
@@ -72,9 +74,11 @@ reorg risk.
 
 The protocol blocks known internal sinks, not every arbitrary contract or future
 address. A user can still transfer a ticket to a contract that cannot manage a received
-NFT or initiate its own refunds. Permissionless winning-ticket settlement snapshots
-the current owner; later winner, sponsor, and treasury releases always use their fixed
-recorded recipients. A bad winner destination can therefore strand only its own claim.
+NFT, initiate its own refunds, or call winner redemption. Permissionless settlement
+does not read or fix the ticket owner. After settlement the ticket remains transferable,
+and only its current owner can atomically burn it for the winner NFT or cash. Sponsor
+and treasury releases always use their immutable recipients, so a bad winner
+destination can strand only its own bearer claim.
 
 Lost keys, mistaken external transfers, and unrelated NFTs forced into a raffle are
 not recoverable. There is no administrator rescue desk.

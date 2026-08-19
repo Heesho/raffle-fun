@@ -135,7 +135,7 @@ export default function DocsPage() {
           <DocHeading
             eyebrow="Exact economics"
             title="Every entry is exactly $1 USDC."
-            text="One 5% fee is deducted from aggregate gross sales, never added at checkout. It is recorded when the winning ticket settles, alongside the winner and sponsor claims; every asset is released independently afterward."
+            text="One 5% fee is deducted from aggregate gross sales, never added at checkout. Settlement records the winner, sponsor, and protocol claims without moving an asset; the winning ticket's owner later burns it to redeem atomically."
           />
           <div className="card mt-8 overflow-hidden">
             <div className="grid gap-1 bg-[var(--ink)] p-6 text-white sm:grid-cols-3">
@@ -167,10 +167,11 @@ export default function DocsPage() {
             </div>
           </div>
           <p className="mt-5 rounded-2xl card p-5 text-sm leading-6">
-            Purchases never allocate fees. A cash result creates the treasury,
-            outcome and winning entry only. Settling the winning ticket
-            allocates sponsor and protocol balances and pays or delivers the
-            winner’s asset.
+            Purchases never allocate fees, and a VRF result records only the
+            outcome and winning entry. Settling the winning ticket allocates the
+            winner, sponsor, and protocol balances without paying or delivering
+            an asset. The current ticket owner burns it while receiving the
+            winner’s cash or NFT in one transaction.
           </p>
         </section>
 
@@ -193,8 +194,8 @@ export default function DocsPage() {
             />
             <RiskCard
               icon={<CircleDollarSign />}
-              title="Fixed destinations"
-              text="Anyone may execute settlement and releases, but winners, the sponsor, and the treasury always receive assets at their recorded addresses."
+              title="Bearer redemption"
+              text="Anyone may settle the result, but only the winning ticket's current owner can burn it and redeem. Sponsor and treasury releases still use their fixed addresses."
             />
           </div>
           <p className="mt-5 text-sm leading-6 text-[var(--ink-2)]">
@@ -206,8 +207,9 @@ export default function DocsPage() {
             callback deadline; at the deadline they are ignored and refunds are
             available, even if nobody has opened refunds yet. Only
             wrapper-authenticated, ABI-decodable calls reach that ignore logic.
-            Anyone may settle the winner, and delivery always goes to the
-            recorded winner recipient.
+            Anyone may settle the winning ticket without fixing its owner. The
+            ticket remains transferable afterward; whoever owns it when it is
+            redeemed burns it and receives the prize atomically.
           </p>
         </section>
 
@@ -215,7 +217,7 @@ export default function DocsPage() {
           <DocHeading
             eyebrow="Entries & ticket ownership"
             title="Ranges keep large purchases simple."
-            text="A ticket can represent one entry or an enormous contiguous range. It remains transferable in every raffle state until successful winner settlement or a refund burns it."
+            text="A ticket can represent one entry or an enormous contiguous range. It remains transferable in every raffle state, including after settlement, until successful winner redemption or a refund burns it."
           />
           <div className="card mt-8 grid gap-5 p-6 sm:grid-cols-3">
             <Fact

@@ -5,14 +5,14 @@ factory and raffle contracts directly for authoritative state. There is no Lens.
 write checks the wallet chain, uses raw-unit `bigint` values, and is simulated against
 the target contract before submission.
 
-| Route                | Purpose                                                           |
-| -------------------- | ----------------------------------------------------------------- |
-| `/`                  | discover and filter indexed raffles                               |
-| `/create`            | validate/approve one NFT and atomically create a raffle           |
-| `/raffle/[address]`  | buy entries, request a draw, settle, refund, and release proceeds |
-| `/profile/[address]` | indexed range tickets and protocol positions                      |
-| `/activity`          | indexed lifecycle and redemption history                          |
-| `/docs`              | mechanics, guarantees, and external risks                         |
+| Route                | Purpose                                                          |
+| -------------------- | ---------------------------------------------------------------- |
+| `/`                  | discover and filter indexed raffles                              |
+| `/create`            | validate/approve one NFT and atomically create a raffle          |
+| `/raffle/[address]`  | buy entries, request a draw, settle, redeem, refund, and release |
+| `/profile/[address]` | indexed range tickets and protocol positions                     |
+| `/activity`          | indexed lifecycle and redemption history                         |
+| `/docs`              | mechanics, guarantees, and external risks                        |
 
 ## Creation
 
@@ -40,8 +40,9 @@ Allowance handling simulates ordered approve/buy behavior before requesting an
 EIP-5792 wallet batch, with a separately confirmed approval fallback when batching is
 unavailable.
 
-Tickets remain transferable until successful winner settlement or a refund burns them.
-The UI treats the current `ownerOf(ticketId)` result as authoritative.
+Tickets remain transferable until successful winner redemption or a refund burns them,
+including after permissionless winner settlement. The UI treats the current
+`ownerOf(ticketId)` result as authoritative.
 
 ## Draw, settlement, and refunds
 
@@ -58,11 +59,13 @@ wait to almost four days after sale end.
 
 The Chainlink callback records only the winning entry. It does not discover the
 containing ticket, so winner settlement requires a ticket ID. The app discovers
-candidate ranges from indexed history, then the contract proves live `ownerOf` and
-range containment. NFT and cash settlement may be triggered by anyone. It snapshots
-the current owner and records all claims without transferring an asset. Winner cash,
-winner NFT, sponsor proceeds, protocol fees, and sponsor NFT are released separately
-to fixed recipients, so one failed recipient cannot block the others.
+candidate ranges from indexed history, then the contract proves range containment.
+NFT and cash settlement may be triggered by anyone; it records the winning ticket ID
+and allocates liabilities without reading its owner or burning it. The current owner
+then calls `redeemWinningTicket`, which may settle first when necessary and atomically
+burns the ticket while delivering the NFT or cash. Failed delivery reverts the burn.
+Sponsor proceeds, protocol fees, and the cash-result sponsor NFT remain independent
+permissionless releases to immutable recipients.
 
 Refunds similarly require explicit ticket IDs. A call accepts at most 100 tickets,
 and each ticket refunds its stored number of entries. The owner must initiate the call,
@@ -77,7 +80,8 @@ or stale, the UI shows the value as unavailable instead of inventing zero.
 
 The offline sandbox mirrors the same sequential ticket IDs, stored ranges, 5% fee,
 branch-specific 95% sponsor or 80/5/15 gross economics, O(1) winner selection,
-transfer-free current-owner settlement, independent releases, and
+transfer-free accounting settlement, owner-only atomic redemption, independent
+sponsor/protocol releases, and
 the same hard request/callback boundaries and both timeout-refund origins. Only
 authenticated, ABI-decodable callbacks reach the ignored-callback cases; unauthorized
 or undecodable calls fail earlier. Demo state uses a versioned local-storage key and is

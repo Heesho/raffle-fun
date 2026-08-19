@@ -12,11 +12,11 @@ legally approved. There is **no live deployment** of this candidate.
 No deployment, broadcast, source verification, ownership transaction, package
 publication, push, or pull request is authorized by this report.
 
-> **Timeout-remediation evidence notice:** the numerical results and finding closures
-> below are preserved facts for the recorded candidate SHAs. The later hard
-> request/callback-boundary remediation changes behavior and requires a new frozen
-> identity plus complete affected-gate reproduction; this dated report does not claim
-> that validation.
+> **Superseded-candidate evidence notice:** the numerical results, design narrative, and
+> finding closures below are preserved facts for the recorded candidate SHAs. The later
+> timeout remediation, official Chainlink consumer-base migration, and bearer-redemption
+> redesign require a new frozen identity plus complete affected-gate reproduction; this
+> dated report does not claim that validation.
 
 ## Candidate identity
 

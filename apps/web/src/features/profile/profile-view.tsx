@@ -51,8 +51,10 @@ function raffleRead(
 
 type LiveClaim = {
   readonly raffle: Address;
-  readonly canReleaseWinnerProceeds: boolean;
-  readonly canReleaseWinnerPrize: boolean;
+  readonly winnerRedemption: {
+    readonly ticketId: bigint;
+    readonly result: RaffleStatus.NftWon | RaffleStatus.CashWon;
+  } | null;
   readonly canReleaseSponsorProceeds: boolean;
   readonly canReleaseProtocolFees: boolean;
   readonly canReleaseSponsorPrize: boolean;
@@ -145,12 +147,14 @@ export function ProfileView({
         : raffleAddresses.flatMap((raffle) => [
             raffleRead(raffle, "sponsorRecipient"),
             raffleRead(raffle, "protocolTreasury"),
-            raffleRead(raffle, "winnerRecipient"),
             raffleRead(raffle, "sponsorProceeds"),
             raffleRead(raffle, "protocolFees"),
-            raffleRead(raffle, "winnerProceeds"),
             raffleRead(raffle, "status"),
             raffleRead(raffle, "prizeClaimed"),
+            raffleRead(raffle, "winningEntry"),
+            raffleRead(raffle, "winningTicketId"),
+            raffleRead(raffle, "settlementComplete"),
+            raffleRead(raffle, "winnerRedeemed"),
           ]),
     [profile, raffleAddresses],
   );
@@ -161,28 +165,55 @@ export function ProfileView({
     },
   });
 
+  const indexedTickets = useMemo(
+    () => profileQuery.data?.tickets ?? [],
+    [profileQuery.data?.tickets],
+  );
   const liveClaims = useMemo<readonly LiveClaim[]>(() => {
     if (profile === undefined) return [];
     const reads = liveQuery.data ?? [];
     return raffleAddresses.map((raffle, raffleIndex) => {
-      const offset = raffleIndex * 8;
+      const offset = raffleIndex * 10;
       const sponsorRecipient = reads[offset]?.result as Address | undefined;
       const treasury = reads[offset + 1]?.result as Address | undefined;
-      const winnerRecipient = reads[offset + 2]?.result as Address | undefined;
-      const sponsorProceeds = (reads[offset + 3]?.result ?? 0n) as bigint;
-      const protocolFees = (reads[offset + 4]?.result ?? 0n) as bigint;
-      const winnerProceeds = (reads[offset + 5]?.result ?? 0n) as bigint;
-      const status = Number(reads[offset + 6]?.result ?? -1);
-      const prizeClaimed = (reads[offset + 7]?.result ?? true) as boolean;
+      const sponsorProceeds = (reads[offset + 2]?.result ?? 0n) as bigint;
+      const protocolFees = (reads[offset + 3]?.result ?? 0n) as bigint;
+      const status = Number(reads[offset + 4]?.result ?? -1);
+      const prizeClaimed = (reads[offset + 5]?.result ?? true) as boolean;
+      const winningEntry = (reads[offset + 6]?.result ?? 0n) as bigint;
+      const winningTicketId = (reads[offset + 7]?.result ?? 0n) as bigint;
+      const settlementComplete = reads[offset + 8]?.result as
+        boolean | undefined;
+      const winnerRedeemed = reads[offset + 9]?.result as boolean | undefined;
+      const winningTicket =
+        winnerRedeemed === false &&
+        (status === RaffleStatus.NftWon || status === RaffleStatus.CashWon)
+          ? indexedTickets.find((ticket) => {
+              if (ticket.raffle.id.toLowerCase() !== raffle.toLowerCase()) {
+                return false;
+              }
+              if (settlementComplete === true) {
+                return ticket.ticketId === winningTicketId.toString();
+              }
+              return (
+                settlementComplete === false &&
+                winningEntry > 0n &&
+                ticket.firstEntry !== null &&
+                ticket.lastEntry !== null &&
+                winningEntry >= BigInt(ticket.firstEntry) &&
+                winningEntry <= BigInt(ticket.lastEntry)
+              );
+            })
+          : undefined;
       return {
         raffle,
-        canReleaseWinnerProceeds:
-          winnerRecipient?.toLowerCase() === profile.toLowerCase() &&
-          winnerProceeds > 0n,
-        canReleaseWinnerPrize:
-          winnerRecipient?.toLowerCase() === profile.toLowerCase() &&
-          !prizeClaimed &&
-          status === RaffleStatus.NftWon,
+        winnerRedemption:
+          winningTicket === undefined
+            ? null
+            : {
+                ticketId: BigInt(winningTicket.ticketId),
+                result: status as RaffleStatus.NftWon | RaffleStatus.CashWon,
+              },
         canReleaseSponsorProceeds:
           sponsorRecipient?.toLowerCase() === profile.toLowerCase() &&
           sponsorProceeds > 0n,
@@ -196,19 +227,20 @@ export function ProfileView({
             status === RaffleStatus.Refunding),
       };
     });
-  }, [liveQuery.data, profile, raffleAddresses]);
+  }, [indexedTickets, liveQuery.data, profile, raffleAddresses]);
   const releasableProceeds = liveClaims.reduce(
     (count, item) =>
       count +
-      Number(item.canReleaseWinnerProceeds) +
+      Number(item.winnerRedemption?.result === RaffleStatus.CashWon) +
       Number(item.canReleaseSponsorProceeds) +
       Number(item.canReleaseProtocolFees),
     0,
   );
   const claimablePrizes = liveClaims.filter(
-    (item) => item.canReleaseWinnerPrize || item.canReleaseSponsorPrize,
+    (item) =>
+      item.winnerRedemption?.result === RaffleStatus.NftWon ||
+      item.canReleaseSponsorPrize,
   ).length;
-  const indexedTickets = profileQuery.data?.tickets ?? [];
   const indexedEntriesComplete = indexedTickets.every(
     (ticket) => ticket.entryCount !== null,
   );
@@ -222,26 +254,16 @@ export function ProfileView({
     profile !== undefined &&
     address.toLowerCase() === profile.toLowerCase();
   const batchCalls = liveClaims.flatMap((item) => [
-    ...(item.canReleaseWinnerProceeds
+    ...(item.winnerRedemption !== null
       ? [
           {
             to: item.raffle,
-            kind: "winnerProceeds" as const,
+            kind: "winnerRedemption" as const,
+            ticketId: item.winnerRedemption.ticketId,
             data: encodeFunctionData({
               abi: raffleAbi,
-              functionName: "releaseWinnerProceeds",
-            }),
-          },
-        ]
-      : []),
-    ...(item.canReleaseWinnerPrize
-      ? [
-          {
-            to: item.raffle,
-            kind: "winnerPrize" as const,
-            data: encodeFunctionData({
-              abi: raffleAbi,
-              functionName: "releaseWinnerPrize",
+              functionName: "redeemWinningTicket",
+              args: [item.winnerRedemption.ticketId],
             }),
           },
         ]
@@ -311,20 +333,13 @@ export function ProfileView({
       try {
         for (const call of batchCalls) {
           let hash: `0x${string}`;
-          if (call.kind === "winnerProceeds") {
+          if (call.kind === "winnerRedemption") {
             const { request } = await publicClient.simulateContract({
               account: address,
               address: call.to,
               abi: raffleAbi,
-              functionName: "releaseWinnerProceeds",
-            });
-            hash = await wallet.data.writeContract(request);
-          } else if (call.kind === "winnerPrize") {
-            const { request } = await publicClient.simulateContract({
-              account: address,
-              address: call.to,
-              abi: raffleAbi,
-              functionName: "releaseWinnerPrize",
+              functionName: "redeemWinningTicket",
+              args: [call.ticketId],
             });
             hash = await wallet.data.writeContract(request);
           } else if (call.kind === "sponsorProceeds") {
@@ -426,7 +441,7 @@ export function ProfileView({
           value={
             releasableProceeds === 0
               ? "0"
-              : `${releasableProceeds} USDC release${releasableProceeds === 1 ? "" : "s"}`
+              : `${releasableProceeds} USDC claim${releasableProceeds === 1 ? "" : "s"}`
           }
         />
         <Summary
@@ -497,7 +512,7 @@ export function ProfileView({
           <p className="eyebrow">Indexed entry tickets</p>
           <h2 className="mt-2 text-3xl md:text-4xl">Your ticket ranges</h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--ink-2)]">
-            These ranges help you find the ticket ID to supply for settlement or
+            These ranges help you find the ticket ID to supply for redemption or
             refunds. The raffle contract&apos;s current owner check remains
             authoritative.
           </p>

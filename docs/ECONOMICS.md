@@ -47,7 +47,8 @@ per-purchase rounding.
 ### NFT result
 
 The callback records only the result and winning entry. When anyone later settles the
-winning ticket, the contract records its current owner as the fixed NFT recipient and:
+winning ticket, the contract records its ID without reading its owner or burning it and
+allocates:
 
 ```text
 protocolFees    = protocolFee
@@ -55,10 +56,13 @@ sponsorProceeds = netPot
 winner cash     = 0
 ```
 
+The ticket remains transferable. Its current owner receives the NFT only by atomically
+burning the ticket through `redeemWinningTicket`.
+
 ### Cash result
 
 The callback records only the result and winning entry. When anyone later settles the
-winning ticket, the transaction records:
+winning ticket, the transaction records its ID and allocates:
 
 ```text
 protocolFees    = protocolFee
@@ -68,7 +72,9 @@ sponsorProceeds = cashSponsor
 
 The sponsor also receives the NFT back. Assigning the subtraction remainder to the
 sponsor conserves every raw quote-token unit. The cash result is final and never
-changes to refunds.
+changes to refunds. The cash amount remains attached to the transferable winning
+ticket until its current owner atomically burns it and receives the amount through
+`redeemWinningTicket`.
 
 ### Examples
 

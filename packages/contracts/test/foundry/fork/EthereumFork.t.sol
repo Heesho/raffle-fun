@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.36;
 
+import { VRFV2PlusWrapperConsumerBase } from "@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol";
+import { IVRFV2PlusWrapper } from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { Test } from "forge-std/Test.sol";
 
 import { Raffle } from "../../../src/Raffle.sol";
 import { RaffleFactory } from "../../../src/RaffleFactory.sol";
-import { IChainlinkVRFV2PlusWrapper } from "../../../src/interfaces/IChainlinkVRFV2PlusWrapper.sol";
 import { IRaffle } from "../../../src/interfaces/IRaffle.sol";
 import { IRaffleFactory } from "../../../src/interfaces/IRaffleFactory.sol";
 import { MockERC721 } from "../../../src/mocks/MockERC721.sol";
@@ -61,7 +62,7 @@ contract EthereumForkTest is Test {
         assertGt(wrapperAddress.code.length, 0);
         assertGt(usdc.code.length, 0);
         assertEq(IERC20Metadata(usdc).decimals(), 6);
-        assertGt(IChainlinkVRFV2PlusWrapper(wrapperAddress).calculateRequestPriceNative(300_000, 1), 0);
+        assertGt(IVRFV2PlusWrapper(wrapperAddress).calculateRequestPriceNative(300_000, 1), 0);
 
         MockERC721 prize = new MockERC721();
         RaffleFactory factory = new RaffleFactory(usdc, wrapperAddress, treasury, address(this));
@@ -101,7 +102,7 @@ contract EthereumForkTest is Test {
 
         uint256[] memory randomWords = new uint256[](1);
         randomWords[0] = 1;
-        vm.expectPartialRevert(IRaffle.OnlyVRFWrapperCanFulfill.selector);
+        vm.expectPartialRevert(VRFV2PlusWrapperConsumerBase.OnlyVRFWrapperCanFulfill.selector);
         raffle.rawFulfillRandomWords(requestId, randomWords);
     }
 

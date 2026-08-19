@@ -70,6 +70,7 @@ type Raffle @entity(immutable: false) {
   winningEntry: BigInt
   winningTicketId: BigInt
   winningTicketSettled: Boolean!
+  winnerRedeemed: Boolean!
   prizeClaimed: Boolean!
   prizeDestination: Bytes
   createdTxHash: Bytes!
@@ -85,6 +86,7 @@ type Raffle @entity(immutable: false) {
   refundEnable: RefundEnable @derivedFrom(field: "raffle")
   refundRedemptions: [RefundRedemption!]! @derivedFrom(field: "raffle")
   winningSettlements: [WinningSettlement!]! @derivedFrom(field: "raffle")
+  winningRedemptions: [WinningRedemption!]! @derivedFrom(field: "raffle")
   proceedsReleases: [ProceedsRelease!]! @derivedFrom(field: "raffle")
   tickets: [Ticket!]! @derivedFrom(field: "raffle")
   purchases: [Purchase!]! @derivedFrom(field: "raffle")
@@ -221,7 +223,7 @@ type WinningSettlement @entity(immutable: true) {
   id: String!
   raffle: Raffle!
   ticketId: BigInt!
-  winner: Account!
+  settler: Account!
   result: RaffleStatus!
   cashAmount: BigInt!
   protocolFee: BigInt!
@@ -232,8 +234,22 @@ type WinningSettlement @entity(immutable: true) {
   logIndex: BigInt!
 }
 
+type WinningRedemption @entity(immutable: true) {
+  id: String!
+  raffle: Raffle!
+  ticketId: BigInt!
+  winner: Account!
+  result: RaffleStatus!
+  cashAmount: BigInt!
+  prizeToken: Bytes!
+  prizeTokenId: BigInt!
+  transactionHash: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  logIndex: BigInt!
+}
+
 enum ProceedsKind {
-  WINNER
   SPONSOR
   PROTOCOL
 }
@@ -252,19 +268,6 @@ type ProceedsRelease @entity(immutable: true) {
 }
 
 type SponsorPrizeRelease @entity(immutable: true) {
-  id: String!
-  raffle: Raffle!
-  caller: Account!
-  recipient: Account!
-  prizeToken: Bytes!
-  prizeTokenId: BigInt!
-  transactionHash: Bytes!
-  blockNumber: BigInt!
-  timestamp: BigInt!
-  logIndex: BigInt!
-}
-
-type WinnerPrizeRelease @entity(immutable: true) {
   id: String!
   raffle: Raffle!
   caller: Account!

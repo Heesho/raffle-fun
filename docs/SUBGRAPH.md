@@ -16,7 +16,7 @@ ticket shell and fills its range from the later event in the same transaction.
 
 The winning entry is known at `RaffleResolved`, but finding the containing ticket
 would require an index scan. The subgraph deliberately does not do that. It records
-`winningTicketId` only when a valid ticket is claimed; clients can compare an
+`winningTicketId` only when a valid ticket is settled; clients can compare an
 individual ticket's range with `winningEntry` directly.
 
 ## Indexed state
@@ -28,7 +28,8 @@ Primary mutable entities include:
 - `Ticket`, `Purchase`, and `RaffleTransfer`;
 - account and raffle-participation aggregates;
 - `DrawRequest`, `Resolution`, and `RefundEnable`;
-- refund, winning settlement, winner/sponsor/protocol release, and prize-release history.
+- refund, winning settlement and redemption, sponsor/protocol release, and sponsor
+  prize-release history.
 
 All integer amounts and ticket IDs remain Graph `BigInt`; they are never cast
 through JavaScript `Number`.
@@ -50,6 +51,7 @@ pnpm --filter @raffle-fun/subgraph test
 ```
 
 The manifest is generated from a validated deployment record. No placeholder
-deployment address is accepted. `WinningTicketSettled` records the fixed winner and
-allocated liabilities; `WinnerProceedsReleased` and `WinnerPrizeReleased` record later
-delivery independently.
+deployment address is accepted. `WinningTicketSettled` records the winning ticket ID,
+settler, and allocated liabilities without fixing an owner. `WinningTicketRedeemed`
+records the owner who atomically burns the ticket and receives its cash or NFT. Sponsor
+and protocol releases remain separate events.

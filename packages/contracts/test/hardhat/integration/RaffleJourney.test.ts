@@ -79,6 +79,7 @@ describe("Raffle Fun sequential-ticket integration", () => {
     const buildEvidence = await loadDeploymentBuildEvidence(
       path.resolve(import.meta.dirname, "../../../../.."),
       buildCandidate,
+      vrfWrapper.address,
       buildCandidate.sourceCommit,
       async () => {},
     );
@@ -223,12 +224,24 @@ describe("Raffle Fun sequential-ticket integration", () => {
     );
     assertAddressEqual(
       await raffle.read.winnerRecipient(),
+      "0x0000000000000000000000000000000000000000",
+    );
+    assertAddressEqual(
+      await raffle.read.ownerOf([winningTicket]),
       buyer.account.address,
     );
+    assert.equal(await raffle.read.settlementComplete(), true);
     assert.equal(await raffle.read.prizeClaimed(), false);
     assertAddressEqual(await prize.read.ownerOf([1n]), raffleAddress);
-    await wait(publicClient, settlerRaffle.write.releaseWinnerPrize());
+    await wait(
+      publicClient,
+      buyerRaffle.write.redeemWinningTicket([winningTicket]),
+    );
     assertAddressEqual(await prize.read.ownerOf([1n]), buyer.account.address);
+    assertAddressEqual(
+      await raffle.read.winnerRecipient(),
+      buyer.account.address,
+    );
     assert.equal(await raffle.read.protocolFees(), 300_000n);
     assert.equal(await raffle.read.sponsorProceeds(), 5_700_000n);
     assert.equal(await raffle.read.unsettledPot(), 0n);
@@ -331,10 +344,10 @@ describe("Raffle Fun sequential-ticket integration", () => {
     );
     assertAddressEqual(
       await raffle.read.winnerRecipient(),
-      buyer.account.address,
+      "0x0000000000000000000000000000000000000000",
     );
     assert.equal(await raffle.read.winnerProceeds(), 800_000n);
-    await wait(publicClient, settlerRaffle.write.releaseWinnerProceeds());
+    await wait(publicClient, buyerRaffle.write.redeemWinningTicket([ticketId]));
     assert.equal(
       (await quote.read.balanceOf([buyer.account.address])) - buyerBefore,
       800_000n,

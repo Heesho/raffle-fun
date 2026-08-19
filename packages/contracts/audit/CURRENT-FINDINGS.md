@@ -10,9 +10,10 @@ an empty open-defect column do not establish that no undiscovered defect exists.
 > internal security-review pass. The candidate remains
 > **not mainnet-ready** because the release gates below are incomplete.
 
-> The later hard request/callback-boundary remediation changes the recorded candidate.
-> It is not covered by the historical counts or closure statements in this ledger and
-> must be independently reviewed and rerun before it can be part of a release claim.
+> The later hard request/callback-boundary remediation, official Chainlink
+> consumer-base migration, and bearer-redemption redesign change the recorded
+> candidate. They are not covered by the historical counts or closure statements in
+> this ledger and must be independently reviewed and rerun before a release claim.
 
 ## Severity summary
 

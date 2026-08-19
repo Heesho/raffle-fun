@@ -14,8 +14,7 @@ import {
 
 import {
   buyEntries as applyBuy,
-  releaseWinnerPrize as applyReleaseWinnerPrize,
-  releaseWinnerProceeds as applyReleaseWinnerProceeds,
+  redeemWinningTicket as applyRedeemWinningTicket,
   releaseSponsorPrize as applyReleaseSponsorPrize,
   releaseSponsorProceeds as applyReleaseSponsorProceeds,
   releaseProtocolFees as applyReleaseProtocolFees,
@@ -31,7 +30,7 @@ import {
 } from "./engine";
 import { createSandbox } from "./seed";
 
-const STORAGE_KEY = "raffle-fun.sandbox.tickets-v2";
+const STORAGE_KEY = "raffle-fun.sandbox.tickets-v3";
 
 /** How long the stand-in oracle takes to deliver randomness. */
 export const ORACLE_DELAY_MS = 4_000;
@@ -133,8 +132,7 @@ interface SandboxContextValue {
     ticketIds: readonly bigint[],
   ) => void;
   readonly settleWinningTicket: (raffleId: string, ticketId: bigint) => void;
-  readonly releaseWinnerPrize: (raffleId: string) => void;
-  readonly releaseWinnerProceeds: (raffleId: string) => void;
+  readonly redeemWinningTicket: (raffleId: string, ticketId: bigint) => void;
   readonly releaseSponsorPrize: (raffleId: string) => void;
   readonly releaseSponsorProceeds: (raffleId: string) => void;
   readonly releaseProtocolFees: (raffleId: string) => void;
@@ -251,10 +249,10 @@ export function SandboxProvider({
         run((state) =>
           applySettleWinningTicket(state, raffleId, ticketId, Date.now()),
         ),
-      releaseWinnerPrize: (raffleId) =>
-        run((state) => applyReleaseWinnerPrize(state, raffleId, Date.now())),
-      releaseWinnerProceeds: (raffleId) =>
-        run((state) => applyReleaseWinnerProceeds(state, raffleId, Date.now())),
+      redeemWinningTicket: (raffleId, ticketId) =>
+        run((state) =>
+          applyRedeemWinningTicket(state, raffleId, ticketId, Date.now()),
+        ),
       releaseSponsorPrize: (raffleId) =>
         run((state) => applyReleaseSponsorPrize(state, raffleId, Date.now())),
       releaseSponsorProceeds: (raffleId) =>

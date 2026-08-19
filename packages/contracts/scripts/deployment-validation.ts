@@ -26,6 +26,7 @@ const raffleImplementationAbi = parseAbi([
   "function factory() view returns (address)",
   "function quoteToken() view returns (address)",
   "function vrfWrapper() view returns (address)",
+  "function getLinkToken() view returns (address)",
   "function callbackGasLimit() view returns (uint32)",
   "function requestConfirmations() view returns (uint16)",
   "function initialized() view returns (bool)",
@@ -188,6 +189,7 @@ export async function validateDeploymentOnchain(
     implementationFactory,
     implementationQuoteToken,
     implementationVrfWrapper,
+    implementationLinkToken,
     implementationCallbackGasLimit,
     implementationRequestConfirmations,
     implementationEntryPrice,
@@ -277,6 +279,12 @@ export async function validateDeploymentOnchain(
       address: candidate.raffleImplementation as Address,
       abi: raffleImplementationAbi,
       functionName: "vrfWrapper",
+      blockNumber: validationBlockNumber,
+    }),
+    client.readContract({
+      address: candidate.raffleImplementation as Address,
+      abi: raffleImplementationAbi,
+      functionName: "getLinkToken",
       blockNumber: validationBlockNumber,
     }),
     client.readContract({
@@ -397,6 +405,11 @@ export async function validateDeploymentOnchain(
     "implementation.vrfWrapper",
     implementationVrfWrapper,
     candidate.vrfWrapper,
+  );
+  assertAddress(
+    "implementation.getLinkToken",
+    implementationLinkToken,
+    wrapperLink,
   );
   if (implementationCallbackGasLimit !== candidate.callbackGasLimit) {
     throw new Error(

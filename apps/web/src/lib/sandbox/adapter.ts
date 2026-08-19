@@ -63,8 +63,7 @@ const activityKinds: Record<
   RESOLVED: "RESOLUTION",
   SPONSOR_PROCEEDS_RELEASED: "QUOTE_CLAIM",
   PROTOCOL_FEES_RELEASED: "QUOTE_CLAIM",
-  WINNER_PROCEEDS_RELEASED: "QUOTE_CLAIM",
-  WINNER_PRIZE_RELEASED: "PRIZE_CLAIM",
+  WINNING_REDEEMED: undefined,
   SPONSOR_PRIZE_RELEASED: "PRIZE_CLAIM",
   DRAW_REQUESTED: undefined,
   REFUNDS_ENABLED: undefined,
@@ -76,7 +75,12 @@ export function toIndexedActivity(
   sandbox: Sandbox,
 ): readonly IndexedActivity[] {
   return sandbox.log.flatMap((event) => {
-    const kind = activityKinds[event.kind];
+    const kind =
+      event.kind === "WINNING_REDEEMED"
+        ? event.amount === null
+          ? "PRIZE_CLAIM"
+          : "QUOTE_CLAIM"
+        : activityKinds[event.kind];
     if (kind === undefined) return [];
     const amount = event.kind === "RESOLVED" ? null : event.amount;
     return [

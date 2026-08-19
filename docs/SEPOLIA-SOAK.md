@@ -30,16 +30,16 @@ collections. Keep every prize and entry value deliberately low.
 | Scenario                | Required evidence                                                                                                                                                                     |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Range purchase          | sequential IDs and stored 1-entry/multi-entry ranges are exact and contiguous; cost is exactly 1 USDC per entry                                                                       |
-| Bearer transfer         | ticket transfers work before close, while drawing, and after resolution; successful settlement burns the ticket exactly once                                                          |
-| NFT result              | equality meets reserve; settlement snapshots winner and records 5%/95%; winner NFT and both quote claims release independently                                                        |
-| Cash result             | below-reserve settlement records 80%/5%/15%; winner cash, sponsor cash, protocol fee, and sponsor NFT release independently                                                           |
+| Bearer transfer         | ticket transfers work before close, while drawing, after resolution, and after accounting settlement; owner redemption or refund burns exactly once                                   |
+| NFT result              | equality meets reserve; settlement records the ticket and 5%/95% without reading its owner; current owner atomically burns and receives the NFT                                       |
+| Cash result             | below-reserve settlement records the ticket and 80%/5%/15%; current owner atomically burns and receives cash; sponsor/protocol claims and sponsor NFT release independently           |
 | Empty raffle            | sponsor enters zero-liability `Refunding` before end and anyone can do so at/after end                                                                                                |
 | Request boundary        | request at `drawRequestDeadline() - 1` succeeds; request at the deadline fails; a sold `Active` raffle can enter refunds at the deadline                                              |
 | Callback absence        | staging wrapper accepts but does not fulfill; refunds open exactly at `callbackDeadline()`                                                                                            |
 | Callback rejection      | staging wrapper sends synchronous, wrong-ID, duplicate, stale, and deadline-expired ABI-decodable callbacks without unsafe mutation; unauthorized or undecodable calls revert earlier |
-| NFT transfer failure    | adversarial collection reverts or lies on release; winner NFT remains pending while settlement and both quote claims remain usable                                                    |
+| NFT transfer failure    | adversarial collection reverts or lies on redemption; the burn and redemption markers revert while prior settlement and both quote claims remain usable                               |
 | Callback boundary       | matching callback at `callbackDeadline() - 1` resolves; at the deadline it is ignored and refunds are available                                                                       |
-| Outgoing failure        | adversarial quote token proves a failed winner/sponsor/protocol release restores only that claim and leaves all other claims usable                                                   |
+| Outgoing failure        | adversarial quote token proves failed winner redemption restores its ticket and cash liability while failed sponsor/protocol release restores only that claim                         |
 | Operational controls    | contract wallet pauses/resumes future creation; frontend write kill switch and keeper actions are rehearsed                                                                           |
 | Degraded infrastructure | direct chain reads and calldata instructions remain usable while subgraph or one RPC is unavailable                                                                                   |
 

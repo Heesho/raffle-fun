@@ -122,7 +122,8 @@ contract RaffleSecurityTest is Test {
         vm.prank(buyer);
         raffle.settleWinningTicket(receiptId);
         assertFalse(hostile.reentryBlocked());
-        raffle.releaseWinnerProceeds();
+        vm.prank(buyer);
+        raffle.redeemWinningTicket(receiptId);
         assertTrue(hostile.reentryBlocked());
         assertEq(raffle.unsettledPot(), 0);
     }
@@ -192,23 +193,26 @@ contract RaffleSecurityTest is Test {
         hostile.setTransferMode(AdversarialOutboundERC20.TransferMode.RecipientFee);
         vm.prank(buyer);
         raffle.settleWinningTicket(receiptId);
-        vm.expectRevert();
-        raffle.ownerOf(receiptId);
+        assertEq(raffle.ownerOf(receiptId), buyer);
         assertEq(raffle.unsettledPot(), 0);
         assertEq(raffle.winnerProceeds(), 800_000);
         assertEq(raffle.sponsorProceeds(), 150_000);
         assertEq(raffle.protocolFees(), 50_000);
         assertEq(hostile.balanceOf(address(raffle)), USDC);
 
+        vm.prank(buyer);
         vm.expectRevert();
-        raffle.releaseWinnerProceeds();
+        raffle.redeemWinningTicket(receiptId);
+        assertEq(raffle.ownerOf(receiptId), buyer);
+        assertFalse(raffle.winnerRedeemed());
+        assertEq(raffle.winnerRecipient(), address(0));
         assertEq(raffle.winnerProceeds(), 800_000);
         assertEq(raffle.sponsorProceeds(), 150_000);
         assertEq(raffle.protocolFees(), 50_000);
 
         hostile.setTransferMode(AdversarialOutboundERC20.TransferMode.Exact);
         vm.prank(buyer);
-        raffle.releaseWinnerProceeds();
+        raffle.redeemWinningTicket(receiptId);
         assertEq(raffle.winnerProceeds(), 0);
     }
 
@@ -252,8 +256,8 @@ contract RaffleSecurityTest is Test {
         vm.prank(outsider);
         raffle.settleWinningTicket(receiptId);
         assertEq(hostilePrize.reentryAttempts(), 0);
-        vm.prank(outsider);
-        raffle.releaseWinnerPrize();
+        vm.prank(buyer);
+        raffle.redeemWinningTicket(receiptId);
 
         assertTrue(hostilePrize.reentryBlocked());
         assertEq(hostilePrize.reentryAttempts(), 1);
@@ -321,8 +325,8 @@ contract RaffleSecurityTest is Test {
         _resolve(raffle, 0);
         vm.prank(outsider);
         raffle.settleWinningTicket(receiptId);
-        vm.prank(outsider);
-        raffle.releaseWinnerPrize();
+        vm.prank(buyer);
+        raffle.redeemWinningTicket(receiptId);
         assertEq(prize.ownerOf(raffle.prizeTokenId()), buyer);
     }
 

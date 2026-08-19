@@ -6,8 +6,9 @@ Candidate: committed Ethereum v1 range-ticket audit candidate. The implementatio
 independent audit, and the complete gate set must be rerun from the clean final release SHA.
 
 > The totals below are preserved evidence for the recorded pre-remediation SHAs. They
-> do not validate the later hard request/callback-boundary change; affected rows require
-> a clean rerun against the final remediated SHA.
+> do not validate the later hard request/callback-boundary change, official Chainlink
+> consumer-base migration, or bearer-redemption redesign; affected rows require a clean
+> rerun against the final release SHA.
 
 In the lifecycle rows, `D = drawRequestDeadline() = endTime + 2 days` and
 `C = callbackDeadline() = drawRequestedAt + 2 days`.

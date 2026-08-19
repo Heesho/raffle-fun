@@ -1,19 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.36;
 
+import { IVRFV2PlusWrapper } from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-
-import { IChainlinkVRFV2PlusWrapper } from "./IChainlinkVRFV2PlusWrapper.sol";
 
 /**
  * @title raffle.fun Raffle Interface
  * @author Heesho
  * @notice Defines one autonomous NFT raffle using fixed-price USDC entries and one transferable ERC-721 ticket per
  *         purchase.
- * @dev Ticket IDs are sequential. Each ticket stores one inclusive uint128 entry range and remains a bearer claim
- *      until it is atomically burned for settlement or refund. Supported quote tokens are exact-transfer, non-rebasing
- *      six-decimal ERC-20s. Supported prizes are honest, standards-compliant ERC-721s.
+ * @dev Ticket IDs are sequential. Each ticket stores one inclusive uint128 entry range and remains a transferable
+ *      bearer claim until its owner atomically burns it for redemption or refund. Supported quote tokens are
+ *      exact-transfer, non-rebasing six-decimal ERC-20s. Supported prizes are honest, standards-compliant ERC-721s.
  * @custom:version 1.0.0
  */
 interface IRaffle {
@@ -69,15 +68,16 @@ interface IRaffle {
     error RefundsNotAvailable(uint256 deadline, uint256 currentTime);
     error InsufficientVrfFee(uint256 requiredFee, uint256 suppliedValue);
     error NativeRefundFailed(address recipient, uint256 amount);
-    error OnlyVRFWrapperCanFulfill(address have, address want);
     error NoWinnerProceeds();
     error NoSponsorProceeds();
     error NoProtocolFees();
     error UnsafeProtocolDestination(address destination);
     error NotTicketOwner(uint256 ticketId, address caller, address owner);
     error TicketDoesNotContainWinningEntry(uint256 ticketId, uint128 winningEntry);
+    error SettlementAlreadyComplete();
+    error WinningTicketMismatch(uint256 suppliedTicketId, uint256 winningTicketId);
+    error WinningTicketAlreadyRedeemed();
     error SponsorPrizeUnavailable(Status status);
-    error WinnerPrizeUnavailable(Status status);
     error PrizeAlreadyClaimed();
     error PrizeDeliveryVerificationFailed(address recipient);
 
@@ -110,11 +110,20 @@ interface IRaffle {
 
     event WinningTicketSettled(
         uint256 indexed ticketId,
-        address indexed winner,
+        address indexed settler,
         Status indexed result,
         uint256 cashAmount,
         uint256 protocolFee,
         uint256 sponsorAmount
+    );
+
+    event WinningTicketRedeemed(
+        uint256 indexed ticketId,
+        address indexed winner,
+        Status indexed result,
+        uint256 cashAmount,
+        address prizeToken,
+        uint256 prizeTokenId
     );
 
     event TicketsRefunded(
@@ -127,12 +136,6 @@ interface IRaffle {
 
     event SponsorProceedsReleased(address indexed caller, address indexed recipient, uint256 amount);
     event ProtocolFeesReleased(address indexed caller, address indexed treasury, uint256 amount);
-    event WinnerProceedsReleased(address indexed caller, address indexed recipient, uint256 amount);
-
-    event WinnerPrizeReleased(
-        address indexed caller, address indexed recipient, address indexed prizeToken, uint256 prizeTokenId
-    );
-
     event SponsorPrizeReleased(
         address indexed caller, address indexed recipient, address indexed prizeToken, uint256 prizeTokenId
     );
@@ -145,7 +148,6 @@ interface IRaffle {
     function getVrfRequestPrice() external view returns (uint256 fee);
     function estimateVrfRequestPrice(uint256 requestGasPriceWei) external view returns (uint256 fee);
     function requestDraw() external payable returns (uint256 requestId);
-    function rawFulfillRandomWords(uint256 requestId, uint256[] memory randomWords) external;
 
     /**
      * @notice Enables full refunds after either the sold-raffle draw-request deadline or an accepted request's callback
@@ -154,15 +156,20 @@ interface IRaffle {
     function enableRefunds() external;
 
     /**
-     * @notice Settles with the ticket containing the winning entry. Anyone may execute; the current bearer is
-     *         snapshotted as the fixed winner recipient, the ticket is burned, and all quote liabilities are credited
-     *         without making an external asset transfer.
+     * @notice Proves which ticket contains the winning entry and allocates the fixed winner, sponsor, and protocol
+     *         liabilities. Anyone may execute; ownership is not read, the ticket remains transferable, and no external
+     *         asset transfer occurs.
      */
     function settleWinningTicket(uint256 ticketId) external returns (uint256 cashAmount);
 
+    /**
+     * @notice Lets the current winning-ticket owner atomically burn the ticket and receive the NFT or cash prize.
+     * @dev If necessary, this first settles the supplied winning ticket so the owner can complete both steps in one
+     *      transaction. Any failed delivery reverts the burn and every redemption state change.
+     */
+    function redeemWinningTicket(uint256 ticketId) external returns (uint256 cashAmount);
+
     function refundTickets(uint256[] calldata ticketIds) external returns (uint256 amount);
-    function releaseWinnerProceeds() external returns (uint256 amount);
-    function releaseWinnerPrize() external;
     function releaseSponsorProceeds() external returns (uint256 amount);
     function releaseProtocolFees() external returns (uint256 amount);
     function releaseSponsorPrize() external;
@@ -180,7 +187,7 @@ interface IRaffle {
     function sponsorRecipient() external view returns (address);
     function protocolTreasury() external view returns (address);
     function quoteToken() external view returns (IERC20);
-    function vrfWrapper() external view returns (IChainlinkVRFV2PlusWrapper);
+    function vrfWrapper() external view returns (IVRFV2PlusWrapper);
     function prizeToken() external view returns (IERC721);
     function prizeTokenId() external view returns (uint256);
     function raffleId() external view returns (uint256);
@@ -202,6 +209,8 @@ interface IRaffle {
     function winningEntry() external view returns (uint128);
     function winningTicketId() external view returns (uint256);
     function status() external view returns (Status);
+    function settlementComplete() external view returns (bool);
+    function winnerRedeemed() external view returns (bool);
     function prizeClaimed() external view returns (bool);
     function initialized() external view returns (bool);
 }

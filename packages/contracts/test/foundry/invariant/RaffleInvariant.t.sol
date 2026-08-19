@@ -77,6 +77,7 @@ contract RaffleInvariantTest is StdInvariant, Test {
         assertLe(handler.ghostRequestCount(), 1);
         assertLe(handler.ghostResolutionCount(), 1);
         assertLe(handler.ghostRefundEnableCount(), 1);
+        assertLe(handler.ghostWinnerSettlements(), 1);
         assertLe(handler.ghostWinnerRedemptions(), 1);
         if (handler.ghostCashResolved()) {
             assertNotEq(uint256(raffle.status()), uint256(IRaffle.Status.Refunding));
@@ -148,7 +149,7 @@ contract RaffleInvariantTest is StdInvariant, Test {
         IRaffle.Status current = raffle.status();
         uint256 fee = raffle.grossSales() * 500 / 10_000;
         if (current == IRaffle.Status.CashWon) {
-            if (handler.ghostWinnerRedemptions() == 0) {
+            if (!raffle.settlementComplete()) {
                 assertEq(raffle.unsettledPot(), raffle.grossSales());
                 assertEq(raffle.sponsorProceeds(), 0);
                 assertEq(raffle.protocolFees(), 0);
@@ -158,7 +159,7 @@ contract RaffleInvariantTest is StdInvariant, Test {
                 assertEq(raffle.sponsorProceeds() + handler.ghostSponsorPaidOut(), raffle.grossSales() * 1500 / 10_000);
                 assertEq(raffle.protocolFees() + handler.ghostProtocolPaidOut(), fee);
             }
-        } else if (current == IRaffle.Status.NftWon && handler.ghostWinnerRedemptions() != 0) {
+        } else if (current == IRaffle.Status.NftWon && raffle.settlementComplete()) {
             assertEq(raffle.unsettledPot(), 0);
             assertEq(raffle.sponsorProceeds() + handler.ghostSponsorPaidOut(), raffle.grossSales() - fee);
             assertEq(raffle.protocolFees() + handler.ghostProtocolPaidOut(), fee);
@@ -173,5 +174,26 @@ contract RaffleInvariantTest is StdInvariant, Test {
     function invariantPrizeCustodyMatchesClaimMarker() public view {
         if (raffle.prizeClaimed()) assertNotEq(prize.ownerOf(1), address(raffle));
         else assertEq(prize.ownerOf(1), address(raffle));
+    }
+
+    function invariantSettlementAndRedemptionMarkersMatchTicketState() public view {
+        if (!raffle.settlementComplete()) {
+            assertEq(raffle.winningTicketId(), 0);
+            assertFalse(raffle.winnerRedeemed());
+            return;
+        }
+
+        uint256 ticketId = raffle.winningTicketId();
+        assertNotEq(ticketId, 0);
+        assertEq(raffle.unsettledPot(), 0);
+        if (raffle.winnerRedeemed()) {
+            assertNotEq(raffle.winnerRecipient(), address(0));
+            try raffle.ownerOf(ticketId) returns (address) {
+                assertTrue(false, "redeemed winning ticket still exists");
+            } catch { }
+        } else {
+            assertNotEq(raffle.ownerOf(ticketId), address(0));
+            assertEq(raffle.winnerRecipient(), address(0));
+        }
     }
 }

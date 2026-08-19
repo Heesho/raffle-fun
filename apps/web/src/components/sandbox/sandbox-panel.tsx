@@ -184,8 +184,7 @@ function SettlePanel({
     enableRefunds,
     refundTickets,
     settleWinningTicket,
-    releaseWinnerPrize,
-    releaseWinnerProceeds,
+    redeemWinningTicket,
     releaseSponsorPrize,
     releaseSponsorProceeds,
     releaseProtocolFees,
@@ -197,18 +196,17 @@ function SettlePanel({
   const successful =
     raffle.status === "NFT_WON" || raffle.status === "CASH_WON";
   const winningTicket =
-    raffle.winningEntry === null
-      ? undefined
-      : ticketContainingEntry(raffle, raffle.winningEntry);
+    raffle.winningTicketId !== null
+      ? raffle.tickets.find((ticket) => ticket.id === raffle.winningTicketId)
+      : raffle.winningEntry === null
+        ? undefined
+        : ticketContainingEntry(raffle, raffle.winningEntry);
   const ownsWinning =
     winningTicket !== undefined &&
+    !winningTicket.burned &&
     winningTicket.owner.toLowerCase() === sandbox.player.toLowerCase();
   const sponsorPrizeAvailable =
     !raffle.prizeClaimed && (raffle.status === "CASH_WON" || refunding);
-  const winnerPrizeAvailable =
-    !raffle.prizeClaimed &&
-    raffle.status === "NFT_WON" &&
-    raffle.winnerRecipient !== null;
   const refundableTickets = refunding
     ? ticketsOwnedBy(raffle, sandbox.player)
     : [];
@@ -298,14 +296,20 @@ function SettlePanel({
           </h2>
           <div className="mt-4 rounded-2xl bg-[var(--paper-sunk)] p-4 text-sm">
             <p className="flex items-center gap-2 font-bold">
-              <Trophy aria-hidden size={16} /> Current ticket owner:{" "}
+              <Trophy aria-hidden size={16} />
+              {raffle.winnerRedeemed
+                ? "Redeemed by:"
+                : "Current ticket owner:"}{" "}
               {winningTicket?.owner.slice(0, 8)}…
             </p>
             <p className="mt-2 text-[var(--ink-2)]">
-              Anyone can submit the ticket and settle directly to its current
-              owner. There is no redirect address.
+              {raffle.winnerRedeemed
+                ? "The owner surrendered the winning ticket and received the prize atomically."
+                : raffle.settlementComplete
+                  ? "Settlement allocated every balance without burning the winning ticket. It remains a transferable bearer claim until its owner redeems."
+                  : "Anyone can verify the winning ticket and allocate balances without burning it. Its owner can settle and redeem atomically."}
             </p>
-            {winningTicket !== undefined && !winningTicket.burned ? (
+            {winningTicket !== undefined && !raffle.winnerRedeemed ? (
               <button
                 className="mt-3 font-bold underline"
                 onClick={() =>
@@ -317,15 +321,17 @@ function SettlePanel({
               </button>
             ) : null}
           </div>
-          <label className="mt-4 block">
-            <span className="field-label">Winning ticket ID</span>
-            <input
-              className="input numeric"
-              onChange={(event) => setWinningTicketIdText(event.target.value)}
-              placeholder="For example: 3"
-              value={winningTicketIdText}
-            />
-          </label>
+          {!raffle.winnerRedeemed ? (
+            <label className="mt-4 block">
+              <span className="field-label">Winning ticket ID</span>
+              <input
+                className="input numeric"
+                onChange={(event) => setWinningTicketIdText(event.target.value)}
+                placeholder="For example: 3"
+                value={winningTicketIdText}
+              />
+            </label>
+          ) : null}
         </>
       ) : null}
 
@@ -367,16 +373,26 @@ function SettlePanel({
       ) : null}
 
       <div className="mt-5 grid gap-2">
-        {winningTicket !== undefined &&
-        !winningTicket.burned &&
-        winningTicketId !== undefined ? (
+        {ownsWinning && winningTicketId !== undefined ? (
           <button
             className="btn btn-primary w-full"
+            onClick={() => redeemWinningTicket(raffle.id, winningTicketId)}
+            type="button"
+          >
+            <Gift aria-hidden size={17} />
+            Redeem winning ticket
+          </button>
+        ) : null}
+        {successful &&
+        !raffle.settlementComplete &&
+        winningTicketId !== undefined ? (
+          <button
+            className="btn btn-outline w-full"
             onClick={() => settleWinningTicket(raffle.id, winningTicketId)}
             type="button"
           >
             <Gift aria-hidden size={17} />
-            Settle winning ticket
+            Settle without redeeming
           </button>
         ) : null}
         {refundableTickets.length > 0 && refundProofValid ? (
@@ -386,25 +402,6 @@ function SettlePanel({
             type="button"
           >
             <CircleDollarSign aria-hidden size={17} /> Claim ticket refunds
-          </button>
-        ) : null}
-        {winnerPrizeAvailable ? (
-          <button
-            className="btn btn-primary w-full"
-            onClick={() => releaseWinnerPrize(raffle.id)}
-            type="button"
-          >
-            <Gift aria-hidden size={17} /> Release NFT to winner
-          </button>
-        ) : null}
-        {raffle.winnerProceeds > 0n ? (
-          <button
-            className="btn btn-primary w-full"
-            onClick={() => releaseWinnerProceeds(raffle.id)}
-            type="button"
-          >
-            <CircleDollarSign aria-hidden size={17} /> Release{" "}
-            {amount(raffle.winnerProceeds)} to winner
           </button>
         ) : null}
         {sponsorPrizeAvailable ? (

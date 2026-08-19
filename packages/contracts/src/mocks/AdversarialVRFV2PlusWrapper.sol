@@ -11,6 +11,7 @@ contract AdversarialVRFV2PlusWrapper {
     error UnknownRequest(uint256 requestId);
 
     uint256 public quotedFee = 0.001 ether;
+    uint256 public drawingQuotedFee;
     uint256 public requiredRequestFee = 0.001 ether;
     uint256 public nextRequestId;
     uint256 public fixedRequestId;
@@ -20,6 +21,7 @@ contract AdversarialVRFV2PlusWrapper {
     uint256 public synchronousRandomWord;
     bool public synchronousEmptyWords;
     bool public feeReadReverts;
+    bool public drawingQuoteEnabled;
     bool public requestReverts;
     bool public persistRequest = true;
     bool public attemptReentry;
@@ -34,6 +36,14 @@ contract AdversarialVRFV2PlusWrapper {
     function configureFees(uint256 quoted, uint256 required) external {
         quotedFee = quoted;
         requiredRequestFee = required;
+        drawingQuoteEnabled = false;
+    }
+
+    function configureQuoteDrift(uint256 activeQuote, uint256 drawingQuote, uint256 required) external {
+        quotedFee = activeQuote;
+        drawingQuotedFee = drawingQuote;
+        requiredRequestFee = required;
+        drawingQuoteEnabled = true;
     }
 
     function configureFailures(bool feeReadFails, bool requestFails, bool persists, bool reenters) external {
@@ -60,6 +70,10 @@ contract AdversarialVRFV2PlusWrapper {
     function calculateRequestPriceNative(uint32, uint32) external view returns (uint256 fee) {
         if (feeReadReverts) revert FeeReadFailed();
         fee = quotedFee;
+        if (drawingQuoteEnabled) {
+            (bool success, bytes memory result) = msg.sender.staticcall(abi.encodeWithSignature("status()"));
+            if (success && result.length >= 32 && abi.decode(result, (uint256)) == 2) fee = drawingQuotedFee;
+        }
     }
 
     function estimateRequestPriceNative(uint32, uint32, uint256) external view returns (uint256 fee) {

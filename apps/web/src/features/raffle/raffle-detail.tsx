@@ -44,10 +44,9 @@ import {
   raffleFactoryAbi,
   raffleStatusLabels,
   ticketRangeContainsEntry,
+  redeemWinningTicket,
   refundTickets,
   releaseProtocolFees,
-  releaseWinnerPrize,
-  releaseWinnerProceeds,
   releaseSponsorPrize,
   releaseSponsorProceeds,
   settleWinningTicket,
@@ -113,7 +112,6 @@ interface LiveRaffleView {
   readonly grossSales: bigint;
   readonly unsettledPot: bigint;
   readonly remainingRefundLiability: bigint;
-  readonly winnerRecipient: Address;
   readonly winnerProceeds: bigint;
   readonly sponsorProceeds: bigint;
   readonly protocolFees: bigint;
@@ -122,6 +120,8 @@ interface LiveRaffleView {
   readonly resolvedAt: bigint;
   readonly winningEntry: bigint;
   readonly winningTicketId: bigint;
+  readonly settlementComplete: boolean;
+  readonly winnerRedeemed: boolean;
   readonly prizeClaimed: boolean;
   readonly callbackDeadline: bigint;
   readonly accountedQuoteBalance: bigint;
@@ -246,7 +246,7 @@ function SandboxRaffleDetail({ address }: { readonly address: string }) {
       footnote={
         <p className="px-2 text-xs leading-5 text-[var(--ink-3)]">
           One ticket represents one purchase range and remains transferable
-          until it is burned during settlement or a refund.{" "}
+          until its owner burns it during winner redemption or a refund.{" "}
           <Link className="font-bold underline" href="/docs">
             Read the full mechanics.
           </Link>
@@ -340,6 +340,8 @@ function LiveRaffleDetail({
           raffleRead(raffle, "resolvedAt"),
           raffleRead(raffle, "winningEntry"),
           raffleRead(raffle, "winningTicketId"),
+          raffleRead(raffle, "settlementComplete"),
+          raffleRead(raffle, "winnerRedeemed"),
           raffleRead(raffle, "prizeClaimed"),
           raffleRead(raffle, "callbackDeadline"),
           raffleRead(raffle, "accountedQuoteBalance"),
@@ -361,9 +363,9 @@ function LiveRaffleDetail({
     // Every contract read that drives state, economics, or write eligibility must
     // succeed together. A partial multicall is not a zero-valued protocol state.
     if (
-      viewQuery.data.length < 29 ||
+      viewQuery.data.length < 31 ||
       viewQuery.data
-        .slice(0, 29)
+        .slice(0, 31)
         .some(
           (result) =>
             result?.status !== "success" || result.result === undefined,
@@ -411,7 +413,6 @@ function LiveRaffleDetail({
       grossSales: value<bigint>(14) ?? 0n,
       unsettledPot: value<bigint>(15) ?? 0n,
       remainingRefundLiability: value<bigint>(16) ?? 0n,
-      winnerRecipient: value<Address>(17) ?? zeroAddress,
       winnerProceeds: value<bigint>(18) ?? 0n,
       sponsorProceeds: value<bigint>(19) ?? 0n,
       protocolFees: value<bigint>(20) ?? 0n,
@@ -420,10 +421,12 @@ function LiveRaffleDetail({
       resolvedAt: value<bigint>(23) ?? 0n,
       winningEntry: value<bigint>(24) ?? 0n,
       winningTicketId: value<bigint>(25) ?? 0n,
-      prizeClaimed: value<boolean>(26) ?? false,
-      callbackDeadline: value<bigint>(27) ?? 0n,
-      accountedQuoteBalance: value<bigint>(28) ?? 0n,
-      accountTicketBalance: value<bigint>(29) ?? 0n,
+      settlementComplete: value<boolean>(26) ?? false,
+      winnerRedeemed: value<boolean>(27) ?? false,
+      prizeClaimed: value<boolean>(28) ?? false,
+      callbackDeadline: value<bigint>(29) ?? 0n,
+      accountedQuoteBalance: value<bigint>(30) ?? 0n,
+      accountTicketBalance: value<bigint>(31) ?? 0n,
     };
   }, [raffle, viewQuery.data]);
 
@@ -625,9 +628,8 @@ function LiveRaffleDetail({
   async function handleAction(
     action:
       | "draw"
-      | "winner"
-      | "winnerProceeds"
-      | "winnerPrize"
+      | "settleWinner"
+      | "redeemWinner"
       | "sponsorPrize"
       | "sponsorProceeds"
       | "protocolFees"
@@ -650,15 +652,12 @@ function LiveRaffleDetail({
         hash = await releaseSponsorProceeds(context, raffle);
       } else if (action === "protocolFees") {
         hash = await releaseProtocolFees(context, raffle);
-      } else if (action === "winnerProceeds") {
-        hash = await releaseWinnerProceeds(context, raffle);
-      } else if (action === "winnerPrize") {
-        hash = await releaseWinnerPrize(context, raffle);
-      } else if (action === "winner") {
-        const ticketId = parsePositiveBigInt(
-          winningTicketProof,
-          "Winning ticket ID",
-        );
+      } else if (action === "settleWinner" || action === "redeemWinner") {
+        const ticketId =
+          winningTicketProof.trim() === "" && view.settlementComplete
+            ? view.winningTicketId
+            : parsePositiveBigInt(winningTicketProof, "Winning ticket ID");
+        if (ticketId === 0n) throw new Error("Enter the winning ticket ID.");
         const [firstEntry, lastEntry] =
           (await context.publicClient.readContract({
             address: raffle,
@@ -676,7 +675,10 @@ function LiveRaffleDetail({
             "That ticket range does not contain the winning entry.",
           );
         }
-        hash = await settleWinningTicket(context, raffle, ticketId);
+        hash =
+          action === "settleWinner"
+            ? await settleWinningTicket(context, raffle, ticketId)
+            : await redeemWinningTicket(context, raffle, ticketId);
       } else {
         hash = await releaseSponsorPrize(context, raffle);
       }
@@ -911,6 +913,11 @@ function LiveRaffleDetail({
                       : `${(winningTicketRangeQuery.data as readonly [bigint, bigint])[0].toString()}–${(winningTicketRangeQuery.data as readonly [bigint, bigint])[1].toString()}`}
                   </span>
                 ) : null}
+                {view.settlementComplete && view.winningTicketId !== 0n ? (
+                  <span className="field-hint">
+                    Recorded winning ticket: #{view.winningTicketId.toString()}
+                  </span>
+                ) : null}
                 {indexedWinningTicket !== undefined ? (
                   <button
                     className="field-hint font-bold underline"
@@ -953,26 +960,6 @@ function LiveRaffleDetail({
               />
               <ActionButton
                 disabled={
-                  view.winnerProceeds === 0n || progress.kind === "pending"
-                }
-                icon={<CircleDollarSign size={17} />}
-                label={`Release ${formatTokenAmount(view.winnerProceeds, tokenMetadata.decimals, tokenMetadata.symbol)} to winner`}
-                onClick={() => handleAction("winnerProceeds")}
-              />
-              <ActionButton
-                disabled={
-                  view.status !== RaffleStatus.NftWon ||
-                  view.winningTicketId === 0n ||
-                  view.winnerRecipient === zeroAddress ||
-                  view.prizeClaimed ||
-                  progress.kind === "pending"
-                }
-                icon={<Gift size={17} />}
-                label="Release NFT to winner"
-                onClick={() => handleAction("winnerPrize")}
-              />
-              <ActionButton
-                disabled={
                   view.sponsorProceeds === 0n || progress.kind === "pending"
                 }
                 icon={<CircleDollarSign size={17} />}
@@ -991,13 +978,37 @@ function LiveRaffleDetail({
                 disabled={
                   (view.status !== RaffleStatus.NftWon &&
                     view.status !== RaffleStatus.CashWon) ||
-                  view.winningTicketId !== 0n ||
+                  view.settlementComplete ||
                   winningTicketProof.trim() === "" ||
                   progress.kind === "pending"
                 }
                 icon={<Gift size={17} />}
-                label="Settle winning ticket"
-                onClick={() => handleAction("winner")}
+                label="Record winning ticket & allocate balances"
+                onClick={() => handleAction("settleWinner")}
+              />
+              <ActionButton
+                disabled={
+                  (view.status !== RaffleStatus.NftWon &&
+                    view.status !== RaffleStatus.CashWon) ||
+                  view.winnerRedeemed ||
+                  (winningTicketProof.trim() === "" &&
+                    (!view.settlementComplete ||
+                      view.winningTicketId === 0n)) ||
+                  progress.kind === "pending"
+                }
+                icon={
+                  view.status === RaffleStatus.CashWon ? (
+                    <CircleDollarSign size={17} />
+                  ) : (
+                    <Gift size={17} />
+                  )
+                }
+                label={
+                  view.status === RaffleStatus.CashWon
+                    ? "Burn winning ticket & redeem cash"
+                    : "Burn winning ticket & redeem NFT"
+                }
+                onClick={() => handleAction("redeemWinner")}
               />
               <ActionButton
                 disabled={
@@ -1079,9 +1090,10 @@ function LiveRaffleDetail({
       }
       footnote={
         <p className="px-2 text-xs leading-5 text-[var(--ink-3)]">
-          Tickets remain transferable until claimed and burned. Anyone may
-          settle directly to the current owner. Sponsor and treasury payments
-          always go to their configured addresses.{" "}
+          Anyone may record the winning ticket and allocate balances. The ticket
+          stays transferable until its current owner redeems and burns it
+          atomically for the prize. Sponsor and treasury payments always go to
+          their configured addresses.{" "}
           <Link className="font-bold underline" href="/docs">
             Read the full mechanics.
           </Link>

@@ -64,6 +64,7 @@ export function handleRaffleCreated(event: RaffleCreated): void {
   raffle.ignoredVrfCallbackCount = BigInt.zero();
   raffle.prizeClaimed = false;
   raffle.winningTicketSettled = false;
+  raffle.winnerRedeemed = false;
   raffle.createdTxHash = event.transaction.hash;
   raffle.createdBlock = event.block.number;
   raffle.createdTimestamp = event.block.timestamp;

@@ -71,13 +71,15 @@ Evidence tags:
 26. A draw requires at least one entry, `now >= endTime`, and
     `now < endTime + 2 days`. `U/A/F`
 27. A raffle accepts at most one VRF request. `U/A/I/E`
-28. `requestDraw` quotes and forwards one native-funded request with one word,
+28. `requestDraw` uses the exact-pinned Chainlink Contracts `1.5.0` wrapper consumer,
+    client, and interface to quote and forward one native-funded request with one word,
     300,000 callback gas, and 30 confirmations. `U/A/K/X`
 29. Insufficient fee, fee-read failure, wrapper failure, or failed excess refund
     rolls the complete request back to `Active`. `U/A`
 30. Direct native transfers revert; forced native value is not an economic
     liability. `U/A/I`
-31. Only the immutable wrapper may call `rawFulfillRandomWords`. `U/A/K`
+31. The official `VRFV2PlusWrapperConsumerBase` permits only the immutable wrapper to
+    call `rawFulfillRandomWords`. `U/A/K`
 32. A synchronous, wrong-ID, malformed, stale, or duplicate callback cannot settle
     the raffle. `U/A`
 33. A valid callback stores one winning entry and terminal result without searching
@@ -108,24 +110,29 @@ Evidence tags:
     sponsor, and protocol proceeds. `F/I/E`
 44. The raffle's supported quote-token balance never falls below accounted
     liabilities; donations are surplus and create no claim. `U/F/I/E`
-45. A cash callback records only the result and winner entry. Winning-ticket settlement
-    snapshots its owner and records 80% of gross for that winner, `floor(gross * 5%)`
-    for the treasury, and the exact remainder for the sponsor. `U/F/I`
-46. An NFT callback records only the result and winner entry. Winning-ticket settlement
-    snapshots its owner as the fixed NFT recipient and records 5% for the treasury and
-    95% for the sponsor. `U/A/F/I`
+45. A cash callback records only the result and winning entry. Winning-ticket settlement
+    records the ticket ID without reading ownership and allocates 80% of gross to the
+    bearer claim, `floor(gross * 5%)` for the treasury, and the exact remainder for the
+    sponsor. `U/F/I`
+46. An NFT callback records only the result and winning entry. Winning-ticket settlement
+    records the ticket ID without reading ownership and allocates 5% for the treasury
+    and 95% for the sponsor. The ticket remains the bearer claim to the NFT. `U/A/F/I`
 47. Every refund branch charges no fee and moves the complete unsettled pot into
     weighted ticket refunds. `U/A/F/I/E`
-48. Winner proof is O(1): ownership plus inclusive range containment. `U/F/I`
-49. NFT and cash settlement are permissionless, snapshot the current ticket owner, and
-    make no external asset transfer. `U/A/F`
-50. Successful winner settlement burns the winning ticket and creates its fixed-recipient
-    winner claim exactly once. `U/A/I/E`
-51. Winner, sponsor, and protocol releases are independent; a failed transfer restores
-    only the attempted claim and cannot roll back settlement or another claim. `U/A`
-52. NFT winner delivery uses `transferFrom` plus an `ownerOf` postcondition so a
-    non-receiver contract cannot veto settlement; failure leaves only that NFT claim
-    pending. `U/A`
+48. Winner proof is O(1) inclusive range containment; redemption separately checks
+    live ticket ownership in O(1). `U/F/I`
+49. NFT and cash settlement are permissionless accounting only: they record the proven
+    winning ticket and liabilities without reading ownership, burning a ticket, or
+    transferring an external asset. `U/A/F`
+50. A settled winning ticket remains transferable. Only its current owner, not an
+    approved operator, may redeem it; successful redemption burns it while delivering
+    its NFT or cash atomically and can perform settlement first. `U/A/I/E`
+51. Failed winner delivery restores the ticket, `winnerRedeemed`, `winnerRecipient`,
+    the cash liability, and any lazy settlement in that call. A prior permissionless
+    settlement and sponsor/protocol claims remain usable. `U/A`
+52. NFT winner redemption uses `transferFrom` plus an `ownerOf` postcondition without
+    a receiver callback; transfer or verification failure reverts the burn and leaves
+    the bearer claim pending. `U/A`
 53. Refund value is the sum of the inclusive entry counts in the caller-owned
     tickets times one USDC. `U/F/I/E`
 54. A refund call handles 1–100 tickets; duplicate, invalid, or mixed-owner batches
@@ -134,8 +141,9 @@ Evidence tags:
     by those tickets. `U/A/X`
 56. Sponsor prize recovery is available only in `CashWon` or `Refunding`, is
     independent of quote settlement, and consumes the prize once. `U/A/I/E`
-57. Winner, sponsor, and treasury quote balances are independent fixed-recipient
-    liabilities; anyone may trigger payment only to the recorded recipient. `U/A/I`
+57. Sponsor and treasury quote balances are independent immutable-recipient liabilities.
+    The winner cash liability follows the transferable ticket until its current owner
+    burns it through owner-only redemption. `U/A/I`
 58. Outgoing quote transfers verify both exact raffle debit and exact recipient
     credit; failures restore all effects. `U/A`
 59. Known protocol destinations cannot receive tickets, quote payouts, or claimed

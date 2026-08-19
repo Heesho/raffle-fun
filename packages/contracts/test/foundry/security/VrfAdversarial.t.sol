@@ -82,6 +82,37 @@ contract VrfAdversarialTest is Test {
         assertEq(wrapper.lastNumWords(), 1);
     }
 
+    function testOfficialHelperCannotUseForcedNativeToSubsidizeQuoteDrift() public {
+        Raffle raffle = _preparedRaffle();
+        vm.warp(raffle.endTime());
+        wrapper.configureQuoteDrift(0.1 ether, 1 ether, 1 ether);
+        vm.deal(address(raffle), 1 ether);
+
+        vm.expectRevert(abi.encodeWithSelector(IRaffle.InsufficientVrfFee.selector, 1 ether, 0.1 ether));
+        raffle.requestDraw{ value: 0.1 ether }();
+
+        assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Active));
+        assertEq(address(raffle).balance, 1 ether);
+        assertEq(wrapper.nextRequestId(), 0);
+        assertEq(address(wrapper).balance, 0);
+    }
+
+    function testOfficialHelperRefundsAgainstActualLowerPrice() public {
+        Raffle raffle = _preparedRaffle();
+        vm.warp(raffle.endTime());
+        wrapper.configureQuoteDrift(1 ether, 0.4 ether, 0.4 ether);
+        address requester = makeAddr("drift-requester");
+        vm.deal(requester, 2 ether);
+        uint256 balanceBefore = requester.balance;
+
+        vm.prank(requester);
+        raffle.requestDraw{ value: 1 ether }();
+
+        assertEq(requester.balance, balanceBefore - 0.4 ether);
+        assertEq(address(wrapper).balance, 0.4 ether);
+        assertEq(address(raffle).balance, 0);
+    }
+
     function testSynchronousWrongDuplicateAndValidCallbacksCannotResolveInFlightRequest() public {
         Raffle raffle = _preparedRaffle();
         vm.warp(raffle.endTime());

@@ -54,7 +54,9 @@ The intended bounded paths are:
 
 - anyone may request the one draw at any time after sale end;
 - anyone may enable refunds if an accepted request misses its two-day callback deadline;
-- anyone may settle a winning NFT or cash ticket to its current owner;
+- anyone may settle a winning NFT or cash ticket to allocate liabilities without
+  reading ownership or burning the ticket;
+- only the current winning-ticket owner may atomically burn it and redeem the NFT or cash;
 - each refund owner burns up to 100 tickets per call for their exact entry value;
 - sponsor and treasury balances are independent fixed-recipient liabilities;
 - anyone may release either balance only to its immutable recipient.
@@ -71,14 +73,16 @@ verified. Issuer pauses and blacklists can still prevent transfer.
 
 Prize custody assumes a standards-compliant ERC-721 whose `ownerOf` and transfer
 behavior remain honest. A malicious or upgraded collection can lie, freeze, burn, or
-misdirect its NFT. The NFT-success pot is not released until delivery is verified;
-after 30 days it can instead become full buyer refunds. That protects the USDC pot,
-but cannot force a broken prize out of escrow.
+misdirect its NFT. Winner redemption burns the ticket and delivers the prize in one
+transaction, so failed delivery restores the ticket and every redemption marker.
+Permissionless accounting settlement allows sponsor and treasury quote claims to
+remain usable independently, but there is no successful-result timeout or rescue path
+that can force a broken prize out of escrow.
 
 Winner NFT delivery uses `transferFrom` plus an ownership postcondition rather than
-`safeTransferFrom`. This prevents a contract owner from vetoing permissionless
-delivery through a receiver callback, but the recipient contract must itself be able
-to manage an ERC-721 received without that callback.
+`safeTransferFrom`. Owner-initiated redemption therefore does not depend on a receiver
+callback, but a contract ticket owner must be able to call the raffle and manage an
+ERC-721 received without that callback.
 
 The contracts cannot guarantee recovery from a halted or reorganized chain, universal
 censorship, a broken Chainlink wrapper, lost keys, unsupported recipient contracts,

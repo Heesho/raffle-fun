@@ -29,6 +29,7 @@ contract RaffleHandler is Test, IERC721Receiver {
     uint256 public ghostRequestCount;
     uint256 public ghostResolutionCount;
     uint256 public ghostRefundEnableCount;
+    uint256 public ghostWinnerSettlements;
     uint256 public ghostWinnerRedemptions;
     bool public ghostCashResolved;
     bool public statusWentBackward;
@@ -163,29 +164,32 @@ contract RaffleHandler is Test, IERC721Receiver {
         IRaffle.Status current = raffle.status();
         if ((current != IRaffle.Status.NftWon && current != IRaffle.Status.CashWon) || receiptIds.length == 0) return;
         uint256 receiptId = receiptIds[receiptSeed % receiptIds.length];
-        address owner;
-        try raffle.ownerOf(receiptId) returns (address owner_) {
-            owner = owner_;
-        } catch {
-            return;
-        }
         try raffle.settleWinningTicket(receiptId) returns (uint256) {
-            ++ghostWinnerRedemptions;
+            ++ghostWinnerSettlements;
         } catch { }
         _observe();
     }
 
     function releaseWinnerClaim() external {
         IRaffle.Status current = raffle.status();
-        if (current == IRaffle.Status.CashWon && raffle.winnerProceeds() != 0) {
-            try raffle.releaseWinnerProceeds() returns (uint256 amount) {
-                ghostQuotePaidOut += amount;
-                ghostWinnerPaidOut += amount;
-            } catch { }
-        } else if (current == IRaffle.Status.NftWon && raffle.winnerRecipient() != address(0) && !raffle.prizeClaimed())
-        {
-            try raffle.releaseWinnerPrize() { } catch { }
+        if (
+            (current != IRaffle.Status.CashWon && current != IRaffle.Status.NftWon) || !raffle.settlementComplete()
+                || raffle.winnerRedeemed()
+        ) return;
+
+        uint256 ticketId = raffle.winningTicketId();
+        address owner;
+        try raffle.ownerOf(ticketId) returns (address owner_) {
+            owner = owner_;
+        } catch {
+            return;
         }
+        vm.prank(owner);
+        try raffle.redeemWinningTicket(ticketId) returns (uint256 amount) {
+            ++ghostWinnerRedemptions;
+            ghostQuotePaidOut += amount;
+            ghostWinnerPaidOut += amount;
+        } catch { }
         _observe();
     }
 

@@ -4,6 +4,11 @@ This ledger applies to the committed Ethereum v1 audit candidate. It distinguish
 the contract deliberately contains from work still required before mainnet. Passing
 internal tests does not make any item safe for unlimited value.
 
+> **Evidence freshness:** the source has since moved to the exact-pinned official
+> Chainlink consumer base and bearer-ticket redemption. This risk ledger remains a
+> working checklist, but commit-bound audit evidence must be regenerated for the final
+> release SHA.
+
 ## Protocol and dependency risks
 
 ### VRF availability and configuration
@@ -54,20 +59,18 @@ A malicious NFT able to lie consistently about ownership is outside the supporte
 model. Prize admission and collection review are therefore material launch controls,
 not optional metadata checks.
 
-Winner delivery uses unsafe ERC-721 `transferFrom` intentionally so a contract ticket
-owner cannot veto fixed-owner delivery. A winner contract that cannot later transfer
-the NFT may strand its own prize. Frontends must warn contract recipients before a
-ticket is acquired.
+Winner redemption uses ERC-721 `transferFrom` intentionally so a contract ticket owner
+cannot veto delivery by rejecting a receiver callback. A winner contract that cannot
+later transfer the NFT may strand its own prize. Frontends must warn contract recipients
+before a ticket is acquired.
 
 ### Credential-owner reachability
 
-Cash and NFT winner settlement are permissionless and snapshot the current ticket owner.
-Winner releases are also permissionless but fixed to that snapshotted recipient, so an
-unreachable or token-restricted winner can strand only its own claim. Refund redemption
-is owner-only because burning the bearer credential must be authorized by that owner.
-A ticket held by a destroyed, incapable, or inaccessible contract can therefore leave
-its refund permanently unclaimed. The protocol cannot infer future code or key
-availability.
+Cash and NFT settlement are permissionless and do not inspect ownership. The winning
+ticket remains transferable until its current owner atomically burns it to redeem. A
+destroyed, incapable, inaccessible, or token-restricted owner can therefore strand its
+winner claim or refund until the ticket can be transferred by that owner. The protocol
+cannot infer future code or key availability.
 
 ### No economic value cap
 

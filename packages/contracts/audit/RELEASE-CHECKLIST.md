@@ -12,7 +12,8 @@ review does not replace an independent audit or operational approval.
 
 > **Evidence freshness:** checked numerical results below are preserved for the recorded
 > pre-remediation candidate. They do not validate the later hard request/callback
-> boundaries; all affected gates remain open until rerun on the final remediated SHA.
+> boundaries, official Chainlink consumer-base migration, or bearer-redemption redesign;
+> all affected gates remain open until rerun on the final release SHA.
 
 ## Source identity and reproducibility
 
@@ -37,7 +38,8 @@ review does not replace an independent audit or operational approval.
 - [x] Refund work is bounded by 1–100 submitted ticket IDs, not represented entries.
 - [x] One ticket contains a self-contained inclusive `uint128` entry range.
 - [x] `totalEntries` and `ticketCount` are separate and tested through extreme ranges.
-- [x] Tickets remain transferable in every status until settlement/refund burns them.
+- [x] Tickets remain transferable in every status, including after settlement, until
+      owner redemption or a refund burns them.
 - [ ] Prove `requestDraw` succeeds exactly in `[endTime, drawRequestDeadline())`.
 - [ ] Prove a sold `Active` raffle rejects refunds before `drawRequestDeadline()`,
       opens refunds at that deadline, and cannot request at or after it.
@@ -48,9 +50,9 @@ review does not replace an independent audit or operational approval.
 - [x] Both valid resolution branches are final and have no refund timeout.
 - [x] Cash settlement is 80% winner / 5% treasury / 15% sponsor of gross.
 - [x] NFT settlement records 5% treasury / 95% sponsor without external delivery;
-      the winner-prize release verifies delivery independently and cannot roll back
-      those quote claims.
-- [x] Winner settlement is permissionless and cannot redirect delivery from the current owner.
+      owner-only redemption later burns the winning ticket and verifies NFT delivery.
+- [x] Winner settlement is permissionless and owner-agnostic; only the current bearer
+      can atomically burn and redeem the winning ticket.
 - [x] Sponsor and protocol releases are permissionless but always use immutable recipients.
 - [x] Every refund pays the stored entry count at the fixed price exactly once.
 - [x] Exact inbound/outbound quote accounting, prize custody, and failed-transfer
@@ -99,6 +101,11 @@ review does not replace an independent audit or operational approval.
       against the final source; every new finding must stay active.
 - [ ] Repeat dependency, package-signature, secret, ABI-drift, runtime-size, initcode,
       and gas gates on the final SHA.
+- [ ] Formally disposition the npm audit advisories in unrelated transitive packages
+      bundled by `@chainlink/contracts@1.5.0`. The current compiled source graph includes
+      only the official wrapper base, client, interface, and LINK interface, and transitive
+      build scripts are denied; preserve that reachability evidence or remove the unused
+      dependency surface before release.
 - [ ] Execute pinned and latest-head Ethereum mainnet and Sepolia fork tests for the
       exact final SHA with archived block identities.
 

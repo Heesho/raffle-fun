@@ -41,7 +41,7 @@ Direct donations can make the last inequality strict. A deficit is never expecte
 | P2       | sold `Active` raffle remains without `DrawRequested` beyond the agreed keeper SLO but before `drawRequestDeadline()`                                                                           |                  1 hour | notify sponsor/buyers and submit a public draw request before the hard cutoff                    |
 | P2       | any `VrfCallbackIgnored`; request remains unresolved beyond the normal fulfillment SLO; RPC providers disagree past finality                                                                   |                  1 hour | correlate request ID with Chainlink logs and preserve raw receipts/traces                        |
 | P2       | claim/refund/redemption failures rise above the agreed threshold; indexer lags finalized head by more than 20 blocks                                                                           |                  1 hour | validate directly from chain and mark indexed data degraded                                      |
-| P3       | stale unclaimed winner/sponsor/protocol/refund liability or unreleased prize; Safe signer/threshold review due                                                                                 |          1 business day | notify the entitled account or operations owner                                                  |
+| P3       | stale unredeemed winning ticket, sponsor/protocol/refund liability, or unreleased sponsor prize; Safe signer/threshold review due                                                              |          1 business day | notify the entitled account or operations owner                                                  |
 
 Thresholds for rate-based alerts must be set before launch from Sepolia measurements;
 they may not be left as vendor defaults.
@@ -63,7 +63,8 @@ At minimum display:
   callback-deadline queues;
 - unsettled pot, refund liability, winner proceeds, sponsor proceeds, protocol fees, actual USDC
   balance, and deficit per raffle and in aggregate;
-- winning settlements, refunds, fixed-recipient releases, and winner/sponsor prize withdrawals.
+- winning settlements and owner redemptions, refunds, sponsor/protocol fixed-recipient
+  releases, and sponsor prize withdrawals.
 
 Run full finalized-state reconciliation at least hourly and after every deployment,
 ownership change, pause change, reorg, or incident. Page on any unexplained

@@ -100,25 +100,18 @@ abstract contract RaffleEchidnaBase is IERC721Receiver {
         uint256 receiptId = receiptIds[receiptSeed % receiptIds.length];
         try raffle.ownerOf(receiptId) returns (address owner) {
             if (owner != address(this)) return;
-            try raffle.settleWinningTicket(receiptId) { } catch { }
+            try raffle.redeemWinningTicket(receiptId) returns (uint256 amount) {
+                ghostPaidOut += amount;
+            } catch { }
         } catch { }
         _observe();
     }
 
-    function releaseWinnerProceeds() external {
-        if (raffle.winnerProceeds() == 0) return;
-        try raffle.releaseWinnerProceeds() returns (uint256 amount) {
-            ghostPaidOut += amount;
-        } catch { }
-        _observe();
-    }
-
-    function releaseWinnerPrize() external {
-        if (raffle.status() != IRaffle.Status.NftWon || raffle.winnerRecipient() == address(0) || raffle.prizeClaimed())
-        {
-            return;
-        }
-        try raffle.releaseWinnerPrize() { } catch { }
+    function settleCandidateWinner(uint256 receiptSeed) external {
+        IRaffle.Status current = raffle.status();
+        if ((current != IRaffle.Status.NftWon && current != IRaffle.Status.CashWon) || receiptIds.length == 0) return;
+        uint256 receiptId = receiptIds[receiptSeed % receiptIds.length];
+        try raffle.settleWinningTicket(receiptId) { } catch { }
         _observe();
     }
 

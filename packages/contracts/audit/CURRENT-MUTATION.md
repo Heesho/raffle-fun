@@ -4,6 +4,11 @@ This campaign targets the active Ethereum v1 sequential range-ticket candidate. 
 focused, hand-selected security mutation set, not an exhaustive search and not an
 independent audit.
 
+> **Superseded evidence:** this campaign is preserved for the exact source identity
+> below. It predates the timeout remediation, official Chainlink consumer-base
+> migration, and bearer-redemption redesign. Its score does not validate the current
+> working source; regenerate the catalog and results from the final release SHA.
+
 ## Candidate identity and isolation
 
 - source commit at campaign start: `92eccb4beda71175dfeab4fa2282fbcfaab075c4`

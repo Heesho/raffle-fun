@@ -4,7 +4,7 @@ import path from "node:path";
 import process from "node:process";
 import { promisify } from "node:util";
 
-import { createPublicClient, http } from "viem";
+import { createPublicClient, http, parseAbi, type Address } from "viem";
 
 import { loadDeploymentBuildEvidence } from "./deployment-build-evidence.js";
 import {
@@ -15,6 +15,7 @@ import { createEtherscanSourceVerifier } from "./deployment-source-verification.
 import { validateDeploymentOnchain } from "./deployment-validation.js";
 
 const execFileAsync = promisify(execFile);
+const vrfWrapperAbi = parseAbi(["function link() view returns (address)"]);
 
 const inputPath = process.argv[2];
 if (inputPath === undefined) {
@@ -96,12 +97,6 @@ if (etherscanApiKey === undefined) {
     "ETHERSCAN_API_KEY is required to verify published Factory and implementation source independently.",
   );
 }
-const evidence = await loadDeploymentBuildEvidence(
-  repositoryRoot,
-  candidate,
-  sourceCommit,
-  createEtherscanSourceVerifier(etherscanApiKey),
-);
 const rpcUrl =
   candidate.chainId === 11_155_111
     ? process.env.SEPOLIA_RPC_URL
@@ -113,6 +108,19 @@ if (rpcUrl === undefined) {
 }
 
 const client = createPublicClient({ transport: http(rpcUrl) });
+const vrfLinkToken = await client.readContract({
+  address: candidate.vrfWrapper as Address,
+  abi: vrfWrapperAbi,
+  functionName: "link",
+  blockNumber: BigInt(candidate.validationBlock),
+});
+const evidence = await loadDeploymentBuildEvidence(
+  repositoryRoot,
+  candidate,
+  vrfLinkToken,
+  sourceCommit,
+  createEtherscanSourceVerifier(etherscanApiKey),
+);
 await validateDeploymentOnchain(client, candidate, evidence);
 
 const [{ stdout: finalCommit }, { stdout: finalStatus }] = await Promise.all([

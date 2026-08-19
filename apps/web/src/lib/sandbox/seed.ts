@@ -58,6 +58,8 @@ function raffle(
     | "protocolFees"
     | "winningEntry"
     | "winningTicketId"
+    | "settlementComplete"
+    | "winnerRedeemed"
     | "prizeClaimed"
     | "drawRequestedAt"
     | "drawRequestedBy"
@@ -85,6 +87,8 @@ function raffle(
     protocolFees: 0n,
     winningEntry: null,
     winningTicketId: null,
+    settlementComplete: false,
+    winnerRedeemed: false,
     prizeClaimed: false,
     drawRequestedAt: null,
     drawRequestedBy: null,

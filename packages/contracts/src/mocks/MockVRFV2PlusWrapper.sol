@@ -23,6 +23,8 @@ contract MockVRFV2PlusWrapper {
     mapping(uint256 requestId => uint32 gasLimit) public gasLimitByRequest;
     mapping(uint256 requestId => uint16 confirmations) public confirmationsByRequest;
     mapping(uint256 requestId => uint32 wordCount) public wordCountByRequest;
+    mapping(uint256 requestId => uint256 paidAmount) public paidByRequest;
+    mapping(uint256 requestId => bytes extraArgs) public extraArgsByRequest;
     uint256 public lastCallbackGasUsed;
     bool public feeReadReverts;
 
@@ -48,7 +50,7 @@ contract MockVRFV2PlusWrapper {
         uint32 callbackGasLimit,
         uint16 requestConfirmations,
         uint32 numWords,
-        bytes calldata
+        bytes calldata extraArgs
     ) external payable returns (uint256 requestId) {
         if (msg.value < fee) revert InsufficientFee(fee, msg.value);
         requestId = ++latestRequestId;
@@ -56,6 +58,8 @@ contract MockVRFV2PlusWrapper {
         gasLimitByRequest[requestId] = callbackGasLimit;
         confirmationsByRequest[requestId] = requestConfirmations;
         wordCountByRequest[requestId] = numWords;
+        paidByRequest[requestId] = msg.value;
+        extraArgsByRequest[requestId] = extraArgs;
         emit RequestRegistered(requestId, msg.sender, callbackGasLimit, requestConfirmations);
     }
 

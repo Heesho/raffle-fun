@@ -1,8 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  releaseWinnerPrize,
-  releaseWinnerProceeds,
+  redeemWinningTicket,
   requestDraw,
   validateCreateRaffleParams,
   validateEntryCount,
@@ -132,39 +131,36 @@ describe("requestDraw", () => {
   });
 });
 
-describe("winner releases", () => {
-  it.each([
-    ["releaseWinnerProceeds", releaseWinnerProceeds],
-    ["releaseWinnerPrize", releaseWinnerPrize],
-  ] as const)(
-    "simulates %s before submitting it",
-    async (functionName, action) => {
-      const calls: Array<{ readonly method: string; readonly value: unknown }> =
-        [];
-      const context = {
-        account,
-        publicClient: {
-          async simulateContract(parameters: unknown) {
-            calls.push({ method: "simulateContract", value: parameters });
-            return { request: { marker: functionName } };
-          },
+describe("winner redemption", () => {
+  it("simulates an owner redemption before submitting it", async () => {
+    const functionName = "redeemWinningTicket";
+    const calls: Array<{ readonly method: string; readonly value: unknown }> =
+      [];
+    const context = {
+      account,
+      publicClient: {
+        async simulateContract(parameters: unknown) {
+          calls.push({ method: "simulateContract", value: parameters });
+          return { request: { marker: functionName } };
         },
-        walletClient: {
-          async writeContract(request: unknown) {
-            calls.push({ method: "writeContract", value: request });
-            return "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
-          },
+      },
+      walletClient: {
+        async writeContract(request: unknown) {
+          calls.push({ method: "writeContract", value: request });
+          return "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
         },
-      } as unknown as ActionContext;
+      },
+    } as unknown as ActionContext;
 
-      await expect(action(context, raffle)).resolves.toMatch(/^0x[b]+$/);
-      expect(calls).toMatchObject([
-        {
-          method: "simulateContract",
-          value: { account, address: raffle, functionName },
-        },
-        { method: "writeContract", value: { marker: functionName } },
-      ]);
-    },
-  );
+    await expect(redeemWinningTicket(context, raffle, 7n)).resolves.toMatch(
+      /^0x[b]+$/,
+    );
+    expect(calls).toMatchObject([
+      {
+        method: "simulateContract",
+        value: { account, address: raffle, functionName, args: [7n] },
+      },
+      { method: "writeContract", value: { marker: functionName } },
+    ]);
+  });
 });

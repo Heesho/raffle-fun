@@ -36,6 +36,8 @@ release block.
 ## Release gates
 
 - independent audit of the exact source, generated ABI, dependency lock, and compiler;
+- exact `@chainlink/contracts@1.5.0` dependency and official
+  `VRFV2PlusWrapperConsumerBase` integration present in the verified implementation source;
 - no unresolved critical, high, or medium finding;
 - clean format, lint, typecheck, build, unit, fuzz, invariant, model, coverage, gas,
   Slither, SDK, subgraph, and web checks;
@@ -116,5 +118,6 @@ indexer, keeper, legal, monitoring, or incident-response gate remains incomplete
 
 Existing raffles cannot be upgraded or paused. Incident response is limited to pausing
 future creation, warning users, disabling first-party surfaces, assisting
-permissionless draw/refund/claim calls, and deploying a new factory. No operator can
-rewrite or rescue an existing raffle.
+permissionless draw, refund, settlement, and fixed-recipient release calls, supporting
+owner-controlled redemption, and deploying a new factory. No operator can rewrite or
+rescue an existing raffle.

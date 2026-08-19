@@ -1,7 +1,8 @@
 # Current protocol specification
 
-Status: normative security-review summary for the committed Ethereum v1 audit candidate.
+Status: normative security-review summary for the current Ethereum v1 source.
 Production Solidity and interfaces are authoritative if this document conflicts with code.
+Commit-bound audit evidence must be regenerated for this revised candidate.
 
 ## Contract graph and fixed configuration
 
@@ -9,7 +10,9 @@ Production Solidity and interfaces are authoritative if this document conflicts 
 non-upgradeable ERC-1167 clones. Its two-step owner may pause future creation only.
 Every clone shares the factory's immutable six-decimal quote token, Chainlink VRF v2.5
 native direct-funding wrapper, protocol treasury, 300,000 callback gas limit, and 30
-request confirmations.
+request confirmations. The consumer inherits the exact-pinned official
+`@chainlink/contracts@1.5.0` wrapper base and uses its client library; the raffle does
+not manage a Chainlink subscription.
 
 Each raffle fixes its sponsor, immutable `sponsorRecipient`, prize contract and token ID,
 reserve entry count, and exclusive sale end. The sponsor is `msg.sender` at creation;
@@ -26,8 +29,9 @@ ERC-721 ticket with a sequential ID. A separate mapping stores that ticket's inc
 `uint128` entry range. Ranges start at one and partition all sold entries without gaps.
 
 Unburned tickets remain transferable in every status. Current `ownerOf(ticketId)` is the
-bearer credential at settlement or refund time. Purchase and winning-ticket verification
-are O(1) in entry count; refunds loop over at most 100 supplied ticket IDs.
+bearer credential at redemption or refund time; settlement does not inspect ownership.
+Purchase and winning-ticket verification are O(1) in entry count; refunds loop over at
+most 100 supplied ticket IDs.
 
 ## Lifecycle and liveness
 
@@ -88,12 +92,13 @@ The callback never searches tickets, loops over entries, transfers a token, or c
 user. Its fixed gas-unit limit does not cap Ethereum's gas price; the wrapper's live
 native quote changes with gas pricing.
 
-## Settlement and fixed destinations
+## Settlement and bearer redemption
 
 `settleWinningTicket(ticketId)` is permissionless. The contract proves the supplied
-range contains `winningEntry`, snapshots its current owner as `winnerRecipient`, burns
-the ticket, and records every terminal liability without transferring an external
-asset. There is no caller-selected destination.
+range contains `winningEntry`, records that ticket as the winner, and records every
+terminal liability without inspecting its owner, burning it, or transferring an
+external asset. The winning ticket remains an ordinary transferable bearer asset until
+its current owner redeems it.
 
 For gross sales `G`:
 
@@ -102,22 +107,27 @@ protocolFee = floor(G * 500 / 10_000)
 cashWinner  = floor(G * 8_000 / 10_000)
 ```
 
-- `NftWon`: record the ticket owner as the fixed NFT recipient, `G - protocolFee` as
-  `sponsorProceeds`, and `protocolFee` as `protocolFees`.
+- `NftWon`: record the winning ticket, `G - protocolFee` as `sponsorProceeds`, and
+  `protocolFee` as `protocolFees`; the prize NFT remains escrowed for redemption by the
+  ticket's current owner.
 - `CashWon`: record `cashWinner` as `winnerProceeds`, `G - protocolFee - cashWinner`
   for the sponsor, and `protocolFee` for the protocol. The sponsor prize is independently
   releasable.
 - `Refunding`: the current owner calls `refundTickets`, burns one to 100 owned tickets,
   and receives exactly their aggregate entry count times one USDC.
 
-Anyone may call `releaseWinnerProceeds`, `releaseWinnerPrize`,
-`releaseSponsorProceeds`, `releaseProtocolFees`, or `releaseSponsorPrize`. They always
-pay the snapshotted winner or immutable sponsor/treasury recipient; the caller cannot
-redirect value. A failed winner release restores only that winner claim and cannot
-roll back settlement or another party's liability.
+Only the winning ticket's current owner may call `redeemWinningTicket`. Redemption
+burns that exact ticket and transfers the cash or prize NFT to the owner atomically. If
+settlement has not happened yet, the owner may settle and redeem in the same call. An
+approved operator is deliberately insufficient: possession of the ticket itself is the
+claim. A failed transfer reverts the burn and all redemption effects. If settlement was
+already committed in an earlier transaction, its other liabilities remain available.
 
-NFT delivery deliberately uses ERC-721 `transferFrom` plus `ownerOf` verification so a
-contract recipient cannot veto fixed delivery by rejecting a receiver callback. A
+Anyone may call `releaseSponsorProceeds`, `releaseProtocolFees`, or
+`releaseSponsorPrize`. They always pay the immutable sponsor or treasury recipient; the
+caller cannot redirect value.
+
+NFT delivery deliberately uses ERC-721 `transferFrom` plus `ownerOf` verification. A
 noncompliant prize contract remains outside the supported-asset model.
 
 ## Accounting
@@ -132,10 +142,10 @@ accountedQuoteBalance
 ```
 
 Incoming and outgoing quote transfers verify exact sender and recipient balance deltas.
-Settlement has no external asset interaction. Each release zeroes only its own claim
-before an external interaction under a reentrancy guard; a failed transfer restores
-that claim without affecting settlement or other recipients. Direct quote donations are
-unaccounted surplus and have no rescue path.
+Settlement has no external asset interaction. Redemption and each release apply their
+effects before an external interaction under a reentrancy guard; a failed transfer
+reverts those effects. Direct quote donations are unaccounted surplus and have no
+rescue path.
 
 ## Trust boundary
 

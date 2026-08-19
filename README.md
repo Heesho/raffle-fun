@@ -48,13 +48,13 @@ protocolFee = floor(grossSales * 500 / 10_000)
 netPot      = grossSales - protocolFee
 ```
 
-The Chainlink callback only records the result and winning entry. Settlement later
-snapshots the current ticket owner, burns the winning ticket, and atomically records
-every claim without transferring an asset. For an NFT result, the winner receives a
-fixed NFT claim and 95% / 5% sponsor and protocol balances are recorded. For a cash
-result, 80% is recorded for the winner, 15% for the sponsor, 5% for the protocol, and
-the sponsor can independently recover the NFT. Each asset is released separately, so
-one failed recipient cannot roll back anyone else's claim.
+The Chainlink callback only records the result and winning entry. Permissionless
+settlement later proves which ticket contains that entry and allocates the economic
+liabilities without reading its owner, burning it, or transferring an asset. The
+ticket remains a transferable bearer claim after settlement. Its current owner calls
+`redeemWinningTicket` to burn it and receive the NFT or cash atomically; failed
+delivery reverts the burn and all redemption state. Sponsor and protocol balances,
+and the sponsor's cash-result NFT return, remain independently releasable.
 
 Full refunds charge no fee. Refund execution is bounded by submitted tickets, not
 their entry counts, and accepts at most 100 tickets per transaction.
@@ -109,15 +109,18 @@ branch.
 
 ## Settlement authority
 
-An unburned ticket is a transferable bearer claim. Anyone may settle the winning ticket,
-which snapshots its current owner as the fixed winner recipient and burns the ticket
-exactly once. Anyone may then release the winner's cash or NFT, sponsor proceeds,
-protocol fees, or sponsor prize, but each release always pays its recorded recipient.
-Refunds are owner-only, burn the submitted tickets, and always pay that owner.
+An unburned ticket is a transferable bearer claim, including after the result and
+winning ticket have been settled. Anyone may settle the winning ticket to allocate
+liabilities and record its ID, but settlement does not read ownership or burn the
+ticket. Only its current owner may redeem it. Redemption can perform settlement first
+when necessary, then atomically burns the ticket and delivers the NFT or cash to that
+owner. Sponsor proceeds, protocol fees, and the cash-result sponsor prize remain
+permissionless releases to immutable recipients. Refunds are owner-only, burn the
+submitted tickets, and always pay that owner.
 
 NFT winner delivery deliberately uses ERC-721 `transferFrom`, followed by an
-`ownerOf` postcondition, so a contract winner cannot veto its fixed-recipient release by
-rejecting an ERC-721 receiver callback.
+`ownerOf` postcondition. Redemption therefore does not depend on an ERC-721 receiver
+callback, while a failed or dishonest prize transfer still reverts the ticket burn.
 
 ## Architecture and authority
 
@@ -153,7 +156,7 @@ otherwise non-exact quote tokens are unsupported.
 Prize safety assumes an honest, standards-compliant ERC-721 whose `ownerOf` and
 transfers remain available. A malicious or upgraded collection can lie, freeze, burn,
 or refuse to move its NFT. A valid Chainlink result is final, so a broken prize contract
-can block its own NFT release, but it cannot roll back recorded quote claims; no contract
+can block winner redemption, but it cannot roll back recorded quote claims; no contract
 can force a noncompliant NFT to leave escrow.
 
 Chainlink VRF, Ethereum inclusion, USDC issuer controls, the prize collection, and
@@ -177,6 +180,7 @@ docs/                 protocol and operations documentation
 ## Toolchain and validation
 
 - Solidity `0.8.36`, exact pragma, Cancun EVM target
+- Chainlink Contracts `1.5.0`, exact-pinned official VRF v2.5 consumer integration
 - OpenZeppelin Contracts `5.6.1`
 - Foundry plus Hardhat 3 / Viem
 - Node `>=22.13 <23`, pnpm `11.18.0`

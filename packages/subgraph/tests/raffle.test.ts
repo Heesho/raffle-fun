@@ -17,8 +17,7 @@ import {
   RefundsEnabled,
   Transfer,
   VrfCallbackIgnored,
-  WinnerPrizeReleased,
-  WinnerProceedsReleased,
+  WinningTicketRedeemed,
   WinningTicketSettled,
 } from "../generated/templates/Raffle/Raffle";
 import { handleRaffleCreated } from "../src/factory";
@@ -30,8 +29,7 @@ import {
   handleRefundsEnabled,
   handleTransfer,
   handleVrfCallbackIgnored,
-  handleWinnerPrizeReleased,
-  handleWinnerProceedsReleased,
+  handleWinningTicketRedeemed,
   handleWinningTicketSettled,
 } from "../src/raffle";
 import { ticketEntityId } from "../src/helpers";
@@ -137,9 +135,6 @@ describe("Raffle mappings", () => {
     const resolution = createResolutionEvent(4);
     const resolutionId = resolution.transaction.hash.toHexString() + "-6";
     handleRaffleResolved(resolution);
-    handleTransfer(
-      createTransferEvent(RECIPIENT, Address.zero(), TICKET_ID, 7),
-    );
     handleWinningTicketSettled(createWinningSettlementEvent(4));
 
     assert.fieldEquals("Raffle", RAFFLE.toHexString(), "status", "CASH_WON");
@@ -154,12 +149,6 @@ describe("Raffle mappings", () => {
       RAFFLE.toHexString(),
       "winnerProceeds",
       "16000000",
-    );
-    assert.fieldEquals(
-      "Raffle",
-      RAFFLE.toHexString(),
-      "winnerRecipient",
-      RECIPIENT.toHexString(),
     );
     assert.fieldEquals(
       "Raffle",
@@ -186,23 +175,45 @@ describe("Raffle mappings", () => {
       "winning",
       "true",
     );
+    assert.fieldEquals(
+      "Ticket",
+      ticketEntityId(RAFFLE, TICKET_ID),
+      "currentOwner",
+      RECIPIENT.toHexString(),
+    );
+    assert.fieldEquals(
+      "Ticket",
+      ticketEntityId(RAFFLE, TICKET_ID),
+      "burned",
+      "false",
+    );
     assert.entityCount("WinningSettlement", 1);
 
-    const release = createWinnerProceedsReleasedEvent();
-    handleWinnerProceedsReleased(release);
+    handleTransfer(
+      createTransferEvent(RECIPIENT, Address.zero(), TICKET_ID, 9),
+    );
+    const redemption = createWinningRedemptionEvent(4);
+    handleWinningTicketRedeemed(redemption);
     assert.fieldEquals("Raffle", RAFFLE.toHexString(), "winnerProceeds", "0");
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "winnerRedeemed",
+      "true",
+    );
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "winnerRecipient",
+      RECIPIENT.toHexString(),
+    );
     assert.fieldEquals(
       "QuoteTokenStats",
       FACTORY.toHexString() + "-" + QUOTE.toHexString(),
       "winnerCashRedeemed",
       "16000000",
     );
-    assert.fieldEquals(
-      "ProceedsRelease",
-      release.transaction.hash.toHexString() + "-9",
-      "kind",
-      "WINNER",
-    );
+    assert.entityCount("WinningRedemption", 1);
   });
 
   test("ignored VRF callbacks are indexed for operational alerts", () => {
@@ -244,9 +255,6 @@ describe("Raffle mappings", () => {
       "0",
     );
 
-    handleTransfer(
-      createTransferEvent(RECIPIENT, Address.zero(), TICKET_ID, 7),
-    );
     handleWinningTicketSettled(createWinningSettlementEvent(3));
     assert.fieldEquals("Raffle", RAFFLE.toHexString(), "unsettledPot", "0");
     assert.fieldEquals(
@@ -262,11 +270,26 @@ describe("Raffle mappings", () => {
       "1000000",
     );
     assert.fieldEquals("Raffle", RAFFLE.toHexString(), "prizeClaimed", "false");
+    assert.fieldEquals(
+      "Ticket",
+      ticketEntityId(RAFFLE, TICKET_ID),
+      "currentOwner",
+      RECIPIENT.toHexString(),
+    );
 
-    const release = createWinnerPrizeReleasedEvent();
-    handleWinnerPrizeReleased(release);
+    handleTransfer(
+      createTransferEvent(RECIPIENT, Address.zero(), TICKET_ID, 9),
+    );
+    const redemption = createWinningRedemptionEvent(3);
+    handleWinningTicketRedeemed(redemption);
     assert.fieldEquals("Raffle", RAFFLE.toHexString(), "prizeClaimed", "true");
-    assert.entityCount("WinnerPrizeRelease", 1);
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "winnerRedeemed",
+      "true",
+    );
+    assert.entityCount("WinningRedemption", 1);
   });
 
   test("refund redemption records ticket and entry quantities separately", () => {
@@ -411,7 +434,7 @@ function createWinningSettlementEvent(result: i32): WinningTicketSettled {
   event.logIndex = BigInt.fromI32(8);
   event.parameters = new Array();
   pushBigInt(event, "ticketId", TICKET_ID);
-  pushAddress(event, "winner", RECIPIENT);
+  pushAddress(event, "settler", BUYER);
   pushUnsigned(event, "result", result);
   pushUnsigned(event, "cashAmount", result == 4 ? 16_000_000 : 0);
   pushUnsigned(event, "protocolFee", 1_000_000);
@@ -419,26 +442,17 @@ function createWinningSettlementEvent(result: i32): WinningTicketSettled {
   return event;
 }
 
-function createWinnerProceedsReleasedEvent(): WinnerProceedsReleased {
-  const event = changetype<WinnerProceedsReleased>(newMockEvent());
+function createWinningRedemptionEvent(result: i32): WinningTicketRedeemed {
+  const event = changetype<WinningTicketRedeemed>(newMockEvent());
   event.address = RAFFLE;
-  event.logIndex = BigInt.fromI32(9);
+  event.logIndex = BigInt.fromI32(10);
   event.parameters = new Array();
-  pushAddress(event, "caller", BUYER);
-  pushAddress(event, "recipient", RECIPIENT);
-  pushUnsigned(event, "amount", 16_000_000);
-  return event;
-}
-
-function createWinnerPrizeReleasedEvent(): WinnerPrizeReleased {
-  const event = changetype<WinnerPrizeReleased>(newMockEvent());
-  event.address = RAFFLE;
-  event.logIndex = BigInt.fromI32(9);
-  event.parameters = new Array();
-  pushAddress(event, "caller", BUYER);
-  pushAddress(event, "recipient", RECIPIENT);
-  pushAddress(event, "prizeToken", PRIZE);
-  pushUnsigned(event, "prizeTokenId", 42);
+  pushBigInt(event, "ticketId", TICKET_ID);
+  pushAddress(event, "winner", RECIPIENT);
+  pushUnsigned(event, "result", result);
+  pushUnsigned(event, "cashAmount", result == 4 ? 16_000_000 : 0);
+  pushAddress(event, "prizeToken", result == 3 ? PRIZE : Address.zero());
+  pushUnsigned(event, "prizeTokenId", result == 3 ? 42 : 0);
   return event;
 }
 

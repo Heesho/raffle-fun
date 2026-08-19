@@ -8,7 +8,7 @@ import { IRaffle } from "../interfaces/IRaffle.sol";
 import { IRaffleFactory } from "../interfaces/IRaffleFactory.sol";
 
 /// @title ReentrantPrizeERC721
-/// @notice Adversarial prize that attempts nested factory creation or raffle settlement.
+/// @notice Adversarial prize that attempts nested factory creation or winning-ticket redemption.
 contract ReentrantPrizeERC721 is ERC721, IERC721Receiver {
     enum AttackKind {
         None,
@@ -27,13 +27,13 @@ contract ReentrantPrizeERC721 is ERC721, IERC721Receiver {
     uint256 public nestedPrizeTokenId;
     /// @notice Active attack path.
     AttackKind public attackKind;
-    /// @notice Raffle targeted by a settlement reentry attempt.
+    /// @notice Raffle targeted by a redemption reentry attempt.
     IRaffle public targetRaffle;
-    /// @notice Ticket supplied to a nested permissionless settlement attempt.
+    /// @notice Ticket supplied to a nested winning-ticket redemption attempt.
     uint256 public targetTicketId;
     /// @notice Current ticket owner used as the only allowed third-party destination.
     address public targetWinner;
-    /// @notice Number of nested settlement calls attempted.
+    /// @notice Number of nested redemption calls attempted.
     uint256 public reentryAttempts;
     /// @notice Number of nested calls rejected by the target.
     uint256 public reentryBlocks;
@@ -73,14 +73,14 @@ contract ReentrantPrizeERC721 is ERC721, IERC721Receiver {
         _armSettlement(AttackKind.SponsorSafeTransfer, raffle_, ticketId_, winner_);
     }
 
-    /// @notice Attempts settlement reentry before a winner-prize release completes.
+    /// @notice Attempts redemption reentry before a winner-prize delivery completes.
     function transferFrom(address from, address to, uint256 tokenId) public override {
         if (
             attackEnabled && (attackKind == AttackKind.WinnerTransfer || attackKind == AttackKind.SponsorSafeTransfer)
                 && msg.sender == address(targetRaffle)
         ) {
             attackEnabled = false;
-            _attemptSettlementReentry();
+            _attemptRedemptionReentry();
         }
         super.transferFrom(from, to, tokenId);
     }
@@ -104,7 +104,7 @@ contract ReentrantPrizeERC721 is ERC721, IERC721Receiver {
             }
         } else if (attackEnabled && attackKind == AttackKind.SponsorSafeTransfer && msg.sender == address(targetRaffle))
         {
-            _attemptSettlementReentry();
+            _attemptRedemptionReentry();
         }
         super.safeTransferFrom(from, to, tokenId, data);
         if (attackKind == AttackKind.SponsorSafeTransfer) attackEnabled = false;
@@ -113,7 +113,7 @@ contract ReentrantPrizeERC721 is ERC721, IERC721Receiver {
     /// @notice Attempts nested settlement from the sponsor delivery receiver callback.
     function onERC721Received(address, address, uint256, bytes calldata) external override returns (bytes4) {
         if (attackEnabled && attackKind == AttackKind.SponsorSafeTransfer) {
-            _attemptSettlementReentry();
+            _attemptRedemptionReentry();
         }
         return IERC721Receiver.onERC721Received.selector;
     }
@@ -130,9 +130,9 @@ contract ReentrantPrizeERC721 is ERC721, IERC721Receiver {
         reentrySelector = bytes4(0);
     }
 
-    function _attemptSettlementReentry() private {
+    function _attemptRedemptionReentry() private {
         ++reentryAttempts;
-        try targetRaffle.settleWinningTicket(targetTicketId) {
+        try targetRaffle.redeemWinningTicket(targetTicketId) {
             reentryBlocked = false;
         } catch (bytes memory reason) {
             reentryBlocked = true;

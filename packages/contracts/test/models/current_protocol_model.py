@@ -88,6 +88,8 @@ class Model:
     winning_entry: int = 0
     winning_ticket: int = 0
     winner_recipient: str = ""
+    settlement_complete: bool = False
+    winner_redeemed: bool = False
     prize_claimed: bool = False
     quote_paid: int = 0
 
@@ -142,15 +144,16 @@ class Model:
         else:
             self.status = Status.CASH_WON
 
-    def claim_winner(self, ticket_id: int, *, caller: str) -> int:
+    def settle_winner(self, ticket_id: int, *, caller: str) -> int:
         if self.status not in (Status.NFT_WON, Status.CASH_WON):
             raise ValueError("invalid winner state")
+        if self.settlement_complete:
+            raise ValueError("already settled")
         ticket = self._live(ticket_id)
         if not ticket.first <= self.winning_entry <= ticket.last:
             raise ValueError("wrong ticket")
-        ticket.consumed = True
+        self.settlement_complete = True
         self.winning_ticket = ticket_id
-        self.winner_recipient = ticket.owner
         split = split_gross(self.gross, nft_won=self.status is Status.NFT_WON)
         self.unsettled = 0
         self.treasury_claim += split.fee
@@ -160,21 +163,31 @@ class Model:
         self.winner_cash = split.winner_cash
         return split.winner_cash
 
-    def release_winner_cash(self) -> int:
-        if not self.winner_recipient or self.winner_cash == 0:
+    def redeem_winner(self, ticket_id: int, *, caller: str) -> int:
+        if self.status not in (Status.NFT_WON, Status.CASH_WON):
+            raise ValueError("invalid winner state")
+        if self.winner_redeemed:
+            raise ValueError("already redeemed")
+        if not self.settlement_complete:
+            self.settle_winner(ticket_id, caller=caller)
+        elif ticket_id != self.winning_ticket:
+            raise ValueError("wrong settled ticket")
+        ticket = self._live(ticket_id)
+        if ticket.owner != caller:
+            raise ValueError("not owner")
+        ticket.consumed = True
+        self.winner_recipient = caller
+        self.winner_redeemed = True
+        if self.status is Status.NFT_WON:
+            if self.prize_claimed:
+                raise ValueError("winner prize unavailable")
+            self.prize_claimed = True
+            return 0
+        if self.winner_cash == 0:
             raise ValueError("empty winner claim")
         amount, self.winner_cash = self.winner_cash, 0
         self.quote_paid += amount
         return amount
-
-    def release_winner_prize(self) -> None:
-        if (
-            self.status is not Status.NFT_WON
-            or not self.winner_recipient
-            or self.prize_claimed
-        ):
-            raise ValueError("winner prize unavailable")
-        self.prize_claimed = True
 
     def enable_refunds(
         self,
@@ -268,6 +281,12 @@ class Model:
         assert self.gross == self.accounted + self.quote_paid
         if self.winning_entry:
             assert len(self.containing_tickets(self.winning_entry)) == 1
+        if self.settlement_complete:
+            assert self.winning_ticket != 0
+            assert self.unsettled == 0
+            assert self.tickets[self.winning_ticket].consumed is self.winner_redeemed
+        if self.winner_redeemed:
+            assert self.winner_recipient
 
     def _live(self, ticket_id: int) -> Ticket:
         ticket = self.tickets.get(ticket_id)

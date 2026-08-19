@@ -11,8 +11,8 @@ A buyer chooses how many numbers to buy:
 - 20 USDC mints one ticket containing 20 consecutive numbers;
 - any positive amount still mints only one ticket.
 
-The ticket is an ERC-721 bearer claim and can move in any raffle state until a
-successful winner settlement or refund burns it.
+The ticket is an ERC-721 bearer claim and can move in any raffle state, including
+after winner settlement, until successful owner redemption or a refund burns it.
 
 ## Two successful outcomes
 
@@ -35,9 +35,10 @@ the reserve.
 
 If the reserve is missed, the sponsor receives the NFT back plus 15% of gross sales.
 The randomly selected ticket receives 80% of gross sales, and the protocol receives
-the remaining 5%. Settlement records these fixed entitlements first; winner, sponsor,
-and protocol assets are released separately so one failed recipient cannot block the
-others.
+the remaining 5%. Permissionless settlement records the winning ticket and allocates
+these entitlements without reading its owner or burning it. The current owner then
+atomically burns the ticket while receiving its NFT or cash; sponsor and protocol
+assets remain independently releasable.
 
 ## Verifiable and bounded
 

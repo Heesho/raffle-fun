@@ -13,26 +13,27 @@ stateDiagram-v2
   Drawing --> Refunding: callback timeout
 ```
 
-| Status          | Meaning                                            | Available progress                                               |
-| --------------- | -------------------------------------------------- | ---------------------------------------------------------------- |
-| `AwaitingPrize` | clone initialized inside creation                  | exact factory-operated prize deposit; otherwise creation reverts |
-| `Active`        | prize escrowed; purchases allowed before `endTime` | purchase; bounded draw request; or deadline-based refunds        |
-| `Drawing`       | one Chainlink request accepted                     | matching callback or callback-timeout refunds                    |
-| `NftWon`        | reserve met; winning entry recorded                | settle ticket; independently release winner NFT and quote claims |
-| `CashWon`       | reserve missed; winning entry recorded             | settle ticket; independently release all claims and sponsor NFT  |
-| `Refunding`     | full-refund or empty-raffle result                 | ticket refunds and sponsor prize return                          |
+| Status          | Meaning                                            | Available progress                                                |
+| --------------- | -------------------------------------------------- | ----------------------------------------------------------------- |
+| `AwaitingPrize` | clone initialized inside creation                  | exact factory-operated prize deposit; otherwise creation reverts  |
+| `Active`        | prize escrowed; purchases allowed before `endTime` | purchase; bounded draw request; or deadline-based refunds         |
+| `Drawing`       | one Chainlink request accepted                     | matching callback or callback-timeout refunds                     |
+| `NftWon`        | reserve met; winning entry recorded                | settle ticket; owner redeems NFT; release sponsor/protocol claims |
+| `CashWon`       | reserve missed; winning entry recorded             | settle; owner redeems cash; release protocol/sponsor assets       |
+| `Refunding`     | full-refund or empty-raffle result                 | ticket refunds and sponsor prize return                           |
 
 There is no separate `Closed` or `Completed` state. One-time burns,
-`prizeClaimed`, and zeroed liabilities record consumption while preserving the
-economic result.
+`settlementComplete`, `winnerRedeemed`, `prizeClaimed`, and zeroed liabilities record
+consumption while preserving the economic result.
 
 ## Sale and bearer ownership
 
 Purchases require `status == Active` and `block.timestamp < endTime`. The end is
 exclusive. An unburned ticket remains transferable in every status. Approvals do not
-authorize settlement: ownership is read from `ownerOf(ticketId)` at execution time.
-If a transfer and claim compete, normal Ethereum transaction ordering decides which
-valid action executes first.
+authorize winner redemption or refunds. Permissionless settlement does not read
+ownership; redemption reads `ownerOf(ticketId)` and requires that owner as the caller.
+If a transfer and redemption compete, normal Ethereum transaction ordering decides
+which valid action executes first.
 
 ## Draw request
 
@@ -73,13 +74,18 @@ nominal path from sale end to a successful result or permissionless refund eligi
 is just under four days. A deadline makes the transition eligible; it does not execute
 the transition automatically.
 
-Both resolved statuses are final. Settlement snapshots the current winner, burns the
-winning ticket, and records the 80% cash claim in `CashWon` or fixed NFT claim in
-`NftWon`, plus sponsor and protocol balances. Settlement transfers no external asset.
+Both resolved statuses are final. Permissionless settlement proves the ticket range,
+records `winningTicketId`, and allocates the 80% bearer cash liability in `CashWon`
+plus sponsor and protocol balances. In `NftWon`, it allocates the sponsor and protocol
+balances while the ticket remains the bearer claim to the escrowed NFT. Settlement
+does not read ownership, burn the ticket, or transfer an external asset.
 
 ## Consumption
 
-The winning ticket is burned after its range proves `winningEntry`. Settlement and all
-winner, sponsor, and protocol releases are permissionless, but always target their fixed
-recorded recipient. Refund calls burn one to 100 caller-owned tickets and pay their
-aggregate entry value to that owner. A failed release affects only its own claim.
+Anyone may settle the winning ticket. Only its current owner may call
+`redeemWinningTicket`, which can settle first when needed and then atomically burns the
+ticket while delivering its NFT or cash. A failed delivery reverts the burn,
+`winnerRedeemed`, `winnerRecipient`, and any lazy settlement performed by that call.
+After a separate successful settlement, sponsor and protocol releases remain usable
+even if winner redemption fails. Refund calls burn one to 100 caller-owned tickets and
+pay their aggregate entry value to that owner.

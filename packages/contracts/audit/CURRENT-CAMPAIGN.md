@@ -7,10 +7,11 @@ security campaign, not an independent audit and not a mainnet authorization.
 > The candidate is committed and merged to `main`, has no live deployment, and has not
 > completed the release blockers in `RELEASE-CHECKLIST.md`.
 
-> **Timeout-remediation evidence notice:** the numerical results below are preserved
-> evidence for the recorded candidate SHAs. The later hard request/callback-boundary
-> remediation changes protocol behavior and is not validated by those totals. Its final
-> source identity and every affected gate must be regenerated before release.
+> **Superseded-candidate evidence notice:** the numerical results and design narrative
+> below are preserved evidence for the recorded candidate SHAs. The later hard
+> request/callback-boundary remediation, official Chainlink consumer-base migration,
+> and bearer-redemption redesign are not validated by those totals. The final source
+> identity and every affected gate must be regenerated before release.
 
 ## Candidate identity and scope
 

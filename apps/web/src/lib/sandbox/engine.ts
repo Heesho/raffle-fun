@@ -46,6 +46,8 @@ export interface SandboxRaffle {
   readonly protocolFees: bigint;
   readonly winningEntry: bigint | null;
   readonly winningTicketId: bigint | null;
+  readonly settlementComplete: boolean;
+  readonly winnerRedeemed: boolean;
   readonly prizeClaimed: boolean;
   readonly drawRequestedAt: number | null;
   readonly drawRequestedBy: string | null;
@@ -76,8 +78,7 @@ export interface SandboxEvent {
     | "RESOLVED"
     | "SPONSOR_PROCEEDS_RELEASED"
     | "PROTOCOL_FEES_RELEASED"
-    | "WINNER_PROCEEDS_RELEASED"
-    | "WINNER_PRIZE_RELEASED"
+    | "WINNING_REDEEMED"
     | "SPONSOR_PRIZE_RELEASED"
     | "REFUNDS_ENABLED"
     | "REFUND_REDEEMED"
@@ -304,7 +305,7 @@ export function resolveDraw(
       raffleId: raffle.id,
       kind: "RESOLVED",
       // Resolution deliberately mirrors the callback: record the entry only.
-      // Ticket range and ownership are checked later during settlement.
+      // The range is proved during settlement; ownership is checked at redemption.
       account: raffle.id,
       amount: null,
       at: now,
@@ -401,6 +402,7 @@ export function settleWinningTicket(
   now: number,
 ): Sandbox {
   const raffle = requireRaffle(sandbox, raffleId);
+  if (raffle.settlementComplete) fail("The winning ticket is already settled.");
   if (raffle.status !== "NFT_WON" && raffle.status !== "CASH_WON") {
     fail("The winning prize is not available.");
   }
@@ -421,16 +423,12 @@ export function settleWinningTicket(
     ? 0n
     : (gross * CASH_WINNER_PERCENT_OF_GROSS) / 100n;
   const sponsorAmount = gross - protocolFee - cashAmount;
-  const tickets = raffle.tickets.map((entry) =>
-    entry.id === ticket.id ? { ...entry, burned: true } : entry,
-  );
   return replace(
     sandbox,
     {
       ...raffle,
-      tickets,
+      settlementComplete: true,
       winningTicketId: ticket.id,
-      winnerRecipient: ticket.owner,
       winnerProceeds: cashAmount,
       unsettledPot: 0n,
       sponsorProceeds: sponsorAmount,
@@ -440,7 +438,7 @@ export function settleWinningTicket(
       id: eventId(raffle.id, "WINNING_SETTLED", now),
       raffleId: raffle.id,
       kind: "WINNING_SETTLED",
-      account: ticket.owner,
+      account: sandbox.player,
       amount: cashAmount === 0n ? null : cashAmount,
       at: now,
       detail: `ticket ${ticket.id.toString()}`,
@@ -449,59 +447,72 @@ export function settleWinningTicket(
   );
 }
 
-export function releaseWinnerProceeds(
+/**
+ * The current ticket owner surrenders the bearer ticket and receives the
+ * winning asset in the same state transition. If nobody settled first, this
+ * mirrors the contract's one-transaction settle-and-redeem convenience path.
+ */
+export function redeemWinningTicket(
   sandbox: Sandbox,
   raffleId: string,
+  ticketId: bigint,
   now: number,
 ): Sandbox {
-  const raffle = requireRaffle(sandbox, raffleId);
-  const amount = raffle.winnerProceeds;
-  const recipient = raffle.winnerRecipient;
-  if (amount <= 0n || recipient === null) {
-    fail("There are no winner proceeds to release.");
+  let next = sandbox;
+  let raffle = requireRaffle(next, raffleId);
+  if (raffle.winnerRedeemed) fail("The winning ticket was already redeemed.");
+  if (raffle.status !== "NFT_WON" && raffle.status !== "CASH_WON") {
+    fail("The winning prize is not available.");
   }
-  return replace(
-    sandbox,
-    { ...raffle, winnerProceeds: 0n },
-    {
-      id: eventId(raffle.id, "WINNER_PROCEEDS_RELEASED", now),
-      raffleId: raffle.id,
-      kind: "WINNER_PROCEEDS_RELEASED",
-      account: recipient,
-      amount,
-      at: now,
-    },
-    recipient.toLowerCase() === sandbox.player.toLowerCase()
-      ? { ...sandbox.wallet, usdc: sandbox.wallet.usdc + amount }
-      : sandbox.wallet,
-  );
-}
 
-export function releaseWinnerPrize(
-  sandbox: Sandbox,
-  raffleId: string,
-  now: number,
-): Sandbox {
-  const raffle = requireRaffle(sandbox, raffleId);
-  const recipient = raffle.winnerRecipient;
-  if (raffle.status !== "NFT_WON" || recipient === null) {
-    fail("The winner NFT is not available.");
+  if (!raffle.settlementComplete) {
+    next = settleWinningTicket(next, raffleId, ticketId, now);
+    raffle = requireRaffle(next, raffleId);
+  } else if (raffle.winningTicketId !== ticketId) {
+    fail("That is not the settled winning ticket.");
   }
-  if (raffle.prizeClaimed) fail("The NFT has already been claimed.");
+
+  const ticket = raffle.tickets.find((entry) => entry.id === ticketId);
+  if (ticket === undefined || ticket.burned) {
+    fail("The winning ticket was already burned or does not exist.");
+  }
+  if (ticket.owner.toLowerCase() !== sandbox.player.toLowerCase()) {
+    fail("Only the current winning-ticket owner can redeem it.");
+  }
+
+  const nftWon = raffle.status === "NFT_WON";
+  if (nftWon && raffle.prizeClaimed) fail("The NFT has already been claimed.");
+  const cashAmount = nftWon ? 0n : raffle.winnerProceeds;
+  if (!nftWon && cashAmount <= 0n) {
+    fail("There are no winner proceeds to redeem.");
+  }
+
+  const tickets = raffle.tickets.map((entry) =>
+    entry.id === ticket.id ? { ...entry, burned: true } : entry,
+  );
+  const wallet = nftWon
+    ? { ...next.wallet, nfts: [...next.wallet.nfts, raffle.id] }
+    : { ...next.wallet, usdc: next.wallet.usdc + cashAmount };
   return replace(
-    sandbox,
-    { ...raffle, prizeClaimed: true },
+    next,
     {
-      id: eventId(raffle.id, "WINNER_PRIZE_RELEASED", now),
-      raffleId: raffle.id,
-      kind: "WINNER_PRIZE_RELEASED",
-      account: recipient,
-      amount: null,
-      at: now,
+      ...raffle,
+      tickets,
+      winnerRecipient: ticket.owner,
+      winnerRedeemed: true,
+      winnerProceeds: nftWon ? raffle.winnerProceeds : 0n,
+      prizeClaimed: nftWon ? true : raffle.prizeClaimed,
     },
-    recipient.toLowerCase() === sandbox.player.toLowerCase()
-      ? { ...sandbox.wallet, nfts: [...sandbox.wallet.nfts, raffle.id] }
-      : sandbox.wallet,
+    {
+      id: eventId(raffle.id, "WINNING_REDEEMED", now),
+      raffleId: raffle.id,
+      kind: "WINNING_REDEEMED",
+      account: ticket.owner,
+      amount: nftWon ? null : cashAmount,
+      at: now,
+      detail: `ticket ${ticket.id.toString()} · ${nftWon ? "NFT" : "cash"}`,
+    },
+    wallet,
   );
 }
 

@@ -4,6 +4,11 @@ This file fixes the adversary and trust assumptions used for review of the commi
 Ethereum v1 audit candidate. The maintained public explanation is
 `docs/THREAT-MODEL.md`; the code is authoritative.
 
+> **Superseded review scope:** this commit-bound model predates the official Chainlink
+> consumer-base migration and bearer-redemption redesign. Use the maintained public
+> threat model for the current behavior, and regenerate this audit artifact from the
+> final release SHA before relying on it as review evidence.
+
 ## Security objective
 
 For an honest standards-compliant ERC-721 prize and available exact-transfer official

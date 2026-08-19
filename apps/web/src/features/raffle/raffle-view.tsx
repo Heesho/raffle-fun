@@ -279,7 +279,7 @@ export function RaffleLayout({
                     headline={`at ${view.reserveEntries.toString()}+ entries`}
                     icon={<Trophy aria-hidden size={19} />}
                     label="At or above reserve"
-                    text="Settlement records 5% for the protocol and 95% for the sponsor; winner NFT delivery is a separate release."
+                    text="Settlement records 5% for the protocol and 95% for the sponsor; the winning ticket's owner later burns it while receiving the NFT atomically."
                     tint="var(--yellow-wash)"
                     title="Winner claims the NFT"
                   />

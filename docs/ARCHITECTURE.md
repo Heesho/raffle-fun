@@ -48,12 +48,12 @@ Ranges are contiguous and non-overlapping because each new range starts at
 `totalEntries + 1`. One compact range mapping exists, but no per-entry owner mapping.
 The ERC-721 owner of the one ticket containing `winningEntry` owns the outcome.
 
-| Operation                    | Complexity                       |
-| ---------------------------- | -------------------------------- |
-| buy any positive entry count | O(1)                             |
-| Chainlink callback           | O(1)                             |
-| prove and settle winner      | O(1)                             |
-| refund                       | O(tickets supplied), maximum 100 |
+| Operation                       | Complexity                       |
+| ------------------------------- | -------------------------------- |
+| buy any positive entry count    | O(1)                             |
+| Chainlink callback              | O(1)                             |
+| prove, settle, or redeem winner | O(1)                             |
+| refund                          | O(tickets supplied), maximum 100 |
 
 ## Authority
 
@@ -84,11 +84,18 @@ Incoming and outgoing USDC balance deltas must match exactly. Known protocol
 destinations are rejected for tickets and payouts. Arbitrary future addresses and
 unrelated contracts cannot be proven safe onchain and remain user/deployment risks.
 
-The Chainlink callback authenticates the immutable wrapper and performs storage work
-only. Winning-ticket settlement also performs storage work only: it snapshots the
-bearer, burns the ticket, and records isolated winner, sponsor, and protocol claims.
-ERC-20 transfers, ERC-721 delivery, and refunds occur later in independent
-non-reentrant calls, so one failed recipient cannot roll back another recipient's claim.
+The raffle inherits Chainlink Contracts `1.5.0`'s official
+`VRFV2PlusWrapperConsumerBase` and uses its `IVRFV2PlusWrapper` and
+`VRFV2PlusClient` types for native direct funding. The inherited callback boundary
+authenticates the immutable wrapper; the raffle's override performs storage work only.
+
+Winning-ticket settlement also performs storage work only: it proves the range,
+records the winning ticket ID, and allocates the economic result and quote liabilities
+without reading ownership or burning the ticket. The ticket stays transferable until
+its current owner atomically burns it while receiving the NFT or cash through
+`redeemWinningTicket`. A failed redemption restores the burn and redemption state.
+Sponsor and protocol releases remain independent non-reentrant calls, so winner
+inactivity or delivery failure cannot block them after settlement.
 
 Liveness is bounded by two hard, non-overlapping time windows. A sold raffle accepts a
 draw request in `[endTime, drawRequestDeadline())`, with refunds available at the

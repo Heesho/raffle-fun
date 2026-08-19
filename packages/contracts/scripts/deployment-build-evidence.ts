@@ -68,6 +68,7 @@ interface BuildOutput {
 export async function loadDeploymentBuildEvidence(
   repositoryRoot: string,
   candidate: DeploymentRecord,
+  vrfLinkToken: Address,
   sourceCommit: string,
   verifyPublishedSource: DeploymentValidationEvidence["verifyPublishedSource"],
 ): Promise<DeploymentValidationEvidence> {
@@ -101,7 +102,8 @@ export async function loadDeploymentBuildEvidence(
     materializeRuntime(contractsRoot, raffleArtifact, {
       factory: candidate.raffleFactory,
       quoteToken: candidate.quoteToken,
-      vrfWrapper: candidate.vrfWrapper,
+      i_linkToken: vrfLinkToken,
+      i_vrfV2PlusWrapper: candidate.vrfWrapper,
     }),
   ]);
 
@@ -206,7 +208,11 @@ async function materializeRuntime(
   for (const [declarationId, references] of Object.entries(
     contractOutput.evm.deployedBytecode.immutableReferences,
   )) {
-    const immutableName = findNodeNameById(sourceAst, Number(declarationId));
+    let immutableName: string | undefined;
+    for (const source of Object.values(buildOutput.output.sources)) {
+      immutableName = findNodeNameById(source.ast, Number(declarationId));
+      if (immutableName !== undefined) break;
+    }
     if (
       immutableName === undefined ||
       immutableValues[immutableName] === undefined

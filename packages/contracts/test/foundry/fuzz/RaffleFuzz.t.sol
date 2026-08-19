@@ -117,9 +117,11 @@ contract RaffleFuzzTest is Test {
         raffle.settleWinningTicket(losingId);
 
         raffle.settleWinningTicket(winningId);
-        assertEq(raffle.winnerRecipient(), winner);
+        assertEq(raffle.winnerRecipient(), address(0));
+        assertEq(raffle.ownerOf(winningId), winner);
         assertEq(prize.ownerOf(raffle.prizeTokenId()), address(raffle));
-        raffle.releaseWinnerPrize();
+        vm.prank(winner);
+        raffle.redeemWinningTicket(winningId);
         assertEq(prize.ownerOf(raffle.prizeTokenId()), winner);
     }
 
@@ -166,7 +168,8 @@ contract RaffleFuzzTest is Test {
         assertEq(raffle.sponsorProceeds(), sponsorCash);
         assertEq(raffle.accountedQuoteBalance(), gross);
 
-        raffle.releaseWinnerProceeds();
+        vm.prank(buyer);
+        raffle.redeemWinningTicket(ticketId);
         assertEq(quote.balanceOf(buyer) - winnerBefore, winnerCash);
         assertEq(raffle.winnerProceeds(), 0);
         assertEq(raffle.accountedQuoteBalance(), fee + sponsorCash);
@@ -216,7 +219,7 @@ contract RaffleFuzzTest is Test {
         assertEq(raffle.remainingRefundLiability(), 0);
     }
 
-    function testFuzzPostResolutionBearerCanReceivePermissionlessNftSettlement(uint64 entrySeed) public {
+    function testFuzzPostSettlementBearerCanRedeemNft(uint64 entrySeed) public {
         uint128 entries = uint128(bound(uint256(entrySeed), 1, type(uint32).max));
         Raffle raffle = _create(entries);
         _fundAndApprove(raffle, uint256(entries) * ENTRY_PRICE);
@@ -227,9 +230,10 @@ contract RaffleFuzzTest is Test {
         raffle.transferFrom(buyer, recipient, receiptId);
         vm.prank(requester);
         raffle.settleWinningTicket(receiptId);
-        assertEq(raffle.winnerRecipient(), recipient);
-        vm.prank(requester);
-        raffle.releaseWinnerPrize();
+        assertEq(raffle.winnerRecipient(), address(0));
+        assertEq(raffle.ownerOf(receiptId), recipient);
+        vm.prank(recipient);
+        raffle.redeemWinningTicket(receiptId);
         assertEq(prize.ownerOf(raffle.prizeTokenId()), recipient);
     }
 

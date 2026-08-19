@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.36;
 
+import { VRFV2PlusWrapperConsumerBase } from "@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol";
+import { IVRFV2PlusWrapper } from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol";
+import { VRFV2PlusClient } from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -9,7 +12,6 @@ import { IERC721Receiver } from "@openzeppelin/contracts/token/ERC721/IERC721Rec
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
 
-import { IChainlinkVRFV2PlusWrapper } from "./interfaces/IChainlinkVRFV2PlusWrapper.sol";
 import { IRaffle } from "./interfaces/IRaffle.sol";
 import { IRaffleFactory } from "./interfaces/IRaffleFactory.sol";
 import { RaffleConstants } from "./libraries/RaffleConstants.sol";
@@ -19,13 +21,13 @@ import { RaffleConstants } from "./libraries/RaffleConstants.sol";
  * @author Heesho
  * @notice Escrows one NFT and sells fixed-price USDC entries through one transferable ERC-721 ticket per purchase.
  * @dev Ticket IDs are sequential and map to one inclusive `[firstEntry,lastEntry]` uint128 range. Purchases, Chainlink
- *      callbacks, and winner proofs are O(1) in entry count. Tickets remain transferable bearer claims until burned for
- *      settlement or refund. Each raffle is a fixed, non-upgradeable ERC-1167 clone with no administrator or rescue
- *      path. Settlement snapshots the winning bearer and creates isolated fixed-recipient pull claims; it never makes
- *      an external asset transfer. Anyone may release winner, sponsor, and protocol claims to their fixed recipients.
+ *      callbacks, and winner proofs are O(1) in entry count. Tickets remain transferable bearer claims until their
+ *      owners burn them for redemption or refund. Each raffle is a fixed, non-upgradeable ERC-1167 clone with no
+ *      administrator or rescue path. Permissionless settlement only allocates liabilities; the winning-ticket owner
+ *      atomically burns the ticket while receiving the NFT or cash prize.
  * @custom:version 1.0.0
  */
-contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
+contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusWrapperConsumerBase {
     using SafeERC20 for IERC20;
 
     struct TicketRange {
@@ -33,15 +35,12 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
         uint128 lastEntry;
     }
 
-    bytes4 private constant VRF_EXTRA_ARGS_V1_TAG = bytes4(keccak256("VRF ExtraArgsV1"));
-
     uint256 public constant override ENTRY_PRICE = RaffleConstants.ENTRY_PRICE;
     uint32 public constant override callbackGasLimit = RaffleConstants.VRF_CALLBACK_GAS_LIMIT;
     uint16 public constant override requestConfirmations = RaffleConstants.VRF_REQUEST_CONFIRMATIONS;
 
     address public immutable override factory;
     IERC20 public immutable override quoteToken;
-    IChainlinkVRFV2PlusWrapper public immutable override vrfWrapper;
 
     address public override sponsor;
     address public override sponsorRecipient;
@@ -65,6 +64,8 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
     uint128 public override winningEntry;
     uint256 public override winningTicketId;
     Status public override status;
+    bool public override settlementComplete;
+    bool public override winnerRedeemed;
     bool public override prizeClaimed;
     bool public override initialized;
     mapping(uint256 ticketId => TicketRange range) private _ticketRanges;
@@ -78,12 +79,14 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
      * @notice Deploys and locks the implementation shared by one factory's minimal-proxy raffles.
      * @dev Constructor state belongs to the implementation. Clones share these immutables but hold isolated storage.
      */
-    constructor(address quoteToken_, address vrfWrapper_) ERC721("", "") {
-        if (msg.sender == address(0) || quoteToken_ == address(0) || vrfWrapper_ == address(0)) revert ZeroAddress();
+    constructor(address quoteToken_, address vrfWrapper_)
+        ERC721("", "")
+        VRFV2PlusWrapperConsumerBase(_validatedVrfWrapper(vrfWrapper_))
+    {
+        if (msg.sender == address(0) || quoteToken_ == address(0)) revert ZeroAddress();
 
         factory = msg.sender;
         quoteToken = IERC20(quoteToken_);
-        vrfWrapper = IChainlinkVRFV2PlusWrapper(vrfWrapper_);
 
         initialized = true;
         status = Status.Refunding;
@@ -170,12 +173,17 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
 
     /// @inheritdoc IRaffle
     function getVrfRequestPrice() public view override returns (uint256 fee) {
-        fee = vrfWrapper.calculateRequestPriceNative(callbackGasLimit, 1);
+        fee = i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit, 1);
     }
 
     /// @inheritdoc IRaffle
     function estimateVrfRequestPrice(uint256 requestGasPriceWei) public view override returns (uint256 fee) {
-        fee = vrfWrapper.estimateRequestPriceNative(callbackGasLimit, 1, requestGasPriceWei);
+        fee = i_vrfV2PlusWrapper.estimateRequestPriceNative(callbackGasLimit, 1, requestGasPriceWei);
+    }
+
+    /// @inheritdoc IRaffle
+    function vrfWrapper() public view override returns (IVRFV2PlusWrapper wrapper) {
+        wrapper = i_vrfV2PlusWrapper;
     }
 
     /// @inheritdoc IRaffle
@@ -188,19 +196,20 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
             revert DrawRequestWindowExpired(requestDeadline, block.timestamp);
         }
 
-        uint256 fee = getVrfRequestPrice();
-        if (msg.value < fee) revert InsufficientVrfFee(fee, msg.value);
+        uint256 quotedFee = getVrfRequestPrice();
+        if (msg.value < quotedFee) revert InsufficientVrfFee(quotedFee, msg.value);
 
         status = Status.Drawing;
         drawRequestedAt = uint64(block.timestamp);
         _requestInFlight = true;
-        bytes memory extraArgs = abi.encodeWithSelector(VRF_EXTRA_ARGS_V1_TAG, true);
-        requestId =
-            vrfWrapper.requestRandomWordsInNative{ value: fee }(callbackGasLimit, requestConfirmations, 1, extraArgs);
+        bytes memory extraArgs = VRFV2PlusClient._argsToBytes(VRFV2PlusClient.ExtraArgsV1({ nativePayment: true }));
+        uint256 paidPrice;
+        (requestId, paidPrice) = requestRandomnessPayInNative(callbackGasLimit, requestConfirmations, 1, extraArgs);
+        if (paidPrice > msg.value) revert InsufficientVrfFee(paidPrice, msg.value);
         vrfRequestId = requestId;
         _requestInFlight = false;
 
-        uint256 excess = msg.value - fee;
+        uint256 excess = msg.value - paidPrice;
         if (excess != 0) {
             bool success;
             address refundRecipient = msg.sender;
@@ -210,7 +219,7 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
             if (!success) revert NativeRefundFailed(msg.sender, excess);
         }
 
-        emit DrawRequested(requestId, msg.sender, fee, excess, drawRequestedAt, callbackDeadline());
+        emit DrawRequested(requestId, msg.sender, paidPrice, excess, drawRequestedAt, callbackDeadline());
     }
 
     /// @inheritdoc IRaffle
@@ -243,31 +252,47 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
 
     /// @inheritdoc IRaffle
     function settleWinningTicket(uint256 ticketId) external override nonReentrant returns (uint256 cashAmount) {
+        cashAmount = _settleWinningTicket(ticketId);
+    }
+
+    /// @inheritdoc IRaffle
+    function redeemWinningTicket(uint256 ticketId) external override nonReentrant returns (uint256 cashAmount) {
+        if (winnerRedeemed) revert WinningTicketAlreadyRedeemed();
         Status result = status;
         if (result != Status.NftWon && result != Status.CashWon) revert InvalidStatus(result);
 
-        address winner = ownerOf(ticketId);
-        _requireWinningTicket(ticketId);
-        uint256 grossPot = unsettledPot;
-        uint256 protocolFee = Math.mulDiv(grossPot, RaffleConstants.PROTOCOL_FEE_BPS, RaffleConstants.BPS);
-        uint256 sponsorAmount;
-
-        if (result == Status.NftWon) {
-            sponsorAmount = grossPot - protocolFee;
-        } else {
-            cashAmount = Math.mulDiv(grossPot, RaffleConstants.CASH_WINNER_BPS, RaffleConstants.BPS);
-            sponsorAmount = grossPot - protocolFee - cashAmount;
-            winnerProceeds = cashAmount;
+        if (!settlementComplete) {
+            _settleWinningTicket(ticketId);
+        } else if (ticketId != winningTicketId) {
+            revert WinningTicketMismatch(ticketId, winningTicketId);
         }
 
-        winningTicketId = ticketId;
+        address winner = ownerOf(ticketId);
+        if (msg.sender != winner) revert NotTicketOwner(ticketId, msg.sender, winner);
+
         winnerRecipient = winner;
-        unsettledPot = 0;
-        sponsorProceeds = sponsorAmount;
-        protocolFees = protocolFee;
+        winnerRedeemed = true;
         _burn(ticketId);
 
-        emit WinningTicketSettled(ticketId, winner, result, cashAmount, protocolFee, sponsorAmount);
+        address deliveredPrizeToken = address(0);
+        uint256 deliveredPrizeTokenId = 0;
+        if (result == Status.NftWon) {
+            if (prizeClaimed) revert PrizeAlreadyClaimed();
+            prizeClaimed = true;
+            deliveredPrizeToken = address(prizeToken);
+            deliveredPrizeTokenId = prizeTokenId;
+            prizeToken.transferFrom(address(this), winner, deliveredPrizeTokenId);
+            if (prizeToken.ownerOf(deliveredPrizeTokenId) != winner) {
+                revert PrizeDeliveryVerificationFailed(winner);
+            }
+        } else {
+            cashAmount = winnerProceeds;
+            if (cashAmount == 0) revert NoWinnerProceeds();
+            winnerProceeds = 0;
+            _transferQuoteExact(winner, cashAmount);
+        }
+
+        emit WinningTicketRedeemed(ticketId, winner, result, cashAmount, deliveredPrizeToken, deliveredPrizeTokenId);
     }
 
     /// @inheritdoc IRaffle
@@ -294,32 +319,6 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
         _transferQuoteExact(msg.sender, amount);
         uint256 liabilityAfter = remainingRefundLiability;
         emit TicketsRefunded(msg.sender, ticketQuantity, aggregateEntries, amount, liabilityAfter);
-    }
-
-    /// @inheritdoc IRaffle
-    function releaseWinnerProceeds() external override nonReentrant returns (uint256 amount) {
-        amount = winnerProceeds;
-        if (amount == 0) revert NoWinnerProceeds();
-        winnerProceeds = 0;
-        address recipient = winnerRecipient;
-        _transferQuoteExact(recipient, amount);
-        emit WinnerProceedsReleased(msg.sender, recipient, amount);
-    }
-
-    /// @inheritdoc IRaffle
-    function releaseWinnerPrize() external override nonReentrant {
-        Status currentStatus = status;
-        address recipient = winnerRecipient;
-        if (currentStatus != Status.NftWon || recipient == address(0)) {
-            revert WinnerPrizeUnavailable(currentStatus);
-        }
-        if (prizeClaimed) revert PrizeAlreadyClaimed();
-
-        prizeClaimed = true;
-        // Deliberately avoids an ERC721Receiver callback so a contract winner cannot veto permissionless delivery.
-        prizeToken.transferFrom(address(this), recipient, prizeTokenId);
-        if (prizeToken.ownerOf(prizeTokenId) != recipient) revert PrizeDeliveryVerificationFailed(recipient);
-        emit WinnerPrizeReleased(msg.sender, recipient, address(prizeToken), prizeTokenId);
     }
 
     /// @inheritdoc IRaffle
@@ -418,20 +417,13 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
         revert DirectNativeTransfer();
     }
 
-    /// @inheritdoc IRaffle
-    function rawFulfillRandomWords(uint256 requestId, uint256[] memory randomWords) external override {
-        address wrapperAddress = address(vrfWrapper);
-        if (msg.sender != wrapperAddress) revert OnlyVRFWrapperCanFulfill(msg.sender, wrapperAddress);
-        _fulfillRandomWords(requestId, randomWords);
-    }
-
     /**
      * @dev Authenticated randomness selects only an entry. No ticket search, loop, user call, or token transfer occurs.
      *      In-flight, late, wrong-request, duplicate, and ABI-decodable wrong-length callbacks are ignored
      *      for liveness;
      *      malformed ABI calldata reverts during Solidity decoding before this handler runs.
      */
-    function _fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) private {
+    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
         if (
             _requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1
                 || block.timestamp >= callbackDeadline()
@@ -446,6 +438,33 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
         status = totalEntries >= reserveEntries ? Status.NftWon : Status.CashWon;
 
         emit RaffleResolved(requestId, resolvedEntry, status);
+    }
+
+    function _settleWinningTicket(uint256 ticketId) private returns (uint256 cashAmount) {
+        if (settlementComplete) revert SettlementAlreadyComplete();
+        Status result = status;
+        if (result != Status.NftWon && result != Status.CashWon) revert InvalidStatus(result);
+
+        _requireWinningTicket(ticketId);
+        uint256 grossPot = unsettledPot;
+        uint256 protocolFee = Math.mulDiv(grossPot, RaffleConstants.PROTOCOL_FEE_BPS, RaffleConstants.BPS);
+        uint256 sponsorAmount;
+
+        if (result == Status.NftWon) {
+            sponsorAmount = grossPot - protocolFee;
+        } else {
+            cashAmount = Math.mulDiv(grossPot, RaffleConstants.CASH_WINNER_BPS, RaffleConstants.BPS);
+            sponsorAmount = grossPot - protocolFee - cashAmount;
+            winnerProceeds = cashAmount;
+        }
+
+        settlementComplete = true;
+        winningTicketId = ticketId;
+        unsettledPot = 0;
+        sponsorProceeds = sponsorAmount;
+        protocolFees = protocolFee;
+
+        emit WinningTicketSettled(ticketId, msg.sender, result, cashAmount, protocolFee, sponsorAmount);
     }
 
     function _requireWinningTicket(uint256 ticketId) private view {
@@ -486,7 +505,7 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
     {
         IRaffleFactory canonicalFactory = IRaffleFactory(factory);
         unsafeDestination = destination == address(this) || destination == factory || destination == address(quoteToken)
-            || destination == address(vrfWrapper) || destination == prizeToken_
+            || destination == address(i_vrfV2PlusWrapper) || destination == prizeToken_
             || destination == canonicalFactory.raffleImplementation();
         if (!unsafeDestination && destination.code.length != 0) {
             unsafeDestination = canonicalFactory.isRaffle(destination);
@@ -496,10 +515,15 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver {
     function _isKnownProtocolDestination(address destination) private view returns (bool unsafeDestination) {
         IRaffleFactory canonicalFactory = IRaffleFactory(factory);
         unsafeDestination = destination == address(this) || destination == factory || destination == address(quoteToken)
-            || destination == address(vrfWrapper) || destination == address(prizeToken)
+            || destination == address(i_vrfV2PlusWrapper) || destination == address(prizeToken)
             || destination == canonicalFactory.raffleImplementation();
         if (!unsafeDestination && destination.code.length != 0) {
             unsafeDestination = canonicalFactory.isRaffle(destination);
         }
+    }
+
+    function _validatedVrfWrapper(address wrapper) private pure returns (address) {
+        if (wrapper == address(0)) revert ZeroAddress();
+        return wrapper;
     }
 }

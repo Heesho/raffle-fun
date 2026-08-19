@@ -44,6 +44,11 @@ its range cannot be split. The current owner holds the bearer claim.
 After the sale, anyone can pay the current Chainlink VRF v2.5 native fee in ETH to
 request the draw. The protocol does not take that fee from the USDC pot.
 
+The raffle uses Chainlink's official native direct-funding wrapper through the
+exact-pinned `@chainlink/contracts@1.5.0` consumer base, interface, and client library.
+It does not deploy its own oracle or wrapper, and it does not require a raffle-managed
+VRF subscription.
+
 Chainlink later supplies one authenticated 256-bit word. The raffle maps it to:
 
 ```text
@@ -66,30 +71,34 @@ This is why entry count does not create a gas-limit problem:
 ## If the reserve is met
 
 The selected ticket wins the NFT. The USDC pot does not leave merely because the
-callback picked a winner. A later settlement proves the ticket, snapshots its current
-owner, burns it, and records every claim without transferring an asset.
+callback picked a winner. A later permissionless settlement proves the ticket and
+allocates the sponsor and protocol balances without reading its owner, burning it, or
+transferring an asset.
 
 Settlement records:
 
 - the protocol records a 5% balance for its immutable treasury;
 - the protocol records a 95% balance for the sponsor's immutable recipient;
-- the winning ticket is burned and its owner becomes the fixed NFT recipient.
+- the winning ticket ID is recorded while the ticket remains transferable.
 
-Anyone may settle or release the fixed claims, so a winner does not need to be online.
-The NFT, sponsor proceeds, and protocol fee are released in separate transactions. NFT
-delivery uses a raw ERC-721 transfer plus an ownership check, which prevents a contract
-owner from blocking fixed delivery by rejecting a receiver callback. A broken winner
-destination can block only its own NFT release, not settlement or either quote claim.
+Only the current ticket owner may redeem the NFT. `redeemWinningTicket` can perform
+settlement first when necessary, then burns the ticket and transfers the NFT in the
+same transaction. A failed transfer or ownership check reverts the burn. Sponsor
+proceeds and the protocol fee are separately releasable after settlement, so winner
+inactivity or a broken prize cannot block those quote claims.
 
 ## If the reserve is missed
 
-Gross sales are split into fixed claims: the selected ticket owner receives 80%, the
-protocol treasury receives 5%, and the sponsor receives the exact 15% remainder plus
-the NFT.
+Gross sales are split into fixed claims: the selected ticket carries the right to 80%,
+the protocol treasury receives 5%, and the sponsor receives the exact 15% remainder
+plus the NFT.
 
-Cash settlement follows the same authority rule: anyone may snapshot the current owner,
-then anyone may release each fixed claim. The cash result is final; it does not later
-turn into refunds because winner inactivity affects no other participant.
+Cash settlement follows the same accounting rule: anyone may prove and record the
+winning ticket and allocate the 80/5/15 split without reading ownership. The ticket
+remains transferable until its current owner atomically burns it and receives the 80%
+cash amount. The sponsor and protocol claims remain independently releasable. The cash
+result is final; it does not later turn into refunds because winner inactivity affects
+no other participant.
 
 For example, suppose 80 entries sell against a 100-entry reserve:
 

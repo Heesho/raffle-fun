@@ -28,8 +28,11 @@ class CurrentProtocolModelTest(unittest.TestCase):
         model.request()
         model.callback(0)
         model.transfer(ticket, "bob", "carol")
-        model.claim_winner(ticket, caller="keeper")
-        self.assertEqual(model.winner_recipient, "carol")
+        model.settle_winner(ticket, caller="keeper")
+        self.assertEqual(model.winner_recipient, "")
+        model.transfer(ticket, "carol", "dave")
+        model.redeem_winner(ticket, caller="dave")
+        self.assertEqual(model.winner_recipient, "dave")
 
     def test_refund_right_follows_ticket_transfer(self) -> None:
         model = Model(entry_price=1_000_000, reserve_entries=10)
@@ -73,13 +76,13 @@ class CurrentProtocolModelTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             model.enable_refunds(callback_timeout_elapsed=True)
         self.assertEqual(
-            model.claim_winner(ticket, caller="keeper"), 800_000
+            model.settle_winner(ticket, caller="keeper"), 800_000
         )
         self.assertEqual(model.treasury_claim, 50_000)
         self.assertEqual(model.winner_cash, 800_000)
         self.assertEqual(model.sponsor_claim, 150_000)
-        self.assertEqual(model.winner_recipient, "alice")
-        self.assertEqual(model.release_winner_cash(), 800_000)
+        self.assertEqual(model.winner_recipient, "")
+        self.assertEqual(model.redeem_winner(ticket, caller="alice"), 800_000)
         model.assert_invariants()
 
     def test_winner_settlement_is_permissionless_to_current_owner(self) -> None:
@@ -88,8 +91,12 @@ class CurrentProtocolModelTest(unittest.TestCase):
         model.end_sale()
         model.request()
         model.callback(0)
-        model.claim_winner(ticket, caller="keeper")
-        self.assertEqual(model.winner_recipient, "alice")
+        model.settle_winner(ticket, caller="keeper")
+        self.assertEqual(model.winner_recipient, "")
+        self.assertFalse(model.tickets[ticket].consumed)
+        model.transfer(ticket, "alice", "bob")
+        model.redeem_winner(ticket, caller="bob")
+        self.assertEqual(model.winner_recipient, "bob")
         model.assert_invariants()
 
     def test_request_and_callback_timeouts_preserve_full_weighted_refunds(self) -> None:
@@ -168,12 +175,12 @@ class CurrentProtocolModelTest(unittest.TestCase):
                     model.callback(rng.getrandbits(256))
                     if model.status is Status.NFT_WON:
                         winner = model.containing_tickets(model.winning_entry)[0]
-                        model.claim_winner(winner, caller="keeper")
-                        model.release_winner_prize()
+                        model.settle_winner(winner, caller="keeper")
+                        model.redeem_winner(winner, caller="alice")
                     else:
                         winner = model.containing_tickets(model.winning_entry)[0]
-                        model.claim_winner(winner, caller="keeper")
-                        model.release_winner_cash()
+                        model.settle_winner(winner, caller="keeper")
+                        model.redeem_winner(winner, caller="alice")
                         model.recover_sponsor_prize()
                 else:
                     model.enable_refunds(callback_timeout_elapsed=True)

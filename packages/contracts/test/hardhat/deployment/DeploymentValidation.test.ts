@@ -58,6 +58,7 @@ interface ClientOverrides {
   readonly implementationEntryPrice?: bigint;
   readonly implementationInitialized?: boolean;
   readonly implementationStatus?: number;
+  readonly implementationLinkToken?: Address;
   readonly wrapperConfigured?: boolean;
   readonly wrapperDisabled?: boolean;
   readonly minimumConfirmations?: number;
@@ -236,6 +237,16 @@ describe("deployment validation", () => {
       ),
       /EIP-150 overhead.*exceeds coordinator maximum/,
     );
+    await assert.rejects(
+      validateDeploymentOnchain(
+        fakeClient({
+          implementationLinkToken: "0xcccccccccccccccccccccccccccccccccccccccc",
+        }),
+        candidate,
+        releaseEvidence,
+      ),
+      /implementation.getLinkToken/,
+    );
   });
 
   it("binds the record, deployment input, and runtime to the clean local build", async () => {
@@ -295,6 +306,14 @@ describe("deployment validation", () => {
     const evidence = await loadDeploymentBuildEvidence(
       repositoryRoot,
       candidate,
+      link,
+      candidate.sourceCommit,
+      async () => {},
+    );
+    const alternateLinkEvidence = await loadDeploymentBuildEvidence(
+      repositoryRoot,
+      candidate,
+      "0xcccccccccccccccccccccccccccccccccccccccc",
       candidate.sourceCommit,
       async () => {},
     );
@@ -308,6 +327,10 @@ describe("deployment validation", () => {
     assert.notEqual(
       evidence.expectedRuntimeCodeHashes.raffleImplementation,
       candidate.runtimeCodeHashes.raffleImplementation,
+    );
+    assert.notEqual(
+      evidence.expectedRuntimeCodeHashes.raffleImplementation,
+      alternateLinkEvidence.expectedRuntimeCodeHashes.raffleImplementation,
     );
   });
 });
@@ -410,6 +433,9 @@ function fakeClient(overrides: ClientOverrides = {}): PublicClient {
         }
         if (functionName === "status") {
           return overrides.implementationStatus ?? 5;
+        }
+        if (functionName === "getLinkToken") {
+          return overrides.implementationLinkToken ?? link;
         }
       }
       switch (functionName) {
