@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 258" width="780" height="258" role="img" aria-label="Three purchases partition sixty entries into three range tickets">
+  <text x="60" y="26" font-family="Nunito var, Inter var, sans-serif" font-size="15" font-weight="800" fill="#16229b">Three purchases, three tickets, sixty entries</text>
+  <text x="60" y="46" font-family="Inter var, system-ui, sans-serif" font-size="12" fill="#676c94">Each purchase mints one ERC-721 whose stored range covers every number it bought.</text>
+
+  <!-- ticket 1: entries 1-20 -->
+  <rect x="60" y="70" width="220" height="48" rx="7" fill="#fdf0f9" stroke="#c01a92" stroke-width="1.2"/>
+  <text x="170" y="90" font-family="Inter var, system-ui, sans-serif" font-size="12.5" font-weight="700" fill="#c01a92" text-anchor="middle">ticket #1</text>
+  <text x="170" y="107" font-family="Inter var, system-ui, sans-serif" font-size="11.5" fill="#454b78" text-anchor="middle">entries 1–20 · 20 USDC</text>
+
+  <!-- ticket 2: entries 21-25 -->
+  <rect x="280" y="70" width="55" height="48" rx="7" fill="#eee9ff" stroke="#5b3fd4" stroke-width="1.2"/>
+  <text x="307.5" y="90" font-family="Inter var, system-ui, sans-serif" font-size="12.5" font-weight="700" fill="#5b3fd4" text-anchor="middle">#2</text>
+  <text x="307.5" y="107" font-family="Inter var, system-ui, sans-serif" font-size="11" fill="#454b78" text-anchor="middle">21–25</text>
+
+  <!-- ticket 3: entries 26-60 -->
+  <rect x="335" y="70" width="385" height="48" rx="7" fill="#e9f0fd" stroke="#1e2a9b" stroke-width="1.2"/>
+  <text x="527.5" y="90" font-family="Inter var, system-ui, sans-serif" font-size="12.5" font-weight="700" fill="#1e2a9b" text-anchor="middle">ticket #3</text>
+  <text x="527.5" y="107" font-family="Inter var, system-ui, sans-serif" font-size="11.5" fill="#454b78" text-anchor="middle">entries 26–60 · 35 USDC</text>
+
+  <!-- number line -->
+  <line x1="60" y1="136" x2="720" y2="136" stroke="#c3c5dd" stroke-width="1"/>
+  <g stroke="#c3c5dd" stroke-width="1">
+    <line x1="60" y1="132" x2="60" y2="142"/>
+    <line x1="280" y1="132" x2="280" y2="142"/>
+    <line x1="335" y1="132" x2="335" y2="142"/>
+    <line x1="720" y1="132" x2="720" y2="142"/>
+  </g>
+  <g font-family="Inter var, system-ui, sans-serif" font-size="10" fill="#676c94">
+    <text x="60" y="156" text-anchor="middle">1</text>
+    <text x="280" y="156" text-anchor="middle">21</text>
+    <text x="335" y="156" text-anchor="middle">26</text>
+    <text x="720" y="156" text-anchor="middle">60</text>
+  </g>
+  <text x="390" y="174" font-family="Inter var, system-ui, sans-serif" font-size="10.5" fill="#676c94" text-anchor="middle">totalEntries = 60 · no gaps, no overlaps, every number belongs to exactly one ticket</text>
+
+  <!-- winning entry marker -->
+  <line x1="307.5" y1="212" x2="307.5" y2="124" stroke="#f033bb" stroke-width="1.6" stroke-dasharray="4 3"/>
+  <path d="M 307.5 118 l -5 9 l 10 0 Z" fill="#f033bb"/>
+  <circle cx="307.5" cy="216" r="4" fill="#f033bb"/>
+  <text x="307.5" y="238" font-family="Inter var, system-ui, sans-serif" font-size="11.5" font-weight="700" fill="#c01a92" text-anchor="middle">winningEntry = 23</text>
+  <text x="345" y="216" font-family="Inter var, system-ui, sans-serif" font-size="11" fill="#454b78">falls inside ticket #2, so #2 holds the claim — one lookup, no search</text>
+</svg>
