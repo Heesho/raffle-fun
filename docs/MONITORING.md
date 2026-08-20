@@ -9,7 +9,7 @@ transaction receipts are authoritative; the subgraph is a discovery and UX layer
 - the signed deployment record and its finalized validation block/hash;
 - two independent Ethereum RPC providers, one archive-capable;
 - factory, implementation, USDC, and Chainlink wrapper addresses;
-- the reviewed owner and treasury Safe addresses;
+- the reviewed treasury Safe address;
 - ABI/source identities for the exact release commit.
 
 The monitor must refuse to start if `deployment:write` validation fails. It must
@@ -32,16 +32,16 @@ Direct donations can make the last inequality strict. A deficit is never expecte
 
 ## Alerts
 
-| Severity | Trigger                                                                                                                                                                                        | Maximum acknowledgement | Required first action                                                                            |
-| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------: | ------------------------------------------------------------------------------------------------ |
-| P0       | quote-token deficit; unrecognized raffle runtime/implementation; authenticated callback produces impossible state; confirmed asset-moving exploit                                              |               5 minutes | verify on the second RPC, pause new creation through the owner Safe, invoke the incident runbook |
-| P1       | factory owner/pending owner or immutable treasury differs from the approved registry; unexpected creation-pause change; USDC paused; wrapper disabled/unconfigured; repeated creation failures |              15 minutes | stop UI writes and sponsor onboarding; obtain Safe and chain evidence                            |
-| P1       | sold `Active` raffle reaches `drawRequestDeadline()` without a request or refund transaction                                                                                                   |              15 minutes | submit `enableRefunds` and alert affected users                                                  |
-| P1       | `Drawing` reaches `callbackDeadline()` without a result or refund transaction                                                                                                                  |              15 minutes | submit `enableRefunds` and alert affected users                                                  |
-| P2       | sold `Active` raffle remains without `DrawRequested` beyond the agreed keeper SLO but before `drawRequestDeadline()`                                                                           |                  1 hour | notify sponsor/buyers and submit a public draw request before the hard cutoff                    |
-| P2       | any `VrfCallbackIgnored`; request remains unresolved beyond the normal fulfillment SLO; RPC providers disagree past finality                                                                   |                  1 hour | correlate request ID with Chainlink logs and preserve raw receipts/traces                        |
-| P2       | claim/refund/redemption failures rise above the agreed threshold; indexer lags finalized head by more than 20 blocks                                                                           |                  1 hour | validate directly from chain and mark indexed data degraded                                      |
-| P3       | stale unredeemed winning ticket, sponsor/protocol/refund liability, or unreleased sponsor prize; Safe signer/threshold review due                                                              |          1 business day | notify the entitled account or operations owner                                                  |
+| Severity | Trigger                                                                                                                                           | Maximum acknowledgement | Required first action                                                                        |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------: | -------------------------------------------------------------------------------------------- |
+| P0       | quote-token deficit; unrecognized raffle runtime/implementation; authenticated callback produces impossible state; confirmed asset-moving exploit |               5 minutes | verify on the second RPC, stop UI writes and sponsor onboarding, invoke the incident runbook |
+| P1       | immutable treasury differs from the approved registry; USDC paused; wrapper disabled/unconfigured; repeated creation failures                     |              15 minutes | stop UI writes and sponsor onboarding; preserve chain evidence                               |
+| P1       | sold `Active` raffle reaches `drawRequestDeadline()` without a request or refund transaction                                                      |              15 minutes | submit `enableRefunds` and alert affected users                                              |
+| P1       | `Drawing` reaches `callbackDeadline()` without a result or refund transaction                                                                     |              15 minutes | submit `enableRefunds` and alert affected users                                              |
+| P2       | sold `Active` raffle remains without `DrawRequested` beyond the agreed keeper SLO but before `drawRequestDeadline()`                              |                  1 hour | notify sponsor/buyers and submit a public draw request before the hard cutoff                |
+| P2       | any `VrfCallbackIgnored`; request remains unresolved beyond the normal fulfillment SLO; RPC providers disagree past finality                      |                  1 hour | correlate request ID with Chainlink logs and preserve raw receipts/traces                    |
+| P2       | claim/refund/redemption failures rise above the agreed threshold; indexer lags finalized head by more than 20 blocks                              |                  1 hour | validate directly from chain and mark indexed data degraded                                  |
+| P3       | stale unredeemed winning ticket, sponsor/protocol/refund liability, or unreleased sponsor prize                                                   |          1 business day | notify the entitled account or operations owner                                              |
 
 Thresholds for rate-based alerts must be set before launch from Sepolia measurements;
 they may not be left as vendor defaults.
@@ -55,8 +55,8 @@ on before the hard cutoff is not a liveness control.
 At minimum display:
 
 - finalized head, indexer head, RPC agreement, and reorg count;
-- owner, pending owner, immutable treasury, creation pause, wrapper configured/disabled state,
-  USDC paused state, and all runtime hashes;
+- immutable treasury, wrapper configured/disabled state, USDC paused state, and all
+  runtime hashes;
 - raffle counts by lifecycle, sales volume, native request fees, fulfillment latency,
   ignored callbacks (from the subgraph's immutable `IgnoredVrfCallback` records,
   reconciled to finalized raw logs), and separate request-deadline and
@@ -67,12 +67,12 @@ At minimum display:
   releases, and sponsor prize withdrawals.
 
 Run full finalized-state reconciliation at least hourly and after every deployment,
-ownership change, pause change, reorg, or incident. Page on any unexplained
-disagreement between events, registry state, liabilities, and balances.
+reorg, or incident. Page on any unexplained disagreement between events, registry
+state, liabilities, and balances.
 
 ## Operational drills
 
 Before mainnet, demonstrate with timestamped evidence that the team can: acknowledge a
-P0, execute the reviewed Safe pause, disable frontend writes, find every affected
-raffle without the subgraph, sponsor each permissionless deadline action, publish a
-warning, and validate a replacement factory without altering existing raffles.
+P0, disable frontend writes and sponsor onboarding, find every affected raffle without
+the subgraph, sponsor each permissionless deadline action, publish a warning, and
+validate a replacement factory without altering existing raffles.

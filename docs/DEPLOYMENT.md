@@ -13,7 +13,6 @@ Each factory constructor receives:
 quoteToken          official six-decimal USDC
 vrfWrapper          official Chainlink VRF v2.5 native direct-funding wrapper
 protocolTreasury    reviewed immutable fee recipient
-initialOwner        deployer used for the two-step ownership handoff
 ```
 
 The implementation fixes:
@@ -43,8 +42,7 @@ release block.
   Slither, SDK, subgraph, and web checks;
 - Ethereum mainnet and Sepolia fork checks against the live USDC and VRF wrapper;
 - callback measurement with production bytecode below the fixed 300,000 limit;
-- reviewed contract-wallet treasury and final factory owner on mainnet;
-- completed `Ownable2Step` acceptance before a record is published;
+- reviewed contract-wallet treasury on mainnet;
 - exact source verification for factory and implementation;
 - successful Sepolia soak of both result branches, the no-request refund path, and
   the callback timeout;
@@ -61,7 +59,6 @@ DEPLOYER_PRIVATE_KEY
 QUOTE_TOKEN
 VRF_WRAPPER
 PROTOCOL_TREASURY
-FACTORY_OWNER
 SEPOLIA_RPC_URL
 ETHEREUM_RPC_URL
 ETHERSCAN_API_KEY
@@ -81,8 +78,7 @@ variables. Do not store real keys or unreviewed parameter files in the repositor
    `raffleImplementation()` address.
 6. Verify factory and implementation source. The implementation constructor arguments
    are the exact quote token and wrapper supplied to the factory.
-7. Complete the two-step ownership handoff. Require
-   `owner() == FACTORY_OWNER` and `pendingOwner() == address(0)`.
+7. Confirm the factory ABI exposes no owner, pause, upgrade, or mutable configuration.
 8. Validate at a finalized block and record that block's hash plus every runtime code
    hash.
 9. Require the implementation to report `initialized == true`,
@@ -107,17 +103,17 @@ and `Active`, and the configured prize is actually owned by the clone.
 
 No default mainnet deployment command exists. Add a separately reviewed,
 environment-guarded operator command only after the audit and Sepolia gates pass.
-Repeat every validation at a finalized Ethereum block, require verified source and
-contract-wallet owner/treasury, use a fresh deployment key, and publish the deployment
-record only after ownership acceptance.
+Repeat every validation at a finalized Ethereum block, require verified source and a
+reviewed contract-wallet treasury, use a fresh deployment key, and publish the
+deployment record only after independent verification.
 
 Do not advertise or enable public creation while any record, source-verification,
 indexer, keeper, legal, monitoring, or incident-response gate remains incomplete.
 
 ## Operational authority
 
-Existing raffles cannot be upgraded or paused. Incident response is limited to pausing
-future creation, warning users, disabling first-party surfaces, assisting
-permissionless draw, refund, settlement, and fixed-recipient release calls, supporting
-owner-controlled redemption, and deploying a new factory. No operator can rewrite or
-rescue an existing raffle.
+The factory and existing raffles cannot be upgraded or paused. Incident response is
+limited to warning users, disabling first-party surfaces and sponsor onboarding,
+assisting permissionless draw, refund, settlement, and fixed-recipient release calls,
+supporting owner-controlled redemption, and deploying a new factory. No operator can
+rewrite or rescue a raffle.

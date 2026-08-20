@@ -16,7 +16,6 @@ const rpcUrlSchema = z
 export const deploymentEnvSchema = z.object({
   DEPLOYER_PRIVATE_KEY: privateKeySchema,
   PROTOCOL_TREASURY: addressSchema,
-  FACTORY_OWNER: addressSchema,
   SEPOLIA_RPC_URL: rpcUrlSchema.optional(),
   ETHEREUM_RPC_URL: rpcUrlSchema.optional(),
   ETHERSCAN_API_KEY: z.string().min(1).optional(),

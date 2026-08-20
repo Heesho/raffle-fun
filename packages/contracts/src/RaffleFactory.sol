@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.36;
 
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
-import { Ownable2Step } from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import { Clones } from "@openzeppelin/contracts/proxy/Clones.sol";
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
@@ -18,11 +16,11 @@ import { RaffleConstants } from "./libraries/RaffleConstants.sol";
  * @title raffle.fun Canonical USDC Raffle Factory
  * @author Heesho
  * @notice Atomically creates, funds, and registers autonomous fixed-implementation raffle clones.
- * @dev The implementation, six-decimal quote token, treasury, fee, and Chainlink configuration are immutable. Factory
- *      ownership controls only whether future raffles may be created and has no authority over existing clones.
+ * @dev The implementation, six-decimal quote token, treasury, fee, and Chainlink configuration are immutable. The
+ *      factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.
  * @custom:version 1.0.0
  */
-contract RaffleFactory is IRaffleFactory, Ownable2Step, ReentrancyGuard {
+contract RaffleFactory is IRaffleFactory, ReentrancyGuard {
     address public immutable override quoteToken;
     address public immutable override vrfWrapper;
     address public immutable override protocolTreasury;
@@ -31,8 +29,6 @@ contract RaffleFactory is IRaffleFactory, Ownable2Step, ReentrancyGuard {
     address public immutable override raffleImplementation;
 
     uint256 public raffleCount;
-    bool public creationPaused;
-
     mapping(uint256 raffleId => address raffle) public override raffleById;
     mapping(address raffle => uint256 raffleId) public override idByRaffle;
     mapping(address raffle => bool registered) public override isRaffle;
@@ -41,14 +37,11 @@ contract RaffleFactory is IRaffleFactory, Ownable2Step, ReentrancyGuard {
      * @param quoteToken_ Official-style exact-transfer six-decimal quote token used by every raffle.
      * @param vrfWrapper_ Official Chainlink VRF v2.5 native direct-funding wrapper for the target chain.
      * @param protocolTreasury_ Immutable protocol-fee recipient used by every raffle.
-     * @param initialOwner Two-step owner able to pause only future raffle creation.
      */
-    constructor(address quoteToken_, address vrfWrapper_, address protocolTreasury_, address initialOwner)
-        Ownable(initialOwner)
-    {
+    constructor(address quoteToken_, address vrfWrapper_, address protocolTreasury_) {
         _requireContract(quoteToken_);
         _requireContract(vrfWrapper_);
-        if (protocolTreasury_ == address(0) || initialOwner == address(0)) revert ZeroAddress();
+        if (protocolTreasury_ == address(0)) revert ZeroAddress();
 
         uint8 quoteDecimals = 0;
         try IERC20Metadata(quoteToken_).decimals() returns (uint8 decimals_) {
@@ -76,7 +69,6 @@ contract RaffleFactory is IRaffleFactory, Ownable2Step, ReentrancyGuard {
 
     /// @inheritdoc IRaffleFactory
     function createRaffle(CreateRaffleParams calldata params) external override nonReentrant returns (address raffle) {
-        if (creationPaused) revert CreationPaused();
         _validateCreateParams(params);
 
         uint256 currentTime = block.timestamp;
@@ -128,18 +120,6 @@ contract RaffleFactory is IRaffleFactory, Ownable2Step, ReentrancyGuard {
             params.reserveEntries,
             params.endTime
         );
-    }
-
-    /// @inheritdoc IRaffleFactory
-    function setCreationPaused(bool paused) external override onlyOwner {
-        bool previousPaused = creationPaused;
-        creationPaused = paused;
-        emit CreationPauseUpdated(previousPaused, paused);
-    }
-
-    /// @notice Disabled so the future-creation pause cannot be permanently stranded without an administrator.
-    function renounceOwnership() public pure override {
-        revert OwnershipRenunciationDisabled();
     }
 
     function _validateCreateParams(CreateRaffleParams calldata params) private view {

@@ -7,7 +7,8 @@ Commit-bound audit evidence must be regenerated for this revised candidate.
 ## Contract graph and fixed configuration
 
 `RaffleFactory` deploys one locked `Raffle` implementation and creates canonical,
-non-upgradeable ERC-1167 clones. Its two-step owner may pause future creation only.
+non-upgradeable ERC-1167 clones. The factory is ownerless: creation is permanently
+permissionless and there is no role, pause, upgrade, rescue, or mutable configuration.
 Every clone shares the factory's immutable six-decimal quote token, Chainlink VRF v2.5
 native direct-funding wrapper, protocol treasury, 300,000 callback gas limit, and 30
 request confirmations. The consumer inherits the exact-pinned official

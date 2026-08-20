@@ -160,10 +160,7 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusW
         ticketId = uint256(ticketCount) + 1;
 
         totalEntries = lastEntry;
-        unchecked {
-            // Every ticket contains at least one entry, so ticketCount cannot overflow before totalEntries does.
-            ++ticketCount;
-        }
+        ++ticketCount;
         _ticketRanges[ticketId] = TicketRange({ firstEntry: firstEntry, lastEntry: lastEntry });
         unsettledPot += grossAmount;
 

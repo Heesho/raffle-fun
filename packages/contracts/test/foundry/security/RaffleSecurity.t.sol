@@ -62,7 +62,7 @@ contract RaffleSecurityTest is Test {
         quote = new MockERC20();
         prize = new MockERC721();
         vrfWrapper = new MockVRFV2PlusWrapper();
-        factory = new RaffleFactory(address(quote), address(vrfWrapper), treasury, address(this));
+        factory = new RaffleFactory(address(quote), address(vrfWrapper), treasury);
         vm.prank(sponsor);
         prize.setApprovalForAll(address(factory), true);
         quote.mint(buyer, 1_000_000 * USDC);
@@ -130,8 +130,7 @@ contract RaffleSecurityTest is Test {
 
     function testFalseReturningAndFeeOnTransferQuotesCannotCreateReceipts() public {
         FalseERC20 falseQuote = new FalseERC20();
-        RaffleFactory falseFactory =
-            new RaffleFactory(address(falseQuote), address(vrfWrapper), treasury, address(this));
+        RaffleFactory falseFactory = new RaffleFactory(address(falseQuote), address(vrfWrapper), treasury);
         vm.prank(sponsor);
         prize.setApprovalForAll(address(falseFactory), true);
         Raffle falseRaffle = _create(falseFactory, address(prize), 1);
@@ -144,7 +143,7 @@ contract RaffleSecurityTest is Test {
         assertEq(falseRaffle.totalEntries(), 0);
 
         FeeOnTransferERC20 feeQuote = new FeeOnTransferERC20();
-        RaffleFactory feeFactory = new RaffleFactory(address(feeQuote), address(vrfWrapper), treasury, address(this));
+        RaffleFactory feeFactory = new RaffleFactory(address(feeQuote), address(vrfWrapper), treasury);
         vm.prank(sponsor);
         prize.setApprovalForAll(address(feeFactory), true);
         Raffle feeRaffle = _create(feeFactory, address(prize), 1);
@@ -160,7 +159,7 @@ contract RaffleSecurityTest is Test {
 
     function testOverCreditQuoteCannotSpoofGrossAccounting() public {
         BonusERC20 bonus = new BonusERC20();
-        RaffleFactory bonusFactory = new RaffleFactory(address(bonus), address(vrfWrapper), treasury, address(this));
+        RaffleFactory bonusFactory = new RaffleFactory(address(bonus), address(vrfWrapper), treasury);
         vm.prank(sponsor);
         prize.setApprovalForAll(address(bonusFactory), true);
         Raffle raffle = _create(bonusFactory, address(prize), 1);
@@ -391,7 +390,7 @@ contract RaffleSecurityTest is Test {
     }
 
     function _factoryWithQuote(address selectedQuote) internal returns (RaffleFactory) {
-        return new RaffleFactory(selectedQuote, address(vrfWrapper), treasury, address(this));
+        return new RaffleFactory(selectedQuote, address(vrfWrapper), treasury);
     }
 
     function _buy(Raffle raffle, uint128 entries) internal returns (uint256 receiptId) {

@@ -6,8 +6,9 @@ independent audit.
 
 > **Superseded evidence:** this campaign is preserved for the exact source identity
 > below. It predates the timeout remediation, official Chainlink consumer-base
-> migration, and bearer-redemption redesign. Its score does not validate the current
-> working source; regenerate the catalog and results from the final release SHA.
+> migration, bearer-redemption redesign, and ownerless-factory change. Its score does
+> not validate the current working source; regenerate the catalog and results from the
+> final release SHA.
 
 ## Candidate identity and isolation
 

@@ -42,7 +42,6 @@ export const deploymentRecordSchema = z
       })
       .strict(),
     deployer: address,
-    finalFactoryOwner: address,
     quoteToken: address,
     vrfWrapper: address,
     raffleFactory: address,

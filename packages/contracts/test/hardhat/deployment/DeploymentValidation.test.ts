@@ -2,13 +2,7 @@ import assert from "node:assert/strict";
 import path from "node:path";
 import { describe, it } from "node:test";
 
-import {
-  keccak256,
-  zeroAddress,
-  type Address,
-  type Hex,
-  type PublicClient,
-} from "viem";
+import { keccak256, type Address, type Hex, type PublicClient } from "viem";
 
 import {
   validateDeploymentOnchain,
@@ -37,7 +31,6 @@ const candidate: DeploymentRecord = {
     raffleImplementation: keccak256("0x01"),
   },
   deployer: "0x1111111111111111111111111111111111111111",
-  finalFactoryOwner: "0x2222222222222222222222222222222222222222",
   quoteToken: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   vrfWrapper: "0x02aae1A04f9828517b3007f83f6181900CaD910c",
   raffleFactory: "0x3333333333333333333333333333333333333333",
@@ -50,8 +43,6 @@ const candidate: DeploymentRecord = {
 };
 
 interface ClientOverrides {
-  readonly owner?: Address;
-  readonly pendingOwner?: Address;
   readonly decimals?: number;
   readonly paused?: boolean;
   readonly raffleImplementation?: Address;
@@ -86,22 +77,8 @@ const releaseEvidence: DeploymentValidationEvidence = {
 };
 
 describe("deployment validation", () => {
-  it("accepts only a completed, unpaused, six-decimal mainnet deployment", async () => {
+  it("accepts an ownerless six-decimal mainnet deployment", async () => {
     await validateDeploymentOnchain(fakeClient(), candidate, releaseEvidence);
-  });
-
-  it("rejects a pending ownership handoff", async () => {
-    await assert.rejects(
-      validateDeploymentOnchain(
-        fakeClient({
-          owner: candidate.deployer as Address,
-          pendingOwner: candidate.finalFactoryOwner as Address,
-        }),
-        candidate,
-        releaseEvidence,
-      ),
-      /ownership has not been accepted/,
-    );
   });
 
   it("rejects incompatible or paused quote-token state", async () => {
@@ -453,10 +430,6 @@ function fakeClient(overrides: ClientOverrides = {}): PublicClient {
           );
         case "protocolTreasury":
           return candidate.protocolTreasury;
-        case "owner":
-          return overrides.owner ?? candidate.finalFactoryOwner;
-        case "pendingOwner":
-          return overrides.pendingOwner ?? zeroAddress;
         default:
           throw new Error(`unexpected read: ${String(functionName)}`);
       }

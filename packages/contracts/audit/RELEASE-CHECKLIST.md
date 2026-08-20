@@ -61,7 +61,7 @@ review does not replace an independent audit or operational approval.
       synchronous/repeated/wrong-word-count behavior, unauthorized/undecodable reverts,
       and callback gas boundedness are exercised for the recorded candidate.
 - [x] Sponsor, treasury, and runtime destinations reject known protocol sinks.
-- [x] Factory authority is limited to pausing future creation.
+- [x] Factory has no owner, role, pause, upgrade, rescue, or mutable configuration.
 - [x] Current internal finding disposition is recorded in `CURRENT-FINDINGS.md`.
 - [ ] Obtain an independent third-party audit of the exact final SHA, including every
       internally fixed release-integrity and observability finding.
@@ -117,8 +117,7 @@ review does not replace an independent audit or operational approval.
 - [x] Subgraph stores one ticket range per purchase and never expands entries.
 - [x] Deployment tooling uses one factory/implementation and no Lens.
 - [x] Deployment validation binds the fixed price, 300,000 callback gas, 30
-      confirmations, implementation lock, official dependency expectations, and final
-      ownership.
+      confirmations, implementation lock, and official dependency expectations.
 - [x] Coordinator capacity validation includes wrapper overhead and EIP-150 forwarding
       compensation, `floor(callbackGasLimit / 63) + 1`.
 - [x] Source verification requires `Proxy === "0"`, exact empty `Implementation`, and
@@ -142,17 +141,17 @@ review does not replace an independent audit or operational approval.
       maximum callback gas, overhead configuration, and operational status.
 - [ ] Verify USDC proxy/runtime, six decimals, issuer controls, and exact-transfer
       behavior at the release block.
-- [ ] Select and independently review nonzero owner and treasury Safes, signer sets,
-      thresholds, modules, guards, recovery, and monitoring.
+- [ ] Select and independently review the nonzero treasury Safe, signer set, threshold,
+      modules, guards, recovery, and monitoring.
 - [ ] Deploy only to Sepolia first; verify implementation and factory source exactly.
-- [ ] Confirm factory ownership acceptance: `owner == Safe` and
-      `pendingOwner == address(0)`.
+- [ ] Confirm the verified factory ABI and runtime expose no owner, role, pause,
+      upgrade, rescue, or mutable-configuration path.
 - [ ] Prove sampled raffle runtimes are canonical fixed-target 45-byte ERC-1167 clones.
 - [ ] Complete every required scenario in `docs/SEPOLIA-SOAK.md` under active
       monitoring.
 - [ ] Produce, independently verify, and sign the finalized deployment record.
-- [x] No live deployment, broadcast, source verification, or ownership transaction has
-      been performed for this candidate.
+- [x] No live deployment, broadcast, or source verification has been performed for
+      this candidate.
 - [x] CI contains no mainnet broadcast job or production-private-key path.
 
 ## Operations, policy, and law
@@ -161,7 +160,7 @@ review does not replace an independent audit or operational approval.
       ceiling; a frontend limit is not a security boundary.
 - [ ] Deploy dashboards and alerts for creation, draw requests, ignored callbacks,
       separate request/callback deadline queues, outcomes, settlements, refund
-      liabilities, solvency, pause, and ownership.
+      liabilities, solvency, treasury configuration, and runtime identity.
 - [ ] Staff and drill monitoring, incident-response, frontend-disable, disclosure, and
       new-factory migration procedures.
 - [ ] Establish and test private disclosure and bug-bounty processes.

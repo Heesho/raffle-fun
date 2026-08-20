@@ -32,8 +32,8 @@ Evidence tags:
 9. The quote token, VRF wrapper, treasury, implementation, entry price, callback
    gas, confirmations, fee rate, and timeouts cannot change for an existing raffle.
    `U/I/X`
-10. The factory owner can only pause future creation; ownership renunciation is
-    disabled. `U/X`
+10. The factory has no owner, role, pause, upgrade, rescue, or mutable configuration.
+    `U/X`
 11. A prize must be a deployed ERC-721 contract and must not be a known protocol
     destination. `U/A`
 12. The reserve is positive and the sale ends in `(now, now + 30 days]`. `U/F`
@@ -148,8 +148,8 @@ Evidence tags:
     credit; failures restore all effects. `U/A`
 59. Known protocol destinations cannot receive tickets, quote payouts, or claimed
     prizes. `U/A`
-60. No factory-owner or treasury function can seize, redirect, rescue, or mutate an
-    existing raffle's assets or result. `U/I/X`
+60. No factory or treasury function can seize, redirect, rescue, or mutate a raffle's
+    assets or result. `U/I/X`
 
 ## Off-chain consistency
 
@@ -162,7 +162,7 @@ Evidence tags:
     simulated against chain state. `X`
 64. Deployment validation checks chain identity, finalized block/hash, code hashes,
     official dependencies, six-decimal quote behavior, implementation locking,
-    constants, ownership acceptance, and verified source requirements. `K/X`
+    constants, ownerless factory surface, and verified source requirements. `K/X`
 65. No checked-in deployment record enables public mainnet writes. `X`
 
 ## Explicit assumptions

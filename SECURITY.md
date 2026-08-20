@@ -47,8 +47,8 @@ Use local networks or accounts and assets you control. Do not:
 ## Security model
 
 Every raffle is a fixed-target ERC-1167 clone. Its implementation and dependencies
-cannot be upgraded. The factory's two-step owner can pause only future creation; it
-cannot change, pause, settle, or rescue an existing raffle.
+cannot be upgraded. The factory is also ownerless and immutable: it has no role, pause,
+upgrade, rescue, or mutable-configuration path.
 
 The intended bounded paths are:
 

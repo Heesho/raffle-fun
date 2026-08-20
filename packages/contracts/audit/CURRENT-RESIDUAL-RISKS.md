@@ -82,10 +82,11 @@ before the final audit; a frontend-only cap is bypassable.
 
 ### Immutable implementation
 
-Each raffle clone is non-upgradeable. This removes upgrade-admin seizure risk but also
-means a discovered bug cannot be patched in place. The factory can pause only new
-creation; existing raffles must finish under their deployed code. Incident response is
-frontend warnings, monitoring, voluntary user behavior, and migration to a new factory.
+The factory and each raffle clone are ownerless and non-upgradeable. This removes admin
+seizure risk but also means a discovered bug cannot be patched and new creation cannot
+be paused onchain. Incident response is frontend warnings, disabled first-party writes
+and sponsor onboarding, monitoring, voluntary user behavior, and migration to a new
+factory.
 
 ### Modulo mapping
 
@@ -102,10 +103,10 @@ intentional surface-area reduction and should be disclosed.
 
 ## Operational and integration risks
 
-- The factory owner and protocol treasury must be independently reviewed contract
-  wallets with tested signer, recovery, module, and monitoring policies.
-- Deployment records, source verification, runtime hashes, owner acceptance, and
-  official dependency addresses must be checked against a finalized release-day block.
+- The protocol treasury must be an independently reviewed contract wallet with tested
+  signer, recovery, module, and monitoring policies.
+- Deployment records, source verification, runtime hashes, and official dependency
+  addresses must be checked against a finalized release-day block.
 - The subgraph is eventually consistent and non-authoritative. Ticket ownership and
   every write must be read/simulated against Ethereum.
 - Large values must remain `bigint` end to end. A JavaScript `number` conversion can
@@ -129,7 +130,7 @@ intentional surface-area reduction and should be disclosed.
 5. Deploy and drill monitoring, incident response, frontend-disable, and new-factory
    migration procedures.
 6. Complete legal review and a written value-limit/go-no-go decision.
-7. Verify production owner/treasury wallets, Chainlink/USDC dependencies, source,
-   runtime bytecode, and signed deployment record before enabling writes.
+7. Verify the production treasury wallet, Chainlink/USDC dependencies, source, runtime
+   bytecode, and signed deployment record before enabling writes.
 
 Until those items are complete, the candidate is audit-ready—not mainnet-ready.

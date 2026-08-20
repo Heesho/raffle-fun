@@ -5,9 +5,9 @@ Ethereum v1 audit candidate. The maintained public explanation is
 `docs/THREAT-MODEL.md`; the code is authoritative.
 
 > **Superseded review scope:** this commit-bound model predates the official Chainlink
-> consumer-base migration and bearer-redemption redesign. Use the maintained public
-> threat model for the current behavior, and regenerate this audit artifact from the
-> final release SHA before relying on it as review evidence.
+> consumer-base migration, bearer-redemption redesign, and ownerless-factory change.
+> Use the maintained public threat model for the current behavior, and regenerate this
+> audit artifact from the final release SHA before relying on it as review evidence.
 
 ## Security objective
 
@@ -22,7 +22,6 @@ refund recovery boundary, subject to external asset and chain availability.
 
 - malicious sponsor, buyer, ticket recipient, ticket operator, draw requester,
   refund caller, winner, and public finalizer;
-- compromised factory owner after deployment;
 - reentrant or rejecting ERC-721 receivers;
 - false-returning, fee-on-transfer, over-crediting, under-crediting, or reentrant quote
   tokens at the contract boundary;
@@ -43,7 +42,7 @@ refund recovery boundary, subject to external asset and chain availability.
   pricing, and availability model;
 - the release-day official USDC deployment and its issuer/proxy controls;
 - honest ERC-721 interface and ownership behavior for a supported prize;
-- secure factory-owner and treasury wallets;
+- a secure protocol treasury wallet;
 - users retain control of ticket-owner accounts or deploy contracts capable of the
   owner-only refund action;
 - independently reviewed deployment configuration and verified bytecode.
@@ -57,10 +56,10 @@ can place the final nominal boundary almost four days after sale end.
 
 ## Authority review
 
-The factory owner can pause or unpause future creation and transfer factory ownership
-through `Ownable2Step`. It cannot change the immutable implementation, quote token,
-wrapper, treasury, constants, or an existing raffle. A raffle has no owner, upgrade,
-arbitrary-call, cancellation, rescue, or emergency-settlement selector.
+The factory is ownerless and exposes no role, pause, upgrade, rescue, or mutable-
+configuration selector. Its implementation, quote token, wrapper, treasury, and
+constants are fixed at deployment. A raffle likewise has no owner, upgrade, arbitrary-
+call, cancellation, rescue, or emergency-settlement selector.
 
 The sponsor controls the initial prize, reserve, and end time. After atomic creation it
 cannot cancel a sold raffle, choose randomness, move tickets, take the cash-result pot,

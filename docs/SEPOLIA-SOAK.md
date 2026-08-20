@@ -13,9 +13,9 @@ that must never enter deployment records or the public application.
 - every repository validation gate green from a clean checkout;
 - independent audit scope fixed to that commit and deployment configuration;
 - verified factory and implementation source;
-- finalized deployment record passes transaction, runtime, ownership, USDC, wrapper,
-  fixed-constant, and implementation-lock checks;
-- two-step ownership accepted by the reviewed contract wallet;
+- finalized deployment record passes transaction, runtime, ownerless-factory, USDC,
+  wrapper, fixed-constant, and implementation-lock checks;
+- the protocol treasury is the reviewed contract wallet;
 - monitoring, keepers, incident roles, and legal review staffed.
 
 ## Duration and volume
@@ -40,7 +40,7 @@ collections. Keep every prize and entry value deliberately low.
 | NFT transfer failure    | adversarial collection reverts or lies on redemption; the burn and redemption markers revert while prior settlement and both quote claims remain usable                               |
 | Callback boundary       | matching callback at `callbackDeadline() - 1` resolves; at the deadline it is ignored and refunds are available                                                                       |
 | Outgoing failure        | adversarial quote token proves failed winner redemption restores its ticket and cash liability while failed sponsor/protocol release restores only that claim                         |
-| Operational controls    | contract wallet pauses/resumes future creation; frontend write kill switch and keeper actions are rehearsed                                                                           |
+| Operational controls    | frontend write kill switch, sponsor-onboarding stop, and keeper actions are rehearsed                                                                                                 |
 | Degraded infrastructure | direct chain reads and calldata instructions remain usable while subgraph or one RPC is unavailable                                                                                   |
 
 For every scenario retain chain ID, block and transaction hashes, addresses, decoded
@@ -62,7 +62,7 @@ The soak passes only with:
 - no callback gas failure and approved headroom for the exact release bytecode;
 - the empty path, exact request and callback boundaries, the last-valid-second request,
   both refund origins, and both successful outcomes exercised;
-- complete monitoring reconciliation, contract-wallet pause, UI-disable, and incident
+- complete monitoring reconciliation, UI-disable, sponsor-onboarding stop, and incident
   drills by the people who will operate mainnet;
 - every code or configuration change independently reviewed and its soak impact
   documented.
@@ -74,5 +74,5 @@ request or callback after its cutoff: it cannot be replayed and the supported re
 outcome is refunds.
 
 Changing Solidity, compiler, dependencies, wrapper, USDC, implementation, constants,
-owner/treasury, ABI generation, or deployment procedure invalidates affected evidence
-and requires a documented restart decision.
+treasury, ABI generation, or deployment procedure invalidates affected evidence and
+requires a documented restart decision.

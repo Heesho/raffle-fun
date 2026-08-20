@@ -1,9 +1,9 @@
 # Incident-response runbook
 
-Existing raffles are immutable and have no administrator. An incident response can
-pause only future creation, disable product surfaces, help users exercise existing
+The factory and its raffles are immutable and have no administrator. Incident response
+can disable product surfaces, stop sponsor onboarding, help users exercise existing
 permissionless paths, and migrate new activity to a separately reviewed factory. It
-cannot upgrade, seize, redirect, or rewrite an existing raffle.
+cannot pause onchain creation, upgrade, seize, redirect, or rewrite a raffle.
 
 ## Roles and authority
 
@@ -11,8 +11,8 @@ Assign named primary and backup people before launch:
 
 - incident commander: severity, decisions, timeline, and closure;
 - chain lead: independent RPC verification, traces, affected-set and loss analysis;
-- Safe operator: proposes the pre-reviewed pause transaction; never acts from a single
-  chat message;
+- treasury Safe operator: protects the protocol recipient wallet and never acts from a
+  single chat message;
 - product lead: disables writes and preserves read/recovery access;
 - communications/legal lead: user notices, regulator/counterparty coordination, and
   disclosure timing.
@@ -24,9 +24,9 @@ repository. Test access quarterly.
 ## Severity
 
 - **P0:** active exploitation, quote insolvency, counterfeit canonical raffle,
-  compromised owner Safe, or a production-state violation that can affect assets.
+  compromised treasury Safe, or a production-state violation that can affect assets.
 - **P1:** credible unexploited vulnerability, broken dependency/oracle/token control,
-  owner/treasury drift, or widespread inability to complete recovery paths.
+  treasury drift, or widespread inability to complete recovery paths.
 - **P2:** isolated liveness, indexer, RPC, or UI fault with onchain safety properties
   intact.
 
@@ -38,9 +38,10 @@ repository. Test access quarterly.
 3. Identify the exact factory, implementation, raffle set, source commit, dependency
    lock, first suspicious block, and whether the issue affects existing raffles or only
    future creation.
-4. For P0/P1, have the Safe operator propose `setCreationPaused(true)`. A second person
-   must decode the chain, target, selector, and argument before the Safe threshold signs.
-5. Disable new-raffle and purchase writes in the frontend. Keep direct read, claim,
+4. For P0/P1, disable new-raffle and purchase writes in the frontend and stop sponsor
+   onboarding. The ownerless factory cannot be paused onchain; publish the affected
+   factory address and source commit prominently.
+5. Keep direct read, claim,
    redemption, and refund instructions available unless the affected call itself is
    unsafe.
 6. Preserve RPC responses, receipts, logs, traces, bytecode, runtime hashes, monitor
@@ -60,21 +61,22 @@ all deadlines and entitlement holders from chain state.
   permissionless transition only when its documented boundary is reached.
 - For claims/redemptions, publish exact verified addresses and calldata-generation
   instructions; do not introduce an unreviewed relayer or asset custodian.
-- For an owner compromise, creation pause/treasury controls affect future raffles only.
-  Assume every owner action needs independent decoding and Safe recovery review.
+- For a treasury compromise, immutable raffle destinations cannot be changed. Follow
+  the treasury Safe's independently reviewed recovery process and disclose the affected
+  factory and raffles.
 - Escalate Chainlink liveness/authentication issues to Chainlink and USDC
   pause/freeze/proxy issues to Circle, while continuing independent chain verification.
 
 ## Recovery and migration
 
 A replacement factory is a new release. It requires a new implementation, independent
-review, Sepolia validation, source verification, Safe acceptance, monitoring, and
+review, Sepolia validation, source verification, treasury review, monitoring, and a
 signed deployment record. Never label it a hotfix while skipping release gates.
 
-Resume creation only after the incident commander records root cause, affected scope,
-why remaining raffles are safe to interact with, completed fixes, independent review
-where required, monitoring changes, and the exact Safe transaction approving resume.
-The frontend must not silently route an old factory page to a new contract.
+Resume first-party creation only after the incident commander records root cause,
+affected scope, why remaining raffles are safe to interact with, completed fixes,
+independent review where required, and monitoring changes. The frontend must not
+silently route an old factory page to a new contract.
 
 ## Communications and closure
 

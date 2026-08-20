@@ -24,7 +24,6 @@ export interface DeploymentRecord {
     readonly raffleImplementation: Hex;
   };
   readonly deployer: Address;
-  readonly finalFactoryOwner: Address;
   readonly quoteToken: Address;
   readonly vrfWrapper: Address;
   readonly raffleFactory: Address;

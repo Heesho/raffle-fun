@@ -29,7 +29,7 @@ contract RaffleInvariantTest is StdInvariant, Test {
         prize = new MockERC721();
         vrfWrapper = new MockVRFV2PlusWrapper();
         handler = new RaffleHandler(quote, vrfWrapper, treasury);
-        RaffleFactory factory = new RaffleFactory(address(quote), address(vrfWrapper), treasury, address(this));
+        RaffleFactory factory = new RaffleFactory(address(quote), address(vrfWrapper), treasury);
 
         prize.mint(address(handler), 1);
         vm.prank(address(handler));

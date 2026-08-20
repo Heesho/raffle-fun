@@ -7,8 +7,8 @@ independent audit, and the complete gate set must be rerun from the clean final 
 
 > The totals below are preserved evidence for the recorded pre-remediation SHAs. They
 > do not validate the later hard request/callback-boundary change, official Chainlink
-> consumer-base migration, or bearer-redemption redesign; affected rows require a clean
-> rerun against the final release SHA.
+> consumer-base migration, bearer-redemption redesign, or ownerless-factory change;
+> affected rows require a clean rerun against the final release SHA.
 
 In the lifecycle rows, `D = drawRequestDeadline() = endTime + 2 days` and
 `C = callbackDeadline() = drawRequestedAt + 2 days`.
@@ -49,7 +49,7 @@ detector. Gitleaks also exits 0 for the committed candidate and 25-commit histor
 | ------------------------------------------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------- |
 | Locked implementation and one-time initialization | direct implementation and clone reinitialization reject                             | Foundry unit/security                                       |
 | Atomic creation                                   | clone registration, initialization, prize escrow, and activation roll back together | Foundry unit/security + Hardhat journey                     |
-| Future-only pause                                 | creation rejects while existing raffles remain operable                             | Foundry unit + deployment tests                             |
+| Ownerless permissionless creation                 | no owner, role, pause, upgrade, rescue, or mutable-configuration selector           | source/ABI review; final-SHA rerun required                 |
 | Immediate sale and maximum duration               | sale begins at creation and cannot exceed 30 days                                   | Foundry boundary + mutation                                 |
 | Bearer ownership                                  | tickets transfer before close, while drawing, and after resolution until burned     | Foundry unit/fuzz/invariant                                 |
 | Draw-request window                               | request succeeds exactly in `[endTime, drawRequestDeadline())`                      | Foundry unit + model; remediated-SHA rerun required         |
@@ -122,7 +122,7 @@ detector. Gitleaks also exits 0 for the committed candidate and 25-commit histor
 | Layer              | Required evidence                                                          | Current evidence / remaining gate                        |
 | ------------------ | -------------------------------------------------------------------------- | -------------------------------------------------------- |
 | ABI                | generated SDK/subgraph ABIs match source; retired Lens/Pyth symbols absent | current drift checks reported green; repeat at final SHA |
-| Deployment record  | chain, addresses, constants, hashes, final block, and ownership are bound  | Hardhat regressions; no signed live record               |
+| Deployment record  | chain, addresses, constants, hashes, and final block are bound             | Hardhat regressions; no signed live record               |
 | Source publication | exact direct-contract match; omitted/proxy/similar-match metadata rejects  | Hardhat regression; no live verification                 |
 | SDK                | `bigint` counts/ranges, explicit ticket IDs, fixed economics               | 14/14                                                    |
 | Web                | fixed-$1 entries, range tickets, direct reads, settlement/refunds          | 15/15; repeat lint/typecheck/build at final SHA          |

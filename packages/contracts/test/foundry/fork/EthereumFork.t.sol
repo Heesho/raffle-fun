@@ -65,7 +65,7 @@ contract EthereumForkTest is Test {
         assertGt(IVRFV2PlusWrapper(wrapperAddress).calculateRequestPriceNative(300_000, 1), 0);
 
         MockERC721 prize = new MockERC721();
-        RaffleFactory factory = new RaffleFactory(usdc, wrapperAddress, treasury, address(this));
+        RaffleFactory factory = new RaffleFactory(usdc, wrapperAddress, treasury);
         assertEq(factory.callbackGasLimit(), 300_000);
         assertEq(factory.requestConfirmations(), 30);
         vm.prank(sponsor);

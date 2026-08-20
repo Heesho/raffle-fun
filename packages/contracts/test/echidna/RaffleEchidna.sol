@@ -31,7 +31,7 @@ abstract contract RaffleEchidnaBase is IERC721Receiver {
         prize = new MockERC721();
         vrfWrapper = new MockVRFV2PlusWrapper();
         vrfWrapper.setFee(0);
-        factory = new RaffleFactory(address(quote), address(vrfWrapper), TREASURY, address(this));
+        factory = new RaffleFactory(address(quote), address(vrfWrapper), TREASURY);
         prize.mint(address(this), 1);
         prize.setApprovalForAll(address(factory), true);
         raffle = Raffle(

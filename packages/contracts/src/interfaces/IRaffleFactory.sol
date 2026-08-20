@@ -5,8 +5,7 @@ pragma solidity 0.8.36;
  * @title raffle.fun Raffle Factory Interface
  * @author Heesho
  * @notice Defines atomic ERC-1167 raffle creation for one immutable USDC, treasury, and Chainlink configuration.
- * @dev Factory ownership may pause only future creation. It cannot change an existing raffle, treasury, economic
- *      constant, randomness configuration, or implementation.
+ * @dev The factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.
  * @custom:version 1.0.0
  */
 interface IRaffleFactory {
@@ -23,13 +22,11 @@ interface IRaffleFactory {
     error UnsupportedQuoteToken(address quoteToken);
     error InvalidQuoteTokenDecimals(uint8 actualDecimals, uint8 requiredDecimals);
     error UnsupportedPrizeToken(address prizeToken);
-    error CreationPaused();
     error ZeroReserveEntries();
     error InvalidEndTime(uint256 currentTime, uint256 endTime);
     error SaleDurationTooLong(uint256 duration, uint256 maximumDuration);
     error UnsafeProtocolDestination(address destination);
     error PrizeEscrowVerificationFailed(address raffle, address prizeToken, uint256 prizeTokenId);
-    error OwnershipRenunciationDisabled();
 
     event RaffleCreated(
         uint256 indexed raffleId,
@@ -44,10 +41,7 @@ interface IRaffleFactory {
         uint64 endTime
     );
 
-    event CreationPauseUpdated(bool previousPaused, bool newPaused);
-
     function createRaffle(CreateRaffleParams calldata params) external returns (address raffle);
-    function setCreationPaused(bool paused) external;
 
     function quoteToken() external view returns (address quoteTokenAddress);
     function vrfWrapper() external view returns (address wrapperAddress);

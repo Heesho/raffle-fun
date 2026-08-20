@@ -114,7 +114,6 @@ export async function loadDeploymentBuildEvidence(
       getAddress(candidate.quoteToken),
       getAddress(candidate.vrfWrapper),
       getAddress(candidate.protocolTreasury),
-      getAddress(candidate.deployer),
     ],
   });
 

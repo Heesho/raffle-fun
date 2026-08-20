@@ -141,7 +141,7 @@ a reproduced production defect:
 | V1-REL-05 | Current external-fuzzer runtime evidence is absent              | Execute the compiled Echidna harness with a retained corpus and explicit branch-reachability review.                                                                                                                                        |
 | V1-REL-06 | No independent audit of this exact v1                           | Review the final SHA and all internally fixed findings; resolve every Critical/High and supported-asset Medium.                                                                                                                             |
 | V1-REL-07 | No monitored Sepolia soak or operational drill                  | Exercise every terminal branch, exact request/callback cutoff, last-valid-second request, both timeout-refund origins, contract-owner case, weighted refund, and failed/retried delivery while monitors and incident procedures are active. |
-| V1-REL-08 | Production identities and dependencies are unapproved           | Review owner/treasury Safes and verify official USDC, wrapper, coordinator, verified source, runtime, clone target, ownership acceptance, and signed deployment record.                                                                     |
+| V1-REL-08 | Production identities and dependencies are unapproved           | Review the treasury Safe and verify official USDC, wrapper, coordinator, verified source, runtime, clone target, ownerless factory ABI, and signed deployment record.                                                                       |
 | V1-REL-09 | Launch policy and legal approval are incomplete                 | Decide supported value policy, complete jurisdiction-specific review, and record a written go/no-go decision.                                                                                                                               |
 
 Current static and secret-scanning evidence is green: Slither exits 0 with 0 results
@@ -165,8 +165,9 @@ These are intentional or external limits, not closed by the internal test suite:
   remain independently releasable; there is intentionally no post-result refund path.
 - A destroyed or incapable ticket-owning contract can make its owner-only refund
   unreachable.
-- Existing clones are immutable. A discovered defect cannot be patched in place; the
-  factory owner can only pause future creation and migrate users to a new factory.
+- The ownerless factory and existing clones are immutable. A discovered defect cannot
+  be patched in place and creation cannot be paused onchain; containment depends on
+  first-party UI/onboarding controls and migration to a new factory.
 - The contracts enforce no economic value ceiling. `uint128` is a machine bound, not a
   risk limit, and a frontend cap is bypassable.
 - The winning modulo mapping has negligible but mathematically nonzero `2^-256`-scale

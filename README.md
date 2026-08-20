@@ -124,15 +124,15 @@ callback, while a failed or dishonest prize transfer still reverts the ticket bu
 
 ## Architecture and authority
 
-| Contract        | Purpose                                                    | Authority                                     |
-| --------------- | ---------------------------------------------------------- | --------------------------------------------- |
-| `RaffleFactory` | creates and registers fixed-target ERC-1167 raffle clones  | two-step owner may pause only future creation |
-| `Raffle`        | prize escrow, ticket ERC-721, draw, accounting, settlement | no administrator                              |
+| Contract        | Purpose                                                    | Authority        |
+| --------------- | ---------------------------------------------------------- | ---------------- |
+| `RaffleFactory` | creates and registers fixed-target ERC-1167 raffle clones  | no administrator |
+| `Raffle`        | prize escrow, ticket ERC-721, draw, accounting, settlement | no administrator |
 
 The factory's quote token, Chainlink wrapper, treasury, callback gas limit, request
 confirmations, and implementation are immutable. Existing raffles have no owner,
 upgrade path, mutable implementation pointer, settlement override, or generic rescue
-function. Factory ownership cannot change an existing raffle.
+function. The factory itself has no owner, pause, upgrade, or mutable configuration.
 
 The callback requests one word with a fixed 300,000 gas-unit limit and 30 confirmations.
 That is an execution limit, not a gas-price cap: the native request quote changes with

@@ -243,24 +243,28 @@ export default function DocsPage() {
           <DocHeading
             eyebrow="Trust model"
             title="Know what code can—and cannot—protect."
-            text="Existing raffles are non-upgradeable ERC-1167 clones. The factory owner can only pause or resume future creation; the treasury and protocol dependencies are immutable."
+            text="The factory and every ERC-1167 raffle clone are ownerless and non-upgradeable. Creation cannot be paused, and the treasury and protocol dependencies are immutable."
           />
           <div className="mt-8 grid gap-5 lg:grid-cols-2">
             <div className="card p-7">
               <div className="flex items-center gap-3">
                 <ShieldCheck aria-hidden className="text-[var(--grass)]" />
-                <h3 className="text-2xl">Factory owner can</h3>
+                <h3 className="text-2xl">Ownerless factory</h3>
               </div>
               <ul className="mt-5 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--ink-2)]">
-                <li>Pause creation of new raffles</li>
-                <li>Resume creation of new raffles</li>
-                <li>Transfer two-step factory ownership</li>
+                <li>Raffle creation remains permanently permissionless</li>
+                <li>
+                  No owner, role, pause, upgrade, or rescue function exists
+                </li>
+                <li>
+                  Treasury, implementation, USDC, and VRF settings are fixed
+                </li>
               </ul>
             </div>
             <div className="card p-7">
               <div className="flex items-center gap-3">
                 <LockKeyhole aria-hidden className="text-[var(--sky)]" />
-                <h3 className="text-2xl">Factory owner cannot</h3>
+                <h3 className="text-2xl">No administrator can</h3>
               </div>
               <ul className="mt-5 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--ink-2)]">
                 <li>

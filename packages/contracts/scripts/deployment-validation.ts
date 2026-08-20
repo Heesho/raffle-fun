@@ -2,7 +2,6 @@ import {
   getAddress,
   keccak256,
   parseAbi,
-  zeroAddress,
   type Address,
   type Hash,
   type Hex,
@@ -18,8 +17,6 @@ const factoryAbi = parseAbi([
   "function requestConfirmations() view returns (uint16)",
   "function raffleImplementation() view returns (address)",
   "function protocolTreasury() view returns (address)",
-  "function owner() view returns (address)",
-  "function pendingOwner() view returns (address)",
 ]);
 const raffleImplementationAbi = parseAbi([
   "function ENTRY_PRICE() view returns (uint256)",
@@ -182,8 +179,6 @@ export async function validateDeploymentOnchain(
     requestConfirmations,
     raffleImplementation,
     treasury,
-    owner,
-    pendingOwner,
     quoteTokenDecimals,
     quoteTokenPaused,
     implementationFactory,
@@ -237,18 +232,6 @@ export async function validateDeploymentOnchain(
       address: factory,
       abi: factoryAbi,
       functionName: "protocolTreasury",
-      blockNumber: validationBlockNumber,
-    }),
-    client.readContract({
-      address: factory,
-      abi: factoryAbi,
-      functionName: "owner",
-      blockNumber: validationBlockNumber,
-    }),
-    client.readContract({
-      address: factory,
-      abi: factoryAbi,
-      functionName: "pendingOwner",
       blockNumber: validationBlockNumber,
     }),
     client.readContract({
@@ -484,30 +467,11 @@ export async function validateDeploymentOnchain(
     );
   }
 
-  const finalOwner = getAddress(candidate.finalFactoryOwner);
-  const ownershipAccepted =
-    getAddress(owner) === finalOwner && pendingOwner === zeroAddress;
-  if (!ownershipAccepted) {
-    throw new Error(
-      `factory ownership has not been accepted by ${finalOwner}; pending handoff is not a publishable deployment state.`,
-    );
-  }
   if (candidate.chainId === 1) {
-    const [ownerCode, treasuryCode] = await Promise.all([
-      client.getCode({
-        address: finalOwner,
-        blockNumber: validationBlockNumber,
-      }),
-      client.getCode({
-        address: candidate.protocolTreasury as Address,
-        blockNumber: validationBlockNumber,
-      }),
-    ]);
-    if (ownerCode === undefined || ownerCode === "0x") {
-      throw new Error(
-        "Ethereum mainnet finalFactoryOwner must be a reviewed contract wallet.",
-      );
-    }
+    const treasuryCode = await client.getCode({
+      address: candidate.protocolTreasury as Address,
+      blockNumber: validationBlockNumber,
+    });
     if (treasuryCode === undefined || treasuryCode === "0x") {
       throw new Error(
         "Ethereum mainnet protocolTreasury must be a reviewed contract wallet.",

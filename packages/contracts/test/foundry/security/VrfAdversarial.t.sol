@@ -27,7 +27,7 @@ contract VrfAdversarialTest is Test {
         quote = new MockERC20();
         prize = new MockERC721();
         wrapper = new AdversarialVRFV2PlusWrapper();
-        factory = new RaffleFactory(address(quote), address(wrapper), treasury, address(this));
+        factory = new RaffleFactory(address(quote), address(wrapper), treasury);
         vm.prank(sponsor);
         prize.setApprovalForAll(address(factory), true);
         quote.mint(buyer, 100 * 1e6);

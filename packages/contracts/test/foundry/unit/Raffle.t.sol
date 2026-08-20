@@ -128,7 +128,7 @@ contract RaffleTest is Test, IERC721Receiver {
         quote = new MockERC20();
         prize = new MockERC721();
         vrfWrapper = new MockVRFV2PlusWrapper();
-        factory = new RaffleFactory(address(quote), address(vrfWrapper), treasury, address(this));
+        factory = new RaffleFactory(address(quote), address(vrfWrapper), treasury);
 
         vm.prank(sponsor);
         prize.setApprovalForAll(address(factory), true);
@@ -283,24 +283,24 @@ contract RaffleTest is Test, IERC721Receiver {
 
     function testFactoryConstructorAndCreationValidation() public {
         vm.expectRevert(abi.encodeWithSelector(IRaffleFactory.NotContract.selector, address(0)));
-        new RaffleFactory(address(0), address(vrfWrapper), treasury, address(this));
+        new RaffleFactory(address(0), address(vrfWrapper), treasury);
         vm.expectRevert(abi.encodeWithSelector(IRaffleFactory.NotContract.selector, outsider));
-        new RaffleFactory(outsider, address(vrfWrapper), treasury, address(this));
+        new RaffleFactory(outsider, address(vrfWrapper), treasury);
         vm.expectRevert(IRaffleFactory.ZeroAddress.selector);
-        new RaffleFactory(address(quote), address(vrfWrapper), address(0), address(this));
+        new RaffleFactory(address(quote), address(vrfWrapper), address(0));
 
         EighteenDecimalToken wrong = new EighteenDecimalToken();
         vm.expectRevert(abi.encodeWithSelector(IRaffleFactory.InvalidQuoteTokenDecimals.selector, 18, 6));
-        new RaffleFactory(address(wrong), address(vrfWrapper), treasury, address(this));
+        new RaffleFactory(address(wrong), address(vrfWrapper), treasury);
 
         RevertingDecimalsToken revertingDecimals = new RevertingDecimalsToken();
         vm.expectRevert(
             abi.encodeWithSelector(IRaffleFactory.UnsupportedQuoteToken.selector, address(revertingDecimals))
         );
-        new RaffleFactory(address(revertingDecimals), address(vrfWrapper), treasury, address(this));
+        new RaffleFactory(address(revertingDecimals), address(vrfWrapper), treasury);
 
         vm.expectRevert(abi.encodeWithSelector(IRaffleFactory.UnsafeProtocolDestination.selector, address(quote)));
-        new RaffleFactory(address(quote), address(vrfWrapper), address(quote), address(this));
+        new RaffleFactory(address(quote), address(vrfWrapper), address(quote));
 
         IRaffleFactory.CreateRaffleParams memory params = _validParams(address(prize));
         params.sponsorRecipient = address(0);
@@ -402,19 +402,6 @@ contract RaffleTest is Test, IERC721Receiver {
         vm.expectPartialRevert(IRaffleFactory.PrizeEscrowVerificationFailed.selector);
         factory.createRaffle(params);
         assertEq(fakeEscrow.ownerOf(1), sponsor);
-    }
-
-    function testFactoryPauseAffectsOnlyFutureRaffles() public {
-        Raffle existing = _create(1);
-        factory.setCreationPaused(true);
-        vm.prank(sponsor);
-        vm.expectRevert(IRaffleFactory.CreationPaused.selector);
-        factory.createRaffle(_validParams(address(prize)));
-
-        _buy(existing, buyer, 1);
-        assertEq(existing.totalEntries(), 1);
-        vm.expectRevert(IRaffleFactory.OwnershipRenunciationDisabled.selector);
-        factory.renounceOwnership();
     }
 
     function testPurchaseMintsOneSequentialTicketForAnyEntryCount() public {

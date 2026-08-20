@@ -57,14 +57,13 @@ The ERC-721 owner of the one ticket containing `winningEntry` owns the outcome.
 
 ## Authority
 
-The factory has an OpenZeppelin two-step owner. That owner may set only
-`creationPaused`, affecting future clones. The factory's quote token, Chainlink
-wrapper, treasury, callback gas, confirmation count, and implementation are immutable.
-`renounceOwnership` is disabled so a paused factory cannot be permanently stranded.
+The factory has no owner, role, pause, upgrade, rescue, or mutable configuration. Its
+quote token, Chainlink wrapper, treasury, callback gas, confirmation count, and
+implementation are immutable, and raffle creation remains permanently permissionless.
 
 A raffle has no owner, role, pause, rescue, reroll, or configuration setter. Its
-sponsor is only a fixed prize/proceeds claimant. Neither sponsor nor factory owner can
-choose a winner, cancel a sold raffle, or redirect another account's assets.
+sponsor is only a fixed prize/proceeds claimant. No administrator or sponsor can choose
+a winner, cancel a sold raffle, or redirect another account's assets.
 
 ## Custody and accounting
 

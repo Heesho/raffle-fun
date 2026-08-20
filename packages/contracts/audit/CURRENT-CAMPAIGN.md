@@ -10,23 +10,24 @@ security campaign, not an independent audit and not a mainnet authorization.
 > **Superseded-candidate evidence notice:** the numerical results and design narrative
 > below are preserved evidence for the recorded candidate SHAs. The later hard
 > request/callback-boundary remediation, official Chainlink consumer-base migration,
-> and bearer-redemption redesign are not validated by those totals. The final source
-> identity and every affected gate must be regenerated before release.
+> bearer-redemption redesign, and ownerless-factory change are not validated by those
+> totals. The final source identity and every affected gate must be regenerated before
+> release.
 
 ## Candidate identity and scope
 
-| Item               | Current value                                                                             |
-| ------------------ | ----------------------------------------------------------------------------------------- |
-| implementation SHA | `92eccb4beda71175dfeab4fa2282fbcfaab075c4`                                                |
-| evidence SHA       | `e9e0e730c17c07b21e911aa0c02804336e4f146b`                                                |
-| candidate identity | committed audit candidate on `main`; not yet designated or attested as a final release    |
-| target chain       | Ethereum mainnet, with Sepolia required before mainnet                                    |
-| architecture       | one immutable `RaffleFactory`, one locked implementation, fixed-target ERC-1167 clones    |
-| quote asset        | factory-fixed six-decimal token; production binding intended to be official USDC          |
-| entry economics    | fixed `1_000_000` quote units per entry; 5% protocol fee                                  |
-| randomness         | Chainlink VRF v2.5 wrapper, native payment, 30 confirmations, 300,000 callback gas        |
-| ticket model       | sequential ERC-721 ID per purchase with a stored inclusive `uint128` entry range          |
-| deployment status  | no deployment, broadcast, source verification, ownership transfer, or package publication |
+| Item               | Current value                                                                          |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| implementation SHA | `92eccb4beda71175dfeab4fa2282fbcfaab075c4`                                             |
+| evidence SHA       | `e9e0e730c17c07b21e911aa0c02804336e4f146b`                                             |
+| candidate identity | committed audit candidate on `main`; not yet designated or attested as a final release |
+| target chain       | Ethereum mainnet, with Sepolia required before mainnet                                 |
+| architecture       | one immutable `RaffleFactory`, one locked implementation, fixed-target ERC-1167 clones |
+| quote asset        | factory-fixed six-decimal token; production binding intended to be official USDC       |
+| entry economics    | fixed `1_000_000` quote units per entry; 5% protocol fee                               |
+| randomness         | Chainlink VRF v2.5 wrapper, native payment, 30 confirmations, 300,000 callback gas     |
+| ticket model       | sequential ERC-721 ID per purchase with a stored inclusive `uint128` entry range       |
+| deployment status  | no deployment, broadcast, source verification, or package publication                  |
 
 The reviewed protocol has no Lens, scheduled start, arbitrary entry price, per-entry
 minting, recovery-recipient role, `Closed` state, Pyth Entropy integration, Base
@@ -61,8 +62,8 @@ deployment, or upgrade path for existing raffles.
 - Refund value is derived from the ticket's stored inclusive range. Exact
   inbound and outbound quote-token deltas, non-reentrancy, fixed-recipient releases, prize custody,
   and post-transfer ownership are exercised against adversarial assets.
-- The factory owner can pause only future creation. Existing clones are immutable and
-  have no factory-admin override.
+- The factory is ownerless and permanently permissionless. It and its immutable clones
+  have no admin, pause, upgrade, rescue, or mutable-configuration path.
 
 ## Verified evidence
 
@@ -133,7 +134,7 @@ complete disposition.
   gas, coverage, ABI drift, source verification, and deployment validation must be
   rerun after the candidate is frozen. The exact Slither source annotation must remain
   narrowly reviewable and must not suppress new findings.
-- No production Safe, treasury, Chainlink/USDC release-day binding, signed deployment
+- No production treasury Safe, Chainlink/USDC release-day binding, signed deployment
   record, live monitoring, incident drill, or legal approval has been accepted.
 - The contracts intentionally have no economic value ceiling. A frontend limit is not
   an enforceable protocol control, so launch value policy requires an explicit go/no-go
@@ -148,9 +149,9 @@ complete disposition.
    and RPC-backed pinned plus latest-head Ethereum fork tests.
 3. Obtain an independent audit of the exact final SHA, including the three internally
    fixed Low items, and resolve every Critical/High and supported-asset Medium finding.
-4. Select and independently review production owner and treasury Safes, verify official
-   USDC and Chainlink wrapper/coordinator configuration, and validate exact verified
-   source/runtime bytecode and ownership acceptance.
+4. Select and independently review the production treasury Safe, verify official USDC
+   and Chainlink wrapper/coordinator configuration, and validate exact verified source
+   and runtime bytecode.
 5. Deploy to Sepolia first and complete the monitored soak for NFT success, cash
    success, empty raffles, exact request/callback boundaries, a last-valid-second
    request, both timeout-refund origins, weighted refunds, contract owners, and

@@ -127,10 +127,10 @@ callback is ignored even if `enableRefunds` has not yet been called.
 
 ## What is and is not guaranteed
 
-Every raffle clone is fixed and has no administrator. The factory owner may pause only
-new creation; it cannot alter existing prizes, reserves, owners, results, or claims.
-USDC movements verify exact balance changes, and known protocol addresses cannot
-receive tickets or payouts.
+Every raffle clone is fixed and has no administrator. The factory is also ownerless,
+cannot be paused or reconfigured, and cannot alter existing prizes, reserves, owners,
+results, or claims. USDC movements verify exact balance changes, and known protocol
+addresses cannot receive tickets or payouts.
 
 The design still relies on external systems:
 

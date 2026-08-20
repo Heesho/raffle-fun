@@ -57,8 +57,8 @@ maximum nominal path just under four days.
 ## What the operator cannot do
 
 Every raffle is a fixed, non-upgradeable ERC-1167 clone with no owner or rescue key.
-The factory owner may pause only future creation. It cannot change a running raffle,
-choose a winner, redirect a prize, or seize its pot.
+The factory is also ownerless and cannot be paused or reconfigured. No administrator
+can change a running raffle, choose a winner, redirect a prize, or seize its pot.
 
 This candidate v1 is not deployed or independently audited. Chainlink, Ethereum,
 USDC issuer controls, the NFT collection, wallet safety, and applicable gambling or

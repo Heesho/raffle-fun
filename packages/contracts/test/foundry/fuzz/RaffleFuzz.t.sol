@@ -31,7 +31,7 @@ contract RaffleFuzzTest is Test {
         quote = new MockERC20();
         prize = new MockERC721();
         vrfWrapper = new MockVRFV2PlusWrapper();
-        factory = new RaffleFactory(address(quote), address(vrfWrapper), treasury, address(this));
+        factory = new RaffleFactory(address(quote), address(vrfWrapper), treasury);
         vm.prank(sponsor);
         prize.setApprovalForAll(address(factory), true);
         vm.deal(requester, 100 ether);

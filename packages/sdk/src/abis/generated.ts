@@ -2080,19 +2080,9 @@ export const raffleFactoryAbi = [
         name: "protocolTreasury_",
         type: "address",
       },
-      {
-        internalType: "address",
-        name: "initialOwner",
-        type: "address",
-      },
     ],
     stateMutability: "nonpayable",
     type: "constructor",
-  },
-  {
-    inputs: [],
-    name: "CreationPaused",
-    type: "error",
   },
   {
     inputs: [],
@@ -2156,33 +2146,6 @@ export const raffleFactoryAbi = [
       },
     ],
     name: "NotContract",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-    ],
-    name: "OwnableInvalidOwner",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-    ],
-    name: "OwnableUnauthorizedAccount",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "OwnershipRenunciationDisabled",
     type: "error",
   },
   {
@@ -2274,63 +2237,6 @@ export const raffleFactoryAbi = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
-        internalType: "bool",
-        name: "previousPaused",
-        type: "bool",
-      },
-      {
-        indexed: false,
-        internalType: "bool",
-        name: "newPaused",
-        type: "bool",
-      },
-    ],
-    name: "CreationPauseUpdated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "previousOwner",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "newOwner",
-        type: "address",
-      },
-    ],
-    name: "OwnershipTransferStarted",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "previousOwner",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "newOwner",
-        type: "address",
-      },
-    ],
-    name: "OwnershipTransferred",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
         indexed: true,
         internalType: "uint256",
         name: "raffleId",
@@ -2396,13 +2302,6 @@ export const raffleFactoryAbi = [
   },
   {
     inputs: [],
-    name: "acceptOwnership",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "callbackGasLimit",
     outputs: [
       {
@@ -2461,19 +2360,6 @@ export const raffleFactoryAbi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "creationPaused",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [
       {
         internalType: "address",
@@ -2506,32 +2392,6 @@ export const raffleFactoryAbi = [
         internalType: "bool",
         name: "registered",
         type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "owner",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "pendingOwner",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
       },
     ],
     stateMutability: "view",
@@ -2610,13 +2470,6 @@ export const raffleFactoryAbi = [
   },
   {
     inputs: [],
-    name: "renounceOwnership",
-    outputs: [],
-    stateMutability: "pure",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "requestConfirmations",
     outputs: [
       {
@@ -2626,32 +2479,6 @@ export const raffleFactoryAbi = [
       },
     ],
     stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bool",
-        name: "paused",
-        type: "bool",
-      },
-    ],
-    name: "setCreationPaused",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "newOwner",
-        type: "address",
-      },
-    ],
-    name: "transferOwnership",
-    outputs: [],
-    stateMutability: "nonpayable",
     type: "function",
   },
   {

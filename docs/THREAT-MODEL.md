@@ -37,10 +37,11 @@ synchronous or wrong-word-count callbacks, unauthorized or undecodable calls tha
 revert earlier, wrong request IDs, strict request/callback deadline boundaries,
 duplicate tickets, and failed outgoing transfers.
 
-The factory owner is treated as potentially compromised after deployment. Its only
-power is pausing or unpausing future creation, so compromise cannot change an existing
-raffle. The sponsor is untrusted except that the prize collection itself must satisfy
-the supported-asset assumptions.
+The factory has no owner, role, pause, upgrade, rescue, or mutable configuration. The
+sponsor is untrusted except that the prize collection itself must satisfy the
+supported-asset assumptions. Incident containment for future creation is therefore
+offchain discovery/UI action plus migration to a new factory, not an administrative
+transaction against the deployed factory.
 
 ## External dependencies and explicit limitations
 

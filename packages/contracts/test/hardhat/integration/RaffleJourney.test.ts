@@ -27,7 +27,6 @@ describe("Raffle Fun sequential-ticket integration", () => {
           quoteToken: quote.address,
           vrfWrapper: vrfWrapper.address,
           protocolTreasury: treasury.account.address,
-          finalFactoryOwner: treasury.account.address,
         },
       },
       deploymentId: "raffle-fun-sequential-ticket-integration",
@@ -65,7 +64,6 @@ describe("Raffle Fun sequential-ticket integration", () => {
         raffleImplementation: keccak256(implementationCode),
       },
       deployer: owner.account.address,
-      finalFactoryOwner: treasury.account.address,
       quoteToken: quote.address,
       vrfWrapper: vrfWrapper.address,
       raffleFactory: raffleFactory.address,
@@ -91,10 +89,6 @@ describe("Raffle Fun sequential-ticket integration", () => {
       buildEvidence.expectedRuntimeCodeHashes.raffleImplementation,
       keccak256(implementationCode),
     );
-    assertAddressEqual(
-      await raffleFactory.read.pendingOwner(),
-      treasury.account.address,
-    );
   });
 
   it("settles an NFT raffle permissionlessly for the current bearer", async () => {
@@ -115,7 +109,6 @@ describe("Raffle Fun sequential-ticket integration", () => {
       quote.address,
       vrfWrapper.address,
       treasury.account.address,
-      owner.account.address,
     ]);
 
     await wait(publicClient, prize.write.mint([sponsor.account.address, 1n]));
@@ -263,7 +256,6 @@ describe("Raffle Fun sequential-ticket integration", () => {
       quote.address,
       wrapper.address,
       treasury.account.address,
-      owner.account.address,
     ]);
     await wait(publicClient, prize.write.mint([sponsor.account.address, 7n]));
     const sponsorPrize = await viem.getContractAt("MockERC721", prize.address, {
@@ -385,7 +377,6 @@ describe("Raffle Fun sequential-ticket integration", () => {
       quote.address,
       wrapper.address,
       treasury.account.address,
-      owner.account.address,
     ]);
     await wait(publicClient, prize.write.mint([sponsor.account.address, 9n]));
     const sponsorPrize = await viem.getContractAt("MockERC721", prize.address, {
