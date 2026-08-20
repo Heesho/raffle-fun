@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 352" width="780" height="352" role="img" aria-label="Half-open request and callback intervals, and the last-valid-second request that pushes the final boundary to almost four days">
+  <text x="60" y="24" font-family="Nunito var, Inter var, sans-serif" font-size="14.5" font-weight="800" fill="#16229b">Half-open windows, and why the tail is almost four days</text>
+
+  <!-- nominal case -->
+  <text x="60" y="52" font-family="Inter var, system-ui, sans-serif" font-size="10.5" font-weight="700" fill="#676c94">REQUEST AT SALE END</text>
+  <rect x="60" y="62" width="200" height="34" rx="5" fill="#e9f0fd" stroke="#1e2a9b" stroke-width="1.1"/>
+  <text x="160" y="84" font-family="Inter var, system-ui, sans-serif" font-size="11.5" fill="#1e2a9b" text-anchor="middle">sale · now &lt; endTime</text>
+  <rect x="260" y="62" width="150" height="34" rx="5" fill="#eee9ff" stroke="#5b3fd4" stroke-width="1.1"/>
+  <text x="335" y="84" font-family="Inter var, system-ui, sans-serif" font-size="11.5" fill="#5b3fd4" text-anchor="middle">callback · 2 days</text>
+  <line x1="410" y1="62" x2="410" y2="112" stroke="#c3c5dd" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="416" y="110" font-family="Inter var, system-ui, sans-serif" font-size="10" fill="#676c94">C lands two days after the sale ends</text>
+
+  <!-- worst case -->
+  <text x="60" y="160" font-family="Inter var, system-ui, sans-serif" font-size="10.5" font-weight="700" fill="#676c94">REQUEST AT THE LAST VALID SECOND</text>
+  <rect x="60" y="170" width="200" height="34" rx="5" fill="#e9f0fd" stroke="#1e2a9b" stroke-width="1.1"/>
+  <text x="160" y="192" font-family="Inter var, system-ui, sans-serif" font-size="11.5" fill="#1e2a9b" text-anchor="middle">sale · now &lt; endTime</text>
+  <rect x="260" y="170" width="150" height="34" rx="5" fill="#f4f4fb" stroke="#c3c5dd" stroke-width="1.1"/>
+  <text x="335" y="192" font-family="Inter var, system-ui, sans-serif" font-size="11.5" fill="#454b78" text-anchor="middle">request window · 2 days</text>
+  <rect x="410" y="170" width="150" height="34" rx="5" fill="#eee9ff" stroke="#5b3fd4" stroke-width="1.1"/>
+  <text x="485" y="192" font-family="Inter var, system-ui, sans-serif" font-size="11.5" fill="#5b3fd4" text-anchor="middle">callback · 2 days</text>
+
+  <!-- boundary markers, kept clear of the span arrow below them -->
+  <g stroke="#c3c5dd" stroke-width="1" stroke-dasharray="3 3">
+    <line x1="260" y1="206" x2="260" y2="228"/>
+    <line x1="410" y1="206" x2="410" y2="228"/>
+    <line x1="560" y1="206" x2="560" y2="228"/>
+  </g>
+  <g font-family="Inter var, system-ui, sans-serif" font-size="10" fill="#676c94" text-anchor="middle">
+    <text x="260" y="242">endTime</text>
+    <text x="410" y="242">D = endTime + 2d</text>
+    <text x="560" y="242">C = D − 1s + 2d</text>
+  </g>
+
+  <!-- total span, below the labels so nothing collides -->
+  <path d="M 262 268 L 558 268" stroke="#c01a92" stroke-width="1.2" fill="none"/>
+  <path d="M 260 268 l 8 -4 l 0 8 Z" fill="#c01a92"/>
+  <path d="M 560 268 l -8 -4 l 0 8 Z" fill="#c01a92"/>
+  <rect x="332" y="258" width="156" height="17" rx="3" fill="#fdfcff"/>
+  <text x="410" y="271" font-family="Inter var, system-ui, sans-serif" font-size="10.5" font-weight="700" fill="#c01a92" text-anchor="middle">3d 23:59:59 after sale end</text>
+
+  <!-- interval semantics -->
+  <rect x="60" y="294" width="660" height="46" rx="6" fill="#fff5d6" stroke="#e2c470" stroke-width="1"/>
+  <text x="74" y="314" font-family="Inter var, system-ui, sans-serif" font-size="11" fill="#454b78">Request is valid on <tspan font-weight="700" fill="#10143a">[endTime, D)</tspan> · a callback resolves only while <tspan font-weight="700" fill="#10143a">now &lt; C</tspan></text>
+  <text x="74" y="331" font-family="Inter var, system-ui, sans-serif" font-size="11" fill="#454b78">Refunds open <tspan font-weight="700" fill="#10143a">at</tspan> D and <tspan font-weight="700" fill="#10143a">at</tspan> C — so success and refund are mutually exclusive by construction, never by race</text>
+</svg>

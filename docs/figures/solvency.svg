@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 296" width="780" height="296" role="img" aria-label="The five recorded liability slots sum to accountedQuoteBalance, which the raffle's token balance must always cover">
+  <defs>
+    <pattern id="rfSurplus" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="7" height="7" fill="#f4f4fb"/>
+      <line x1="0" y1="0" x2="0" y2="7" stroke="#c3c5dd" stroke-width="2"/>
+    </pattern>
+  </defs>
+
+  <text x="60" y="24" font-family="Nunito var, Inter var, sans-serif" font-size="14.5" font-weight="800" fill="#16229b">The accounting identity and the solvency inequality</text>
+  <text x="60" y="43" font-family="Inter var, system-ui, sans-serif" font-size="11" fill="#676c94">Segment widths are schematic — at most three of the five slots are ever nonzero at the same time.</text>
+
+  <g font-family="SF Mono, Menlo, Consolas, monospace" font-size="8.4" fill="#16229b" text-anchor="middle">
+    <rect x="60" y="66" width="112" height="54" rx="6" fill="#e9f0fd" stroke="#1e2a9b" stroke-width="1.1"/>
+    <text x="116" y="89">unsettled</text><text x="116" y="101">Pot</text>
+    <rect x="188" y="66" width="112" height="54" rx="6" fill="#e9f0fd" stroke="#1e2a9b" stroke-width="1.1"/>
+    <text x="244" y="83">remaining</text><text x="244" y="95">Refund</text><text x="244" y="107">Liability</text>
+    <rect x="316" y="66" width="112" height="54" rx="6" fill="#fdf0f9" stroke="#c01a92" stroke-width="1.1"/>
+    <text x="372" y="89" fill="#c01a92">winner</text><text x="372" y="101" fill="#c01a92">Proceeds</text>
+    <rect x="444" y="66" width="112" height="54" rx="6" fill="#eee9ff" stroke="#5b3fd4" stroke-width="1.1"/>
+    <text x="500" y="89" fill="#5b3fd4">sponsor</text><text x="500" y="101" fill="#5b3fd4">Proceeds</text>
+    <rect x="572" y="66" width="112" height="54" rx="6" fill="#eee9ff" stroke="#5b3fd4" stroke-width="1.1"/>
+    <text x="628" y="89" fill="#5b3fd4">protocol</text><text x="628" y="101" fill="#5b3fd4">Fees</text>
+  </g>
+  <g font-family="Inter var, system-ui, sans-serif" font-size="14" fill="#676c94" text-anchor="middle">
+    <text x="180" y="99">+</text><text x="308" y="99">+</text><text x="436" y="99">+</text><text x="564" y="99">+</text>
+  </g>
+
+  <path d="M 60 132 L 60 140 L 368 140 L 372 146 L 376 140 L 684 140 L 684 132" fill="none" stroke="#c3c5dd" stroke-width="1.1"/>
+  <text x="372" y="163" font-family="SF Mono, Menlo, Consolas, monospace" font-size="10.5" font-weight="700" fill="#10143a" text-anchor="middle">accountedQuoteBalance()</text>
+
+  <text x="372" y="192" font-family="Inter var, system-ui, sans-serif" font-size="11.5" font-weight="700" fill="#c01a92" text-anchor="middle">must never exceed what the contract actually holds</text>
+
+  <rect x="60" y="206" width="624" height="44" rx="6" fill="#f7f5ff" stroke="#16229b" stroke-width="1.2"/>
+  <rect x="684" y="206" width="60" height="44" rx="6" fill="url(#rfSurplus)" stroke="#c3c5dd" stroke-width="1.1"/>
+  <text x="372" y="233" font-family="Inter var, system-ui, sans-serif" font-size="11.5" font-weight="600" fill="#16229b" text-anchor="middle">every recorded liability, fully backed</text>
+  <text x="714" y="228" font-family="Inter var, system-ui, sans-serif" font-size="8.5" fill="#676c94" text-anchor="middle">surplus</text>
+  <text x="714" y="240" font-family="Inter var, system-ui, sans-serif" font-size="8.5" fill="#676c94" text-anchor="middle">donations</text>
+  <text x="60" y="268" font-family="SF Mono, Menlo, Consolas, monospace" font-size="10.5" font-weight="700" fill="#10143a">quoteToken.balanceOf(raffle)</text>
+  <text x="372" y="286" font-family="Inter var, system-ui, sans-serif" font-size="10.5" fill="#676c94" text-anchor="middle">A donation raises the balance and never becomes a claim. There is no sweep function, so it is unrecoverable.</text>
+</svg>

@@ -140,17 +140,35 @@ const root = resolve(here, "../..");
 const outDir = resolve(root, "output/pdf");
 const workDir = resolve(root, "docs/pdf/.build");
 
-const factRegistry = readFileSync(
-  resolve(root, "docs/facts/raffle-fun-facts.md"),
-  "utf8",
-);
-if (
-  /Historical snapshot|Pyth Entropy|RaffleLens|Base Sepolia/.test(factRegistry)
-) {
-  throw new Error(
-    "Refusing to publish PDFs while the fact registry and technical whitepaper describe the retired protocol. See docs/WHITEPAPER.md.",
+/**
+ * Names of the retired Base/Pyth/Lens generation. Any of these in a document that
+ * describes current behaviour means the prose has drifted behind the Solidity.
+ */
+const RETIRED_PROTOCOL =
+  /Historical snapshot|Pyth Entropy|RaffleLens|Base Sepolia/;
+
+/**
+ * A "removed behaviour — do not restore" ledger has to name the things it retired, or it
+ * cannot do its job. Those passages are fenced with `retired-reference` comments and are
+ * exempt; everything outside a fence is read as a claim about the current protocol.
+ */
+const stripRetiredReferences = (markdown) =>
+  markdown.replace(
+    /<!--\s*retired-reference:start\s*-->[\s\S]*?<!--\s*retired-reference:end\s*-->/g,
+    "",
   );
+
+function assertDescribesCurrentProtocol(relativePath) {
+  const source = readFileSync(resolve(root, relativePath), "utf8");
+  if (RETIRED_PROTOCOL.test(stripRetiredReferences(source))) {
+    throw new Error(
+      `Refusing to publish PDFs: ${relativePath} still describes the retired Base/Pyth protocol. ` +
+        "Reconcile it against packages/contracts/src and docs/facts/raffle-fun-facts.md first.",
+    );
+  }
 }
+
+assertDescribesCurrentProtocol("docs/facts/raffle-fun-facts.md");
 
 const chrome =
   process.env.CHROME ||
@@ -184,6 +202,9 @@ const docs = [
     lede: "State machine, economics, invariants, threat model and integration surface for an immutable, administrator-free NFT raffle protocol.",
   },
 ];
+
+// The registry gates publication, but these three are what a reader actually receives.
+for (const doc of docs) assertDescribesCurrentProtocol(doc.path);
 
 /**
  * The commit the documents describe. This is deliberately read out of the fact registry
@@ -235,7 +256,15 @@ function renderDocument(doc) {
 
   renderer.code = function ({ text, lang }) {
     if (lang === "mermaid") {
-      return `<figure class="diagram"><pre class="mermaid">${escapeHtml(text)}</pre></figure>`;
+      // A fenced diagram has nowhere to put a caption, so the first line may carry one as
+      // a `%% caption:` comment — still valid mermaid if this ever renders elsewhere.
+      const caption = text.match(/^\s*%%\s*caption:\s*(.+)$/m);
+      const source = caption ? text.replace(caption[0], "").trim() : text;
+      return `<figure class="plate diagram"><pre class="mermaid">${escapeHtml(source)}</pre>${
+        caption
+          ? `<figcaption>${escapeHtml(caption[1].trim())}</figcaption>`
+          : ""
+      }</figure>`;
     }
     return `<pre><code>${escapeHtml(text)}</code></pre>`;
   };
@@ -244,7 +273,11 @@ function renderDocument(doc) {
   };
   renderer.image = function ({ href, text }) {
     const svg = inlineSvg(href, dirname(doc.path));
-    if (!svg) return "";
+    if (!svg) {
+      throw new Error(
+        `${doc.path} references a figure that does not exist: ${href}`,
+      );
+    }
     return `<figure class="plate">${svg}<figcaption>${text}</figcaption></figure>`;
   };
   renderer.link = function ({ href, tokens }) {
@@ -377,8 +410,9 @@ figure.plate{margin:12pt 0 14pt;padding:9pt;text-align:center;break-inside:avoid
 figure.plate svg{max-width:100%;max-height:176mm;height:auto;width:auto}
 figure.plate figcaption{margin-top:7pt;font-size:7.6pt;color:var(--ink3);
   font-family:var(--body);text-align:center;line-height:1.4}
-figure.diagram{margin:10pt 0 12pt;text-align:center;break-inside:avoid}
-figure.diagram svg{max-width:100%;max-height:200mm;height:auto;width:auto}
+/* Mermaid output sits on the same plate as a hand-drawn figure so the two read as one
+   family. Its natural size is often far taller than a column, hence the height cap. */
+figure.diagram svg{max-height:188mm}
 figure.diagram pre.mermaid{background:none;border:0;padding:0;margin:0}
 </style></head><body>
 <div class="cover">
@@ -401,8 +435,57 @@ figure.diagram pre.mermaid{background:none;border:0;padding:0;margin:0}
 ${doc.html}
 <script>${mermaidBundle}</script>
 <script>
-  mermaid.initialize({ startOnLoad: false, theme: "neutral" });
-  window.__diagrams = mermaid.run({ querySelector: "pre.mermaid" }).then(function () {
+  // Themed off the same palette as the print stylesheet so a generated graph and a
+  // hand-drawn figure look like they came from the same document.
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: "base",
+    themeVariables: {
+      fontFamily: '"Inter var", system-ui, sans-serif',
+      fontSize: "13px",
+      primaryColor: "#f7f5ff",
+      primaryBorderColor: "#16229b",
+      primaryTextColor: "#10143a",
+      secondaryColor: "#fdf0f9",
+      secondaryBorderColor: "#c01a92",
+      tertiaryColor: "#f4f4fb",
+      tertiaryBorderColor: "#c3c5dd",
+      lineColor: "#676c94",
+      textColor: "#10143a",
+      mainBkg: "#f7f5ff",
+      nodeBorder: "#16229b",
+      clusterBkg: "#fbfaff",
+      clusterBorder: "#dcdded",
+      edgeLabelBackground: "#ffffff",
+      labelBoxBkgColor: "#f7f5ff",
+      labelBoxBorderColor: "#16229b",
+      actorBkg: "#f7f5ff",
+      actorBorder: "#16229b",
+      actorTextColor: "#10143a",
+      actorLineColor: "#c3c5dd",
+      signalColor: "#454b78",
+      signalTextColor: "#10143a",
+      noteBkgColor: "#fff5d6",
+      noteBorderColor: "#e2c470",
+      noteTextColor: "#10143a",
+      activationBkgColor: "#fdf0f9",
+      activationBorderColor: "#c01a92",
+      sequenceNumberColor: "#ffffff",
+    },
+    flowchart: { curve: "linear", padding: 10, nodeSpacing: 46, rankSpacing: 46, useMaxWidth: false },
+    sequence: { useMaxWidth: false, wrap: false, mirrorActors: false },
+    state: { useMaxWidth: false },
+  });
+  // mermaid sizes every node by measuring its label, so it has to run after the embedded
+  // faces are live. Measured against a fallback font, labels come out narrower than they
+  // render and the node clips the last character or two.
+  window.__diagrams = Promise.all([
+    document.fonts.load('600 13px "Inter var"'),
+    document.fonts.load('13px "Inter var"'),
+    document.fonts.ready,
+  ]).then(function () {
+    return mermaid.run({ querySelector: "pre.mermaid" });
+  }).then(function () {
     // mermaid sizes its output only through a style attribute, so an SVG stripped of it
     // has no intrinsic height and collapses to nothing. Give each one explicit dimensions
     // from its viewBox and let the print stylesheet scale it down.

@@ -1,7 +1,9 @@
 # raffle.fun at a glance
 
-raffle.fun is an Ethereum raffle for one NFT. The sponsor chooses a deadline and a
-reserve price. Every raffle number costs exactly 1 USDC.
+raffle.fun is an Ethereum raffle for one NFT. The sponsor picks a reserve price and a
+deadline up to 30 days out. Every raffle number costs exactly 1 USDC. Selling starts the
+moment the NFT is locked in, which happens in the same transaction that creates the
+raffle.
 
 ## One purchase, one NFT ticket
 
@@ -14,20 +16,11 @@ A buyer chooses how many numbers to buy:
 The ticket is an ERC-721 bearer claim and can move in any raffle state, including
 after winner settlement, until successful owner redemption or a refund burns it.
 
+![One ticket per purchase, each holding a contiguous block of numbers. The draw picks a number, not a ticket — so finding the winner is a single lookup no matter how many entries sold.](../figures/entry-ranges.svg)
+
 ## Two successful outcomes
 
-```mermaid
-flowchart TD
-  A["Sponsor escrows an NFT<br/>and sets a reserve in $1 entries"]
-  B["Buyers receive range tickets"]
-  C{"Entries sold<br/>at least the reserve?"}
-  D["NFT result<br/>ticket owner gets NFT<br/>sponsor gets 95% USDC<br/>protocol gets 5%"]
-  E["Cash result<br/>sponsor gets NFT + 15% of gross<br/>ticket owner gets 80% of gross<br/>protocol gets 5% of gross"]
-  A --> B
-  B --> C
-  C -->|"yes, including equality"| D
-  C -->|"no"| E
-```
+![Both endings pay the sponsor and the protocol. The reserve only decides who ends up with the NFT, and whether the drawn ticket is paid in cash.](../figures/outcome-split.svg)
 
 If a sponsor sets a 2,000,000-entry reserve, there is no separate protocol cap. The
 raffle does not sell out: it accepts entries until the deadline, and equality meets
@@ -35,10 +28,10 @@ the reserve.
 
 If the reserve is missed, the sponsor receives the NFT back plus 15% of gross sales.
 The randomly selected ticket receives 80% of gross sales, and the protocol receives
-the remaining 5%. Permissionless settlement records the winning ticket and allocates
-these entitlements without reading its owner or burning it. The current owner then
-atomically burns the ticket while receiving its NFT or cash; sponsor and protocol
-assets remain independently releasable.
+the remaining 5%. Anyone can settle a finished raffle, which records the winning ticket
+and locks in these entitlements without reading its owner or burning it. The current
+owner then atomically burns the ticket while receiving its NFT or cash; sponsor and
+protocol assets remain independently releasable.
 
 ## Verifiable and bounded
 
@@ -54,11 +47,23 @@ that deadline are ignored and refunds become available. Each ticket refunds its
 number of entries at 1 USDC each. A request made in the final second can make the
 maximum nominal path just under four days.
 
+![The two draw windows run back to back rather than overlapping, so a raffle started at the last permitted second still finishes within roughly four days of the sale ending.](../figures/lifecycle-timeline.svg)
+
 ## What the operator cannot do
 
 Every raffle is a fixed, non-upgradeable ERC-1167 clone with no owner or rescue key.
 The factory is also ownerless and cannot be paused or reconfigured. No administrator
 can change a running raffle, choose a winner, redirect a prize, or seize its pot.
+
+The same immutability cuts the other way: nothing can be fixed after the fact either.
+
+## Know before you buy
+
+Refunds exist only until a result arrives. Once the draw resolves, that result is
+final — there is no refund afterwards. So if the prize collection is later paused,
+upgraded, or otherwise stops allowing transfers, the winner's NFT can stay stuck, even
+though the sponsor and protocol USDC still pay out normally. **The collection behind a
+raffle is the risk you are taking. Check it before you buy.**
 
 This candidate v1 is not deployed or independently audited. Chainlink, Ethereum,
 USDC issuer controls, the NFT collection, wallet safety, and applicable gambling or
