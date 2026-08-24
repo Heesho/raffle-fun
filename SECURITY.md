@@ -67,9 +67,10 @@ not loop over entries.
 
 ## Supported recovery envelope
 
-The quote-token property assumes the configured official six-decimal USDC remains
-available, non-rebasing, and exact-transfer. Incoming and outgoing balance deltas are
-verified. Issuer pauses and blacklists can still prevent transfer.
+The quote-token property trusts the configured official six-decimal USDC to remain
+available, non-rebasing, and fee-free. Transfers use `SafeERC20`; the protocol does not
+repeat USDC's transfer accounting with sender or recipient balance snapshots. Issuer
+pauses and blacklists can still prevent transfer.
 
 Prize custody assumes a standards-compliant ERC-721 whose `ownerOf` and transfer
 behavior remain honest. A malicious or upgraded collection can lie, freeze, burn, or

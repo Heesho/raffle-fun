@@ -51,10 +51,12 @@ Evidence tags:
 17. A purchase accepts any positive `uint128` count that does not overflow the
     cumulative `uint128 totalEntries`; there is no business-level per-ticket cap.
     `U/F`
-18. The incoming quote balance delta equals `entryCount * 1_000_000` exactly before
-    the ticket is minted. `U/A/F`
-19. False-returning, taxed, rebasing-at-transfer, or reentrant payment behavior
-    cannot create an unfunded ticket or liability. `A`
+18. A purchase requests exactly `entryCount * 1_000_000` raw USDC units through
+    `SafeERC20` before the ticket is minted. Canonical USDC is trusted to credit that
+    amount without a fee or rebase. `U/F`
+19. False-returning or reentrant payment behavior cannot create an unfunded ticket or
+    liability. Taxed, rebasing, or otherwise non-standard quote tokens are outside the
+    canonical-USDC trust model. `A`
 20. A rejecting or reentrant ticket receiver rolls back the payment and mint. `A`
 21. Purchases are valid before `endTime` and invalid at or after it. `U/F`
 22. Every unburned ticket remains transferable before and after `endTime`, including
@@ -108,8 +110,9 @@ Evidence tags:
     `F/I/E`
 43. `accountedQuoteBalance` equals unsettled pot plus refund liability plus winner,
     sponsor, and protocol proceeds. `F/I/E`
-44. The raffle's supported quote-token balance never falls below accounted
-    liabilities; donations are surplus and create no claim. `U/F/I/E`
+44. Under the canonical USDC transfer assumption, the raffle's quote-token balance
+    never falls below accounted liabilities; donations are surplus and create no
+    claim. `U/F/I/E`
 45. A cash callback records only the result and winning entry. Winning-ticket settlement
     records the ticket ID without reading ownership and allocates 80% of gross to the
     bearer claim, `floor(gross * 5%)` for the treasury, and the exact remainder for the
@@ -144,8 +147,9 @@ Evidence tags:
 57. Sponsor and treasury quote balances are independent immutable-recipient liabilities.
     The winner cash liability follows the transferable ticket until its current owner
     burns it through owner-only redemption. `U/A/I`
-58. Outgoing quote transfers verify both exact raffle debit and exact recipient
-    credit; failures restore all effects. `U/A`
+58. Outgoing quote claims use `SafeERC20` for the complete liability after effects;
+    a reverted or false-returning transfer restores all effects. Exact fee-free debit
+    and credit behavior is trusted to canonical USDC. `U/A`
 59. Known protocol destinations cannot receive tickets, quote payouts, or claimed
     prizes. `U/A`
 60. No factory or treasury function can seize, redirect, rescue, or mutate a raffle's
@@ -167,8 +171,8 @@ Evidence tags:
 
 ## Explicit assumptions
 
-These invariants assume an honest standards-compliant ERC-721 prize, an exact-transfer
-non-rebasing USDC deployment, correct Chainlink VRF wrapper/coordinator operation,
+These invariants assume an honest standards-compliant ERC-721 prize, canonical
+non-rebasing and fee-free official USDC, correct Chainlink VRF wrapper/coordinator operation,
 normal Ethereum consensus, and reachable credential owners. Upgradeable/freezeable
 assets, future-code destinations, blocklists, key loss, oracle outage, transaction
 censorship, and legal/operational failures remain external risks. See

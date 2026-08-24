@@ -16,6 +16,8 @@ contract ReentrantERC20 is ERC20 {
     bool public reentryBlocked;
     bool private attacking;
     bool public attackOutbound;
+    /// @notice Whether outbound transfers should return false without moving tokens.
+    bool public failOutboundTransfer;
 
     /// @notice Creates the adversarial quote token.
     constructor() ERC20("Reentrant Token", "REENT") { }
@@ -46,6 +48,12 @@ contract ReentrantERC20 is ERC20 {
         reentryBlocked = false;
     }
 
+    /// @notice Configures an outbound SafeERC20 failure for rollback testing.
+    /// @param value Whether `transfer` should return false.
+    function setFailOutboundTransfer(bool value) external {
+        failOutboundTransfer = value;
+    }
+
     /// @notice Attempts reentry once before completing the exact requested transfer.
     function transferFrom(address from, address to, uint256 value) public override returns (bool success) {
         if (attackEnabled && !attacking) {
@@ -59,6 +67,7 @@ contract ReentrantERC20 is ERC20 {
     }
 
     function transfer(address to, uint256 value) public override returns (bool success) {
+        if (failOutboundTransfer) return false;
         if (attackOutbound && !attacking) {
             attacking = true;
             (bool nestedSuccess,) = target.call(abi.encodeCall(IRaffle.releaseProtocolFees, ()));

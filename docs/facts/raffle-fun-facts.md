@@ -5,12 +5,16 @@ raffle.fun documents. Every substantive claim in the one-pager, the layman's art
 and the technical whitepaper must trace to a Fact ID here. It exists so that a public
 claim can never drift ahead of production Solidity.
 
-**Registry commit.** `e65e1e5f89a548ed03a0ebe0a0b722d609244d18`
-(branch `claude/smart-contract-docs-sync-c01d89`, working tree clean at capture time).
-Unless a fact says otherwise, every "Commit" field refers to this SHA, and every source
-line reference is a line number as of this SHA.
+**Registry baseline commit.** `90ecd7d74a6efcc0ce32aa0ac7a0478924be0d88`, the last
+committed production baseline before the trusted-USDC follow-up.
 
-**Registry date.** 2026-08-20.
+**Registry commit.** `b7f3f6407c8ec62f87655e14320bfd6e5da36d67`, which applies
+the trusted canonical-USDC behavior to the production source and current normative
+documentation. The verification record is
+`packages/contracts/audit/TRUSTED-USDC-FOLLOW-UP-2026-08-25.md`. Historical "Commit"
+fields continue to refer to the SHA each one states.
+
+**Registry date.** 2026-08-25.
 
 **Candidate identity.** Ethereum v1: one ownerless `RaffleFactory`, one locked `Raffle`
 implementation, fixed-target ERC-1167 clones, a factory-fixed six-decimal quote token,
@@ -54,7 +58,10 @@ direct funding.
 > behavioral facts below are read directly from the current source. The **numeric**
 > campaign totals are preserved evidence for those earlier SHAs and must be reproduced
 > from a clean checkout of the eventual release SHA. `V12-REVIEW-2026-08-20.md` records
-> a full local suite pass at `3da958f` (Foundry 80, Hardhat 21, one RPC-gated skip).
+> a full local suite pass at `3da958f` (Foundry 80, Hardhat 21, one RPC-gated skip). The
+> trusted-USDC implementation at `b7f3f64` is instead evidenced by
+> `TRUSTED-USDC-FOLLOW-UP-2026-08-25.md`: Foundry 79 passed plus one RPC-gated skip (80
+> total), and Hardhat 22 passed.
 
 ## Evidence tag legend
 
@@ -121,7 +128,7 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
   validation (`X`).
 - **Status.** Current.
 - **Caveats.** A six-decimal `decimals()` return is a self-report. It does not prove the
-  address is official USDC, and it does not prove the token transfers exactly. Those are
+  address is official USDC or that the token has standard fee-free transfers. Those are
   deployment-validation and issuer-trust concerns (`RF-055`, `RF-064`). The treasury
   check runs at deployment only: a treasury address that is code-less now and later
   becomes a registered clone is a deployer-misconfiguration trap, not a runtime attack
@@ -352,23 +359,23 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
 - **Caveats.** The sale end is exclusive and the draw-request window opens inclusively at
   the same instant (`RF-026`), so the two abut with no dead interval.
 
-### RF-016 — Incoming payment is verified by exact balance delta
+### RF-016 — Incoming payment trusts canonical USDC and uses SafeERC20
 
-- **Claim.** A token that delivers less — or more — than the stated amount cannot buy
-  entries.
-- **Technical.** `buyEntries` snapshots `quoteToken.balanceOf(address(this))`, performs
-  `safeTransferFrom`, re-reads the balance, computes the saturating delta, and reverts
-  `UnsupportedQuoteToken(grossAmount, receivedAmount)` unless the delta equals
-  `grossAmount` exactly. The check runs before any state write or mint.
+- **Claim.** A purchase requests the complete stated amount from trusted canonical USDC
+  before it records entries or mints a ticket.
+- **Technical.** `buyEntries` computes `grossAmount`, calls
+  `quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount)`, and only then
+  records the range and mints. `SafeERC20` rejects a reverted or false-returning call.
+  The contract deliberately does not repeat canonical USDC's accounting with balance
+  snapshots.
 - **Source.** `packages/contracts/src/Raffle.sol`.
-- **Function / state.** `UnsupportedQuoteToken`.
-- **Evidence.** `testFalseReturningAndFeeOnTransferQuotesCannotCreateReceipts` (`A`);
-  `testOverCreditQuoteCannotSpoofGrossAccounting` (`A`);
+- **Function / state.** `buyEntries`, `unsettledPot`.
+- **Evidence.** `testFalseReturningQuoteCannotCreateReceipt` (`A`);
   `testReentrantQuoteTokenCannotNestInboundPurchase` (`A`).
 - **Status.** Current.
-- **Caveats.** This makes fee-on-transfer and rebasing tokens unusable by construction.
-  It cannot detect a token that reports honest balances while behaving dishonestly
-  elsewhere (`RF-055`).
+- **Caveats.** Fee-on-transfer, rebasing, bonus-credit, or otherwise non-standard tokens
+  can break solvency and are outside the supported deployment model. Release validation
+  must pin official USDC (`RF-057`, `RF-064`).
 
 ### RF-017 — One purchase mints exactly one ticket holding an inclusive entry range
 
@@ -490,13 +497,14 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
 - **Technical.** `redeemWinningTicket` sets `winnerRedeemed`, `_burn`s the ticket, then
   transfers. `refundTickets` burns each ticket, decrements
   `remainingRefundLiability`, then transfers. Both run under `nonReentrant`, and every
-  transfer is verified (`ownerOf` post-check for the NFT, exact two-sided deltas for the
-  quote). Any verification failure reverts the burn and every accompanying state change.
+  transfer is guarded (`ownerOf` post-check for the NFT, SafeERC20 failure propagation
+  for USDC). Any failed external call reverts the burn and every accompanying state change.
 - **Source.** `packages/contracts/src/Raffle.sol`.
-- **Function / state.** `winnerRedeemed`, `_burn`, `_transferQuoteExact`.
+- **Function / state.** `winnerRedeemed`, `_burn`, `_transferQuote`.
 - **Evidence.** `testWinnerRedeemsAndFixedProceedsReleaseIndependently` (`U`);
   `testNftDeliveryFailureRollsBackLazySettlementAndBurn` (`A`);
-  `testOutboundClaimFailureRestoresClaimAndAccounting` (`A`);
+  `testFalseReturningWinnerTransferRestoresTicketAndLazySettlement` (`A`);
+  `testFalseReturningOutboundTransferRestoresClaimAndAccounting` (`A`);
   `testFuzzRefundPaysWeightedRangeExactlyOnce` (`F`);
   `invariantSettlementAndRedemptionMarkersMatchTicketState` (`I`).
 - **Status.** Current.
@@ -526,7 +534,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   the factory, the quote token, the VRF wrapper, the supplied prize token, or the shared
   implementation — and, when `d` already has code, when
   `IRaffleFactory(factory).isRaffle(d)` returns true. It is applied in `_update` (for
-  non-burn transfers), `_transferQuoteExact`, and initialization. Initialization supplies
+  non-burn transfers), `_transferQuote`, and initialization. Initialization supplies
   the prospective prize token before clone storage is populated, and
   `_validateCreateParams` applies the corresponding factory checks to `prizeToken` and
   `sponsorRecipient`.
@@ -1070,7 +1078,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   `[1, MAX_REFUND_TICKET_BATCH_SIZE]` where the maximum is 100. For each ID it requires
   caller ownership, adds `lastEntry - firstEntry + 1` to the aggregate, and burns. Then
   `amount = aggregateEntries * ENTRY_PRICE`, `remainingRefundLiability -= amount`, and
-  `_transferQuoteExact(msg.sender, amount)`.
+  `_transferQuote(msg.sender, amount)`.
 - **Source.** `packages/contracts/src/Raffle.sol`;
   `packages/contracts/src/libraries/RaffleConstants.sol`.
 - **Function / state.** `refundTickets`, `MAX_REFUND_TICKET_BATCH_SIZE`,
@@ -1123,25 +1131,22 @@ sponsorProceeds + protocolFees`. The maintained invariant is
   There is no sweep function, so donated quote tokens are unrecoverable — a deliberate
   consequence of having no administrator.
 
-### RF-055 — Outgoing transfers verify both the debit and the credit
+### RF-055 — Outgoing claims use SafeERC20 under the canonical-USDC trust model
 
-- **Claim.** A payout that under-delivers or over-delivers is rejected outright, and the
-  claim survives for a retry.
-- **Technical.** `_transferQuoteExact(to, amount)` first rejects a protocol destination
-  (`InvalidQuoteDestination`), snapshots both the raffle's and the recipient's balances,
-  performs `safeTransfer`, then recomputes both saturating deltas and reverts
-  `UnsupportedQuoteTokenTransfer(amount, debited, credited)` unless both equal `amount`.
+- **Claim.** Each payout requests the complete liability from canonical USDC, and a
+  reverted or false-returning transfer restores the claim for retry.
+- **Technical.** `_transferQuote(to, amount)` first rejects a protocol destination
+  (`InvalidQuoteDestination`) and then calls `safeTransfer(to, amount)`. Effects are
+  applied before the call under `nonReentrant`; an EVM revert or SafeERC20 failure rolls
+  them back atomically. Canonical USDC is trusted to debit and credit exactly `amount`.
 - **Source.** `packages/contracts/src/Raffle.sol`.
-- **Function / state.** `UnsupportedQuoteTokenTransfer`, `InvalidQuoteDestination`.
-- **Evidence.** `testNonExactOutboundTokenCannotConsumeWinnerLiability` (`A`);
-  `testOutboundClaimFailureRestoresClaimAndAccounting` (`A`);
-  `testReentrantQuoteTokenCannotNestWinnerWithdrawal` (`A`);
-  `testOverCreditQuoteCannotSpoofGrossAccounting` (`A`).
+- **Function / state.** `_transferQuote`, `InvalidQuoteDestination`.
+- **Evidence.** `testFalseReturningOutboundTransferRestoresClaimAndAccounting` (`A`);
+  `testReentrantQuoteTokenCannotNestWinnerWithdrawal` (`A`).
 - **Status.** Current.
-- **Caveats.** Checking both sides catches recipient-bonus tokens (credit > debit) and
-  sender-rebate tokens (debit < amount) that a one-sided check would miss. It preserves
-  an onchain claim across a USDC blacklist event; it cannot force the transfer to
-  succeed.
+- **Caveats.** The contract does not measure post-transfer balance deltas. Taxed,
+  rebasing, bonus-credit, or otherwise non-standard quote tokens are unsupported. A
+  USDC pause or blocklist can still prevent transfer, but a failed call restores state.
 
 ---
 
@@ -1170,25 +1175,24 @@ sponsorProceeds + protocolFees`. The maintained invariant is
   value. Because a resolved result is final (`RF-040`), this is the most material launch
   consideration in the current risk set (`V12` entries `243747`, `243754`).
 
-### RF-057 — Supported payment: one non-rebasing, exact-transfer six-decimal ERC-20
+### RF-057 — Supported payment: canonical official six-decimal USDC
 
-- **Claim.** The intended quote token is official USDC, and the code enforces the shape
-  rather than the identity.
-- **Technical.** The factory requires code and `decimals() == 6`. Every inbound and
-  outbound movement is verified by exact balance delta. The Solidity is **not**
-  hard-coded to USDC: the address is a constructor argument, and "official USDC" is
-  enforced by deployment validation and human review.
+- **Claim.** Official USDC is the trusted canonical quote token for a production factory.
+- **Technical.** The factory requires code and `decimals() == 6`, while deployment
+  validation requires the chain-specific official USDC address before a deployment record
+  may be published or used. Solidity keeps the address as a constructor argument for
+  multi-network deployment and trusts official USDC's standard, non-rebasing, fee-free
+  transfers; it does not measure transfer deltas.
 - **Source.** `packages/contracts/src/RaffleFactory.sol`;
   `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `quoteToken`, `QUOTE_TOKEN_DECIMALS`.
-- **Evidence.** `testFalseReturningAndFeeOnTransferQuotesCannotCreateReceipts` (`A`);
-  `testEthereumMainnetChainlinkVrfUsdcAndRangeReceipt` (`K`); deployment validation (`X`).
+- **Evidence.** `testFalseReturningQuoteCannotCreateReceipt` (`A`);
+  `testEthereumMainnetChainlinkVrfUsdcAndRangeReceipt` (`K`); deployment validation,
+  including rejection of a noncanonical six-decimal token (`X`).
 - **Status.** Current.
-- **Caveats.** Circle retains issuer, proxy, pause, and blocklist controls. Exact-delta
-  checks prevent silent accounting drift but cannot guarantee transfer liveness. A
-  consistently lying token is unsupported and can, in combination with a
-  sponsor-selected predicted recipient, be used to strand that sponsor's own proceeds
-  (`V12` entry `243755`).
+- **Caveats.** Circle retains issuer, proxy, pause, and blocklist controls. A wrong,
+  upgraded-to-nonstandard, taxed, or rebasing token can break the accounting identity;
+  canonical-address verification is therefore a release-critical trust boundary.
 
 ### RF-058 — Explicitly unsupported and unrecoverable
 
@@ -1262,15 +1266,16 @@ sponsorProceeds + protocolFees`. The maintained invariant is
 
 # 15. Bytecode and gas
 
-### RF-062 — Measured contract sizes at this commit
+### RF-062 — Measured contract sizes for the current follow-up
 
 - **Claim.** Both production contracts sit comfortably inside their code-size limits.
-- **Technical.** Measured with `forge build --sizes` at this registry commit:
+- **Technical.** Measured with `forge build --sizes` at trusted-USDC implementation
+  commit `b7f3f64`:
 
   | Contract        | Runtime (B) | Initcode (B) | Runtime margin (B) | Initcode margin (B) |
   | --------------- | ----------: | -----------: | -----------------: | ------------------: |
-  | `Raffle`        |      17,459 |       18,569 |              7,117 |              30,583 |
-  | `RaffleFactory` |       3,973 |       23,476 |             20,603 |              25,676 |
+  | `Raffle`        |      15,947 |       16,987 |              8,629 |              32,165 |
+  | `RaffleFactory` |       3,949 |       21,870 |             20,627 |              27,282 |
 
   The factory's runtime is small because clone creation moved the protocol logic into the
   implementation; its initcode is large because the constructor deploys that
@@ -1278,7 +1283,7 @@ sponsorProceeds + protocolFees`. The maintained invariant is
 
 - **Source.** `packages/contracts/src/{Raffle,RaffleFactory}.sol`.
 - **Function / state.** —
-- **Evidence.** `forge build --sizes` at commit `e65e1e5` (`X`).
+- **Evidence.** `forge build --sizes`; `TRUSTED-USDC-FOLLOW-UP-2026-08-25.md` (`X`).
 - **Status.** Current. **The retired design's 309-byte EIP-170 headroom warning no longer
   applies** — see section 19.
 - **Caveats.** Runtime margin is against EIP-170 (24,576 B) and initcode margin against
@@ -1365,10 +1370,11 @@ sponsorProceeds + protocolFees`. The maintained invariant is
 - **Function / state.** —
 - **Evidence.** The audit ledger itself.
 - **Status.** Current, with the freshness caveat at the top of this registry.
-- **Reproduced at this registry commit.** `forge test` reports **80 passed, 0 failed, 1
-  skipped** (81 total; the skip is the RPC-gated fork case) and `hardhat test nodejs`
-  reports **21 passing, 0 failing**. These two are the only totals in this fact that
-  describe the current source.
+- **Reproduced for the current follow-up.** At trusted-USDC implementation commit
+  `b7f3f64`, `forge test` reports **79 passed, 0 failed, 1 skipped** (80 total; the skip
+  is the RPC-gated fork case) and `hardhat test nodejs` reports **22 passing, 0
+  failing**. These two are the only totals in this fact that describe the current
+  source; `TRUSTED-USDC-FOLLOW-UP-2026-08-25.md` records the full gate set.
 - **Caveats.** Three explicit evidence limits: the Ethereum fork case is compiled but was
   **skipped** without an RPC endpoint; **no current Echidna runtime campaign** is claimed
   because the executable was unavailable; and the 52-mutant result covers a declared,
@@ -1388,8 +1394,9 @@ independently releasable, and there is intentionally no post-result refund path
 
 ### RF-069 — USDC issuer controls
 
-Circle can pause, freeze, blocklist, or upgrade USDC. Exact-delta checks preserve onchain
-claims across a failed transfer but cannot force one (`RF-057`).
+Circle can pause, freeze, blocklist, or upgrade USDC. A reverted or false-returning call
+propagates through `SafeERC20` and EVM rollback preserves the claim, but neither mechanism
+can force a transfer (`RF-057`).
 
 ### RF-070 — Ethereum inclusion, ordering, and reorganization
 
@@ -1499,7 +1506,7 @@ public document from those reports.
 | `claimQuote` / `claimQuoteFor` pull-claim ledger                      | Fixed-recipient `releaseSponsorProceeds` / `releaseProtocolFees` (`RF-044`)             |
 | `sponsorPrizeRecoveryRecipient` as a distinct role                    | The single immutable `sponsorRecipient` (`RF-044`)                                      |
 | `metadataURI` and `MAX_METADATA_URI_LENGTH`                           | Nothing. There is no onchain metadata parameter.                                        |
-| A 309-byte EIP-170 headroom constraint on the factory                 | 20,603 bytes of runtime margin (`RF-062`)                                               |
+| A 309-byte EIP-170 headroom constraint on the factory                 | 20,627 bytes of runtime margin (`RF-062`)                                               |
 
 ---
 

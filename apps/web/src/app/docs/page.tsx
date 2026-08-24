@@ -295,9 +295,10 @@ export default function DocsPage() {
                 or worthless.
               </li>
               <li>
-                New raffles accept only factory-admitted exact-transfer tokens.
-                Their issuers may still upgrade, pause, freeze, blacklist, or
-                otherwise prevent later claims.
+                Production factories trust the chain&apos;s canonical official
+                USDC and use SafeERC20 without redundant balance snapshots.
+                Circle may still upgrade, pause, freeze, blacklist, or otherwise
+                prevent later claims.
               </li>
               <li>
                 Deadlines bound protocol liveness, but cannot overcome a halted

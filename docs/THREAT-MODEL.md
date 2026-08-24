@@ -2,8 +2,8 @@
 
 ## Security objective
 
-For an honest standards-compliant ERC-721 prize and available exact-transfer official
-USDC, each protocol-controlled state should expose a bounded path for the rightful
+For an honest standards-compliant ERC-721 prize and available canonical official USDC
+with standard fee-free transfer semantics, each protocol-controlled state should expose a bounded path for the rightful
 ticket owner or sponsor to consume the prize and every accounted quote liability.
 No administrator may alter an existing raffle, choose its winner, or seize its assets.
 
@@ -24,7 +24,7 @@ No administrator may alter an existing raffle, choose its winner, or seize its a
 | Callback griefing                    | callback performs storage only and no user or token calls                              |
 | Cash branch diverts sponsor value    | fixed gross split: 80% winner / 5% protocol / 15% sponsor                              |
 | Double settlement or redemption      | one-time markers; winner/refund tickets burn atomically with payment                   |
-| Taxed or rebasing quote token        | exact inbound and outbound balance-delta verification                                  |
+| Non-standard quote-token accounting  | excluded by the canonical official-USDC deployment trust boundary                      |
 | One claimant blocks another          | separate winner, sponsor, treasury, and refund paths                                   |
 | Contract winner rejects NFT callback | owner redemption uses `transferFrom` plus ownership verification                       |
 | Protocol sink receives claim         | known factory, raffle, implementation, token, wrapper, and prize destinations rejected |
@@ -58,8 +58,9 @@ available while the winning ticket stays transferable and unburned.
 ### USDC
 
 Issuer blacklists, pauses, upgrades, and chain-specific behavior can prevent payments.
-Balance-delta checks turn non-exact behavior into a revert; they cannot restore token
-availability. Direct USDC donations are surplus with no rescue path.
+Transfers use `SafeERC20`, but the contracts trust canonical USDC's standard fee-free
+accounting and do not measure sender or recipient balance deltas. Direct USDC donations
+are surplus with no rescue path.
 
 ### Chainlink and Ethereum
 

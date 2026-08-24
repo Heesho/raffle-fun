@@ -10,8 +10,9 @@ import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 /// @notice Defines one autonomous NFT raffle using fixed-price USDC entries and one transferable ERC-721 ticket per
 ///         purchase.
 /// @dev Ticket IDs are sequential. Each ticket stores one inclusive uint128 entry range and remains a transferable
-///      bearer claim until its owner atomically burns it for redemption or refund. Supported quote tokens are
-///      exact-transfer, non-rebasing six-decimal ERC-20s. Supported prizes are honest, standards-compliant ERC-721s.
+///      bearer claim until its owner atomically burns it for redemption or refund. The immutable quote token is trusted
+///      canonical six-decimal USDC with standard, non-rebasing, fee-free transfers. Supported prizes are honest,
+///      standards-compliant ERC-721s.
 /// @custom:version 1.0.0
 interface IRaffle {
     // Types
@@ -221,17 +222,6 @@ interface IRaffle {
     /// @param maximum Maximum ticket IDs accepted per refund transaction.
     error InvalidTicketBatchSize(uint256 quantity, uint256 maximum);
 
-    /// @notice Raised when an inbound quote-token transfer does not credit the raffle by the exact purchase amount.
-    /// @param expectedAmount Raw six-decimal quote-token units required for the purchase.
-    /// @param receivedAmount Raw quote-token units measured as the raffle's nonnegative balance increase.
-    error UnsupportedQuoteToken(uint256 expectedAmount, uint256 receivedAmount);
-
-    /// @notice Raised when an outbound quote-token transfer does not debit and credit the exact claim amount.
-    /// @param expectedAmount Raw six-decimal quote-token units owed by the claim.
-    /// @param debitedAmount Raw quote-token units measured as the raffle's nonnegative balance decrease.
-    /// @param creditedAmount Raw quote-token units measured as the recipient's nonnegative balance increase.
-    error UnsupportedQuoteTokenTransfer(uint256 expectedAmount, uint256 debitedAmount, uint256 creditedAmount);
-
     /// @notice Raised when a quote-token claim targets a known protocol destination that could strand the claim.
     /// @param destination Rejected payout recipient.
     error InvalidQuoteDestination(address destination);
@@ -429,8 +419,8 @@ interface IRaffle {
     /// @return treasury Protocol treasury address.
     function protocolTreasury() external view returns (address treasury);
 
-    /// @notice Returns the immutable exact-transfer six-decimal quote token.
-    /// @return token Quote-token contract.
+    /// @notice Returns the immutable canonical six-decimal USDC contract.
+    /// @return token Canonical USDC contract trusted by this factory deployment.
     function quoteToken() external view returns (IERC20 token);
 
     /// @notice Returns the immutable Chainlink VRF v2.5 native direct-funding wrapper.

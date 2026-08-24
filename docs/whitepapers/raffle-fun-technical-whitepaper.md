@@ -6,8 +6,9 @@ bearer settlement, and hard-bounded oracle liveness.**
 | Field                 | Value                                                                                                |
 | --------------------- | ---------------------------------------------------------------------------------------------------- |
 | **Version**           | Contracts `1.0.0`                                                                                    |
-| **Protocol commit**   | `e65e1e5f89a548ed03a0ebe0a0b722d609244d18` (production Solidity)                                     |
-| **Document date**     | 2026-08-20                                                                                           |
+| **Protocol commit**   | `b7f3f6407c8ec62f87655e14320bfd6e5da36d67` (production Solidity)                                     |
+| **Follow-up record**  | `packages/contracts/audit/TRUSTED-USDC-FOLLOW-UP-2026-08-25.md`                                      |
+| **Document date**     | 2026-08-25                                                                                           |
 | **Audience**          | Security auditors, protocol engineers, researchers, integrators, sophisticated participants          |
 | **Target chain**      | Ethereum mainnet (1); Sepolia (11155111) required first                                              |
 | **Compiler**          | Solidity `0.8.36`, exact pragma, EVM target `cancun`, optimizer enabled at 200 runs, via-IR disabled |
@@ -21,9 +22,10 @@ bearer settlement, and hard-bounded oracle liveness.**
 
 ### 0.1 Precedence
 
-This document describes the production Solidity in `packages/contracts/src/` at the commit
-above. Where any other artifact disagrees — including this document — **the deployed
-bytecode is authoritative for onchain behavior**.
+This document describes the production Solidity in `packages/contracts/src/` at the
+protocol commit above. The dated follow-up record binds the verification evidence for
+the trusted canonical-USDC change. Where any other artifact disagrees — including this
+document — **the deployed bytecode is authoritative for onchain behavior**.
 
 Every substantive claim below is backed by a Fact ID in
 [`docs/facts/raffle-fun-facts.md`](../facts/raffle-fun-facts.md), which cites the contract,
@@ -74,8 +76,8 @@ independent review; **not mainnet-ready** `[RF-064]`. Nine release-verification 
 
 ### 0.5 Security objective (as stated by the project)
 
-> For an honest standards-compliant ERC-721 prize and available exact-transfer official
-> USDC, no unauthorized party can select the winner, seize or duplicate a supported asset,
+> For an honest standards-compliant ERC-721 prize and available canonical official
+> USDC with standard fee-free transfers, no unauthorized party can select the winner, seize or duplicate a supported asset,
 > create an unfunded liability, redirect a fixed recipient's balance, or make work scale
 > with total entries. A sold raffle has a bounded two-day request window followed, if a
 > request succeeds, by a bounded two-day callback window, each with an exact full-refund
@@ -127,11 +129,11 @@ full, fee-free refunds `[RF-050]`. Requests and callbacks are excluded _at_ thei
 deadlines and refunds open _at_ them, so the two are mutually exclusive by construction
 rather than by race `[RF-028]`, `[RF-029]`.
 
-**G6 — Fixed recipients and exact-delta verification.** No caller can name a payout
+**G6 — Fixed recipients and canonical-USDC transfers.** No caller can name a payout
 destination: value goes to the current ticket owner, the immutable `sponsorRecipient`, or
-the immutable `protocolTreasury` `[RF-044]`. Both incoming and outgoing ERC-20 movements
-are verified by two-sided balance delta `[RF-016]`, `[RF-055]`, and NFT delivery is
-verified by `ownerOf` post-condition `[RF-043]`.
+the immutable `protocolTreasury` `[RF-044]`. Incoming and outgoing USDC movements use
+`SafeERC20` and trust the canonical token's standard fee-free accounting `[RF-016]`,
+`[RF-055]`; NFT delivery is verified by `ownerOf` post-condition `[RF-043]`.
 
 ### 1.1 Explicit non-goals
 
@@ -163,7 +165,7 @@ flowchart TB
   S["Sponsor"] -->|"createRaffle + prize"| F
   B["Entry buyers<br/>ticket owners"] -->|"buyEntries · redeem · refund"| R
   K["Any account"] -->|"requestDraw · enableRefunds<br/>settle · release"| R
-  R <-.->|"exact-delta transfers"| U["USDC"]
+  R <-.->|"SafeERC20 · trusted canonical token"| U["USDC"]
   R <-.->|"escrow + verified delivery"| P["Prize ERC-721"]
   V["Chainlink VRF v2.5 wrapper"] -.->|"authenticated callback"| R
 ```
@@ -196,12 +198,12 @@ manages a VRF subscription.
 
 ### 2.3 Bytecode footprint
 
-Measured with `forge build --sizes` at this document's commit `[RF-062]`:
+Measured with `forge build --sizes` at protocol commit `b7f3f64` `[RF-062]`:
 
 | Contract        | Runtime (B) | Initcode (B) | Runtime margin (B) | Initcode margin (B) |
 | --------------- | ----------: | -----------: | -----------------: | ------------------: |
-| `Raffle`        |      17,459 |       18,569 |              7,117 |              30,583 |
-| `RaffleFactory` |       3,973 |       23,476 |             20,603 |              25,676 |
+| `Raffle`        |      15,947 |       16,987 |              8,629 |              32,165 |
+| `RaffleFactory` |       3,949 |       21,870 |             20,627 |              27,282 |
 
 Runtime margin is against EIP-170 (24,576 B); initcode margin against EIP-3860
 (49,152 B). The factory's runtime is small because the protocol logic lives in the cloned
@@ -403,10 +405,7 @@ require entryCount != 0                                    // ZeroEntryCount
 require entryCount <= type(uint128).max - totalEntries     // TotalEntriesOverflow
 
 grossAmount = uint256(entryCount) * ENTRY_PRICE            // uint128 * 1e6 cannot overflow
-before      = quoteToken.balanceOf(this)
 quoteToken.safeTransferFrom(msg.sender, this, grossAmount)
-received    = saturatingSub(quoteToken.balanceOf(this), before)
-require received == grossAmount                            // UnsupportedQuoteToken
 
 firstEntry  = totalEntries + 1
 lastEntry   = totalEntries + entryCount
@@ -421,11 +420,12 @@ _safeMint(recipient, ticketId)
 emit TicketPurchased(msg.sender, recipient, ticketId, firstEntry, lastEntry, entryCount, grossAmount)
 ```
 
-The overflow guard precedes all token interaction `[RF-019]`. The balance-delta equality
-makes fee-on-transfer and rebasing tokens unusable by construction `[RF-016]`. `_safeMint`
-invokes `onERC721Received` on contract recipients; a revert propagates and rolls back the
-entire purchase including the payment `[RF-020]`. `nonReentrant` prevents nested purchases
-from a malicious receiver or a reentrant token.
+The overflow guard precedes all token interaction `[RF-019]`. `SafeERC20` rejects a
+reverted or false-returning transfer, while production correctness trusts the configured
+canonical USDC to deliver the requested amount without fees or rebasing `[RF-016]`.
+`_safeMint` invokes `onERC721Received` on contract recipients; a revert propagates and
+rolls back the entire purchase including the payment `[RF-020]`. `nonReentrant` prevents
+nested purchases from a malicious receiver or a reentrant token.
 
 **Invariants.** `grossSales() == totalEntries * ENTRY_PRICE` by construction, because
 `grossSales()` is a derived view with no backing storage `[RF-049]`. Ranges partition
@@ -502,7 +502,7 @@ _isProtocolDestination(d, prizeToken_) =
    || (d.code.length != 0 && IRaffleFactory(factory).isRaffle(d))
 ```
 
-Applied at `_update` (non-burn transfers), `_transferQuoteExact`, and initialization.
+Applied at `_update` (non-burn transfers), `_transferQuote`, and initialization.
 Runtime calls pass the stored prize token; initialization passes the prospective prize
 token before storage is populated. The factory applies the corresponding test to
 `prizeToken` and `sponsorRecipient` at creation, and to `protocolTreasury` in its own
@@ -920,27 +920,24 @@ G1.
 > somebody settles. Settlement is permissionless and free of external interaction
 > specifically so that this state is trivially exitable by any party `[RF-041]`.
 
-### 8.4 Exact-transfer verification
+### 8.4 Canonical USDC transfers
 
-`_transferQuoteExact(to, amount)` verifies **both sides** `[RF-055]`:
+`_transferQuote(to, amount)` uses `SafeERC20` under the canonical-USDC trust boundary
+`[RF-055]`:
 
 ```text
 require !_isProtocolDestination(to, address(prizeToken))   // InvalidQuoteDestination
-raffleBefore = balanceOf(this);  recipientBefore = balanceOf(to)
 safeTransfer(to, amount)
-debited  = saturatingSub(raffleBefore, balanceOf(this))
-credited = saturatingSub(balanceOf(to), recipientBefore)
-require debited == amount && credited == amount            // UnsupportedQuoteTokenTransfer
 ```
 
-Checking both sides catches recipient-bonus tokens (credit > debit) and sender-rebate
-tokens (debit < amount) that a one-sided check would miss. On revert, the ticket burn, the
-zeroed liability slot, and the decremented refund liability are all restored, so the claim
-survives for a later retry. This preserves the onchain claim across a USDC blocklist
-event — it cannot force the transfer `[RF-069]`.
+On a reverted or false-returning transfer, the ticket burn, zeroed liability slot, and
+decremented refund liability are restored, so the claim survives for a later retry.
+Sender and recipient balance snapshots are intentionally omitted because official USDC
+is trusted to apply standard, fee-free, non-rebasing accounting. A wrong or later-
+nonstandard token is outside the supported deployment model `[RF-057]`.
 
-Incoming payment is verified symmetrically at `buyEntries` `[RF-016]`. Settlement performs
-**no** external asset interaction at all, so there is nothing to verify there.
+Incoming payment likewise uses `safeTransferFrom` before recording the purchase
+`[RF-016]`. Settlement performs **no** external asset interaction at all.
 
 ---
 
@@ -1010,7 +1007,7 @@ function refundTickets(uint256[] calldata ticketIds) external returns (uint256 a
 Requires `status == Refunding` and `1 <= ticketIds.length <= 100`. Each ID must be owned by
 `msg.sender`; each is burned and its range weight accumulated. Then
 `amount = aggregateEntries × ENTRY_PRICE`, `remainingRefundLiability -= amount`, and
-`_transferQuoteExact(msg.sender, amount)` `[RF-052]`.
+`_transferQuote(msg.sender, amount)` `[RF-052]`.
 
 The batch is **atomic**: a duplicate ID fails on the second `ownerOf` (the first burn
 cleared the owner), and a foreign ID fails ownership — either reverts the whole batch.
@@ -1108,7 +1105,7 @@ regardless.
 | --------------------------------------------------- | ------------------------- | ---------------------------------------------------- | :---------: | -------- |
 | Prize transfer or activation fails at creation      | double post-condition     | entire creation reverts, clone discarded             |      —      | `RF-010` |
 | Prize reenters during escrow                        | `nonReentrant`            | creation reverts atomically                          |      —      | `RF-010` |
-| Quote token under- or over-delivers on purchase     | balance delta             | purchase reverts, no ticket                          |      —      | `RF-016` |
+| Noncanonical quote token supplied for deployment    | release validation        | rejected by validation before record publication/use |      —      | `RF-057` |
 | Ticket receiver reverts                             | `_safeMint`               | purchase fully reverts, payment returned             |      —      | `RF-020` |
 | Cumulative entry overflow                           | pre-transfer guard        | reverts before payment                               |      —      | `RF-019` |
 | Zero entries sold                                   | `totalEntries == 0`       | zero-liability `Refunding`; NFT returned             |   **no**    | `RF-051` |
@@ -1126,7 +1123,7 @@ regardless.
 | Non-owner attempts redemption                       | `ownerOf` check           | reverts `NotTicketOwner`                             |      —      | `RF-022` |
 | Prize undeliverable at redemption                   | `ownerOf` post-check      | tx reverts; burn rolled back; retry possible         |      —      | `RF-043` |
 | Prize permanently undeliverable                     | none                      | **winner claim blocked; buyers are NOT refunded**    |    yes\*    | `RF-068` |
-| Quote payout under/over-delivers                    | two-sided delta           | reverts; claim preserved                             |      —      | `RF-055` |
+| USDC transfer reverts or returns false              | `SafeERC20`               | tx reverts; claim preserved                          |      —      | `RF-055` |
 | Payout or ticket destination is a protocol sink     | `_isProtocolDestination`  | reverts; claim preserved                             |      —      | `RF-025` |
 | Forced ETH (`SELFDESTRUCT`)                         | none                      | outside accounting; unrecoverable                    |      —      | `RF-058` |
 | Direct quote-token donation                         | none                      | surplus; unrecoverable                               |      —      | `RF-054` |
@@ -1161,11 +1158,11 @@ coordinator maximum, at the finalized release block (`V1-DEPLOY-01`, closed) `[R
 
 ### T2 — Quote-token issuer
 
-The intended quote token is USDC. Circle can pause, freeze, blocklist, or upgrade it.
-Exact-delta checks preserve onchain claims across a failed transfer but cannot force one
-`[RF-069]`. The Solidity is **not** hard-coded to USDC — the factory accepts any
-code-bearing address reporting six decimals, and "official USDC" is enforced by deployment
-validation and human review `[RF-057]`.
+The trusted canonical quote token is USDC. Circle can pause, freeze, blocklist, or
+upgrade it. `SafeERC20` propagates a failed transfer but cannot force one `[RF-069]`.
+The Solidity is **not** hard-coded to one address — the factory accepts any code-bearing
+address reporting six decimals so deployments can target multiple networks. Release
+validation must pin the chain-specific official USDC address `[RF-057]`.
 
 ### T3 — Prize ERC-721 honesty (most material)
 
@@ -1216,17 +1213,19 @@ Chainlink consumer-base migration, the bearer-redemption redesign, and the owner
 change. They are preserved evidence for those SHAs and **do not** validate the current
 source `[RF-067]`.
 
-The deterministic suites were reproduced at **this document's commit** and are the only
+The deterministic suites were reproduced at protocol commit `b7f3f64` and are the only
 totals here that describe the current source:
 
-| Suite                        |                                 Result at `e65e1e5` |
+| Suite                        |                                      Current result |
 | ---------------------------- | --------------------------------------------------: |
-| Foundry (81 tests)           | **80 passed, 0 failed, 1 skipped** (RPC-gated fork) |
-| Hardhat deployment + journey |                             **21 passed, 0 failed** |
+| Foundry (80 tests)           | **79 passed, 0 failed, 1 skipped** (RPC-gated fork) |
+| Hardhat deployment + journey |                             **22 passed, 0 failed** |
 
-This matches the independent run recorded in `V12-REVIEW-2026-08-20.md` at SHA `3da958f`.
-Everything in §13.2 other than these two rows still requires reproduction from a clean
-checkout of the frozen release SHA (`V1-REL-02`).
+The earlier independent run recorded in `V12-REVIEW-2026-08-20.md` at SHA `3da958f`
+remains historical evidence with different totals. The current results above are recorded
+in `TRUSTED-USDC-FOLLOW-UP-2026-08-25.md`. Everything in §13.2 other than these two rows
+still requires reproduction from a clean checkout of the frozen release SHA
+(`V1-REL-02`).
 
 ### 13.2 Recorded campaign totals
 
@@ -1485,7 +1484,7 @@ reports.
 | `claimQuote` / `claimQuoteFor` pull ledger               | Fixed-recipient release functions (§10.1)                |
 | `sponsorPrizeRecoveryRecipient` as a distinct role       | The single immutable `sponsorRecipient` (§7.2)           |
 | `metadataURI` and `MAX_METADATA_URI_LENGTH`              | Nothing. No onchain metadata parameter                   |
-| 309-byte EIP-170 headroom on the factory                 | 20,603 bytes of runtime margin (§2.3)                    |
+| 309-byte EIP-170 headroom on the factory                 | 20,627 bytes of runtime margin (§2.3)                    |
 
 <!-- retired-reference:end -->
 
@@ -1575,8 +1574,7 @@ needs to call back into the factory to reconstruct a raffle's fixed configuratio
 
 **`IRaffle`** — `OnlyFactory`, `AlreadyInitialized`, `ZeroAddress`, `InvalidStatus`,
 `UnexpectedPrize`, `SaleEnded`, `InvalidRecipient`, `ZeroEntryCount`,
-`TotalEntriesOverflow`, `InvalidTicketBatchSize`, `UnsupportedQuoteToken`,
-`UnsupportedQuoteTokenTransfer`, `InvalidQuoteDestination`, `RaffleNotEnded`,
+`TotalEntriesOverflow`, `InvalidTicketBatchSize`, `InvalidQuoteDestination`, `RaffleNotEnded`,
 `DrawRequestWindowExpired`, `NoEntriesSold`, `RefundsNotAvailable`,
 `InsufficientVrfFee`, `NativeRefundFailed`, `NoWinnerProceeds`, `NoSponsorProceeds`,
 `NoProtocolFees`, `UnsafeProtocolDestination`, `NotTicketOwner`,

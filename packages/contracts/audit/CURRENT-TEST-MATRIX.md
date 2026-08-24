@@ -91,21 +91,21 @@ detector. Gitleaks also exits 0 for the committed candidate and 25-commit histor
 
 ## Economics and settlement
 
-| Property                         | Required evidence                                                          | Current evidence                           |
-| -------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------ |
-| Fixed quote precision and price  | factory rejects non-six-decimal quote; entry price is `1_000_000`          | Foundry unit + Hardhat journey             |
-| Reserve boundary                 | equality selects NFT; one below selects cash                               | Foundry unit/fuzz/model/mutation           |
-| Cash economics                   | 80/5/15 winner/treasury/sponsor gross split                                | Foundry unit/fuzz/invariant/model          |
-| NFT economics                    | gross stays escrowed until verified delivery, then 5%/95%                  | Foundry unit/fuzz/invariant/model          |
-| Full refunds                     | no fee; each ticket returns exact range-weighted gross once                | Foundry unit/fuzz/invariant/model/mutation |
-| Permissionless winner settlement | third party may deliver only to current owner                              | Foundry unit/fuzz/mutation                 |
-| Fixed winner destination         | caller cannot redirect NFT or cash from the current owner                  | Foundry unit/mutation                      |
-| Sponsor recovery                 | anyone releases NFT only to fixed sponsor recipient                        | Foundry unit/invariant/mutation            |
-| Fixed quote releases             | anyone releases sponsor/treasury balances only to immutable recipients     | Foundry unit/invariant/mutation            |
-| Failed-transfer rollback         | ticket, custody, liability, and claims remain unchanged                    | Foundry unit/security/mutation             |
-| Exact token deltas               | taxed, false-return, short-credit, over-credit, and reentrant paths reject | Foundry security                           |
-| Solvency                         | recorded claims/refunds conserve and remain backed by quote custody        | Foundry fuzz/invariant + model             |
-| Donations                        | surplus quote/native value cannot create or consume liabilities            | Foundry unit/invariant                     |
+| Property                         | Required evidence                                                         | Current evidence                           |
+| -------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------ |
+| Fixed quote precision and price  | factory rejects non-six-decimal quote; entry price is `1_000_000`         | Foundry unit + Hardhat journey             |
+| Reserve boundary                 | equality selects NFT; one below selects cash                              | Foundry unit/fuzz/model/mutation           |
+| Cash economics                   | 80/5/15 winner/treasury/sponsor gross split                               | Foundry unit/fuzz/invariant/model          |
+| NFT economics                    | gross stays escrowed until verified delivery, then 5%/95%                 | Foundry unit/fuzz/invariant/model          |
+| Full refunds                     | no fee; each ticket returns exact range-weighted gross once               | Foundry unit/fuzz/invariant/model/mutation |
+| Permissionless winner settlement | third party may deliver only to current owner                             | Foundry unit/fuzz/mutation                 |
+| Fixed winner destination         | caller cannot redirect NFT or cash from the current owner                 | Foundry unit/mutation                      |
+| Sponsor recovery                 | anyone releases NFT only to fixed sponsor recipient                       | Foundry unit/invariant/mutation            |
+| Fixed quote releases             | anyone releases sponsor/treasury balances only to immutable recipients    | Foundry unit/invariant/mutation            |
+| Failed-transfer rollback         | ticket, custody, liability, and claims remain unchanged                   | Foundry unit/security/mutation             |
+| Canonical USDC transfer boundary | false-return and reentrant paths revert; noncanonical address is rejected | Foundry security + Hardhat deployment      |
+| Solvency                         | recorded claims/refunds conserve and remain backed by quote custody       | Foundry fuzz/invariant + model             |
+| Donations                        | surplus quote/native value cannot create or consume liabilities           | Foundry unit/invariant                     |
 
 ## Factory, asset, and destination defenses
 

@@ -149,8 +149,8 @@ callback is ignored even if `enableRefunds` has not yet been called.
 
 Every raffle clone is fixed and has no administrator. The factory is also ownerless,
 cannot be paused or reconfigured, and cannot alter existing prizes, reserves, owners,
-results, or claims. USDC movements verify exact balance changes, and known protocol
-addresses cannot receive tickets or payouts.
+results, or claims. USDC movements use `SafeERC20` under the trusted canonical-token
+assumption, and known protocol addresses cannot receive tickets or payouts.
 
 There is no administrator to abuse the system — and none to repair it. A bug found
 after launch cannot be patched into a running raffle, and new raffles cannot be halted
