@@ -374,8 +374,9 @@ Any failure reverts everything, including the clone deployment and every registr
 cash branch deterministically — permitted, and frontends should surface it `[RF-038]`.
 
 The clone's own `initialize` re-screens `sponsor`, `sponsorRecipient`, and
-`protocolTreasury` against `_isInitializationProtocolDestination`, which additionally
-covers the raffle itself and the implementation `[RF-025]`.
+`protocolTreasury` with `_isProtocolDestination`, supplying the prospective prize token
+before clone storage is populated. The same predicate protects runtime ticket and payout
+destinations and additionally covers the raffle itself and the implementation `[RF-025]`.
 
 ### 4.3 Receiver authentication
 
@@ -456,7 +457,9 @@ The `_update` override imposes exactly one restriction, and it is about _destina
 _timing_:
 
 ```solidity
-if (to != address(0) && _isKnownProtocolDestination(to)) revert UnsafeProtocolDestination(to);
+if (to != address(0) && _isProtocolDestination(to, address(prizeToken))) {
+    revert UnsafeProtocolDestination(to);
+}
 ```
 
 | Status      | Non-winning ticket | Winning ticket |
@@ -489,20 +492,21 @@ if (to != address(0) && _isKnownProtocolDestination(to)) revert UnsafeProtocolDe
 ### 5.4 Destination screening
 
 ```solidity
-_isKnownProtocolDestination(d) =
+_isProtocolDestination(d, prizeToken_) =
       d == address(this)
    || d == factory
    || d == address(quoteToken)
    || d == address(i_vrfV2PlusWrapper)
-   || d == address(prizeToken)
+   || d == prizeToken_
    || d == IRaffleFactory(factory).raffleImplementation()
    || (d.code.length != 0 && IRaffleFactory(factory).isRaffle(d))
 ```
 
-Applied at `_update` (non-burn transfers) and `_transferQuoteExact`. An initialization-time
-analogue screens `sponsor`, `sponsorRecipient`, and `protocolTreasury`; the factory applies
-the same test to `prizeToken` and `sponsorRecipient` at creation, and to
-`protocolTreasury` in its own constructor `[RF-025]`, `[RF-003]`.
+Applied at `_update` (non-burn transfers), `_transferQuoteExact`, and initialization.
+Runtime calls pass the stored prize token; initialization passes the prospective prize
+token before storage is populated. The factory applies the corresponding test to
+`prizeToken` and `sponsorRecipient` at creation, and to `protocolTreasury` in its own
+constructor `[RF-025]`, `[RF-003]`.
 
 ```mermaid
 %% caption: Destination screening, and the one gap it deliberately leaves open. The code-length test is what makes the residual reachable — and what keeps it confined to the party who chose the address.
@@ -921,7 +925,7 @@ G1.
 `_transferQuoteExact(to, amount)` verifies **both sides** `[RF-055]`:
 
 ```text
-require !_isKnownProtocolDestination(to)                   // InvalidQuoteDestination
+require !_isProtocolDestination(to, address(prizeToken))   // InvalidQuoteDestination
 raffleBefore = balanceOf(this);  recipientBefore = balanceOf(to)
 safeTransfer(to, amount)
 debited  = saturatingSub(raffleBefore, balanceOf(this))
@@ -1100,36 +1104,36 @@ regardless.
 
 ## 11. Failure mode analysis
 
-| Failure                                             | Detection                     | Outcome                                              | Fee charged | Fact     |
-| --------------------------------------------------- | ----------------------------- | ---------------------------------------------------- | :---------: | -------- |
-| Prize transfer or activation fails at creation      | double post-condition         | entire creation reverts, clone discarded             |      —      | `RF-010` |
-| Prize reenters during escrow                        | `nonReentrant`                | creation reverts atomically                          |      —      | `RF-010` |
-| Quote token under- or over-delivers on purchase     | balance delta                 | purchase reverts, no ticket                          |      —      | `RF-016` |
-| Ticket receiver reverts                             | `_safeMint`                   | purchase fully reverts, payment returned             |      —      | `RF-020` |
-| Cumulative entry overflow                           | pre-transfer guard            | reverts before payment                               |      —      | `RF-019` |
-| Zero entries sold                                   | `totalEntries == 0`           | zero-liability `Refunding`; NFT returned             |   **no**    | `RF-051` |
-| VRF fee read or request reverts                     | no `try/catch`                | tx reverts, stays `Active`, window preserved         |      —      | `RF-032` |
-| Native excess refund fails                          | raw call result               | whole request reverts                                |      —      | `RF-031` |
-| Direct ETH sent to raffle                           | `receive()`                   | reverts                                              |      —      | `RF-031` |
-| No draw request within 2 days of sale end           | `enableRefunds` origin 2      | full refunds                                         |   **no**    | `RF-050` |
-| No valid callback within 2 days of the request      | `enableRefunds` origin 3      | full refunds                                         |   **no**    | `RF-050` |
-| Synchronous / wrong-ID / stale / duplicate callback | five application guards       | ignored, `VrfCallbackIgnored` emitted                |      —      | `RF-035` |
-| Wrong word count                                    | `randomWords.length != 1`     | ignored, event emitted                               |      —      | `RF-035` |
-| Callback at or after `callbackDeadline()`           | timestamp guard               | ignored, refunds available                           |      —      | `RF-035` |
-| Unauthorized or undecodable callback calldata       | transport / ABI decoder       | reverts                                              |      —      | `RF-035` |
-| Non-winning ticket supplied to settlement           | range containment             | reverts `TicketDoesNotContainWinningEntry`           |      —      | `RF-041` |
-| Second settlement attempt                           | `settlementComplete`          | reverts                                              |      —      | `RF-041` |
-| Non-owner attempts redemption                       | `ownerOf` check               | reverts `NotTicketOwner`                             |      —      | `RF-022` |
-| Prize undeliverable at redemption                   | `ownerOf` post-check          | tx reverts; burn rolled back; retry possible         |      —      | `RF-043` |
-| Prize permanently undeliverable                     | none                          | **winner claim blocked; buyers are NOT refunded**    |    yes\*    | `RF-068` |
-| Quote payout under/over-delivers                    | two-sided delta               | reverts; claim preserved                             |      —      | `RF-055` |
-| Payout or ticket destination is a protocol sink     | `_isKnownProtocolDestination` | reverts; claim preserved                             |      —      | `RF-025` |
-| Forced ETH (`SELFDESTRUCT`)                         | none                          | outside accounting; unrecoverable                    |      —      | `RF-058` |
-| Direct quote-token donation                         | none                          | surplus; unrecoverable                               |      —      | `RF-054` |
-| Unrelated NFT via unsafe transfer                   | none                          | outside accounting; unrecoverable                    |      —      | `RF-058` |
-| Ticket sent to an incapable contract                | none                          | claim forfeit; **no recovery**                       |      —      | `RF-072` |
-| Claim assigned to a future code-less clone address  | none                          | **unsupported**; strands only that party's own claim |      —      | `RF-058` |
-| Losing tickets after settlement                     | none                          | remain valid, tradable, worth nothing                |      —      | `RF-024` |
+| Failure                                             | Detection                 | Outcome                                              | Fee charged | Fact     |
+| --------------------------------------------------- | ------------------------- | ---------------------------------------------------- | :---------: | -------- |
+| Prize transfer or activation fails at creation      | double post-condition     | entire creation reverts, clone discarded             |      —      | `RF-010` |
+| Prize reenters during escrow                        | `nonReentrant`            | creation reverts atomically                          |      —      | `RF-010` |
+| Quote token under- or over-delivers on purchase     | balance delta             | purchase reverts, no ticket                          |      —      | `RF-016` |
+| Ticket receiver reverts                             | `_safeMint`               | purchase fully reverts, payment returned             |      —      | `RF-020` |
+| Cumulative entry overflow                           | pre-transfer guard        | reverts before payment                               |      —      | `RF-019` |
+| Zero entries sold                                   | `totalEntries == 0`       | zero-liability `Refunding`; NFT returned             |   **no**    | `RF-051` |
+| VRF fee read or request reverts                     | no `try/catch`            | tx reverts, stays `Active`, window preserved         |      —      | `RF-032` |
+| Native excess refund fails                          | raw call result           | whole request reverts                                |      —      | `RF-031` |
+| Direct ETH sent to raffle                           | `receive()`               | reverts                                              |      —      | `RF-031` |
+| No draw request within 2 days of sale end           | `enableRefunds` origin 2  | full refunds                                         |   **no**    | `RF-050` |
+| No valid callback within 2 days of the request      | `enableRefunds` origin 3  | full refunds                                         |   **no**    | `RF-050` |
+| Synchronous / wrong-ID / stale / duplicate callback | five application guards   | ignored, `VrfCallbackIgnored` emitted                |      —      | `RF-035` |
+| Wrong word count                                    | `randomWords.length != 1` | ignored, event emitted                               |      —      | `RF-035` |
+| Callback at or after `callbackDeadline()`           | timestamp guard           | ignored, refunds available                           |      —      | `RF-035` |
+| Unauthorized or undecodable callback calldata       | transport / ABI decoder   | reverts                                              |      —      | `RF-035` |
+| Non-winning ticket supplied to settlement           | range containment         | reverts `TicketDoesNotContainWinningEntry`           |      —      | `RF-041` |
+| Second settlement attempt                           | `settlementComplete`      | reverts                                              |      —      | `RF-041` |
+| Non-owner attempts redemption                       | `ownerOf` check           | reverts `NotTicketOwner`                             |      —      | `RF-022` |
+| Prize undeliverable at redemption                   | `ownerOf` post-check      | tx reverts; burn rolled back; retry possible         |      —      | `RF-043` |
+| Prize permanently undeliverable                     | none                      | **winner claim blocked; buyers are NOT refunded**    |    yes\*    | `RF-068` |
+| Quote payout under/over-delivers                    | two-sided delta           | reverts; claim preserved                             |      —      | `RF-055` |
+| Payout or ticket destination is a protocol sink     | `_isProtocolDestination`  | reverts; claim preserved                             |      —      | `RF-025` |
+| Forced ETH (`SELFDESTRUCT`)                         | none                      | outside accounting; unrecoverable                    |      —      | `RF-058` |
+| Direct quote-token donation                         | none                      | surplus; unrecoverable                               |      —      | `RF-054` |
+| Unrelated NFT via unsafe transfer                   | none                      | outside accounting; unrecoverable                    |      —      | `RF-058` |
+| Ticket sent to an incapable contract                | none                      | claim forfeit; **no recovery**                       |      —      | `RF-072` |
+| Claim assigned to a future code-less clone address  | none                      | **unsupported**; strands only that party's own claim |      —      | `RF-058` |
+| Losing tickets after settlement                     | none                      | remain valid, tradable, worth nothing                |      —      | `RF-024` |
 
 \* The fee and sponsor proceeds are recorded at settlement and remain releasable even when
 prize delivery is permanently blocked. That asymmetry is deliberate — one broken recipient
@@ -1572,8 +1576,8 @@ needs to call back into the factory to reconstruct a raffle's fixed configuratio
 **`IRaffle`** — `OnlyFactory`, `AlreadyInitialized`, `ZeroAddress`, `InvalidStatus`,
 `UnexpectedPrize`, `SaleEnded`, `InvalidRecipient`, `ZeroEntryCount`,
 `TotalEntriesOverflow`, `InvalidTicketBatchSize`, `UnsupportedQuoteToken`,
-`UnsupportedQuoteTokenTransfer`, `InvalidQuoteDestination`, `OnlySponsor`,
-`RaffleNotEnded`, `DrawRequestWindowExpired`, `NoEntriesSold`, `RefundsNotAvailable`,
+`UnsupportedQuoteTokenTransfer`, `InvalidQuoteDestination`, `RaffleNotEnded`,
+`DrawRequestWindowExpired`, `NoEntriesSold`, `RefundsNotAvailable`,
 `InsufficientVrfFee`, `NativeRefundFailed`, `NoWinnerProceeds`, `NoSponsorProceeds`,
 `NoProtocolFees`, `UnsafeProtocolDestination`, `NotTicketOwner`,
 `TicketDoesNotContainWinningEntry`, `SettlementAlreadyComplete`, `WinningTicketMismatch`,

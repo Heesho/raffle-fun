@@ -271,22 +271,6 @@ export const raffleAbi = [
     inputs: [
       {
         internalType: "address",
-        name: "caller",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "sponsor",
-        type: "address",
-      },
-    ],
-    name: "OnlySponsor",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
         name: "have",
         type: "address",
       },

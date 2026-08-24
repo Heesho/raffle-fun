@@ -1,5 +1,8 @@
 # Deep contract testing follow-up — 2026-08-13
 
+> **Historical candidate evidence.** This campaign covers the recorded Pyth Entropy candidate, not the current
+> Chainlink VRF implementation. Its results remain commit-bound history and do not validate the current source.
+
 ## Scope and conclusion
 
 The production contracts at commit `fe09d476cbe770d770cbc2603a1ce73330739025`

@@ -16,69 +16,142 @@ import { IRaffle } from "./interfaces/IRaffle.sol";
 import { IRaffleFactory } from "./interfaces/IRaffleFactory.sol";
 import { RaffleConstants } from "./libraries/RaffleConstants.sol";
 
-/**
- * @title raffle.fun Raffle Escrow and Entry Ticket
- * @author Heesho
- * @notice Escrows one NFT and sells fixed-price USDC entries through one transferable ERC-721 ticket per purchase.
- * @dev Ticket IDs are sequential and map to one inclusive `[firstEntry,lastEntry]` uint128 range. Purchases, Chainlink
- *      callbacks, and winner proofs are O(1) in entry count. Tickets remain transferable bearer claims until their
- *      owners burn them for redemption or refund. Each raffle is a fixed, non-upgradeable ERC-1167 clone with no
- *      administrator or rescue path. Permissionless settlement only allocates liabilities; the winning-ticket owner
- *      atomically burns the ticket while receiving the NFT or cash prize.
- * @custom:version 1.0.0
- */
+/// @title raffle.fun Raffle Escrow and Entry Ticket
+/// @author heesho
+/// @notice Escrows one NFT and sells fixed-price USDC entries through one transferable ERC-721 ticket per purchase.
+/// @dev Ticket IDs are sequential and map to one inclusive `[firstEntry,lastEntry]` uint128 range. Purchases, Chainlink
+///      callbacks, and winner proofs are O(1) in entry count. Tickets remain transferable bearer claims until their
+///      owners burn them for redemption or refund. Each raffle is a fixed, non-upgradeable ERC-1167 clone with no
+///      administrator or rescue path. Permissionless settlement only allocates liabilities; the winning-ticket owner
+///      atomically burns the ticket while receiving the NFT or cash prize.
+/// @custom:version 1.0.0
 contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusWrapperConsumerBase {
     using SafeERC20 for IERC20;
 
+    // Types
+
+    /// @notice Inclusive global entry-number range represented by one sequential ERC-721 ticket.
+    /// @param firstEntry First represented one-based global entry.
+    /// @param lastEntry Last represented one-based global entry.
     struct TicketRange {
         uint128 firstEntry;
         uint128 lastEntry;
     }
 
+    // Constants
+
+    /// @inheritdoc IRaffle
     uint256 public constant override ENTRY_PRICE = RaffleConstants.ENTRY_PRICE;
+
+    /// @inheritdoc IRaffle
     uint32 public constant override callbackGasLimit = RaffleConstants.VRF_CALLBACK_GAS_LIMIT;
+
+    /// @inheritdoc IRaffle
     uint16 public constant override requestConfirmations = RaffleConstants.VRF_REQUEST_CONFIRMATIONS;
 
+    // Immutables and state
+
+    /// @inheritdoc IRaffle
     address public immutable override factory;
+
+    /// @inheritdoc IRaffle
     IERC20 public immutable override quoteToken;
 
+    /// @inheritdoc IRaffle
     address public override sponsor;
+
+    /// @inheritdoc IRaffle
     address public override sponsorRecipient;
+
+    /// @inheritdoc IRaffle
     address public override protocolTreasury;
+
+    /// @inheritdoc IRaffle
     IERC721 public override prizeToken;
+
+    /// @inheritdoc IRaffle
     uint256 public override prizeTokenId;
+
+    /// @inheritdoc IRaffle
     uint256 public override raffleId;
+
+    /// @inheritdoc IRaffle
     uint128 public override reserveEntries;
+
+    /// @inheritdoc IRaffle
     uint64 public override endTime;
+
+    /// @inheritdoc IRaffle
     uint128 public override totalEntries;
+
+    /// @inheritdoc IRaffle
     uint128 public override ticketCount;
+
+    /// @inheritdoc IRaffle
     uint256 public override unsettledPot;
+
+    /// @inheritdoc IRaffle
     uint256 public override remainingRefundLiability;
+
+    /// @inheritdoc IRaffle
     address public override winnerRecipient;
+
+    /// @inheritdoc IRaffle
     uint256 public override winnerProceeds;
+
+    /// @inheritdoc IRaffle
     uint256 public override sponsorProceeds;
+
+    /// @inheritdoc IRaffle
     uint256 public override protocolFees;
+
+    /// @inheritdoc IRaffle
     uint256 public override vrfRequestId;
+
+    /// @inheritdoc IRaffle
     uint64 public override drawRequestedAt;
+
+    /// @inheritdoc IRaffle
     uint64 public override resolvedAt;
+
+    /// @inheritdoc IRaffle
     uint128 public override winningEntry;
+
+    /// @inheritdoc IRaffle
     uint256 public override winningTicketId;
+
+    /// @inheritdoc IRaffle
     Status public override status;
+
+    /// @inheritdoc IRaffle
     bool public override settlementComplete;
+
+    /// @inheritdoc IRaffle
     bool public override winnerRedeemed;
+
+    /// @inheritdoc IRaffle
     bool public override prizeClaimed;
+
+    /// @inheritdoc IRaffle
     bool public override initialized;
+
+    /// @dev Historical ticket ranges remain stored after burns so indexers and callers can reconstruct entry coverage.
     mapping(uint256 ticketId => TicketRange range) private _ticketRanges;
 
+    /// @dev True only while the wrapper request call is executing, so a synchronous callback cannot resolve early.
     bool private _requestInFlight;
+
+    // Errors
 
     /// @notice Raised when native currency is sent outside the payable draw-request path.
     error DirectNativeTransfer();
 
-    /**
-     * @notice Deploys and locks the implementation shared by one factory's minimal-proxy raffles.
-     * @dev Constructor state belongs to the implementation. Clones share these immutables but hold isolated storage.
-     */
+    // Constructor
+
+    /// @notice Deploys and locks the implementation shared by one factory's minimal-proxy raffles.
+    /// @dev Constructor state belongs to the implementation. Clones share these immutables but hold isolated storage.
+    /// @param quoteToken_ Exact-transfer six-decimal quote-token contract fixed for the implementation and every clone.
+    /// @param vrfWrapper_ Chainlink VRF v2.5 native direct-funding wrapper fixed for the implementation and all clones.
     constructor(address quoteToken_, address vrfWrapper_)
         ERC721("", "")
         VRFV2PlusWrapperConsumerBase(_validatedVrfWrapper(vrfWrapper_))
@@ -90,6 +163,13 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusW
 
         initialized = true;
         status = Status.Refunding;
+    }
+
+    // External state-changing functions
+
+    /// @notice Rejects direct native-token transfers that are not attached to `requestDraw`.
+    receive() external payable {
+        revert DirectNativeTransfer();
     }
 
     /// @inheritdoc IRaffle
@@ -104,13 +184,13 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusW
         ) {
             revert ZeroAddress();
         }
-        if (_isInitializationProtocolDestination(params.sponsor, params.prizeToken)) {
+        if (_isProtocolDestination(params.sponsor, params.prizeToken)) {
             revert UnsafeProtocolDestination(params.sponsor);
         }
-        if (_isInitializationProtocolDestination(params.protocolTreasury, params.prizeToken)) {
+        if (_isProtocolDestination(params.protocolTreasury, params.prizeToken)) {
             revert UnsafeProtocolDestination(params.protocolTreasury);
         }
-        if (_isInitializationProtocolDestination(params.sponsorRecipient, params.prizeToken)) {
+        if (_isProtocolDestination(params.sponsorRecipient, params.prizeToken)) {
             revert UnsafeProtocolDestination(params.sponsorRecipient);
         }
 
@@ -123,14 +203,6 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusW
         reserveEntries = params.reserveEntries;
         endTime = params.endTime;
         status = Status.AwaitingPrize;
-    }
-
-    function name() public pure override returns (string memory) {
-        return "raffle.fun Ticket";
-    }
-
-    function symbol() public pure override returns (string memory) {
-        return "RAFFLE";
     }
 
     /// @inheritdoc IRaffle
@@ -166,21 +238,6 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusW
 
         _safeMint(recipient, ticketId);
         emit TicketPurchased(msg.sender, recipient, ticketId, firstEntry, lastEntry, entryCount, grossAmount);
-    }
-
-    /// @inheritdoc IRaffle
-    function getVrfRequestPrice() public view override returns (uint256 fee) {
-        fee = i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit, 1);
-    }
-
-    /// @inheritdoc IRaffle
-    function estimateVrfRequestPrice(uint256 requestGasPriceWei) public view override returns (uint256 fee) {
-        fee = i_vrfV2PlusWrapper.estimateRequestPriceNative(callbackGasLimit, 1, requestGasPriceWei);
-    }
-
-    /// @inheritdoc IRaffle
-    function vrfWrapper() public view override returns (IVRFV2PlusWrapper wrapper) {
-        wrapper = i_vrfV2PlusWrapper;
     }
 
     /// @inheritdoc IRaffle
@@ -353,6 +410,47 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusW
         emit SponsorPrizeReleased(msg.sender, recipient, address(prizeToken), prizeTokenId);
     }
 
+    /// @notice Accepts only the exact configured prize deposited by the factory for the sponsor.
+    /// @dev Unrelated NFTs forced here with unsafe `transferFrom` remain outside protocol accounting and cannot be
+    ///      rescued.
+    /// @param operator ERC-721 transfer operator, which must be the canonical factory.
+    /// @param from Previous owner, which must be the configured sponsor.
+    /// @param tokenId Transferred token ID, which must match the configured prize.
+    /// @return selector ERC-721 receiver acceptance selector.
+    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata)
+        external
+        override
+        returns (bytes4 selector)
+    {
+        if (
+            status != Status.AwaitingPrize || msg.sender != address(prizeToken) || tokenId != prizeTokenId
+                || from != sponsor || operator != factory
+        ) {
+            revert UnexpectedPrize(msg.sender, tokenId, from, operator);
+        }
+
+        status = Status.Active;
+        emit PrizeDeposited(msg.sender, tokenId, from);
+        selector = IERC721Receiver.onERC721Received.selector;
+    }
+
+    // Public view and pure functions
+
+    /// @inheritdoc IRaffle
+    function getVrfRequestPrice() public view override returns (uint256 fee) {
+        fee = i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit, 1);
+    }
+
+    /// @inheritdoc IRaffle
+    function estimateVrfRequestPrice(uint256 requestGasPriceWei) public view override returns (uint256 fee) {
+        fee = i_vrfV2PlusWrapper.estimateRequestPriceNative(callbackGasLimit, 1, requestGasPriceWei);
+    }
+
+    /// @inheritdoc IRaffle
+    function vrfWrapper() public view override returns (IVRFV2PlusWrapper wrapper) {
+        wrapper = i_vrfV2PlusWrapper;
+    }
+
     /// @inheritdoc IRaffle
     function ticketRange(uint256 ticketId) public view override returns (uint128 firstEntry, uint128 lastEntry) {
         TicketRange storage range = _ticketRanges[ticketId];
@@ -380,46 +478,38 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusW
         amount = uint256(totalEntries) * ENTRY_PRICE;
     }
 
-    /**
-     * @dev Tickets remain transferable bearer claims in every lifecycle state. Known protocol sinks are rejected before
-     *      their ownership could make a claim unreachable.
-     */
+    /// @notice Returns the fixed display name shared by every raffle ticket collection.
+    /// @return Exact ERC-721 collection name, `raffle.fun Ticket`.
+    function name() public pure override returns (string memory) {
+        return "raffle.fun Ticket";
+    }
+
+    /// @notice Returns the fixed display symbol shared by every raffle ticket collection.
+    /// @return Exact ERC-721 collection symbol, `RAFFLE`.
+    function symbol() public pure override returns (string memory) {
+        return "RAFFLE";
+    }
+
+    // Internal state-changing functions
+
+    /// @dev Tickets remain transferable bearer claims in every lifecycle state. Known protocol sinks are rejected
+    ///      before their ownership could make a claim unreachable. Burns pass the zero address and remain permitted.
+    /// @param to Prospective ticket recipient, or the zero address for a burn.
+    /// @param ticketId Ticket being minted, transferred, or burned.
+    /// @param auth Caller whose owner or operator authority is checked by ERC-721.
+    /// @return previousOwner Ticket owner before the update, or the zero address for a mint.
     function _update(address to, uint256 ticketId, address auth) internal override returns (address previousOwner) {
-        if (to != address(0) && _isKnownProtocolDestination(to)) revert UnsafeProtocolDestination(to);
+        if (to != address(0) && _isProtocolDestination(to, address(prizeToken))) {
+            revert UnsafeProtocolDestination(to);
+        }
         previousOwner = super._update(to, ticketId, auth);
     }
 
-    /**
-     * @notice Accepts only the exact configured prize deposited by the factory for the sponsor.
-     * @dev Unrelated NFTs forced here with unsafe `transferFrom` remain outside protocol accounting and have no rescue.
-     */
-    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata)
-        external
-        override
-        returns (bytes4 selector)
-    {
-        if (
-            status != Status.AwaitingPrize || msg.sender != address(prizeToken) || tokenId != prizeTokenId
-                || from != sponsor || operator != factory
-        ) {
-            revert UnexpectedPrize(msg.sender, tokenId, from, operator);
-        }
-
-        status = Status.Active;
-        emit PrizeDeposited(msg.sender, tokenId, from);
-        selector = IERC721Receiver.onERC721Received.selector;
-    }
-
-    receive() external payable {
-        revert DirectNativeTransfer();
-    }
-
-    /**
-     * @dev Authenticated randomness selects only an entry. No ticket search, loop, user call, or token transfer occurs.
-     *      In-flight, late, wrong-request, duplicate, and ABI-decodable wrong-length callbacks are ignored
-     *      for liveness;
-     *      malformed ABI calldata reverts during Solidity decoding before this handler runs.
-     */
+    /// @dev Authenticated randomness selects only an entry. No ticket search, loop, user call, or token transfer
+    ///      occurs. In-flight, late, wrong-request, duplicate, and ABI-decodable wrong-length callbacks are ignored for
+    ///      liveness; malformed ABI calldata reverts during Solidity decoding before this handler runs.
+    /// @param requestId Wrapper-authenticated request identifier supplied by the callback.
+    /// @param randomWords Callback words; exactly one word is required for resolution.
     function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
         if (
             _requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1
@@ -437,6 +527,13 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusW
         emit RaffleResolved(requestId, resolvedEntry, status);
     }
 
+    // Private state-changing helpers
+
+    /// @dev Validates the winning range once and allocates all terminal quote-token liabilities without transferring
+    ///      an asset or reading ticket ownership. Both percentage allocations round down; sponsor proceeds are the
+    ///      remainder.
+    /// @param ticketId Ticket whose inclusive range must contain the selected winning entry.
+    /// @return cashAmount Raw six-decimal quote-token units allocated to the cash winner, or zero for `NftWon`.
     function _settleWinningTicket(uint256 ticketId) private returns (uint256 cashAmount) {
         if (settlementComplete) revert SettlementAlreadyComplete();
         Status result = status;
@@ -464,16 +561,11 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusW
         emit WinningTicketSettled(ticketId, msg.sender, result, cashAmount, protocolFee, sponsorAmount);
     }
 
-    function _requireWinningTicket(uint256 ticketId) private view {
-        (uint128 firstEntry, uint128 lastEntry) = ticketRange(ticketId);
-        uint128 selectedEntry = winningEntry;
-        if (selectedEntry < firstEntry || selectedEntry > lastEntry) {
-            revert TicketDoesNotContainWinningEntry(ticketId, selectedEntry);
-        }
-    }
-
+    /// @dev Transfers one complete current quote-token claim and rejects non-exact balance deltas or protocol sinks.
+    /// @param to Immutable or owner-derived recipient of the claim.
+    /// @param amount Raw six-decimal quote-token units that must be debited and credited exactly.
     function _transferQuoteExact(address to, uint256 amount) private {
-        if (_isKnownProtocolDestination(to)) revert InvalidQuoteDestination(to);
+        if (_isProtocolDestination(to, address(prizeToken))) revert InvalidQuoteDestination(to);
         uint256 raffleBalanceBefore = quoteToken.balanceOf(address(this));
         uint256 recipientBalanceBefore = quoteToken.balanceOf(to);
         quoteToken.safeTransfer(to, amount);
@@ -491,11 +583,31 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusW
         }
     }
 
+    // Private view and pure helpers
+
+    /// @dev Reverts unless the raffle is in the expected lifecycle state.
+    /// @param expected Status required by the calling operation.
     function _requireStatus(Status expected) private view {
         if (status != expected) revert InvalidStatus(status);
     }
 
-    function _isInitializationProtocolDestination(address destination, address prizeToken_)
+    /// @dev Reverts unless the supplied ticket's stored inclusive range contains the selected winning entry.
+    /// @param ticketId Candidate winning ticket ID.
+    function _requireWinningTicket(uint256 ticketId) private view {
+        (uint128 firstEntry, uint128 lastEntry) = ticketRange(ticketId);
+        uint128 selectedEntry = winningEntry;
+        if (selectedEntry < firstEntry || selectedEntry > lastEntry) {
+            revert TicketDoesNotContainWinningEntry(ticketId, selectedEntry);
+        }
+    }
+
+    /// @dev Identifies same-factory protocol plumbing that cannot safely own a ticket or receive a payout.
+    ///      Initialization supplies the prospective prize token because clone storage is not populated yet; runtime
+    ///      checks pass the stored prize token. Code-less addresses are not queried in the registry.
+    /// @param destination Address being screened.
+    /// @param prizeToken_ Configured or prospective prize-token address to reject.
+    /// @return unsafeDestination True when the address is known same-factory protocol plumbing.
+    function _isProtocolDestination(address destination, address prizeToken_)
         private
         view
         returns (bool unsafeDestination)
@@ -509,18 +621,11 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusW
         }
     }
 
-    function _isKnownProtocolDestination(address destination) private view returns (bool unsafeDestination) {
-        IRaffleFactory canonicalFactory = IRaffleFactory(factory);
-        unsafeDestination = destination == address(this) || destination == factory || destination == address(quoteToken)
-            || destination == address(i_vrfV2PlusWrapper) || destination == address(prizeToken)
-            || destination == canonicalFactory.raffleImplementation();
-        if (!unsafeDestination && destination.code.length != 0) {
-            unsafeDestination = canonicalFactory.isRaffle(destination);
-        }
-    }
-
-    function _validatedVrfWrapper(address wrapper) private pure returns (address) {
+    /// @dev Validates the wrapper before passing it to the inherited constructor initializer.
+    /// @param wrapper Prospective Chainlink wrapper address.
+    /// @return validatedWrapper The same nonzero wrapper address.
+    function _validatedVrfWrapper(address wrapper) private pure returns (address validatedWrapper) {
         if (wrapper == address(0)) revert ZeroAddress();
-        return wrapper;
+        validatedWrapper = wrapper;
     }
 }

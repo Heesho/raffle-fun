@@ -74,7 +74,7 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
   `Ownable2Step`, `AccessControl`, or role library is inherited. The contract declares no
   `onlyOwner` modifier, no setter, and no privileged function. Its entire external
   mutating surface is `createRaffle`.
-- **Source.** `packages/contracts/src/RaffleFactory.sol:23,71`;
+- **Source.** `packages/contracts/src/RaffleFactory.sol`;
   `packages/contracts/src/interfaces/IRaffleFactory.sol`.
 - **Function / state.** `RaffleFactory.createRaffle`; immutables `quoteToken`,
   `vrfWrapper`, `protocolTreasury`, `raffleImplementation`.
@@ -94,8 +94,8 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
 - **Technical.** `quoteToken`, `vrfWrapper`, `protocolTreasury`, and
   `raffleImplementation` are `immutable`. `callbackGasLimit` and `requestConfirmations`
   are `constant`, sourced from `RaffleConstants`. No function writes any of them.
-- **Source.** `packages/contracts/src/RaffleFactory.sol:24-29,61-67`;
-  `packages/contracts/src/libraries/RaffleConstants.sol:26-27`.
+- **Source.** `packages/contracts/src/RaffleFactory.sol`;
+  `packages/contracts/src/libraries/RaffleConstants.sol`.
 - **Function / state.** `quoteToken()`, `vrfWrapper()`, `protocolTreasury()`,
   `raffleImplementation()`, `callbackGasLimit()`, `requestConfirmations()`.
 - **Evidence.** `testFactoryAtomicallyEscrowsAndCapturesFixedConfiguration` (`U`);
@@ -113,8 +113,8 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
   rejects a zero treasury, calls `IERC20Metadata.decimals()` inside `try/catch` and
   rejects anything other than `QUOTE_TOKEN_DECIMALS == 6`, then rejects a treasury equal
   to the factory, the quote token, the wrapper, or the freshly deployed implementation.
-- **Source.** `packages/contracts/src/RaffleFactory.sol:41-68`;
-  `packages/contracts/src/libraries/RaffleConstants.sol:17`.
+- **Source.** `packages/contracts/src/RaffleFactory.sol`;
+  `packages/contracts/src/libraries/RaffleConstants.sol`.
 - **Function / state.** `RaffleFactory.constructor`; errors `NotContract`, `ZeroAddress`,
   `UnsupportedQuoteToken`, `InvalidQuoteTokenDecimals`, `UnsafeProtocolDestination`.
 - **Evidence.** `testFactoryConstructorAndCreationValidation` (`U`); Hardhat deployment
@@ -132,7 +132,7 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
 - **Claim.** Anyone can create a raffle, forever, and nobody can stop them.
 - **Technical.** `createRaffle` has no access modifier and no pause flag. It is
   `nonReentrant` and parameter-validated only.
-- **Source.** `packages/contracts/src/RaffleFactory.sol:71-123`.
+- **Source.** `packages/contracts/src/RaffleFactory.sol`.
 - **Function / state.** `createRaffle(CreateRaffleParams)`.
 - **Evidence.** `testFactoryConstructorAndCreationValidation` (`U`);
   Hardhat journey suite (`X`).
@@ -148,7 +148,7 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
 - **Technical.** `raffleId = ++raffleCount`, then `raffleById[raffleId]`,
   `idByRaffle[raffle]`, and `isRaffle[raffle]` are written once. No function deletes or
   overwrites a registry entry.
-- **Source.** `packages/contracts/src/RaffleFactory.sol:31-34,81,99-101`.
+- **Source.** `packages/contracts/src/RaffleFactory.sol`.
 - **Function / state.** `raffleCount`, `raffleById`, `idByRaffle`, `isRaffle`.
 - **Evidence.** `testFactoryCreatesCanonicalClonesWithIsolatedRangeState` (`U`);
   `invariantStatusAndTerminalTransitionsAreMonotonic` (`I`); subgraph mapping tests (`X`).
@@ -170,8 +170,8 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
   `Clones.clone(raffleImplementation)`, producing a standard 45-byte EIP-1167 minimal
   proxy whose runtime hard-codes the implementation address. There is no implementation
   setter, no beacon, and no CREATE2 salt.
-- **Source.** `packages/contracts/src/RaffleFactory.sol:65-67,82`;
-  `packages/contracts/src/Raffle.sol:82-93`.
+- **Source.** `packages/contracts/src/RaffleFactory.sol`;
+  `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `Clones.clone`, `raffleImplementation`.
 - **Evidence.** `testFactoryCreatesCanonicalClonesWithIsolatedRangeState` (`U`);
   `testImplementationAndCloneInitializationAreLocked` (`U`); Hardhat clone-target
@@ -190,7 +190,7 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
   implementation itself and its zero-liability `Refunding` state makes every other entry
   point inert. On a clone, `initialize` reverts unless `msg.sender == factory`, then sets
   `initialized = true` before writing any configuration.
-- **Source.** `packages/contracts/src/Raffle.sol:82-93,96-126`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `initialize(RaffleInitParams)`, `initialized`; errors
   `AlreadyInitialized`, `OnlyFactory`.
 - **Evidence.** `testImplementationAndCloneInitializationAreLocked` (`U`);
@@ -210,7 +210,7 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
   Payout destinations are the immutable `sponsorRecipient` and `protocolTreasury` or the
   current ticket owner; a caller can never name a destination.
 - **Source.** `packages/contracts/src/Raffle.sol` (complete external surface);
-  `packages/contracts/src/interfaces/IRaffle.sol:143-176`.
+  `packages/contracts/src/interfaces/IRaffle.sol`.
 - **Function / state.** Full external ABI.
 - **Evidence.** `testSponsorRecipientIsFixedForProceedsAndReturnedPrize` (`U`);
   `testNftSettlementIsPermissionlessAccountingOnlyAndProofIsExact` (`U`);
@@ -249,7 +249,7 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
   **both** `ownerOf(prizeTokenId) == raffle` **and** `IRaffle(raffle).status() == Active`.
   Either post-condition failing reverts with `PrizeEscrowVerificationFailed`, discarding
   the clone, the registry writes, and the logs.
-- **Source.** `packages/contracts/src/RaffleFactory.sol:71-123`.
+- **Source.** `packages/contracts/src/RaffleFactory.sol`.
 - **Function / state.** `createRaffle`; `PrizeEscrowVerificationFailed`.
 - **Evidence.** `testFactoryAtomicallyEscrowsAndCapturesFixedConfiguration` (`U`);
   `testFactoryRejectsPrizesThatDoNotEscrowAndActivateExactly` (`A`);
@@ -267,8 +267,8 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
   `onERC721Received`. Both happen inside `createRaffle`, whose post-condition requires
   `Active`. A raffle that never activates is never registered, because the whole
   transaction reverts.
-- **Source.** `packages/contracts/src/Raffle.sol:125,408`;
-  `packages/contracts/src/RaffleFactory.sol:107-109`.
+- **Source.** `packages/contracts/src/Raffle.sol`;
+  `packages/contracts/src/RaffleFactory.sol`.
 - **Function / state.** `Status.AwaitingPrize`, `Status.Active`.
 - **Evidence.** `testFactoryRejectsPrizesThatDoNotEscrowAndActivateExactly` (`A`);
   `invariantStatusAndTerminalTransitionsAreMonotonic` (`I`).
@@ -284,7 +284,7 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
   `status == AwaitingPrize`, `msg.sender == address(prizeToken)`,
   `tokenId == prizeTokenId`, `from == sponsor`, and `operator == factory`. On success it
   sets `Active` and emits `PrizeDeposited`.
-- **Source.** `packages/contracts/src/Raffle.sol:396-411`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `onERC721Received`; `UnexpectedPrize`.
 - **Evidence.** `testFactoryRejectsPrizesThatDoNotEscrowAndActivateExactly` (`A`);
   `testPrizeCannotReenterDuringSponsorSafeTransfer` (`A`).
@@ -301,7 +301,7 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
   `redeemWinningTicket` (NFT branch) and `releaseSponsorPrize` each check
   `if (prizeClaimed) revert PrizeAlreadyClaimed()` and set it before transferring. Both
   verify delivery with `ownerOf` afterwards and revert on mismatch.
-- **Source.** `packages/contracts/src/Raffle.sol:276-284,342-354`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `prizeClaimed`, `PrizeAlreadyClaimed`,
   `PrizeDeliveryVerificationFailed`.
 - **Evidence.** `invariantPrizeCustodyMatchesClaimMarker` (`I`);
@@ -324,8 +324,8 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
   there is no per-purchase quantity ceiling and no protocol gross-sales cap.
   `grossAmount = uint256(entryCount) * ENTRY_PRICE` cannot overflow because `entryCount`
   is `uint128`.
-- **Source.** `packages/contracts/src/libraries/RaffleConstants.sol:16-17`;
-  `packages/contracts/src/Raffle.sol:38,137-151`.
+- **Source.** `packages/contracts/src/libraries/RaffleConstants.sol`;
+  `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `ENTRY_PRICE`, `buyEntries(address,uint128)`; errors
   `ZeroEntryCount`, `TotalEntriesOverflow`.
 - **Evidence.** `testPurchaseMintsOneSequentialTicketForAnyEntryCount` (`U`);
@@ -344,7 +344,7 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
   `block.timestamp < endTime`, reverting `SaleEnded(endTime, block.timestamp)` at or
   after the deadline. The sale begins at creation, when the prize deposit sets `Active` —
   there is no scheduled start.
-- **Source.** `packages/contracts/src/Raffle.sol:143-144`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `endTime`, `SaleEnded`, `InvalidStatus`.
 - **Evidence.** `testSaleEndsButTicketsStayTransferableUntilBurned` (`U`);
   `testSoldRaffleHasHardRequestAndCallbackRefundDeadlines` (`U`).
@@ -360,7 +360,7 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
   `safeTransferFrom`, re-reads the balance, computes the saturating delta, and reverts
   `UnsupportedQuoteToken(grossAmount, receivedAmount)` unless the delta equals
   `grossAmount` exactly. The check runs before any state write or mint.
-- **Source.** `packages/contracts/src/Raffle.sol:152-156`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `UnsupportedQuoteToken`.
 - **Evidence.** `testFalseReturningAndFeeOnTransferQuotesCannotCreateReceipts` (`A`);
   `testOverCreditQuoteCannotSpoofGrossAccounting` (`A`);
@@ -380,7 +380,7 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
   `_ticketRanges[ticketId] = TicketRange(firstEntry, lastEntry)`, adds the gross to
   `unsettledPot`, and calls `_safeMint(recipient, ticketId)`. There is no per-entry
   mapping and no per-entry mint.
-- **Source.** `packages/contracts/src/Raffle.sol:33-36,71,158-168`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `ticketRange(uint256)`, `totalEntries`, `ticketCount`,
   `TicketPurchased`.
 - **Evidence.** `testPurchaseMintsOneSequentialTicketForAnyEntryCount` (`U`);
@@ -399,7 +399,7 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
 - **Technical.** Each new range begins at `totalEntries + 1` and ends at
   `totalEntries + entryCount`, and `totalEntries` is then set to that last value.
   Ranges therefore partition `[1, totalEntries]` exactly.
-- **Source.** `packages/contracts/src/Raffle.sol:158-162`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `_ticketRanges`, `totalEntries`.
 - **Evidence.** `testFuzzSeparatePurchasesPartitionEntriesWithoutGaps` (`F`);
   `invariantRangesPartitionEverySoldEntryExactlyOnce` (`I`);
@@ -416,7 +416,7 @@ fork, `X` SDK/subgraph/frontend/deployment/static check.
 - **Technical.** `if (entryCount > type(uint128).max - totalEntries) revert
 TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transfer and
   before every state write.
-- **Source.** `packages/contracts/src/Raffle.sol:147-149`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `TotalEntriesOverflow`.
 - **Evidence.** `testPurchaseMaximumRangeAndOverflowAreAtomic` (`U`).
 - **Status.** Current.
@@ -431,7 +431,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   propagates and rolls back the transfer, both counters, the range write, and the pot
   credit. `buyEntries` is `nonReentrant`, so a malicious receiver or reentrant token
   cannot nest a second purchase.
-- **Source.** `packages/contracts/src/Raffle.sol:139,167`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `_safeMint`, `nonReentrant`, `InvalidRecipient`.
 - **Evidence.** `testPurchaseValidationAndReceiverRollbackAreAtomic` (`U`);
   `testReentrantReceiptReceiverCannotNestPurchase` (`A`);
@@ -454,7 +454,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   non-burn transfer to a known protocol destination reverts — and imposes no
   status-dependent lock whatsoever. There is no draw-time freeze and no post-resolution
   lock on the winning ticket.
-- **Source.** `packages/contracts/src/Raffle.sol:30,128-134,383-390`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `_update(address,uint256,address)`, `ownerOf`, `transferFrom`,
   `safeTransferFrom`.
 - **Evidence.** `testSaleEndsButTicketsStayTransferableUntilBurned` (`U`);
@@ -475,7 +475,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   reverts `NotTicketOwner` unless `msg.sender == winner`. `refundTickets` performs the
   same check per ticket in the batch. Neither consults `getApproved` or
   `isApprovedForAll`.
-- **Source.** `packages/contracts/src/Raffle.sol:267-268,306-307`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `NotTicketOwner`.
 - **Evidence.** `testOwnerCanSettleAndRedeemAtomicallyButApprovedOperatorCannot` (`U`);
   `testRefundBatchValidationAndMixedOwnershipAreAtomic` (`U`).
@@ -492,7 +492,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   `remainingRefundLiability`, then transfers. Both run under `nonReentrant`, and every
   transfer is verified (`ownerOf` post-check for the NFT, exact two-sided deltas for the
   quote). Any verification failure reverts the burn and every accompanying state change.
-- **Source.** `packages/contracts/src/Raffle.sol:256-293,296-319,475-492`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `winnerRedeemed`, `_burn`, `_transferQuoteExact`.
 - **Evidence.** `testWinnerRedeemsAndFixedProceedsReleaseIndependently` (`U`);
   `testNftDeliveryFailureRollsBackLazySettlementAndBurn` (`A`);
@@ -510,7 +510,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
 - **Technical.** Only `redeemWinningTicket` and `refundTickets` burn. In `NftWon` and
   `CashWon` no other ticket is touched, so every losing ticket keeps its owner, its
   stored range, and its transferability forever.
-- **Source.** `packages/contracts/src/Raffle.sol:272,311`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `_burn`, `ticketRange`.
 - **Evidence.** `invariantSettlementAndRedemptionMarkersMatchTicketState` (`I`);
   subgraph ticket-state tests (`X`).
@@ -522,16 +522,16 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
 
 - **Claim.** You cannot send a ticket, a payout, or a prize into the protocol's own
   plumbing, where it would become unreachable.
-- **Technical.** `_isKnownProtocolDestination(d)` is true when `d` is the raffle itself,
-  the factory, the quote token, the VRF wrapper, the prize token, or the shared
+- **Technical.** `_isProtocolDestination(d, prizeToken)` is true when `d` is the raffle itself,
+  the factory, the quote token, the VRF wrapper, the supplied prize token, or the shared
   implementation — and, when `d` already has code, when
   `IRaffleFactory(factory).isRaffle(d)` returns true. It is applied in `_update` (for
-  non-burn transfers) and in `_transferQuoteExact`. A constructor-time analogue,
-  `_isInitializationProtocolDestination`, screens `sponsor`, `sponsorRecipient`, and
-  `protocolTreasury` at initialization, and `_validateCreateParams` applies the same
-  test to `prizeToken` and `sponsorRecipient` at the factory.
-- **Source.** `packages/contracts/src/Raffle.sol:107-115,387-390,476,498-520`;
-  `packages/contracts/src/RaffleFactory.sol:125-140`.
+  non-burn transfers), `_transferQuoteExact`, and initialization. Initialization supplies
+  the prospective prize token before clone storage is populated, and
+  `_validateCreateParams` applies the corresponding factory checks to `prizeToken` and
+  `sponsorRecipient`.
+- **Source.** `packages/contracts/src/Raffle.sol`;
+  `packages/contracts/src/RaffleFactory.sol`.
 - **Function / state.** `UnsafeProtocolDestination`, `InvalidQuoteDestination`.
 - **Evidence.** `testProtocolDestinationsCannotReceiveReceiptsOrPayouts` (`A`);
   `testCloneInitializationRejectsRegisteredRaffleSponsorAndTreasury` (`U`);
@@ -555,7 +555,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   instant.
 - **Technical.** `buyEntries` requires `block.timestamp < endTime`. `requestDraw`
   requires `block.timestamp >= endTime`. The windows abut exactly.
-- **Source.** `packages/contracts/src/Raffle.sol:144,189`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `endTime`, `SaleEnded`, `RaffleNotEnded`.
 - **Evidence.** `testSoldRaffleHasHardRequestAndCallbackRefundDeadlines` (`U`);
   `invariantDrawAndCallbackDeadlinesAreHardAndOrdered` (`I`).
@@ -570,8 +570,8 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
 - **Technical.** `createRaffle` reverts `InvalidEndTime` when
   `params.endTime <= block.timestamp` and `SaleDurationTooLong` when
   `endTime - now > MAX_SALE_DURATION == 30 days`. There is no start delay parameter.
-- **Source.** `packages/contracts/src/RaffleFactory.sol:74-79`;
-  `packages/contracts/src/libraries/RaffleConstants.sol:22`.
+- **Source.** `packages/contracts/src/RaffleFactory.sol`;
+  `packages/contracts/src/libraries/RaffleConstants.sol`.
 - **Function / state.** `MAX_SALE_DURATION`, `InvalidEndTime`, `SaleDurationTooLong`.
 - **Evidence.** `testFactoryAcceptsExactMaximumSaleDuration` (`U`);
   `testFactoryConstructorAndCreationValidation` (`U`).
@@ -588,8 +588,8 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   `DRAW_REQUEST_TIMEOUT = 2 days`. `requestDraw` reverts
   `DrawRequestWindowExpired` when `block.timestamp >= requestDeadline`, so the window is
   the half-open interval `[endTime, drawRequestDeadline())`.
-- **Source.** `packages/contracts/src/Raffle.sol:191-194,364-366`;
-  `packages/contracts/src/libraries/RaffleConstants.sol:23`.
+- **Source.** `packages/contracts/src/Raffle.sol`;
+  `packages/contracts/src/libraries/RaffleConstants.sol`.
 - **Function / state.** `drawRequestDeadline()`, `DrawRequestWindowExpired`.
 - **Evidence.** `testSoldRaffleHasHardRequestAndCallbackRefundDeadlines` (`U`);
   `invariantDrawAndCallbackDeadlinesAreHardAndOrdered` (`I`); independent Python model.
@@ -605,8 +605,8 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   the wrapper. `callbackDeadline() = drawRequestedAt + DRAW_CALLBACK_TIMEOUT` with
   `DRAW_CALLBACK_TIMEOUT = 2 days`, and returns `0` before any request. A callback
   resolves only when `block.timestamp < callbackDeadline()`.
-- **Source.** `packages/contracts/src/Raffle.sol:200,368-371,426`;
-  `packages/contracts/src/libraries/RaffleConstants.sol:24`.
+- **Source.** `packages/contracts/src/Raffle.sol`;
+  `packages/contracts/src/libraries/RaffleConstants.sol`.
 - **Function / state.** `drawRequestedAt`, `callbackDeadline()`.
 - **Evidence.** `testCallbackDeadlineIsHardAtEqualityRegardlessOfOrdering` (`U`);
   `testAuthenticatedValidCallbackAtDeadlineIsIgnoredBeforeRefunds` (`A`);
@@ -631,7 +631,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   second request fails the `Active` check, and calls
   `requestRandomnessPayInNative(callbackGasLimit, requestConfirmations, 1, extraArgs)`
   with `ExtraArgsV1.nativePayment = true`.
-- **Source.** `packages/contracts/src/Raffle.sol:172-179,187-220`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `requestDraw()`, `getVrfRequestPrice()`,
   `estimateVrfRequestPrice(uint256)`, `InsufficientVrfFee`.
 - **Evidence.** `testDrawForwardsExactDynamicFeeAndRefundsExcess` (`U`);
@@ -652,7 +652,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   return-data bomb). A failed return reverts the whole request with `NativeRefundFailed`.
   `receive()` reverts with `DirectNativeTransfer`, so the raffle never holds an ETH
   balance outside this path.
-- **Source.** `packages/contracts/src/Raffle.sol:205-219,413-415`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `NativeRefundFailed`, `DirectNativeTransfer`, `DrawRequested`.
 - **Evidence.** `testDrawForwardsExactDynamicFeeAndRefundsExcess` (`U`);
   `testOfficialHelperRefundsAgainstActualLowerPrice` (`A`);
@@ -670,7 +670,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   `try/catch`, so any failure reverts the whole transaction, restoring `Active`,
   `drawRequestedAt == 0`, and `vrfRequestId == 0`. The request window is preserved for a
   retry, and if it expires the raffle still has its full-refund path.
-- **Source.** `packages/contracts/src/Raffle.sol:196-207`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `status`, `vrfRequestId`, `drawRequestedAt`.
 - **Evidence.** `testFeeReadAndRequestFailuresRollBackToActiveThenRefundAtDeadline` (`A`);
   `testNonPersistedRequestStillHasBoundedFullRefundRecovery` (`A`);
@@ -687,8 +687,8 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   `requestConfirmations = VRF_REQUEST_CONFIRMATIONS = 30` are `constant` on both the
   raffle and the factory. The word count is the literal `1` at both the quote and the
   request, so quote and request can never disagree.
-- **Source.** `packages/contracts/src/Raffle.sol:39-40,173,204`;
-  `packages/contracts/src/libraries/RaffleConstants.sol:26-27`.
+- **Source.** `packages/contracts/src/Raffle.sol`;
+  `packages/contracts/src/libraries/RaffleConstants.sol`.
 - **Function / state.** `callbackGasLimit()`, `requestConfirmations()`.
 - **Evidence.** `testDrawUsesFixedThirtyConfirmationsAndOneWord` (`U`);
   `testBothCallbackBranchesStayBelowGasBudget` (`U`); Hardhat journey (`X`).
@@ -707,7 +707,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   `@chainlink/contracts@1.5.0`. Native direct funding pays the existing official wrapper
   per request, so no raffle creates or manages a VRF subscription. The wrapper address is
   validated non-zero at construction and held `immutable`.
-- **Source.** `packages/contracts/src/Raffle.sol:4-6,30,84,522-525`;
+- **Source.** `packages/contracts/src/Raffle.sol`;
   `packages/contracts/package.json:28`.
 - **Function / state.** `vrfWrapper()`, `i_vrfV2PlusWrapper`.
 - **Evidence.** `testEthereumMainnetChainlinkVrfUsdcAndRangeReceipt` (`K`);
@@ -732,7 +732,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   Application: `fulfillRandomWords` returns early — emitting `VrfCallbackIgnored` — if
   `_requestInFlight`, `status != Drawing`, `requestId != vrfRequestId`,
   `randomWords.length != 1`, or `block.timestamp >= callbackDeadline()`.
-- **Source.** `packages/contracts/src/Raffle.sol:73,201,207,417-438`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `fulfillRandomWords`, `_requestInFlight`, `VrfCallbackIgnored`.
 - **Evidence.** `testWrongDuplicateMalformedAndUnauthorizedCallbacksAreHarmless` (`A`);
   `testSynchronousWrongDuplicateAndValidCallbacksCannotResolveInFlightRequest` (`A`);
@@ -755,7 +755,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   `requestRandomnessPayInNative` and cleared immediately after `vrfRequestId` is stored.
   While it is true, `fulfillRandomWords` ignores every delivery, including an otherwise
   valid one.
-- **Source.** `packages/contracts/src/Raffle.sol:201,206-207,425`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `_requestInFlight`, `vrfRequestId`.
 - **Evidence.** `testSynchronousWrongDuplicateAndValidCallbacksCannotResolveInFlightRequest`
   (`A`); `testZeroRequestIdDoesNotMatchUntilRequestReturns` (`A`).
@@ -771,7 +771,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   `resolvedAt`, sets `status = totalEntries >= reserveEntries ? NftWon : CashWon`, and
   emits `RaffleResolved`. There is no loop, no ERC-20 or ERC-721 interaction, and no call
   to any user-controlled address.
-- **Source.** `packages/contracts/src/Raffle.sol:423-438`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `winningEntry`, `resolvedAt`, `status`, `RaffleResolved`.
 - **Evidence.** `testCallbackStoresInclusiveWinningEntryAndSelectsReserveBoundary` (`U`);
   `testCallbackMakesNoQuoteOrPrizeExternalTransfers` (`A`);
@@ -787,8 +787,8 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
 - **Claim.** Hitting the reserve exactly counts as success.
 - **Technical.** The comparison is `totalEntries >= reserveEntries`. `reserveEntries` is
   `uint128`, must be non-zero at creation, and is unbounded above.
-- **Source.** `packages/contracts/src/Raffle.sol:435`;
-  `packages/contracts/src/RaffleFactory.sol:149`.
+- **Source.** `packages/contracts/src/Raffle.sol`;
+  `packages/contracts/src/RaffleFactory.sol`.
 - **Function / state.** `reserveEntries`, `Status.NftWon`, `Status.CashWon`,
   `ZeroReserveEntries`.
 - **Evidence.** `testCallbackStoresInclusiveWinningEntryAndSelectsReserveBoundary` (`U`);
@@ -806,7 +806,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   `n` does not divide `2^256`. The absolute per-entry probability difference is on the
   order of `2^-256`. No rejection sampling is performed; it would require an unbounded
   callback loop or a second oracle round.
-- **Source.** `packages/contracts/src/Raffle.sol:432`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `winningEntry`.
 - **Evidence.** `testFuzzWinningEntryAlwaysUsesInclusiveSoldRange` (`F`);
   `invariantWinningEntryHasExactlyOneReceiptProof` (`I`).
@@ -822,7 +822,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
 - **Technical.** `enableRefunds` dispatches only on `Active` and `Drawing`; any other
   status, including `NftWon` and `CashWon`, reverts `InvalidStatus`. Correspondingly,
   once `status` leaves `Drawing`, `fulfillRandomWords` ignores every further callback.
-- **Source.** `packages/contracts/src/Raffle.sol:223-248,425`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `enableRefunds()`, `InvalidStatus`.
 - **Evidence.** `testAcceptedDrawCannotRefundBeforeCallbackDeadlineAndValidNftOutcomeNeverRefunds`
   (`U`); `invariantStatusAndTerminalTransitionsAreMonotonic` (`I`); independent model.
@@ -849,7 +849,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   `unsettledPot`, and writes `sponsorProceeds`, `protocolFees`, and (cash branch)
   `winnerProceeds`. It never calls `ownerOf`, never burns, and makes no external asset
   call.
-- **Source.** `packages/contracts/src/Raffle.sol:251-253,440-473`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `settleWinningTicket`, `settlementComplete`, `winningTicketId`,
   `WinningTicketSettled`; errors `SettlementAlreadyComplete`,
   `TicketDoesNotContainWinningEntry`.
@@ -872,7 +872,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   happened, otherwise requires `ticketId == winningTicketId`
   (`WinningTicketMismatch`). It reads `ownerOf(ticketId)`, requires the caller to be that
   owner, records `winnerRecipient`, sets `winnerRedeemed`, `_burn`s, and then delivers.
-- **Source.** `packages/contracts/src/Raffle.sol:256-293`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `redeemWinningTicket`, `winnerRecipient`, `winnerRedeemed`,
   `WinningTicketRedeemed`; errors `WinningTicketAlreadyRedeemed`, `WinningTicketMismatch`,
   `NotTicketOwner`.
@@ -894,7 +894,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   `safeTransferFrom` — then requires `prizeToken.ownerOf(prizeTokenId) == winner`,
   reverting `PrizeDeliveryVerificationFailed` otherwise. A revert rolls back the burn and
   every redemption state change.
-- **Source.** `packages/contracts/src/Raffle.sol:276-284`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `PrizeDeliveryVerificationFailed`, `prizeClaimed`.
 - **Evidence.** `testNftDeliveryFailureRollsBackLazySettlementAndBurn` (`A`);
   `testNonCompliantPrizeCannotPassPostDeliveryVerification` (`A`);
@@ -913,7 +913,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   `releaseSponsorPrize` are three separate permissionless functions. Each zeroes its own
   balance before transferring and pays only the immutable `sponsorRecipient` or
   `protocolTreasury`. `releaseSponsorPrize` is available in `CashWon` and `Refunding`.
-- **Source.** `packages/contracts/src/Raffle.sol:322-354`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `sponsorProceeds`, `protocolFees`; errors `NoSponsorProceeds`,
   `NoProtocolFees`, `SponsorPrizeUnavailable`.
 - **Evidence.** `testWinnerRedeemsAndFixedProceedsReleaseIndependently` (`U`);
@@ -937,8 +937,8 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   `PROTOCOL_FEE_BPS = 500` and `BPS = 10_000`, computed once in `_settleWinningTicket`
   over the whole pot rather than per purchase. `enableRefunds` moves the entire
   `unsettledPot` into `remainingRefundLiability` and records no fee.
-- **Source.** `packages/contracts/src/Raffle.sol:243-247,447`;
-  `packages/contracts/src/libraries/RaffleConstants.sol:11-12`.
+- **Source.** `packages/contracts/src/Raffle.sol`;
+  `packages/contracts/src/libraries/RaffleConstants.sol`.
 - **Function / state.** `protocolFees`, `PROTOCOL_FEE_BPS`.
 - **Evidence.** `testFuzzCashSplitAlwaysConservesEightyFifteenFive` (`F`);
   `testFuzzNoRequestTimeoutPaysFullWeightedRange` (`F`);
@@ -954,7 +954,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
 - **Technical.** In `_settleWinningTicket` with `result == NftWon`,
   `sponsorAmount = grossPot - protocolFee` and `winnerProceeds` stays zero. The prize
   remains escrowed for the ticket's current owner.
-- **Source.** `packages/contracts/src/Raffle.sol:450-451,458-462`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `sponsorProceeds`, `protocolFees`.
 - **Evidence.** `testNftSettlementIsPermissionlessAccountingOnlyAndProofIsExact` (`U`);
   `invariantBranchEconomicsRemainEightyFifteenFiveNinetyFiveFiveOrFullRefund` (`I`);
@@ -973,8 +973,8 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   `sponsorAmount = grossPot - protocolFee - cashAmount`. All three shares are taken from
   **gross**, so the sponsor's remainder is exactly 15% before rounding. The NFT becomes
   releasable to `sponsorRecipient`.
-- **Source.** `packages/contracts/src/Raffle.sol:452-456`;
-  `packages/contracts/src/libraries/RaffleConstants.sol:13`.
+- **Source.** `packages/contracts/src/Raffle.sol`;
+  `packages/contracts/src/libraries/RaffleConstants.sol`.
 - **Function / state.** `winnerProceeds`, `sponsorProceeds`, `protocolFees`,
   `CASH_WINNER_BPS`.
 - **Evidence.** `testCashSettlementLeavesBearerClaimAndOwnerRedeemsOnce` (`U`);
@@ -994,7 +994,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   `NftWon: protocolFee + sponsorProceeds == grossPot`;
   `CashWon: protocolFee + winnerProceeds + sponsorProceeds == grossPot`;
   `Refunding: sum of each burned ticket's range × ENTRY_PRICE == grossPot`.
-- **Source.** `packages/contracts/src/Raffle.sol:450-456`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `unsettledPot`, `sponsorProceeds`, `protocolFees`,
   `winnerProceeds`.
 - **Evidence.** `testFuzzCashSplitAlwaysConservesEightyFifteenFive` (`F`);
@@ -1011,7 +1011,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   count.
 - **Technical.** `grossSales()` returns `uint256(totalEntries) * ENTRY_PRICE` as a view.
   No storage slot mirrors it.
-- **Source.** `packages/contracts/src/Raffle.sol:378-381`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `grossSales()`.
 - **Evidence.** `invariantQuoteAccountingIsExactAndSolvent` (`I`); SDK economics tests
   (`X`).
@@ -1035,7 +1035,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   In all cases it moves `unsettledPot` into `remainingRefundLiability`, sets `Refunding`,
   and emits `RefundsEnabled`. Before the deadline it reverts `RefundsNotAvailable`; from
   any other status, `InvalidStatus`.
-- **Source.** `packages/contracts/src/Raffle.sol:223-248`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `enableRefunds()`, `remainingRefundLiability`, `RefundsEnabled`.
 - **Evidence.** `testSoldRaffleHasHardRequestAndCallbackRefundDeadlines` (`U`);
   `testEmptyRaffleUsesRefundingWithoutClosedState` (`U`);
@@ -1055,7 +1055,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   `enableRefunds` produces `Refunding` with zero liability. `releaseSponsorPrize` is
   available in `Refunding`, returning the NFT to `sponsorRecipient`. The sponsor may
   finalize before `endTime`; anyone may at or after it.
-- **Source.** `packages/contracts/src/Raffle.sol:226-231,342-354`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `Status.Refunding`, `releaseSponsorPrize`.
 - **Evidence.** `testEmptyRaffleUsesRefundingWithoutClosedState` (`U`).
 - **Status.** Current.
@@ -1071,8 +1071,8 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   caller ownership, adds `lastEntry - firstEntry + 1` to the aggregate, and burns. Then
   `amount = aggregateEntries * ENTRY_PRICE`, `remainingRefundLiability -= amount`, and
   `_transferQuoteExact(msg.sender, amount)`.
-- **Source.** `packages/contracts/src/Raffle.sol:296-319`;
-  `packages/contracts/src/libraries/RaffleConstants.sol:20`.
+- **Source.** `packages/contracts/src/Raffle.sol`;
+  `packages/contracts/src/libraries/RaffleConstants.sol`.
 - **Function / state.** `refundTickets`, `MAX_REFUND_TICKET_BATCH_SIZE`,
   `InvalidTicketBatchSize`, `TicketsRefunded`.
 - **Evidence.** `testWeightedRefundBatchPaysExactRangesAndConsumesOnce` (`U`);
@@ -1093,7 +1093,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
 - **Technical.** `enableRefunds` writes `remainingRefundLiability = unsettledPot` and
   never touches `protocolFees`, `sponsorProceeds`, or `winnerProceeds`. Those slots are
   written only by `_settleWinningTicket`, which is unreachable from `Refunding`.
-- **Source.** `packages/contracts/src/Raffle.sol:243-247,440-465`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `remainingRefundLiability`, `protocolFees`, `sponsorProceeds`.
 - **Evidence.** `testFuzzNoRequestTimeoutPaysFullWeightedRange` (`F`);
   `invariantBranchEconomicsRemainEightyFifteenFiveNinetyFiveFiveOrFullRefund` (`I`);
@@ -1114,7 +1114,7 @@ TotalEntriesOverflow(totalEntries, entryCount)` executes before the token transf
   `accountedQuoteBalance() = unsettledPot + remainingRefundLiability + winnerProceeds +
 sponsorProceeds + protocolFees`. The maintained invariant is
   `quoteToken.balanceOf(raffle) >= accountedQuoteBalance()`.
-- **Source.** `packages/contracts/src/Raffle.sol:373-376`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `accountedQuoteBalance()`.
 - **Evidence.** `invariantQuoteAccountingIsExactAndSolvent` (`I`);
   `testDonationsAndForcedNativeDoNotAlterQuoteAccounting` (`U`); independent Python model.
@@ -1131,7 +1131,7 @@ sponsorProceeds + protocolFees`. The maintained invariant is
   (`InvalidQuoteDestination`), snapshots both the raffle's and the recipient's balances,
   performs `safeTransfer`, then recomputes both saturating deltas and reverts
   `UnsupportedQuoteTokenTransfer(amount, debited, credited)` unless both equal `amount`.
-- **Source.** `packages/contracts/src/Raffle.sol:475-492`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `UnsupportedQuoteTokenTransfer`, `InvalidQuoteDestination`.
 - **Evidence.** `testNonExactOutboundTokenCannotConsumeWinnerLiability` (`A`);
   `testOutboundClaimFailureRestoresClaimAndAccounting` (`A`);
@@ -1155,8 +1155,8 @@ sponsorProceeds + protocolFees`. The maintained invariant is
   `supportsInterface(type(IERC721).interfaceId)` truthfully inside `try/catch`, and
   rejects the factory, quote token, wrapper, implementation, and any registered raffle as
   a prize. Escrow and both delivery paths add `ownerOf` post-conditions.
-- **Source.** `packages/contracts/src/RaffleFactory.sol:125-148`;
-  `packages/contracts/src/Raffle.sol:282-284,352`.
+- **Source.** `packages/contracts/src/RaffleFactory.sol`;
+  `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `UnsupportedPrizeToken`, `NotContract`,
   `UnsafeProtocolDestination`.
 - **Evidence.** `testFactoryConstructorAndCreationValidation` (`U`);
@@ -1178,8 +1178,8 @@ sponsorProceeds + protocolFees`. The maintained invariant is
   outbound movement is verified by exact balance delta. The Solidity is **not**
   hard-coded to USDC: the address is a constructor argument, and "official USDC" is
   enforced by deployment validation and human review.
-- **Source.** `packages/contracts/src/RaffleFactory.sol:41-63`;
-  `packages/contracts/src/Raffle.sol:152-156,475-492`.
+- **Source.** `packages/contracts/src/RaffleFactory.sol`;
+  `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `quoteToken`, `QUOTE_TOKEN_DECIMALS`.
 - **Evidence.** `testFalseReturningAndFeeOnTransferQuotesCannotCreateReceipts` (`A`);
   `testEthereumMainnetChainlinkVrfUsdcAndRangeReceipt` (`K`); deployment validation (`X`).
@@ -1198,8 +1198,8 @@ sponsorProceeds + protocolFees`. The maintained invariant is
   unrelated NFTs pushed in with unsafe `transferFrom`; tickets or payouts sent to a
   destination that cannot act; and claims deliberately assigned to a code-less address
   that later becomes a registered clone.
-- **Source.** `packages/contracts/src/Raffle.sol:394,413-415,512-520`.
-- **Function / state.** `receive()`, `_isKnownProtocolDestination`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
+- **Function / state.** `receive()`, `_isProtocolDestination`.
 - **Evidence.** `testDonationsAndForcedNativeDoNotAlterQuoteAccounting` (`U`);
   `testFutureCanonicalCloneCanBrickOnlyItsOwnWinnerRedemption` (`A`).
 - **Status.** Current.
@@ -1218,7 +1218,7 @@ sponsorProceeds + protocolFees`. The maintained invariant is
 - **Technical.** The wrapper is `immutable`, validated non-zero at construction. There is
   no second source, no alternate resolution path, and no manual override. If no valid
   callback arrives before `callbackDeadline()`, the outcome is refunds, not a retry.
-- **Source.** `packages/contracts/src/Raffle.sol:84,182-184,423-438,522-525`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** `vrfWrapper()`.
 - **Evidence.** `testFeeReadAndRequestFailuresRollBackToActiveThenRefundAtDeadline` (`A`);
   `docs/RANDOMNESS.md`.
@@ -1252,7 +1252,7 @@ sponsorProceeds + protocolFees`. The maintained invariant is
   `@openzeppelin/contracts@5.6.1`; `@chainlink/contracts@1.5.0`; Node `22.23.2`;
   pnpm `11.18.0`.
 - **Source.** `packages/contracts/package.json:27-29`; `package.json:8-9`;
-  `packages/contracts/src/Raffle.sol:2`.
+  `packages/contracts/src/Raffle.sol`.
 - **Function / state.** —
 - **Evidence.** Lockfile; `CURRENT-CAMPAIGN.md`.
 - **Status.** Current.
@@ -1291,7 +1291,7 @@ sponsorProceeds + protocolFees`. The maintained invariant is
 - **Technical.** Purchase is one payment plus one mint. The callback is one modulo plus
   bounded storage writes. Winner proof is one range load plus two comparisons. Only
   refunds loop, and only over the at-most-100 submitted ticket IDs.
-- **Source.** `packages/contracts/src/Raffle.sol:137-169,423-438,467-473,296-319`.
+- **Source.** `packages/contracts/src/Raffle.sol`.
 - **Function / state.** —
 - **Evidence.** `testCallbackGasDoesNotScaleWithReceiptCount` (`U`);
   `testPurchaseAndRefundGasDoNotScaleWithEntriesInsideReceipt` (`U`);

@@ -1,5 +1,8 @@
 # ETHSkills security review — 2026-08-13
 
+> **Historical candidate evidence.** This report covers an earlier Base/Pyth, owner-controlled design. Its findings and
+> remediations are preserved for provenance but are superseded for current behavior by the normative current documents.
+
 ## Scope and status
 
 This focused review followed the ETHSkills ship, security, testing, audit, CROPS,

@@ -1,5 +1,8 @@
 # Test campaign
 
+> **Historical candidate evidence.** This campaign covers the recorded Base/Pyth source identity, test inventory, and
+> toolchain. Preserve its results as history; use the current matrix and a fresh final-SHA rerun for release evidence.
+
 Review date: 2026-08-09. Reviewer: internal Codex adversarial review.
 
 This ledger reports completed commands and actual results. Configured but incomplete

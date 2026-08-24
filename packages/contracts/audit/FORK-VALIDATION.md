@@ -1,5 +1,8 @@
 # Base fork validation
 
+> **Historical candidate evidence.** These Base/Pyth fork results apply only to the recorded earlier design. The current
+> Ethereum/Chainlink fork gate is `test/foundry/fork/EthereumFork.t.sol` and remains RPC-gated until rerun for release.
+
 The fork harness is opt-in through `RUN_FORK_TESTS=true`; the ordinary suite skips it
 without silently treating it as passed.
 

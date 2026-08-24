@@ -1,5 +1,8 @@
 # Residual risks and accepted assumptions
 
+> **Historical candidate risk ledger.** This file describes the superseded Pyth Entropy design. Use
+> `CURRENT-RESIDUAL-RISKS.md` and `docs/THREAT-MODEL.md` for the current Ethereum/Chainlink trust boundary.
+
 The 2026-08-13 ETHSkills review removed multiple High/Medium implementation risks, but
 one High oracle trust issue remains unresolved: the Entropy provider can selectively
 reveal a favorable result when it already owns tickets. The following external and

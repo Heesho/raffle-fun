@@ -1,5 +1,8 @@
 # Static analysis
 
+> **Historical candidate evidence.** This tool output and triage cover the source identity and obsolete Lens/Pyth
+> architecture named below. They are retained as history and do not establish a result for the current source.
+
 Review date/reviewer: 2026-08-09, internal Codex adversarial review. Production scope
 was `Raffle.sol`, `RaffleFactory.sol`, `RaffleLens.sol`, first-party interfaces, and
 constants; dependency and test findings were reviewed separately.
