@@ -1,5 +1,8 @@
 # Symbolic and formal checks
 
+> **Historical candidate evidence.** These Halmos results cover an earlier raffle lifecycle. They are retained as
+> commit-bound history and do not constitute formal verification of the current Ethereum/Chainlink source.
+
 Halmos `0.3.3` with Z3 `4.12.6` ran the production `Raffle` through a concrete
 one-ticket setup with symbolic `bytes32` randomness:
 

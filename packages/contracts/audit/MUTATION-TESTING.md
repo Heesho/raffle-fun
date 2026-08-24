@@ -1,5 +1,8 @@
 # Mutation testing
 
+> **Historical candidate evidence.** This mutation campaign targets the source identity and obsolete selectors named
+> below. Use `CURRENT-MUTATION.md` for the latest commit-bound campaign status; neither validates this working tree.
+
 Gambit `1.0.6` was downloaded from the pinned upstream release into
 `/tmp/raffle-audit-tools/gambit`. Mutants were generated in disposable directories
 with seed `20260809`, exact solc `0.8.36`, Cancun, optimizer enabled for 1,000 runs,

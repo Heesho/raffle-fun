@@ -1,5 +1,8 @@
 # Extreme smart-contract testing — 2026-08-13
 
+> **Historical candidate evidence.** This campaign covers the recorded Pyth Entropy candidate, not the current
+> Chainlink VRF implementation. Its results remain commit-bound history and do not validate the current source.
+
 ## Conclusion
 
 This follow-up tested the production contracts at `b992b23eabfffb4f5604524951c673f70b920603`

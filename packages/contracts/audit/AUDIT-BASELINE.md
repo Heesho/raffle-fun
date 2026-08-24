@@ -1,5 +1,8 @@
 # Internal adversarial audit baseline
 
+> **Historical candidate evidence.** This review is bound to the source identity below and predates the current
+> Ethereum/Chainlink range-ticket implementation. Preserve it as audit history; do not use it as current release proof.
+
 Review date: 2026-08-09 (Europe/Podgorica)
 
 This is an internal review of an uncommitted worktree. It is not an independent audit.

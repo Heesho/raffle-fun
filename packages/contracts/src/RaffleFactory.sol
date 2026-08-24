@@ -12,32 +12,54 @@ import { IRaffle } from "./interfaces/IRaffle.sol";
 import { IRaffleFactory } from "./interfaces/IRaffleFactory.sol";
 import { RaffleConstants } from "./libraries/RaffleConstants.sol";
 
-/**
- * @title raffle.fun Canonical USDC Raffle Factory
- * @author Heesho
- * @notice Atomically creates, funds, and registers autonomous fixed-implementation raffle clones.
- * @dev The implementation, six-decimal quote token, treasury, fee, and Chainlink configuration are immutable. The
- *      factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.
- * @custom:version 1.0.0
- */
+/// @title raffle.fun Canonical USDC Raffle Factory
+/// @author heesho
+/// @notice Atomically creates, funds, and registers autonomous fixed-implementation raffle clones.
+/// @dev The implementation, six-decimal quote token, treasury, fee, and Chainlink configuration are immutable. The
+///      factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.
+/// @custom:version 1.0.0
 contract RaffleFactory is IRaffleFactory, ReentrancyGuard {
-    address public immutable override quoteToken;
-    address public immutable override vrfWrapper;
-    address public immutable override protocolTreasury;
+    // Constants
+
+    /// @inheritdoc IRaffleFactory
     uint32 public constant override callbackGasLimit = RaffleConstants.VRF_CALLBACK_GAS_LIMIT;
+
+    /// @inheritdoc IRaffleFactory
     uint16 public constant override requestConfirmations = RaffleConstants.VRF_REQUEST_CONFIRMATIONS;
+
+    // Immutables and state
+
+    /// @inheritdoc IRaffleFactory
+    address public immutable override quoteToken;
+
+    /// @inheritdoc IRaffleFactory
+    address public immutable override vrfWrapper;
+
+    /// @inheritdoc IRaffleFactory
+    address public immutable override protocolTreasury;
+
+    /// @inheritdoc IRaffleFactory
     address public immutable override raffleImplementation;
 
-    uint256 public raffleCount;
+    /// @inheritdoc IRaffleFactory
+    uint256 public override raffleCount;
+
+    /// @inheritdoc IRaffleFactory
     mapping(uint256 raffleId => address raffle) public override raffleById;
+
+    /// @inheritdoc IRaffleFactory
     mapping(address raffle => uint256 raffleId) public override idByRaffle;
+
+    /// @inheritdoc IRaffleFactory
     mapping(address raffle => bool registered) public override isRaffle;
 
-    /**
-     * @param quoteToken_ Official-style exact-transfer six-decimal quote token used by every raffle.
-     * @param vrfWrapper_ Official Chainlink VRF v2.5 native direct-funding wrapper for the target chain.
-     * @param protocolTreasury_ Immutable protocol-fee recipient used by every raffle.
-     */
+    // Constructor
+
+    /// @notice Deploys the ownerless factory and its locked raffle implementation with one immutable configuration.
+    /// @dev The quote token must report exactly six decimals; the wrapper and quote token must contain deployed code.
+    /// @param quoteToken_ Official-style exact-transfer six-decimal quote token used by every raffle.
+    /// @param vrfWrapper_ Official Chainlink VRF v2.5 native direct-funding wrapper for the target chain.
+    /// @param protocolTreasury_ Immutable protocol-fee recipient used by every raffle.
     constructor(address quoteToken_, address vrfWrapper_, address protocolTreasury_) {
         _requireContract(quoteToken_);
         _requireContract(vrfWrapper_);
@@ -67,17 +89,17 @@ contract RaffleFactory is IRaffleFactory, ReentrancyGuard {
         raffleImplementation = implementation;
     }
 
+    // External state-changing functions
+
     /// @inheritdoc IRaffleFactory
     function createRaffle(CreateRaffleParams calldata params) external override nonReentrant returns (address raffle) {
         _validateCreateParams(params);
-
         uint256 currentTime = block.timestamp;
         if (params.endTime <= currentTime) revert InvalidEndTime(currentTime, params.endTime);
         uint256 saleDuration = uint256(params.endTime) - currentTime;
         if (saleDuration > RaffleConstants.MAX_SALE_DURATION) {
             revert SaleDurationTooLong(saleDuration, RaffleConstants.MAX_SALE_DURATION);
         }
-
         uint256 raffleId = ++raffleCount;
         raffle = Clones.clone(raffleImplementation);
         // The fresh fixed-target clone can initialize only once; this function is nonReentrant and atomic.
@@ -100,8 +122,9 @@ contract RaffleFactory is IRaffleFactory, ReentrancyGuard {
         idByRaffle[raffle] = raffleId;
         isRaffle[raffle] = true;
 
-        IERC721(params.prizeToken).safeTransferFrom(msg.sender, raffle, params.prizeTokenId);
-        if (IERC721(params.prizeToken).ownerOf(params.prizeTokenId) != raffle) {
+        IERC721 prize = IERC721(params.prizeToken);
+        prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId);
+        if (prize.ownerOf(params.prizeTokenId) != raffle) {
             revert PrizeEscrowVerificationFailed(raffle, params.prizeToken, params.prizeTokenId);
         }
         if (IRaffle(raffle).status() != IRaffle.Status.Active) {
@@ -122,6 +145,10 @@ contract RaffleFactory is IRaffleFactory, ReentrancyGuard {
         );
     }
 
+    // Private view helpers
+
+    /// @dev Validates the sponsor-selected token, recipient, reserve, and supported ERC-721 interface before cloning.
+    /// @param params Prospective raffle configuration supplied by the sponsor.
     function _validateCreateParams(CreateRaffleParams calldata params) private view {
         _requireContract(params.prizeToken);
         if (params.sponsorRecipient == address(0)) revert ZeroAddress();
@@ -149,6 +176,8 @@ contract RaffleFactory is IRaffleFactory, ReentrancyGuard {
         if (params.reserveEntries == 0) revert ZeroReserveEntries();
     }
 
+    /// @dev Reverts unless an address contains deployed code.
+    /// @param account Address required to be a contract.
     function _requireContract(address account) private view {
         if (account.code.length == 0) revert NotContract(account);
     }
