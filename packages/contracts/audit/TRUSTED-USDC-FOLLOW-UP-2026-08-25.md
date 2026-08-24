@@ -47,6 +47,15 @@ This is an explicitly authorized behavior and trust-boundary change. It supersed
   A wrong or later-nonstandard token can violate solvency and is outside the supported
   deployment model.
 
+## Intentionally preserved historical evidence
+
+`current-mutations.json`, its result JSON, and the superseded mutation-campaign narrative
+remain unchanged and commit-bound to their recorded pre-follow-up source. They therefore
+contain obsolete source snippets such as `_transferQuoteExact`. Updating one definition
+without rerunning and re-fingerprinting the full campaign would falsify the retained 52/52
+record. No mutation score is claimed for the trusted-USDC implementation; a clean campaign
+remains a final-release gate.
+
 ## Verification
 
 | Gate                                                | Result                                        |
@@ -64,6 +73,7 @@ This is an explicitly authorized behavior and trust-boundary change. It supersed
 | SDK ABI sync                                        | Regenerated and freshness check passed        |
 | Subgraph codegen, build, and mappings               | Passed; 8 mapping tests                       |
 | Repository format, lint, typecheck, build, and test | Passed                                        |
+| Current-source mutation campaign                    | Not rerun; historical evidence preserved      |
 
 The Ethereum fork test remains unavailable without an RPC URL. Completed local tests
 validate the clarified code and deployment mapping; they do not establish live

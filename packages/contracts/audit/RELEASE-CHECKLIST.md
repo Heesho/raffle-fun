@@ -12,8 +12,10 @@ review does not replace an independent audit or operational approval.
 
 > **Evidence freshness:** checked numerical results below are preserved for the recorded
 > pre-remediation candidate. They do not validate the later hard request/callback
-> boundaries, official Chainlink consumer-base migration, or bearer-redemption redesign;
-> all affected gates remain open until rerun on the final release SHA.
+> boundaries, official Chainlink consumer-base migration, bearer-redemption redesign,
+> ownerless-factory change, or trusted canonical-USDC simplification. The 2026-08-25
+> follow-up reruns the applicable local gates, but all release-sensitive gates remain
+> open until reproduced on the final release SHA.
 
 ## Source identity and reproducibility
 
@@ -55,8 +57,8 @@ review does not replace an independent audit or operational approval.
       can atomically burn and redeem the winning ticket.
 - [x] Sponsor and protocol releases are permissionless but always use immutable recipients.
 - [x] Every refund pays the stored entry count at the fixed price exactly once.
-- [x] Exact inbound/outbound quote accounting, prize custody, and failed-transfer
-      rollback are covered with adversarial assets and non-reentrancy regressions.
+- [x] Canonical USDC transfers use `SafeERC20`; false-returning inbound and outbound
+      calls roll back atomically, and release validation rejects a noncanonical address.
 - [x] Wrapper authentication, request matching, authenticated ABI-decodable
       synchronous/repeated/wrong-word-count behavior, unauthorized/undecodable reverts,
       and callback gas boundedness are exercised for the recorded candidate.
@@ -79,7 +81,8 @@ review does not replace an independent audit or operational approval.
       zero handler reverts.
 - [x] Hardhat deployment/source-verification/journey tests: 22 passed, 0 failed.
 - [x] Independent Python model: 11 passed, 0 failed.
-- [x] Declared current mutation campaign: 52 of 52 compiling mutants killed.
+- [x] Preserved historical mutation campaign: 52 of 52 compiling mutants killed at its
+      recorded source identity; this result does not cover the current source.
 - [x] Deterministic gas suite: 57 passed, 0 failed, plus one RPC-gated fork skip.
 - [x] SDK: 14 passed, 0 failed.
 - [x] Web: 15 passed, 0 failed.
@@ -89,8 +92,8 @@ review does not replace an independent audit or operational approval.
 - [x] Current Gitleaks runs: tracked candidate and 25-commit history both exit 0 with no
       leaks.
 - [ ] Reproduce coverage on the exact final SHA.
-- [ ] Run aggregate formatting, lint, typecheck, build, and test gates after the timeout
-      remediation edits settle.
+- [x] Run aggregate formatting, lint, typecheck, build, and test gates for the
+      trusted-USDC implementation follow-up.
 - [ ] Run high-count final fuzz/invariant campaigns on the exact final SHA.
 - [ ] Execute the compiled Echidna harness with retained corpus and branch-reachability
       review.
