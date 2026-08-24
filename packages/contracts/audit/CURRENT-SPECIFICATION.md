@@ -142,15 +142,15 @@ accountedQuoteBalance
   + protocolFees
 ```
 
-Incoming and outgoing quote transfers verify exact sender and recipient balance deltas.
-Settlement has no external asset interaction. Redemption and each release apply their
-effects before an external interaction under a reentrancy guard; a failed transfer
-reverts those effects. Direct quote donations are unaccounted surplus and have no
-rescue path.
+Incoming and outgoing quote transfers use `SafeERC20` and trust canonical official
+USDC's standard, fee-free transfer behavior. Settlement has no external asset
+interaction. Redemption and each release apply their effects before an external
+interaction under a reentrancy guard; a reverted or false-returning transfer restores
+those effects. Direct quote donations are unaccounted surplus and have no rescue path.
 
 ## Trust boundary
 
-Correctness assumes available exact-transfer official USDC, an honest standards-compliant
+Correctness assumes available canonical official USDC with standard fee-free transfers, an honest standards-compliant
 ERC-721 prize, Ethereum inclusion/finality, and the configured Chainlink wrapper and
 coordinator. Existing clones cannot be patched. Release blockers and accepted external
 risks are tracked in `CURRENT-RESIDUAL-RISKS.md` and `RELEASE-CHECKLIST.md`.

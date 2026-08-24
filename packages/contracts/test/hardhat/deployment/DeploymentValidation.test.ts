@@ -100,6 +100,21 @@ describe("deployment validation", () => {
     );
   });
 
+  it("rejects a six-decimal quote token that is not canonical USDC", async () => {
+    const nonCanonicalCandidate: DeploymentRecord = {
+      ...candidate,
+      quoteToken: "0x4444444444444444444444444444444444444444",
+    };
+    await assert.rejects(
+      validateDeploymentOnchain(
+        fakeClient({ decimals: 6 }),
+        nonCanonicalCandidate,
+        releaseEvidence,
+      ),
+      /quoteToken .* does not match expected/,
+    );
+  });
+
   it("rejects an EOA mainnet treasury", async () => {
     await assert.rejects(
       validateDeploymentOnchain(

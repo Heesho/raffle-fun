@@ -139,8 +139,8 @@ review does not replace an independent audit or operational approval.
       addresses from primary sources on release day.
 - [ ] Verify wrapper/coordinator source, runtime, native pricing, minimum confirmations,
       maximum callback gas, overhead configuration, and operational status.
-- [ ] Verify USDC proxy/runtime, six decimals, issuer controls, and exact-transfer
-      behavior at the release block.
+- [ ] Verify the canonical USDC proxy/runtime and address, six decimals, issuer
+      controls, and standard fee-free transfer behavior at the release block.
 - [ ] Select and independently review the nonzero treasury Safe, signer set, threshold,
       modules, guards, recovery, and monitoring.
 - [ ] Deploy only to Sepolia first; verify implementation and factory source exactly.

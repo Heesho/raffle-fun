@@ -150,7 +150,7 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusW
 
     /// @notice Deploys and locks the implementation shared by one factory's minimal-proxy raffles.
     /// @dev Constructor state belongs to the implementation. Clones share these immutables but hold isolated storage.
-    /// @param quoteToken_ Exact-transfer six-decimal quote-token contract fixed for the implementation and every clone.
+    /// @param quoteToken_ Canonical six-decimal USDC contract fixed for the implementation and every clone.
     /// @param vrfWrapper_ Chainlink VRF v2.5 native direct-funding wrapper fixed for the implementation and all clones.
     constructor(address quoteToken_, address vrfWrapper_)
         ERC721("", "")
@@ -221,11 +221,7 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusW
         }
 
         uint256 grossAmount = uint256(entryCount) * ENTRY_PRICE;
-        uint256 balanceBefore = quoteToken.balanceOf(address(this));
         quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount);
-        uint256 balanceAfter = quoteToken.balanceOf(address(this));
-        uint256 receivedAmount = balanceAfter >= balanceBefore ? balanceAfter - balanceBefore : 0;
-        if (receivedAmount != grossAmount) revert UnsupportedQuoteToken(grossAmount, receivedAmount);
 
         uint128 firstEntry = totalEntries + 1;
         uint128 lastEntry = totalEntries + entryCount;
@@ -343,7 +339,7 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusW
             cashAmount = winnerProceeds;
             if (cashAmount == 0) revert NoWinnerProceeds();
             winnerProceeds = 0;
-            _transferQuoteExact(winner, cashAmount);
+            _transferQuote(winner, cashAmount);
         }
 
         emit WinningTicketRedeemed(ticketId, winner, result, cashAmount, deliveredPrizeToken, deliveredPrizeTokenId);
@@ -370,7 +366,7 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusW
 
         amount = aggregateEntries * ENTRY_PRICE;
         remainingRefundLiability -= amount;
-        _transferQuoteExact(msg.sender, amount);
+        _transferQuote(msg.sender, amount);
         uint256 liabilityAfter = remainingRefundLiability;
         emit TicketsRefunded(msg.sender, ticketQuantity, aggregateEntries, amount, liabilityAfter);
     }
@@ -381,7 +377,7 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusW
         if (amount == 0) revert NoSponsorProceeds();
         sponsorProceeds = 0;
         address recipient = sponsorRecipient;
-        _transferQuoteExact(recipient, amount);
+        _transferQuote(recipient, amount);
         emit SponsorProceedsReleased(msg.sender, recipient, amount);
     }
 
@@ -391,7 +387,7 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusW
         if (amount == 0) revert NoProtocolFees();
         protocolFees = 0;
         address treasury = protocolTreasury;
-        _transferQuoteExact(treasury, amount);
+        _transferQuote(treasury, amount);
         emit ProtocolFeesReleased(msg.sender, treasury, amount);
     }
 
@@ -561,26 +557,13 @@ contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusW
         emit WinningTicketSettled(ticketId, msg.sender, result, cashAmount, protocolFee, sponsorAmount);
     }
 
-    /// @dev Transfers one complete current quote-token claim and rejects non-exact balance deltas or protocol sinks.
+    /// @dev Transfers one complete current USDC claim through SafeERC20 after rejecting known protocol sinks. The
+    ///      canonical USDC trust model assumes standard, non-rebasing, fee-free transfer semantics.
     /// @param to Immutable or owner-derived recipient of the claim.
-    /// @param amount Raw six-decimal quote-token units that must be debited and credited exactly.
-    function _transferQuoteExact(address to, uint256 amount) private {
+    /// @param amount Raw six-decimal USDC units transferred.
+    function _transferQuote(address to, uint256 amount) private {
         if (_isProtocolDestination(to, address(prizeToken))) revert InvalidQuoteDestination(to);
-        uint256 raffleBalanceBefore = quoteToken.balanceOf(address(this));
-        uint256 recipientBalanceBefore = quoteToken.balanceOf(to);
         quoteToken.safeTransfer(to, amount);
-        uint256 raffleBalanceAfter = quoteToken.balanceOf(address(this));
-        uint256 recipientBalanceAfter = quoteToken.balanceOf(to);
-
-        uint256 debitedAmount = 0;
-        if (raffleBalanceBefore >= raffleBalanceAfter) {
-            debitedAmount = raffleBalanceBefore - raffleBalanceAfter;
-        }
-        uint256 creditedAmount =
-            recipientBalanceAfter >= recipientBalanceBefore ? recipientBalanceAfter - recipientBalanceBefore : 0;
-        if (debitedAmount != amount || creditedAmount != amount) {
-            revert UnsupportedQuoteTokenTransfer(amount, debitedAmount, creditedAmount);
-        }
     }
 
     // Private view and pure helpers

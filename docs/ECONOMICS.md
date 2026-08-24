@@ -122,10 +122,11 @@ accountedQuoteBalance
   + protocolFees
 ```
 
-The contract's actual quote balance must be at least that amount. Purchases and
-outgoing transfers verify both expected balance deltas. Direct token donations are
-unaccounted surplus and cannot be swept or converted into claims.
+Under the canonical USDC trust assumption, the contract's actual quote balance is at
+least that amount. Purchases and outgoing claims use `SafeERC20` for the stated amount
+without redundant balance snapshots. Direct token donations are unaccounted surplus
+and cannot be swept or converted into claims.
 
 USDC issuer pauses, blacklists, upgrades, or other transfer failures may delay or
-prevent individual payments. Exact-delta checking prevents silent underpayment but
-cannot force an unavailable token to transfer.
+prevent individual payments. `SafeERC20` propagates a reverted or false-returning
+transfer but cannot force an unavailable token to transfer.

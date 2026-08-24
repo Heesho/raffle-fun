@@ -39,7 +39,7 @@ collections. Keep every prize and entry value deliberately low.
 | Callback rejection      | staging wrapper sends synchronous, wrong-ID, duplicate, stale, and deadline-expired ABI-decodable callbacks without unsafe mutation; unauthorized or undecodable calls revert earlier |
 | NFT transfer failure    | adversarial collection reverts or lies on redemption; the burn and redemption markers revert while prior settlement and both quote claims remain usable                               |
 | Callback boundary       | matching callback at `callbackDeadline() - 1` resolves; at the deadline it is ignored and refunds are available                                                                       |
-| Outgoing failure        | adversarial quote token proves failed winner redemption restores its ticket and cash liability while failed sponsor/protocol release restores only that claim                         |
+| Outgoing failure        | a staged false-returning transfer proves SafeERC20 failure restores the affected ticket or fixed-recipient claim; production configuration remains pinned to canonical USDC           |
 | Operational controls    | frontend write kill switch, sponsor-onboarding stop, and keeper actions are rehearsed                                                                                                 |
 | Degraded infrastructure | direct chain reads and calldata instructions remain usable while subgraph or one RPC is unavailable                                                                                   |
 

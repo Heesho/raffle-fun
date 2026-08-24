@@ -149,9 +149,10 @@ See [architecture](docs/ARCHITECTURE.md), [lifecycle](docs/STATE-MACHINE.md),
 ## Supported assets and limitations
 
 The production deployment must use official six-decimal USDC and the official
-Ethereum Chainlink VRF v2.5 native direct-funding wrapper. The contracts verify exact
-incoming and outgoing USDC balance deltas. Fee-on-transfer, rebasing, unavailable, or
-otherwise non-exact quote tokens are unsupported.
+Ethereum Chainlink VRF v2.5 native direct-funding wrapper. USDC is a trusted canonical
+token: transfers use `SafeERC20` without redundant sender or recipient balance snapshots.
+Fee-on-transfer, rebasing, or otherwise non-standard quote tokens are outside the
+supported deployment model.
 
 Prize safety assumes an honest, standards-compliant ERC-721 whose `ownerOf` and
 transfers remain available. A malicious or upgraded collection can lie, freeze, burn,

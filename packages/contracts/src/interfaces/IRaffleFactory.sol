@@ -4,7 +4,9 @@ pragma solidity 0.8.36;
 /// @title raffle.fun Raffle Factory Interface
 /// @author heesho
 /// @notice Defines atomic ERC-1167 raffle creation for one immutable USDC, treasury, and Chainlink configuration.
-/// @dev The factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.
+/// @dev The factory has no owner, pause, upgrade, rescue, or mutable protocol configuration. Deployment tooling must
+///      verify that the immutable quote-token address is the target chain's official USDC; onchain construction checks
+///      only code presence and six-decimal metadata.
 /// @custom:version 1.0.0
 interface IRaffleFactory {
     // Types
@@ -32,7 +34,7 @@ interface IRaffleFactory {
     /// @param sponsorRecipient Immutable recipient of sponsor quote proceeds and any returned prize.
     /// @param prizeToken ERC-721 contract of the escrowed prize.
     /// @param prizeTokenId Token ID of the escrowed prize.
-    /// @param quoteToken Immutable exact-transfer six-decimal quote token used by the raffle.
+    /// @param quoteToken Immutable canonical six-decimal USDC contract used by the raffle.
     /// @param protocolTreasury Immutable recipient of protocol fees.
     /// @param reserveEntries Global raw entry-count threshold selecting the NFT outcome when met or exceeded.
     /// @param endTime Exclusive sale-end Unix timestamp, in seconds.
@@ -103,8 +105,8 @@ interface IRaffleFactory {
 
     // Public generated getters
 
-    /// @notice Returns the immutable exact-transfer six-decimal quote token used by every raffle.
-    /// @return quoteTokenAddress Quote-token contract address.
+    /// @notice Returns the immutable canonical six-decimal USDC contract used by every raffle.
+    /// @return quoteTokenAddress Canonical USDC contract address trusted by this deployment.
     function quoteToken() external view returns (address quoteTokenAddress);
 
     /// @notice Returns the immutable Chainlink VRF v2.5 native direct-funding wrapper used by every raffle.

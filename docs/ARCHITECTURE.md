@@ -79,9 +79,10 @@ accountedQuoteBalance
   + protocolFees
 ```
 
-Incoming and outgoing USDC balance deltas must match exactly. Known protocol
-destinations are rejected for tickets and payouts. Arbitrary future addresses and
-unrelated contracts cannot be proven safe onchain and remain user/deployment risks.
+Incoming and outgoing transfers use `SafeERC20` and rely on the factory's canonical
+USDC trust assumption for standard, fee-free accounting. Known protocol destinations
+are rejected for tickets and payouts. Arbitrary future addresses and unrelated
+contracts cannot be proven safe onchain and remain user/deployment risks.
 
 The raffle inherits Chainlink Contracts `1.5.0`'s official
 `VRFV2PlusWrapperConsumerBase` and uses its `IVRFV2PlusWrapper` and

@@ -3,44 +3,17 @@ pragma solidity 0.8.36;
 
 import { Test } from "forge-std/Test.sol";
 
-import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-
 import { Raffle } from "../../../src/Raffle.sol";
 import { RaffleFactory } from "../../../src/RaffleFactory.sol";
 import { IRaffle } from "../../../src/interfaces/IRaffle.sol";
 import { IRaffleFactory } from "../../../src/interfaces/IRaffleFactory.sol";
-import { AdversarialOutboundERC20 } from "../../../src/mocks/AdversarialOutboundERC20.sol";
 import { FalseERC20 } from "../../../src/mocks/FalseERC20.sol";
-import { FeeOnTransferERC20 } from "../../../src/mocks/FeeOnTransferERC20.sol";
 import { MockERC20 } from "../../../src/mocks/MockERC20.sol";
 import { MockERC721 } from "../../../src/mocks/MockERC721.sol";
 import { MockVRFV2PlusWrapper } from "../../../src/mocks/MockVRFV2PlusWrapper.sol";
 import { ReentrantERC20 } from "../../../src/mocks/ReentrantERC20.sol";
 import { ReentrantPrizeERC721 } from "../../../src/mocks/ReentrantPrizeERC721.sol";
 import { ReentrantTicketReceiver } from "../../../src/mocks/ReentrantTicketReceiver.sol";
-
-contract BonusERC20 is ERC20 {
-    bool public bonusEnabled;
-
-    constructor() ERC20("Bonus USDC", "BUSDC") { }
-
-    function decimals() public pure override returns (uint8) {
-        return 6;
-    }
-
-    function mint(address to, uint256 amount) external {
-        _mint(to, amount);
-    }
-
-    function setBonusEnabled(bool value) external {
-        bonusEnabled = value;
-    }
-
-    function _update(address from, address to, uint256 value) internal override {
-        super._update(from, to, value);
-        if (bonusEnabled && from != address(0) && to != address(0)) _mint(to, value / 100);
-    }
-}
 
 contract RaffleSecurityTest is Test {
     uint256 internal constant USDC = 1e6;
@@ -128,7 +101,7 @@ contract RaffleSecurityTest is Test {
         assertEq(raffle.unsettledPot(), 0);
     }
 
-    function testFalseReturningAndFeeOnTransferQuotesCannotCreateReceipts() public {
+    function testFalseReturningQuoteCannotCreateReceipt() public {
         FalseERC20 falseQuote = new FalseERC20();
         RaffleFactory falseFactory = new RaffleFactory(address(falseQuote), address(vrfWrapper), treasury);
         vm.prank(sponsor);
@@ -141,47 +114,43 @@ contract RaffleSecurityTest is Test {
         vm.expectRevert();
         falseRaffle.buyEntries(buyer, 1);
         assertEq(falseRaffle.totalEntries(), 0);
-
-        FeeOnTransferERC20 feeQuote = new FeeOnTransferERC20();
-        RaffleFactory feeFactory = new RaffleFactory(address(feeQuote), address(vrfWrapper), treasury);
-        vm.prank(sponsor);
-        prize.setApprovalForAll(address(feeFactory), true);
-        Raffle feeRaffle = _create(feeFactory, address(prize), 1);
-        feeQuote.mint(buyer, USDC);
-        vm.prank(buyer);
-        feeQuote.approve(address(feeRaffle), USDC);
-        vm.prank(buyer);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.UnsupportedQuoteToken.selector, USDC, 990_000));
-        feeRaffle.buyEntries(buyer, 1);
-        assertEq(feeRaffle.totalEntries(), 0);
-        assertEq(feeRaffle.accountedQuoteBalance(), 0);
     }
 
-    function testOverCreditQuoteCannotSpoofGrossAccounting() public {
-        BonusERC20 bonus = new BonusERC20();
-        RaffleFactory bonusFactory = new RaffleFactory(address(bonus), address(vrfWrapper), treasury);
-        vm.prank(sponsor);
-        prize.setApprovalForAll(address(bonusFactory), true);
-        Raffle raffle = _create(bonusFactory, address(prize), 1);
-        bonus.mint(buyer, USDC);
-        bonus.setBonusEnabled(true);
-        vm.prank(buyer);
-        bonus.approve(address(raffle), USDC);
-
-        vm.prank(buyer);
-        vm.expectRevert(abi.encodeWithSelector(IRaffle.UnsupportedQuoteToken.selector, USDC, 1_010_000));
-        raffle.buyEntries(buyer, 1);
-        assertEq(raffle.totalEntries(), 0);
-        assertEq(bonus.balanceOf(address(raffle)), 0);
-        assertEq(bonus.balanceOf(buyer), USDC);
-    }
-
-    function testNonExactOutboundTokenCannotConsumeWinnerLiability() public {
-        AdversarialOutboundERC20 hostile = new AdversarialOutboundERC20();
+    function testFalseReturningOutboundTransferRestoresClaimAndAccounting() public {
+        ReentrantERC20 hostile = new ReentrantERC20();
         RaffleFactory hostileFactory = _factoryWithQuote(address(hostile));
         vm.prank(sponsor);
         prize.setApprovalForAll(address(hostileFactory), true);
         Raffle raffle = _create(hostileFactory, address(prize), 2);
+
+        hostile.mint(buyer, USDC);
+        vm.prank(buyer);
+        hostile.approve(address(raffle), USDC);
+        vm.prank(buyer);
+        uint256 receiptId = raffle.buyEntries(buyer, 1);
+        _resolve(raffle, 0);
+        raffle.settleWinningTicket(receiptId);
+
+        uint256 treasuryClaim = raffle.protocolFees();
+        hostile.setFailOutboundTransfer(true);
+        vm.expectRevert();
+        raffle.releaseProtocolFees();
+        assertEq(raffle.protocolFees(), treasuryClaim);
+        assertEq(raffle.accountedQuoteBalance(), USDC);
+
+        hostile.setFailOutboundTransfer(false);
+        assertEq(raffle.releaseProtocolFees(), treasuryClaim);
+        assertEq(raffle.protocolFees(), 0);
+        assertEq(hostile.balanceOf(treasury), treasuryClaim);
+    }
+
+    function testFalseReturningWinnerTransferRestoresTicketAndLazySettlement() public {
+        ReentrantERC20 hostile = new ReentrantERC20();
+        RaffleFactory hostileFactory = _factoryWithQuote(address(hostile));
+        vm.prank(sponsor);
+        prize.setApprovalForAll(address(hostileFactory), true);
+        Raffle raffle = _create(hostileFactory, address(prize), 2);
+
         hostile.mint(buyer, USDC);
         vm.prank(buyer);
         hostile.approve(address(raffle), USDC);
@@ -189,30 +158,20 @@ contract RaffleSecurityTest is Test {
         uint256 receiptId = raffle.buyEntries(buyer, 1);
         _resolve(raffle, 0);
 
-        hostile.setTransferMode(AdversarialOutboundERC20.TransferMode.RecipientFee);
-        vm.prank(buyer);
-        raffle.settleWinningTicket(receiptId);
-        assertEq(raffle.ownerOf(receiptId), buyer);
-        assertEq(raffle.unsettledPot(), 0);
-        assertEq(raffle.winnerProceeds(), 800_000);
-        assertEq(raffle.sponsorProceeds(), 150_000);
-        assertEq(raffle.protocolFees(), 50_000);
-        assertEq(hostile.balanceOf(address(raffle)), USDC);
-
+        hostile.setFailOutboundTransfer(true);
         vm.prank(buyer);
         vm.expectRevert();
         raffle.redeemWinningTicket(receiptId);
         assertEq(raffle.ownerOf(receiptId), buyer);
         assertFalse(raffle.winnerRedeemed());
-        assertEq(raffle.winnerRecipient(), address(0));
-        assertEq(raffle.winnerProceeds(), 800_000);
-        assertEq(raffle.sponsorProceeds(), 150_000);
-        assertEq(raffle.protocolFees(), 50_000);
+        assertFalse(raffle.settlementComplete());
+        assertEq(raffle.unsettledPot(), USDC);
 
-        hostile.setTransferMode(AdversarialOutboundERC20.TransferMode.Exact);
+        hostile.setFailOutboundTransfer(false);
         vm.prank(buyer);
-        raffle.redeemWinningTicket(receiptId);
+        assertEq(raffle.redeemWinningTicket(receiptId), 800_000);
         assertEq(raffle.winnerProceeds(), 0);
+        assertEq(hostile.balanceOf(buyer), 800_000);
     }
 
     function testFactoryReentrancyDuringPrizeEscrowIsBlockedAtomically() public {
@@ -345,28 +304,6 @@ contract RaffleSecurityTest is Test {
         assertEq(quote.balanceOf(address(cash)), quoteBefore);
         assertEq(prize.ownerOf(cash.prizeTokenId()), address(cash));
         assertEq(cash.ownerOf(cashReceipt), buyer);
-    }
-
-    function testOutboundClaimFailureRestoresClaimAndAccounting() public {
-        AdversarialOutboundERC20 hostile = new AdversarialOutboundERC20();
-        RaffleFactory hostileFactory = _factoryWithQuote(address(hostile));
-        vm.prank(sponsor);
-        prize.setApprovalForAll(address(hostileFactory), true);
-        Raffle raffle = _create(hostileFactory, address(prize), 2);
-        hostile.mint(buyer, USDC);
-        vm.prank(buyer);
-        hostile.approve(address(raffle), USDC);
-        vm.prank(buyer);
-        uint256 receiptId = raffle.buyEntries(buyer, 1);
-        _resolve(raffle, 0);
-        raffle.settleWinningTicket(receiptId);
-        uint256 treasuryClaim = raffle.protocolFees();
-
-        hostile.setTransferMode(AdversarialOutboundERC20.TransferMode.SenderTax);
-        vm.expectRevert();
-        raffle.releaseProtocolFees();
-        assertEq(raffle.protocolFees(), treasuryClaim);
-        assertEq(raffle.accountedQuoteBalance(), USDC);
     }
 
     function _create(RaffleFactory selectedFactory, address prizeAddress, uint128 reserve)

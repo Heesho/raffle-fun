@@ -45,8 +45,9 @@ individual liveness window is two days.
 The production design assumes the intended six-decimal USDC deployment transfers
 exactly and does not rebase. Circle can upgrade, pause, or blocklist through external
 issuer controls. A pause or blocklist can leave individual payouts unavailable.
-Exact-balance checks prevent silent accounting loss but cannot restore liveness. A
-consistently lying or malicious token is unsupported.
+`SafeERC20` propagates reverted or false-returning calls, but sender and recipient
+balance deltas are not measured. A wrong or later-nonstandard token can break solvency
+and is outside the canonical-USDC trust model.
 
 ### Prize behavior
 

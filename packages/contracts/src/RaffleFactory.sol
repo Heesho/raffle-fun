@@ -15,7 +15,7 @@ import { RaffleConstants } from "./libraries/RaffleConstants.sol";
 /// @title raffle.fun Canonical USDC Raffle Factory
 /// @author heesho
 /// @notice Atomically creates, funds, and registers autonomous fixed-implementation raffle clones.
-/// @dev The implementation, six-decimal quote token, treasury, fee, and Chainlink configuration are immutable. The
+/// @dev The implementation, canonical six-decimal USDC, treasury, fee, and Chainlink configuration are immutable. The
 ///      factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.
 /// @custom:version 1.0.0
 contract RaffleFactory is IRaffleFactory, ReentrancyGuard {
@@ -57,7 +57,9 @@ contract RaffleFactory is IRaffleFactory, ReentrancyGuard {
 
     /// @notice Deploys the ownerless factory and its locked raffle implementation with one immutable configuration.
     /// @dev The quote token must report exactly six decimals; the wrapper and quote token must contain deployed code.
-    /// @param quoteToken_ Official-style exact-transfer six-decimal quote token used by every raffle.
+    ///      Deployment tooling must supply and verify the target chain's official USDC address because the constructor
+    ///      cannot prove token identity from metadata.
+    /// @param quoteToken_ Target chain's official six-decimal USDC contract trusted by every raffle.
     /// @param vrfWrapper_ Official Chainlink VRF v2.5 native direct-funding wrapper for the target chain.
     /// @param protocolTreasury_ Immutable protocol-fee recipient used by every raffle.
     constructor(address quoteToken_, address vrfWrapper_, address protocolTreasury_) {

@@ -1,5 +1,11 @@
 # Production Solidity source standardization — 2026-08-24
 
+> **Superseded trust-model decision:** This record describes merge
+> `90ecd7d74a6efcc0ce32aa0ac7a0478924be0d88`. On 2026-08-25, USDC was explicitly
+> designated the trusted canonical token, superseding this record's decision to retain
+> inbound and outbound balance-delta checks. Use the newer trusted-USDC follow-up record
+> for the current candidate.
+
 ## Status and scope
 
 This is the current, commit-bound review record for the production Solidity source at
