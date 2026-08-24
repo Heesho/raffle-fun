@@ -2,6 +2,7 @@ import { BigInt } from "@graphprotocol/graph-ts";
 
 import { RaffleCreated } from "../generated/RaffleFactory/RaffleFactory";
 import { Raffle as RaffleTemplate } from "../generated/templates";
+import { Raffle as RaffleContract } from "../generated/templates/Raffle/Raffle";
 import { Raffle } from "../generated/schema";
 import {
   getOrCreateAccount,
@@ -10,8 +11,6 @@ import {
 } from "./helpers";
 
 const ONE = BigInt.fromI32(1);
-const ENTRY_PRICE = BigInt.fromI32(1_000_000);
-const DRAW_REQUEST_TIMEOUT = BigInt.fromI32(172800);
 
 export function handleRaffleCreated(event: RaffleCreated): void {
   if (Raffle.load(event.params.raffle) != null) return;
@@ -34,6 +33,8 @@ export function handleRaffleCreated(event: RaffleCreated): void {
   quoteTokenStats.raffleCount = quoteTokenStats.raffleCount.plus(ONE);
   quoteTokenStats.save();
 
+  const raffleContract = RaffleContract.bind(event.params.raffle);
+
   const raffle = new Raffle(event.params.raffle);
   raffle.protocol = protocol.id;
   raffle.factoryId = event.params.raffleId;
@@ -44,10 +45,10 @@ export function handleRaffleCreated(event: RaffleCreated): void {
   raffle.quoteTokenStats = quoteTokenStats.id;
   raffle.prizeToken = event.params.prizeToken;
   raffle.prizeTokenId = event.params.prizeTokenId;
-  raffle.entryPrice = ENTRY_PRICE;
+  raffle.entryPrice = raffleContract.ENTRY_PRICE();
   raffle.reserveEntries = event.params.reserveEntries;
   raffle.endTime = event.params.endTime;
-  raffle.drawRequestDeadline = event.params.endTime.plus(DRAW_REQUEST_TIMEOUT);
+  raffle.drawRequestDeadline = raffleContract.drawRequestDeadline();
   // RaffleCreated is emitted only after the factory verifies prize escrow.
   raffle.status = "ACTIVE";
   raffle.totalEntries = BigInt.zero();
@@ -63,6 +64,7 @@ export function handleRaffleCreated(event: RaffleCreated): void {
   raffle.quoteClaimed = BigInt.zero();
   raffle.ignoredVrfCallbackCount = BigInt.zero();
   raffle.prizeClaimed = false;
+  raffle.settlementComplete = false;
   raffle.winningTicketSettled = false;
   raffle.winnerRedeemed = false;
   raffle.createdTxHash = event.transaction.hash;

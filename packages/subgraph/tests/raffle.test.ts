@@ -2,6 +2,7 @@ import {
   afterEach,
   assert,
   clearStore,
+  createMockedFunction,
   describe,
   newMockEvent,
   test,
@@ -72,8 +73,26 @@ describe("Raffle mappings", () => {
     assert.fieldEquals(
       "Raffle",
       RAFFLE.toHexString(),
+      "settlementComplete",
+      "false",
+    );
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
       "sponsorRecipient",
       SPONSOR.toHexString(),
+    );
+  });
+
+  test("factory creation reads canonical raffle configuration", () => {
+    handleRaffleCreated(createRaffleCreatedEventWithConfig(2_000_000, 999_999));
+
+    assert.fieldEquals("Raffle", RAFFLE.toHexString(), "entryPrice", "2000000");
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "drawRequestDeadline",
+      "999999",
     );
   });
 
@@ -163,11 +182,18 @@ describe("Raffle mappings", () => {
       "1000000",
     );
     assert.fieldEquals("Raffle", RAFFLE.toHexString(), "winningEntry", "2");
+    assert.fieldEquals("Raffle", RAFFLE.toHexString(), "resolvedAt", "2100");
     assert.fieldEquals(
       "Raffle",
       RAFFLE.toHexString(),
       "winningTicketId",
       TICKET_ID.toString(),
+    );
+    assert.fieldEquals(
+      "Raffle",
+      RAFFLE.toHexString(),
+      "settlementComplete",
+      "true",
     );
     assert.fieldEquals(
       "Ticket",
@@ -212,6 +238,12 @@ describe("Raffle mappings", () => {
       FACTORY.toHexString() + "-" + QUOTE.toHexString(),
       "winnerCashRedeemed",
       "16000000",
+    );
+    assert.fieldEquals(
+      "QuoteTokenStats",
+      FACTORY.toHexString() + "-" + QUOTE.toHexString(),
+      "settledVolume",
+      "20000000",
     );
     assert.entityCount("WinningRedemption", 1);
   });
@@ -334,6 +366,26 @@ function createPurchasedRaffle(): void {
 }
 
 function createRaffleCreatedEvent(): RaffleCreated {
+  return createRaffleCreatedEventWithConfig(1_000_000, 174_800);
+}
+
+function createRaffleCreatedEventWithConfig(
+  entryPrice: i32,
+  drawRequestDeadline: i32,
+): RaffleCreated {
+  createMockedFunction(
+    RAFFLE,
+    "ENTRY_PRICE",
+    "ENTRY_PRICE():(uint256)",
+  ).returns([ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(entryPrice))]);
+  createMockedFunction(
+    RAFFLE,
+    "drawRequestDeadline",
+    "drawRequestDeadline():(uint256)",
+  ).returns([
+    ethereum.Value.fromUnsignedBigInt(BigInt.fromI32(drawRequestDeadline)),
+  ]);
+
   const event = changetype<RaffleCreated>(newMockEvent());
   event.address = FACTORY;
   event.logIndex = BigInt.zero();
@@ -404,6 +456,7 @@ function createDrawRequestedEvent(): DrawRequested {
 function createResolutionEvent(result: i32): RaffleResolved {
   const event = changetype<RaffleResolved>(newMockEvent());
   event.address = RAFFLE;
+  event.block.timestamp = BigInt.fromI32(2_100);
   event.logIndex = BigInt.fromI32(6);
   event.parameters = new Array();
   pushUnsigned(event, "requestId", 1);

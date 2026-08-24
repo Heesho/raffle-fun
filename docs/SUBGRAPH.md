@@ -24,7 +24,8 @@ individual ticket's range with `winningEntry` directly.
 Primary mutable entities include:
 
 - `Protocol`, `QuoteTokenStats`, and daily aggregates;
-- `Raffle` with the six-state enum and five quote-liability buckets;
+- `Raffle` with the six-state enum, canonical `resolvedAt` and
+  `settlementComplete` state, and five quote-liability buckets;
 - `Ticket`, `Purchase`, and `RaffleTransfer`;
 - account and raffle-participation aggregates;
 - `DrawRequest`, `Resolution`, and `RefundEnable`;
@@ -33,6 +34,10 @@ Primary mutable entities include:
 
 All integer amounts and ticket IDs remain Graph `BigInt`; they are never cast
 through JavaScript `Number`.
+
+At creation, the mapping reads `ENTRY_PRICE()` and `drawRequestDeadline()` from the
+new raffle instead of duplicating protocol constants. Settlement aggregates count the
+entire pot allocated by `WinningTicketSettled`, including the protocol-fee slice.
 
 The schema has no Lens, per-entry Ticket, Closed status, scheduled start, mutable
 ticket price, metadata URI, or recovery-recipient field. Cash resolutions record both

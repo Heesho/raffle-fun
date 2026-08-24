@@ -69,6 +69,7 @@ type Raffle @entity(immutable: false) {
   vrfRequestId: BigInt
   winningEntry: BigInt
   winningTicketId: BigInt
+  settlementComplete: Boolean!
   winningTicketSettled: Boolean!
   winnerRedeemed: Boolean!
   prizeClaimed: Boolean!
@@ -79,6 +80,7 @@ type Raffle @entity(immutable: false) {
   requestedTxHash: Bytes
   requestedBlock: BigInt
   requestedTimestamp: BigInt
+  resolvedAt: BigInt
   resolvedTxHash: Bytes
   resolvedBlock: BigInt
   resolvedTimestamp: BigInt

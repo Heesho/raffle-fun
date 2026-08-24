@@ -158,7 +158,7 @@ export function updateResolutionDayData(
   raffle: Raffle,
   event: ethereum.Event,
   protocolFee: BigInt,
-  distributablePot: BigInt,
+  settledAmount: BigInt,
 ): void {
   const day = event.block.timestamp.div(SECONDS_PER_DAY);
   const id = raffle.quoteTokenStats + "-" + day.toString();
@@ -169,7 +169,7 @@ export function updateResolutionDayData(
   }
   if (data != null) {
     data.protocolFees = data.protocolFees.plus(protocolFee);
-    data.settledVolume = data.settledVolume.plus(distributablePot);
+    data.settledVolume = data.settledVolume.plus(settledAmount);
     data.resolutions = data.resolutions.plus(BigInt.fromI32(1));
     data.save();
   }
@@ -179,7 +179,7 @@ export function updateSettlementDayData(
   raffle: Raffle,
   event: ethereum.Event,
   protocolFee: BigInt,
-  distributablePot: BigInt,
+  settledAmount: BigInt,
 ): void {
   const day = event.block.timestamp.div(SECONDS_PER_DAY);
   const id = raffle.quoteTokenStats + "-" + day.toString();
@@ -190,7 +190,7 @@ export function updateSettlementDayData(
   }
   if (data != null) {
     data.protocolFees = data.protocolFees.plus(protocolFee);
-    data.settledVolume = data.settledVolume.plus(distributablePot);
+    data.settledVolume = data.settledVolume.plus(settledAmount);
     data.save();
   }
 }

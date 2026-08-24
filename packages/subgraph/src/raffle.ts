@@ -268,6 +268,7 @@ export function handleRaffleResolved(event: RaffleResolved): void {
   raffle.status = result;
   raffle.vrfRequestId = event.params.requestId;
   raffle.winningEntry = event.params.winningEntry;
+  raffle.resolvedAt = event.block.timestamp;
   raffle.resolvedTxHash = event.transaction.hash;
   raffle.resolvedBlock = event.block.number;
   raffle.resolvedTimestamp = event.block.timestamp;
@@ -385,6 +386,7 @@ export function handleWinningTicketSettled(event: WinningTicketSettled): void {
 
   const settler = getOrCreateAccount(event.params.settler);
   raffle.winningTicketId = event.params.ticketId;
+  raffle.settlementComplete = true;
   raffle.winningTicketSettled = true;
   raffle.unsettledPot = BigInt.zero();
   raffle.winnerProceeds = raffle.winnerProceeds.plus(event.params.cashAmount);
@@ -417,14 +419,15 @@ export function handleWinningTicketSettled(event: WinningTicketSettled): void {
   settlement.logIndex = event.logIndex;
   settlement.save();
 
+  const settledAmount = event.params.cashAmount
+    .plus(event.params.protocolFee)
+    .plus(event.params.sponsorAmount);
   const quoteToken = QuoteTokenStats.load(raffle.quoteTokenStats);
   if (quoteToken != null) {
     quoteToken.protocolFees = quoteToken.protocolFees.plus(
       event.params.protocolFee,
     );
-    quoteToken.settledVolume = quoteToken.settledVolume
-      .plus(event.params.cashAmount)
-      .plus(event.params.sponsorAmount);
+    quoteToken.settledVolume = quoteToken.settledVolume.plus(settledAmount);
     quoteToken.save();
   }
 
@@ -432,7 +435,7 @@ export function handleWinningTicketSettled(event: WinningTicketSettled): void {
     raffle,
     event,
     event.params.protocolFee,
-    event.params.cashAmount.plus(event.params.sponsorAmount),
+    settledAmount,
   );
 }
 
