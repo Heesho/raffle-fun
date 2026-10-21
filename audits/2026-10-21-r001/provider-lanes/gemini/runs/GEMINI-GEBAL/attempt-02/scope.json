@@ -1,0 +1,19 @@
+{
+  "paths": [
+    "packages/contracts/src/Raffle.sol",
+    "packages/contracts/src/RaffleFactory.sol",
+    "packages/contracts/src/interfaces/IRaffle.sol",
+    "packages/contracts/src/interfaces/IRaffleFactory.sol",
+    "packages/contracts/src/libraries/RaffleConstants.sol",
+    "packages/contracts/test/foundry",
+    "packages/contracts/test/echidna",
+    "packages/contracts/foundry.toml",
+    "packages/contracts/remappings.txt"
+  ],
+  "projectPath": "packages/contracts",
+  "exclusions": [],
+  "requirements": "raffle.fun non-upgradeable ERC-721 prize raffle protocol (Raffle.sol, RaffleFactory.sol, IRaffle.sol, IRaffleFactory.sol, RaffleConstants.sol) with test-inclusive verification (Foundry unit, fuzz, invariant, VRF adversarial, security, and Echidna property tests). Requirements: (1) Never move assets between raffle clones or lock assets in protocol sinks; (2) Escrowed prizeToken must be verified and isolated per raffle; (3) Ticket entries are fixed 1 USDC (6 decimals), sequential 1-indexed contiguous ranges [startEntry, endEntry], transferable via ERC-721; (4) Chainlink VRF v2.5 Direct Funding native wrapper draw within [endTime, endTime + 2 days) and callback within [requestedAt, requestedAt + 2 days); (5) Settlement is permissionless and storage-only, splitting 95% sponsor / 5% treasury on NftWon (totalEntries >= reserveEntries) or 80% winner / 15% sponsor / 5% treasury on CashWon (totalEntries < reserveEntries); (6) Pull-claim isolation for winner redemption, sponsor proceeds, sponsor prize reclaim, protocol fees, and ticket refunds.",
+  "permission": "authorized",
+  "existingTests": false,
+  "sourceOnly": true
+}

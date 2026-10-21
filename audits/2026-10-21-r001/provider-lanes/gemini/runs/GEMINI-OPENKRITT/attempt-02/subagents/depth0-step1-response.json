@@ -1,0 +1,197 @@
+{
+  "_kritt_extractor_helper": true,
+  "stub": false,
+  "stub_explanation": "",
+  "results": [
+    {
+      "entrypoint_kind": "smart_contract_external_function",
+      "entrypoint_label": "RaffleFactory.createRaffle(CreateRaffleParams)",
+      "entrypoint_handler": "RaffleFactory.createRaffle",
+      "entrypoint_file_path": "packages/contracts/src/RaffleFactory.sol",
+      "entrypoint_line": 97,
+      "entrypoint_actor": "Any external EOA or contract acting as raffle sponsor",
+      "entrypoint_input": "CreateRaffleParams calldata params (sponsorRecipient, prizeToken, prizeTokenId, reserveEntries, endTime) and msg.sender",
+      "entrypoint_reachability": "Declared external on RaffleFactory at line 97 with no access control restriction; callable by any caller supplying valid parameters and owning/approving the prize ERC-721."
+    },
+    {
+      "entrypoint_kind": "smart_contract_receive_function",
+      "entrypoint_label": "Raffle.receive()",
+      "entrypoint_handler": "Raffle.receive",
+      "entrypoint_file_path": "packages/contracts/src/Raffle.sol",
+      "entrypoint_line": 171,
+      "entrypoint_actor": "Any external EOA or contract sending native currency with empty calldata",
+      "entrypoint_input": "msg.value and msg.sender",
+      "entrypoint_reachability": "Declared external payable receive() on Raffle at line 171; reachable by any direct native transfer and unconditionally reverts with DirectNativeTransfer()."
+    },
+    {
+      "entrypoint_kind": "smart_contract_external_function",
+      "entrypoint_label": "Raffle.initialize(RaffleInitParams)",
+      "entrypoint_handler": "Raffle.initialize",
+      "entrypoint_file_path": "packages/contracts/src/Raffle.sol",
+      "entrypoint_line": 176,
+      "entrypoint_actor": "Canonical RaffleFactory contract (or any external caller attempting direct initialization)",
+      "entrypoint_input": "RaffleInitParams calldata params (sponsor, sponsorRecipient, protocolTreasury, prizeToken, prizeTokenId, raffleId, reserveEntries, endTime) and msg.sender",
+      "entrypoint_reachability": "Declared external on Raffle at line 176; guarded by !initialized and msg.sender == factory, invoked atomically by RaffleFactory.createRaffle on newly deployed ERC-1167 clones."
+    },
+    {
+      "entrypoint_kind": "smart_contract_external_function",
+      "entrypoint_label": "Raffle.buyEntries(address,uint128)",
+      "entrypoint_handler": "Raffle.buyEntries",
+      "entrypoint_file_path": "packages/contracts/src/Raffle.sol",
+      "entrypoint_line": 209,
+      "entrypoint_actor": "Any external EOA or contract purchasing raffle entries",
+      "entrypoint_input": "address recipient, uint128 entryCount, and msg.sender",
+      "entrypoint_reachability": "Declared external on Raffle at line 209; permissionlessly callable while status is Active and block.timestamp < endTime."
+    },
+    {
+      "entrypoint_kind": "smart_contract_external_function",
+      "entrypoint_label": "Raffle.requestDraw()",
+      "entrypoint_handler": "Raffle.requestDraw",
+      "entrypoint_file_path": "packages/contracts/src/Raffle.sol",
+      "entrypoint_line": 240,
+      "entrypoint_actor": "Any external EOA or contract initiating the VRF draw",
+      "entrypoint_input": "msg.value (native token payment for Chainlink VRF v2.5 wrapper fee) and msg.sender",
+      "entrypoint_reachability": "Declared external payable on Raffle at line 240; permissionlessly callable when status is Active, totalEntries > 0, and block.timestamp is within [endTime, drawRequestDeadline())."
+    },
+    {
+      "entrypoint_kind": "smart_contract_external_function",
+      "entrypoint_label": "Raffle.enableRefunds()",
+      "entrypoint_handler": "Raffle.enableRefunds",
+      "entrypoint_file_path": "packages/contracts/src/Raffle.sol",
+      "entrypoint_line": 276,
+      "entrypoint_actor": "Raffle sponsor (before endTime when totalEntries == 0) or any external EOA/contract after the applicable liveness deadline",
+      "entrypoint_input": "msg.sender and block.timestamp",
+      "entrypoint_reachability": "Declared external on Raffle at line 276; callable by sponsor before endTime when totalEntries == 0, or by anyone after endTime (when totalEntries == 0), drawRequestDeadline() (when Active with entries), or callbackDeadline() (when Drawing)."
+    },
+    {
+      "entrypoint_kind": "smart_contract_external_function",
+      "entrypoint_label": "Raffle.settleWinningTicket(uint256)",
+      "entrypoint_handler": "Raffle.settleWinningTicket",
+      "entrypoint_file_path": "packages/contracts/src/Raffle.sol",
+      "entrypoint_line": 304,
+      "entrypoint_actor": "Any external EOA or contract",
+      "entrypoint_input": "uint256 ticketId and msg.sender",
+      "entrypoint_reachability": "Declared external on Raffle at line 304; permissionlessly callable when status is NftWon or CashWon and settlementComplete is false."
+    },
+    {
+      "entrypoint_kind": "smart_contract_external_function",
+      "entrypoint_label": "Raffle.redeemWinningTicket(uint256)",
+      "entrypoint_handler": "Raffle.redeemWinningTicket",
+      "entrypoint_file_path": "packages/contracts/src/Raffle.sol",
+      "entrypoint_line": 309,
+      "entrypoint_actor": "Current ERC-721 owner of the winning ticket",
+      "entrypoint_input": "uint256 ticketId and msg.sender",
+      "entrypoint_reachability": "Declared external on Raffle at line 309; callable by the current owner of the winning ticket when status is NftWon or CashWon and winnerRedeemed is false."
+    },
+    {
+      "entrypoint_kind": "smart_contract_external_function",
+      "entrypoint_label": "Raffle.refundTickets(uint256[])",
+      "entrypoint_handler": "Raffle.refundTickets",
+      "entrypoint_file_path": "packages/contracts/src/Raffle.sol",
+      "entrypoint_line": 349,
+      "entrypoint_actor": "Current ERC-721 owner of the specified ticket IDs",
+      "entrypoint_input": "uint256[] calldata ticketIds and msg.sender",
+      "entrypoint_reachability": "Declared external on Raffle at line 349; callable by any ticket owner for 1 to 100 owned tickets per call when status is Refunding."
+    },
+    {
+      "entrypoint_kind": "smart_contract_external_function",
+      "entrypoint_label": "Raffle.releaseSponsorProceeds()",
+      "entrypoint_handler": "Raffle.releaseSponsorProceeds",
+      "entrypoint_file_path": "packages/contracts/src/Raffle.sol",
+      "entrypoint_line": 375,
+      "entrypoint_actor": "Any external EOA or contract",
+      "entrypoint_input": "msg.sender",
+      "entrypoint_reachability": "Declared external on Raffle at line 375; permissionlessly callable whenever sponsorProceeds > 0 after settlement."
+    },
+    {
+      "entrypoint_kind": "smart_contract_external_function",
+      "entrypoint_label": "Raffle.releaseProtocolFees()",
+      "entrypoint_handler": "Raffle.releaseProtocolFees",
+      "entrypoint_file_path": "packages/contracts/src/Raffle.sol",
+      "entrypoint_line": 385,
+      "entrypoint_actor": "Any external EOA or contract",
+      "entrypoint_input": "msg.sender",
+      "entrypoint_reachability": "Declared external on Raffle at line 385; permissionlessly callable whenever protocolFees > 0 after settlement."
+    },
+    {
+      "entrypoint_kind": "smart_contract_external_function",
+      "entrypoint_label": "Raffle.releaseSponsorPrize()",
+      "entrypoint_handler": "Raffle.releaseSponsorPrize",
+      "entrypoint_file_path": "packages/contracts/src/Raffle.sol",
+      "entrypoint_line": 395,
+      "entrypoint_actor": "Any external EOA or contract",
+      "entrypoint_input": "msg.sender",
+      "entrypoint_reachability": "Declared external on Raffle at line 395; permissionlessly callable when status is CashWon or Refunding and prizeClaimed is false."
+    },
+    {
+      "entrypoint_kind": "smart_contract_external_callback",
+      "entrypoint_label": "Raffle.onERC721Received(address,address,uint256,bytes)",
+      "entrypoint_handler": "Raffle.onERC721Received",
+      "entrypoint_file_path": "packages/contracts/src/Raffle.sol",
+      "entrypoint_line": 416,
+      "entrypoint_actor": "Configured prizeToken ERC-721 contract invoked during safeTransferFrom from RaffleFactory",
+      "entrypoint_input": "address operator, address from, uint256 tokenId, bytes calldata data, and msg.sender",
+      "entrypoint_reachability": "Declared external on Raffle at line 416; externally reachable, succeeding only when status is AwaitingPrize, msg.sender == address(prizeToken), tokenId == prizeTokenId, from == sponsor, and operator == factory."
+    },
+    {
+      "entrypoint_kind": "smart_contract_external_callback",
+      "entrypoint_label": "Raffle.rawFulfillRandomWords(uint256,uint256[])",
+      "entrypoint_handler": "Raffle.fulfillRandomWords",
+      "entrypoint_file_path": "packages/contracts/src/Raffle.sol",
+      "entrypoint_line": 509,
+      "entrypoint_actor": "Configured Chainlink VRF v2.5 Wrapper contract (i_vrfV2PlusWrapper)",
+      "entrypoint_input": "uint256 requestId, uint256[] memory randomWords, and msg.sender",
+      "entrypoint_reachability": "Inherited external rawFulfillRandomWords on VRFV2PlusWrapperConsumerBase (Raffle.sol line 28) checks msg.sender == address(i_vrfV2PlusWrapper) and dispatches to Raffle.fulfillRandomWords at line 509."
+    },
+    {
+      "entrypoint_kind": "smart_contract_external_function",
+      "entrypoint_label": "Raffle.transferFrom(address,address,uint256)",
+      "entrypoint_handler": "Raffle._update",
+      "entrypoint_file_path": "packages/contracts/src/Raffle.sol",
+      "entrypoint_line": 497,
+      "entrypoint_actor": "Ticket owner or approved ERC-721 operator",
+      "entrypoint_input": "address from, address to, uint256 tokenId, and msg.sender",
+      "entrypoint_reachability": "Inherited public transferFrom on OpenZeppelin ERC721 (Raffle.sol line 28) dispatches to overridden internal Raffle._update at line 497."
+    },
+    {
+      "entrypoint_kind": "smart_contract_external_function",
+      "entrypoint_label": "Raffle.safeTransferFrom(address,address,uint256)",
+      "entrypoint_handler": "Raffle._update",
+      "entrypoint_file_path": "packages/contracts/src/Raffle.sol",
+      "entrypoint_line": 497,
+      "entrypoint_actor": "Ticket owner or approved ERC-721 operator",
+      "entrypoint_input": "address from, address to, uint256 tokenId, and msg.sender",
+      "entrypoint_reachability": "Inherited public safeTransferFrom(address,address,uint256) on OpenZeppelin ERC721 (Raffle.sol line 28) dispatches to overridden internal Raffle._update at line 497 and invokes IERC721Receiver.onERC721Received on contract recipients."
+    },
+    {
+      "entrypoint_kind": "smart_contract_external_function",
+      "entrypoint_label": "Raffle.safeTransferFrom(address,address,uint256,bytes)",
+      "entrypoint_handler": "Raffle._update",
+      "entrypoint_file_path": "packages/contracts/src/Raffle.sol",
+      "entrypoint_line": 497,
+      "entrypoint_actor": "Ticket owner or approved ERC-721 operator",
+      "entrypoint_input": "address from, address to, uint256 tokenId, bytes memory data, and msg.sender",
+      "entrypoint_reachability": "Inherited public safeTransferFrom(address,address,uint256,bytes) on OpenZeppelin ERC721 (Raffle.sol line 28) dispatches to overridden internal Raffle._update at line 497 and invokes IERC721Receiver.onERC721Received on contract recipients."
+    },
+    {
+      "entrypoint_kind": "smart_contract_external_function",
+      "entrypoint_label": "Raffle.approve(address,uint256)",
+      "entrypoint_handler": "ERC721.approve",
+      "entrypoint_file_path": "packages/contracts/src/Raffle.sol",
+      "entrypoint_line": 28,
+      "entrypoint_actor": "Ticket owner or operator approved for all",
+      "entrypoint_input": "address to, uint256 tokenId, and msg.sender",
+      "entrypoint_reachability": "Inherited public approve(address,uint256) on OpenZeppelin ERC721 (Raffle.sol line 28) callable by the ticket owner or an operator approved via setApprovalForAll."
+    },
+    {
+      "entrypoint_kind": "smart_contract_external_function",
+      "entrypoint_label": "Raffle.setApprovalForAll(address,bool)",
+      "entrypoint_handler": "ERC721.setApprovalForAll",
+      "entrypoint_file_path": "packages/contracts/src/Raffle.sol",
+      "entrypoint_line": 28,
+      "entrypoint_actor": "Any external EOA or contract",
+      "entrypoint_input": "address operator, bool approved, and msg.sender",
+      "entrypoint_reachability": "Inherited public setApprovalForAll(address,bool) on OpenZeppelin ERC721 (Raffle.sol line 28) callable by any address to configure operator approvals for its tickets."
+    }
+  ]
+}

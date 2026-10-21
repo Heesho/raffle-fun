@@ -1,0 +1,113 @@
+{
+  "round": "2026-10-21-r001",
+  "provider": "google-gemini",
+  "target_commit": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "freeze_manifest": "../../freeze.json",
+  "clean_context_archive": "../../clean-context.tar.gz",
+  "clean_context_sha256": "fc53106bb75495a4caa732f3be0a7e5bca3d619c5d01a77b0909227d30ede96d",
+  "target_archive": "../../target.tar.gz",
+  "target_archive_sha256": "67d554dfd521c83a3383fe1b58b934647ff86ead6c3f3b9290af45e44d6aae1d",
+  "first_pass_report": "FIRST-PASS.md",
+  "first_pass_sha256": "43a0a0efa35ae70f82b0311b29aea14a66aedf0b1f97d50f14e780d44ab5d3a3",
+  "first_pass_sealed_at": "2026-10-21T08:46:56Z",
+  "final_report": "FINAL-AUDIT-REPORT.md",
+  "reconciliation_report": "reconciliation/RECONCILIATION.md",
+  "toolchain_manifest": "toolchain.json",
+  "model_selection": {
+    "requested_provider": "Google Gemini",
+    "requested_model_id": "gemini-4-argon",
+    "accepted_local_selection": "inherit (Gemini 4 Argon (High))",
+    "provider_returned_identity": "Gemini 4 Argon (High) (verified in Antigravity runner transcript .system_generated/logs/transcript.jsonl)",
+    "reasoning_thinking_setting": "High (thinkingEffort: High)",
+    "runner_binary": "/Applications/Antigravity.app/Contents/Resources/bin/language_server",
+    "runner_version": "hub-2.25.0",
+    "automatic_fallback_disabled": true,
+    "fallbacks_used": []
+  },
+  "cells": [
+    {
+      "cell_id": "GEMINI-SIMAO",
+      "harness": "0xSimao AI",
+      "upstream_url": "https://github.com/0xsimao/0xsimao-ai",
+      "requested_pin": "3f81e5803174182a7db07eca87849d2b3d571113",
+      "resolved_pin": "3f81e5803174182a7db07eca87849d2b3d571113",
+      "status": "COMPLETED",
+      "exposure": "cold-source-only",
+      "attempts": ["runs/GEMINI-SIMAO/attempt-01"],
+      "primary_report": "runs/GEMINI-SIMAO/attempt-01/REPORT.md"
+    },
+    {
+      "cell_id": "GEMINI-PASHOV",
+      "harness": "Pashov Skills / solidity-auditor",
+      "upstream_url": "https://github.com/pashov/skills",
+      "requested_pin": "8ce544c9c9affab448d3dc4c79191d052e3a57ec",
+      "resolved_pin": "8ce544c9c9affab448d3dc4c79191d052e3a57ec",
+      "status": "COMPLETED",
+      "exposure": "cold-source-only",
+      "attempts": ["runs/GEMINI-PASHOV/attempt-01"],
+      "primary_report": "runs/GEMINI-PASHOV/attempt-01/REPORT.md"
+    },
+    {
+      "cell_id": "GEMINI-OPENKRITT",
+      "harness": "OpenKritt",
+      "upstream_url": "https://github.com/open-kritt/open-kritt",
+      "requested_pin": "43e1d19a00ce50bd93253d1c6c3a48cfffbcc4c3",
+      "resolved_pin": "43e1d19a00ce50bd93253d1c6c3a48cfffbcc4c3",
+      "status": "COMPLETED",
+      "attempt_01_note": "Upstream OpenKritt CLI runner adapter (open_kritt_engine/harnesses.py) only defines subprocess runners for codex, claude-code, and grok-build (documented in runs/GEMINI-OPENKRITT/attempt-01/BLOCKER.md). In attempt-02, we executed the full open_kritt_engine workflow (external-flow-analysis Depth 0/1/2 + post_processing dedupe + Blockchain security triage ranker) natively using Gemini 4 Argon (High) subagents with 100% schema validation.",
+      "exposure": "cold-source-only",
+      "attempts": [
+        "runs/GEMINI-OPENKRITT/attempt-01",
+        "runs/GEMINI-OPENKRITT/attempt-02"
+      ],
+      "blocker_report": "runs/GEMINI-OPENKRITT/attempt-01/BLOCKER.md",
+      "primary_report": "runs/GEMINI-OPENKRITT/attempt-02/REPORT.md",
+      "artifacts": [
+        "runs/GEMINI-OPENKRITT/attempt-02/REPORT.md",
+        "runs/GEMINI-OPENKRITT/attempt-02/step-results.json",
+        "runs/GEMINI-OPENKRITT/attempt-02/vulnerabilities.json",
+        "runs/GEMINI-OPENKRITT/attempt-02/post-processing.json"
+      ]
+    },
+    {
+      "cell_id": "GEMINI-TOB",
+      "harness": "Trail of Bits Skills",
+      "upstream_url": "https://github.com/trailofbits/skills",
+      "requested_pin": "82fe8226252622fa807643bdca1710901198553a",
+      "resolved_pin": "82fe8226252622fa807643bdca1710901198553a",
+      "status": "COMPLETED",
+      "exposure": "cold-source-only",
+      "attempts": ["runs/GEMINI-TOB/attempt-01"],
+      "primary_report": "runs/GEMINI-TOB/attempt-01/REPORT.md"
+    },
+    {
+      "cell_id": "GEMINI-GEBAL",
+      "harness": "Gebal",
+      "upstream_url": "https://github.com/Heesho/gebal",
+      "requested_pin": "5c68ec0284dc642823abe81cbc0e02fcb080a69f",
+      "requested_pin_fetch_status": "FAILED_EXIT_128_NOT_OUR_REF",
+      "resolved_pin": "9ad24645f92a3821ae4539db5f1be52b48ed379e",
+      "status": "COMPLETED",
+      "exposure": "cold-source-only (attempt-01) + post-seal-test-inclusive (attempt-02)",
+      "attempts": [
+        "runs/GEMINI-GEBAL/attempt-01",
+        "runs/GEMINI-GEBAL/attempt-02"
+      ],
+      "primary_reports": [
+        "runs/GEMINI-GEBAL/attempt-01/REPORT.md",
+        "runs/GEMINI-GEBAL/attempt-02/REPORT.md",
+        "runs/GEMINI-GEBAL/attempt-02/compare-attempt01-vs-attempt02.json"
+      ]
+    }
+  ],
+  "supplementary_reviews": [
+    {
+      "cell_id": "GEMINI-SUPPLEMENTARY",
+      "description": "Independent Gemini 4 Argon (High) whole-system mathematical, state-machine, custody, and cross-contract composition cold review + post-seal dynamic Foundry PoC, Slither, Echidna, and Python reference model execution",
+      "status": "COMPLETED",
+      "exposure": "cold-source-only (REPORT.md) + post-seal-validation (GeminiAuditPoC.t.sol, forge, slither, echidna)",
+      "attempts": ["runs/GEMINI-SUPPLEMENTARY/attempt-01"],
+      "primary_report": "runs/GEMINI-SUPPLEMENTARY/attempt-01/REPORT.md"
+    }
+  ]
+}

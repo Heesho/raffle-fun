@@ -1,0 +1,787 @@
+{
+  "schemaVersion": 1,
+  "brand": "Gebal",
+  "domain": "gebal.ai",
+  "run": {
+    "schemaVersion": 1,
+    "id": "9b66bccf-5138-42e3-911d-48da23cf375d",
+    "createdAt": "2026-10-21T08:35:24.967Z",
+    "planId": "e18e71bc-b939-4804-84ad-678cf3c7a4b7",
+    "snapshotId": "18accd2f-d169-4b9f-8c55-b9bccbdc4367",
+    "state": "succeeded",
+    "finishedAt": "2026-10-21T08:35:24.977Z",
+    "cancelRequested": false,
+    "costUsd": null,
+    "reservedTokens": 0,
+    "usedTokens": 0
+  },
+  "plan": {
+    "schemaVersion": 1,
+    "id": "e18e71bc-b939-4804-84ad-678cf3c7a4b7",
+    "createdAt": "2026-10-21T08:35:05.736Z",
+    "snapshotId": "18accd2f-d169-4b9f-8c55-b9bccbdc4367",
+    "snapshotHash": "4d791fd1b91c282a49b1db1ec34fc406e11a75d7cb7fe4fea8a93c9b81d22ecb",
+    "scopeId": "14117a53-1538-471a-baff-d4567757e84e",
+    "diagnosis": {
+      "kind": "foundry",
+      "supported": false,
+      "compiler": "0.8.36",
+      "evm": "cancun",
+      "settings": {
+        "src": "packages/contracts/src",
+        "test": "packages/contracts/test/foundry",
+        "script": "script",
+        "out": "out",
+        "libs": [
+          "packages/contracts/lib",
+          "packages/contracts/node_modules"
+        ],
+        "solc_version": "0.8.36",
+        "evm_version": "cancun",
+        "optimizer": true,
+        "optimizer_runs": 200,
+        "via_ir": false,
+        "fuzz": {
+          "runs": 1000,
+          "seed": "0x524146464c45"
+        },
+        "invariant": {
+          "runs": 256,
+          "depth": 64,
+          "fail_on_revert": false
+        },
+        "gas_reports": [
+          "Raffle",
+          "RaffleFactory"
+        ],
+        "projectPath": "packages/contracts",
+        "remappings": [
+          "@openzeppelin/contracts/=packages/contracts/node_modules/@openzeppelin/contracts/",
+          "forge-std/=packages/contracts/lib/forge-std/src/"
+        ]
+      },
+      "issues": [
+        "Unsupported configuration key: gas_reports",
+        "Dependencies missing from authorized snapshot: packages/contracts/src/interfaces/IRaffle.sol: @chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol, packages/contracts/src/interfaces/IRaffle.sol: @openzeppelin/contracts/token/ERC20/IERC20.sol, packages/contracts/src/interfaces/IRaffle.sol: @openzeppelin/contracts/token/ERC721/IERC721.sol, packages/contracts/src/Raffle.sol: @chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol, packages/contracts/src/Raffle.sol: @chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol, packages/contracts/src/Raffle.sol: @chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol, packages/contracts/src/Raffle.sol: @openzeppelin/contracts/token/ERC20/IERC20.sol, packages/contracts/src/Raffle.sol: @openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol, packages/contracts/src/Raffle.sol: @openzeppelin/contracts/token/ERC721/ERC721.sol, packages/contracts/src/Raffle.sol: @openzeppelin/contracts/token/ERC721/IERC721.sol"
+      ],
+      "notes": [
+        "Only profile.default is selected; other profiles, RPC endpoints and formatting configuration are not loaded.",
+        "Controller overrides output/cache/script paths, denies FFI/filesystem/RPC and dependency downloads, and disables automatic remappings.",
+        "Configured fuzz/invariant campaigns are replaced by the disclosed fixed seed and bounded campaign. Tests requiring denied capabilities cannot be validated.",
+        "Source-only intake does not establish compiler, test, property or security coverage."
+      ]
+    },
+    "tasks": [
+      "intake"
+    ],
+    "limits": {
+      "seconds": 120,
+      "memoryMb": 1024,
+      "cpus": 1,
+      "pids": 64,
+      "diskMb": 128,
+      "maxOutputBytes": 2097152,
+      "tokens": 24000,
+      "maxTasks": 4
+    },
+    "image": null,
+    "provider": null,
+    "egress": [],
+    "methodology": "native-review-v1",
+    "adapterVersion": "0.2.0",
+    "hash": "e95739d00c912c074f0b39a7283363cd6cc878e2a6abc15769c7a6afd7de25f0"
+  },
+  "snapshot": {
+    "schemaVersion": 1,
+    "id": "18accd2f-d169-4b9f-8c55-b9bccbdc4367",
+    "createdAt": "2026-10-21T08:35:05.734Z",
+    "scopeId": "14117a53-1538-471a-baff-d4567757e84e",
+    "hash": "4d791fd1b91c282a49b1db1ec34fc406e11a75d7cb7fe4fea8a93c9b81d22ecb",
+    "files": [
+      {
+        "path": "packages/contracts/foundry.toml",
+        "hash": "0fdce809ea1675dac422cff420a3402b2f28aabed0631595e43823033fa8ef50",
+        "bytes": 1228,
+        "lines": 49
+      },
+      {
+        "path": "packages/contracts/remappings.txt",
+        "hash": "cbf6730be9c6b6daa1855953ba581d96f14e2dbc3bc95ca3bc2d92cfd231acaa",
+        "bytes": 93,
+        "lines": 3
+      },
+      {
+        "path": "packages/contracts/src/interfaces/IRaffle.sol",
+        "hash": "a43ede9e8802d636a566fb225ed65bdf70f06d17f4734a1632a0a9f84aa5b2dd",
+        "bytes": 29703,
+        "lines": 522
+      },
+      {
+        "path": "packages/contracts/src/interfaces/IRaffleFactory.sol",
+        "hash": "747d238e4c7dc5b517f91c796dec87d9ddbfec9c626d1ff21467c60d780d03cf",
+        "bytes": 7875,
+        "lines": 151
+      },
+      {
+        "path": "packages/contracts/src/libraries/RaffleConstants.sol",
+        "hash": "0893f1a70ac03ad557e0b4c8bdf6a2f73d317f8417d1b4a3c1a571b893ed54b6",
+        "bytes": 2172,
+        "lines": 44
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "hash": "6e4c977922c3e39fafaa8c4c4fb74a971f1817eca9b6552eb8a540969f968617",
+        "bytes": 26421,
+        "lines": 615
+      },
+      {
+        "path": "packages/contracts/src/RaffleFactory.sol",
+        "hash": "d0e62b34faa42513fd968f915262728fe66a15c4b9af13a3c66f496704142ace",
+        "bytes": 8286,
+        "lines": 187
+      }
+    ],
+    "excluded": [],
+    "dependencyLocks": {}
+  },
+  "scope": {
+    "schemaVersion": 1,
+    "id": "14117a53-1538-471a-baff-d4567757e84e",
+    "createdAt": "2026-10-21T08:35:05.718Z",
+    "projectId": "20a42e5b-35c6-4970-a4f7-455e7f9a153d",
+    "authorized": true,
+    "paths": [
+      "packages/contracts/src",
+      "packages/contracts/foundry.toml",
+      "packages/contracts/remappings.txt"
+    ],
+    "projectPath": "packages/contracts",
+    "exclusions": [],
+    "requirements": "raffle.fun non-upgradeable ERC-721 prize raffle protocol (Raffle.sol, RaffleFactory.sol, IRaffle.sol, IRaffleFactory.sol, RaffleConstants.sol). Requirements: (1) Never move assets between raffle clones or lock assets in protocol sinks; (2) Escrowed prizeToken must be verified and isolated per raffle; (3) Ticket entries are fixed 1 USDC (6 decimals), sequential 1-indexed contiguous ranges [startEntry, endEntry], transferable via ERC-721; (4) Chainlink VRF v2.5 Direct Funding native wrapper draw within [endTime, endTime + 2 days) and callback within [requestedAt, requestedAt + 2 days); (5) Settlement is permissionless and storage-only, splitting 95% sponsor / 5% treasury on NftWon (totalEntries >= reserveEntries) or 80% winner / 15% sponsor / 5% treasury on CashWon (totalEntries < reserveEntries); (6) Pull-claim isolation for winner redemption, sponsor proceeds, sponsor prize reclaim, protocol fees, and ticket refunds.",
+    "permission": "authorized"
+  },
+  "project": {
+    "schemaVersion": 1,
+    "id": "20a42e5b-35c6-4970-a4f7-455e7f9a153d",
+    "createdAt": "2026-10-21T08:35:05.714Z",
+    "name": "source-repo",
+    "root": "/Users/hishamel-husseini/.gemini/antigravity/brain/2e9c188b-5d8e-48b7-bce3-b1f2ebc4987c/scratch/raffle-audit-r001-gemini/runs/GEMINI-GEBAL/attempt-01/source-repo",
+    "origin": "local-project"
+  },
+  "tasks": [
+    {
+      "schemaVersion": 1,
+      "id": "cc7d4a5f-bf72-4e40-8633-afc03f5a739d",
+      "createdAt": "2026-10-21T08:35:24.969Z",
+      "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "kind": "intake",
+      "state": "succeeded",
+      "dependencies": [],
+      "attempts": 1,
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "detail": "Recorded 7 authorized files. Build configuration unsupported; see diagnosis.",
+      "evidence": [
+        "6a2f6ee5a51c355f1ec00e670901ccba6a13b8ebb37bfa86341429701eb81378"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "schemaVersion": 1,
+      "id": "2098caef-e33c-41ff-aa87-1c0dab9b4b77",
+      "createdAt": "2026-10-21T08:36:33.256Z",
+      "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "title": "Predictable CREATE clone addresses bypass _isProtocolDestination before deployment, locking quote payouts and allowing cross-clone prize transfers",
+      "description": "RaffleFactory.createRaffle deploys clones with Clones.clone(raffleImplementation) (EVM CREATE opcode), making every future clone address deterministic from (address(factory), nonce). Before a future clone R_future is deployed, R_future.code.length == 0 and canonicalFactory.isRaffle(R_future) == false. Consequently, R_future passes RaffleFactory._validateCreateParams and Raffle._isProtocolDestination during Raffle.initialize (as sponsorRecipient) and Raffle._update (as a ticket recipient in buyEntries or transferFrom), and bypasses ERC721Utils.checkOnERC721Received. Once R_future is deployed by a subsequent createRaffle call, isRaffle[R_future] becomes true and R_future.code.length == 45: (1) Raffle.releaseSponsorProceeds calls _transferQuote(R_future, amount), which re-checks _isProtocolDestination and permanently reverts with InvalidQuoteDestination(R_future), locking sponsorProceeds; (2) Raffle.releaseSponsorPrize and Raffle.redeemWinningTicket (in Status.NftWon) omit _isProtocolDestination and call prizeToken.transferFrom(address(this), R_future, prizeTokenId), moving the prize NFT into clone R_future in violation of the cross-clone asset isolation invariant and stranding the NFT permanently; (3) any ticket owned by R_future can never be redeemed or refunded because Raffle has no outbound call to redeemWinningTicket or refundTickets; (4) if protocolTreasury is configured to a future clone CREATE address R_k in the RaffleFactory constructor, createRaffle permanently reverts at raffle k with UnsafeProtocolDestination.\nAssumptions: A caller or sponsor specifies a precomputed future CREATE address of RaffleFactory before that clone index is deployed.; At least one subsequent createRaffle call occurs to deploy the clone at that predicted address.",
+      "severity": "medium",
+      "confidence": "high",
+      "evidenceType": "model",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 334,
+          "end": 337
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 395,
+          "end": 407
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 497,
+          "end": 502
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 564,
+          "end": 567
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 593,
+          "end": 605
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 106,
+          "end": 127
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 159,
+          "end": 168
+        }
+      ],
+      "evidence": [
+        "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+      ],
+      "observationIds": [
+        "2b84976b-86d5-47f9-971f-c255ef1f892b"
+      ],
+      "fingerprint": "c6645ec3b821b1a438af4fa99bcfc493c97d9d6a083def70602283855375efb5"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "e6d0631f-c322-4094-bc75-e073536cbd84",
+      "createdAt": "2026-10-21T08:36:33.257Z",
+      "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "title": "Decoupled sponsorProceeds payout in Status.NftWon allows sponsor to claim 95% of buyer USDC even when prizeToken delivery fails in redeemWinningTicket",
+      "description": "In Status.NftWon, _settleWinningTicket allocates 95% of unsettledPot to sponsorProceeds and 5% to protocolFees in storage without transferring prizeToken or verifying that prizeToken remains transferable to the winning ticket owner. Raffle.releaseSponsorProceeds only checks sponsorProceeds != 0 and does not require prizeClaimed == true when status == Status.NftWon. If the arbitrary ERC-721 prizeToken is pausable, blacklist-enabled, expiring, soulbound-after-escrow, or sponsor-controlled and reverts (or fails the post-transfer ownerOf check) during redeemWinningTicket, the sponsor still extracts 95% of buyer USDC while the winner cannot receive the NFT and the raffle cannot transition from Status.NftWon to Status.Refunding.\nAssumptions: The escrowed prizeToken is an arbitrary ERC-721 contract that succeeds during createRaffle safeTransferFrom but reverts or blocks transfer when redeemWinningTicket is called after settlement.",
+      "severity": "medium",
+      "confidence": "high",
+      "evidenceType": "model",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 329,
+          "end": 339
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 375,
+          "end": 382
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 533,
+          "end": 558
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 171,
+          "end": 177
+        }
+      ],
+      "evidence": [
+        "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+      ],
+      "observationIds": [
+        "5611ca28-9309-4e99-9c15-b20eef7f9543"
+      ],
+      "fingerprint": "6e351b750bab639f1b178d7f99809b87c99dcec9c4e32a234c1d6977e911f04d"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "0962fc57-fc22-4b17-bff8-ffbed2b896bb",
+      "createdAt": "2026-10-21T08:36:33.257Z",
+      "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "title": "Discontinuous payout cliff at reserveEntries and unrestricted single-buyer under-target draw enable sponsor self-purchase arbitrage and 20% fee extraction",
+      "description": "When totalEntries crosses reserveEntries, settlement switches discontinuously from Status.CashWon (80% winnerProceeds, 15% sponsorProceeds, 5% protocolFees, plus prize NFT returned to sponsor) to Status.NftWon (0% winnerProceeds, 95% sponsorProceeds, 5% protocolFees). Because neither sponsor nor sponsorRecipient is blocked in buyEntries, a sponsor receives a 95% rebate on every entry bought once totalEntries >= reserveEntries (paying $0.05 net per $1.00 entry) and can buy the shortfall right before endTime to capture 80% of existing buyers' pot plus proportional probability of winning back the NFT. Conversely, when totalEntries < reserveEntries and only a single buyer (or single ticket) participated, requestDraw can still be called at endTime to force Status.CashWon, extracting 15% sponsorProceeds + 5% protocolFees from the sole buyer while returning the NFT to the sponsor.\nAssumptions: Economic mechanism treats sponsor entries identically to external buyer entries and permits draws when ticketCount == 1 below reserveEntries.",
+      "severity": "low",
+      "confidence": "high",
+      "evidenceType": "model",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 209,
+          "end": 236
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 243,
+          "end": 248
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 519,
+          "end": 550
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 178,
+          "end": 179
+        }
+      ],
+      "evidence": [
+        "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+      ],
+      "observationIds": [
+        "1124c480-333c-420e-a6b0-858d4e5216c4"
+      ],
+      "fingerprint": "3ccc0c93034cb2298096f04d91aa5e7ced094516dd4215b7fc5b74ae524ae839"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "7ff0468d-4372-4414-bbec-d848cea216e6",
+      "createdAt": "2026-10-21T08:36:33.257Z",
+      "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "title": "Sponsor pre-endTime empty-raffle cancellation in enableRefunds can be front-run by a 1-USDC buyEntries transaction",
+      "description": "Raffle.enableRefunds allows the sponsor to cancel an active raffle before endTime only when totalEntries == 0. Because buyEntries is permissionless while block.timestamp < endTime, an observer in the public mempool can front-run the sponsor's enableRefunds() call with buyEntries(recipient, 1) for 1 USDC (1e6 quoteToken units). This increments totalEntries to 1, causing the sponsor's enableRefunds() transaction to take the totalEntries != 0 branch and revert with RefundsNotAvailable(endTime + 2 days, block.timestamp), locking the prize NFT until at least endTime (and winning the NFT for 1 USDC if reserveEntries == 1).\nAssumptions: The sponsor broadcasts enableRefunds() via a public mempool before endTime while totalEntries == 0.",
+      "severity": "low",
+      "confidence": "high",
+      "evidenceType": "model",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 209,
+          "end": 236
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 280,
+          "end": 292
+        }
+      ],
+      "evidence": [
+        "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+      ],
+      "observationIds": [
+        "6227199a-9d78-4344-b282-4d7f054d3542"
+      ],
+      "fingerprint": "52739ec63ba374611fd45b779a9e3007848f9d538c0b91576ba00038eb6147c2"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "e71313c8-e91a-4dcf-b93b-851d58275b05",
+      "createdAt": "2026-10-21T08:36:33.257Z",
+      "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "title": "Untrusted prizeToken.safeTransferFrom in createRaffle activates the Raffle clone before RaffleCreated is emitted and before post-transfer ownerOf verification",
+      "description": "In RaffleFactory.createRaffle, prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId) invokes Raffle.onERC721Received, which transitions the clone from Status.Initialized to Status.Active and emits PrizeDeposited before safeTransferFrom returns to RaffleFactory. Because Raffle's own ReentrancyGuard is not entered during createRaffle, a custom or hook-enabled prizeToken contract can call raffle.buyEntries(recipient, entryCount) inside safeTransferFrom after onERC721Received returns, emitting Transfer and TicketPurchased events before RaffleFactory verifies prize.ownerOf(params.prizeTokenId) == raffle and before RaffleCreated is emitted.\nAssumptions: The prizeToken contract executes an external call to the newly created Raffle clone inside safeTransferFrom after calling onERC721Received.",
+      "severity": "low",
+      "confidence": "high",
+      "evidenceType": "model",
+      "source": [
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 128,
+          "end": 147
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 416,
+          "end": 431
+        }
+      ],
+      "evidence": [
+        "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+      ],
+      "observationIds": [
+        "9c740689-a305-43e8-aeec-c5bd05729e77"
+      ],
+      "fingerprint": "e2fa4b470385d249cd0aaa668185e80ac458bffe420229055868a21b85bdfa3d"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "92bbcdc5-98b5-4f71-871e-fa7f94d602d5",
+      "createdAt": "2026-10-21T08:36:33.257Z",
+      "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "title": "Unbounded reserveEntries upper limit, unrestricted secondary ticket transfers during Status.Drawing, and ERC-1167 ReentrancyGuard cold-slot gas overhead",
+      "description": "Three defense-in-depth and gas hygiene issues exist across RaffleFactory and Raffle: (1) RaffleFactory._validateCreateParams only checks reserveEntries != 0 and enforces no upper bound on uint128 reserveEntries, allowing raffles where reserveEntries exceeds total USDC supply so Status.NftWon is unreachable; (2) Raffle._update does not restrict ERC-721 ticket transfers during Status.Drawing or after draw fulfillment, exposing open secondary-market orders or bids on tickets to mempool front-running once the VRF fulfillment transaction is visible; (3) Raffle inherits storage-backed ReentrancyGuard (where _status starts at 0 in uninitialized ERC-1167 clone storage rather than _NOT_ENTERED = 1), charging the first buyEntries caller a 20,000-gas 0-to-1 SSTORE penalty, and hardcodes VRF_CALLBACK_GAS_LIMIT = 300_000 even though fulfillRandomWords only writes 4 storage slots.\nAssumptions: Target EVM is cancun (as configured in foundry.toml), where transient storage (EIP-1153) is available.",
+      "severity": "informational",
+      "confidence": "high",
+      "evidenceType": "model",
+      "source": [
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 178,
+          "end": 179
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 252,
+          "end": 266
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 497,
+          "end": 502
+        },
+        {
+          "path": "packages/contracts/src/libraries/RaffleConstants.sol",
+          "start": 32,
+          "end": 42
+        }
+      ],
+      "evidence": [
+        "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+      ],
+      "observationIds": [
+        "2a2da519-335e-48b4-9682-c24e8e60e486"
+      ],
+      "fingerprint": "830881bd4b6203f7a01684bbe7ec65f886f1ff3a1106209b0c64c18983187ae3"
+    }
+  ],
+  "observations": [
+    {
+      "schemaVersion": 1,
+      "id": "2b84976b-86d5-47f9-971f-c255ef1f892b",
+      "createdAt": "2026-10-21T08:36:33.255Z",
+      "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "producer": "model",
+      "text": "RaffleFactory.createRaffle deploys clones with Clones.clone(raffleImplementation) (EVM CREATE opcode), making every future clone address deterministic from (address(factory), nonce). Before a future clone R_future is deployed, R_future.code.length == 0 and canonicalFactory.isRaffle(R_future) == false. Consequently, R_future passes RaffleFactory._validateCreateParams and Raffle._isProtocolDestination during Raffle.initialize (as sponsorRecipient) and Raffle._update (as a ticket recipient in buyEntries or transferFrom), and bypasses ERC721Utils.checkOnERC721Received. Once R_future is deployed by a subsequent createRaffle call, isRaffle[R_future] becomes true and R_future.code.length == 45: (1) Raffle.releaseSponsorProceeds calls _transferQuote(R_future, amount), which re-checks _isProtocolDestination and permanently reverts with InvalidQuoteDestination(R_future), locking sponsorProceeds; (2) Raffle.releaseSponsorPrize and Raffle.redeemWinningTicket (in Status.NftWon) omit _isProtocolDestination and call prizeToken.transferFrom(address(this), R_future, prizeTokenId), moving the prize NFT into clone R_future in violation of the cross-clone asset isolation invariant and stranding the NFT permanently; (3) any ticket owned by R_future can never be redeemed or refunded because Raffle has no outbound call to redeemWinningTicket or refundTickets; (4) if protocolTreasury is configured to a future clone CREATE address R_k in the RaffleFactory constructor, createRaffle permanently reverts at raffle k with UnsafeProtocolDestination.\nAssumptions: A caller or sponsor specifies a precomputed future CREATE address of RaffleFactory before that clone index is deployed.; At least one subsequent createRaffle call occurs to deploy the clone at that predicted address.",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 334,
+          "end": 337
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 395,
+          "end": 407
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 497,
+          "end": 502
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 564,
+          "end": 567
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 593,
+          "end": 605
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 106,
+          "end": 127
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 159,
+          "end": 168
+        }
+      ],
+      "evidence": [
+        "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "5611ca28-9309-4e99-9c15-b20eef7f9543",
+      "createdAt": "2026-10-21T08:36:33.257Z",
+      "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "producer": "model",
+      "text": "In Status.NftWon, _settleWinningTicket allocates 95% of unsettledPot to sponsorProceeds and 5% to protocolFees in storage without transferring prizeToken or verifying that prizeToken remains transferable to the winning ticket owner. Raffle.releaseSponsorProceeds only checks sponsorProceeds != 0 and does not require prizeClaimed == true when status == Status.NftWon. If the arbitrary ERC-721 prizeToken is pausable, blacklist-enabled, expiring, soulbound-after-escrow, or sponsor-controlled and reverts (or fails the post-transfer ownerOf check) during redeemWinningTicket, the sponsor still extracts 95% of buyer USDC while the winner cannot receive the NFT and the raffle cannot transition from Status.NftWon to Status.Refunding.\nAssumptions: The escrowed prizeToken is an arbitrary ERC-721 contract that succeeds during createRaffle safeTransferFrom but reverts or blocks transfer when redeemWinningTicket is called after settlement.",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 329,
+          "end": 339
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 375,
+          "end": 382
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 533,
+          "end": 558
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 171,
+          "end": 177
+        }
+      ],
+      "evidence": [
+        "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "1124c480-333c-420e-a6b0-858d4e5216c4",
+      "createdAt": "2026-10-21T08:36:33.257Z",
+      "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "producer": "model",
+      "text": "When totalEntries crosses reserveEntries, settlement switches discontinuously from Status.CashWon (80% winnerProceeds, 15% sponsorProceeds, 5% protocolFees, plus prize NFT returned to sponsor) to Status.NftWon (0% winnerProceeds, 95% sponsorProceeds, 5% protocolFees). Because neither sponsor nor sponsorRecipient is blocked in buyEntries, a sponsor receives a 95% rebate on every entry bought once totalEntries >= reserveEntries (paying $0.05 net per $1.00 entry) and can buy the shortfall right before endTime to capture 80% of existing buyers' pot plus proportional probability of winning back the NFT. Conversely, when totalEntries < reserveEntries and only a single buyer (or single ticket) participated, requestDraw can still be called at endTime to force Status.CashWon, extracting 15% sponsorProceeds + 5% protocolFees from the sole buyer while returning the NFT to the sponsor.\nAssumptions: Economic mechanism treats sponsor entries identically to external buyer entries and permits draws when ticketCount == 1 below reserveEntries.",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 209,
+          "end": 236
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 243,
+          "end": 248
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 519,
+          "end": 550
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 178,
+          "end": 179
+        }
+      ],
+      "evidence": [
+        "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "6227199a-9d78-4344-b282-4d7f054d3542",
+      "createdAt": "2026-10-21T08:36:33.257Z",
+      "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "producer": "model",
+      "text": "Raffle.enableRefunds allows the sponsor to cancel an active raffle before endTime only when totalEntries == 0. Because buyEntries is permissionless while block.timestamp < endTime, an observer in the public mempool can front-run the sponsor's enableRefunds() call with buyEntries(recipient, 1) for 1 USDC (1e6 quoteToken units). This increments totalEntries to 1, causing the sponsor's enableRefunds() transaction to take the totalEntries != 0 branch and revert with RefundsNotAvailable(endTime + 2 days, block.timestamp), locking the prize NFT until at least endTime (and winning the NFT for 1 USDC if reserveEntries == 1).\nAssumptions: The sponsor broadcasts enableRefunds() via a public mempool before endTime while totalEntries == 0.",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 209,
+          "end": 236
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 280,
+          "end": 292
+        }
+      ],
+      "evidence": [
+        "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "9c740689-a305-43e8-aeec-c5bd05729e77",
+      "createdAt": "2026-10-21T08:36:33.257Z",
+      "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "producer": "model",
+      "text": "In RaffleFactory.createRaffle, prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId) invokes Raffle.onERC721Received, which transitions the clone from Status.Initialized to Status.Active and emits PrizeDeposited before safeTransferFrom returns to RaffleFactory. Because Raffle's own ReentrancyGuard is not entered during createRaffle, a custom or hook-enabled prizeToken contract can call raffle.buyEntries(recipient, entryCount) inside safeTransferFrom after onERC721Received returns, emitting Transfer and TicketPurchased events before RaffleFactory verifies prize.ownerOf(params.prizeTokenId) == raffle and before RaffleCreated is emitted.\nAssumptions: The prizeToken contract executes an external call to the newly created Raffle clone inside safeTransferFrom after calling onERC721Received.",
+      "source": [
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 128,
+          "end": 147
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 416,
+          "end": 431
+        }
+      ],
+      "evidence": [
+        "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "2a2da519-335e-48b4-9682-c24e8e60e486",
+      "createdAt": "2026-10-21T08:36:33.257Z",
+      "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "producer": "model",
+      "text": "Three defense-in-depth and gas hygiene issues exist across RaffleFactory and Raffle: (1) RaffleFactory._validateCreateParams only checks reserveEntries != 0 and enforces no upper bound on uint128 reserveEntries, allowing raffles where reserveEntries exceeds total USDC supply so Status.NftWon is unreachable; (2) Raffle._update does not restrict ERC-721 ticket transfers during Status.Drawing or after draw fulfillment, exposing open secondary-market orders or bids on tickets to mempool front-running once the VRF fulfillment transaction is visible; (3) Raffle inherits storage-backed ReentrancyGuard (where _status starts at 0 in uninitialized ERC-1167 clone storage rather than _NOT_ENTERED = 1), charging the first buyEntries caller a 20,000-gas 0-to-1 SSTORE penalty, and hardcodes VRF_CALLBACK_GAS_LIMIT = 300_000 even though fulfillRandomWords only writes 4 storage slots.\nAssumptions: Target EVM is cancun (as configured in foundry.toml), where transient storage (EIP-1153) is available.",
+      "source": [
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 178,
+          "end": 179
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 252,
+          "end": 266
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 497,
+          "end": 502
+        },
+        {
+          "path": "packages/contracts/src/libraries/RaffleConstants.sol",
+          "start": 32,
+          "end": 42
+        }
+      ],
+      "evidence": [
+        "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+      ]
+    }
+  ],
+  "properties": [],
+  "coverage": [
+    {
+      "schemaVersion": 1,
+      "id": "1bbf8c52-75a9-47e2-adfa-b1a48401b4dc",
+      "createdAt": "2026-10-21T08:35:24.976Z",
+      "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "taskId": "cc7d4a5f-bf72-4e40-8633-afc03f5a739d",
+      "state": "succeeded",
+      "claim": "Recorded 7 authorized files. Build configuration unsupported; see diagnosis.",
+      "gaps": [
+        "No semantic, test, or property coverage established by intake."
+      ],
+      "evidence": [
+        "6a2f6ee5a51c355f1ec00e670901ccba6a13b8ebb37bfa86341429701eb81378"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "5adb92a6-e28e-45ec-82ce-16946751d70e",
+      "createdAt": "2026-10-21T08:36:33.258Z",
+      "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "taskId": "external-review:beba25d0-7aff-49c5-bd11-044c48ed6603",
+      "state": "unknown",
+      "claim": "External agent observations imported and schema/source validated. Review quality and claimed model execution are unverified.",
+      "gaps": [
+        "External agent provenance, token usage and spend are unknown.",
+        "Imported observations do not complete blocked local checks or establish any property.",
+        "Cold source-only review (attempt-01) excludes dynamic execution of Foundry tests, Slither, Aderyn, Echidna, and Halmos; dynamic verification is deferred to post-seal validation and attempt-02.",
+        "Chainlink VRF v2.5 Direct Funding wrapper fee pricing and coordinator behavior are external to the five in-scope contracts."
+      ],
+      "evidence": [
+        "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+      ]
+    }
+  ],
+  "executions": [],
+  "invocations": [
+    {
+      "schemaVersion": 1,
+      "id": "beba25d0-7aff-49c5-bd11-044c48ed6603",
+      "createdAt": "2026-10-21T08:36:33.255Z",
+      "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "provider": "external-agent",
+      "model": "gemini-4-argon (Google Gemini 4 Argon High)",
+      "contextHash": "d44d7dc1bfe4a4f5701ca3df68cb0ce890897f7ca817345a331aa0d44655ec0e",
+      "settings": {
+        "provenance": "operator-reported, not independently verified",
+        "methodology": "native-review-v1",
+        "execution": "outside Gebal",
+        "generationSettings": "unknown"
+      },
+      "inputTokens": null,
+      "outputTokens": null,
+      "costUsd": null,
+      "state": "succeeded",
+      "evidence": [
+        "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "schemaVersion": 1,
+      "id": "e9c5eab0-0cb8-424e-8de8-aeb181be358c",
+      "createdAt": "2026-10-21T08:35:24.855Z",
+      "subjectId": "e18e71bc-b939-4804-84ad-678cf3c7a4b7",
+      "action": "approve-plan",
+      "rationale": "Approved cold source-only review plan for r001",
+      "actor": "gemini-4-argon",
+      "boundHash": "e95739d00c912c074f0b39a7283363cd6cc878e2a6abc15769c7a6afd7de25f0"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "61fbbbdf-f480-47ee-9667-24f3d4302600",
+      "createdAt": "2026-10-21T08:36:59.705Z",
+      "subjectId": "2098caef-e33c-41ff-aa87-1c0dab9b4b77",
+      "action": "accept",
+      "rationale": "Verified against source lines in packages/contracts/src/Raffle.sol during cold source-only review.",
+      "actor": "gemini-4-argon",
+      "boundHash": null
+    },
+    {
+      "schemaVersion": 1,
+      "id": "549feb4a-88d2-43b0-acbb-c638b59ee898",
+      "createdAt": "2026-10-21T08:36:59.819Z",
+      "subjectId": "e6d0631f-c322-4094-bc75-e073536cbd84",
+      "action": "accept",
+      "rationale": "Verified against source lines in packages/contracts/src/Raffle.sol during cold source-only review.",
+      "actor": "gemini-4-argon",
+      "boundHash": null
+    },
+    {
+      "schemaVersion": 1,
+      "id": "660fb706-d7e7-4c2f-a78c-3d0d9f01c5a3",
+      "createdAt": "2026-10-21T08:36:59.912Z",
+      "subjectId": "0962fc57-fc22-4b17-bff8-ffbed2b896bb",
+      "action": "accept",
+      "rationale": "Verified against source lines in packages/contracts/src/Raffle.sol during cold source-only review.",
+      "actor": "gemini-4-argon",
+      "boundHash": null
+    },
+    {
+      "schemaVersion": 1,
+      "id": "e80b881c-bbfd-4678-8763-f1a6ab570f41",
+      "createdAt": "2026-10-21T08:37:00.011Z",
+      "subjectId": "7ff0468d-4372-4414-bbec-d848cea216e6",
+      "action": "accept",
+      "rationale": "Verified against source lines in packages/contracts/src/Raffle.sol during cold source-only review.",
+      "actor": "gemini-4-argon",
+      "boundHash": null
+    },
+    {
+      "schemaVersion": 1,
+      "id": "41602935-d8ec-4835-80dd-3c1ee9ad3954",
+      "createdAt": "2026-10-21T08:37:00.136Z",
+      "subjectId": "e71313c8-e91a-4dcf-b93b-851d58275b05",
+      "action": "accept",
+      "rationale": "Verified against source lines in packages/contracts/src/RaffleFactory.sol during cold source-only review.",
+      "actor": "gemini-4-argon",
+      "boundHash": null
+    },
+    {
+      "schemaVersion": 1,
+      "id": "6a025b8b-f8b6-4863-8416-568750c635fd",
+      "createdAt": "2026-10-21T08:37:00.279Z",
+      "subjectId": "92bbcdc5-98b5-4f71-871e-fa7f94d602d5",
+      "action": "accept",
+      "rationale": "Verified against source lines in packages/contracts/src/RaffleFactory.sol during cold source-only review.",
+      "actor": "gemini-4-argon",
+      "boundHash": null
+    }
+  ],
+  "events": [
+    {
+      "seq": 1,
+      "run_id": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "at": "2026-10-21T08:35:24.970Z",
+      "message": "Approved plan enqueued."
+    },
+    {
+      "seq": 2,
+      "run_id": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "at": "2026-10-21T08:35:24.972Z",
+      "message": "intake: running (attempt 1)"
+    },
+    {
+      "seq": 3,
+      "run_id": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "at": "2026-10-21T08:35:24.976Z",
+      "message": "intake: succeeded — Recorded 7 authorized files. Build configuration unsupported; see diagnosis."
+    },
+    {
+      "seq": 4,
+      "run_id": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "at": "2026-10-21T08:35:24.977Z",
+      "message": "Run succeeded. Review coverage gaps before relying on results."
+    },
+    {
+      "seq": 5,
+      "run_id": "9b66bccf-5138-42e3-911d-48da23cf375d",
+      "at": "2026-10-21T08:36:33.258Z",
+      "message": "Imported external review from operator-reported reviewer gemini-4-argon (Google Gemini 4 Argon High); observations remain unreviewed."
+    }
+  ],
+  "disclaimer": "An empty findings list is not a security certificate. Completed checks establish only their stated coverage."
+}

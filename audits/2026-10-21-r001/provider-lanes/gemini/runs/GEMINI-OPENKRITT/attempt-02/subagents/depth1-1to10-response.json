@@ -1,0 +1,403 @@
+{
+  "1": {
+    "_kritt_extractor_helper": true,
+    "stub": false,
+    "stub_explanation": "",
+    "results": [
+      {
+        "flow_summary": "Validates sponsor-supplied raffle creation parameters, deploys and initializes a new ERC-1167 Raffle clone, registers the clone in factory mappings, transfers the prize ERC-721 from the caller into the clone via safeTransferFrom (triggering Raffle.onERC721Received to activate the raffle), and verifies post-transfer prize ownership and Active status.",
+        "flow_trace": [
+          "packages/contracts/src/RaffleFactory.sol:97 RaffleFactory.createRaffle - Enters nonReentrant raffle creation entrypoint with CreateRaffleParams calldata",
+          "packages/contracts/src/RaffleFactory.sol:154 RaffleFactory._validateCreateParams - Checks prizeToken has deployed code, sponsorRecipient is non-zero, neither address is a known protocol destination, prizeToken supports IERC721 via ERC-165, and reserveEntries > 0",
+          "packages/contracts/src/RaffleFactory.sol:100 RaffleFactory.createRaffle - Validates params.endTime > block.timestamp and saleDuration <= MAX_SALE_DURATION (30 days)",
+          "packages/contracts/src/RaffleFactory.sol:105 RaffleFactory.createRaffle - Increments raffleCount and deploys a deterministic-target ERC-1167 minimal proxy via Clones.clone(raffleImplementation)",
+          "packages/contracts/src/RaffleFactory.sol:109 RaffleFactory.createRaffle - Invokes IRaffle(raffle).initialize(...) with msg.sender as sponsor and caller-supplied parameters",
+          "packages/contracts/src/Raffle.sol:176 Raffle.initialize - Verifies !initialized and msg.sender == factory, screens sponsor/protocolTreasury/sponsorRecipient via _isProtocolDestination, persists raffle configuration, and sets status to Status.AwaitingPrize",
+          "packages/contracts/src/RaffleFactory.sol:123 RaffleFactory.createRaffle - Records clone address in raffleById, idByRaffle, and isRaffle",
+          "packages/contracts/src/RaffleFactory.sol:128 RaffleFactory.createRaffle - Calls IERC721(params.prizeToken).safeTransferFrom(msg.sender, raffle, params.prizeTokenId) to escrow the prize NFT",
+          "packages/contracts/src/Raffle.sol:416 Raffle.onERC721Received - Verifies status == Status.AwaitingPrize, msg.sender == address(prizeToken), tokenId == prizeTokenId, from == sponsor, and operator == factory; transitions status to Status.Active",
+          "packages/contracts/src/RaffleFactory.sol:129 RaffleFactory.createRaffle - Verifies prize.ownerOf(params.prizeTokenId) == raffle and IRaffle(raffle).status() == IRaffle.Status.Active, emits RaffleCreated, and returns raffle"
+        ],
+        "flow_terminal_action": "External ERC-721 calls IERC721(params.prizeToken).safeTransferFrom(msg.sender, raffle, params.prizeTokenId) and prize.ownerOf(params.prizeTokenId), followed by IRaffle(raffle).status() verification and RaffleCreated event emission.",
+        "flow_file_path": "packages/contracts/src/RaffleFactory.sol",
+        "flow_line": 128,
+        "flow_input_to_sink": "params.prizeToken controls the external contract called by supportsInterface, safeTransferFrom, and ownerOf; msg.sender, params.prizeTokenId, params.sponsorRecipient, params.reserveEntries, and params.endTime populate the clone storage and safeTransferFrom arguments.",
+        "flow_security_relevance": "The caller controls params.prizeToken (an arbitrary contract reporting ERC-165 IERC721 support), which is called externally after factory registry mappings and clone initialization have already mutated state. Review must verify reentrancy protection, callbacks during safeTransferFrom, and post-transfer escrow invariants."
+      },
+      {
+        "flow_summary": "Rejects raffle creation and reverts when caller-supplied parameters fail contract code checks, zero-address checks, protocol-plumbing destination screening, ERC-165 interface checks, reserve/timing bounds, or post-transfer escrow verification.",
+        "flow_trace": [
+          "packages/contracts/src/RaffleFactory.sol:97 RaffleFactory.createRaffle - Enters nonReentrant raffle creation entrypoint",
+          "packages/contracts/src/RaffleFactory.sol:154 RaffleFactory._validateCreateParams - Reverts with NotContract, ZeroAddress, UnsafeProtocolDestination, UnsupportedPrizeToken, or ZeroReserveEntries on invalid parameters",
+          "packages/contracts/src/RaffleFactory.sol:100 RaffleFactory.createRaffle - Reverts with InvalidEndTime or SaleDurationTooLong if endTime is not in (block.timestamp, block.timestamp + 30 days]",
+          "packages/contracts/src/Raffle.sol:187 Raffle.initialize - Reverts with UnsafeProtocolDestination if msg.sender (sponsor) is a forbidden protocol destination",
+          "packages/contracts/src/RaffleFactory.sol:129 RaffleFactory.createRaffle - Reverts with PrizeEscrowVerificationFailed if prize.ownerOf(params.prizeTokenId) != raffle or clone status != Status.Active"
+        ],
+        "flow_terminal_action": "Transaction revert via custom error (NotContract, ZeroAddress, UnsafeProtocolDestination, UnsupportedPrizeToken, ZeroReserveEntries, InvalidEndTime, SaleDurationTooLong, or PrizeEscrowVerificationFailed).",
+        "flow_file_path": "packages/contracts/src/RaffleFactory.sol",
+        "flow_line": 154,
+        "flow_input_to_sink": "CreateRaffleParams calldata params and msg.sender directly determine which validation branch triggers a revert.",
+        "flow_security_relevance": "Enforces destination hygiene and configuration invariants at creation time so that protocol contracts (factory, implementation, sibling raffles, quoteToken, vrfWrapper, prizeToken) cannot be configured as prize tokens or payout recipients."
+      }
+    ]
+  },
+  "2": {
+    "_kritt_extractor_helper": true,
+    "stub": false,
+    "stub_explanation": "",
+    "results": [
+      {
+        "flow_summary": "Unconditionally rejects any direct native-currency transfer with empty calldata to the Raffle implementation or clone by reverting with DirectNativeTransfer().",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:171 Raffle.receive - Invoked when native currency is transferred to the contract without calldata",
+          "packages/contracts/src/Raffle.sol:172 Raffle.receive - Reverts unconditionally with DirectNativeTransfer()"
+        ],
+        "flow_terminal_action": "Unconditional revert with DirectNativeTransfer().",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 172,
+        "flow_input_to_sink": "Any msg.value and empty calldata sent by msg.sender reach the receive() handler and trigger the revert.",
+        "flow_security_relevance": "Prevents stray native currency from being locked in a Raffle clone outside requestDraw(), and also causes any external contract attempting to send native currency back to the Raffle via plain transfer/call to revert."
+      }
+    ]
+  },
+  "3": {
+    "_kritt_extractor_helper": true,
+    "stub": false,
+    "stub_explanation": "",
+    "results": [
+      {
+        "flow_summary": "Initializes a newly cloned Raffle instance once when called by the canonical RaffleFactory, screening all configured addresses against protocol destinations and transitioning the clone to Status.AwaitingPrize.",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:176 Raffle.initialize - Enters clone initialization with RaffleInitParams calldata",
+          "packages/contracts/src/Raffle.sol:177 Raffle.initialize - Verifies !initialized and msg.sender == factory, then sets initialized = true",
+          "packages/contracts/src/Raffle.sol:181 Raffle.initialize - Verifies sponsor, sponsorRecipient, protocolTreasury, and prizeToken are non-zero",
+          "packages/contracts/src/Raffle.sol:187 Raffle.initialize - Calls _isProtocolDestination for sponsor, protocolTreasury, and sponsorRecipient against params.prizeToken",
+          "packages/contracts/src/Raffle.sol:593 Raffle._isProtocolDestination - Screens destination against address(this), factory, quoteToken, i_vrfV2PlusWrapper, prizeToken_, canonicalFactory.raffleImplementation(), and canonicalFactory.isRaffle(destination)",
+          "packages/contracts/src/Raffle.sol:197 Raffle.initialize - Writes sponsor, sponsorRecipient, protocolTreasury, prizeToken, prizeTokenId, raffleId, reserveEntries, endTime, and status = Status.AwaitingPrize to clone storage"
+        ],
+        "flow_terminal_action": "Storage mutation initializing all per-raffle parameters and setting status = Status.AwaitingPrize.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 197,
+        "flow_input_to_sink": "RaffleInitParams calldata params supplied by factory populate clone storage fields (sponsor, sponsorRecipient, protocolTreasury, prizeToken, prizeTokenId, raffleId, reserveEntries, endTime).",
+        "flow_security_relevance": "Locks one-time initialization to the immutable factory and establishes the clone's trust configuration and payout recipients before the clone is registered in the factory's isRaffle mapping."
+      },
+      {
+        "flow_summary": "Reverts initialization attempts on the implementation contract, on already-initialized clones, from non-factory callers, or with invalid/protocol-plumbing addresses.",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:176 Raffle.initialize - Enters initialize",
+          "packages/contracts/src/Raffle.sol:177 Raffle.initialize - Reverts with AlreadyInitialized() if initialized is true or OnlyFactory() if msg.sender != factory",
+          "packages/contracts/src/Raffle.sol:181 Raffle.initialize - Reverts with ZeroAddress() or UnsafeProtocolDestination(...) if any address in RaffleInitParams is zero or matches known protocol plumbing"
+        ],
+        "flow_terminal_action": "Transaction revert with AlreadyInitialized, OnlyFactory, ZeroAddress, or UnsafeProtocolDestination.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 177,
+        "flow_input_to_sink": "msg.sender and RaffleInitParams calldata params determine whether initialization is rejected.",
+        "flow_security_relevance": "Prevents external callers from taking over uninitialized clones or re-initializing active raffles."
+      }
+    ]
+  },
+  "4": {
+    "_kritt_extractor_helper": true,
+    "stub": false,
+    "stub_explanation": "",
+    "results": [
+      {
+        "flow_summary": "Validates an active entry purchase, pulls ENTRY_PRICE * entryCount in quoteToken from msg.sender, assigns the next sequential ticket ID and inclusive entry range, updates unsettledPot, and safeMints the ERC-721 ticket to recipient.",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:209 Raffle.buyEntries - Enters nonReentrant entry purchase with recipient and entryCount",
+          "packages/contracts/src/Raffle.sol:215 Raffle.buyEntries - Verifies status == Status.Active, block.timestamp < endTime, recipient != address(0), entryCount > 0, and entryCount <= type(uint128).max - totalEntries",
+          "packages/contracts/src/Raffle.sol:223 Raffle.buyEntries - Computes grossAmount = uint256(entryCount) * ENTRY_PRICE and calls quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount)",
+          "packages/contracts/src/Raffle.sol:226 Raffle.buyEntries - Updates totalEntries, increments ticketCount, stores TicketRange(firstEntry, lastEntry) in _ticketRanges[ticketId], and increments unsettledPot += grossAmount",
+          "packages/contracts/src/Raffle.sol:235 Raffle.buyEntries - Calls _safeMint(recipient, ticketId) which invokes _update(recipient, ticketId, address(0))",
+          "packages/contracts/src/Raffle.sol:497 Raffle._update - Rejects recipient if _isProtocolDestination(recipient, address(prizeToken)) is true, mints the ERC-721 ticket, and invokes IERC721Receiver(recipient).onERC721Received if recipient has code",
+          "packages/contracts/src/Raffle.sol:236 Raffle.buyEntries - Emits TicketPurchased and returns ticketId"
+        ],
+        "flow_terminal_action": "Mints ERC-721 ticket to recipient via _safeMint (invoking IERC721Receiver.onERC721Received on contract recipients) and emits TicketPurchased.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 235,
+        "flow_input_to_sink": "entryCount determines grossAmount pulled via quoteToken.safeTransferFrom and the [firstEntry, lastEntry] range; recipient receives the ERC-721 ticket and any onERC721Received callback.",
+        "flow_security_relevance": "Combines quote-token collection, sequential range accounting, protocol-destination screening in _update, and an untrusted external callback to recipient via _safeMint."
+      },
+      {
+        "flow_summary": "Reverts entry purchase when the raffle is not Active, the sale window has ended, recipient is zero or a protocol destination, entryCount is zero or overflows uint128, or quoteToken transfer fails.",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:215 Raffle.buyEntries - Reverts with InvalidStatus, SaleEnded, InvalidRecipient, ZeroEntryCount, or TotalEntriesOverflow on failed precondition checks",
+          "packages/contracts/src/Raffle.sol:498 Raffle._update - Reverts with UnsafeProtocolDestination(recipient) if recipient is a known protocol destination"
+        ],
+        "flow_terminal_action": "Transaction revert via custom error or failed ERC-20 transfer / ERC-721 receiver check.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 215,
+        "flow_input_to_sink": "recipient, entryCount, msg.sender, and block.timestamp control the validation outcome.",
+        "flow_security_relevance": "Enforces the exclusive endTime cutoff, prevents uint128 entry-counter overflow, and prevents minting tickets to unclaimable protocol addresses."
+      }
+    ]
+  },
+  "5": {
+    "_kritt_extractor_helper": true,
+    "stub": false,
+    "stub_explanation": "",
+    "results": [
+      {
+        "flow_summary": "Initiates a Chainlink VRF v2.5 native direct-funding randomness request after sale end, transitions the raffle to Status.Drawing, pays the VRF wrapper fee from msg.value, and refunds any excess native value to msg.sender.",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:240 Raffle.requestDraw - Enters payable nonReentrant draw request",
+          "packages/contracts/src/Raffle.sol:241 Raffle.requestDraw - Verifies status == Status.Active, block.timestamp >= endTime, totalEntries > 0, and block.timestamp < drawRequestDeadline()",
+          "packages/contracts/src/Raffle.sol:249 Raffle.requestDraw - Calls getVrfRequestPrice() -> i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit, 1) and checks msg.value >= quotedFee",
+          "packages/contracts/src/Raffle.sol:252 Raffle.requestDraw - Sets status = Status.Drawing, drawRequestedAt = uint64(block.timestamp), and _requestInFlight = true",
+          "packages/contracts/src/Raffle.sol:257 Raffle.requestDraw - Calls requestRandomnessPayInNative(callbackGasLimit, requestConfirmations, 1, extraArgs) to pay native fee to i_vrfV2PlusWrapper and obtain (requestId, paidPrice)",
+          "packages/contracts/src/Raffle.sol:258 Raffle.requestDraw - Verifies paidPrice <= msg.value, records vrfRequestId = requestId, and sets _requestInFlight = false",
+          "packages/contracts/src/Raffle.sol:262 Raffle.requestDraw - Computes excess = msg.value - paidPrice; if excess != 0, executes assembly call(gas(), msg.sender, excess, 0, 0, 0, 0) and requires success",
+          "packages/contracts/src/Raffle.sol:272 Raffle.requestDraw - Emits DrawRequested and returns requestId"
+        ],
+        "flow_terminal_action": "External call to i_vrfV2PlusWrapper.requestRandomWordsInNative followed by optional low-level native refund call(gas(), msg.sender, excess, 0, 0, 0, 0) and DrawRequested event emission.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 257,
+        "flow_input_to_sink": "msg.value funds the VRF wrapper native payment and determines excess returned to msg.sender via low-level call.",
+        "flow_security_relevance": "Transitions raffle state to Drawing, makes external calls with native value to the VRF wrapper and back to msg.sender, and uses _requestInFlight plus nonReentrant to prevent synchronous callback or refund reentrancy."
+      },
+      {
+        "flow_summary": "Reverts draw initiation when called outside the [endTime, drawRequestDeadline()) window, when status is not Active or totalEntries is zero, when msg.value is below the VRF fee, or when excess native refund to msg.sender fails.",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:241 Raffle.requestDraw - Reverts with InvalidStatus, RaffleNotEnded, NoEntriesSold, DrawRequestWindowExpired, or InsufficientVrfFee",
+          "packages/contracts/src/Raffle.sol:269 Raffle.requestDraw - Reverts with NativeRefundFailed(msg.sender, excess) if the low-level native refund call returns false"
+        ],
+        "flow_terminal_action": "Transaction revert with InvalidStatus, RaffleNotEnded, NoEntriesSold, DrawRequestWindowExpired, InsufficientVrfFee, or NativeRefundFailed.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 241,
+        "flow_input_to_sink": "msg.value, msg.sender, and block.timestamp determine which guard reverts.",
+        "flow_security_relevance": "Ensures a draw cannot be requested prematurely, after the 2-day draw request timeout, on an empty raffle, or without sufficient native fee coverage."
+      }
+    ]
+  },
+  "6": {
+    "_kritt_extractor_helper": true,
+    "stub": false,
+    "stub_explanation": "",
+    "results": [
+      {
+        "flow_summary": "Enables refunds on an active raffle with zero sold entries when called by the sponsor before endTime or by any caller at or after endTime, transitioning status to Status.Refunding so the sponsor can recover the escrowed prize.",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:276 Raffle.enableRefunds - Enters nonReentrant refund activation",
+          "packages/contracts/src/Raffle.sol:279 Raffle.enableRefunds - Matches status == Status.Active and totalEntries == 0; sets deadline = endTime and verifies msg.sender == sponsor || block.timestamp >= deadline",
+          "packages/contracts/src/Raffle.sol:296 Raffle.enableRefunds - Moves unsettledPot (0) to remainingRefundLiability, sets status = Status.Refunding, and emits RefundsEnabled(msg.sender, 0)"
+        ],
+        "flow_terminal_action": "Sets status = Status.Refunding and remainingRefundLiability = 0, then emits RefundsEnabled.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 280,
+        "flow_input_to_sink": "msg.sender and block.timestamp authorize early sponsor cancellation or post-endTime closure when totalEntries == 0.",
+        "flow_security_relevance": "Enforces the authorization boundary allowing only the sponsor to cancel an empty raffle before endTime while preventing sponsor cancellation once at least one entry is sold."
+      },
+      {
+        "flow_summary": "Enables full refunds on an active raffle with sold entries after drawRequestDeadline() (endTime + 2 days) has passed without a VRF draw request, moving unsettledPot into remainingRefundLiability.",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:276 Raffle.enableRefunds - Enters nonReentrant refund activation",
+          "packages/contracts/src/Raffle.sol:285 Raffle.enableRefunds - Matches status == Status.Active and totalEntries != 0; sets deadline = drawRequestDeadline() and verifies block.timestamp >= deadline",
+          "packages/contracts/src/Raffle.sol:296 Raffle.enableRefunds - Sets remainingRefundLiability = unsettledPot, zeroes unsettledPot, sets status = Status.Refunding, and emits RefundsEnabled(msg.sender, liability)"
+        ],
+        "flow_terminal_action": "Moves unsettledPot to remainingRefundLiability, sets status = Status.Refunding, and emits RefundsEnabled.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 286,
+        "flow_input_to_sink": "block.timestamp >= drawRequestDeadline() triggers the transition regardless of msg.sender.",
+        "flow_security_relevance": "Provides liveness recovery for buyers and sponsor if requestDraw() is never called within the 2-day request window."
+      },
+      {
+        "flow_summary": "Enables full refunds on a Drawing raffle after callbackDeadline() (drawRequestedAt + 2 days) has elapsed without VRF fulfillment, moving unsettledPot into remainingRefundLiability and permanently locking out late VRF callbacks.",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:276 Raffle.enableRefunds - Enters nonReentrant refund activation",
+          "packages/contracts/src/Raffle.sol:289 Raffle.enableRefunds - Matches status == Status.Drawing; sets deadline = callbackDeadline() and verifies block.timestamp >= deadline",
+          "packages/contracts/src/Raffle.sol:296 Raffle.enableRefunds - Sets remainingRefundLiability = unsettledPot, zeroes unsettledPot, sets status = Status.Refunding, and emits RefundsEnabled(msg.sender, liability)"
+        ],
+        "flow_terminal_action": "Moves unsettledPot to remainingRefundLiability, sets status = Status.Refunding, and emits RefundsEnabled.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 289,
+        "flow_input_to_sink": "block.timestamp >= callbackDeadline() triggers the transition regardless of msg.sender.",
+        "flow_security_relevance": "Guarantees funds and prize are not permanently locked if Chainlink VRF fails to deliver a valid callback before callbackDeadline()."
+      },
+      {
+        "flow_summary": "Reverts when enableRefunds() is called in an terminal/non-refundable status or before the applicable liveness deadline.",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:282 Raffle.enableRefunds - Reverts with RefundsNotAvailable(deadline, block.timestamp) if called before deadline (unless sponsor on empty Active raffle)",
+          "packages/contracts/src/Raffle.sol:293 Raffle.enableRefunds - Reverts with InvalidStatus(status) if status is neither Active nor Drawing"
+        ],
+        "flow_terminal_action": "Transaction revert with RefundsNotAvailable or InvalidStatus.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 282,
+        "flow_input_to_sink": "msg.sender and block.timestamp determine whether the deadline check reverts.",
+        "flow_security_relevance": "Prevents premature cancellation of active or drawing raffles before their respective timeouts expire."
+      }
+    ]
+  },
+  "7": {
+    "_kritt_extractor_helper": true,
+    "stub": false,
+    "stub_explanation": "",
+    "results": [
+      {
+        "flow_summary": "Proves that ticketId's stored range contains winningEntry when status is Status.NftWon and allocates unsettledPot into protocolFees (5% rounded down) and sponsorProceeds (95% remainder).",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:304 Raffle.settleWinningTicket - Enters nonReentrant settlement entrypoint and calls _settleWinningTicket(ticketId)",
+          "packages/contracts/src/Raffle.sol:534 Raffle._settleWinningTicket - Verifies !settlementComplete and status == Status.NftWon",
+          "packages/contracts/src/Raffle.sol:538 Raffle._settleWinningTicket - Calls _requireWinningTicket(ticketId) to verify winningEntry is within _ticketRanges[ticketId].[firstEntry, lastEntry]",
+          "packages/contracts/src/Raffle.sol:540 Raffle._settleWinningTicket - Computes protocolFee = Math.mulDiv(grossPot, PROTOCOL_FEE_BPS, BPS) and sponsorAmount = grossPot - protocolFee",
+          "packages/contracts/src/Raffle.sol:551 Raffle._settleWinningTicket - Sets settlementComplete = true, winningTicketId = ticketId, unsettledPot = 0, sponsorProceeds = sponsorAmount, protocolFees = protocolFee, and emits WinningTicketSettled"
+        ],
+        "flow_terminal_action": "Allocates unsettledPot between sponsorProceeds and protocolFees, sets settlementComplete = true and winningTicketId = ticketId, and emits WinningTicketSettled.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 533,
+        "flow_input_to_sink": "ticketId selects the stored TicketRange checked against winningEntry and is recorded in winningTicketId.",
+        "flow_security_relevance": "Permissionlessly locks in winningTicketId and allocates all quote-token liabilities for NftWon without transferring assets or checking ticket ownership."
+      },
+      {
+        "flow_summary": "Proves that ticketId's stored range contains winningEntry when status is Status.CashWon and allocates unsettledPot into protocolFees (5% rounded down), winnerProceeds (80% rounded down), and sponsorProceeds (remainder).",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:304 Raffle.settleWinningTicket - Enters nonReentrant settlement entrypoint and calls _settleWinningTicket(ticketId)",
+          "packages/contracts/src/Raffle.sol:534 Raffle._settleWinningTicket - Verifies !settlementComplete and status == Status.CashWon",
+          "packages/contracts/src/Raffle.sol:538 Raffle._settleWinningTicket - Calls _requireWinningTicket(ticketId) to verify winningEntry is within _ticketRanges[ticketId].[firstEntry, lastEntry]",
+          "packages/contracts/src/Raffle.sol:540 Raffle._settleWinningTicket - Computes protocolFee (5%), cashAmount (80%), and sponsorAmount = grossPot - protocolFee - cashAmount; stores winnerProceeds = cashAmount",
+          "packages/contracts/src/Raffle.sol:551 Raffle._settleWinningTicket - Sets settlementComplete = true, winningTicketId = ticketId, unsettledPot = 0, sponsorProceeds = sponsorAmount, protocolFees = protocolFee, and emits WinningTicketSettled"
+        ],
+        "flow_terminal_action": "Allocates unsettledPot across winnerProceeds, sponsorProceeds, and protocolFees, sets settlementComplete = true and winningTicketId = ticketId, and emits WinningTicketSettled.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 546,
+        "flow_input_to_sink": "ticketId selects the stored TicketRange checked against winningEntry and is recorded in winningTicketId.",
+        "flow_security_relevance": "Performs the three-way basis-point split of unsettledPot for CashWon, preserving exact conservation of accountedQuoteBalance() via remainder assignment."
+      },
+      {
+        "flow_summary": "Reverts settlement when settlementComplete is already true, status is neither NftWon nor CashWon, or the supplied ticketId does not contain winningEntry.",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:534 Raffle._settleWinningTicket - Reverts with SettlementAlreadyComplete() or InvalidStatus(result)",
+          "packages/contracts/src/Raffle.sol:579 Raffle._requireWinningTicket - Reverts with TicketDoesNotContainWinningEntry(ticketId, selectedEntry) if winningEntry < firstEntry or winningEntry > lastEntry (including unminted tickets where range is [0, 0])"
+        ],
+        "flow_terminal_action": "Transaction revert with SettlementAlreadyComplete, InvalidStatus, or TicketDoesNotContainWinningEntry.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 579,
+        "flow_input_to_sink": "ticketId is looked up in _ticketRanges and compared against winningEntry.",
+        "flow_security_relevance": "Prevents settling a non-winning or unminted ticket ID or settling a raffle more than once."
+      }
+    ]
+  },
+  "8": {
+    "_kritt_extractor_helper": true,
+    "stub": false,
+    "stub_explanation": "",
+    "results": [
+      {
+        "flow_summary": "Settles the winning ticket if not yet settled, verifies msg.sender owns ticketId, burns the winning ticket, and transfers the escrowed ERC-721 prize to the winner when status is Status.NftWon.",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:309 Raffle.redeemWinningTicket - Enters nonReentrant redemption with ticketId",
+          "packages/contracts/src/Raffle.sol:310 Raffle.redeemWinningTicket - Verifies !winnerRedeemed and status == Status.NftWon",
+          "packages/contracts/src/Raffle.sol:314 Raffle.redeemWinningTicket - Calls _settleWinningTicket(ticketId) if !settlementComplete, else verifies ticketId == winningTicketId",
+          "packages/contracts/src/Raffle.sol:320 Raffle.redeemWinningTicket - Queries winner = ownerOf(ticketId) and verifies msg.sender == winner",
+          "packages/contracts/src/Raffle.sol:323 Raffle.redeemWinningTicket - Sets winnerRecipient = winner, winnerRedeemed = true, and burns ticketId via _burn(ticketId)",
+          "packages/contracts/src/Raffle.sol:329 Raffle.redeemWinningTicket - Verifies !prizeClaimed, sets prizeClaimed = true, calls prizeToken.transferFrom(address(this), winner, prizeTokenId), verifies prizeToken.ownerOf(prizeTokenId) == winner, and emits WinningTicketRedeemed"
+        ],
+        "flow_terminal_action": "Burns ticketId and executes prizeToken.transferFrom(address(this), winner, prizeTokenId) followed by prizeToken.ownerOf(prizeTokenId) == winner verification.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 334,
+        "flow_input_to_sink": "ticketId identifies the winning ticket to settle/burn; msg.sender is verified as ownerOf(ticketId) and receives the ERC-721 prize.",
+        "flow_security_relevance": "Atomically burns the bearer winning ticket and transfers the escrowed NFT prize to msg.sender, verifying post-transfer ERC-721 ownership."
+      },
+      {
+        "flow_summary": "Settles the winning ticket if not yet settled, verifies msg.sender owns ticketId, burns the winning ticket, and transfers winnerProceeds in quoteToken to the winner when status is Status.CashWon.",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:309 Raffle.redeemWinningTicket - Enters nonReentrant redemption with ticketId",
+          "packages/contracts/src/Raffle.sol:310 Raffle.redeemWinningTicket - Verifies !winnerRedeemed and status == Status.CashWon",
+          "packages/contracts/src/Raffle.sol:314 Raffle.redeemWinningTicket - Calls _settleWinningTicket(ticketId) if !settlementComplete, else verifies ticketId == winningTicketId",
+          "packages/contracts/src/Raffle.sol:320 Raffle.redeemWinningTicket - Queries winner = ownerOf(ticketId) and verifies msg.sender == winner",
+          "packages/contracts/src/Raffle.sol:323 Raffle.redeemWinningTicket - Sets winnerRecipient = winner, winnerRedeemed = true, and burns ticketId via _burn(ticketId)",
+          "packages/contracts/src/Raffle.sol:339 Raffle.redeemWinningTicket - Reads cashAmount = winnerProceeds, verifies cashAmount != 0, zeroes winnerProceeds = 0, and calls _transferQuote(winner, cashAmount)",
+          "packages/contracts/src/Raffle.sol:564 Raffle._transferQuote - Verifies !_isProtocolDestination(winner, address(prizeToken)) and transfers USDC via quoteToken.safeTransfer(winner, cashAmount)",
+          "packages/contracts/src/Raffle.sol:345 Raffle.redeemWinningTicket - Emits WinningTicketRedeemed and returns cashAmount"
+        ],
+        "flow_terminal_action": "Burns ticketId, zeroes winnerProceeds, and calls quoteToken.safeTransfer(winner, cashAmount) via _transferQuote.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 342,
+        "flow_input_to_sink": "ticketId identifies the winning ticket to settle/burn; msg.sender is verified as ownerOf(ticketId) and receives cashAmount via quoteToken.safeTransfer.",
+        "flow_security_relevance": "Atomically burns the winning bearer ticket and transfers the 80% cash prize in USDC after screening msg.sender against _isProtocolDestination."
+      },
+      {
+        "flow_summary": "Reverts redemption if the winning ticket was already redeemed, the raffle is not resolved to NftWon/CashWon, ticketId is not the winning ticket, msg.sender is not the current ticket owner, or prize/quote delivery fails.",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:310 Raffle.redeemWinningTicket - Reverts with WinningTicketAlreadyRedeemed, InvalidStatus, TicketDoesNotContainWinningEntry, or WinningTicketMismatch",
+          "packages/contracts/src/Raffle.sol:320 Raffle.redeemWinningTicket - Reverts with ERC721NonexistentToken or NotTicketOwner if ticketId is burned/nonexistent or not owned by msg.sender",
+          "packages/contracts/src/Raffle.sol:330 Raffle.redeemWinningTicket - Reverts with PrizeAlreadyClaimed, PrizeDeliveryVerificationFailed, NoWinnerProceeds, or InvalidQuoteDestination"
+        ],
+        "flow_terminal_action": "Transaction revert on failed ownership, ticket match, status, or delivery verification.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 320,
+        "flow_input_to_sink": "ticketId and msg.sender determine which validation or ownership guard reverts.",
+        "flow_security_relevance": "Ensures only the current owner of the exact winning ticket can redeem the prize and only once."
+      }
+    ]
+  },
+  "9": {
+    "_kritt_extractor_helper": true,
+    "stub": false,
+    "stub_explanation": "",
+    "results": [
+      {
+        "flow_summary": "Burns a bounded batch of 1 to 100 caller-owned tickets in Status.Refunding, sums their entry counts, decrements remainingRefundLiability, and transfers the full USDC refund to msg.sender.",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:349 Raffle.refundTickets - Enters nonReentrant batch ticket refund with ticketIds calldata",
+          "packages/contracts/src/Raffle.sol:350 Raffle.refundTickets - Verifies status == Status.Refunding and 1 <= ticketIds.length <= MAX_REFUND_TICKET_BATCH_SIZE (100)",
+          "packages/contracts/src/Raffle.sol:357 Raffle.refundTickets - Loops through ticketIds; for each ticketId, checks ownerOf(ticketId) == msg.sender, reads [firstEntry, lastEntry] via ticketRange(ticketId), adds (lastEntry - firstEntry + 1) to aggregateEntries, and calls _burn(ticketId)",
+          "packages/contracts/src/Raffle.sol:367 Raffle.refundTickets - Computes amount = aggregateEntries * ENTRY_PRICE, decrements remainingRefundLiability -= amount, and calls _transferQuote(msg.sender, amount)",
+          "packages/contracts/src/Raffle.sol:564 Raffle._transferQuote - Verifies !_isProtocolDestination(msg.sender, address(prizeToken)) and calls quoteToken.safeTransfer(msg.sender, amount)",
+          "packages/contracts/src/Raffle.sol:371 Raffle.refundTickets - Emits TicketsRefunded and returns amount"
+        ],
+        "flow_terminal_action": "Burns all supplied ticketIds, decrements remainingRefundLiability, and transfers amount in USDC to msg.sender via quoteToken.safeTransfer.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 368,
+        "flow_input_to_sink": "ticketIds[] selects which tickets are verified, summed, and burned; msg.sender receives the aggregate refund amount.",
+        "flow_security_relevance": "Processes a caller-controlled array of ticket IDs where burning each ticket immediately inside the loop prevents duplicate IDs in the same batch from double-claiming remainingRefundLiability."
+      },
+      {
+        "flow_summary": "Reverts batch refund if status is not Refunding, ticketIds batch size is 0 or > 100, any ticketId is nonexistent, already burned, duplicated in the batch, or not owned by msg.sender, or msg.sender is a forbidden protocol destination.",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:350 Raffle.refundTickets - Reverts with InvalidStatus or InvalidTicketBatchSize",
+          "packages/contracts/src/Raffle.sol:359 Raffle.refundTickets - Reverts with ERC721NonexistentToken (if unminted, already burned, or duplicated in ticketIds) or NotTicketOwner (if owner != msg.sender)",
+          "packages/contracts/src/Raffle.sol:565 Raffle._transferQuote - Reverts with InvalidQuoteDestination(msg.sender) if _isProtocolDestination is true"
+        ],
+        "flow_terminal_action": "Transaction revert rolling back the entire batch refund.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 359,
+        "flow_input_to_sink": "ticketIds[] and msg.sender trigger the batch validation or ownership revert.",
+        "flow_security_relevance": "Guarantees atomic all-or-nothing batch refund semantics and blocks double-refunding via duplicate ticket IDs."
+      }
+    ]
+  },
+  "10": {
+    "_kritt_extractor_helper": true,
+    "stub": false,
+    "stub_explanation": "",
+    "results": [
+      {
+        "flow_summary": "Permissionlessly releases the full settled sponsorProceeds balance in quoteToken to the immutable-per-raffle sponsorRecipient.",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:375 Raffle.releaseSponsorProceeds - Enters nonReentrant sponsor proceeds release",
+          "packages/contracts/src/Raffle.sol:376 Raffle.releaseSponsorProceeds - Reads amount = sponsorProceeds, verifies amount != 0, and zeroes sponsorProceeds = 0",
+          "packages/contracts/src/Raffle.sol:379 Raffle.releaseSponsorProceeds - Reads recipient = sponsorRecipient and calls _transferQuote(recipient, amount)",
+          "packages/contracts/src/Raffle.sol:564 Raffle._transferQuote - Verifies !_isProtocolDestination(recipient, address(prizeToken)) and executes quoteToken.safeTransfer(recipient, amount)",
+          "packages/contracts/src/Raffle.sol:381 Raffle.releaseSponsorProceeds - Emits SponsorProceedsReleased(msg.sender, recipient, amount) and returns amount"
+        ],
+        "flow_terminal_action": "Zeroes sponsorProceeds and transfers amount in USDC to sponsorRecipient via quoteToken.safeTransfer.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 380,
+        "flow_input_to_sink": "msg.sender triggers the release and is logged in SponsorProceedsReleased, while recipient (sponsorRecipient) and amount (sponsorProceeds) come from contract storage.",
+        "flow_security_relevance": "Re-evaluates _isProtocolDestination(sponsorRecipient, address(prizeToken)) at claim time before transferring USDC, which dynamically checks sponsorRecipient.code.length and canonicalFactory.isRaffle(sponsorRecipient)."
+      },
+      {
+        "flow_summary": "Reverts when no sponsor proceeds are currently claimable or if sponsorRecipient is rejected by _isProtocolDestination.",
+        "flow_trace": [
+          "packages/contracts/src/Raffle.sol:377 Raffle.releaseSponsorProceeds - Reverts with NoSponsorProceeds() if sponsorProceeds == 0",
+          "packages/contracts/src/Raffle.sol:565 Raffle._transferQuote - Reverts with InvalidQuoteDestination(recipient) if _isProtocolDestination(recipient, address(prizeToken)) returns true"
+        ],
+        "flow_terminal_action": "Transaction revert with NoSponsorProceeds or InvalidQuoteDestination.",
+        "flow_file_path": "packages/contracts/src/Raffle.sol",
+        "flow_line": 377,
+        "flow_input_to_sink": "msg.sender initiates the call; storage state (sponsorProceeds and sponsorRecipient) determines the revert.",
+        "flow_security_relevance": "Prevents zero-value releases and blocks transfers if sponsorRecipient became a registered raffle address after initialization (e.g. via precomputed CREATE/clone address)."
+      }
+    ]
+  }
+}

@@ -1,0 +1,237 @@
+[
+  {
+    "schemaVersion": 1,
+    "id": "2098caef-e33c-41ff-aa87-1c0dab9b4b77",
+    "createdAt": "2026-10-21T08:36:33.256Z",
+    "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+    "title": "Predictable CREATE clone addresses bypass _isProtocolDestination before deployment, locking quote payouts and allowing cross-clone prize transfers",
+    "description": "RaffleFactory.createRaffle deploys clones with Clones.clone(raffleImplementation) (EVM CREATE opcode), making every future clone address deterministic from (address(factory), nonce). Before a future clone R_future is deployed, R_future.code.length == 0 and canonicalFactory.isRaffle(R_future) == false. Consequently, R_future passes RaffleFactory._validateCreateParams and Raffle._isProtocolDestination during Raffle.initialize (as sponsorRecipient) and Raffle._update (as a ticket recipient in buyEntries or transferFrom), and bypasses ERC721Utils.checkOnERC721Received. Once R_future is deployed by a subsequent createRaffle call, isRaffle[R_future] becomes true and R_future.code.length == 45: (1) Raffle.releaseSponsorProceeds calls _transferQuote(R_future, amount), which re-checks _isProtocolDestination and permanently reverts with InvalidQuoteDestination(R_future), locking sponsorProceeds; (2) Raffle.releaseSponsorPrize and Raffle.redeemWinningTicket (in Status.NftWon) omit _isProtocolDestination and call prizeToken.transferFrom(address(this), R_future, prizeTokenId), moving the prize NFT into clone R_future in violation of the cross-clone asset isolation invariant and stranding the NFT permanently; (3) any ticket owned by R_future can never be redeemed or refunded because Raffle has no outbound call to redeemWinningTicket or refundTickets; (4) if protocolTreasury is configured to a future clone CREATE address R_k in the RaffleFactory constructor, createRaffle permanently reverts at raffle k with UnsafeProtocolDestination.\nAssumptions: A caller or sponsor specifies a precomputed future CREATE address of RaffleFactory before that clone index is deployed.; At least one subsequent createRaffle call occurs to deploy the clone at that predicted address.",
+    "severity": "medium",
+    "confidence": "high",
+    "evidenceType": "model",
+    "source": [
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 334,
+        "end": 337
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 395,
+        "end": 407
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 497,
+        "end": 502
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 564,
+        "end": 567
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 593,
+        "end": 605
+      },
+      {
+        "path": "packages/contracts/src/RaffleFactory.sol",
+        "start": 106,
+        "end": 127
+      },
+      {
+        "path": "packages/contracts/src/RaffleFactory.sol",
+        "start": 159,
+        "end": 168
+      }
+    ],
+    "evidence": [
+      "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+    ],
+    "observationIds": [
+      "2b84976b-86d5-47f9-971f-c255ef1f892b"
+    ],
+    "fingerprint": "c6645ec3b821b1a438af4fa99bcfc493c97d9d6a083def70602283855375efb5"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "e6d0631f-c322-4094-bc75-e073536cbd84",
+    "createdAt": "2026-10-21T08:36:33.257Z",
+    "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+    "title": "Decoupled sponsorProceeds payout in Status.NftWon allows sponsor to claim 95% of buyer USDC even when prizeToken delivery fails in redeemWinningTicket",
+    "description": "In Status.NftWon, _settleWinningTicket allocates 95% of unsettledPot to sponsorProceeds and 5% to protocolFees in storage without transferring prizeToken or verifying that prizeToken remains transferable to the winning ticket owner. Raffle.releaseSponsorProceeds only checks sponsorProceeds != 0 and does not require prizeClaimed == true when status == Status.NftWon. If the arbitrary ERC-721 prizeToken is pausable, blacklist-enabled, expiring, soulbound-after-escrow, or sponsor-controlled and reverts (or fails the post-transfer ownerOf check) during redeemWinningTicket, the sponsor still extracts 95% of buyer USDC while the winner cannot receive the NFT and the raffle cannot transition from Status.NftWon to Status.Refunding.\nAssumptions: The escrowed prizeToken is an arbitrary ERC-721 contract that succeeds during createRaffle safeTransferFrom but reverts or blocks transfer when redeemWinningTicket is called after settlement.",
+    "severity": "medium",
+    "confidence": "high",
+    "evidenceType": "model",
+    "source": [
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 329,
+        "end": 339
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 375,
+        "end": 382
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 533,
+        "end": 558
+      },
+      {
+        "path": "packages/contracts/src/RaffleFactory.sol",
+        "start": 171,
+        "end": 177
+      }
+    ],
+    "evidence": [
+      "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+    ],
+    "observationIds": [
+      "5611ca28-9309-4e99-9c15-b20eef7f9543"
+    ],
+    "fingerprint": "6e351b750bab639f1b178d7f99809b87c99dcec9c4e32a234c1d6977e911f04d"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "0962fc57-fc22-4b17-bff8-ffbed2b896bb",
+    "createdAt": "2026-10-21T08:36:33.257Z",
+    "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+    "title": "Discontinuous payout cliff at reserveEntries and unrestricted single-buyer under-target draw enable sponsor self-purchase arbitrage and 20% fee extraction",
+    "description": "When totalEntries crosses reserveEntries, settlement switches discontinuously from Status.CashWon (80% winnerProceeds, 15% sponsorProceeds, 5% protocolFees, plus prize NFT returned to sponsor) to Status.NftWon (0% winnerProceeds, 95% sponsorProceeds, 5% protocolFees). Because neither sponsor nor sponsorRecipient is blocked in buyEntries, a sponsor receives a 95% rebate on every entry bought once totalEntries >= reserveEntries (paying $0.05 net per $1.00 entry) and can buy the shortfall right before endTime to capture 80% of existing buyers' pot plus proportional probability of winning back the NFT. Conversely, when totalEntries < reserveEntries and only a single buyer (or single ticket) participated, requestDraw can still be called at endTime to force Status.CashWon, extracting 15% sponsorProceeds + 5% protocolFees from the sole buyer while returning the NFT to the sponsor.\nAssumptions: Economic mechanism treats sponsor entries identically to external buyer entries and permits draws when ticketCount == 1 below reserveEntries.",
+    "severity": "low",
+    "confidence": "high",
+    "evidenceType": "model",
+    "source": [
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 209,
+        "end": 236
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 243,
+        "end": 248
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 519,
+        "end": 550
+      },
+      {
+        "path": "packages/contracts/src/RaffleFactory.sol",
+        "start": 178,
+        "end": 179
+      }
+    ],
+    "evidence": [
+      "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+    ],
+    "observationIds": [
+      "1124c480-333c-420e-a6b0-858d4e5216c4"
+    ],
+    "fingerprint": "3ccc0c93034cb2298096f04d91aa5e7ced094516dd4215b7fc5b74ae524ae839"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "7ff0468d-4372-4414-bbec-d848cea216e6",
+    "createdAt": "2026-10-21T08:36:33.257Z",
+    "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+    "title": "Sponsor pre-endTime empty-raffle cancellation in enableRefunds can be front-run by a 1-USDC buyEntries transaction",
+    "description": "Raffle.enableRefunds allows the sponsor to cancel an active raffle before endTime only when totalEntries == 0. Because buyEntries is permissionless while block.timestamp < endTime, an observer in the public mempool can front-run the sponsor's enableRefunds() call with buyEntries(recipient, 1) for 1 USDC (1e6 quoteToken units). This increments totalEntries to 1, causing the sponsor's enableRefunds() transaction to take the totalEntries != 0 branch and revert with RefundsNotAvailable(endTime + 2 days, block.timestamp), locking the prize NFT until at least endTime (and winning the NFT for 1 USDC if reserveEntries == 1).\nAssumptions: The sponsor broadcasts enableRefunds() via a public mempool before endTime while totalEntries == 0.",
+    "severity": "low",
+    "confidence": "high",
+    "evidenceType": "model",
+    "source": [
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 209,
+        "end": 236
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 280,
+        "end": 292
+      }
+    ],
+    "evidence": [
+      "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+    ],
+    "observationIds": [
+      "6227199a-9d78-4344-b282-4d7f054d3542"
+    ],
+    "fingerprint": "52739ec63ba374611fd45b779a9e3007848f9d538c0b91576ba00038eb6147c2"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "e71313c8-e91a-4dcf-b93b-851d58275b05",
+    "createdAt": "2026-10-21T08:36:33.257Z",
+    "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+    "title": "Untrusted prizeToken.safeTransferFrom in createRaffle activates the Raffle clone before RaffleCreated is emitted and before post-transfer ownerOf verification",
+    "description": "In RaffleFactory.createRaffle, prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId) invokes Raffle.onERC721Received, which transitions the clone from Status.Initialized to Status.Active and emits PrizeDeposited before safeTransferFrom returns to RaffleFactory. Because Raffle's own ReentrancyGuard is not entered during createRaffle, a custom or hook-enabled prizeToken contract can call raffle.buyEntries(recipient, entryCount) inside safeTransferFrom after onERC721Received returns, emitting Transfer and TicketPurchased events before RaffleFactory verifies prize.ownerOf(params.prizeTokenId) == raffle and before RaffleCreated is emitted.\nAssumptions: The prizeToken contract executes an external call to the newly created Raffle clone inside safeTransferFrom after calling onERC721Received.",
+    "severity": "low",
+    "confidence": "high",
+    "evidenceType": "model",
+    "source": [
+      {
+        "path": "packages/contracts/src/RaffleFactory.sol",
+        "start": 128,
+        "end": 147
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 416,
+        "end": 431
+      }
+    ],
+    "evidence": [
+      "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+    ],
+    "observationIds": [
+      "9c740689-a305-43e8-aeec-c5bd05729e77"
+    ],
+    "fingerprint": "e2fa4b470385d249cd0aaa668185e80ac458bffe420229055868a21b85bdfa3d"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "92bbcdc5-98b5-4f71-871e-fa7f94d602d5",
+    "createdAt": "2026-10-21T08:36:33.257Z",
+    "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+    "title": "Unbounded reserveEntries upper limit, unrestricted secondary ticket transfers during Status.Drawing, and ERC-1167 ReentrancyGuard cold-slot gas overhead",
+    "description": "Three defense-in-depth and gas hygiene issues exist across RaffleFactory and Raffle: (1) RaffleFactory._validateCreateParams only checks reserveEntries != 0 and enforces no upper bound on uint128 reserveEntries, allowing raffles where reserveEntries exceeds total USDC supply so Status.NftWon is unreachable; (2) Raffle._update does not restrict ERC-721 ticket transfers during Status.Drawing or after draw fulfillment, exposing open secondary-market orders or bids on tickets to mempool front-running once the VRF fulfillment transaction is visible; (3) Raffle inherits storage-backed ReentrancyGuard (where _status starts at 0 in uninitialized ERC-1167 clone storage rather than _NOT_ENTERED = 1), charging the first buyEntries caller a 20,000-gas 0-to-1 SSTORE penalty, and hardcodes VRF_CALLBACK_GAS_LIMIT = 300_000 even though fulfillRandomWords only writes 4 storage slots.\nAssumptions: Target EVM is cancun (as configured in foundry.toml), where transient storage (EIP-1153) is available.",
+    "severity": "informational",
+    "confidence": "high",
+    "evidenceType": "model",
+    "source": [
+      {
+        "path": "packages/contracts/src/RaffleFactory.sol",
+        "start": 178,
+        "end": 179
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 252,
+        "end": 266
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 497,
+        "end": 502
+      },
+      {
+        "path": "packages/contracts/src/libraries/RaffleConstants.sol",
+        "start": 32,
+        "end": 42
+      }
+    ],
+    "evidence": [
+      "9c6ca2adbc5e564b4ccf733989466f80dfe93189d8dfc38d69c31c8b2569a6d7"
+    ],
+    "observationIds": [
+      "2a2da519-335e-48b4-9682-c24e8e60e486"
+    ],
+    "fingerprint": "830881bd4b6203f7a01684bbe7ec65f886f1ff3a1106209b0c64c18983187ae3"
+  }
+]

@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "provider": "gemini",
+  "recordedAtUtc": "2026-10-21T09:05:00Z",
+  "runner": {
+    "application": "Google Antigravity IDE / Language Server",
+    "binary": "/Applications/Antigravity.app/Contents/Resources/bin/language_server",
+    "version": "hub-2.25.0",
+    "modelId": "gemini-4-argon",
+    "modelDisplayName": "Gemini 4 Argon (High)"
+  },
+  "environment": {
+    "os": "macOS (arm64)",
+    "shell": "zsh",
+    "isolatedScratchRoot": "/Users/hishamel-husseini/.gemini/antigravity/brain/2e9c188b-5d8e-48b7-bce3-b1f2ebc4987c/scratch/raffle-audit-r001-gemini",
+    "writableReportRoot": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/gemini"
+  },
+  "tools": {
+    "forge": {
+      "available": true,
+      "binary": "/Users/hishamel-husseini/.foundry/bin/forge",
+      "version": "forge Version: 1.7.1-v1.7.1",
+      "solc": "0.8.36+commit.f9a66b02.Darwin.appleclang",
+      "executedPostSeal": true,
+      "summary": "Executed 5 custom PoC tests in GeminiAuditPoC.t.sol (5/5 PASS) and 80 repository tests across 6 suites (79 PASS, 0 FAIL, 1 SKIP fork test without ETH_RPC_URL)."
+    },
+    "cast": {
+      "available": true,
+      "binary": "/Users/hishamel-husseini/.foundry/bin/cast",
+      "version": "cast Version: 1.7.1-v1.7.1"
+    },
+    "anvil": {
+      "available": true,
+      "binary": "/Users/hishamel-husseini/.foundry/bin/anvil",
+      "version": "anvil Version: 1.7.1-v1.7.1"
+    },
+    "slither": {
+      "available": true,
+      "binary": "/opt/homebrew/bin/slither",
+      "version": "0.11.6",
+      "executedPostSeal": true,
+      "summary": "Analyzed 46 contracts with 64 detectors using slither.config.json; 0 static detector alerts triggered."
+    },
+    "echidna": {
+      "available": true,
+      "binary": "/opt/homebrew/bin/echidna",
+      "version": "Echidna 2.3.3",
+      "executedPostSeal": true,
+      "summary": "Executed RaffleEchidna property suite (5,130 calls across 4 workers, 13,119 unique instructions, 8 unique codehashes): all 6 properties (echidna_winner_is_in_sold_range, echidna_sales_and_liabilities_are_exact, echidna_ranges_partition_all_entries, echidna_prize_custody_matches_claim_marker, echidna_draw_and_callback_deadlines_are_ordered, echidna_status_never_regresses) passed."
+    },
+    "python3": {
+      "available": true,
+      "binary": "/opt/homebrew/bin/python3",
+      "version": "Python 3.14.2",
+      "executedPostSeal": true,
+      "summary": "Executed test_current_protocol_model.py (11/11 reference model tests PASS) and verify-freeze.py (OK)."
+    },
+    "node": {
+      "available": true,
+      "binary": "/Users/hishamel-husseini/.nvm/versions/node/v22.23.2/bin/node",
+      "version": "v22.23.2",
+      "executedPostSeal": true,
+      "summary": "Used to execute Gebal v0.2.0 CLI in both attempt-01 (cold source-only) and attempt-02 (post-seal test-inclusive)."
+    },
+    "aderyn": {
+      "available": false,
+      "binary": null,
+      "version": null,
+      "executedPostSeal": false,
+      "summary": "Not installed on local host."
+    },
+    "halmos": {
+      "available": false,
+      "binary": null,
+      "version": null,
+      "executedPostSeal": false,
+      "summary": "Not installed on local host."
+    },
+    "medusa": {
+      "available": false,
+      "binary": null,
+      "version": null,
+      "executedPostSeal": false,
+      "summary": "Not installed on local host."
+    }
+  },
+  "harnesses": {
+    "simao": {
+      "repo": "https://github.com/0xSimao/codex-audit-skill.git",
+      "commit": "041ff6d7637a9f3ee73f25a8f28853a63e833d28",
+      "status": "completed"
+    },
+    "pashov": {
+      "repo": "https://github.com/pashov/skills.git",
+      "commit": "dc16fa75ecfc6fcf5e7ec3fb5e29bbd39f89de88",
+      "status": "completed"
+    },
+    "trailofbits": {
+      "repo": "https://github.com/trailofbits/skills.git",
+      "commit": "82fe8226252622fa807643bdca1710901198553a",
+      "status": "completed"
+    },
+    "gebal": {
+      "repo": "https://github.com/enspyrco/gebal.git",
+      "commit": "b5a229d5e2bfbe253da6c3a4dc7fc331f0a69538",
+      "status": "completed (attempt-01 source-only + attempt-02 test-inclusive + compare)"
+    },
+    "openkritt": {
+      "repo": "https://github.com/open-kritt/open-kritt.git",
+      "commit": "43e1d19a00ce50bd93253d1c6c3a48cfffbcc4c3",
+      "status": "completed (attempt-02 via open_kritt_engine external-flow-analysis + post_processing dedupe + Blockchain security triage ranker with gemini-4-argon; attempt-01 CLI blocker preserved in BLOCKER.md)"
+    }
+  }
+}
