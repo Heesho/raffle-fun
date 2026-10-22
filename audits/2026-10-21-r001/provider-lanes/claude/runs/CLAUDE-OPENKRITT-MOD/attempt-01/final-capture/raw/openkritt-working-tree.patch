@@ -1,0 +1,68 @@
+diff --git a/backend/package-lock.json b/backend/package-lock.json
+index 9696b4d..2768147 100644
+--- a/backend/package-lock.json
++++ b/backend/package-lock.json
+@@ -1339,6 +1339,7 @@
+       "version": "2.3.3",
+       "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz",
+       "integrity": "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==",
++      "dev": true,
+       "hasInstallScript": true,
+       "license": "MIT",
+       "optional": true,
+diff --git a/backend/src/lib/modelCatalog.js b/backend/src/lib/modelCatalog.js
+index a1ad765..64295cd 100644
+--- a/backend/src/lib/modelCatalog.js
++++ b/backend/src/lib/modelCatalog.js
+@@ -3,6 +3,13 @@ import { MODEL_PROVIDERS, THINKING_EFFORTS } from './constants.js';
+ const SAFE_MODEL_NOTE_URLS = new Set(['https://chatgpt.com/cyber']);
+ 
+ const CLAUDE_CODE_MODELS = [
++  {
++    // raffle r001 Anthropic-lane modification: exact model required by the audit assignment
++    id: 'claude-opus-5-5',
++    label: 'Opus 5.5',
++    thinkingEfforts: ['low', 'medium', 'high', 'xhigh', 'max'],
++    isDefault: false,
++  },
+   {
+     id: 'claude-fable-5',
+     label: 'Fable 5',
+diff --git a/engine/Dockerfile b/engine/Dockerfile
+index 17ed677..618e3f5 100644
+--- a/engine/Dockerfile
++++ b/engine/Dockerfile
+@@ -14,7 +14,7 @@ RUN apt-get update \
+     && npm install --global --no-audit --no-fund npm@12.0.1 \
+     && npm install --global --no-audit --no-fund @openai/codex@0.145.0 \
+     && codex --version \
+-    && npm install --global --no-audit --no-fund --allow-scripts=@anthropic-ai/claude-code @anthropic-ai/claude-code@2.1.215 \
++    && npm install --global --no-audit --no-fund --allow-scripts=@anthropic-ai/claude-code @anthropic-ai/claude-code@2.1.299 \
+     && apt-get clean \
+     && rm -rf /var/lib/apt/lists/*
+ 
+diff --git a/engine/Dockerfile.claude-runner b/engine/Dockerfile.claude-runner
+index f4f349f..6ec3348 100644
+--- a/engine/Dockerfile.claude-runner
++++ b/engine/Dockerfile.claude-runner
+@@ -4,7 +4,7 @@ WORKDIR /workspace
+ 
+ RUN apt-get update \
+     && apt-get install -y --no-install-recommends ca-certificates git \
+-    && npm install -g @anthropic-ai/claude-code@2.1.215 \
++    && npm install -g @anthropic-ai/claude-code@2.1.299 \
+     && mkdir -p /home/runner/.claude /home/runner/.config /home/runner/.cache /home/runner/.local/share /home/runner/.npm \
+     && apt-get clean \
+     && rm -rf /var/lib/apt/lists/*
+diff --git a/engine/open_kritt_engine/model_catalog.py b/engine/open_kritt_engine/model_catalog.py
+index d155693..d1e7823 100644
+--- a/engine/open_kritt_engine/model_catalog.py
++++ b/engine/open_kritt_engine/model_catalog.py
+@@ -50,6 +50,7 @@ MODEL_NOTES = {
+     "claude-fable-5": "Cyber requests may route to Opus 4.8.",
+ }
+ CLAUDE_MODEL_THINKING_EFFORTS = {
++    "claude-opus-5-5": ("low", "medium", "high", "xhigh", "max"),  # raffle r001 Anthropic-lane modification
+     "claude-fable-5": ("low", "medium", "high", "xhigh", "max"),
+     "claude-opus-5": ("low", "medium", "high", "xhigh", "max"),
+     "claude-opus-4-8": ("low", "medium", "high", "xhigh", "max"),

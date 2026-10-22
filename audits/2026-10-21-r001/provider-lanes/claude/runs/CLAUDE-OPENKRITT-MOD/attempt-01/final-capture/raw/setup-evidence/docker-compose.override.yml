@@ -1,0 +1,5 @@
+# raffle r001 Anthropic lane: lima "docker" template runs rootless Docker; give the engine the daemon socket that owns the images.
+services:
+  engine:
+    volumes:
+      - /run/user/501/docker.sock:/var/run/docker.sock

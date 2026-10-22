@@ -1,0 +1,21 @@
+[profile.default]
+src = "src"
+test = "test"
+out = "out"
+cache_path = "cache"
+libs = []
+solc_version = "0.8.36"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 200
+via_ir = false
+offline = true
+allow_paths = ["../../../packages", "../../mutants", "../../harness"]
+remappings = [
+  "@openzeppelin/contracts/=../../../packages/contracts/node_modules/@openzeppelin/contracts/",
+  "@chainlink/contracts/=../../../packages/contracts/node_modules/@chainlink/contracts/",
+  "raffle/=../../mutants/M03-cash-sponsor-overallocated/src/",
+]
+code_size_limit = 1_000_000
+fuzz = { runs = 300, seed = "0x4d555441" }
+invariant = { runs = 120, depth = 100, fail_on_revert = false }

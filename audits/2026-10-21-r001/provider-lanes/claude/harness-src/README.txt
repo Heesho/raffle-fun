@@ -1,0 +1,1 @@
+Production sources are NOT duplicated here. To reproduce, copy the five frozen files from target.tar.gz (snapshot/packages/contracts/src) into <harness>/src and verify their sha256 against ../../freeze.json.

@@ -1,0 +1,138 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_3080_ERC721 {
+label = "ERC721"
+"3080_ownerOf(uint256)" [label="ownerOf(uint256)"]
+"3080__burn(uint256)" [label="_burn(uint256)"]
+"3080_supportsInterface(bytes4)" [label="supportsInterface(bytes4)"]
+"3080_constructor(string,string)" [label="constructor(string,string)"]
+"3080_transferFrom(address,address,uint256)" [label="transferFrom(address,address,uint256)"]
+"3080_tokenURI(uint256)" [label="tokenURI(uint256)"]
+"3080__increaseBalance(address,uint128)" [label="_increaseBalance(address,uint128)"]
+"3080__safeMint(address,uint256,bytes)" [label="_safeMint(address,uint256,bytes)"]
+"3080__getApproved(uint256)" [label="_getApproved(uint256)"]
+"3080__ownerOf(uint256)" [label="_ownerOf(uint256)"]
+"3080_symbol()" [label="symbol()"]
+"3080__safeMint(address,uint256)" [label="_safeMint(address,uint256)"]
+"3080__approve(address,uint256,address,bool)" [label="_approve(address,uint256,address,bool)"]
+"3080_balanceOf(address)" [label="balanceOf(address)"]
+"3080__update(address,uint256,address)" [label="_update(address,uint256,address)"]
+"3080__mint(address,uint256)" [label="_mint(address,uint256)"]
+"3080_approve(address,uint256)" [label="approve(address,uint256)"]
+"3080_isApprovedForAll(address,address)" [label="isApprovedForAll(address,address)"]
+"3080__isAuthorized(address,address,uint256)" [label="_isAuthorized(address,address,uint256)"]
+"3080_setApprovalForAll(address,bool)" [label="setApprovalForAll(address,bool)"]
+"3080__setApprovalForAll(address,address,bool)" [label="_setApprovalForAll(address,address,bool)"]
+"3080__checkAuthorized(address,address,uint256)" [label="_checkAuthorized(address,address,uint256)"]
+"3080_safeTransferFrom(address,address,uint256)" [label="safeTransferFrom(address,address,uint256)"]
+"3080__transfer(address,address,uint256)" [label="_transfer(address,address,uint256)"]
+"3080__approve(address,uint256,address)" [label="_approve(address,uint256,address)"]
+"3080_getApproved(uint256)" [label="getApproved(uint256)"]
+"3080__safeTransfer(address,address,uint256)" [label="_safeTransfer(address,address,uint256)"]
+"3080__baseURI()" [label="_baseURI()"]
+"3080__requireOwned(uint256)" [label="_requireOwned(uint256)"]
+"3080_safeTransferFrom(address,address,uint256,bytes)" [label="safeTransferFrom(address,address,uint256,bytes)"]
+"3080__safeTransfer(address,address,uint256,bytes)" [label="_safeTransfer(address,address,uint256,bytes)"]
+"3080_name()" [label="name()"]
+"3080_transferFrom(address,address,uint256)" -> "3080__update(address,uint256,address)"
+"3080_safeTransferFrom(address,address,uint256,bytes)" -> "3080__msgSender()"
+"3080__approve(address,uint256,address)" -> "3080__approve(address,uint256,address,bool)"
+"3080__requireOwned(uint256)" -> "3080__ownerOf(uint256)"
+"3080__approve(address,uint256,address,bool)" -> "3080_isApprovedForAll(address,address)"
+"3080__approve(address,uint256,address,bool)" -> "3080__requireOwned(uint256)"
+"3080_approve(address,uint256)" -> "3080__msgSender()"
+"3080_setApprovalForAll(address,bool)" -> "3080__msgSender()"
+"3080__safeTransfer(address,address,uint256)" -> "3080__safeTransfer(address,address,uint256,bytes)"
+"3080__update(address,uint256,address)" -> "3080__ownerOf(uint256)"
+"3080__burn(uint256)" -> "3080__update(address,uint256,address)"
+"3080__safeTransfer(address,address,uint256,bytes)" -> "3080__msgSender()"
+"3080_approve(address,uint256)" -> "3080__approve(address,uint256,address)"
+"3080_transferFrom(address,address,uint256)" -> "3080__msgSender()"
+"3080__safeMint(address,uint256)" -> "3080__safeMint(address,uint256,bytes)"
+"3080__safeTransfer(address,address,uint256,bytes)" -> "3080__transfer(address,address,uint256)"
+"3080__safeMint(address,uint256,bytes)" -> "3080__msgSender()"
+"3080__mint(address,uint256)" -> "3080__update(address,uint256,address)"
+"3080__checkAuthorized(address,address,uint256)" -> "3080__isAuthorized(address,address,uint256)"
+"3080_ownerOf(uint256)" -> "3080__requireOwned(uint256)"
+"3080__update(address,uint256,address)" -> "3080__approve(address,uint256,address,bool)"
+"3080_getApproved(uint256)" -> "3080__requireOwned(uint256)"
+"3080_tokenURI(uint256)" -> "3080__baseURI()"
+"3080_tokenURI(uint256)" -> "3080__requireOwned(uint256)"
+"3080_getApproved(uint256)" -> "3080__getApproved(uint256)"
+"3080__isAuthorized(address,address,uint256)" -> "3080__getApproved(uint256)"
+"3080_supportsInterface(bytes4)" -> "3080_supportsInterface(bytes4)"
+"3080__isAuthorized(address,address,uint256)" -> "3080_isApprovedForAll(address,address)"
+"3080__transfer(address,address,uint256)" -> "3080__update(address,uint256,address)"
+"3080_setApprovalForAll(address,bool)" -> "3080__setApprovalForAll(address,address,bool)"
+"3080__update(address,uint256,address)" -> "3080__checkAuthorized(address,address,uint256)"
+"3080__safeMint(address,uint256,bytes)" -> "3080__mint(address,uint256)"
+"3080_safeTransferFrom(address,address,uint256)" -> "3080_safeTransferFrom(address,address,uint256,bytes)"
+"3080_safeTransferFrom(address,address,uint256,bytes)" -> "3080_transferFrom(address,address,uint256)"
+}subgraph cluster_6281_IERC165 {
+label = "IERC165"
+"6281_supportsInterface(bytes4)" [label="supportsInterface(bytes4)"]
+}subgraph cluster_3243_IERC721Metadata {
+label = "IERC721Metadata"
+"3243_tokenURI(uint256)" [label="tokenURI(uint256)"]
+"3243_name()" [label="name()"]
+"3243_symbol()" [label="symbol()"]
+}subgraph cluster_6269_ERC165 {
+label = "ERC165"
+"6269_supportsInterface(bytes4)" [label="supportsInterface(bytes4)"]
+}subgraph cluster_4151_Context {
+label = "Context"
+"4151__msgSender()" [label="_msgSender()"]
+"4151__msgData()" [label="_msgData()"]
+"4151__contextSuffixLength()" [label="_contextSuffixLength()"]
+}subgraph cluster_13916_MockERC721 {
+label = "MockERC721"
+"13916_mint(address,uint256)" [label="mint(address,uint256)"]
+"13916_constructor()" [label="constructor()"]
+"13916_mint(address,uint256)" -> "13916__safeMint(address,uint256)"
+"13916_constructor()" -> "13916_constructor(string,string)"
+}subgraph cluster_3197_IERC721 {
+label = "IERC721"
+"3197_isApprovedForAll(address,address)" [label="isApprovedForAll(address,address)"]
+"3197_safeTransferFrom(address,address,uint256)" [label="safeTransferFrom(address,address,uint256)"]
+"3197_safeTransferFrom(address,address,uint256,bytes)" [label="safeTransferFrom(address,address,uint256,bytes)"]
+"3197_ownerOf(uint256)" [label="ownerOf(uint256)"]
+"3197_approve(address,uint256)" [label="approve(address,uint256)"]
+"3197_getApproved(uint256)" [label="getApproved(uint256)"]
+"3197_setApprovalForAll(address,bool)" [label="setApprovalForAll(address,bool)"]
+"3197_transferFrom(address,address,uint256)" [label="transferFrom(address,address,uint256)"]
+"3197_balanceOf(address)" [label="balanceOf(address)"]
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"revert ERC721InvalidReceiver(address)" 
+"revert ERC721InvalidOperator(address)" 
+"revert ERC721InvalidOwner(address)" 
+"revert ERC721InvalidSender(address)" 
+"revert ERC721IncorrectOwner(address,uint256,address)" 
+"revert ERC721InsufficientApproval(address,uint256)" 
+"revert ERC721InvalidApprover(address)" 
+"string.concat()" 
+"revert ERC721NonexistentToken(uint256)" 
+"type()" 
+"3080__transfer(address,address,uint256)" -> "revert ERC721NonexistentToken(uint256)"
+"3080__setApprovalForAll(address,address,bool)" -> "revert ERC721InvalidApprover(address)"
+"3080_transferFrom(address,address,uint256)" -> "revert ERC721InvalidReceiver(address)"
+"3080_tokenURI(uint256)" -> "string.concat()"
+"3080__checkAuthorized(address,address,uint256)" -> "revert ERC721NonexistentToken(uint256)"
+"3080__mint(address,uint256)" -> "revert ERC721InvalidSender(address)"
+"3080_transferFrom(address,address,uint256)" -> "revert ERC721IncorrectOwner(address,uint256,address)"
+"3080__requireOwned(uint256)" -> "revert ERC721NonexistentToken(uint256)"
+"3080__transfer(address,address,uint256)" -> "revert ERC721IncorrectOwner(address,uint256,address)"
+"3080_balanceOf(address)" -> "revert ERC721InvalidOwner(address)"
+"3080__burn(uint256)" -> "revert ERC721NonexistentToken(uint256)"
+"3080__transfer(address,address,uint256)" -> "revert ERC721InvalidReceiver(address)"
+"3080__checkAuthorized(address,address,uint256)" -> "revert ERC721InsufficientApproval(address,uint256)"
+"3080__mint(address,uint256)" -> "revert ERC721InvalidReceiver(address)"
+"3080__approve(address,uint256,address,bool)" -> "revert ERC721InvalidApprover(address)"
+"3080__setApprovalForAll(address,address,bool)" -> "revert ERC721InvalidOperator(address)"
+"6269_supportsInterface(bytes4)" -> "type()"
+"3080_supportsInterface(bytes4)" -> "type()"
+}subgraph cluster_toplevel {
+label = "[Top Level]"
+}
+}

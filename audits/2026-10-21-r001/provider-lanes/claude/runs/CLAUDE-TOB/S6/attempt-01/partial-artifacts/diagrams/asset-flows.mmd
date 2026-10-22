@@ -1,0 +1,21 @@
+flowchart LR
+    subgraph USDC["USDC (trusted quote token)"]
+      B[Buyers] -- "buyEntries: n x 1e6" --> P[(unsettledPot)]
+      P -- "settle (NftWon)" --> F1[("protocolFees 5%")] & S1[("sponsorProceeds 95%")]
+      P -- "settle (CashWon)" --> F2[("protocolFees 5%")] & S2[("sponsorProceeds 15%")] & W[("winnerProceeds 80%")]
+      P -- enableRefunds --> R[(remainingRefundLiability)]
+      F1 & F2 -- releaseProtocolFees --> T[protocolTreasury]
+      S1 & S2 -- releaseSponsorProceeds --> SR[sponsorRecipient]
+      W -- "redeemWinningTicket (owner)" --> O[Winning ticket owner]
+      R -- "refundTickets (owner)" --> TO[Ticket owners]
+    end
+    subgraph NFT["Prize ERC-721 (untrusted contract)"]
+      SP[Sponsor] -- "factory.createRaffle: safeTransferFrom" --> E[(Raffle escrow)]
+      E -- "NftWon: redeemWinningTicket" --> O2[Winning ticket owner]
+      E -- "CashWon/Refunding: releaseSponsorPrize" --> SR2[sponsorRecipient]
+    end
+    subgraph ETH["Native ETH"]
+      Q[Draw requester] -- "requestDraw msg.value" --> X[(Raffle, transient)]
+      X -- "VRF fee" --> VW[VRF v2.5 wrapper]
+      X -- "excess (refund, reverts on failure)" --> Q
+    end

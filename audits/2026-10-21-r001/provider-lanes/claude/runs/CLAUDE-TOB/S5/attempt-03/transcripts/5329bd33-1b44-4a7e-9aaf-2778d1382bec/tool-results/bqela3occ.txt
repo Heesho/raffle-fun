@@ -1,0 +1,720 @@
+     614 Raffle.sol
+     186 RaffleFactory.sol
+     521 interfaces/IRaffle.sol
+     150 interfaces/IRaffleFactory.sol
+      43 libraries/RaffleConstants.sol
+    1514 total
+     1	// SPDX-License-Identifier: MIT
+     2	pragma solidity 0.8.36;
+     3	
+     4	/// @title raffle.fun Protocol Constants
+     5	/// @author heesho
+     6	/// @notice Defines the fixed v1 economics, timing, and bounded-execution limits shared by the factory and raffles.
+     7	/// @dev Quote-token amounts use raw six-decimal units. Basis-point calculations round down through `Math.mulDiv`, and
+     8	///      the sponsor receives the remaining raw units after winner and protocol allocations.
+     9	/// @custom:version 1.0.0
+    10	library RaffleConstants {
+    11	    /// @notice Denominator used for every global protocol basis-point rate.
+    12	    uint256 internal constant BPS = 10_000;
+    13	
+    14	    /// @notice Global protocol fee rate: 500 basis points, or 5% of gross sales.
+    15	    uint256 internal constant PROTOCOL_FEE_BPS = 500;
+    16	
+    17	    /// @notice Cash-result winner rate: 8,000 basis points, or 80% of gross sales.
+    18	    uint256 internal constant CASH_WINNER_BPS = 8000;
+    19	
+    20	    /// @notice Global entry price: exactly 1,000,000 raw six-decimal quote-token units, or one USDC.
+    21	    uint256 internal constant ENTRY_PRICE = 1_000_000;
+    22	
+    23	    /// @notice Decimal precision required from the immutable quote token.
+    24	    uint8 internal constant QUOTE_TOKEN_DECIMALS = 6;
+    25	
+    26	    /// @notice Refund execution is bounded by tickets, while each ticket may represent any uint128 entry count.
+    27	    uint256 internal constant MAX_REFUND_TICKET_BATCH_SIZE = 100;
+    28	
+    29	    /// @notice Maximum prospective raffle sale duration, measured from creation to the exclusive sale end.
+    30	    uint256 internal constant MAX_SALE_DURATION = 30 days;
+    31	
+    32	    /// @notice Duration after sale end during which a sold raffle may initiate its draw, in seconds.
+    33	    uint256 internal constant DRAW_REQUEST_TIMEOUT = 2 days;
+    34	
+    35	    /// @notice Duration after an accepted request during which its authenticated callback may resolve, in seconds.
+    36	    uint256 internal constant DRAW_CALLBACK_TIMEOUT = 2 days;
+    37	
+    38	    /// @notice Gas-unit limit requested for the single-word Chainlink callback.
+    39	    uint32 internal constant VRF_CALLBACK_GAS_LIMIT = 300_000;
+    40	
+    41	    /// @notice Block confirmations requested from Chainlink before callback fulfillment.
+    42	    uint16 internal constant VRF_REQUEST_CONFIRMATIONS = 30;
+    43	}
+     1	// SPDX-License-Identifier: MIT
+     2	pragma solidity 0.8.36;
+     3	
+     4	import { IVRFV2PlusWrapper } from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol";
+     5	import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+     6	import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+     7	
+     8	/// @title raffle.fun Raffle Interface
+     9	/// @author heesho
+    10	/// @notice Defines one autonomous NFT raffle using fixed-price USDC entries and one transferable ERC-721 ticket per
+    11	///         purchase.
+    12	/// @dev Ticket IDs are sequential. Each ticket stores one inclusive uint128 entry range and remains a transferable
+    13	///      bearer claim until its owner atomically burns it for redemption or refund. The immutable quote token is trusted
+    14	///      canonical six-decimal USDC with standard, non-rebasing, fee-free transfers. Supported prizes are honest,
+    15	///      standards-compliant ERC-721s.
+    16	/// @custom:version 1.0.0
+    17	interface IRaffle {
+    18	    // Types
+    19	
+    20	    /// @notice The single authoritative raffle lifecycle and economic result.
+    21	    enum Status {
+    22	        /// @notice The clone is initialized and waiting for the factory to escrow the configured prize.
+    23	        AwaitingPrize,
+    24	        /// @notice The prize is escrowed and entry sales or post-sale draw initiation are available.
+    25	        Active,
+    26	        /// @notice A Chainlink VRF request was accepted and its callback window is open.
+    27	        Drawing,
+    28	        /// @notice The reserve was met and the winning ticket may redeem the prize NFT.
+    29	        NftWon,
+    30	        /// @notice The reserve was missed and the winning ticket may redeem its cash allocation.
+    31	        CashWon,
+    32	        /// @notice Full ticket refunds are enabled and the sponsor may recover the prize NFT.
+    33	        Refunding
+    34	    }
+    35	
+    36	    /// @notice Complete clone-specific configuration supplied once by the canonical factory.
+    37	    /// @param sponsor Prize depositor and empty-raffle cancellation authority.
+    38	    /// @param sponsorRecipient Immutable recipient of sponsor quote proceeds and any returned prize.
+    39	    /// @param protocolTreasury Immutable recipient of protocol fees.
+    40	    /// @param prizeToken Standards-compliant ERC-721 prize contract.
+    41	    /// @param prizeTokenId Token ID of the prize escrowed by this raffle.
+    42	    /// @param raffleId One-based canonical factory identifier for this raffle.
+    43	    /// @param reserveEntries Global raw entry-count threshold selecting the NFT outcome when met or exceeded.
+    44	    /// @param endTime Unix timestamp, in seconds, at which entry sales end exclusively.
+    45	    struct RaffleInitParams {
+    46	        address sponsor;
+    47	        address sponsorRecipient;
+    48	        address protocolTreasury;
+    49	        address prizeToken;
+    50	        uint256 prizeTokenId;
+    51	        uint256 raffleId;
+    52	        uint128 reserveEntries;
+    53	        uint64 endTime;
+    54	    }
+    55	
+    56	    // Events
+    57	
+    58	    /// @notice Emitted when the factory deposits the configured prize and activates the raffle.
+    59	    /// @param prizeToken ERC-721 contract of the deposited prize.
+    60	    /// @param prizeTokenId Token ID of the deposited prize.
+    61	    /// @param sponsor Address that deposited the prize through the factory.
+    62	    event PrizeDeposited(address indexed prizeToken, uint256 indexed prizeTokenId, address indexed sponsor);
+    63	
+    64	    /// @notice Emitted when a buyer pays for entries and one range ticket is minted.
+    65	    /// @param buyer Address that paid the six-decimal quote-token amount.
+    66	    /// @param recipient Address that received the newly minted ticket.
+    67	    /// @param ticketId Sequential ticket ID assigned to the purchase.
+    68	    /// @param firstEntry First global raffle entry represented by the ticket, inclusive.
+    69	    /// @param lastEntry Last global raffle entry represented by the ticket, inclusive.
+    70	    /// @param entryCount Number of entries represented by the ticket.
+    71	    /// @param grossAmount Raw six-decimal quote-token units paid, equal to `entryCount * ENTRY_PRICE`.
+    72	    event TicketPurchased(
+    73	        address indexed buyer,
+    74	        address indexed recipient,
+    75	        uint256 indexed ticketId,
+    76	        uint128 firstEntry,
+    77	        uint128 lastEntry,
+    78	        uint128 entryCount,
+    79	        uint256 grossAmount
+    80	    );
+    81	
+    82	    /// @notice Emitted when the raffle pays for and records its one Chainlink VRF request.
+    83	    /// @param requestId Wrapper-assigned request identifier.
+    84	    /// @param requester Address that initiated and funded the request.
+    85	    /// @param fee Native-token wei actually paid to the wrapper for the request.
+    86	    /// @param excessReturned Native-token wei returned to the requester after paying the actual fee.
+    87	    /// @param drawRequestedAt Unix timestamp, in seconds, when the request was accepted.
+    88	    /// @param callbackDeadline Exclusive Unix-timestamp deadline for accepting the authenticated callback.
+    89	    event DrawRequested(
+    90	        uint256 indexed requestId,
+    91	        address indexed requester,
+    92	        uint256 fee,
+    93	        uint256 excessReturned,
+    94	        uint256 drawRequestedAt,
+    95	        uint256 callbackDeadline
+    96	    );
+    97	
+    98	    /// @notice Emitted when an authenticated, ABI-decodable callback cannot resolve the raffle.
+    99	    /// @param receivedRequestId Request ID supplied by the wrapper callback.
+   100	    /// @param expectedRequestId Request ID currently recorded by the raffle, or zero before request persistence.
+   101	    /// @param status Current raffle status when the callback is ignored.
+   102	    event VrfCallbackIgnored(uint256 indexed receivedRequestId, uint256 indexed expectedRequestId, Status status);
+   103	
+   104	    /// @notice Emitted when an authenticated callback selects the winning entry and final result.
+   105	    /// @param requestId Request ID that produced the accepted randomness.
+   106	    /// @param winningEntry Selected one-based global entry number in `[1,totalEntries]`.
+   107	    /// @param result Final `NftWon` or `CashWon` result.
+   108	    event RaffleResolved(uint256 indexed requestId, uint128 indexed winningEntry, Status indexed result);
+   109	
+   110	    /// @notice Emitted when the raffle enters the full-refund branch.
+   111	    /// @param finalizer Address that enabled refunds.
+   112	    /// @param remainingRefundLiability Raw six-decimal quote-token units initially available for ticket refunds.
+   113	    event RefundsEnabled(address indexed finalizer, uint256 remainingRefundLiability);
+   114	
+   115	    /// @notice Emitted when the winning ticket is proven and all terminal quote-token liabilities are allocated.
+   116	    /// @param ticketId Ticket proven to contain the selected winning entry.
+   117	    /// @param settler Address that performed permissionless settlement.
+   118	    /// @param result Final `NftWon` or `CashWon` result.
+   119	    /// @param cashAmount Raw six-decimal quote-token units allocated to the cash winner; zero for `NftWon`.
+   120	    /// @param protocolFee Raw six-decimal quote-token units allocated to the treasury, rounded down from gross sales.
+   121	    /// @param sponsorAmount Raw six-decimal quote-token units allocated to the sponsor recipient as the remainder.
+   122	    event WinningTicketSettled(
+   123	        uint256 indexed ticketId,
+   124	        address indexed settler,
+   125	        Status indexed result,
+   126	        uint256 cashAmount,
+   127	        uint256 protocolFee,
+   128	        uint256 sponsorAmount
+   129	    );
+   130	
+   131	    /// @notice Emitted when the winning ticket owner burns the ticket and receives the corresponding prize.
+   132	    /// @param ticketId Burned winning ticket ID.
+   133	    /// @param winner Ticket owner that received the prize at redemption time.
+   134	    /// @param result Final `NftWon` or `CashWon` result.
+   135	    /// @param cashAmount Raw six-decimal quote-token units paid for `CashWon`; zero for `NftWon`.
+   136	    /// @param prizeToken ERC-721 prize contract for `NftWon`; the zero address for `CashWon`.
+   137	    /// @param prizeTokenId ERC-721 prize token ID for `NftWon`; zero for `CashWon`.
+   138	    event WinningTicketRedeemed(
+   139	        uint256 indexed ticketId,
+   140	        address indexed winner,
+   141	        Status indexed result,
+   142	        uint256 cashAmount,
+   143	        address prizeToken,
+   144	        uint256 prizeTokenId
+   145	    );
+   146	
+   147	    /// @notice Emitted when an owner burns one or more tickets for a full quote-token refund.
+   148	    /// @param owner Ticket owner that burned the tickets and received the refund.
+   149	    /// @param ticketQuantity Number of tickets burned in this transaction.
+   150	    /// @param entryQuantity Aggregate number of entries represented by the burned tickets.
+   151	    /// @param amount Raw six-decimal quote-token units refunded, equal to `entryQuantity * ENTRY_PRICE`.
+   152	    /// @param remainingRefundLiability Raw six-decimal quote-token units still claimable after this refund.
+   153	    event TicketsRefunded(
+   154	        address indexed owner,
+   155	        uint256 ticketQuantity,
+   156	        uint256 entryQuantity,
+   157	        uint256 amount,
+   158	        uint256 remainingRefundLiability
+   159	    );
+   160	
+   161	    /// @notice Emitted when the complete current sponsor balance is released to its immutable recipient.
+   162	    /// @param caller Address that triggered the permissionless release.
+   163	    /// @param recipient Immutable sponsor recipient that received the payment.
+   164	    /// @param amount Raw six-decimal quote-token units paid.
+   165	    event SponsorProceedsReleased(address indexed caller, address indexed recipient, uint256 amount);
+   166	
+   167	    /// @notice Emitted when the complete current protocol-fee balance is released to the immutable treasury.
+   168	    /// @param caller Address that triggered the permissionless release.
+   169	    /// @param treasury Immutable protocol treasury that received the payment.
+   170	    /// @param amount Raw six-decimal quote-token units paid.
+   171	    event ProtocolFeesReleased(address indexed caller, address indexed treasury, uint256 amount);
+   172	
+   173	    /// @notice Emitted when the escrowed prize is returned after a cash result or refund transition.
+   174	    /// @param caller Address that triggered the permissionless release.
+   175	    /// @param recipient Immutable sponsor recipient that received the prize.
+   176	    /// @param prizeToken ERC-721 contract of the returned prize.
+   177	    /// @param prizeTokenId Token ID of the returned prize.
+   178	    event SponsorPrizeReleased(
+   179	        address indexed caller, address indexed recipient, address indexed prizeToken, uint256 prizeTokenId
+   180	    );
+   181	
+   182	    // Errors
+   183	
+   184	    /// @notice Raised when a caller other than the immutable factory attempts clone initialization.
+   185	    error OnlyFactory();
+   186	
+   187	    /// @notice Raised when initialization is attempted more than once or on the locked implementation.
+   188	    error AlreadyInitialized();
+   189	
+   190	    /// @notice Raised when a required address is the zero address.
+   191	    error ZeroAddress();
+   192	
+   193	    /// @notice Raised when an operation is unavailable in the current lifecycle state.
+   194	    /// @param actual Current raffle status.
+   195	    error InvalidStatus(Status actual);
+   196	
+   197	    /// @notice Raised when an ERC-721 receiver callback does not exactly match the configured factory prize deposit.
+   198	    /// @param token ERC-721 contract that invoked the receiver callback.
+   199	    /// @param tokenId Token ID supplied by the callback.
+   200	    /// @param from Address identified as the previous token owner.
+   201	    /// @param operator Address identified as the transfer operator.
+   202	    error UnexpectedPrize(address token, uint256 tokenId, address from, address operator);
+   203	
+   204	    /// @notice Raised when an entry purchase is submitted at or after the exclusive sale end.
+   205	    /// @param endTime Exclusive sale-end Unix timestamp, in seconds.
+   206	    /// @param currentTime Current block Unix timestamp, in seconds.
+   207	    error SaleEnded(uint256 endTime, uint256 currentTime);
+   208	
+   209	    /// @notice Raised when an entry ticket would be minted to the zero address.
+   210	    error InvalidRecipient();
+   211	
+   212	    /// @notice Raised when a purchase requests no entries.
+   213	    error ZeroEntryCount();
+   214	
+   215	    /// @notice Raised when a purchase would exceed the `uint128` global entry-number representation.
+   216	    /// @param totalEntries Current global sold-entry count.
+   217	    /// @param requestedEntries Prospective entry count requested by the purchase.
+   218	    error TotalEntriesOverflow(uint128 totalEntries, uint128 requestedEntries);
+   219	
+   220	    /// @notice Raised when a refund batch is empty or exceeds the bounded ticket limit.
+   221	    /// @param quantity Number of supplied ticket IDs.
+   222	    /// @param maximum Maximum ticket IDs accepted per refund transaction.
+   223	    error InvalidTicketBatchSize(uint256 quantity, uint256 maximum);
+   224	
+   225	    /// @notice Raised when a quote-token claim targets a known protocol destination that could strand the claim.
+   226	    /// @param destination Rejected payout recipient.
+   227	    error InvalidQuoteDestination(address destination);
+   228	
+   229	    /// @notice Raised when a draw request is submitted before the sale end.
+   230	    /// @param endTime Exclusive sale-end Unix timestamp, in seconds.
+   231	    /// @param currentTime Current block Unix timestamp, in seconds.
+   232	    error RaffleNotEnded(uint256 endTime, uint256 currentTime);
+   233	
+   234	    /// @notice Raised when a draw request is submitted at or after the exclusive request deadline.
+   235	    /// @param deadline Exclusive draw-request Unix-timestamp deadline, in seconds.
+   236	    /// @param currentTime Current block Unix timestamp, in seconds.
+   237	    error DrawRequestWindowExpired(uint256 deadline, uint256 currentTime);
+   238	
+   239	    /// @notice Raised when draw initiation is attempted for a raffle with zero sold entries.
+   240	    error NoEntriesSold();
+   241	
+   242	    /// @notice Raised when refunds are requested before the applicable liveness deadline.
+   243	    /// @param deadline Unix timestamp, in seconds, at which refunds become available.
+   244	    /// @param currentTime Current block Unix timestamp, in seconds.
+   245	    error RefundsNotAvailable(uint256 deadline, uint256 currentTime);
+   246	
+   247	    /// @notice Raised when supplied native value cannot cover the quoted or actual Chainlink request fee.
+   248	    /// @param requiredFee Native-token wei required for the request.
+   249	    /// @param suppliedValue Native-token wei supplied by the caller.
+   250	    error InsufficientVrfFee(uint256 requiredFee, uint256 suppliedValue);
+   251	
+   252	    /// @notice Raised when excess native value cannot be returned to the draw requester.
+   253	    /// @param recipient Draw requester that was due the refund.
+   254	    /// @param amount Native-token wei that could not be returned.
+   255	    error NativeRefundFailed(address recipient, uint256 amount);
+   256	
+   257	    /// @notice Raised when no current cash-winner proceeds remain claimable.
+   258	    error NoWinnerProceeds();
+   259	
+   260	    /// @notice Raised when no current sponsor proceeds remain claimable.
+   261	    error NoSponsorProceeds();
+   262	
+   263	    /// @notice Raised when no current protocol fees remain claimable.
+   264	    error NoProtocolFees();
+   265	
+   266	    /// @notice Raised when initialization or a ticket transfer targets known protocol plumbing.
+   267	    /// @param destination Rejected address.
+   268	    error UnsafeProtocolDestination(address destination);
+   269	
+   270	    /// @notice Raised when the caller is not the current owner of the supplied ticket.
+   271	    /// @param ticketId Ticket whose ownership was checked.
+   272	    /// @param caller Address attempting the owner-only operation.
+   273	    /// @param owner Current ticket owner.
+   274	    error NotTicketOwner(uint256 ticketId, address caller, address owner);
+   275	
+   276	    /// @notice Raised when the supplied ticket range does not contain the selected winning entry.
+   277	    /// @param ticketId Supplied ticket ID.
+   278	    /// @param winningEntry Selected one-based global winning entry.
+   279	    error TicketDoesNotContainWinningEntry(uint256 ticketId, uint128 winningEntry);
+   280	
+   281	    /// @notice Raised when terminal liabilities have already been allocated.
+   282	    error SettlementAlreadyComplete();
+   283	
+   284	    /// @notice Raised when redemption supplies a ticket other than the recorded winning ticket.
+   285	    /// @param suppliedTicketId Ticket ID supplied for redemption.
+   286	    /// @param winningTicketId Previously settled winning ticket ID.
+   287	    error WinningTicketMismatch(uint256 suppliedTicketId, uint256 winningTicketId);
+   288	
+   289	    /// @notice Raised when the winning ticket has already been burned and redeemed.
+   290	    error WinningTicketAlreadyRedeemed();
+   291	
+   292	    /// @notice Raised when the sponsor prize cannot be returned in the current result state.
+   293	    /// @param status Current raffle status.
+   294	    error SponsorPrizeUnavailable(Status status);
+   295	
+   296	    /// @notice Raised when the escrowed prize has already been released.
+   297	    error PrizeAlreadyClaimed();
+   298	
+   299	    /// @notice Raised when the prize token does not report the expected owner after transfer.
+   300	    /// @param recipient Address that should own the prize after delivery.
+   301	    error PrizeDeliveryVerificationFailed(address recipient);
+   302	
+   303	    // External state-changing functions
+   304	
+   305	    /// @notice Initializes a fresh fixed-target clone with its immutable-per-raffle configuration.
+   306	    /// @dev Callable exactly once and only by the immutable canonical factory. Prize escrow activates the raffle later.
+   307	    /// @param params Clone-specific sponsor, prize, accounting, identifier, reserve, and timing configuration.
+   308	    function initialize(RaffleInitParams calldata params) external;
+   309	
+   310	    /// @notice Buys any positive number of entries and mints one sequential ticket containing their inclusive range.
+   311	    /// @param recipient Address that receives the newly minted ERC-721 range ticket.
+   312	    /// @param entryCount Prospective number of entries to buy for this ticket.
+   313	    /// @return ticketId Sequential ID of the newly minted ticket.
+   314	    function buyEntries(address recipient, uint128 entryCount) external returns (uint256 ticketId);
+   315	
+   316	    /// @notice Pays the current native Chainlink fee and requests the raffle's one random word.
+   317	    /// @dev Callable by anyone only in `[endTime,drawRequestDeadline())` after at least one entry is sold. Any native
+   318	    ///      value above the wrapper's actual fee is returned to the caller atomically.
+   319	    /// @return requestId Wrapper-assigned request identifier recorded by the raffle.
+   320	    function requestDraw() external payable returns (uint256 requestId);
+   321	
+   322	    /// @notice Enables full refunds after the sold-raffle request deadline or an accepted request's callback deadline.
+   323	    ///         Also closes an empty raffle immediately for the sponsor and after sale end for anyone.
+   324	    function enableRefunds() external;
+   325	
+   326	    /// @notice Proves which ticket contains the winning entry and allocates winner, sponsor, and protocol liabilities.
+   327	    /// @dev Anyone may execute; ownership is not read, the ticket remains transferable, and no external asset transfer
+   328	    ///      occurs. The cash-winner allocation is rounded down; the sponsor receives the remaining raw units.
+   329	    /// @param ticketId Ticket whose stored inclusive range must contain `winningEntry`.
+   330	    /// @return cashAmount Raw six-decimal quote-token units allocated to the winner, or zero for an NFT result.
+   331	    function settleWinningTicket(uint256 ticketId) external returns (uint256 cashAmount);
+   332	
+   333	    /// @notice Lets the current winning-ticket owner atomically burn the ticket and receive the NFT or cash prize.
+   334	    /// @dev If necessary, this first settles the supplied winning ticket so the owner can complete both steps in one
+   335	    ///      transaction. Any failed delivery reverts the burn and every redemption state change.
+   336	    /// @param ticketId Winning ticket to settle if needed, burn, and redeem.
+   337	    /// @return cashAmount Raw six-decimal quote-token units paid for `CashWon`, or zero for `NftWon`.
+   338	    function redeemWinningTicket(uint256 ticketId) external returns (uint256 cashAmount);
+   339	
+   340	    /// @notice Burns an owner-selected batch of tickets and returns their full entry purchase value.
+   341	    /// @dev Accepts one to 100 tickets. Duplicate, nonexistent, or foreign-owned IDs revert the entire batch.
+   342	    /// @param ticketIds Ticket IDs owned by the caller and submitted for refund.
+   343	    /// @return amount Raw six-decimal quote-token units paid, equal to represented entries times `ENTRY_PRICE`.
+   344	    function refundTickets(uint256[] calldata ticketIds) external returns (uint256 amount);
+   345	
+   346	    /// @notice Releases the complete current sponsor-proceeds balance to the immutable sponsor recipient.
+   347	    /// @return amount Raw six-decimal quote-token units paid in this release.
+   348	    function releaseSponsorProceeds() external returns (uint256 amount);
+   349	
+   350	    /// @notice Releases the complete current protocol-fee balance to the immutable treasury.
+   351	    /// @return amount Raw six-decimal quote-token units paid in this release.
+   352	    function releaseProtocolFees() external returns (uint256 amount);
+   353	
+   354	    /// @notice Returns the escrowed prize to the immutable sponsor recipient after `CashWon` or `Refunding`.
+   355	    function releaseSponsorPrize() external;
+   356	
+   357	    // External view functions
+   358	
+   359	    /// @notice Returns the wrapper's current native direct-funding price for the configured callback.
+   360	    /// @return fee Native-token wei currently quoted by the wrapper; the value may change before request inclusion.
+   361	    function getVrfRequestPrice() external view returns (uint256 fee);
+   362	
+   363	    /// @notice Estimates the native direct-funding price at a caller-selected gas price.
+   364	    /// @param requestGasPriceWei Prospective transaction gas price in wei per gas.
+   365	    /// @return fee Estimated native-token wei for the configured callback and one random word.
+   366	    function estimateVrfRequestPrice(uint256 requestGasPriceWei) external view returns (uint256 fee);
+   367	
+   368	    /// @notice Returns the inclusive global entry range represented by a ticket ID.
+   369	    /// @dev Returns zeros for an ID that has never been minted; ranges remain historical after ticket burns.
+   370	    /// @param ticketId Sequential ticket ID to inspect.
+   371	    /// @return firstEntry First represented one-based global entry, inclusive.
+   372	    /// @return lastEntry Last represented one-based global entry, inclusive.
+   373	    function ticketRange(uint256 ticketId) external view returns (uint128 firstEntry, uint128 lastEntry);
+   374	
+   375	    /// @notice Returns the exclusive deadline for initiating the draw.
+   376	    /// @return deadline Unix timestamp, in seconds, equal to `endTime + 2 days`.
+   377	    function drawRequestDeadline() external view returns (uint256 deadline);
+   378	
+   379	    /// @notice Returns the exclusive deadline for accepting the authenticated callback.
+   380	    /// @return deadline Unix timestamp, in seconds, equal to `drawRequestedAt + 2 days`, or zero before a request.
+   381	    function callbackDeadline() external view returns (uint256 deadline);
+   382	
+   383	    /// @notice Returns all currently outstanding quote-token liabilities tracked by the raffle.
+   384	    /// @return amount Raw six-decimal quote-token units across the unsettled pot, refunds, and allocated claims.
+   385	    function accountedQuoteBalance() external view returns (uint256 amount);
+   386	
+   387	    /// @notice Returns lifetime gross sales derived from the global sold-entry count.
+   388	    /// @dev No redundant gross-sales value is stored.
+   389	    /// @return amount Raw six-decimal quote-token units equal to `totalEntries * ENTRY_PRICE`.
+   390	    function grossSales() external view returns (uint256 amount);
+   391	
+   392	    // Public generated getters
+   393	
+   394	    /// @notice Returns the fixed raw six-decimal quote-token price of one entry.
+   395	    /// @return price One entry price, exactly 1,000,000 raw units.
+   396	    function ENTRY_PRICE() external view returns (uint256 price);
+   397	
+   398	    /// @notice Returns the fixed Chainlink callback execution limit.
+   399	    /// @return gasLimit Callback gas units requested from the wrapper.
+   400	    function callbackGasLimit() external view returns (uint32 gasLimit);
+   401	
+   402	    /// @notice Returns the fixed Chainlink confirmation count.
+   403	    /// @return confirmations Blocks requested before callback fulfillment.
+   404	    function requestConfirmations() external view returns (uint16 confirmations);
+   405	
+   406	    /// @notice Returns the immutable factory authorized to initialize this implementation's clones.
+   407	    /// @return factoryAddress Canonical factory address.
+   408	    function factory() external view returns (address factoryAddress);
+   409	
+   410	    /// @notice Returns the prize depositor and pre-end empty-raffle refund authority.
+   411	    /// @return sponsorAddress Immutable-per-raffle sponsor address.
+   412	    function sponsor() external view returns (address sponsorAddress);
+   413	
+   414	    /// @notice Returns the immutable recipient of sponsor quote proceeds and returned prizes.
+   415	    /// @return recipient Sponsor recipient address.
+   416	    function sponsorRecipient() external view returns (address recipient);
+   417	
+   418	    /// @notice Returns the immutable recipient of this raffle's protocol fees.
+   419	    /// @return treasury Protocol treasury address.
+   420	    function protocolTreasury() external view returns (address treasury);
+   421	
+   422	    /// @notice Returns the immutable canonical six-decimal USDC contract.
+   423	    /// @return token Canonical USDC contract trusted by this factory deployment.
+   424	    function quoteToken() external view returns (IERC20 token);
+   425	
+   426	    /// @notice Returns the immutable Chainlink VRF v2.5 native direct-funding wrapper.
+   427	    /// @return wrapper Wrapper contract.
+   428	    function vrfWrapper() external view returns (IVRFV2PlusWrapper wrapper);
+   429	
+   430	    /// @notice Returns the configured ERC-721 prize contract.
+   431	    /// @return token Prize-token contract.
+   432	    function prizeToken() external view returns (IERC721 token);
+   433	
+   434	    /// @notice Returns the configured ERC-721 prize token ID.
+   435	    /// @return tokenId Escrowed prize token ID.
+   436	    function prizeTokenId() external view returns (uint256 tokenId);
+   437	
+   438	    /// @notice Returns this raffle's one-based canonical factory identifier.
+   439	    /// @return id Raffle identifier.
+   440	    function raffleId() external view returns (uint256 id);
+   441	
+   442	    /// @notice Returns the global entry threshold that selects the NFT outcome when met or exceeded.
+   443	    /// @return entries Reserve entry count.
+   444	    function reserveEntries() external view returns (uint128 entries);
+   445	
+   446	    /// @notice Returns the exclusive sale-end timestamp.
+   447	    /// @return timestamp Unix timestamp, in seconds.
+   448	    function endTime() external view returns (uint64 timestamp);
+   449	
+   450	    /// @notice Returns the lifetime global number of entries sold.
+   451	    /// @return entries Sold-entry count; also the last assigned global entry number.
+   452	    function totalEntries() external view returns (uint128 entries);
+   453	
+   454	    /// @notice Returns the lifetime number of range tickets minted.
+   455	    /// @return tickets Ticket count; also the latest assigned ticket ID.
+   456	    function ticketCount() external view returns (uint128 tickets);
+   457	
+   458	    /// @notice Returns the current unallocated sale pot.
+   459	    /// @return amount Raw six-decimal quote-token units collected before settlement or refund activation.
+   460	    function unsettledPot() external view returns (uint256 amount);
+   461	
+   462	    /// @notice Returns the current aggregate full-refund liability.
+   463	    /// @return amount Raw six-decimal quote-token units still claimable by unrefunded tickets.
+   464	    function remainingRefundLiability() external view returns (uint256 amount);
+   465	
+   466	    /// @notice Returns the address that burned and redeemed the winning ticket.
+   467	    /// @return recipient Winner at redemption time, or the zero address before redemption.
+   468	    function winnerRecipient() external view returns (address recipient);
+   469	
+   470	    /// @notice Returns the current cash-winner liability.
+   471	    /// @return amount Raw six-decimal quote-token units claimable by the winning ticket, or zero otherwise.
+   472	    function winnerProceeds() external view returns (uint256 amount);
+   473	
+   474	    /// @notice Returns the current sponsor liability.
+   475	    /// @return amount Raw six-decimal quote-token units claimable by the immutable sponsor recipient.
+   476	    function sponsorProceeds() external view returns (uint256 amount);
+   477	
+   478	    /// @notice Returns the current protocol-fee liability.
+   479	    /// @return amount Raw six-decimal quote-token units claimable by the immutable treasury.
+   480	    function protocolFees() external view returns (uint256 amount);
+   481	
+   482	    /// @notice Returns the accepted Chainlink request ID.
+   483	    /// @return requestId Wrapper-assigned ID, or zero before request persistence.
+   484	    function vrfRequestId() external view returns (uint256 requestId);
+   485	
+   486	    /// @notice Returns when the accepted draw request was recorded.
+   487	    /// @return timestamp Unix timestamp, in seconds, or zero before request persistence.
+   488	    function drawRequestedAt() external view returns (uint64 timestamp);
+   489	
+   490	    /// @notice Returns when an authenticated callback resolved the raffle.
+   491	    /// @return timestamp Unix timestamp, in seconds, or zero before resolution.
+   492	    function resolvedAt() external view returns (uint64 timestamp);
+   493	
+   494	    /// @notice Returns the selected one-based global winning entry.
+   495	    /// @return entry Entry in `[1,totalEntries]`, or zero before resolution.
+   496	    function winningEntry() external view returns (uint128 entry);
+   497	
+   498	    /// @notice Returns the ticket proven to contain the winning entry.
+   499	    /// @return ticketId Sequential ticket ID, or zero before settlement.
+   500	    function winningTicketId() external view returns (uint256 ticketId);
+   501	
+   502	    /// @notice Returns the current lifecycle and economic result.
+   503	    /// @return currentStatus Current `Status` value.
+   504	    function status() external view returns (Status currentStatus);
+   505	
+   506	    /// @notice Returns whether terminal winner, sponsor, and protocol liabilities have been allocated.
+   507	    /// @return complete True after winning-ticket settlement.
+   508	    function settlementComplete() external view returns (bool complete);
+   509	
+   510	    /// @notice Returns whether the winning ticket has been burned and its NFT or cash prize delivered.
+   511	    /// @return redeemed True after successful winner redemption.
+   512	    function winnerRedeemed() external view returns (bool redeemed);
+   513	
+   514	    /// @notice Returns whether the prize has been delivered to the winner or returned to the sponsor recipient.
+   515	    /// @return claimed True after successful prize release.
+   516	    function prizeClaimed() external view returns (bool claimed);
+   517	
+   518	    /// @notice Returns whether this implementation or clone has completed its one-time initialization step.
+   519	    /// @return complete True for the locked implementation and every initialized clone.
+   520	    function initialized() external view returns (bool complete);
+   521	}
+     1	// SPDX-License-Identifier: MIT
+     2	pragma solidity 0.8.36;
+     3	
+     4	/// @title raffle.fun Raffle Factory Interface
+     5	/// @author heesho
+     6	/// @notice Defines atomic ERC-1167 raffle creation for one immutable USDC, treasury, and Chainlink configuration.
+     7	/// @dev The factory has no owner, pause, upgrade, rescue, or mutable protocol configuration. Deployment tooling must
+     8	///      verify that the immutable quote-token address is the target chain's official USDC; onchain construction checks
+     9	///      only code presence and six-decimal metadata.
+    10	/// @custom:version 1.0.0
+    11	interface IRaffleFactory {
+    12	    // Types
+    13	
+    14	    /// @notice Sponsor-selected configuration for one new raffle.
+    15	    /// @param sponsorRecipient Immutable recipient of sponsor quote proceeds and any returned prize.
+    16	    /// @param prizeToken Standards-compliant ERC-721 prize contract.
+    17	    /// @param prizeTokenId Token ID to escrow atomically during creation.
+    18	    /// @param reserveEntries Global raw entry-count threshold selecting the NFT outcome when met or exceeded.
+    19	    /// @param endTime Exclusive sale-end Unix timestamp, in seconds.
+    20	    struct CreateRaffleParams {
+    21	        address sponsorRecipient;
+    22	        address prizeToken;
+    23	        uint256 prizeTokenId;
+    24	        uint128 reserveEntries;
+    25	        uint64 endTime;
+    26	    }
+    27	
+    28	    // Events
+    29	
+    30	    /// @notice Emitted after a raffle clone is initialized, registered, funded, and active.
+    31	    /// @param raffleId One-based canonical raffle identifier.
+    32	    /// @param raffle Newly created fixed-target ERC-1167 clone.
+    33	    /// @param sponsor Prize depositor and pre-end empty-raffle refund authority.
+    34	    /// @param sponsorRecipient Immutable recipient of sponsor quote proceeds and any returned prize.
+    35	    /// @param prizeToken ERC-721 contract of the escrowed prize.
+    36	    /// @param prizeTokenId Token ID of the escrowed prize.
+    37	    /// @param quoteToken Immutable canonical six-decimal USDC contract used by the raffle.
+    38	    /// @param protocolTreasury Immutable recipient of protocol fees.
+    39	    /// @param reserveEntries Global raw entry-count threshold selecting the NFT outcome when met or exceeded.
+    40	    /// @param endTime Exclusive sale-end Unix timestamp, in seconds.
+    41	    event RaffleCreated(
+    42	        uint256 indexed raffleId,
+    43	        address indexed raffle,
+    44	        address indexed sponsor,
+    45	        address sponsorRecipient,
+    46	        address prizeToken,
+    47	        uint256 prizeTokenId,
+    48	        address quoteToken,
+    49	        address protocolTreasury,
+    50	        uint128 reserveEntries,
+    51	        uint64 endTime
+    52	    );
+    53	
+    54	    // Errors
+    55	
+    56	    /// @notice Raised when a required address is the zero address.
+    57	    error ZeroAddress();
+    58	
+    59	    /// @notice Raised when an address required to contain deployed code is not a contract.
+    60	    /// @param account Address whose code length was zero.
+    61	    error NotContract(address account);
+    62	
+    63	    /// @notice Raised when the quote token cannot report its decimal precision.
+    64	    /// @param quoteToken Rejected quote-token contract.
+    65	    error UnsupportedQuoteToken(address quoteToken);
+    66	
+    67	    /// @notice Raised when the quote token does not use the required six-decimal precision.
+    68	    /// @param actualDecimals Decimal precision reported by the quote token.
+    69	    /// @param requiredDecimals Required decimal precision, exactly six.
+    70	    error InvalidQuoteTokenDecimals(uint8 actualDecimals, uint8 requiredDecimals);
+    71	
+    72	    /// @notice Raised when the prize contract does not report ERC-721 interface support.
+    73	    /// @param prizeToken Rejected prize-token contract.
+    74	    error UnsupportedPrizeToken(address prizeToken);
+    75	
+    76	    /// @notice Raised when a raffle is configured with a zero reserve entry threshold.
+    77	    error ZeroReserveEntries();
+    78	
+    79	    /// @notice Raised when the sale end is not strictly after the creation block timestamp.
+    80	    /// @param currentTime Current block Unix timestamp, in seconds.
+    81	    /// @param endTime Supplied exclusive sale-end Unix timestamp, in seconds.
+    82	    error InvalidEndTime(uint256 currentTime, uint256 endTime);
+    83	
+    84	    /// @notice Raised when the prospective sale duration exceeds the fixed 30-day limit.
+    85	    /// @param duration Prospective sale duration in seconds.
+    86	    /// @param maximumDuration Maximum permitted sale duration in seconds.
+    87	    error SaleDurationTooLong(uint256 duration, uint256 maximumDuration);
+    88	
+    89	    /// @notice Raised when a configured token or recipient is known protocol plumbing.
+    90	    /// @param destination Rejected address.
+    91	    error UnsafeProtocolDestination(address destination);
+    92	
+    93	    /// @notice Raised when the exact configured prize is not owned by an active clone after escrow.
+    94	    /// @param raffle Newly created clone expected to hold the prize and report `Active`.
+    95	    /// @param prizeToken ERC-721 prize contract.
+    96	    /// @param prizeTokenId Configured prize token ID.
+    97	    error PrizeEscrowVerificationFailed(address raffle, address prizeToken, uint256 prizeTokenId);
+    98	
+    99	    // External state-changing functions
+   100	
+   101	    /// @notice Creates, initializes, registers, and funds one autonomous fixed-target raffle clone atomically.
+   102	    /// @param params Sponsor-selected recipient, prize, reserve, and timing configuration.
+   103	    /// @return raffle Address of the newly created and activated clone.
+   104	    function createRaffle(CreateRaffleParams calldata params) external returns (address raffle);
+   105	
+   106	    // Public generated getters
+   107	
+   108	    /// @notice Returns the immutable canonical six-decimal USDC contract used by every raffle.
+   109	    /// @return quoteTokenAddress Canonical USDC contract address trusted by this deployment.
+   110	    function quoteToken() external view returns (address quoteTokenAddress);
+   111	
+   112	    /// @notice Returns the immutable Chainlink VRF v2.5 native direct-funding wrapper used by every raffle.
+   113	    /// @return wrapperAddress Wrapper contract address.
+   114	    function vrfWrapper() external view returns (address wrapperAddress);
+   115	
+   116	    /// @notice Returns the immutable recipient of protocol fees from every raffle.
+   117	    /// @return treasuryAddress Protocol treasury address.
+   118	    function protocolTreasury() external view returns (address treasuryAddress);
+   119	
+   120	    /// @notice Returns the fixed Chainlink callback execution limit used by every raffle.
+   121	    /// @return gasLimit Callback gas units requested from the wrapper.
+   122	    function callbackGasLimit() external view returns (uint32 gasLimit);
+   123	
+   124	    /// @notice Returns the fixed Chainlink confirmation count used by every raffle.
+   125	    /// @return confirmations Blocks requested before callback fulfillment.
+   126	    function requestConfirmations() external view returns (uint16 confirmations);
+   127	
+   128	    /// @notice Returns the immutable implementation targeted by every registered ERC-1167 clone.
+   129	    /// @return implementation Locked raffle implementation address.
+   130	    function raffleImplementation() external view returns (address implementation);
+   131	
+   132	    /// @notice Returns the lifetime number of successfully created raffles.
+   133	    /// @return count Latest one-based raffle identifier and total registered raffle count.
+   134	    function raffleCount() external view returns (uint256 count);
+   135	
+   136	    /// @notice Returns whether an address is a raffle registered by this factory.
+   137	    /// @param raffle Address to check.
+   138	    /// @return registered True only for a successfully created canonical clone.
+   139	    function isRaffle(address raffle) external view returns (bool registered);
+   140	
+   141	    /// @notice Returns the canonical raffle address for an identifier.
+   142	    /// @param raffleId One-based raffle identifier.
+   143	    /// @return raffle Registered clone address, or the zero address for an unknown identifier.
+   144	    function raffleById(uint256 raffleId) external view returns (address raffle);
+   145	
+   146	    /// @notice Returns the canonical identifier assigned to a raffle address.
+   147	    /// @param raffle Address to query.
+   148	    /// @return raffleId One-based identifier, or zero for an unregistered address.
+   149	    function idByRaffle(address raffle) external view returns (uint256 raffleId);
+   150	}

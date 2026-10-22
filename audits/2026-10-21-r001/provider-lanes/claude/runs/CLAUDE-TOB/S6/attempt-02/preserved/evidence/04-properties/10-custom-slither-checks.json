@@ -1,0 +1,1437 @@
+{
+ "checks": [
+  {
+   "id": "C1",
+   "title": "Raffle state-changing entry points with external interactions are nonReentrant (except documented allowlist)",
+   "result": "PASS",
+   "evidence": {
+    "violations": [],
+    "allowlist": {
+     "initialize(IRaffle.RaffleInitParams)": "factory-only, one-shot; only trusted factory view calls",
+     "rawFulfillRandomWords(uint256,uint256[])": "wrapper-only callback; must not revert, so not nonReentrant",
+     "onERC721Received(address,address,uint256,bytes)": "prize-deposit acceptor; no external calls",
+     "approve(address,uint256)": "inherited ERC721; factory view calls only via _update? (approve has none)",
+     "setApprovalForAll(address,bool)": "inherited ERC721",
+     "transferFrom(address,address,uint256)": "inherited ERC721; _update screens destination via trusted factory views",
+     "safeTransferFrom(address,address,uint256)": "inherited ERC721; recipient callback after state update",
+     "safeTransferFrom(address,address,uint256,bytes)": "inherited ERC721; recipient callback after state update"
+    },
+    "checked": [
+     "rawFulfillRandomWords(uint256,uint256[])",
+     "approve(address,uint256)",
+     "setApprovalForAll(address,bool)",
+     "transferFrom(address,address,uint256)",
+     "safeTransferFrom(address,address,uint256)",
+     "safeTransferFrom(address,address,uint256,bytes)",
+     "receive()",
+     "initialize(IRaffle.RaffleInitParams)",
+     "buyEntries(address,uint128)",
+     "requestDraw()",
+     "enableRefunds()",
+     "settleWinningTicket(uint256)",
+     "redeemWinningTicket(uint256)",
+     "refundTickets(uint256[])",
+     "releaseSponsorProceeds()",
+     "releaseProtocolFees()",
+     "releaseSponsorPrize()",
+     "onERC721Received(address,address,uint256,bytes)"
+    ]
+   }
+  },
+  {
+   "id": "C2",
+   "title": "All quote-token safeTransfer calls are inside _transferQuote",
+   "result": "PASS",
+   "evidence": {
+    "safeTransfer_sites": [
+     "_transferQuote(address,uint256)"
+    ],
+    "violations": []
+   }
+  },
+  {
+   "id": "C3",
+   "title": "Per-raffle configuration variables are written only by initialize()",
+   "result": "PASS",
+   "evidence": {
+    "sponsor": [
+     "initialize(IRaffle.RaffleInitParams)"
+    ],
+    "sponsorRecipient": [
+     "initialize(IRaffle.RaffleInitParams)"
+    ],
+    "protocolTreasury": [
+     "initialize(IRaffle.RaffleInitParams)"
+    ],
+    "prizeToken": [
+     "initialize(IRaffle.RaffleInitParams)"
+    ],
+    "prizeTokenId": [
+     "initialize(IRaffle.RaffleInitParams)"
+    ],
+    "raffleId": [
+     "initialize(IRaffle.RaffleInitParams)"
+    ],
+    "reserveEntries": [
+     "initialize(IRaffle.RaffleInitParams)"
+    ],
+    "endTime": [
+     "initialize(IRaffle.RaffleInitParams)"
+    ]
+   }
+  },
+  {
+   "id": "C4",
+   "title": "status is written only by constructor/initialize/onERC721Received/requestDraw/enableRefunds/fulfillRandomWords",
+   "result": "PASS",
+   "evidence": {
+    "actual": [
+     "constructor(address,address)",
+     "enableRefunds()",
+     "fulfillRandomWords(uint256,uint256[])",
+     "initialize(IRaffle.RaffleInitParams)",
+     "onERC721Received(address,address,uint256,bytes)",
+     "requestDraw()"
+    ],
+    "expected": [
+     "constructor(address,address)",
+     "enableRefunds()",
+     "fulfillRandomWords(uint256,uint256[])",
+     "initialize(IRaffle.RaffleInitParams)",
+     "onERC721Received(address,address,uint256,bytes)",
+     "requestDraw()"
+    ]
+   }
+  },
+  {
+   "id": "C5",
+   "title": "fulfillRandomWords: no explicit revert/require/assert, no external interaction, no loop",
+   "result": "PASS",
+   "evidence": {
+    "reverts": [],
+    "external": [],
+    "loops": [],
+    "note": "implicit panics reviewed manually: modulo by totalEntries>0, index [0] guarded by length==1"
+   }
+  },
+  {
+   "id": "C6",
+   "title": "_settleWinningTicket performs no external interaction (storage-only settlement)",
+   "result": "PASS",
+   "evidence": {
+    "external": []
+   }
+  },
+  {
+   "id": "C7",
+   "title": "Prize transfers only in redeem/releaseSponsorPrize, each reads+writes prizeClaimed and verifies ownerOf",
+   "result": "PASS",
+   "evidence": {
+    "redeemWinningTicket(uint256)": {
+     "calls": [
+      "transferFrom",
+      "ownerOf"
+     ],
+     "writes_prizeClaimed": true,
+     "reads_prizeClaimed": true
+    },
+    "releaseSponsorPrize()": {
+     "calls": [
+      "transferFrom",
+      "ownerOf"
+     ],
+     "writes_prizeClaimed": true,
+     "reads_prizeClaimed": true
+    }
+   }
+  },
+  {
+   "id": "C8",
+   "title": "Raffle._update screens destinations via _isProtocolDestination and delegates to ERC721._update",
+   "result": "PASS",
+   "evidence": {
+    "screens": true,
+    "calls_super": true,
+    "expression_nodes": [
+     "to != address(0) && _isProtocolDestination(to,address(prizeToken))",
+     "revert UnsafeProtocolDestination(address)(to)",
+     "previousOwner = super._update(to,ticketId,auth)",
+     "previousOwner"
+    ]
+   }
+  },
+  {
+   "id": "C9",
+   "title": "No delegatecall/selfdestruct/ecrecover/blockhash/tx.origin/prevrandao in production contracts",
+   "result": "PASS",
+   "evidence": {}
+  },
+  {
+   "id": "C10",
+   "title": "createRaffle: clone -> initialize -> register(isRaffle) -> untrusted prize safeTransferFrom",
+   "result": "PASS",
+   "evidence": {
+    "ordered_effects": [
+     "write:raffleCount",
+     "clone:Clones.clone",
+     "call:TMP_1944.initialize",
+     "write:raffleById",
+     "write:idByRaffle",
+     "write:isRaffle",
+     "call:prize.safeTransferFrom",
+     "call:prize.ownerOf",
+     "call:TMP_1952.status"
+    ]
+   }
+  },
+  {
+   "id": "C11",
+   "title": "unsettledPot written only by buyEntries/enableRefunds/_settleWinningTicket",
+   "result": "PASS",
+   "evidence": {
+    "writers": [
+     "_settleWinningTicket(uint256)",
+     "buyEntries(address,uint128)",
+     "enableRefunds()"
+    ]
+   }
+  },
+  {
+   "id": "C12",
+   "title": "_transferQuote recipients are sponsorRecipient/protocolTreasury (fixed) or the authenticated owner",
+   "result": "PASS",
+   "evidence": {
+    "redeemWinningTicket(uint256)": [
+     "winner"
+    ],
+    "refundTickets(uint256[])": [
+     "msg.sender"
+    ],
+    "releaseSponsorProceeds()": [
+     "recipient"
+    ],
+    "releaseProtocolFees()": [
+     "treasury"
+    ]
+   }
+  }
+ ],
+ "inventory": {
+  "Raffle": [
+   {
+    "function": "rawFulfillRandomWords(uint256,uint256[])",
+    "is_constructor": false,
+    "declared_in": "VRFV2PlusWrapperConsumerBase",
+    "visibility": "external",
+    "mutability": "nonpayable",
+    "modifiers": [],
+    "msg_sender_conditions": [
+     "msg.sender != vrfWrapperAddr"
+    ],
+    "state_written": [
+     "resolvedAt",
+     "status",
+     "winningEntry"
+    ],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "getBalance()",
+    "is_constructor": false,
+    "declared_in": "VRFV2PlusWrapperConsumerBase",
+    "visibility": "public",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "getLinkToken()",
+    "is_constructor": false,
+    "declared_in": "VRFV2PlusWrapperConsumerBase",
+    "visibility": "public",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "supportsInterface(bytes4)",
+    "is_constructor": false,
+    "declared_in": "ERC721",
+    "visibility": "public",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "balanceOf(address)",
+    "is_constructor": false,
+    "declared_in": "ERC721",
+    "visibility": "public",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "ownerOf(uint256)",
+    "is_constructor": false,
+    "declared_in": "ERC721",
+    "visibility": "public",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "tokenURI(uint256)",
+    "is_constructor": false,
+    "declared_in": "ERC721",
+    "visibility": "public",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "approve(address,uint256)",
+    "is_constructor": false,
+    "declared_in": "ERC721",
+    "visibility": "public",
+    "mutability": "nonpayable",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [
+     "_tokenApprovals"
+    ],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "getApproved(uint256)",
+    "is_constructor": false,
+    "declared_in": "ERC721",
+    "visibility": "public",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "setApprovalForAll(address,bool)",
+    "is_constructor": false,
+    "declared_in": "ERC721",
+    "visibility": "public",
+    "mutability": "nonpayable",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [
+     "_operatorApprovals"
+    ],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "isApprovedForAll(address,address)",
+    "is_constructor": false,
+    "declared_in": "ERC721",
+    "visibility": "public",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "transferFrom(address,address,uint256)",
+    "is_constructor": false,
+    "declared_in": "ERC721",
+    "visibility": "public",
+    "mutability": "nonpayable",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [
+     "_balances",
+     "_owners",
+     "_tokenApprovals"
+    ],
+    "external_interactions": [
+     "call IRaffleFactory.isRaffle",
+     "call IRaffleFactory.raffleImplementation"
+    ],
+    "interaction_classes": [
+     "Factory registry view (trusted)"
+    ]
+   },
+   {
+    "function": "safeTransferFrom(address,address,uint256)",
+    "is_constructor": false,
+    "declared_in": "ERC721",
+    "visibility": "public",
+    "mutability": "nonpayable",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [
+     "_balances",
+     "_owners",
+     "_tokenApprovals"
+    ],
+    "external_interactions": [
+     "call IERC721Receiver.onERC721Received",
+     "call IRaffleFactory.isRaffle",
+     "call IRaffleFactory.raffleImplementation",
+     "lib ERC721Utils.checkOnERC721Received"
+    ],
+    "interaction_classes": [
+     "ERC721 receiver callback (UNTRUSTED)",
+     "Factory registry view (trusted)"
+    ]
+   },
+   {
+    "function": "safeTransferFrom(address,address,uint256,bytes)",
+    "is_constructor": false,
+    "declared_in": "ERC721",
+    "visibility": "public",
+    "mutability": "nonpayable",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [
+     "_balances",
+     "_owners",
+     "_tokenApprovals"
+    ],
+    "external_interactions": [
+     "call IERC721Receiver.onERC721Received",
+     "call IRaffleFactory.isRaffle",
+     "call IRaffleFactory.raffleImplementation",
+     "lib ERC721Utils.checkOnERC721Received"
+    ],
+    "interaction_classes": [
+     "ERC721 receiver callback (UNTRUSTED)",
+     "Factory registry view (trusted)"
+    ]
+   },
+   {
+    "function": "ENTRY_PRICE()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "callbackGasLimit()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "requestConfirmations()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "factory()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "sponsor()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "sponsorRecipient()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "protocolTreasury()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "quoteToken()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "prizeToken()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "prizeTokenId()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "raffleId()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "reserveEntries()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "endTime()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "totalEntries()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "ticketCount()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "unsettledPot()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "remainingRefundLiability()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "winnerRecipient()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "winnerProceeds()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "sponsorProceeds()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "protocolFees()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "vrfRequestId()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "drawRequestedAt()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "resolvedAt()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "winningEntry()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "winningTicketId()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "status()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "settlementComplete()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "winnerRedeemed()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "prizeClaimed()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "initialized()",
+    "is_constructor": false,
+    "declared_in": "IRaffle",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "constructor(address,address)",
+    "is_constructor": true,
+    "declared_in": "Raffle",
+    "visibility": "public",
+    "mutability": "nonpayable",
+    "modifiers": [],
+    "msg_sender_conditions": [
+     "msg.sender == address(0) || quoteToken_ == address(0)"
+    ],
+    "state_written": [
+     "_name",
+     "_symbol",
+     "factory",
+     "i_linkToken",
+     "i_vrfV2PlusWrapper",
+     "initialized",
+     "quoteToken",
+     "status"
+    ],
+    "external_interactions": [
+     "call IVRFV2PlusWrapper.link"
+    ],
+    "interaction_classes": [
+     "VRF wrapper (trusted)"
+    ]
+   },
+   {
+    "function": "receive()",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "external",
+    "mutability": "payable",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "initialize(IRaffle.RaffleInitParams)",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "external",
+    "mutability": "nonpayable",
+    "modifiers": [],
+    "msg_sender_conditions": [
+     "msg.sender != factory"
+    ],
+    "state_written": [
+     "endTime",
+     "initialized",
+     "prizeToken",
+     "prizeTokenId",
+     "protocolTreasury",
+     "raffleId",
+     "reserveEntries",
+     "sponsor",
+     "sponsorRecipient",
+     "status"
+    ],
+    "external_interactions": [
+     "call IRaffleFactory.isRaffle",
+     "call IRaffleFactory.raffleImplementation"
+    ],
+    "interaction_classes": [
+     "Factory registry view (trusted)"
+    ]
+   },
+   {
+    "function": "buyEntries(address,uint128)",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "external",
+    "mutability": "nonpayable",
+    "modifiers": [
+     "nonReentrant"
+    ],
+    "msg_sender_conditions": [],
+    "state_written": [
+     "_balances",
+     "_owners",
+     "_ticketRanges",
+     "_tokenApprovals",
+     "ticketCount",
+     "totalEntries",
+     "unsettledPot"
+    ],
+    "external_interactions": [
+     "call IERC721Receiver.onERC721Received",
+     "call IRaffleFactory.isRaffle",
+     "call IRaffleFactory.raffleImplementation",
+     "lib ERC721Utils.checkOnERC721Received",
+     "lib SafeERC20.safeTransferFrom",
+     "yul call"
+    ],
+    "interaction_classes": [
+     "ERC721 receiver callback (UNTRUSTED)",
+     "Factory registry view (trusted)",
+     "USDC (trusted)",
+     "native value call to caller or token (see notes)"
+    ]
+   },
+   {
+    "function": "requestDraw()",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "external",
+    "mutability": "payable",
+    "modifiers": [
+     "nonReentrant"
+    ],
+    "msg_sender_conditions": [],
+    "state_written": [
+     "_requestInFlight",
+     "drawRequestedAt",
+     "status",
+     "vrfRequestId"
+    ],
+    "external_interactions": [
+     "call IVRFV2PlusWrapper.calculateRequestPriceNative",
+     "call IVRFV2PlusWrapper.requestRandomWordsInNative",
+     "yul call"
+    ],
+    "interaction_classes": [
+     "VRF wrapper (trusted)",
+     "native value call to caller or token (see notes)"
+    ]
+   },
+   {
+    "function": "enableRefunds()",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "external",
+    "mutability": "nonpayable",
+    "modifiers": [
+     "nonReentrant"
+    ],
+    "msg_sender_conditions": [
+     "msg.sender != sponsor && block.timestamp < deadline"
+    ],
+    "state_written": [
+     "remainingRefundLiability",
+     "status",
+     "unsettledPot"
+    ],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "settleWinningTicket(uint256)",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "external",
+    "mutability": "nonpayable",
+    "modifiers": [
+     "nonReentrant"
+    ],
+    "msg_sender_conditions": [],
+    "state_written": [
+     "protocolFees",
+     "settlementComplete",
+     "sponsorProceeds",
+     "unsettledPot",
+     "winnerProceeds",
+     "winningTicketId"
+    ],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "redeemWinningTicket(uint256)",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "external",
+    "mutability": "nonpayable",
+    "modifiers": [
+     "nonReentrant"
+    ],
+    "msg_sender_conditions": [
+     "msg.sender != winner"
+    ],
+    "state_written": [
+     "_balances",
+     "_owners",
+     "_tokenApprovals",
+     "prizeClaimed",
+     "protocolFees",
+     "settlementComplete",
+     "sponsorProceeds",
+     "unsettledPot",
+     "winnerProceeds",
+     "winnerRecipient",
+     "winnerRedeemed",
+     "winningTicketId"
+    ],
+    "external_interactions": [
+     "call IERC721.ownerOf",
+     "call IERC721.transferFrom",
+     "call IRaffleFactory.isRaffle",
+     "call IRaffleFactory.raffleImplementation",
+     "lib SafeERC20.safeTransfer",
+     "yul call"
+    ],
+    "interaction_classes": [
+     "Factory registry view (trusted)",
+     "Prize ERC721 (UNTRUSTED)",
+     "USDC (trusted)",
+     "native value call to caller or token (see notes)"
+    ]
+   },
+   {
+    "function": "refundTickets(uint256[])",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "external",
+    "mutability": "nonpayable",
+    "modifiers": [
+     "nonReentrant"
+    ],
+    "msg_sender_conditions": [
+     "msg.sender != owner"
+    ],
+    "state_written": [
+     "_balances",
+     "_owners",
+     "_tokenApprovals",
+     "remainingRefundLiability"
+    ],
+    "external_interactions": [
+     "call IRaffleFactory.isRaffle",
+     "call IRaffleFactory.raffleImplementation",
+     "lib SafeERC20.safeTransfer",
+     "yul call"
+    ],
+    "interaction_classes": [
+     "Factory registry view (trusted)",
+     "USDC (trusted)",
+     "native value call to caller or token (see notes)"
+    ]
+   },
+   {
+    "function": "releaseSponsorProceeds()",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "external",
+    "mutability": "nonpayable",
+    "modifiers": [
+     "nonReentrant"
+    ],
+    "msg_sender_conditions": [],
+    "state_written": [
+     "sponsorProceeds"
+    ],
+    "external_interactions": [
+     "call IRaffleFactory.isRaffle",
+     "call IRaffleFactory.raffleImplementation",
+     "lib SafeERC20.safeTransfer",
+     "yul call"
+    ],
+    "interaction_classes": [
+     "Factory registry view (trusted)",
+     "USDC (trusted)",
+     "native value call to caller or token (see notes)"
+    ]
+   },
+   {
+    "function": "releaseProtocolFees()",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "external",
+    "mutability": "nonpayable",
+    "modifiers": [
+     "nonReentrant"
+    ],
+    "msg_sender_conditions": [],
+    "state_written": [
+     "protocolFees"
+    ],
+    "external_interactions": [
+     "call IRaffleFactory.isRaffle",
+     "call IRaffleFactory.raffleImplementation",
+     "lib SafeERC20.safeTransfer",
+     "yul call"
+    ],
+    "interaction_classes": [
+     "Factory registry view (trusted)",
+     "USDC (trusted)",
+     "native value call to caller or token (see notes)"
+    ]
+   },
+   {
+    "function": "releaseSponsorPrize()",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "external",
+    "mutability": "nonpayable",
+    "modifiers": [
+     "nonReentrant"
+    ],
+    "msg_sender_conditions": [],
+    "state_written": [
+     "prizeClaimed"
+    ],
+    "external_interactions": [
+     "call IERC721.ownerOf",
+     "call IERC721.transferFrom"
+    ],
+    "interaction_classes": [
+     "Prize ERC721 (UNTRUSTED)"
+    ]
+   },
+   {
+    "function": "onERC721Received(address,address,uint256,bytes)",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "external",
+    "mutability": "nonpayable",
+    "modifiers": [],
+    "msg_sender_conditions": [
+     "status != Status.AwaitingPrize || msg.sender != address(prizeToken) || tokenId != prizeTokenId || from != sponsor || operator != factory"
+    ],
+    "state_written": [
+     "status"
+    ],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "getVrfRequestPrice()",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "public",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [
+     "call IVRFV2PlusWrapper.calculateRequestPriceNative"
+    ],
+    "interaction_classes": [
+     "VRF wrapper (trusted)"
+    ]
+   },
+   {
+    "function": "estimateVrfRequestPrice(uint256)",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "public",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [
+     "call IVRFV2PlusWrapper.estimateRequestPriceNative"
+    ],
+    "interaction_classes": [
+     "VRF wrapper (trusted)"
+    ]
+   },
+   {
+    "function": "vrfWrapper()",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "public",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "ticketRange(uint256)",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "public",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "drawRequestDeadline()",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "public",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "callbackDeadline()",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "public",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "accountedQuoteBalance()",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "public",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "grossSales()",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "public",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "name()",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "public",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "symbol()",
+    "is_constructor": false,
+    "declared_in": "Raffle",
+    "visibility": "public",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   }
+  ],
+  "RaffleFactory": [
+   {
+    "function": "quoteToken()",
+    "is_constructor": false,
+    "declared_in": "IRaffleFactory",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "vrfWrapper()",
+    "is_constructor": false,
+    "declared_in": "IRaffleFactory",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "protocolTreasury()",
+    "is_constructor": false,
+    "declared_in": "IRaffleFactory",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "callbackGasLimit()",
+    "is_constructor": false,
+    "declared_in": "IRaffleFactory",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "requestConfirmations()",
+    "is_constructor": false,
+    "declared_in": "IRaffleFactory",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "raffleImplementation()",
+    "is_constructor": false,
+    "declared_in": "IRaffleFactory",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "raffleCount()",
+    "is_constructor": false,
+    "declared_in": "IRaffleFactory",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "isRaffle(address)",
+    "is_constructor": false,
+    "declared_in": "IRaffleFactory",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "raffleById(uint256)",
+    "is_constructor": false,
+    "declared_in": "IRaffleFactory",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "idByRaffle(address)",
+    "is_constructor": false,
+    "declared_in": "IRaffleFactory",
+    "visibility": "external",
+    "mutability": "view",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [],
+    "external_interactions": [],
+    "interaction_classes": []
+   },
+   {
+    "function": "constructor(address,address,address)",
+    "is_constructor": true,
+    "declared_in": "RaffleFactory",
+    "visibility": "public",
+    "mutability": "nonpayable",
+    "modifiers": [],
+    "msg_sender_conditions": [],
+    "state_written": [
+     "protocolTreasury",
+     "quoteToken",
+     "raffleImplementation",
+     "vrfWrapper"
+    ],
+    "external_interactions": [
+     "call IERC20Metadata.decimals"
+    ],
+    "interaction_classes": [
+     "Quote token metadata"
+    ]
+   },
+   {
+    "function": "createRaffle(IRaffleFactory.CreateRaffleParams)",
+    "is_constructor": false,
+    "declared_in": "RaffleFactory",
+    "visibility": "external",
+    "mutability": "nonpayable",
+    "modifiers": [
+     "nonReentrant"
+    ],
+    "msg_sender_conditions": [],
+    "state_written": [
+     "idByRaffle",
+     "isRaffle",
+     "raffleById",
+     "raffleCount"
+    ],
+    "external_interactions": [
+     "call IERC165.supportsInterface",
+     "call IERC721.ownerOf",
+     "call IERC721.safeTransferFrom",
+     "call IRaffle.initialize",
+     "call IRaffle.status",
+     "lib Clones.clone",
+     "yul create"
+    ],
+    "interaction_classes": [
+     "CREATE",
+     "CREATE clone",
+     "Prize ERC721 (UNTRUSTED)",
+     "Raffle clone (protocol code)"
+    ]
+   }
+  ]
+ }
+}

@@ -1,0 +1,30 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_14226_MockVRFV2PlusWrapper {
+label = "MockVRFV2PlusWrapper"
+"14226_estimateRequestPriceNative(uint32,uint32,uint256)" [label="estimateRequestPriceNative(uint32,uint32,uint256)"]
+"14226_slitherConstructorVariables()" [label="slitherConstructorVariables()"]
+"14226_calculateRequestPriceNative(uint32,uint32)" [label="calculateRequestPriceNative(uint32,uint32)"]
+"14226_fulfill(uint256,uint256)" [label="fulfill(uint256,uint256)"]
+"14226_setFee(uint256)" [label="setFee(uint256)"]
+"14226_requestRandomWordsInNative(uint32,uint16,uint32,bytes)" [label="requestRandomWordsInNative(uint32,uint16,uint32,bytes)"]
+"14226_setFeeReadReverts(bool)" [label="setFeeReadReverts(bool)"]
+"14226_fulfillAs(uint256,uint256,uint256)" [label="fulfillAs(uint256,uint256,uint256)"]
+"14226_link()" [label="link()"]
+"14226_fulfill(uint256,uint256)" -> "14226_fulfillAs(uint256,uint256,uint256)"
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"revert()" 
+"revert UnknownRequest(uint256)" 
+"revert InsufficientFee(uint256,uint256)" 
+"gasleft()" 
+"14226_fulfillAs(uint256,uint256,uint256)" -> "gasleft()"
+"14226_fulfillAs(uint256,uint256,uint256)" -> "revert UnknownRequest(uint256)"
+"14226_requestRandomWordsInNative(uint32,uint16,uint32,bytes)" -> "revert InsufficientFee(uint256,uint256)"
+"14226_estimateRequestPriceNative(uint32,uint32,uint256)" -> "revert()"
+"14226_calculateRequestPriceNative(uint32,uint32)" -> "revert()"
+}subgraph cluster_toplevel {
+label = "[Top Level]"
+}
+}

@@ -1,0 +1,22 @@
+# GENERATED SCRATCH CONFIG (S6 attempt-02): Echidna PROPERTY mode over the unmodified production contracts.
+testMode: property
+testLimit: 400000
+seqLen: 100
+shrinkLimit: 5000
+workers: 1
+seed: 6206211
+# Only the generated harness exceeds EIP-170/3860; production Raffle/RaffleFactory are within limits (forge --sizes).
+codeSize: 0xffffffff
+balanceContract: 1000000000000000000000
+deployer: "0x30000"
+sender: ["0x10000", "0x20000", "0x30000"]
+cryticArgs: ["--foundry-compile-all"]
+corpusDir: "echidna-corpus-property"
+coverage: true
+coverageFormats: ["txt"]
+format: "text"
+timeout: 3600
+# Automatic inter-transaction time/block jumps capped so 2-day protocol windows are explorable; larger
+# jumps come from the harness warp()/warpToBoundary() actions.
+maxTimeDelay: 43200
+maxBlockDelay: 3600

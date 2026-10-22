@@ -1,0 +1,31 @@
+{
+  "schema": "raffle-fun.claude-openkritt-terminal-pre-seal-status-exposure-addendum.v1",
+  "recordedUtc": "2026-10-22T00:43:53Z",
+  "scanId": 1,
+  "appliesTo": {
+    "path": "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/PRE-SEAL-STATUS-EXPOSURE.json",
+    "sha256": "21eb12d8b6b900e6c8e95b94ca97ac71918320f10659cb7e6fedbfd17030da68"
+  },
+  "additionalExposure": {
+    "actor": "Daybreak coordinator read-only lane inspector",
+    "observedUtcApprox": "2026-10-22T00:43:30Z",
+    "purpose": "terminal lifecycle and counter diagnosis",
+    "detail": "A read-only terminal diagnostic selected the complete statusSummary object and thereby displayed recentEmptyResults explanation prose again before the raw first-pass seal."
+  },
+  "handling": {
+    "assessedOrAdoptedAsFindingBeforeRawSeal": false,
+    "fedBackIntoNativeReviewer": false,
+    "changedNativeInputs": false,
+    "changedScanOrDatabase": false,
+    "changedPreviouslySealedColdReviews": false
+  },
+  "correction": {
+    "priorField": "subsequentRoutineStatusQueriesRestrictedToLifecycleAndCounters",
+    "priorValue": true,
+    "qualifiedMeaning": "Routine polling after the original exposure was restricted to lifecycle and counters, but this one terminal diagnostic was not. No claim of complete pre-seal narrative non-exposure is made for any coordination reader."
+  },
+  "nativeReviewerIndependence": "The exposed prose was not supplied to the native reviewer and did not alter the completed native workflow.",
+  "productionFilesChanged": false,
+  "scanOrDatabaseMutated": false,
+  "priorExposureRecordOverwritten": false
+}

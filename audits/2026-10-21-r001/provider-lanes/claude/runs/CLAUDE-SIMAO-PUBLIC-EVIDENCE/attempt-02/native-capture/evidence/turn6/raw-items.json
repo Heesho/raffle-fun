@@ -1,0 +1,937 @@
+{
+  "files": [
+    {
+      "file": "lens-1-output.md",
+      "sha256": "b212765f903e8868e2d2fccd3c5ac4874db8c2d82e8ccd4f95d454a39f564b56"
+    },
+    {
+      "file": "lens-2-output.md",
+      "sha256": "771315235de42b7cd41e337050cc3189647cb1c71a73351ee1aad77c799a9313"
+    },
+    {
+      "file": "lens-3-output.md",
+      "sha256": "f59c9fa54a61667fea246dae8c454950164377490a793ef3f342b1d55e11ca30"
+    },
+    {
+      "file": "lens-4-output.md",
+      "sha256": "1b67c93d35d3773fd025ba4aaedaa4d7a3f72298864d95d8d8c7887bb1bea3b7"
+    },
+    {
+      "file": "lens-5-output.md",
+      "sha256": "b30e559524d937004ff41e789db1c3dd350f6f40a5217e2f29a175be7ff88f6e"
+    },
+    {
+      "file": "lens-6-output.md",
+      "sha256": "cc984a6278db3d2ffd7c76de88aa20236c622d608b494b1a668ac0b920e0f851"
+    },
+    {
+      "file": "lens-7-output.md",
+      "sha256": "a36d02c78a23bf99bc9fc74e0cb5e7e7db427fb6181bf30a0ddc576893e12d9c"
+    },
+    {
+      "file": "lens-8-output.md",
+      "sha256": "60f829da08417bb080b07444ec134b5d37102ba57365234b8e76f92006330b53"
+    },
+    {
+      "file": "lens-9-output.md",
+      "sha256": "3960688f5df2b8d8a640ce9b5dd4325ae26fded74efa68ef7ed8329aa45d537d"
+    },
+    {
+      "file": "lens-10-output.md",
+      "sha256": "97024d26d22377d975756bf1956a899c9098578b81de4dd7de07360c0dfef913"
+    },
+    {
+      "file": "lens-11-output.md",
+      "sha256": "3da184bf67e82e91d17b1dec1e37504534dc7bf2e8d12168c87aee5c4af9466d"
+    },
+    {
+      "file": "lens-12-output.md",
+      "sha256": "4120c650d065620b28a231b87ebbfe5e1e561ceca781ff716cda8470df0e47a1"
+    }
+  ],
+  "counts": {
+    "FINDING": 3,
+    "LEAD": 40,
+    "per_lens": {
+      "1": {
+        "FINDING": 0,
+        "LEAD": 3
+      },
+      "2": {
+        "FINDING": 0,
+        "LEAD": 3
+      },
+      "3": {
+        "FINDING": 1,
+        "LEAD": 3
+      },
+      "4": {
+        "FINDING": 1,
+        "LEAD": 4
+      },
+      "5": {
+        "FINDING": 0,
+        "LEAD": 3
+      },
+      "6": {
+        "FINDING": 0,
+        "LEAD": 2
+      },
+      "7": {
+        "FINDING": 0,
+        "LEAD": 4
+      },
+      "8": {
+        "FINDING": 0,
+        "LEAD": 5
+      },
+      "9": {
+        "FINDING": 0,
+        "LEAD": 4
+      },
+      "10": {
+        "FINDING": 1,
+        "LEAD": 2
+      },
+      "11": {
+        "FINDING": 0,
+        "LEAD": 4
+      },
+      "12": {
+        "FINDING": 0,
+        "LEAD": 3
+      }
+    }
+  },
+  "unique_contract_function": [
+    [
+      "Raffle",
+      "_settleWinningTicket"
+    ],
+    [
+      "Raffle",
+      "_update"
+    ],
+    [
+      "Raffle",
+      "buyEntries"
+    ],
+    [
+      "Raffle",
+      "enableRefunds"
+    ],
+    [
+      "Raffle",
+      "fulfillRandomWords"
+    ],
+    [
+      "Raffle",
+      "redeemWinningTicket"
+    ],
+    [
+      "Raffle",
+      "releaseProtocolFees"
+    ],
+    [
+      "Raffle",
+      "releaseSponsorPrize"
+    ],
+    [
+      "Raffle",
+      "releaseSponsorProceeds"
+    ],
+    [
+      "Raffle",
+      "requestDraw"
+    ],
+    [
+      "RaffleFactory",
+      "createRaffle"
+    ]
+  ],
+  "items": [
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "_settleWinningTicket",
+      "bug_class": "sponsor-paid-before-prize-delivery",
+      "group_key": "Raffle | _settleWinningTicket | sponsor-paid-before-prize-delivery",
+      "lens": 1,
+      "file": "lens-1-output.md",
+      "line_start": 20,
+      "line_end": 23,
+      "fields": {
+        "smell": "In the NftWon branch, the full sale price for the NFT, sponsorAmount = grossPot - protocolFee (95%), is credited to sponsorProceeds at settlement (Raffle.sol:544, :554). releaseSponsorProceeds (:375-380) pays it with no check of prizeClaimed or winnerRedeemed, so the USDC leg is never tied to the NFT leg (redeemWinningTicket :334-336). No state turns an undeliverable prize into a cash or refund claim: releaseSponsorPrize is barred in NftWon (:397-398), enableRefunds is barred after resolution (:292-293), and there is no deadline or fallback.",
+        "unverified": "Whether a prize that can refuse transferFrom(raffle, winner, id) after escrow is in the threat model. DESIGN.md says \"arbitrary prize contracts ... are untrusted\", but it also says \"Sponsor and treasury can claim independently after settlement\", and IRaffle.sol:14-15 says \"Supported prizes are honest, standards-compliant ERC-721s\". Against a fully malicious prize, coupling alone would not protect buyers either, because the contract could fake delivery. The defect bites hardest for collections that are honest but can restrict transfers (pause, creator transfer-approval hooks, transfer-validator level changes, migrations) and for owner-upgradeable prize contracts.",
+        "description": "Concrete path. (1) Sponsor creates a raffle (reserveEntries = 1,000) whose prize is an owner-upgradeable ERC-721 that passes F:154-179 and the escrow checks at F:128-134. (2) Buyers buy 5,000 entries, so USDC held is 5,000e6. (3) VRF resolves to NftWon. (4) Sponsor upgrades the prize so transfers out of the raffle revert. (5) Anyone calls settleWinningTicket(w): sponsorProceeds = 4,750e6 and protocolFees = 250e6. (6) releaseSponsorProceeds sends 4,750 USDC to sponsorRecipient. (7) redeemWinningTicket(w) reverts at :334 forever. USDC is conserved (5,000 in = 4,750 + 250 out), but the winning-ticket holder is left holding the loss: no NFT and no USDC claim. With an upgradeable prize the sponsor can also recover the NFT. Minimal mitigation if in scope: in releaseSponsorProceeds, require prizeClaimed when status == NftWon. Trade-off: a winner who never redeems then also defers the sponsor's proceeds."
+      },
+      "block": "LEAD | contract: Raffle | function: _settleWinningTicket | bug_class: sponsor-paid-before-prize-delivery | group_key: Raffle | _settleWinningTicket | sponsor-paid-before-prize-delivery\nsmell: In the NftWon branch, the full sale price for the NFT, sponsorAmount = grossPot - protocolFee (95%), is credited to sponsorProceeds at settlement (Raffle.sol:544, :554). releaseSponsorProceeds (:375-380) pays it with no check of prizeClaimed or winnerRedeemed, so the USDC leg is never tied to the NFT leg (redeemWinningTicket :334-336). No state turns an undeliverable prize into a cash or refund claim: releaseSponsorPrize is barred in NftWon (:397-398), enableRefunds is barred after resolution (:292-293), and there is no deadline or fallback.\nunverified: Whether a prize that can refuse transferFrom(raffle, winner, id) after escrow is in the threat model. DESIGN.md says \"arbitrary prize contracts ... are untrusted\", but it also says \"Sponsor and treasury can claim independently after settlement\", and IRaffle.sol:14-15 says \"Supported prizes are honest, standards-compliant ERC-721s\". Against a fully malicious prize, coupling alone would not protect buyers either, because the contract could fake delivery. The defect bites hardest for collections that are honest but can restrict transfers (pause, creator transfer-approval hooks, transfer-validator level changes, migrations) and for owner-upgradeable prize contracts.\ndescription: Concrete path. (1) Sponsor creates a raffle (reserveEntries = 1,000) whose prize is an owner-upgradeable ERC-721 that passes F:154-179 and the escrow checks at F:128-134. (2) Buyers buy 5,000 entries, so USDC held is 5,000e6. (3) VRF resolves to NftWon. (4) Sponsor upgrades the prize so transfers out of the raffle revert. (5) Anyone calls settleWinningTicket(w): sponsorProceeds = 4,750e6 and protocolFees = 250e6. (6) releaseSponsorProceeds sends 4,750 USDC to sponsorRecipient. (7) redeemWinningTicket(w) reverts at :334 forever. USDC is conserved (5,000 in = 4,750 + 250 out), but the winning-ticket holder is left holding the loss: no NFT and no USDC claim. With an upgradeable prize the sponsor can also recover the NFT. Minimal mitigation if in scope: in releaseSponsorProceeds, require prizeClaimed when status == NftWon. Trade-off: a winner who never redeems then also defers the sponsor's proceeds.",
+      "raw_id": "R01"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "releaseSponsorPrize",
+      "bug_class": "missing-payout-destination-screen",
+      "group_key": "Raffle | releaseSponsorPrize | missing-payout-destination-screen",
+      "lens": 1,
+      "file": "lens-1-output.md",
+      "line_start": 27,
+      "line_end": 30,
+      "fields": {
+        "smell": "All four USDC exits re-screen the payee at payout time via _transferQuote -> _isProtocolDestination (Raffle.sol:565). The NFT exit releaseSponsorPrize (:402-405) sends the prize to sponsorRecipient with no payout-time screen. sponsorRecipient is screened only once, at initialize (:193-195), and isRaffle is queried only when the address already has code (:602-603). F:166 likewise checks only raffles that are already registered.",
+        "unverified": "Any victim other than the sponsor. The screen result can flip only if sponsorRecipient is a code-less address that later becomes a factory clone (the CREATE address keccak(rlp(factory, nonce)), via OZ Clones.clone). Only the sponsor chooses that address, so the harm found so far is self-inflicted.",
+        "description": "If sponsorRecipient is set to the factory's future clone address, releaseSponsorPrize moves the prize into another raffle clone, where no path can release it. That violates DESIGN.md \"Never move assets between raffle clones\". The USDC sibling reverts instead (sponsorProceeds frozen). Minimal mitigation: in releaseSponsorPrize, revert if _isProtocolDestination(recipient, address(prizeToken)), mirroring _transferQuote."
+      },
+      "block": "LEAD | contract: Raffle | function: releaseSponsorPrize | bug_class: missing-payout-destination-screen | group_key: Raffle | releaseSponsorPrize | missing-payout-destination-screen\nsmell: All four USDC exits re-screen the payee at payout time via _transferQuote -> _isProtocolDestination (Raffle.sol:565). The NFT exit releaseSponsorPrize (:402-405) sends the prize to sponsorRecipient with no payout-time screen. sponsorRecipient is screened only once, at initialize (:193-195), and isRaffle is queried only when the address already has code (:602-603). F:166 likewise checks only raffles that are already registered.\nunverified: Any victim other than the sponsor. The screen result can flip only if sponsorRecipient is a code-less address that later becomes a factory clone (the CREATE address keccak(rlp(factory, nonce)), via OZ Clones.clone). Only the sponsor chooses that address, so the harm found so far is self-inflicted.\ndescription: If sponsorRecipient is set to the factory's future clone address, releaseSponsorPrize moves the prize into another raffle clone, where no path can release it. That violates DESIGN.md \"Never move assets between raffle clones\". The USDC sibling reverts instead (sponsorProceeds frozen). Minimal mitigation: in releaseSponsorPrize, revert if _isProtocolDestination(recipient, address(prizeToken)), mirroring _transferQuote.",
+      "raw_id": "R02"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "_update",
+      "bug_class": "outcome-frontrun-ticket-transfer",
+      "group_key": "Raffle | _update | outcome-frontrun-ticket-transfer",
+      "lens": 1,
+      "file": "lens-1-output.md",
+      "line_start": 34,
+      "line_end": 37,
+      "fields": {
+        "smell": "Tickets stay freely transferable while status == Drawing (_update only screens destinations, Raffle.sol:497-502). The outcome winningEntry = randomWords[0] % totalEntries + 1 (:518) is a pure function of the pending VRF fulfillment's proof, because totalEntries is frozen once the sale ends (:216, :242).",
+        "unverified": "Whether fulfillments on the target chain travel through a public mempool, and whether ticket bids or listings of meaningful size exist. This is a Phase-4 cross-time transfer of loss between ticket-market counterparties, not a protocol ledger drift. DESIGN.md's bearer-claim model and \"transaction decisions must reread current chain state\" may accept it.",
+        "description": "A holder who computes that their ticket loses can sell into a standing bid, or a searcher can buy a listed winning ticket, in the block before the callback lands. The counterparty is left holding a zero-value ticket or loses the prize. Possible mitigation: block ticket transfers while status == Drawing."
+      },
+      "block": "LEAD | contract: Raffle | function: _update | bug_class: outcome-frontrun-ticket-transfer | group_key: Raffle | _update | outcome-frontrun-ticket-transfer\nsmell: Tickets stay freely transferable while status == Drawing (_update only screens destinations, Raffle.sol:497-502). The outcome winningEntry = randomWords[0] % totalEntries + 1 (:518) is a pure function of the pending VRF fulfillment's proof, because totalEntries is frozen once the sale ends (:216, :242).\nunverified: Whether fulfillments on the target chain travel through a public mempool, and whether ticket bids or listings of meaningful size exist. This is a Phase-4 cross-time transfer of loss between ticket-market counterparties, not a protocol ledger drift. DESIGN.md's bearer-claim model and \"transaction decisions must reread current chain state\" may accept it.\ndescription: A holder who computes that their ticket loses can sell into a standing bid, or a searcher can buy a listed winning ticket, in the block before the callback lands. The counterparty is left holding a zero-value ticket or loses the prize. Possible mitigation: block ticket transfers while status == Drawing.",
+      "raw_id": "R03"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "_settleWinningTicket",
+      "bug_class": "sponsor-self-entry-rebate",
+      "group_key": "Raffle | _settleWinningTicket | sponsor-self-entry-rebate",
+      "lens": 2,
+      "file": "lens-2-output.md",
+      "line_start": 16,
+      "line_end": 22,
+      "fields": {
+        "smell": "The NftWon branch at Raffle.sol:543-544 (stored at :554) credits sponsorRecipient with 95% of grossPot, and grossPot includes entries the sponsor bought itself. buyEntries (Raffle.sol:209-237) accepts any payer. So a sponsor-funded entry costs the sponsor only 5% net, yet it has the same win probability as a buyer's entry that costs 100%, and it dilutes buyers' odds on the fixed-value NFT.",
+        "unverified": "DESIGN.md neither forbids nor discloses sponsor participation, so it is unclear whether it is an accepted raffle trust assumption. Sponsor purchases cannot be told apart from sybil buyers, so no single code operation removes the root cause. Partial fix: cap sponsorProceeds at reserveEntries\u00d7ENTRY_PRICE\u00d795% and send the surplus to the winner/cash pool. That removes variant A; variant B would still need disclosure.",
+        "description": "The NftWon split rebates 95% of what the sponsor pays for its own entries back to sponsorRecipient, so the sponsor can buy odds on its own NFT at a 95% discount and shift expected value from ticket buyers to itself and the treasury."
+      },
+      "block": "LEAD | contract: Raffle | function: _settleWinningTicket | bug_class: sponsor-self-entry-rebate | group_key: Raffle | _settleWinningTicket | sponsor-self-entry-rebate\nsmell: The NftWon branch at Raffle.sol:543-544 (stored at :554) credits sponsorRecipient with 95% of grossPot, and grossPot includes entries the sponsor bought itself. buyEntries (Raffle.sol:209-237) accepts any payer. So a sponsor-funded entry costs the sponsor only 5% net, yet it has the same win probability as a buyer's entry that costs 100%, and it dilutes buyers' odds on the fixed-value NFT.\n  (A) Reserve already met: R=1,000, buyers B=1,000 entries, NFT worth V=1,000 USDC. Honest result: sponsor gets 950 and buyers' EV is 1,000. A sybil sponsor buys k=1,000 entries in the last block before endTime (sales close at :216, so buyers cannot respond). Pot is 2,000, so sponsorProceeds=1,900 and protocolFees=100. Sponsor ends with 900 net cash plus a 50% chance the NFT comes back (EV 500), total 1,400 (+450). Buyers' EV falls to 500 (\u2212500). Treasury gains 50. The optimum is k* = sqrt(20\u00b7V\u00b7B) \u2212 B \u2248 3,472: buyers lose \u2248776 USDC of EV (77.6%) and the sponsor gains \u2248603.\n  (B) Reserve flip: R=1,000, V=500, B=500. Honestly this ends CashWon and the buyers' winner gets 400 USDC. The sponsor buys 500 entries, forcing NftWon. Sponsor gets 950\u2212500=450 plus NFT EV 250, total 700 against 575 honest (+125). Buyers' EV falls from 400 to 250 (\u2212150).\n  In CashWon, sponsor entries do no harm: buyers' combined EV stays 0.8\u00b7B because the prize grows with the pot. The leak only exists in NftWon.\nunverified: DESIGN.md neither forbids nor discloses sponsor participation, so it is unclear whether it is an accepted raffle trust assumption. Sponsor purchases cannot be told apart from sybil buyers, so no single code operation removes the root cause. Partial fix: cap sponsorProceeds at reserveEntries\u00d7ENTRY_PRICE\u00d795% and send the surplus to the winner/cash pool. That removes variant A; variant B would still need disclosure.\ndescription: The NftWon split rebates 95% of what the sponsor pays for its own entries back to sponsorRecipient, so the sponsor can buy odds on its own NFT at a 95% discount and shift expected value from ticket buyers to itself and the treasury.",
+      "raw_id": "R04"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "releaseSponsorProceeds",
+      "bug_class": "prize-leg-decoupled-payout",
+      "group_key": "Raffle | releaseSponsorProceeds | prize-leg-decoupled-payout",
+      "lens": 2,
+      "file": "lens-2-output.md",
+      "line_start": 26,
+      "line_end": 30,
+      "fields": {
+        "smell": "In NftWon, _settleWinningTicket (Raffle.sol:543-544, :554-555) makes 95% sponsorProceeds and 5% protocolFees releasable right away through releaseSponsorProceeds (:375-382) and releaseProtocolFees (:385-392). Neither depends on the winner's prize transfer in redeemWinningTicket (:329-337: prizeToken.transferFrom plus an ownerOf check) ever succeeding. DESIGN.md says prize contracts are untrusted. Suppose the prize contract stops honouring the clone's transfer after settlement, for example through a collection-admin pause, an ERC721C-style transfer-validator policy raised after deposit, or an upgradeable collection the sponsor controls. Then every redemption reverts. The winning ticket has no fallback claim: no conversion to CashWon, no refund, no timeout. The NFT is stranded in the clone after 100% of the pot has left.",
+        "unverified": "The trust model conflicts. IRaffle.sol:14-15 says supported prizes are honest, standards-compliant ERC-721s, while DESIGN.md calls prize contracts untrusted. A fully malicious prize is economically just a worthless prize, which no escrow can protect against, so real impact depends on the case where a third party freezes the collection. DESIGN.md also requires sponsor and treasury to claim independently after settlement, so holding proceeds until delivery would conflict with the spec. Sibling: receipt-type prizes whose value a third party can drain while escrowed (e.g. cancelable stream NFTs) have the same decoupled payout.",
+        "description": "NftWon pays the whole pot to sponsor and treasury whether or not the escrowed NFT can still be delivered, so if the prize contract later freezes the transfer, the winning ticket is left with a claim it cannot redeem and no cash or refund fallback."
+      },
+      "block": "LEAD | contract: Raffle | function: releaseSponsorProceeds | bug_class: prize-leg-decoupled-payout | group_key: Raffle | releaseSponsorProceeds | prize-leg-decoupled-payout\nsmell: In NftWon, _settleWinningTicket (Raffle.sol:543-544, :554-555) makes 95% sponsorProceeds and 5% protocolFees releasable right away through releaseSponsorProceeds (:375-382) and releaseProtocolFees (:385-392). Neither depends on the winner's prize transfer in redeemWinningTicket (:329-337: prizeToken.transferFrom plus an ownerOf check) ever succeeding. DESIGN.md says prize contracts are untrusted. Suppose the prize contract stops honouring the clone's transfer after settlement, for example through a collection-admin pause, an ERC721C-style transfer-validator policy raised after deposit, or an upgradeable collection the sponsor controls. Then every redemption reverts. The winning ticket has no fallback claim: no conversion to CashWon, no refund, no timeout. The NFT is stranded in the clone after 100% of the pot has left.\n  Example: 10,000 entries with R=10,000 gives NftWon. Settlement releases 9,500 to the sponsor and 500 to the treasury. Prize transfers then freeze, and the winning-ticket holder (from the buyer cohort that funded the pot) receives nothing.\nunverified: The trust model conflicts. IRaffle.sol:14-15 says supported prizes are honest, standards-compliant ERC-721s, while DESIGN.md calls prize contracts untrusted. A fully malicious prize is economically just a worthless prize, which no escrow can protect against, so real impact depends on the case where a third party freezes the collection. DESIGN.md also requires sponsor and treasury to claim independently after settlement, so holding proceeds until delivery would conflict with the spec. Sibling: receipt-type prizes whose value a third party can drain while escrowed (e.g. cancelable stream NFTs) have the same decoupled payout.\ndescription: NftWon pays the whole pot to sponsor and treasury whether or not the escrowed NFT can still be delivered, so if the prize contract later freezes the transfer, the winning ticket is left with a claim it cannot redeem and no cash or refund fallback.",
+      "raw_id": "R05"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "_update",
+      "bug_class": "post-request-ticket-transfer",
+      "group_key": "Raffle | _update | post-request-ticket-transfer",
+      "lens": 2,
+      "file": "lens-2-output.md",
+      "line_start": 34,
+      "line_end": 37,
+      "fields": {
+        "smell": "_update (Raffle.sol:497-502) only screens destinations, so tickets can still move during Drawing: after requestDraw (:252) and before fulfillRandomWords (:509-524) records the result. winningEntry = randomWords[0] % totalEntries + 1 (:518) follows deterministically from the VRF proof in the pending Chainlink fulfillment transaction. A mempool observer can therefore know the winning ticket before the callback is included and act ahead of it: (a) fill standing collection-wide offers with tickets known to lose, or (b) buy the winning ticket from a pending listing. Chainlink's VRF guidance is to stop accepting inputs once randomness has been requested.",
+        "unverified": "The VRF v2.5 coordinator is not vendored in node_modules, so I did not verify how the word is derived from the proof or whether fulfillments pass through the public mempool. Transferability in every state is an explicit design choice (Raffle.sol:25-29 NatSpec, DESIGN.md). Only secondary-market counterparties trading during Drawing can be hurt.",
+        "description": "Tickets stay transferable while the draw outcome can be worked out publicly from the pending VRF fulfillment, so informed holders can offload losing tickets or snipe the winning ticket from counterparties who don't know the result."
+      },
+      "block": "LEAD | contract: Raffle | function: _update | bug_class: post-request-ticket-transfer | group_key: Raffle | _update | post-request-ticket-transfer\nsmell: _update (Raffle.sol:497-502) only screens destinations, so tickets can still move during Drawing: after requestDraw (:252) and before fulfillRandomWords (:509-524) records the result. winningEntry = randomWords[0] % totalEntries + 1 (:518) follows deterministically from the VRF proof in the pending Chainlink fulfillment transaction. A mempool observer can therefore know the winning ticket before the callback is included and act ahead of it: (a) fill standing collection-wide offers with tickets known to lose, or (b) buy the winning ticket from a pending listing. Chainlink's VRF guidance is to stop accepting inputs once randomness has been requested.\nunverified: The VRF v2.5 coordinator is not vendored in node_modules, so I did not verify how the word is derived from the proof or whether fulfillments pass through the public mempool. Transferability in every state is an explicit design choice (Raffle.sol:25-29 NatSpec, DESIGN.md). Only secondary-market counterparties trading during Drawing can be hurt.\ndescription: Tickets stay transferable while the draw outcome can be worked out publicly from the pending VRF fulfillment, so informed holders can offload losing tickets or snipe the winning ticket from counterparties who don't know the result.",
+      "raw_id": "R06"
+    },
+    {
+      "kind": "FINDING",
+      "contract": "Raffle",
+      "function": "buyEntries",
+      "bug_class": "sponsor-rebated-late-dilution",
+      "group_key": "Raffle | buyEntries | sponsor-rebated-late-dilution",
+      "lens": 3,
+      "file": "lens-3-output.md",
+      "line_start": 16,
+      "line_end": 31,
+      "fields": {
+        "root_cause": "Raffle.sol:544 (`sponsorAmount = grossPot - protocolFee`, with grossPot = unsettledPot at :539, credited at :554) pays the sponsor 95% of the whole pot, including entries the sponsor bought through any address. `buyEntries` (Raffle.sol:215-233) has no entry cap once `reserveEntries` is met and does not exclude the rebated party. Each sponsor-funded entry therefore costs the sponsor only 5% of ENTRY_PRICE but carries full weight in the uniform draw (Raffle.sol:518). This breaks DESIGN.md's uniform \"one entry costs 1,000,000 units\" for exactly one cohort. Earlier buyers cannot exit after the sponsor's late purchase: refunds open only at endTime+2d (Raffle.sol:286-287), and anyone, including the sponsor, can draw at endTime (Raffle.sol:242).",
+        "internal_pre": "The raffle resolves NftWon (totalEntries >= reserveEntries, Raffle.sol:521). The sponsor controls or colludes with sponsorRecipient, which is the default setup. The attack pays off whenever the NFT value V > 0.05 * organic entries N.",
+        "external_pre": "The sponsor has k USDC available from the last block before endTime until releaseSponsorProceeds, typically minutes: requestDraw at endTime, then 30 confirmations, then settle and release. 95% of it comes back. A flash loan does not work because entries lock funds across transactions.",
+        "path": "",
+        "impact": "The cohort of organic ticket holders who bought before the sale closed is left holding the loss.",
+        "mitigation": "Stop the sale at the reserve in buyEntries (`if (lastEntry > reserveEntries) revert ...`), so no sponsor-rebated entries can be minted after organic demand meets the reserve. A buyer blocklist on sponsor/sponsorRecipient alone is not enough, because purchases are permissionless (sybil). A sponsor fill of the gap below the reserve remains possible; it is tracked as a separate lead."
+      },
+      "block": "FINDING | contract: Raffle | function: buyEntries | bug_class: sponsor-rebated-late-dilution | group_key: Raffle | buyEntries | sponsor-rebated-late-dilution\nroot_cause: Raffle.sol:544 (`sponsorAmount = grossPot - protocolFee`, with grossPot = unsettledPot at :539, credited at :554) pays the sponsor 95% of the whole pot, including entries the sponsor bought through any address. `buyEntries` (Raffle.sol:215-233) has no entry cap once `reserveEntries` is met and does not exclude the rebated party. Each sponsor-funded entry therefore costs the sponsor only 5% of ENTRY_PRICE but carries full weight in the uniform draw (Raffle.sol:518). This breaks DESIGN.md's uniform \"one entry costs 1,000,000 units\" for exactly one cohort. Earlier buyers cannot exit after the sponsor's late purchase: refunds open only at endTime+2d (Raffle.sol:286-287), and anyone, including the sponsor, can draw at endTime (Raffle.sol:242).\ninternal_pre: The raffle resolves NftWon (totalEntries >= reserveEntries, Raffle.sol:521). The sponsor controls or colludes with sponsorRecipient, which is the default setup. The attack pays off whenever the NFT value V > 0.05 * organic entries N.\nexternal_pre: The sponsor has k USDC available from the last block before endTime until releaseSponsorProceeds, typically minutes: requestDraw at endTime, then 30 confirmations, then settle and release. 95% of it comes back. A flash loan does not work because entries lock funds across transactions.\npath:\n  1. Sponsor S calls RaffleFactory.createRaffle for an NFT worth 10,000 USDC with reserveEntries = 5,000, sponsorRecipient = S, endTime = T.\n  2. Alice calls buyEntries(alice, 10,000) and pays 10,000 USDC. Ticket #1 = [1, 10,000], unsettledPot = 10,000e6, and the reserve is met. Honest outcome: Alice wins the NFT with probability 1 and S nets 9,500 USDC.\n  3. In the last block before T (timestamp T-12), S's fresh address S' calls buyEntries(S', 90,000) and pays 90,000 USDC. Ticket #2 = [10,001, 100,000]; totalEntries = 100,000; unsettledPot = 100,000e6. Nothing blocks it: Raffle.sol:215-221 checks only status, time, recipient and count.\n  4. At T, S calls requestDraw. The VRF callback sets winningEntry uniform on [1, 100,000] and status = NftWon (Raffle.sol:518-521).\n  5. settleWinningTicket sets protocolFees = 5,000 USDC and sponsorProceeds = 95,000 USDC (Raffle.sol:540, 544, 554). releaseSponsorProceeds then pays S 95,000, so S's net cash = 95,000 - 90,000 = +5,000 USDC.\n  6. With probability 0.9, ticket #2 holds winningEntry, and S' calls redeemWinningTicket(2) to take the NFT back (Raffle.sol:329-337).\nimpact: The cohort of organic ticket holders who bought before the sale closed is left holding the loss.\n  - k = 90,000: Alice's prize EV falls from 10,000 to 1,000 USDC (-9,000) for the same 10,000 USDC paid. S's EV rises from 9,500 to 14,000 (+4,500). The treasury takes +4,500 in fees on S's own entries.\n  - EV-optimal k \u2248 34,721 (N + k = sqrt(20*V*N)): S gains about +6,028 and Alice loses about 7,764.\n  - Under-subscribed raffle (Alice 100 entries, V = 10,000): S needs about 4,372 USDC of short-lived capital to cut Alice's prize EV from 10,000 to about 224 (S +9,558 EV).\nmitigation: Stop the sale at the reserve in buyEntries (`if (lastEntry > reserveEntries) revert ...`), so no sponsor-rebated entries can be minted after organic demand meets the reserve. A buyer blocklist on sponsor/sponsorRecipient alone is not enough, because purchases are permissionless (sybil). A sponsor fill of the gap below the reserve remains possible; it is tracked as a separate lead.",
+      "raw_id": "R07"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "fulfillRandomWords",
+      "bug_class": "sponsor-reserve-flip",
+      "group_key": "Raffle | fulfillRandomWords | sponsor-reserve-flip",
+      "lens": 3,
+      "file": "lens-3-output.md",
+      "line_start": 35,
+      "line_end": 38,
+      "fields": {
+        "smell": "The NftWon/CashWon regime check (Raffle.sol:521) counts sponsor-bought entries, which are rebated 95% through sponsorProceeds (Raffle.sol:544). When organic demand N < reserve R, the sponsor can fill R-N in the last block before endTime at a 5% cost. That turns a CashWon raffle (buyers' EV 0.8 USDC per entry) into NftWon. Example with R = 1,000, N = 900, NFT worth V = 500 USDC: honest CashWon gives buyers 720 USDC EV and the sponsor 135 USDC + the NFT (635). If the sponsor buys 100 entries, the raffle becomes NftWon: sponsor = 950 - 100 + 0.1*500 = 900 (+265); buyers' EV = 0.9*500 = 450 (-270); treasury +5.",
+        "unverified": "(1) Whether under-reserve buyers are entitled to expect CashWon. The reserve may be meant only as sponsor protection, and organic demand reaching R gives the same regime. (2) The flip pays only when V is below roughly 0.8*R (an overpriced reserve); with V = 900 in the example it is unprofitable and helps buyers. (3) There is no sybil-proof code fix: the sale cap proposed for the dilution FINDING does not close this gap.",
+        "description": "A sponsor-funded fill of the gap below the reserve in the last block lets the sponsor choose the payout regime after seeing demand, at a 5% cost, and moves EV from under-reserve buyers to the sponsor."
+      },
+      "block": "LEAD | contract: Raffle | function: fulfillRandomWords | bug_class: sponsor-reserve-flip | group_key: Raffle | fulfillRandomWords | sponsor-reserve-flip\nsmell: The NftWon/CashWon regime check (Raffle.sol:521) counts sponsor-bought entries, which are rebated 95% through sponsorProceeds (Raffle.sol:544). When organic demand N < reserve R, the sponsor can fill R-N in the last block before endTime at a 5% cost. That turns a CashWon raffle (buyers' EV 0.8 USDC per entry) into NftWon. Example with R = 1,000, N = 900, NFT worth V = 500 USDC: honest CashWon gives buyers 720 USDC EV and the sponsor 135 USDC + the NFT (635). If the sponsor buys 100 entries, the raffle becomes NftWon: sponsor = 950 - 100 + 0.1*500 = 900 (+265); buyers' EV = 0.9*500 = 450 (-270); treasury +5.\nunverified: (1) Whether under-reserve buyers are entitled to expect CashWon. The reserve may be meant only as sponsor protection, and organic demand reaching R gives the same regime. (2) The flip pays only when V is below roughly 0.8*R (an overpriced reserve); with V = 900 in the example it is unprofitable and helps buyers. (3) There is no sybil-proof code fix: the sale cap proposed for the dilution FINDING does not close this gap.\ndescription: A sponsor-funded fill of the gap below the reserve in the last block lets the sponsor choose the payout regime after seeing demand, at a 5% cost, and moves EV from under-reserve buyers to the sponsor.",
+      "raw_id": "R08"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "_update",
+      "bug_class": "vrf-outcome-frontrun-ticket-trade",
+      "group_key": "Raffle | _update | vrf-outcome-frontrun-ticket-trade",
+      "lens": 3,
+      "file": "lens-3-output.md",
+      "line_start": 42,
+      "line_end": 45,
+      "fields": {
+        "smell": "_update (Raffle.sol:497-502) allows ticket transfers in every status, including Drawing (the NatSpec at Raffle.sol:491 says so deliberately). The pending VRF fulfillment (wrapper -> rawFulfillRandomWords -> Raffle.sol:518) lets any mempool observer work out winningEntry before it executes. The observer can fill a stale marketplace listing of the winning ticket, or sell a losing ticket into a standing collection bid, ahead of or bundled right after the callback. Example: Alice lists ticket #7 (500 of 1,000 entries; NFT worth 2,000 USDC) at 900 USDC. Bob simulates the pending fulfillment, sees that entry 742 (in #7) wins, fills the listing first, and redeems the NFT. Alice's EV falls from about 1,000 to about 450.",
+        "unverified": "(1) Whether Chainlink's mainnet VRF fulfillments go through the public mempool. (2) Whether any fillable marketplace order exists at fulfillment time. (3) A Drawing-only transfer lock can be bypassed by bundling [fulfillment, fill], because status becomes NftWon mid-bundle. The only robust fix, blocking operator-initiated transfers from requestDraw onward, conflicts with the documented bearer-claim design. Victims are external order makers; the protocol's own accounting is unaffected.",
+        "description": "Tickets stay tradeable while the draw result can be derived publicly but is not yet on-chain, which allows trades against stale secondary-market orders by someone who already knows the result."
+      },
+      "block": "LEAD | contract: Raffle | function: _update | bug_class: vrf-outcome-frontrun-ticket-trade | group_key: Raffle | _update | vrf-outcome-frontrun-ticket-trade\nsmell: _update (Raffle.sol:497-502) allows ticket transfers in every status, including Drawing (the NatSpec at Raffle.sol:491 says so deliberately). The pending VRF fulfillment (wrapper -> rawFulfillRandomWords -> Raffle.sol:518) lets any mempool observer work out winningEntry before it executes. The observer can fill a stale marketplace listing of the winning ticket, or sell a losing ticket into a standing collection bid, ahead of or bundled right after the callback. Example: Alice lists ticket #7 (500 of 1,000 entries; NFT worth 2,000 USDC) at 900 USDC. Bob simulates the pending fulfillment, sees that entry 742 (in #7) wins, fills the listing first, and redeems the NFT. Alice's EV falls from about 1,000 to about 450.\nunverified: (1) Whether Chainlink's mainnet VRF fulfillments go through the public mempool. (2) Whether any fillable marketplace order exists at fulfillment time. (3) A Drawing-only transfer lock can be bypassed by bundling [fulfillment, fill], because status becomes NftWon mid-bundle. The only robust fix, blocking operator-initiated transfers from requestDraw onward, conflicts with the documented bearer-claim design. Victims are external order makers; the protocol's own accounting is unaffected.\ndescription: Tickets stay tradeable while the draw result can be derived publicly but is not yet on-chain, which allows trades against stale secondary-market orders by someone who already knows the result.",
+      "raw_id": "R09"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "releaseSponsorProceeds",
+      "bug_class": "payout-decoupled-from-prize-delivery",
+      "group_key": "Raffle | releaseSponsorProceeds | payout-decoupled-from-prize-delivery",
+      "lens": 3,
+      "file": "lens-3-output.md",
+      "line_start": 49,
+      "line_end": 52,
+      "fields": {
+        "smell": "In NftWon, settlement allocates 95% of the buyers' pot to sponsorProceeds (Raffle.sol:544, 554). releaseSponsorProceeds (Raffle.sol:375-382) pays it out whether or not the NFT leg (redeemWinningTicket, Raffle.sol:329-337) ever succeeds. There is no redemption timeout and no fallback to refunds. If the prize collection blocks transfers out of the raffle after creation (an admin-pausable, upgradeable or transfer-validator-gated collection, or a sponsor-controlled contract), the winner can never redeem, while the sponsor keeps 95% and the treasury 5%.",
+        "unverified": "(1) Whether such prizes are in scope. DESIGN.md says arbitrary prize contracts are untrusted, but IRaffle.sol:14-15 says supported prizes are honest, standards-compliant ERC-721s, and DESIGN.md explicitly lets sponsor and treasury claim independently after settlement. (2) Gating sponsor proceeds on prizeClaimed would swap this for a sponsor-side stuck-funds risk if the winner never redeems. This belongs mainly to the trust/integration lens and is recorded here as a split-between-cohorts symptom.",
+        "description": "The sponsor is paid from the pot regardless of whether the buyers' prize can actually be delivered, so a transfer freeze on the prize after creation leaves the winning cohort with nothing."
+      },
+      "block": "LEAD | contract: Raffle | function: releaseSponsorProceeds | bug_class: payout-decoupled-from-prize-delivery | group_key: Raffle | releaseSponsorProceeds | payout-decoupled-from-prize-delivery\nsmell: In NftWon, settlement allocates 95% of the buyers' pot to sponsorProceeds (Raffle.sol:544, 554). releaseSponsorProceeds (Raffle.sol:375-382) pays it out whether or not the NFT leg (redeemWinningTicket, Raffle.sol:329-337) ever succeeds. There is no redemption timeout and no fallback to refunds. If the prize collection blocks transfers out of the raffle after creation (an admin-pausable, upgradeable or transfer-validator-gated collection, or a sponsor-controlled contract), the winner can never redeem, while the sponsor keeps 95% and the treasury 5%.\nunverified: (1) Whether such prizes are in scope. DESIGN.md says arbitrary prize contracts are untrusted, but IRaffle.sol:14-15 says supported prizes are honest, standards-compliant ERC-721s, and DESIGN.md explicitly lets sponsor and treasury claim independently after settlement. (2) Gating sponsor proceeds on prizeClaimed would swap this for a sponsor-side stuck-funds risk if the winner never redeems. This belongs mainly to the trust/integration lens and is recorded here as a split-between-cohorts symptom.\ndescription: The sponsor is paid from the pot regardless of whether the buyers' prize can actually be delivered, so a transfer freeze on the prize after creation leaves the winning cohort with nothing.",
+      "raw_id": "R10"
+    },
+    {
+      "kind": "FINDING",
+      "contract": "Raffle",
+      "function": "releaseSponsorProceeds",
+      "bug_class": "payment-released-without-delivery",
+      "group_key": "Raffle | releaseSponsorProceeds | payment-released-without-delivery",
+      "lens": 4,
+      "file": "lens-4-output.md",
+      "line_start": 17,
+      "line_end": 30,
+      "fields": {
+        "root_cause": "Raffle.sol:375-378 `releaseSponsorProceeds()` pays out the NftWon sponsor allocation (95% of the pot). `_settleWinningTicket` makes that allocation claimable at settlement (Raffle.sol:543-544, 554). The only guard is `amount == 0` at :377. No `prizeClaimed` (delivery) check is performed. The same gap exists in `releaseProtocolFees()` at Raffle.sol:385-388 for the 5% fee. NftWon also has no way out to refunds: `enableRefunds` reverts for every status except Active and Drawing (Raffle.sol:292-293), and `releaseSponsorPrize` rejects NftWon (Raffle.sol:397-398). So payment and delivery are decoupled. If the prize contract stops honouring the clone's own `transferFrom(raffle -> winner)` at Raffle.sol:334, or the `ownerOf` re-check at :335 fails, every redemption reverts. Meanwhile the sponsor and the treasury are paid in full.",
+        "internal_pre": "Raffle resolved as NftWon (totalEntries >= reserveEntries when the sale ends; Raffle.sol:521).",
+        "external_pre": "After escrow, the prize ERC-721 refuses or redirects the clone's transfer of the prize. Possible causes: the collection admin pauses transfers, applies a transfer restriction (operator, owner-initiated or account freeze that hits the clone), or upgrades the collection. A third possibility is a sponsor-controlled collection whose admin seizes or locks the token. DESIGN.md: \"arbitrary prize contracts ... are untrusted\". The pause and transfer-restriction behaviours are general ERC-721 ecosystem facts, not code vendored in this repo.",
+        "path": "",
+        "impact": "The winning-ticket holder bears the whole loss. That is Alice, or anyone who bought the winning ticket on the secondary market at roughly the NFT's value. The NFT she won can never be delivered, and NftWon is terminal with no refund or cash fallback. Meanwhile 100% of the buyers' 12,000 USDC has already gone out: 11,400 to the sponsor recipient and 600 to the treasury. In the seize variant, where S controls the prize contract, S keeps both the NFT and the 11,400 USDC. This breaks money-map invariants 7 (the prize leaves exactly once, to the winner in NftWon) and 15 (every claimant can eventually collect). Suggested severity: Medium, because it depends on an external pre-condition on the prize contract.",
+        "mitigation": "In releaseSponsorProceeds(), and likewise in releaseProtocolFees(), add `if (status == Status.NftWon && !prizeClaimed) revert PrizeNotDelivered();` so the NftWon allocation is paid only against actual delivery. Optionally pair this with an NftWon delivery deadline that turns an undeliverable prize into refunds, so the gated pot cannot be stranded either."
+      },
+      "block": "FINDING | contract: Raffle | function: releaseSponsorProceeds | bug_class: payment-released-without-delivery | group_key: Raffle | releaseSponsorProceeds | payment-released-without-delivery\nroot_cause: Raffle.sol:375-378 `releaseSponsorProceeds()` pays out the NftWon sponsor allocation (95% of the pot). `_settleWinningTicket` makes that allocation claimable at settlement (Raffle.sol:543-544, 554). The only guard is `amount == 0` at :377. No `prizeClaimed` (delivery) check is performed. The same gap exists in `releaseProtocolFees()` at Raffle.sol:385-388 for the 5% fee. NftWon also has no way out to refunds: `enableRefunds` reverts for every status except Active and Drawing (Raffle.sol:292-293), and `releaseSponsorPrize` rejects NftWon (Raffle.sol:397-398). So payment and delivery are decoupled. If the prize contract stops honouring the clone's own `transferFrom(raffle -> winner)` at Raffle.sol:334, or the `ownerOf` re-check at :335 fails, every redemption reverts. Meanwhile the sponsor and the treasury are paid in full.\ninternal_pre: Raffle resolved as NftWon (totalEntries >= reserveEntries when the sale ends; Raffle.sol:521).\nexternal_pre: After escrow, the prize ERC-721 refuses or redirects the clone's transfer of the prize. Possible causes: the collection admin pauses transfers, applies a transfer restriction (operator, owner-initiated or account freeze that hits the clone), or upgrades the collection. A third possibility is a sponsor-controlled collection whose admin seizes or locks the token. DESIGN.md: \"arbitrary prize contracts ... are untrusted\". The pause and transfer-restriction behaviours are general ERC-721 ecosystem facts, not code vendored in this repo.\npath:\n  1. Sponsor S calls F:createRaffle for X#42, where S either is the admin of collection X or holds a token in a pausable or transfer-restricted collection. reserveEntries = 10,000, endTime = T. The escrow checks at F:128-134 pass because X behaves normally at deposit time.\n  2. Buyers buy 12,000 entries for 12,000 USDC. Alice holds ticket #57, covering entries 6,001-7,000. unsettledPot = 12,000e6.\n  3. At T anyone calls requestDraw (Raffle.sol:240). The callback sets winningEntry = 6,500 and status = NftWon (Raffle.sol:518-521).\n  4. X#42 becomes non-transferable out of the clone: S's admin seizes or locks it, or X is paused or restricted. S can do this right after T, before the draw. Once the sale has ended with totalEntries >= reserve, NftWon is already certain. Buyers cannot reach refunds before T+2d (Raffle.sol:286-287), and anyone, including S, can request the draw in [T, T+2d).\n  5. Anyone calls settleWinningTicket(57). This sets sponsorProceeds = 11,400e6 and protocolFees = 600e6 (Raffle.sol:540-555).\n  6. Anyone calls releaseSponsorProceeds(), which pays 11,400 USDC to S's sponsorRecipient. releaseProtocolFees() pays 600 USDC to the treasury.\n  7. Alice calls redeemWinningTicket(57). prizeToken.transferFrom(raffle, Alice, 42) reverts, or the ownerOf check at :335 fails, so the whole call reverts. enableRefunds() reverts with InvalidStatus(NftWon) and releaseSponsorPrize() reverts with SponsorPrizeUnavailable(NftWon). Nothing can ever be paid to Alice.\nimpact: The winning-ticket holder bears the whole loss. That is Alice, or anyone who bought the winning ticket on the secondary market at roughly the NFT's value. The NFT she won can never be delivered, and NftWon is terminal with no refund or cash fallback. Meanwhile 100% of the buyers' 12,000 USDC has already gone out: 11,400 to the sponsor recipient and 600 to the treasury. In the seize variant, where S controls the prize contract, S keeps both the NFT and the 11,400 USDC. This breaks money-map invariants 7 (the prize leaves exactly once, to the winner in NftWon) and 15 (every claimant can eventually collect). Suggested severity: Medium, because it depends on an external pre-condition on the prize contract.\nmitigation: In releaseSponsorProceeds(), and likewise in releaseProtocolFees(), add `if (status == Status.NftWon && !prizeClaimed) revert PrizeNotDelivered();` so the NftWon allocation is paid only against actual delivery. Optionally pair this with an NftWon delivery deadline that turns an undeliverable prize into refunds, so the gated pot cannot be stranded either.",
+      "raw_id": "R11"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "_update",
+      "bug_class": "informed-ticket-trading-during-draw",
+      "group_key": "Raffle | _update | informed-ticket-trading-during-draw",
+      "lens": 4,
+      "file": "lens-4-output.md",
+      "line_start": 38,
+      "line_end": 41,
+      "fields": {
+        "smell": "Tickets stay transferable in Drawing. `_update` (Raffle.sol:497-502) screens only the destination, never the status. The VRF callback (Raffle.sol:518-521) is the only state change between \"random word exists\" and \"winner recorded\". Anyone who can read a pending fulfillment can compute winningEntry = word % totalEntries + 1 before it lands. They can then buy the winning ticket from an open listing, taking the prize from the seller, or sell losing tickets into open collection offers, passing the loss to the bidder. This is the Phase-4 pattern of joining just before a distribution or leaving just before a loss.",
+        "unverified": "Two things are unverified. First, whether VRF v2.5 fulfillment transactions on the target chain are visible in a public mempool before inclusion; the wrapper/coordinator source is not vendored under packages/contracts. Second, whether ticket listings or offers exist on any marketplace during Drawing.",
+        "description": "If fulfillment calldata is public before inclusion, a searcher can bundle a fill of the listed winning ticket ahead of the callback and take the NFT or the 80% cash from the seller. Blocking ticket transfers while status == Drawing would close the window."
+      },
+      "block": "LEAD | contract: Raffle | function: _update | bug_class: informed-ticket-trading-during-draw | group_key: Raffle | _update | informed-ticket-trading-during-draw\nsmell: Tickets stay transferable in Drawing. `_update` (Raffle.sol:497-502) screens only the destination, never the status. The VRF callback (Raffle.sol:518-521) is the only state change between \"random word exists\" and \"winner recorded\". Anyone who can read a pending fulfillment can compute winningEntry = word % totalEntries + 1 before it lands. They can then buy the winning ticket from an open listing, taking the prize from the seller, or sell losing tickets into open collection offers, passing the loss to the bidder. This is the Phase-4 pattern of joining just before a distribution or leaving just before a loss.\nunverified: Two things are unverified. First, whether VRF v2.5 fulfillment transactions on the target chain are visible in a public mempool before inclusion; the wrapper/coordinator source is not vendored under packages/contracts. Second, whether ticket listings or offers exist on any marketplace during Drawing.\ndescription: If fulfillment calldata is public before inclusion, a searcher can bundle a fill of the listed winning ticket ahead of the callback and take the NFT or the 80% cash from the seller. Blocking ticket transfers while status == Drawing would close the window.",
+      "raw_id": "R12"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "fulfillRandomWords",
+      "bug_class": "reserve-flip-by-sponsor-top-up",
+      "group_key": "Raffle | fulfillRandomWords | reserve-flip-by-sponsor-top-up",
+      "lens": 4,
+      "file": "lens-4-output.md",
+      "line_start": 45,
+      "line_end": 48,
+      "fields": {
+        "smell": "The outcome predicate `totalEntries >= reserveEntries` (Raffle.sol:521) counts the sponsor's own entries. In NftWon the sponsor gets back 95% of whatever it paid in (Raffle.sol:544). So the sponsor can meet its own reserve at about 5% cost and turn a CashWon (80% of the pot to a buyer) into an NftWon whenever the NFT is worth less than the cash prize. Worked example (arithmetic checked): reserve 1,000; buyers hold 900 entries; the NFT is worth 500 USDC. If the sponsor buys 100 entries before endTime, the sponsor's expected value rises by 265 USDC, the buyers' falls by 270 USDC and the treasury gains 5.",
+        "unverified": "Whether this is an accepted mechanism-design property. The reserve is public, any party can push the total over it, and the sponsor can buy from fresh addresses, so there is no on-chain fix.",
+        "description": "Buying the reserve shortfall with the sponsor's own money lets the sponsor pick the outcome branch that is worse for buyers. This is probably accepted design and is reported only for calibration."
+      },
+      "block": "LEAD | contract: Raffle | function: fulfillRandomWords | bug_class: reserve-flip-by-sponsor-top-up | group_key: Raffle | fulfillRandomWords | reserve-flip-by-sponsor-top-up\nsmell: The outcome predicate `totalEntries >= reserveEntries` (Raffle.sol:521) counts the sponsor's own entries. In NftWon the sponsor gets back 95% of whatever it paid in (Raffle.sol:544). So the sponsor can meet its own reserve at about 5% cost and turn a CashWon (80% of the pot to a buyer) into an NftWon whenever the NFT is worth less than the cash prize. Worked example (arithmetic checked): reserve 1,000; buyers hold 900 entries; the NFT is worth 500 USDC. If the sponsor buys 100 entries before endTime, the sponsor's expected value rises by 265 USDC, the buyers' falls by 270 USDC and the treasury gains 5.\nunverified: Whether this is an accepted mechanism-design property. The reserve is public, any party can push the total over it, and the sponsor can buy from fresh addresses, so there is no on-chain fix.\ndescription: Buying the reserve shortfall with the sponsor's own money lets the sponsor pick the outcome branch that is worse for buyers. This is probably accepted design and is reported only for calibration.",
+      "raw_id": "R13"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "releaseSponsorPrize",
+      "bug_class": "codeless-destination-screen-bypass",
+      "group_key": "Raffle | releaseSponsorPrize | codeless-destination-screen-bypass",
+      "lens": 4,
+      "file": "lens-4-output.md",
+      "line_start": 52,
+      "line_end": 55,
+      "fields": {
+        "smell": "`_isProtocolDestination` only queries `isRaffle` when `destination.code.length != 0` (Raffle.sol:602-604). Clones are deployed with CREATE from the factory (OZ Clones.clone), so their addresses are predictable from the factory nonce. A sponsorRecipient set to a not-yet-deployed clone address therefore passes F:_validateCreateParams (F:163-169) and initialize (Raffle.sol:193-195). The same applies to a ticket sent to such an address. Once that clone exists, releaseSponsorProceeds reverts with InvalidQuoteDestination forever (Raffle.sol:565). releaseSponsorPrize has no runtime screen at all, so it moves the prize into the other clone via transferFrom (Raffle.sol:402-405). This contradicts DESIGN.md: \"Never move assets between raffle clones\".",
+        "unverified": "Any victim other than the party that chose the address. The recipient is chosen by the sponsor and ticket transfers are started by the owner, so every path found is self-harm.",
+        "description": "Informational only; no third-party loss path was found. Calling `_isProtocolDestination(recipient, address(prizeToken))` in releaseSponsorPrize would match the check `_transferQuote` already makes."
+      },
+      "block": "LEAD | contract: Raffle | function: releaseSponsorPrize | bug_class: codeless-destination-screen-bypass | group_key: Raffle | releaseSponsorPrize | codeless-destination-screen-bypass\nsmell: `_isProtocolDestination` only queries `isRaffle` when `destination.code.length != 0` (Raffle.sol:602-604). Clones are deployed with CREATE from the factory (OZ Clones.clone), so their addresses are predictable from the factory nonce. A sponsorRecipient set to a not-yet-deployed clone address therefore passes F:_validateCreateParams (F:163-169) and initialize (Raffle.sol:193-195). The same applies to a ticket sent to such an address. Once that clone exists, releaseSponsorProceeds reverts with InvalidQuoteDestination forever (Raffle.sol:565). releaseSponsorPrize has no runtime screen at all, so it moves the prize into the other clone via transferFrom (Raffle.sol:402-405). This contradicts DESIGN.md: \"Never move assets between raffle clones\".\nunverified: Any victim other than the party that chose the address. The recipient is chosen by the sponsor and ticket transfers are started by the owner, so every path found is self-harm.\ndescription: Informational only; no third-party loss path was found. Calling `_isProtocolDestination(recipient, address(prizeToken))` in releaseSponsorPrize would match the check `_transferQuote` already makes.",
+      "raw_id": "R14"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "enableRefunds",
+      "bug_class": "empty-raffle-cancel-griefing",
+      "group_key": "Raffle | enableRefunds | empty-raffle-cancel-griefing",
+      "lens": 4,
+      "file": "lens-4-output.md",
+      "line_start": 59,
+      "line_end": 62,
+      "fields": {
+        "smell": "The sponsor can only cancel early while `totalEntries == 0` (Raffle.sol:280-284). Anyone can front-run the cancel with buyEntries(griefer, 1) for 1 USDC. After that, the call requires now >= endTime + 2 days (Raffle.sol:286-287).",
+        "unverified": "Material loss. The griefer's 1 USDC comes back in full (refund) or 80% (CashWon). The sponsor's NFT stays escrowed only within a window the sponsor chose (at most 30 days plus 2), so the harm is opportunity cost.",
+        "description": "Low-impact denial of the sponsor's early-exit right at the cost of gas. Noted for completeness."
+      },
+      "block": "LEAD | contract: Raffle | function: enableRefunds | bug_class: empty-raffle-cancel-griefing | group_key: Raffle | enableRefunds | empty-raffle-cancel-griefing\nsmell: The sponsor can only cancel early while `totalEntries == 0` (Raffle.sol:280-284). Anyone can front-run the cancel with buyEntries(griefer, 1) for 1 USDC. After that, the call requires now >= endTime + 2 days (Raffle.sol:286-287).\nunverified: Material loss. The griefer's 1 USDC comes back in full (refund) or 80% (CashWon). The sponsor's NFT stays escrowed only within a window the sponsor chose (at most 30 days plus 2), so the harm is opportunity cost.\ndescription: Low-impact denial of the sponsor's early-exit right at the cost of gas. Noted for completeness.",
+      "raw_id": "R15"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "releaseSponsorProceeds",
+      "bug_class": "cross-asset-escrow-decoupling",
+      "group_key": "Raffle | releaseSponsorProceeds | cross-asset-escrow-decoupling",
+      "lens": 5,
+      "file": "lens-5-output.md",
+      "line_start": 22,
+      "line_end": 25,
+      "fields": {
+        "smell": "In NftWon, `_settleWinningTicket` allocates `sponsorProceeds = grossPot - protocolFee` and `protocolFees` (Raffle.sol:543-544, :554-555). `releaseSponsorProceeds` (:375-382) and `releaseProtocolFees` (:385-392) then pay both out without checking that the NFT can be delivered. The winner's prize has exactly one delivery path: an external `prizeToken.transferFrom` on a contract that DESIGN.md calls untrusted (:334-337). If that call reverts (collection-wide pause, per-address freeze, creator transfer-validator change, upgrade), redemption reverts atomically as designed. But NftWon is terminal (`enableRefunds` reverts at :292-293), and no branch turns an undeliverable prize into cash or refunds. Partial path: (1) 30,000 entries are sold, so the pot is 30,000 USDC; the reserve is met and the raffle resolves NftWon. (2) The prize collection's admin blocks transfers out of the raffle. (3) Anyone settles; 28,500 USDC is released to sponsorRecipient (:378-380) and 1,500 USDC to the treasury (:388-390). (4) Every `redeemWinningTicket` by the winning-ticket owner reverts at :334. The winning-ticket holder carries the whole loss: buyers funded a pot that was fully paid out for a prize that is never delivered.",
+        "unverified": "(a) The intended trust model is ambiguous. DESIGN.md says \"arbitrary prize contracts ... are untrusted\" but also \"Sponsor and treasury can claim independently after settlement\", and IRaffle.sol:14-15 limits support to \"honest, standards-compliant ERC-721s\". (b) Adversary profit is not established. A sponsor who controls the freeze ends no better off than with an honest outcome, because the NFT leaves the sponsor either way. The exceptions are a sponsor who extorts the winner to unfreeze, or one who can seize the token through an admin function; in the seizure case no escrow ordering helps. So only a grief or an external-freeze path is established, not a profitable theft.",
+        "description": "The NftWon USDC payout to sponsor and treasury and the NFT delivery to the winner settle independently, so a failed NFT delivery strands the winner after the pot is fully paid out. Gating `releaseSponsorProceeds` on `winnerRedeemed` when `status == NftWon` would link the two, at the cost of making the sponsor's payout depend on the winner acting."
+      },
+      "block": "LEAD | contract: Raffle | function: releaseSponsorProceeds | bug_class: cross-asset-escrow-decoupling | group_key: Raffle | releaseSponsorProceeds | cross-asset-escrow-decoupling\nsmell: In NftWon, `_settleWinningTicket` allocates `sponsorProceeds = grossPot - protocolFee` and `protocolFees` (Raffle.sol:543-544, :554-555). `releaseSponsorProceeds` (:375-382) and `releaseProtocolFees` (:385-392) then pay both out without checking that the NFT can be delivered. The winner's prize has exactly one delivery path: an external `prizeToken.transferFrom` on a contract that DESIGN.md calls untrusted (:334-337). If that call reverts (collection-wide pause, per-address freeze, creator transfer-validator change, upgrade), redemption reverts atomically as designed. But NftWon is terminal (`enableRefunds` reverts at :292-293), and no branch turns an undeliverable prize into cash or refunds. Partial path: (1) 30,000 entries are sold, so the pot is 30,000 USDC; the reserve is met and the raffle resolves NftWon. (2) The prize collection's admin blocks transfers out of the raffle. (3) Anyone settles; 28,500 USDC is released to sponsorRecipient (:378-380) and 1,500 USDC to the treasury (:388-390). (4) Every `redeemWinningTicket` by the winning-ticket owner reverts at :334. The winning-ticket holder carries the whole loss: buyers funded a pot that was fully paid out for a prize that is never delivered.\nunverified: (a) The intended trust model is ambiguous. DESIGN.md says \"arbitrary prize contracts ... are untrusted\" but also \"Sponsor and treasury can claim independently after settlement\", and IRaffle.sol:14-15 limits support to \"honest, standards-compliant ERC-721s\". (b) Adversary profit is not established. A sponsor who controls the freeze ends no better off than with an honest outcome, because the NFT leaves the sponsor either way. The exceptions are a sponsor who extorts the winner to unfreeze, or one who can seize the token through an admin function; in the seizure case no escrow ordering helps. So only a grief or an external-freeze path is established, not a profitable theft.\ndescription: The NftWon USDC payout to sponsor and treasury and the NFT delivery to the winner settle independently, so a failed NFT delivery strands the winner after the pot is fully paid out. Gating `releaseSponsorProceeds` on `winnerRedeemed` when `status == NftWon` would link the two, at the cost of making the sponsor's payout depend on the winner acting.",
+      "raw_id": "R16"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "fulfillRandomWords",
+      "bug_class": "vrf-result-preview-ticket-sniping",
+      "group_key": "Raffle | fulfillRandomWords | vrf-result-preview-ticket-sniping",
+      "lens": 5,
+      "file": "lens-5-output.md",
+      "line_start": 29,
+      "line_end": 32,
+      "fields": {
+        "smell": "The result is a pure function of the single VRF word: `winningEntry = word % totalEntries + 1` and NftWon/CashWon (Raffle.sol:518-521). Every ticket range is public (`ticketRange` :451-455). Tickets stay transferable while Drawing and after resolution: `_update` (:497-502) only screens destinations, and the NatSpec at :491 says tickets are transferable \"in every lifecycle state\". Once the oracle's fulfillment transaction, which carries the proof, is visible and before `RaffleResolved` is mined, a watcher can derive the winning ticket ID. The watcher can then fill any resting marketplace order selling that ticket, or sell known-losing tickets into resting bids, before holders can see the result on-chain. Ticket holders with resting orders lose through adverse selection.",
+        "unverified": "(a) Whether Chainlink's Ethereum VRF nodes broadcast fulfillments through the public mempool or privately. (b) Whether the v2.5 coordinator's `fulfillRandomWords` accepts an observed proof from any caller, which would let a sniper deliver it and trade in one atomic transaction. The coordinator and wrapper sources are not vendored under packages/contracts. (c) Whether this goes beyond generic stale-order NFT MEV, given that the design deliberately keeps tickets transferable. The outcome cannot be re-rolled, because reverting a delivery does not change the proof. This is information leakage only; no protocol-held funds are at risk.",
+        "description": "Information about the winner leaks before the state change while the tickets it prices are still tradable. Blocking ticket transfers while `status == Drawing` would close only the pre-inclusion window and conflicts with the bearer-claim design."
+      },
+      "block": "LEAD | contract: Raffle | function: fulfillRandomWords | bug_class: vrf-result-preview-ticket-sniping | group_key: Raffle | fulfillRandomWords | vrf-result-preview-ticket-sniping\nsmell: The result is a pure function of the single VRF word: `winningEntry = word % totalEntries + 1` and NftWon/CashWon (Raffle.sol:518-521). Every ticket range is public (`ticketRange` :451-455). Tickets stay transferable while Drawing and after resolution: `_update` (:497-502) only screens destinations, and the NatSpec at :491 says tickets are transferable \"in every lifecycle state\". Once the oracle's fulfillment transaction, which carries the proof, is visible and before `RaffleResolved` is mined, a watcher can derive the winning ticket ID. The watcher can then fill any resting marketplace order selling that ticket, or sell known-losing tickets into resting bids, before holders can see the result on-chain. Ticket holders with resting orders lose through adverse selection.\nunverified: (a) Whether Chainlink's Ethereum VRF nodes broadcast fulfillments through the public mempool or privately. (b) Whether the v2.5 coordinator's `fulfillRandomWords` accepts an observed proof from any caller, which would let a sniper deliver it and trade in one atomic transaction. The coordinator and wrapper sources are not vendored under packages/contracts. (c) Whether this goes beyond generic stale-order NFT MEV, given that the design deliberately keeps tickets transferable. The outcome cannot be re-rolled, because reverting a delivery does not change the proof. This is information leakage only; no protocol-held funds are at risk.\ndescription: Information about the winner leaks before the state change while the tickets it prices are still tradable. Blocking ticket transfers while `status == Drawing` would close only the pre-inclusion window and conflicts with the bearer-claim design.",
+      "raw_id": "R17"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "releaseSponsorPrize",
+      "bug_class": "config-time-only-destination-screen",
+      "group_key": "Raffle | releaseSponsorPrize | config-time-only-destination-screen",
+      "lens": 5,
+      "file": "lens-5-output.md",
+      "line_start": 36,
+      "line_end": 39,
+      "fields": {
+        "smell": "DESIGN.md requires \"Never move assets between raffle clones.\" `sponsorRecipient` is screened only at creation: `RaffleFactory._validateCreateParams` checks the `isRaffle` mapping (RaffleFactory.sol:163-169), and `Raffle.initialize` calls `_isProtocolDestination` (Raffle.sol:193), which skips the `isRaffle` query for addresses with no code (:602). Clones are deployed with CREATE (OZ `Clones.clone`: `create(value, 0x09, 0x37)`), so each future raffle address depends only on the factory address and nonce. These addresses can be predicted, and anyone can advance the nonce through the permissionless `createRaffle`. A sponsorRecipient equal to a future clone address therefore passes both screens. After a later `createRaffle` registers a raffle at that address, `releaseSponsorPrize` (:402-405) transfers the prize NFT into that clone without a delivery-time screen, and no function can ever move it out. The USDC path for the same recipient, `_transferQuote`, re-screens at payout (:565) and reverts, which strands `sponsorProceeds` instead. The same skip for code-less addresses in `_update` (:498 \u2192 :602) lets a ticket be sent to a future clone address, where it later becomes unreachable.",
+        "unverified": "No actor other than the sponsor (for sponsorRecipient) or the ticket owner or operator (for tickets) chooses these destinations. Pointing at the raffle's own address is caught (:599, `destination == address(this)`), and a recipient that is already a raffle is caught (RaffleFactory.sol:166; Raffle.sol:602-603). On current evidence this harms only the party who chose the address, so it is not reportable as a finding. It is listed because it is the one reachable state that violates DESIGN.md's cross-clone invariant, and because sibling payout sites screen inconsistently.",
+        "description": "Re-running `_isProtocolDestination(recipient, address(prizeToken))` before Raffle.sol:404 would make the NFT payout behave like `_transferQuote`, but because sponsorRecipient is immutable the prize would still be stranded rather than moved."
+      },
+      "block": "LEAD | contract: Raffle | function: releaseSponsorPrize | bug_class: config-time-only-destination-screen | group_key: Raffle | releaseSponsorPrize | config-time-only-destination-screen\nsmell: DESIGN.md requires \"Never move assets between raffle clones.\" `sponsorRecipient` is screened only at creation: `RaffleFactory._validateCreateParams` checks the `isRaffle` mapping (RaffleFactory.sol:163-169), and `Raffle.initialize` calls `_isProtocolDestination` (Raffle.sol:193), which skips the `isRaffle` query for addresses with no code (:602). Clones are deployed with CREATE (OZ `Clones.clone`: `create(value, 0x09, 0x37)`), so each future raffle address depends only on the factory address and nonce. These addresses can be predicted, and anyone can advance the nonce through the permissionless `createRaffle`. A sponsorRecipient equal to a future clone address therefore passes both screens. After a later `createRaffle` registers a raffle at that address, `releaseSponsorPrize` (:402-405) transfers the prize NFT into that clone without a delivery-time screen, and no function can ever move it out. The USDC path for the same recipient, `_transferQuote`, re-screens at payout (:565) and reverts, which strands `sponsorProceeds` instead. The same skip for code-less addresses in `_update` (:498 \u2192 :602) lets a ticket be sent to a future clone address, where it later becomes unreachable.\nunverified: No actor other than the sponsor (for sponsorRecipient) or the ticket owner or operator (for tickets) chooses these destinations. Pointing at the raffle's own address is caught (:599, `destination == address(this)`), and a recipient that is already a raffle is caught (RaffleFactory.sol:166; Raffle.sol:602-603). On current evidence this harms only the party who chose the address, so it is not reportable as a finding. It is listed because it is the one reachable state that violates DESIGN.md's cross-clone invariant, and because sibling payout sites screen inconsistently.\ndescription: Re-running `_isProtocolDestination(recipient, address(prizeToken))` before Raffle.sol:404 would make the NFT payout behave like `_transferQuote`, but because sponsorRecipient is immutable the prize would still be stranded rather than moved.",
+      "raw_id": "R18"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "releaseSponsorProceeds",
+      "bug_class": "cross-asset-payout-decoupling",
+      "group_key": "Raffle | releaseSponsorProceeds | cross-asset-payout-decoupling",
+      "lens": 6,
+      "file": "lens-6-output.md",
+      "line_start": 17,
+      "line_end": 20,
+      "fields": {
+        "smell": "In NftWon, _settleWinningTicket makes 95% of the pot claimable by sponsorRecipient (Raffle.sol:544, :554). releaseSponsorProceeds (Raffle.sol:375-382) pays it without checking prizeClaimed or winnerRedeemed. The NFT leg (redeemWinningTicket, Raffle.sol:334-335) depends on the prize contract, which DESIGN.md says is untrusted, and it has no fallback: releaseSponsorPrize is barred in NftWon (Raffle.sol:397), and enableRefunds rejects terminal states (Raffle.sol:279-294). Suppose the prize contract permanently blocks transfers out of the clone (an admin pause, or a transfer-validator or blocklist entry on the clone address). Then the winning-ticket holder gets nothing while sponsorRecipient (950,000*T raw) and the treasury (50,000*T raw) are paid in full. Example with T = 10,000 entries: 9,500 USDC go to sponsorRecipient, 500 USDC go to the treasury, and the winning ticket is worthless.",
+        "unverified": "This is outside Lens 6 (no arithmetic defect). Unclear whether a sponsor can profit from it. Profit needs a prize contract where the sponsor controls an admin seizure or unfreeze path; otherwise it is only griefing. The IRaffle.sol NatSpec says \"Supported prizes are honest, standards-compliant ERC-721s\", which conflicts with DESIGN.md's untrusted-prize statement. Gating sponsor proceeds on prizeClaimed would create the opposite problem: proceeds held hostage by a winner who never redeems.",
+        "description": "The sponsor and treasury USDC legs settle independently of NFT delivery, so an undeliverable prize leaves only the winner unpaid, with no refund path."
+      },
+      "block": "LEAD | contract: Raffle | function: releaseSponsorProceeds | bug_class: cross-asset-payout-decoupling | group_key: Raffle | releaseSponsorProceeds | cross-asset-payout-decoupling\nsmell: In NftWon, _settleWinningTicket makes 95% of the pot claimable by sponsorRecipient (Raffle.sol:544, :554). releaseSponsorProceeds (Raffle.sol:375-382) pays it without checking prizeClaimed or winnerRedeemed. The NFT leg (redeemWinningTicket, Raffle.sol:334-335) depends on the prize contract, which DESIGN.md says is untrusted, and it has no fallback: releaseSponsorPrize is barred in NftWon (Raffle.sol:397), and enableRefunds rejects terminal states (Raffle.sol:279-294). Suppose the prize contract permanently blocks transfers out of the clone (an admin pause, or a transfer-validator or blocklist entry on the clone address). Then the winning-ticket holder gets nothing while sponsorRecipient (950,000*T raw) and the treasury (50,000*T raw) are paid in full. Example with T = 10,000 entries: 9,500 USDC go to sponsorRecipient, 500 USDC go to the treasury, and the winning ticket is worthless.\nunverified: This is outside Lens 6 (no arithmetic defect). Unclear whether a sponsor can profit from it. Profit needs a prize contract where the sponsor controls an admin seizure or unfreeze path; otherwise it is only griefing. The IRaffle.sol NatSpec says \"Supported prizes are honest, standards-compliant ERC-721s\", which conflicts with DESIGN.md's untrusted-prize statement. Gating sponsor proceeds on prizeClaimed would create the opposite problem: proceeds held hostage by a winner who never redeems.\ndescription: The sponsor and treasury USDC legs settle independently of NFT delivery, so an undeliverable prize leaves only the winner unpaid, with no refund path.",
+      "raw_id": "R19"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "fulfillRandomWords",
+      "bug_class": "reserve-threshold-self-funding",
+      "group_key": "Raffle | fulfillRandomWords | reserve-threshold-self-funding",
+      "lens": 6,
+      "file": "lens-6-output.md",
+      "line_start": 24,
+      "line_end": 27,
+      "fields": {
+        "smell": "The outcome test `totalEntries >= reserveEntries` (Raffle.sol:521) also counts entries the sponsor paid for. In NftWon, 95% of every entry, including the sponsor's own, returns to sponsorRecipient (Raffle.sol:544, :554). So the sponsor can flip a raffle that is below reserve from CashWon to NftWon for a 5% toll on the gap. Example: reserve 10,000 entries, 8,000 entries bought by other users. The sponsor buys 2,000 entries at endTime-1, which Raffle.sol:216 allows. Without the flip (CashWon), the winner gets 6,400 USDC and sponsorRecipient gets 1,200 USDC plus the NFT back. With the flip (NftWon), sponsorRecipient gets 9,500 USDC (net +7,500 after the 2,000 USDC outlay) and the sponsor's tickets have a 20% chance of winning the NFT. With the NFT worth 5,000 USDC: sponsor expected value rises from 6,200 to 8,500 (+2,300). The other buyers' expected value falls from 6,400 to 4,000 (-2,400). The treasury gains 100. The changes sum to zero.",
+        "unverified": "This is outside Lens 6 (economic/MEV). DESIGN.md does not forbid sponsor participation, and any address can buy (Sybil), so this may be an accepted property of reserve auctions. The flip only pays when the sponsor values the NFT below 0.8 x the pot from other buyers (here, below 7,875 USDC). Buyers can see totalEntries and reserveEntries on-chain, but they cannot exit before the outcome except by selling the ticket, because refundTickets requires Refunding.",
+        "description": "The sponsor can meet the reserve with their own entries, 95% of which come back to them, turning a cash raffle into an NFT raffle after buyers have committed."
+      },
+      "block": "LEAD | contract: Raffle | function: fulfillRandomWords | bug_class: reserve-threshold-self-funding | group_key: Raffle | fulfillRandomWords | reserve-threshold-self-funding\nsmell: The outcome test `totalEntries >= reserveEntries` (Raffle.sol:521) also counts entries the sponsor paid for. In NftWon, 95% of every entry, including the sponsor's own, returns to sponsorRecipient (Raffle.sol:544, :554). So the sponsor can flip a raffle that is below reserve from CashWon to NftWon for a 5% toll on the gap. Example: reserve 10,000 entries, 8,000 entries bought by other users. The sponsor buys 2,000 entries at endTime-1, which Raffle.sol:216 allows. Without the flip (CashWon), the winner gets 6,400 USDC and sponsorRecipient gets 1,200 USDC plus the NFT back. With the flip (NftWon), sponsorRecipient gets 9,500 USDC (net +7,500 after the 2,000 USDC outlay) and the sponsor's tickets have a 20% chance of winning the NFT. With the NFT worth 5,000 USDC: sponsor expected value rises from 6,200 to 8,500 (+2,300). The other buyers' expected value falls from 6,400 to 4,000 (-2,400). The treasury gains 100. The changes sum to zero.\nunverified: This is outside Lens 6 (economic/MEV). DESIGN.md does not forbid sponsor participation, and any address can buy (Sybil), so this may be an accepted property of reserve auctions. The flip only pays when the sponsor values the NFT below 0.8 x the pot from other buyers (here, below 7,875 USDC). Buyers can see totalEntries and reserveEntries on-chain, but they cannot exit before the outcome except by selling the ticket, because refundTickets requires Refunding.\ndescription: The sponsor can meet the reserve with their own entries, 95% of which come back to them, turning a cash raffle into an NFT raffle after buyers have committed.",
+      "raw_id": "R20"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "_settleWinningTicket",
+      "bug_class": "sponsor-self-purchase-rebate",
+      "group_key": "Raffle | _settleWinningTicket | sponsor-self-purchase-rebate",
+      "lens": 7,
+      "file": "lens-7-output.md",
+      "line_start": 30,
+      "line_end": 43,
+      "fields": {
+        "smell": "Raffle.sol:544 sets the NftWon sponsor share to `grossPot - protocolFee`. grossPot (L539) includes every purchase, whoever made it. Nothing in buyEntries (L209-237) or _update (L497-502) excludes the sponsor or sponsorRecipient as buyer or recipient. So under NftWon an entry the sponsor buys from any address nets out at 1,000,000 - 950,000 = 50,000 raw units (0.05 USDC), while every other buyer pays 1 USDC. Sales close at endTime (L216), so nobody can respond to a buy in the last block before it.",
+        "unverified": "Whether the design accepts sponsor participation. DESIGN.md does not forbid it, and the money map lists \"may also buy entries\" as a normal sponsor action. No identity check survives Sybil addresses, so there is no single small code fix. A design change such as capping the NftWon sponsor share at reserveEntries*ENTRY_PRICE, with the excess paid to the winner, fixes (a) but not (b). The losses are expected-value transfers, not deterministic theft.",
+        "description": "Because L544 rebates 95% of the sponsor's own spend, a last-block dilution or reserve flip has positive expected value for the sponsor. Non-sponsor buyers carry the loss, and the treasury captures part of it."
+      },
+      "block": "LEAD | contract: Raffle | function: _settleWinningTicket | bug_class: sponsor-self-purchase-rebate | group_key: Raffle | _settleWinningTicket | sponsor-self-purchase-rebate\nsmell: Raffle.sol:544 sets the NftWon sponsor share to `grossPot - protocolFee`. grossPot (L539) includes every purchase, whoever made it. Nothing in buyEntries (L209-237) or _update (L497-502) excludes the sponsor or sponsorRecipient as buyer or recipient. So under NftWon an entry the sponsor buys from any address nets out at 1,000,000 - 950,000 = 50,000 raw units (0.05 USDC), while every other buyer pays 1 USDC. Sales close at endTime (L216), so nobody can respond to a buy in the last block before it.\n  (a) Dilution under NftWon. NFT worth 10,000 USDC, reserveEntries 8,000, buyers hold N = 10,000 entries.\n      1. At endTime-1 the sponsor buys k = 90,000 entries from a fresh address, paying 90,000 USDC.\n      2. Anyone calls requestDraw. L521 resolves NftWon with a pot of 100,000.\n      3. The sponsor calls settleWinningTicket (permissionless), then releaseSponsorProceeds, and receives 95,000 (L554, L380). That is +5,000 cash plus a 90% chance of redeeming the NFT back.\n      Expected values: sponsor 9,500 -> 14,000 (+4,500); buyers 10,000 -> 1,000 (-9,000); treasury 500 -> 5,000 (+4,500).\n  (b) Reserve flip from CashWon to NftWon. reserveEntries 10,000, buyers hold N = 5,000, NFT worth 3,000.\n      Without the flip (CashWon): buyers EV 4,000; sponsor 750 + NFT = 3,750; treasury 250.\n      At endTime-1 the sponsor buys 5,000 entries, so L521 resolves NftWon instead.\n      Result: sponsor 4,500 + 50% of the NFT = 6,000 (+2,250); buyers 1,500 (-2,500); treasury 500 (+250).\n  Capital is locked only from endTime-1 until settlement plus releaseSponsorProceeds, i.e. minutes after the 30-confirmation VRF callback. All numbers were recomputed with the exact integer split (fee n*50,000; NftWon sponsor share n*950,000 raw units).\nunverified: Whether the design accepts sponsor participation. DESIGN.md does not forbid it, and the money map lists \"may also buy entries\" as a normal sponsor action. No identity check survives Sybil addresses, so there is no single small code fix. A design change such as capping the NftWon sponsor share at reserveEntries*ENTRY_PRICE, with the excess paid to the winner, fixes (a) but not (b). The losses are expected-value transfers, not deterministic theft.\ndescription: Because L544 rebates 95% of the sponsor's own spend, a last-block dilution or reserve flip has positive expected value for the sponsor. Non-sponsor buyers carry the loss, and the treasury captures part of it.",
+      "raw_id": "R21"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "_update",
+      "bug_class": "vrf-reveal-ticket-sniping",
+      "group_key": "Raffle | _update | vrf-reveal-ticket-sniping",
+      "lens": 7,
+      "file": "lens-7-output.md",
+      "line_start": 47,
+      "line_end": 55,
+      "fields": {
+        "smell": "Tickets stay transferable while status == Drawing and within the block that resolves the draw. _update (L497-502) only rejects protocol addresses (L599-604), and L491 says this is intended. On Ethereum L1 the Chainlink fulfillment transaction carries the VRF proof in the public mempool. A searcher can compute randomWords[0] % totalEntries + 1 (L518) and map it to a ticket with ticketRange (L451-455) before L521 executes.",
+        "unverified": "That holders actually leave marketplace orders open across requestDraw. That the VRF node broadcasts publicly rather than through a private relay. Freezing transfers only during Drawing does not stop a same-block back-run of the fulfillment. The fix is therefore a design choice: block transfers other than mint and burn from requestDraw until block.timestamp > resolvedAt, and document that holders must cancel orders before the draw.",
+        "description": "Because bearer tickets can be traded across a public randomness reveal, any searcher can snipe stale listings. The victims are ticket holders with open orders; the protocol's own accounting is unaffected."
+      },
+      "block": "LEAD | contract: Raffle | function: _update | bug_class: vrf-reveal-ticket-sniping | group_key: Raffle | _update | vrf-reveal-ticket-sniping\nsmell: Tickets stay transferable while status == Drawing and within the block that resolves the draw. _update (L497-502) only rejects protocol addresses (L599-604), and L491 says this is intended. On Ethereum L1 the Chainlink fulfillment transaction carries the VRF proof in the public mempool. A searcher can compute randomWords[0] % totalEntries + 1 (L518) and map it to a ticket with ticketRange (L451-455) before L521 executes.\n  Setup: 10,000 entries, NftWon, NFT worth 20,000 USDC. Alice's ticket #57 covers 2,000 entries (EV 4,000) and has an open marketplace listing at 3,500.\n  1. The searcher sees the pending fulfillment and decodes a winningEntry that falls inside #57.\n  2. The searcher submits a bundle: fill Alice's listing (3,500 USDC), then the fulfillment, then redeemWinningTicket(57) (L309-346).\n  3. The searcher receives the 20,000 NFT, and Alice is underpaid by 16,500.\n  Mirror case: holders of losing tickets dump them into standing bids. Aggravating factor: tickets have no tokenURI and every clone returns the same name() and symbol() (L479-487), so a listing cannot show a ticket's range or the raffle's state.\nunverified: That holders actually leave marketplace orders open across requestDraw. That the VRF node broadcasts publicly rather than through a private relay. Freezing transfers only during Drawing does not stop a same-block back-run of the fulfillment. The fix is therefore a design choice: block transfers other than mint and burn from requestDraw until block.timestamp > resolvedAt, and document that holders must cancel orders before the draw.\ndescription: Because bearer tickets can be traded across a public randomness reveal, any searcher can snipe stale listings. The victims are ticket holders with open orders; the protocol's own accounting is unaffected.",
+      "raw_id": "R22"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "enableRefunds",
+      "bug_class": "frontrun-cancel-grief",
+      "group_key": "Raffle | enableRefunds | frontrun-cancel-grief",
+      "lens": 7,
+      "file": "lens-7-output.md",
+      "line_start": 59,
+      "line_end": 67,
+      "fields": {
+        "smell": "The sponsor's discretionary early exit only works while totalEntries == 0 (L280-284).",
+        "unverified": "Whether this matters. The sponsor had already committed the NFT until endTime, and the \"empty raffles only\" cancel rule is documented (IRaffle.sol:323). The sponsor can defend by requesting the draw, or by buying entries at the 5% effective cost described in LEAD 1.",
+        "description": "A near-free 1-entry front-run removes the sponsor's only cancellation right. The impact is a longer NFT lock-up and a lost option, not theft."
+      },
+      "block": "LEAD | contract: Raffle | function: enableRefunds | bug_class: frontrun-cancel-grief | group_key: Raffle | enableRefunds | frontrun-cancel-grief\nsmell: The sponsor's discretionary early exit only works while totalEntries == 0 (L280-284).\n  1. Before endTime, the sponsor submits enableRefunds() to withdraw an unpopular raffle.\n  2. An attacker front-runs it with buyEntries(attacker, 1), paying 1 USDC.\n  3. The sponsor's transaction now takes the L285-287 branch and reverts with RefundsNotAvailable(endTime + 2 days).\n  The NFT stays escrowed until the VRF resolves after endTime, or until endTime + 2 days if nobody requests a draw (up to 32 days from creation).\n  Attacker net cost: 0 if no draw happens (full refund), or 0.2 USDC under CashWon. If reserveEntries <= final totalEntries and nobody else buys, the attacker wins the NFT for 1 USDC plus the VRF fee.\nunverified: Whether this matters. The sponsor had already committed the NFT until endTime, and the \"empty raffles only\" cancel rule is documented (IRaffle.sol:323). The sponsor can defend by requesting the draw, or by buying entries at the 5% effective cost described in LEAD 1.\ndescription: A near-free 1-entry front-run removes the sponsor's only cancellation right. The impact is a longer NFT lock-up and a lost option, not theft.",
+      "raw_id": "R23"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "releaseSponsorProceeds",
+      "bug_class": "proceeds-released-before-prize-delivery",
+      "group_key": "Raffle | releaseSponsorProceeds | proceeds-released-before-prize-delivery",
+      "lens": 7,
+      "file": "lens-7-output.md",
+      "line_start": 71,
+      "line_end": 79,
+      "fields": {
+        "smell": "Cross-lens: this is mainly an integration/trust issue, with an ordering angle. In NftWon, permissionless settlement (L533-558) credits 95% of the pot to sponsorProceeds. releaseSponsorProceeds (L375-382) and its sibling releaseProtocolFees (L385-392) pay out without checking winnerRedeemed or prizeClaimed. The winner's side (L334-337) depends on the sponsor-chosen prize contract, which DESIGN.md calls untrusted. totalEntries is frozen at endTime, so the outcome branch at L521 is known before the VRF runs.",
+        "unverified": "The documented trust model contradicts itself. IRaffle.sol:14-15 says \"Supported prizes are honest, standards-compliant ERC-721s\", while DESIGN.md says \"arbitrary prize contracts ... are untrusted\". This is outside this lens's core scope and is flagged for the integration lens.",
+        "description": "NftWon USDC payouts are released independently of NFT delivery, so a sponsor-controlled prize contract can collect the pot and block the winner. The sponsor has a timing advantage because the outcome class is known at endTime."
+      },
+      "block": "LEAD | contract: Raffle | function: releaseSponsorProceeds | bug_class: proceeds-released-before-prize-delivery | group_key: Raffle | releaseSponsorProceeds | proceeds-released-before-prize-delivery\nsmell: Cross-lens: this is mainly an integration/trust issue, with an ordering angle. In NftWon, permissionless settlement (L533-558) credits 95% of the pot to sponsorProceeds. releaseSponsorProceeds (L375-382) and its sibling releaseProtocolFees (L385-392) pay out without checking winnerRedeemed or prizeClaimed. The winner's side (L334-337) depends on the sponsor-chosen prize contract, which DESIGN.md calls untrusted. totalEntries is frozen at endTime, so the outcome branch at L521 is known before the VRF runs.\n  1. The prize is the sponsor's own pausable or upgradeable ERC-721, and the raffle sells at least reserveEntries.\n  2. After endTime, knowing the result will be NftWon, the sponsor arms a transfer block on the NFT contract.\n  3. The fulfillment lands. The sponsor follows it with settleWinningTicket(w) and releaseSponsorProceeds() and receives 95% of the pot.\n  4. The winner's redeemWinningTicket(w) reverts permanently at L334 or L335. No state turns this into refunds.\n  Buyers lose the whole pot: 95% to the sponsor and 5% to the treasury.\nunverified: The documented trust model contradicts itself. IRaffle.sol:14-15 says \"Supported prizes are honest, standards-compliant ERC-721s\", while DESIGN.md says \"arbitrary prize contracts ... are untrusted\". This is outside this lens's core scope and is flagged for the integration lens.\ndescription: NftWon USDC payouts are released independently of NFT delivery, so a sponsor-controlled prize contract can collect the pot and block the winner. The sponsor has a timing advantage because the outcome class is known at endTime.",
+      "raw_id": "R24"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "redeemWinningTicket",
+      "bug_class": "stuck-terminal-state",
+      "group_key": "Raffle | redeemWinningTicket | stuck-terminal-state",
+      "lens": 8,
+      "file": "lens-8-output.md",
+      "line_start": 22,
+      "line_end": 25,
+      "fields": {
+        "smell": "NftWon is a terminal state with no exit if the prize leg can never complete. In NftWon the NFT can only leave through prizeToken.transferFrom(address(this), winner, id) plus the ownerOf re-check (Raffle.sol:334-337). releaseSponsorPrize rejects NftWon (Raffle.sol:397-399). enableRefunds rejects every terminal status (Raffle.sol:279-293). No path turns an undeliverable prize into refunds or cash. Settlement, however, has already credited sponsorProceeds = grossPot - protocolFee (Raffle.sol:544, 554), and releaseSponsorProceeds pays it without checking prizeClaimed (Raffle.sol:375-382). Path: (1) sponsor S escrows token #1 of collection P via createRaffle with reserveEntries = 1,000; (2) buyers buy 1,000 entries = 1,000 USDC; (3) the VRF callback resolves NftWon (Raffle.sol:521); (4) anyone settles: sponsorProceeds = 950 USDC, protocolFees = 50 USDC; (5) anyone calls releaseSponsorProceeds and 950 USDC goes to sponsorRecipient; (6) P permanently blocks transfers out of the clone (admin pause, per-address blocklist, a transfer-validator policy that turns off owner-initiated transfers by contracts, or a sponsor-controlled P whose transferFrom reverts or whose ownerOf lies); (7) every redeemWinningTicket call reverts, which undoes the burn (Raffle.sol:325, 334-337). The winning ticket cannot be refunded either (Raffle.sol:350). Outcome: all 1,000 USDC from buyers is paid out (950 to the sponsor, 50 to the treasury). The winning-ticket holder keeps a claim that can never be redeemed, and the NFT is stuck in the clone with no recovery path.",
+        "unverified": "(a) Whether the trust model makes this reportable. DESIGN.md says arbitrary prize contracts are untrusted, but it also says \"Sponsor and treasury can claim independently after settlement\", and IRaffle.sol:14-15 limits support to \"honest, standards-compliant ERC-721s\". (b) Whether blocking delivery adds any loss. If the sponsor controls P, blocking adds nothing over raffling a worthless token: the sponsor collects 950 either way. A sponsor also gains nothing by blocking a valuable token, because it is stuck for them too. Extra loss only appears when a third-party admin of a real collection permanently restricts transfers out of the clone. Working offline, I could not confirm any live collection that accepts the factory's inbound safeTransferFrom (RaffleFactory.sol:128) but later blocks the raffle's outbound transferFrom. (c) A temporary pause only delays the winner: there is no redemption deadline, so they can redeem after the unpause.",
+        "description": "The NftWon branch ties a final state to a delivery made by an untrusted contract while paying the sponsor's 95% with no condition. The smallest code fix is to make releaseSponsorProceeds (Raffle.sol:375-382) require prizeClaimed when status == NftWon, or to add a fallback for failed delivery. Both conflict with DESIGN.md's \"claim independently after settlement\", and the first lets a winner who never redeems freeze the sponsor's share."
+      },
+      "block": "LEAD | contract: Raffle | function: redeemWinningTicket | bug_class: stuck-terminal-state | group_key: Raffle | redeemWinningTicket | stuck-terminal-state\nsmell: NftWon is a terminal state with no exit if the prize leg can never complete. In NftWon the NFT can only leave through prizeToken.transferFrom(address(this), winner, id) plus the ownerOf re-check (Raffle.sol:334-337). releaseSponsorPrize rejects NftWon (Raffle.sol:397-399). enableRefunds rejects every terminal status (Raffle.sol:279-293). No path turns an undeliverable prize into refunds or cash. Settlement, however, has already credited sponsorProceeds = grossPot - protocolFee (Raffle.sol:544, 554), and releaseSponsorProceeds pays it without checking prizeClaimed (Raffle.sol:375-382). Path: (1) sponsor S escrows token #1 of collection P via createRaffle with reserveEntries = 1,000; (2) buyers buy 1,000 entries = 1,000 USDC; (3) the VRF callback resolves NftWon (Raffle.sol:521); (4) anyone settles: sponsorProceeds = 950 USDC, protocolFees = 50 USDC; (5) anyone calls releaseSponsorProceeds and 950 USDC goes to sponsorRecipient; (6) P permanently blocks transfers out of the clone (admin pause, per-address blocklist, a transfer-validator policy that turns off owner-initiated transfers by contracts, or a sponsor-controlled P whose transferFrom reverts or whose ownerOf lies); (7) every redeemWinningTicket call reverts, which undoes the burn (Raffle.sol:325, 334-337). The winning ticket cannot be refunded either (Raffle.sol:350). Outcome: all 1,000 USDC from buyers is paid out (950 to the sponsor, 50 to the treasury). The winning-ticket holder keeps a claim that can never be redeemed, and the NFT is stuck in the clone with no recovery path.\nunverified: (a) Whether the trust model makes this reportable. DESIGN.md says arbitrary prize contracts are untrusted, but it also says \"Sponsor and treasury can claim independently after settlement\", and IRaffle.sol:14-15 limits support to \"honest, standards-compliant ERC-721s\". (b) Whether blocking delivery adds any loss. If the sponsor controls P, blocking adds nothing over raffling a worthless token: the sponsor collects 950 either way. A sponsor also gains nothing by blocking a valuable token, because it is stuck for them too. Extra loss only appears when a third-party admin of a real collection permanently restricts transfers out of the clone. Working offline, I could not confirm any live collection that accepts the factory's inbound safeTransferFrom (RaffleFactory.sol:128) but later blocks the raffle's outbound transferFrom. (c) A temporary pause only delays the winner: there is no redemption deadline, so they can redeem after the unpause.\ndescription: The NftWon branch ties a final state to a delivery made by an untrusted contract while paying the sponsor's 95% with no condition. The smallest code fix is to make releaseSponsorProceeds (Raffle.sol:375-382) require prizeClaimed when status == NftWon, or to add a fallback for failed delivery. Both conflict with DESIGN.md's \"claim independently after settlement\", and the first lets a winner who never redeems freeze the sponsor's share.",
+      "raw_id": "R25"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "requestDraw",
+      "bug_class": "external-dependency-dos",
+      "group_key": "Raffle | requestDraw | external-dependency-dos",
+      "lens": 8,
+      "file": "lens-8-output.md",
+      "line_start": 29,
+      "line_end": 32,
+      "fields": {
+        "smell": "The VRF wrapper can never change. RaffleFactory stores it as an immutable (RaffleFactory.sol:86), builds it into the single implementation (RaffleFactory.sol:89, inherited immutable i_vrfV2PlusWrapper), has no admin to repoint it, and createRaffle (RaffleFactory.sol:97-148) never checks that the wrapper still works. If the wrapper is disabled or unconfigured, getVrfRequestPrice and requestRandomnessPayInNative (Raffle.sol:249, 257) revert for every raffle. If the wrapper's subscription runs out of funds, a paid request is accepted but never fulfilled. After such an event, sponsors can still create raffles and buyers can still buy (Raffle.sol:209-237), but no raffle can ever resolve. Each one only moves to Refunding at endTime + 2d (Raffle.sol:286-287) or drawRequestedAt + 2d (Raffle.sol:290-291). Buyers' USDC and sponsors' NFTs are locked for up to 30d of sale + 2d (or + 4d). In the unfunded case, whoever requests the draw loses the native VRF fee.",
+        "unverified": "The wrapper implementation is not in node_modules; only VRFV2PlusWrapperConsumerBase.sol and IVRFV2PlusWrapper.sol are. The disabled and unfunded behaviour therefore comes from public Chainlink v2.5 semantics, not from source in the repo. No principal is lost because the refund path stays intact. DESIGN.md treats the wrapper as a trusted canonical dependency and rules out mutable configuration, so this is probably accepted design. The impact is limited to time-bounded locking.",
+        "description": "Because the wrapper is immutable and never checked, a deprecation on Chainlink's side puts every live and future raffle into a \"lock, then refund\" mode that only redeploying the factory can fix."
+      },
+      "block": "LEAD | contract: Raffle | function: requestDraw | bug_class: external-dependency-dos | group_key: Raffle | requestDraw | external-dependency-dos\nsmell: The VRF wrapper can never change. RaffleFactory stores it as an immutable (RaffleFactory.sol:86), builds it into the single implementation (RaffleFactory.sol:89, inherited immutable i_vrfV2PlusWrapper), has no admin to repoint it, and createRaffle (RaffleFactory.sol:97-148) never checks that the wrapper still works. If the wrapper is disabled or unconfigured, getVrfRequestPrice and requestRandomnessPayInNative (Raffle.sol:249, 257) revert for every raffle. If the wrapper's subscription runs out of funds, a paid request is accepted but never fulfilled. After such an event, sponsors can still create raffles and buyers can still buy (Raffle.sol:209-237), but no raffle can ever resolve. Each one only moves to Refunding at endTime + 2d (Raffle.sol:286-287) or drawRequestedAt + 2d (Raffle.sol:290-291). Buyers' USDC and sponsors' NFTs are locked for up to 30d of sale + 2d (or + 4d). In the unfunded case, whoever requests the draw loses the native VRF fee.\nunverified: The wrapper implementation is not in node_modules; only VRFV2PlusWrapperConsumerBase.sol and IVRFV2PlusWrapper.sol are. The disabled and unfunded behaviour therefore comes from public Chainlink v2.5 semantics, not from source in the repo. No principal is lost because the refund path stays intact. DESIGN.md treats the wrapper as a trusted canonical dependency and rules out mutable configuration, so this is probably accepted design. The impact is limited to time-bounded locking.\ndescription: Because the wrapper is immutable and never checked, a deprecation on Chainlink's side puts every live and future raffle into a \"lock, then refund\" mode that only redeploying the factory can fix.",
+      "raw_id": "R26"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "enableRefunds",
+      "bug_class": "griefing-cancel-block",
+      "group_key": "Raffle | enableRefunds | griefing-cancel-block",
+      "lens": 8,
+      "file": "lens-8-output.md",
+      "line_start": 36,
+      "line_end": 39,
+      "fields": {
+        "smell": "The sponsor can only cancel immediately while totalEntries == 0 (Raffle.sol:280-284), and any address can remove that option for 1 USDC. Path: (1) the sponsor creates a raffle with endTime = now + 30 days and reserveEntries = 500; (2) griefer G calls buyEntries(G, 1) and pays 1 USDC (Raffle.sol:209-237); (3) the sponsor's enableRefunds now reverts until drawRequestDeadline = endTime + 2 days (Raffle.sol:286-287); (4) the sponsor either pays the VRF fee to draw (CashWon: G gets 0.8 USDC, the sponsor gets 0.15 USDC and the NFT back through releaseSponsorPrize) or waits 32 days for refunds (G gets the 1 USDC back). G's cost: gas plus 1 USDC, fully recovered if refunds happen (0.2 USDC net if the sponsor draws). The sponsor's NFT stays locked for up to 32 days instead of being withdrawable at once.",
+        "unverified": "It is unclear whether \"closes an empty raffle immediately for the sponsor\" (IRaffle.sol:323) was meant to give the sponsor a cancel right that survives a 1-USDC entry. The griefing purchase looks exactly like a real one, and the sponsor committed to endTime when creating the raffle, so this is probably accepted design. The lock is time-bounded and no principal is lost.",
+        "description": "One 1-USDC entry locks the sponsor's NFT into the full sale window plus the 2-day request window, with no way back out."
+      },
+      "block": "LEAD | contract: Raffle | function: enableRefunds | bug_class: griefing-cancel-block | group_key: Raffle | enableRefunds | griefing-cancel-block\nsmell: The sponsor can only cancel immediately while totalEntries == 0 (Raffle.sol:280-284), and any address can remove that option for 1 USDC. Path: (1) the sponsor creates a raffle with endTime = now + 30 days and reserveEntries = 500; (2) griefer G calls buyEntries(G, 1) and pays 1 USDC (Raffle.sol:209-237); (3) the sponsor's enableRefunds now reverts until drawRequestDeadline = endTime + 2 days (Raffle.sol:286-287); (4) the sponsor either pays the VRF fee to draw (CashWon: G gets 0.8 USDC, the sponsor gets 0.15 USDC and the NFT back through releaseSponsorPrize) or waits 32 days for refunds (G gets the 1 USDC back). G's cost: gas plus 1 USDC, fully recovered if refunds happen (0.2 USDC net if the sponsor draws). The sponsor's NFT stays locked for up to 32 days instead of being withdrawable at once.\nunverified: It is unclear whether \"closes an empty raffle immediately for the sponsor\" (IRaffle.sol:323) was meant to give the sponsor a cancel right that survives a 1-USDC entry. The griefing purchase looks exactly like a real one, and the sponsor committed to endTime when creating the raffle, so this is probably accepted design. The lock is time-bounded and no principal is lost.\ndescription: One 1-USDC entry locks the sponsor's NFT into the full sale window plus the 2-day request window, with no way back out.",
+      "raw_id": "R27"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "buyEntries",
+      "bug_class": "reserve-self-dealing",
+      "group_key": "Raffle | buyEntries | reserve-self-dealing",
+      "lens": 8,
+      "file": "lens-8-output.md",
+      "line_start": 43,
+      "line_end": 46,
+      "fields": {
+        "smell": "(Outside the DoS lens; passed on to the economic/cross-cohort lens.) Only totalEntries >= reserveEntries decides the outcome (Raffle.sol:521), and nothing excludes entries the sponsor paid for. NftWon pays grossPot - fee back to the sponsor (Raffle.sol:544). So buying whatever is missing from the reserve costs the sponsor only the 5% fee on those entries, and lets it flip a raffle that missed its reserve after seeing demand. Path: reserve 10,000; organic buyers hold 2,000 entries (2,000 USDC) one block before endTime. The honest outcome would be CashWon: winner 1,600, sponsor 300 + NFT, treasury 100. Instead the sponsor buys 8,000 entries from a fresh address. The callback gives NftWon; settlement pays the sponsor 9,500 (net +1,500 on an 8,000 outlay), and the sponsor's address holds 80% of entries for its own NFT. With an NFT value V = 3,000 USDC, organic buyers' expected value falls from 1,600 to 600 (-1,000), the sponsor's rises from 3,300 to 3,900 (+600), and the treasury's from 100 to 500 (+400). These sum to zero.",
+        "unverified": "This is not a DoS issue. It is unclear whether DESIGN.md means the reserve to protect only the sponsor, in which case a sponsor buying in is the same as having set a lower reserve. Addresses the sponsor controls cannot be identified on-chain, so any fix is at the design level.",
+        "description": "Buyers rely on the 80% cash payout when the reserve is missed, but the sponsor can cancel it at 5% cost by buying in at the last moment, after seeing demand."
+      },
+      "block": "LEAD | contract: Raffle | function: buyEntries | bug_class: reserve-self-dealing | group_key: Raffle | buyEntries | reserve-self-dealing\nsmell: (Outside the DoS lens; passed on to the economic/cross-cohort lens.) Only totalEntries >= reserveEntries decides the outcome (Raffle.sol:521), and nothing excludes entries the sponsor paid for. NftWon pays grossPot - fee back to the sponsor (Raffle.sol:544). So buying whatever is missing from the reserve costs the sponsor only the 5% fee on those entries, and lets it flip a raffle that missed its reserve after seeing demand. Path: reserve 10,000; organic buyers hold 2,000 entries (2,000 USDC) one block before endTime. The honest outcome would be CashWon: winner 1,600, sponsor 300 + NFT, treasury 100. Instead the sponsor buys 8,000 entries from a fresh address. The callback gives NftWon; settlement pays the sponsor 9,500 (net +1,500 on an 8,000 outlay), and the sponsor's address holds 80% of entries for its own NFT. With an NFT value V = 3,000 USDC, organic buyers' expected value falls from 1,600 to 600 (-1,000), the sponsor's rises from 3,300 to 3,900 (+600), and the treasury's from 100 to 500 (+400). These sum to zero.\nunverified: This is not a DoS issue. It is unclear whether DESIGN.md means the reserve to protect only the sponsor, in which case a sponsor buying in is the same as having set a lower reserve. Addresses the sponsor controls cannot be identified on-chain, so any fix is at the design level.\ndescription: Buyers rely on the 80% cash payout when the reserve is missed, but the sponsor can cancel it at 5% cost by buying in at the last moment, after seeing demand.",
+      "raw_id": "R28"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "_update",
+      "bug_class": "vrf-input-after-request",
+      "group_key": "Raffle | _update | vrf-input-after-request",
+      "lens": 8,
+      "file": "lens-8-output.md",
+      "line_start": 50,
+      "line_end": 53,
+      "fields": {
+        "smell": "(Outside the DoS lens; passed on.) Tickets stay transferable while status == Drawing. Raffle.sol:497-502 only screens destinations, and Raffle.sol:491 says tickets are transferable \"in every lifecycle state\". So the input that decides who gets paid, ticket ownership, can change after the VRF request. The calldata of the coordinator's fulfillment fixes randomWords[0]. Anyone watching the mempool can therefore compute winningEntry = randomWords[0] % totalEntries + 1 (Raffle.sol:518) and the ticket that contains it before the callback lands. They can then trade ahead of it: buy the winning ticket from an open listing, or sell known losing tickets into open collection offers. Path: a CashWon raffle with 1,000 entries and a 1,000 USDC pot. Holder H has an open listing for ticket #7 (entries 101-110) at 9 USDC. The fulfillment transaction is pending, and its random word maps to entry 105. A bot fills H's listing at 9 USDC before the callback, then calls redeemWinningTicket(7) after resolution and receives 800 USDC (Raffle.sol:339-342). H gives up about 791 USDC of value.",
+        "unverified": "I could not confirm offline whether Ethereum-mainnet VRF fulfillments go through the public mempool. Even if they do not, a back-run right after resolution sniping a stale listing causes the same loss to the seller. That makes the protocol's share of the blame small and mostly a question of listing hygiene. Chainlink advises against accepting inputs after a randomness request. The smallest change would be for _update to reject ticket transfers that are neither mints nor burns while status == Drawing, but that removes only the pre-resolution window.",
+        "description": "Because tickets remain transferable during Drawing, anyone who reads the pending fulfillment can trade against counterparties who cannot see it."
+      },
+      "block": "LEAD | contract: Raffle | function: _update | bug_class: vrf-input-after-request | group_key: Raffle | _update | vrf-input-after-request\nsmell: (Outside the DoS lens; passed on.) Tickets stay transferable while status == Drawing. Raffle.sol:497-502 only screens destinations, and Raffle.sol:491 says tickets are transferable \"in every lifecycle state\". So the input that decides who gets paid, ticket ownership, can change after the VRF request. The calldata of the coordinator's fulfillment fixes randomWords[0]. Anyone watching the mempool can therefore compute winningEntry = randomWords[0] % totalEntries + 1 (Raffle.sol:518) and the ticket that contains it before the callback lands. They can then trade ahead of it: buy the winning ticket from an open listing, or sell known losing tickets into open collection offers. Path: a CashWon raffle with 1,000 entries and a 1,000 USDC pot. Holder H has an open listing for ticket #7 (entries 101-110) at 9 USDC. The fulfillment transaction is pending, and its random word maps to entry 105. A bot fills H's listing at 9 USDC before the callback, then calls redeemWinningTicket(7) after resolution and receives 800 USDC (Raffle.sol:339-342). H gives up about 791 USDC of value.\nunverified: I could not confirm offline whether Ethereum-mainnet VRF fulfillments go through the public mempool. Even if they do not, a back-run right after resolution sniping a stale listing causes the same loss to the seller. That makes the protocol's share of the blame small and mostly a question of listing hygiene. Chainlink advises against accepting inputs after a randomness request. The smallest change would be for _update to reject ticket transfers that are neither mints nor burns while status == Drawing, but that removes only the pre-resolution window.\ndescription: Because tickets remain transferable during Drawing, anyone who reads the pending fulfillment can trade against counterparties who cannot see it.",
+      "raw_id": "R29"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "releaseSponsorProceeds",
+      "bug_class": "untrusted-prize-delivery-decoupled",
+      "group_key": "Raffle | releaseSponsorProceeds | untrusted-prize-delivery-decoupled",
+      "lens": 9,
+      "file": "lens-9-output.md",
+      "line_start": 14,
+      "line_end": 17,
+      "fields": {
+        "smell": "In NftWon, _settleWinningTicket allocates 95% of the pot to sponsorProceeds (Raffle.sol:543-544, :554). releaseSponsorProceeds (Raffle.sol:375-382) pays it out with no dependency on the NFT leg. prizeClaimed is set only at :331, immediately before the delivery at :334-336. Whether the prize was escrowed and delivered is checked only by asking the prize contract itself: ownerOf at F:129 and Raffle.sol:335. Activation also trusts the operator/from arguments that this same contract passes to onERC721Received (Raffle.sol:422-428). DESIGN.md says \"arbitrary prize contracts ... are untrusted\". I:14-15 instead assumes \"honest, standards-compliant ERC-721s\".",
+        "unverified": "Concrete only for a sponsor-controlled prize contract: (1) sponsor deploys a pausable ERC-721 and creates a raffle with reserve 10,000; (2) buyers buy 10,000 entries (10,000 USDC); (3) VRF resolves NftWon, anyone settles, releaseSponsorProceeds pays 9,500 USDC to sponsorRecipient and the treasury takes 500; (4) the sponsor pauses transfers, so redeemWinningTicket reverts at :334 forever. The winner, and every buyer whose USDC formed the pot, hold the loss. I could not show an honest-sponsor case where delivery fails permanently after payout: a third-party admin pause or ERC721C validator change can, and ENS expiry is recoverable by renewal during grace. DESIGN.md also says \"Sponsor and treasury can claim independently after settlement\", so gating sponsor proceeds on prizeClaimed would contradict the spec. No on-chain check can defend against a prize contract that lies in ownerOf.",
+        "description": "The spec cannot both treat prize contracts as untrusted and release the sponsor's 95% independently of NFT delivery. The money map's cross-asset coupling is a real trust gap, bounded only by buyers vetting the prize contract."
+      },
+      "block": "LEAD | contract: Raffle | function: releaseSponsorProceeds | bug_class: untrusted-prize-delivery-decoupled | group_key: Raffle | releaseSponsorProceeds | untrusted-prize-delivery-decoupled\nsmell: In NftWon, _settleWinningTicket allocates 95% of the pot to sponsorProceeds (Raffle.sol:543-544, :554). releaseSponsorProceeds (Raffle.sol:375-382) pays it out with no dependency on the NFT leg. prizeClaimed is set only at :331, immediately before the delivery at :334-336. Whether the prize was escrowed and delivered is checked only by asking the prize contract itself: ownerOf at F:129 and Raffle.sol:335. Activation also trusts the operator/from arguments that this same contract passes to onERC721Received (Raffle.sol:422-428). DESIGN.md says \"arbitrary prize contracts ... are untrusted\". I:14-15 instead assumes \"honest, standards-compliant ERC-721s\".\nunverified: Concrete only for a sponsor-controlled prize contract: (1) sponsor deploys a pausable ERC-721 and creates a raffle with reserve 10,000; (2) buyers buy 10,000 entries (10,000 USDC); (3) VRF resolves NftWon, anyone settles, releaseSponsorProceeds pays 9,500 USDC to sponsorRecipient and the treasury takes 500; (4) the sponsor pauses transfers, so redeemWinningTicket reverts at :334 forever. The winner, and every buyer whose USDC formed the pot, hold the loss. I could not show an honest-sponsor case where delivery fails permanently after payout: a third-party admin pause or ERC721C validator change can, and ENS expiry is recoverable by renewal during grace. DESIGN.md also says \"Sponsor and treasury can claim independently after settlement\", so gating sponsor proceeds on prizeClaimed would contradict the spec. No on-chain check can defend against a prize contract that lies in ownerOf.\ndescription: The spec cannot both treat prize contracts as untrusted and release the sponsor's 95% independently of NFT delivery. The money map's cross-asset coupling is a real trust gap, bounded only by buyers vetting the prize contract.",
+      "raw_id": "R30"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "_update",
+      "bug_class": "transfer-during-pending-randomness",
+      "group_key": "Raffle | _update | transfer-during-pending-randomness",
+      "lens": 9,
+      "file": "lens-9-output.md",
+      "line_start": 21,
+      "line_end": 24,
+      "fields": {
+        "smell": "_update (Raffle.sol:497-502) gates ticket transfers only on protocol destinations, never on status, so tickets keep trading while status == Drawing. The VRF v2.5 fulfillment transaction carries the proof in its calldata. Anyone who simulates it before inclusion can compute winningEntry = word % totalEntries + 1 (Raffle.sol:518), find the winning ticket via ticketRange, and act first: fill a standing marketplace sell order for the winning ticket at its pre-draw price, or dump a losing ticket into a standing bid. The victim is the holder with the open sell order or the bidder.",
+        "unverified": "Needs an off-chain standing order that stays open through the roughly 30-confirmation callback window. Judges may treat this as ordinary MEV on user-chosen orders. The NatSpec (Raffle.sol:491, I:12-13) explicitly keeps tickets transferable \"in every lifecycle state\". Blocking transfers only during Drawing would also not protect listings left open after resolution.",
+        "description": "Chainlink's guidance is to stop accepting user inputs once randomness is requested. Here ownership of the claim stays tradeable while the result sits in the mempool, so watchers can extract value from holders with open orders."
+      },
+      "block": "LEAD | contract: Raffle | function: _update | bug_class: transfer-during-pending-randomness | group_key: Raffle | _update | transfer-during-pending-randomness\nsmell: _update (Raffle.sol:497-502) gates ticket transfers only on protocol destinations, never on status, so tickets keep trading while status == Drawing. The VRF v2.5 fulfillment transaction carries the proof in its calldata. Anyone who simulates it before inclusion can compute winningEntry = word % totalEntries + 1 (Raffle.sol:518), find the winning ticket via ticketRange, and act first: fill a standing marketplace sell order for the winning ticket at its pre-draw price, or dump a losing ticket into a standing bid. The victim is the holder with the open sell order or the bidder.\nunverified: Needs an off-chain standing order that stays open through the roughly 30-confirmation callback window. Judges may treat this as ordinary MEV on user-chosen orders. The NatSpec (Raffle.sol:491, I:12-13) explicitly keeps tickets transferable \"in every lifecycle state\". Blocking transfers only during Drawing would also not protect listings left open after resolution.\ndescription: Chainlink's guidance is to stop accepting user inputs once randomness is requested. Here ownership of the claim stays tradeable while the result sits in the mempool, so watchers can extract value from holders with open orders.",
+      "raw_id": "R31"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "buyEntries",
+      "bug_class": "sponsor-self-dealing-reserve",
+      "group_key": "Raffle | buyEntries | sponsor-self-dealing-reserve",
+      "lens": 9,
+      "file": "lens-9-output.md",
+      "line_start": 28,
+      "line_end": 31,
+      "fields": {
+        "smell": "buyEntries (Raffle.sol:209-237) places no restriction on the sponsor or sponsorRecipient. The outcome is decided by totalEntries >= reserveEntries (Raffle.sol:521) over gross entries, including the sponsor's own. NftWon pays 95% of the gross pot to sponsorRecipient (Raffle.sol:543-544). So the sponsor can cross its own reserve at a net cost of 5% of the shortfall and flip a CashWon (80% cash to a buyer) into an NftWon (95% to itself).",
+        "unverified": "Unclear whether this counts as a defect or as an accepted property of the reserve design. Sybil addresses make a msg.sender != sponsor check useless, so there is no minimal on-chain fix. Numbers: reserve 1,000; buyers hold 900 entries (900 USDC); NFT worth 300 USDC. Honest CashWon: winner 720, sponsor 135 + NFT, treasury 45. If the sponsor buys 100 entries just before endTime, the result is NftWon: sponsor receives 950 (net +850 after paying 100, plus a 10% chance at its own NFT); buyers' expected value falls from 720 to 0.9 x 300 = 270 (-450); sponsor gains about +445; treasury gains +5.",
+        "description": "The reserve is meant to measure third-party demand, but the payee can satisfy it, letting the privileged sponsor turn buyers' cash-lottery expectation into its own proceeds."
+      },
+      "block": "LEAD | contract: Raffle | function: buyEntries | bug_class: sponsor-self-dealing-reserve | group_key: Raffle | buyEntries | sponsor-self-dealing-reserve\nsmell: buyEntries (Raffle.sol:209-237) places no restriction on the sponsor or sponsorRecipient. The outcome is decided by totalEntries >= reserveEntries (Raffle.sol:521) over gross entries, including the sponsor's own. NftWon pays 95% of the gross pot to sponsorRecipient (Raffle.sol:543-544). So the sponsor can cross its own reserve at a net cost of 5% of the shortfall and flip a CashWon (80% cash to a buyer) into an NftWon (95% to itself).\nunverified: Unclear whether this counts as a defect or as an accepted property of the reserve design. Sybil addresses make a msg.sender != sponsor check useless, so there is no minimal on-chain fix. Numbers: reserve 1,000; buyers hold 900 entries (900 USDC); NFT worth 300 USDC. Honest CashWon: winner 720, sponsor 135 + NFT, treasury 45. If the sponsor buys 100 entries just before endTime, the result is NftWon: sponsor receives 950 (net +850 after paying 100, plus a 10% chance at its own NFT); buyers' expected value falls from 720 to 0.9 x 300 = 270 (-450); sponsor gains about +445; treasury gains +5.\ndescription: The reserve is meant to measure third-party demand, but the payee can satisfy it, letting the privileged sponsor turn buyers' cash-lottery expectation into its own proceeds.",
+      "raw_id": "R32"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "releaseSponsorPrize",
+      "bug_class": "missing-payout-time-destination-screen",
+      "group_key": "Raffle | releaseSponsorPrize | missing-payout-time-destination-screen",
+      "lens": 9,
+      "file": "lens-9-output.md",
+      "line_start": 35,
+      "line_end": 38,
+      "fields": {
+        "smell": "USDC payouts re-screen the recipient at payout time through _transferQuote (Raffle.sol:564-567). The two NFT payouts, releaseSponsorPrize (Raffle.sol:404) and redeemWinningTicket NftWon (Raffle.sol:334), do not. Two earlier screens both accept a not-yet-deployed CREATE address of the factory's next clone as sponsorRecipient: the init-time screen (Raffle.sol:193 via _isProtocolDestination, which skips the registry for code-less addresses at :602) and the factory screen (F:166, isRaffle mapping). Once a clone is created at that address, anyone can call releaseSponsorPrize and push the prize into another raffle clone. That breaks DESIGN.md \"Never move assets between raffle clones\", and the NFT cannot be recovered there (no rescue path, Raffle.sol:410-411). releaseSponsorProceeds meanwhile reverts with InvalidQuoteDestination forever.",
+        "unverified": "No third-party victim: only the sponsor chooses sponsorRecipient, so the loss is self-inflicted, and the receiving clone's own accounting is unaffected. The ticket-side sibling (_update, Raffle.sol:498, same code-less gap) is also self-harm only.",
+        "description": "The destination screen is applied unevenly across asset types and can be bypassed with counterfactual clone addresses, so the spec invariant is enforced for USDC but not for the prize NFT."
+      },
+      "block": "LEAD | contract: Raffle | function: releaseSponsorPrize | bug_class: missing-payout-time-destination-screen | group_key: Raffle | releaseSponsorPrize | missing-payout-time-destination-screen\nsmell: USDC payouts re-screen the recipient at payout time through _transferQuote (Raffle.sol:564-567). The two NFT payouts, releaseSponsorPrize (Raffle.sol:404) and redeemWinningTicket NftWon (Raffle.sol:334), do not. Two earlier screens both accept a not-yet-deployed CREATE address of the factory's next clone as sponsorRecipient: the init-time screen (Raffle.sol:193 via _isProtocolDestination, which skips the registry for code-less addresses at :602) and the factory screen (F:166, isRaffle mapping). Once a clone is created at that address, anyone can call releaseSponsorPrize and push the prize into another raffle clone. That breaks DESIGN.md \"Never move assets between raffle clones\", and the NFT cannot be recovered there (no rescue path, Raffle.sol:410-411). releaseSponsorProceeds meanwhile reverts with InvalidQuoteDestination forever.\nunverified: No third-party victim: only the sponsor chooses sponsorRecipient, so the loss is self-inflicted, and the receiving clone's own accounting is unaffected. The ticket-side sibling (_update, Raffle.sol:498, same code-less gap) is also self-harm only.\ndescription: The destination screen is applied unevenly across asset types and can be bypassed with counterfactual clone addresses, so the spec invariant is enforced for USDC but not for the prize NFT.",
+      "raw_id": "R33"
+    },
+    {
+      "kind": "FINDING",
+      "contract": "Raffle",
+      "function": "releaseSponsorProceeds",
+      "bug_class": "admin-gated-prize-transfer",
+      "group_key": "Raffle | releaseSponsorProceeds | admin-gated-prize-transfer",
+      "lens": 10,
+      "file": "lens-10-output.md",
+      "line_start": 9,
+      "line_end": 24,
+      "fields": {
+        "root_cause": "Raffle.sol:376. `releaseSponsorProceeds` pays out `sponsorProceeds` with no check on `status` or `prizeClaimed`. In `NftWon`, `_settleWinningTicket` allocates 95% to the sponsor and 5% to the treasury (Raffle.sol:543-544, 554-555) through permissionless, storage-only settlement. Neither step depends on the NFT leg in `redeemWinningTicket` (Raffle.sol:329-337) ever succeeding. `NftWon` also has no fallback for the winner: `enableRefunds` only accepts Active or Drawing (Raffle.sol:279-293), `releaseSponsorPrize` excludes NftWon (Raffle.sol:397), and `winnerProceeds` stays 0. The code assumes the escrowed ERC-721 can still be transferred out of the clone when the winner redeems. Real ERC-721s let an admin revoke that after deposit: OpenZeppelin `ERC721Pausable` (`_update` is `whenNotPaused` and reverts `EnforcedPause()`), Manifold Creator Core's admin-set transfer-approval hook (`setApproveTransfer`), Limit Break ERC721-C transfer validators (creator-set soulbound or OTC-blocking policies, account freezing), and upgradeable ERC-721 proxies. DESIGN.md says \"arbitrary prize contracts ... are untrusted\", but IRaffle.sol:14-15 assumes \"honest\" prizes. The code follows the weaker of the two.",
+        "internal_pre": "The reserve is met, so the result is `NftWon`. No other state is needed.",
+        "external_pre": "The prize collection has an owner-controlled transfer gate (pause, approve-transfer hook, validator policy or freeze, or proxy upgrade), and the sponsor controls it or colludes with whoever does. The common case qualifies: an artist raffling a token from their own Manifold or OpenZeppelin collection.",
+        "path": "",
+        "impact": "The buyer cohort paid 20,000 USDC. S takes 19,000 USDC and the treasury 1,000 USDC, and the NFT is never delivered. Winner W is left holding the loss: the claim on C#7 can never be redeemed and there is no cash or refund substitute. This defeats the protocol's trust-minimising guarantee (\"Exactly one ERC721 prize is escrowed atomically at creation\") while fully protecting the sponsor's 95%. S's cost is a token S controls anyway.",
+        "mitigation": "In `releaseSponsorProceeds` (Raffle.sol:375-376), add `if (status == Status.NftWon && !prizeClaimed) revert` so NftWon sponsor proceeds unlock only after `redeemWinningTicket` has delivered and verified the prize. Optionally apply the same gate to `releaseProtocolFees`. This narrows DESIGN.md's \"claim independently after settlement\" for the NftWon branch only. That is the branch where the sponsor can control the opposite leg, and the gate removes the sponsor's profit from blocking the prize."
+      },
+      "block": "FINDING | contract: Raffle | function: releaseSponsorProceeds | bug_class: admin-gated-prize-transfer | group_key: Raffle | releaseSponsorProceeds | admin-gated-prize-transfer\nroot_cause: Raffle.sol:376. `releaseSponsorProceeds` pays out `sponsorProceeds` with no check on `status` or `prizeClaimed`. In `NftWon`, `_settleWinningTicket` allocates 95% to the sponsor and 5% to the treasury (Raffle.sol:543-544, 554-555) through permissionless, storage-only settlement. Neither step depends on the NFT leg in `redeemWinningTicket` (Raffle.sol:329-337) ever succeeding. `NftWon` also has no fallback for the winner: `enableRefunds` only accepts Active or Drawing (Raffle.sol:279-293), `releaseSponsorPrize` excludes NftWon (Raffle.sol:397), and `winnerProceeds` stays 0. The code assumes the escrowed ERC-721 can still be transferred out of the clone when the winner redeems. Real ERC-721s let an admin revoke that after deposit: OpenZeppelin `ERC721Pausable` (`_update` is `whenNotPaused` and reverts `EnforcedPause()`), Manifold Creator Core's admin-set transfer-approval hook (`setApproveTransfer`), Limit Break ERC721-C transfer validators (creator-set soulbound or OTC-blocking policies, account freezing), and upgradeable ERC-721 proxies. DESIGN.md says \"arbitrary prize contracts ... are untrusted\", but IRaffle.sol:14-15 assumes \"honest\" prizes. The code follows the weaker of the two.\ninternal_pre: The reserve is met, so the result is `NftWon`. No other state is needed.\nexternal_pre: The prize collection has an owner-controlled transfer gate (pause, approve-transfer hook, validator policy or freeze, or proxy upgrade), and the sponsor controls it or colludes with whoever does. The common case qualifies: an artist raffling a token from their own Manifold or OpenZeppelin collection.\npath:\n  1. Artist S owns collection C, an OZ v5 `ERC721` + `ERC721Pausable` + `Ownable` contract that reports `supportsInterface(0x80ac58cd) == true`. C is unpaused and S holds C#7.\n  2. S calls `RaffleFactory.createRaffle({sponsorRecipient: S, prizeToken: C, prizeTokenId: 7, reserveEntries: 1_000, endTime: now + 7 days})`. The escrow at F:128-134 succeeds and raffle R is Active, holding C#7.\n  3. Buyers purchase 20,000 entries. R now holds 20,000 USDC and `unsettledPot = 20_000e6`.\n  4. After `endTime`, S already knows the result will be `NftWon` (20,000 >= 1,000 is fixed before randomness), so S calls `C.pause()`. No draw or refund path touches C. With a per-address gate (a Manifold hook rejecting `from == R`, or an ERC721-C freeze of R), S's other collectors are not affected.\n  5. S calls `R.requestDraw{value: fee}()`. The VRF callback sets `status = NftWon` and `winningEntry = 13_337`, which falls in buyer W's ticket #412.\n  6. S calls `R.settleWinningTicket(412)`, which is permissionless and makes no NFT check. Result: `sponsorProceeds = 19_000e6`, `protocolFees = 1_000e6`.\n  7. S calls `R.releaseSponsorProceeds()` and receives 19,000 USDC. Anyone calls `releaseProtocolFees()` and the treasury receives 1,000 USDC.\n  8. W calls `R.redeemWinningTicket(412)`. `C.transferFrom(R, W, 7)` reverts `EnforcedPause()`, so the whole call reverts and the ticket is not burned. Every retry reverts for as long as C stays gated, and no other claim path exists in `NftWon`. Upgradeable variant: S upgrades C, pulls C#7 back out of R, and still keeps the 19,000 USDC.\nimpact: The buyer cohort paid 20,000 USDC. S takes 19,000 USDC and the treasury 1,000 USDC, and the NFT is never delivered. Winner W is left holding the loss: the claim on C#7 can never be redeemed and there is no cash or refund substitute. This defeats the protocol's trust-minimising guarantee (\"Exactly one ERC721 prize is escrowed atomically at creation\") while fully protecting the sponsor's 95%. S's cost is a token S controls anyway.\nmitigation: In `releaseSponsorProceeds` (Raffle.sol:375-376), add `if (status == Status.NftWon && !prizeClaimed) revert` so NftWon sponsor proceeds unlock only after `redeemWinningTicket` has delivered and verified the prize. Optionally apply the same gate to `releaseProtocolFees`. This narrows DESIGN.md's \"claim independently after settlement\" for the NftWon branch only. That is the branch where the sponsor can control the opposite leg, and the gate removes the sponsor's profit from blocking the prize.\n",
+      "raw_id": "R34"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "releaseProtocolFees",
+      "bug_class": "usdc-blacklist-immutable-recipient",
+      "group_key": "Raffle | releaseProtocolFees | usdc-blacklist-immutable-recipient",
+      "lens": 10,
+      "file": "lens-10-output.md",
+      "line_start": 27,
+      "line_end": 35,
+      "fields": {
+        "smell": "Two USDC claim legs pay out only to addresses that can never change, and neither has a redirect or claim-to path.",
+        "unverified": "No third-party victim. Only the blacklisted beneficiary loses, and only after an outside Circle action. I could not construct an attacker-induced path.",
+        "description": "Immutable USDC recipients with no redirect path turn a USDC blacklist into a permanent freeze of protocol fees (factory-wide) or sponsor proceeds (per raffle)."
+      },
+      "block": "LEAD | contract: Raffle | function: releaseProtocolFees | bug_class: usdc-blacklist-immutable-recipient | group_key: Raffle | releaseProtocolFees | usdc-blacklist-immutable-recipient\nsmell: Two USDC claim legs pay out only to addresses that can never change, and neither has a redirect or claim-to path.\n  - `releaseProtocolFees` pays `protocolTreasury` (Raffle.sol:385-390). That address comes from the factory immutable (F:39, passed in at F:114) and is the same for every raffle.\n  - `releaseSponsorProceeds` pays `sponsorRecipient` (Raffle.sol:375-380), which is set once at initialize.\n  Ethereum-mainnet USDC (Circle FiatToken v2.2) reverts `transfer` when `to` is blacklisted. So one Circle blacklisting of the treasury permanently freezes the 5% fee of every past and future raffle from this factory. A blacklisted `sponsorRecipient` permanently freezes that raffle's 95% or 15% proceeds. The returned-prize payout in `releaseSponsorPrize` (Raffle.sol:404) has the same shape for collections that blocklist recipients.\n  Ticket-holder legs are safe (Raffle.sol:342, 369): they pay the current bearer, who can move the ticket to a clean address first.\nunverified: No third-party victim. Only the blacklisted beneficiary loses, and only after an outside Circle action. I could not construct an attacker-induced path.\ndescription: Immutable USDC recipients with no redirect path turn a USDC blacklist into a permanent freeze of protocol fees (factory-wide) or sponsor proceeds (per raffle).\n",
+      "raw_id": "R35"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "requestDraw",
+      "bug_class": "immutable-vrf-wrapper-dependency",
+      "group_key": "Raffle | requestDraw | immutable-vrf-wrapper-dependency",
+      "lens": 10,
+      "file": "lens-10-output.md",
+      "line_start": 38,
+      "line_end": 46,
+      "fields": {
+        "smell": "The Chainlink wrapper can never be changed, each raffle gets one request attempt, and there is no admin.",
+        "unverified": "Whether Chainlink will retire v2.5, or move the mainnet wrapper to a new coordinator, while a raffle is live. The impact is liveness (sponsor sales never complete, the protocol earns no fees) plus the draw requester's fee. Principal is safe: refunds and prize return still work.",
+        "description": "The whole factory hard-depends on one Chainlink wrapper with no migration path, so a Chainlink-side sunset turns every raffle into a refund."
+      },
+      "block": "LEAD | contract: Raffle | function: requestDraw | bug_class: immutable-vrf-wrapper-dependency | group_key: Raffle | requestDraw | immutable-vrf-wrapper-dependency\nsmell: The Chainlink wrapper can never be changed, each raffle gets one request attempt, and there is no admin.\n  - The wrapper address is fixed at F:36 and in the immutable `i_vrfV2PlusWrapper` (VRFV2PlusWrapperConsumerBase.sol:35), set at Raffle.sol:157 and shared by every clone.\n  - Chainlink's VRFV2PlusWrapper owner can call `disable()`, after which its price and request functions revert. Chainlink has retired whole VRF versions before: v1 and v2 were sunset in favor of v2.5.\n  - Once the wrapper stops serving, `getVrfRequestPrice()` (Raffle.sol:436-438) and therefore `requestDraw` (Raffle.sol:249) revert for every raffle from this factory. Every sold raffle then ends in `Refunding` after `endTime + 2 days`.\n  - If the wrapper's coordinator is re-pointed while a request is pending, the callback is never delivered. The requester's native fee (Raffle.sol:257) is lost before refunds open (Raffle.sol:289-291).\nunverified: Whether Chainlink will retire v2.5, or move the mainnet wrapper to a new coordinator, while a raffle is live. The impact is liveness (sponsor sales never complete, the protocol earns no fees) plus the draw requester's fee. Principal is safe: refunds and prize return still work.\ndescription: The whole factory hard-depends on one Chainlink wrapper with no migration path, so a Chainlink-side sunset turns every raffle into a refund.\n",
+      "raw_id": "R36"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "releaseSponsorProceeds",
+      "bug_class": "terminal-state-no-fallback",
+      "group_key": "Raffle | releaseSponsorProceeds | terminal-state-no-fallback",
+      "lens": 11,
+      "file": "lens-11-output.md",
+      "line_start": 20,
+      "line_end": 28,
+      "fields": {
+        "smell": "In NftWon, `_settleWinningTicket` books 95% of the pot as `sponsorProceeds` (Raffle.sol:544, :554). `releaseSponsorProceeds` (Raffle.sol:375-381) pays it with no dependency on `prizeClaimed` or `winnerRedeemed`. The winner's only exit is `prizeToken.transferFrom(address(this), winner, prizeTokenId)` (Raffle.sol:334). NftWon is an absorbing state: `enableRefunds` reverts outside Active/Drawing (Raffle.sol:292-293), and `releaseSponsorPrize` excludes NftWon (Raffle.sol:397-398). If the prize becomes non-transferable out of the raffle after resolution, there is no cash or refund fallback. Concrete sequence:",
+        "unverified": "It is unclear whether such a prize is in scope. DESIGN.md says \"arbitrary prize contracts ... are untrusted\", but IRaffle.sol:14-15 limits support to \"honest, standards-compliant ERC-721s\". DESIGN.md also asks that sponsor and treasury \"claim independently after settlement\", which this behaviour satisfies. The third-party collection behaviours above (pause, transfer-validator levels, ENS expiry and grace) are not vendored in this workspace and were not verified from source.",
+        "description": "The NftWon terminal state releases the sponsor's 95% independently of an NFT leg that an untrusted or admin-controlled prize can freeze, and offers no path back to refunds. If this is in scope, the minimal fix is to gate NftWon `releaseSponsorProceeds` on `prizeClaimed == true`, plus a long winner-inactivity timeout so an absent winner cannot lock the sponsor forever."
+      },
+      "block": "LEAD | contract: Raffle | function: releaseSponsorProceeds | bug_class: terminal-state-no-fallback | group_key: Raffle | releaseSponsorProceeds | terminal-state-no-fallback\nsmell: In NftWon, `_settleWinningTicket` books 95% of the pot as `sponsorProceeds` (Raffle.sol:544, :554). `releaseSponsorProceeds` (Raffle.sol:375-381) pays it with no dependency on `prizeClaimed` or `winnerRedeemed`. The winner's only exit is `prizeToken.transferFrom(address(this), winner, prizeTokenId)` (Raffle.sol:334). NftWon is an absorbing state: `enableRefunds` reverts outside Active/Drawing (Raffle.sol:292-293), and `releaseSponsorPrize` excludes NftWon (Raffle.sol:397-398). If the prize becomes non-transferable out of the raffle after resolution, there is no cash or refund fallback. Concrete sequence:\n  1. reserveEntries = 1,000. Buyers buy 2,000 entries (2,000 USDC). The VRF resolves NftWon and the winning entry is in Bob's ticket.\n  2. The prize becomes undeliverable from the raffle. Examples: the admin pauses an ERC721Pausable collection; a transfer-validator policy change blocks contract-initiated owner transfers; an expiring registration such as an ENS .eth name passes its grace period.\n  3. Anyone calls settleWinningTicket. sponsorRecipient calls releaseSponsorProceeds and receives 1,900 USDC. The treasury receives 100 USDC.\n  4. Every redeemWinningTicket call by Bob reverts at Raffle.sol:334. No state transition is left.\n  Who holds the loss: Bob, the winning-ticket holder, and ex ante every buyer whose USDC funded the 1,900. If the sponsor controls the collection's freeze switch, this is a rug.\nunverified: It is unclear whether such a prize is in scope. DESIGN.md says \"arbitrary prize contracts ... are untrusted\", but IRaffle.sol:14-15 limits support to \"honest, standards-compliant ERC-721s\". DESIGN.md also asks that sponsor and treasury \"claim independently after settlement\", which this behaviour satisfies. The third-party collection behaviours above (pause, transfer-validator levels, ENS expiry and grace) are not vendored in this workspace and were not verified from source.\ndescription: The NftWon terminal state releases the sponsor's 95% independently of an NFT leg that an untrusted or admin-controlled prize can freeze, and offers no path back to refunds. If this is in scope, the minimal fix is to gate NftWon `releaseSponsorProceeds` on `prizeClaimed == true`, plus a long winner-inactivity timeout so an absent winner cannot lock the sponsor forever.",
+      "raw_id": "R37"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "fulfillRandomWords",
+      "bug_class": "reserve-threshold-manipulation",
+      "group_key": "Raffle | fulfillRandomWords | reserve-threshold-manipulation",
+      "lens": 11,
+      "file": "lens-11-output.md",
+      "line_start": 32,
+      "line_end": 40,
+      "fields": {
+        "smell": "The outcome flips at `totalEntries >= reserveEntries` (Raffle.sol:521). Crossing the threshold moves the 80% cash leg owed to the winner (Raffle.sol:546-548) into the sponsor's 95% (Raffle.sol:544). `buyEntries` (Raffle.sol:209-237) does not restrict who buys. Because `sponsorProceeds` includes 95% of the sponsor's own purchases, the sponsor (or a Sybil wallet) can meet its own reserve for about 5% of the shortfall. Concrete sequence:",
+        "unverified": "Buyers would get the same outcome if an unrelated third party had bought the same 400 entries. So the \"loss\" is measured against a CashWon outcome that buyers were never guaranteed. Neither the design nor the NatSpec says whether the reserve is meant to protect buyers or is purely a sponsor option. No address-based check can stop Sybil self-purchase.",
+        "description": "The reserve threshold acts as a cheap sponsor option (cost about 5% of the shortfall) to turn a buyer-favourable CashWon into an NftWon sale of an overvalued NFT. This is a design-economics lead, not a code defect."
+      },
+      "block": "LEAD | contract: Raffle | function: fulfillRandomWords | bug_class: reserve-threshold-manipulation | group_key: Raffle | fulfillRandomWords | reserve-threshold-manipulation\nsmell: The outcome flips at `totalEntries >= reserveEntries` (Raffle.sol:521). Crossing the threshold moves the 80% cash leg owed to the winner (Raffle.sol:546-548) into the sponsor's 95% (Raffle.sol:544). `buyEntries` (Raffle.sol:209-237) does not restrict who buys. Because `sponsorProceeds` includes 95% of the sponsor's own purchases, the sponsor (or a Sybil wallet) can meet its own reserve for about 5% of the shortfall. Concrete sequence:\n  1. reserveEntries = 1,000. Organic buyers hold 600 entries. The NFT's market value is 300 USDC.\n  2. With no intervention the result is CashWon. The winning buyer gets 480 USDC, sponsorRecipient gets 90 USDC plus the NFT, and the treasury gets 30 USDC.\n  3. Instead, the sponsor buys 400 entries at endTime - 1 for 400 USDC, giving NftWon.\n  4. After settlement, sponsorRecipient gets 950 USDC (net +550 after the 400 paid), the treasury gets 50 USDC, and a buyer wins the NFT with probability 0.6.\n  Effect on expected value: buyers fall from 480 to 180 (-300); the sponsor rises from 390 to 670 (+280). Here the sponsor gains whenever the NFT is worth less than about 767 USDC.\nunverified: Buyers would get the same outcome if an unrelated third party had bought the same 400 entries. So the \"loss\" is measured against a CashWon outcome that buyers were never guaranteed. Neither the design nor the NatSpec says whether the reserve is meant to protect buyers or is purely a sponsor option. No address-based check can stop Sybil self-purchase.\ndescription: The reserve threshold acts as a cheap sponsor option (cost about 5% of the shortfall) to turn a buyer-favourable CashWon into an NftWon sale of an overvalued NFT. This is a design-economics lead, not a code defect.",
+      "raw_id": "R38"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "RaffleFactory",
+      "function": "createRaffle",
+      "bug_class": "spoofable-escrow-verification",
+      "group_key": "RaffleFactory | createRaffle | spoofable-escrow-verification",
+      "lens": 11,
+      "file": "lens-11-output.md",
+      "line_start": 44,
+      "line_end": 51,
+      "fields": {
+        "smell": "Escrow at creation is \"verified\" only through the prize contract's own answers.",
+        "unverified": "This may add no risk beyond \"the prize is worthless\". A hostile contract at its own address is simply a worthless collection that buyers can inspect. Making a genuinely valuable collection behave this way would need a hostile upgrade or admin action, which the protocol cannot control. No on-chain check that only asks the prize contract can fix this.",
+        "description": "The escrow checks cannot enforce DESIGN.md's \"untrusted prize\" stance; they hold only for honest ERC-721s, which is what IRaffle.sol:14-15 assumes. The recommendation is to document the prize trust boundary for buyers, not to change code."
+      },
+      "block": "LEAD | contract: RaffleFactory | function: createRaffle | bug_class: spoofable-escrow-verification | group_key: RaffleFactory | createRaffle | spoofable-escrow-verification\nsmell: Escrow at creation is \"verified\" only through the prize contract's own answers.\n  - During `prize.safeTransferFrom` (RaffleFactory.sol:128), the prize contract is msg.sender. It can call `raffle.onERC721Received(factory, sponsor, prizeTokenId, \"\")` directly.\n  - The `operator` and `from` checks at Raffle.sol:421-423 compare arguments the caller supplies, so the call passes and sets `status = Active` (Raffle.sol:428) without any transfer.\n  - The same contract answers the `ownerOf` check at RaffleFactory.sol:129 and the post-delivery checks at Raffle.sol:335 and :405.\n  A hostile prize therefore produces a registered, Active raffle that looks escrowed but holds nothing. In NftWon the sponsor still collects 95% (Raffle.sol:544, :554).\nunverified: This may add no risk beyond \"the prize is worthless\". A hostile contract at its own address is simply a worthless collection that buyers can inspect. Making a genuinely valuable collection behave this way would need a hostile upgrade or admin action, which the protocol cannot control. No on-chain check that only asks the prize contract can fix this.\ndescription: The escrow checks cannot enforce DESIGN.md's \"untrusted prize\" stance; they hold only for honest ERC-721s, which is what IRaffle.sol:14-15 assumes. The recommendation is to document the prize trust boundary for buyers, not to change code.",
+      "raw_id": "R39"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "releaseSponsorPrize",
+      "bug_class": "payout-screen-inconsistency",
+      "group_key": "Raffle | releaseSponsorPrize | payout-screen-inconsistency",
+      "lens": 11,
+      "file": "lens-11-output.md",
+      "line_start": 55,
+      "line_end": 63,
+      "fields": {
+        "smell": "The two payout paths screen differently:",
+        "unverified": "No third-party victim was found. The sponsor always chooses `sponsorRecipient`, so the only loser is that sponsor, and the NFT that lands in the other clone affects none of that clone's accounting. This is recorded to complete the saturation sweep of the payout-screen pattern, not as a reportable bug.",
+        "description": "The gap between the code-gated `initialize` screen and the payout-time screen can only be reached by deliberate sponsor misconfiguration. Adding the same `_isProtocolDestination` check before Raffle.sol:404 would make the two payout paths consistent."
+      },
+      "block": "LEAD | contract: Raffle | function: releaseSponsorPrize | bug_class: payout-screen-inconsistency | group_key: Raffle | releaseSponsorPrize | payout-screen-inconsistency\nsmell: The two payout paths screen differently:\n  - USDC payouts re-check the destination at payout time (`_transferQuote`, Raffle.sol:565).\n  - The NFT return `prizeToken.transferFrom(address(this), sponsorRecipient, prizeTokenId)` (Raffle.sol:404) has no payout-time check.\n  `initialize` does screen `sponsorRecipient` (Raffle.sol:193-195), but the registry lookup only runs for addresses that have code (Raffle.sol:602-603). `Clones.clone` deploys with CREATE, so clone addresses are predictable. A `sponsorRecipient` set to a not-yet-deployed clone address passes initialisation. Once that clone exists:\n  - `releaseSponsorPrize` moves the NFT into another raffle clone, against DESIGN.md \"Never move assets between raffle clones\";\n  - `releaseSponsorProceeds` reverts forever (Raffle.sol:565).\nunverified: No third-party victim was found. The sponsor always chooses `sponsorRecipient`, so the only loser is that sponsor, and the NFT that lands in the other clone affects none of that clone's accounting. This is recorded to complete the saturation sweep of the payout-screen pattern, not as a reportable bug.\ndescription: The gap between the code-gated `initialize` screen and the payout-time screen can only be reached by deliberate sponsor misconfiguration. Adding the same `_isProtocolDestination` check before Raffle.sol:404 would make the two payout paths consistent.",
+      "raw_id": "R40"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "_settleWinningTicket",
+      "bug_class": "missing-fallback-undeliverable-prize",
+      "group_key": "Raffle | _settleWinningTicket | missing-fallback-undeliverable-prize",
+      "lens": 12,
+      "file": "lens-12-output.md",
+      "line_start": 26,
+      "line_end": 29,
+      "fields": {
+        "smell": "In the NftWon branch, Raffle.sol:544 (`sponsorAmount = grossPot - protocolFee`) and :554-555 make 95% of the pot payable to sponsorRecipient and 5% to the treasury. Neither depends on the NFT being delivered. `releaseSponsorProceeds` (:375-382) has no `prizeClaimed`/delivery gate. The only way the NFT leaves is `redeemWinningTicket` (:334-337). It reverts entirely if the prize contract refuses `transferFrom(raffle, ...)` or misreports `ownerOf`. No state converts an undeliverable NftWon prize into cash or refunds: NftWon can never reach Refunding, and `releaseSponsorPrize` is barred in NftWon (:397). The escrow proof at creation also comes from the same untrusted contract: the prize contract can call `onERC721Received` (:421-428) directly, and the factory trusts its `ownerOf` (F:128-132). Trail: (1) a sponsor that administers an upgradeable ERC-721 collection raffles token #1 with reserve 1,000; (2) buyers purchase 5,000 entries (5,000 USDC); (3) VRF resolves NftWon and anyone settles, giving sponsorProceeds = 4,750 USDC (4,750,000,000 raw) and protocolFees = 250 USDC; (4) the sponsor calls releaseSponsorProceeds and receives 4,750 USDC; (5) the sponsor upgrades the collection so any transfer whose `from` is the raffle reverts; (6) every `redeemWinningTicket` by the winning-ticket owner now reverts forever.",
+        "unverified": "Whether sponsor-controlled or admin-mutable prize contracts are in the threat model. DESIGN.md says \"arbitrary prize contracts ... are untrusted\", but IRaffle.sol:14-15 says \"Supported prizes are honest, standards-compliant ERC-721s\". DESIGN.md also says \"Sponsor and treasury can claim independently after settlement\", so the independence is deliberate. Any delivery gate must still handle a winner who never redeems, because there is no redemption deadline. A fully malicious prize can fake both escrow and delivery, so no on-chain change protects against it. The gap is concrete only for admin-mutable collections (upgradeable, pausable or blocklisting).",
+        "description": "The NftWon branch pays the sponsor and treasury for a prize whose delivery depends only on the untrusted prize contract, so a prize that becomes non-transferable after settlement leaves the winning-ticket owner, and the buyers who funded the pot, holding the entire loss."
+      },
+      "block": "LEAD | contract: Raffle | function: _settleWinningTicket | bug_class: missing-fallback-undeliverable-prize | group_key: Raffle | _settleWinningTicket | missing-fallback-undeliverable-prize\nsmell: In the NftWon branch, Raffle.sol:544 (`sponsorAmount = grossPot - protocolFee`) and :554-555 make 95% of the pot payable to sponsorRecipient and 5% to the treasury. Neither depends on the NFT being delivered. `releaseSponsorProceeds` (:375-382) has no `prizeClaimed`/delivery gate. The only way the NFT leaves is `redeemWinningTicket` (:334-337). It reverts entirely if the prize contract refuses `transferFrom(raffle, ...)` or misreports `ownerOf`. No state converts an undeliverable NftWon prize into cash or refunds: NftWon can never reach Refunding, and `releaseSponsorPrize` is barred in NftWon (:397). The escrow proof at creation also comes from the same untrusted contract: the prize contract can call `onERC721Received` (:421-428) directly, and the factory trusts its `ownerOf` (F:128-132). Trail: (1) a sponsor that administers an upgradeable ERC-721 collection raffles token #1 with reserve 1,000; (2) buyers purchase 5,000 entries (5,000 USDC); (3) VRF resolves NftWon and anyone settles, giving sponsorProceeds = 4,750 USDC (4,750,000,000 raw) and protocolFees = 250 USDC; (4) the sponsor calls releaseSponsorProceeds and receives 4,750 USDC; (5) the sponsor upgrades the collection so any transfer whose `from` is the raffle reverts; (6) every `redeemWinningTicket` by the winning-ticket owner now reverts forever.\nunverified: Whether sponsor-controlled or admin-mutable prize contracts are in the threat model. DESIGN.md says \"arbitrary prize contracts ... are untrusted\", but IRaffle.sol:14-15 says \"Supported prizes are honest, standards-compliant ERC-721s\". DESIGN.md also says \"Sponsor and treasury can claim independently after settlement\", so the independence is deliberate. Any delivery gate must still handle a winner who never redeems, because there is no redemption deadline. A fully malicious prize can fake both escrow and delivery, so no on-chain change protects against it. The gap is concrete only for admin-mutable collections (upgradeable, pausable or blocklisting).\ndescription: The NftWon branch pays the sponsor and treasury for a prize whose delivery depends only on the untrusted prize contract, so a prize that becomes non-transferable after settlement leaves the winning-ticket owner, and the buyers who funded the pot, holding the entire loss.",
+      "raw_id": "R41"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "_settleWinningTicket",
+      "bug_class": "sponsor-self-entry-rebate",
+      "group_key": "Raffle | _settleWinningTicket | sponsor-self-entry-rebate",
+      "lens": 12,
+      "file": "lens-12-output.md",
+      "line_start": 33,
+      "line_end": 36,
+      "fields": {
+        "smell": "In NftWon, `sponsorAmount = grossPot - protocolFee` (Raffle.sol:544) is computed on the gross pot. That pot includes entries the sponsor bought itself, from any address. So each sponsor-funded entry costs the sponsor 5% net, while every other entrant pays 100%. Because buyEntries (:209-237) stays open until endTime, the sponsor can watch demand and shill-enter in the last block, diluting buyers' odds and keeping its NFT. Numbers: the NFT is worth 10,000 USDC and the reserve is 2,000. Buyers purchase 2,000 entries (2,000 USDC). Just before endTime the sponsor buys 18,000 entries from a fresh address. NftWon with a pot of 20,000 gives sponsorProceeds 19,000 and fee 1,000. The sponsor ends +1,000 USDC net and keeps the NFT with probability 0.9. Buyers' expected value drops from 10,000 to 1,000 USDC (-9,000). The sponsor gains +8,100 and the treasury +900 (checked arithmetically). This is profitable whenever the NFT is worth more than 5% of the final pot. In CashWon a self-entry nets -5% (0.80 winner share + 0.15 sponsor share), so only NftWon is exposed.",
+        "unverified": "Whether sponsor participation is an accepted design risk. The money map says the sponsor \"may also buy entries\" and DESIGN.md is silent. Excluding addresses is defeated by Sybil addresses, so there is no one-line mitigation. This is an economic/game-theory issue at the edge of the flow-symmetry lens.",
+        "description": "The 95% sponsor share refunds the sponsor's own entries, so a sponsor can shill-enter at a 5% cost to win back its prize with high probability, and honest entrants hold the loss."
+      },
+      "block": "LEAD | contract: Raffle | function: _settleWinningTicket | bug_class: sponsor-self-entry-rebate | group_key: Raffle | _settleWinningTicket | sponsor-self-entry-rebate\nsmell: In NftWon, `sponsorAmount = grossPot - protocolFee` (Raffle.sol:544) is computed on the gross pot. That pot includes entries the sponsor bought itself, from any address. So each sponsor-funded entry costs the sponsor 5% net, while every other entrant pays 100%. Because buyEntries (:209-237) stays open until endTime, the sponsor can watch demand and shill-enter in the last block, diluting buyers' odds and keeping its NFT. Numbers: the NFT is worth 10,000 USDC and the reserve is 2,000. Buyers purchase 2,000 entries (2,000 USDC). Just before endTime the sponsor buys 18,000 entries from a fresh address. NftWon with a pot of 20,000 gives sponsorProceeds 19,000 and fee 1,000. The sponsor ends +1,000 USDC net and keeps the NFT with probability 0.9. Buyers' expected value drops from 10,000 to 1,000 USDC (-9,000). The sponsor gains +8,100 and the treasury +900 (checked arithmetically). This is profitable whenever the NFT is worth more than 5% of the final pot. In CashWon a self-entry nets -5% (0.80 winner share + 0.15 sponsor share), so only NftWon is exposed.\nunverified: Whether sponsor participation is an accepted design risk. The money map says the sponsor \"may also buy entries\" and DESIGN.md is silent. Excluding addresses is defeated by Sybil addresses, so there is no one-line mitigation. This is an economic/game-theory issue at the edge of the flow-symmetry lens.\ndescription: The 95% sponsor share refunds the sponsor's own entries, so a sponsor can shill-enter at a 5% cost to win back its prize with high probability, and honest entrants hold the loss.",
+      "raw_id": "R42"
+    },
+    {
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "releaseSponsorProceeds",
+      "bug_class": "immutable-recipient-no-reroute",
+      "group_key": "Raffle | releaseSponsorProceeds | immutable-recipient-no-reroute",
+      "lens": 12,
+      "file": "lens-12-output.md",
+      "line_start": 40,
+      "line_end": 43,
+      "fields": {
+        "smell": "`releaseSponsorProceeds` (Raffle.sol:375-382), `releaseProtocolFees` (:385-392) and `releaseSponsorPrize` (:402-405) can only pay the recipients fixed at initialize (:198-199); the treasury is also a factory immutable. Ticket-backed claims (`refundTickets`, `redeemWinningTicket`) have an escape: the holder can transfer the bearer ticket to a clean address. The sponsor and treasury claims have no such path. If USDC blacklists `sponsorRecipient` after settlement, or blacklists the factory-wide `protocolTreasury` at any time, `_transferQuote` -> `safeTransfer` (:564-567) reverts permanently. The allocated USDC is then locked in the clone forever, and for the treasury this hits every raffle from the factory.",
+        "unverified": "Whether recipient-level USDC blacklisting is in scope for a \"trusted canonical dependency\". The loss falls only on the sponsor or the protocol, never on buyers, so this is likely Low/Info.",
+        "description": "Sibling asymmetry: ticket claims can be re-routed by transferring the bearer ticket, but sponsor and treasury claims are pinned to immutable recipients with no fallback, so a USDC freeze on a recipient strands those funds permanently."
+      },
+      "block": "LEAD | contract: Raffle | function: releaseSponsorProceeds | bug_class: immutable-recipient-no-reroute | group_key: Raffle | releaseSponsorProceeds | immutable-recipient-no-reroute\nsmell: `releaseSponsorProceeds` (Raffle.sol:375-382), `releaseProtocolFees` (:385-392) and `releaseSponsorPrize` (:402-405) can only pay the recipients fixed at initialize (:198-199); the treasury is also a factory immutable. Ticket-backed claims (`refundTickets`, `redeemWinningTicket`) have an escape: the holder can transfer the bearer ticket to a clean address. The sponsor and treasury claims have no such path. If USDC blacklists `sponsorRecipient` after settlement, or blacklists the factory-wide `protocolTreasury` at any time, `_transferQuote` -> `safeTransfer` (:564-567) reverts permanently. The allocated USDC is then locked in the clone forever, and for the treasury this hits every raffle from the factory.\nunverified: Whether recipient-level USDC blacklisting is in scope for a \"trusted canonical dependency\". The loss falls only on the sponsor or the protocol, never on buyers, so this is likely Low/Info.\ndescription: Sibling asymmetry: ticket claims can be re-routed by transferring the bearer ticket, but sponsor and treasury claims are pinned to immutable recipients with no fallback, so a USDC freeze on a recipient strands those funds permanently.",
+      "raw_id": "R43"
+    }
+  ]
+}

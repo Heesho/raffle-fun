@@ -1,0 +1,60 @@
+{
+ "language": "Solidity",
+ "sources": {
+  "src/Raffle.sol": {
+   "urls": [
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/validation/snapshot/packages/contracts/src/Raffle.sol"
+   ]
+  },
+  "src/RaffleFactory.sol": {
+   "urls": [
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/validation/snapshot/packages/contracts/src/RaffleFactory.sol"
+   ]
+  }
+ },
+ "settings": {
+  "optimizer": {
+   "enabled": true,
+   "runs": 200
+  },
+  "evmVersion": "cancun",
+  "remappings": [
+   "@openzeppelin/contracts/=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/validation/snapshot/packages/contracts/node_modules/@openzeppelin/contracts/",
+   "@chainlink/contracts/=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/validation/snapshot/packages/contracts/node_modules/@chainlink/contracts/"
+  ],
+  "modelChecker": {
+   "engine": "chc",
+   "contracts": {
+    "src/Raffle.sol": [
+     "Raffle"
+    ],
+    "src/RaffleFactory.sol": [
+     "RaffleFactory"
+    ]
+   },
+   "targets": [
+    "underflow",
+    "overflow",
+    "divByZero",
+    "assert",
+    "constantCondition",
+    "outOfBounds",
+    "balance"
+   ],
+   "timeout": 120000,
+   "showUnproved": true,
+   "showUnsupported": true,
+   "invariants": [
+    "contract"
+   ],
+   "solvers": [
+    "z3"
+   ]
+  },
+  "outputSelection": {
+   "*": {
+    "": []
+   }
+  }
+ }
+}

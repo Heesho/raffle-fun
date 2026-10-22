@@ -1,0 +1,66 @@
+$ grep -nE "delegatecall|selfdestruct|Clones\.|clone\(|upgrade|Upgradeable|initializ|Proxy|ERC1967|UUPS|_disableInitializers" -r packages/contracts/src
+packages/contracts/src/RaffleFactory.sol:4:import { Clones } from "@openzeppelin/contracts/proxy/Clones.sol";
+packages/contracts/src/RaffleFactory.sol:19:///      factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.
+packages/contracts/src/RaffleFactory.sol:106:        raffle = Clones.clone(raffleImplementation);
+packages/contracts/src/RaffleFactory.sol:107:        // The fresh fixed-target clone can initialize only once; this function is nonReentrant and atomic.
+packages/contracts/src/RaffleFactory.sol:110:            .initialize(
+packages/contracts/src/interfaces/IRaffle.sol:22:        /// @notice The clone is initialized and waiting for the factory to escrow the configured prize.
+packages/contracts/src/interfaces/IRaffle.sol:184:    /// @notice Raised when a caller other than the immutable factory attempts clone initialization.
+packages/contracts/src/interfaces/IRaffle.sol:187:    /// @notice Raised when initialization is attempted more than once or on the locked implementation.
+packages/contracts/src/interfaces/IRaffle.sol:266:    /// @notice Raised when initialization or a ticket transfer targets known protocol plumbing.
+packages/contracts/src/interfaces/IRaffle.sol:308:    function initialize(RaffleInitParams calldata params) external;
+packages/contracts/src/interfaces/IRaffle.sol:406:    /// @notice Returns the immutable factory authorized to initialize this implementation's clones.
+packages/contracts/src/interfaces/IRaffle.sol:518:    /// @notice Returns whether this implementation or clone has completed its one-time initialization step.
+packages/contracts/src/interfaces/IRaffle.sol:519:    /// @return complete True for the locked implementation and every initialized clone.
+packages/contracts/src/interfaces/IRaffle.sol:520:    function initialized() external view returns (bool complete);
+packages/contracts/src/interfaces/IRaffleFactory.sol:7:/// @dev The factory has no owner, pause, upgrade, rescue, or mutable protocol configuration. Deployment tooling must
+packages/contracts/src/interfaces/IRaffleFactory.sol:30:    /// @notice Emitted after a raffle clone is initialized, registered, funded, and active.
+packages/contracts/src/interfaces/IRaffleFactory.sol:101:    /// @notice Creates, initializes, registers, and funds one autonomous fixed-target raffle clone atomically.
+packages/contracts/src/Raffle.sol:24:///      owners burn them for redemption or refund. Each raffle is a fixed, non-upgradeable ERC-1167 clone with no
+packages/contracts/src/Raffle.sol:136:    bool public override initialized;
+packages/contracts/src/Raffle.sol:164:        initialized = true;
+packages/contracts/src/Raffle.sol:176:    function initialize(RaffleInitParams calldata params) external override {
+packages/contracts/src/Raffle.sol:177:        if (initialized) revert AlreadyInitialized();
+packages/contracts/src/Raffle.sol:179:        initialized = true;
+packages/contracts/src/Raffle.sol:607:    /// @dev Validates the wrapper before passing it to the inherited constructor initializer.
+
+$ grep -nE "contract .* is |is ERC20|ERC20\(|_mint\(|totalSupply" -r packages/contracts/src   # ERC-20 implementation search (slither-prop applicability)
+packages/contracts/src/RaffleFactory.sol:21:contract RaffleFactory is IRaffleFactory, ReentrancyGuard {
+packages/contracts/src/Raffle.sol:28:contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusWrapperConsumerBase {
+packages/contracts/src/Raffle.sol:162:        quoteToken = IERC20(quoteToken_);
+
+$ grep -nE "IERC20|SafeERC20|safeTransfer|transferFrom|ownerOf|supportsInterface|decimals" -r packages/contracts/src --include=*.sol | grep -v "///"   # token integration surface
+(eval):10: no matches found: --include=*.sol
+
+$ grep -nE "oracle|AggregatorV3|latestRoundData|getPrice|flash|swap|pool|reserve0|TWAP" -ri packages/contracts/src   # DeFi/oracle search
+(no matches)
+
+$ grep -nE "ecrecover|ECDSA|signature|keccak256|blockhash|prevrandao|block\.difficulty|block\.number|tx\.origin" -r packages/contracts/src   # cryptography/randomness search
+(no matches)
+
+$ grep -nE "block\.timestamp|random|%" -r packages/contracts/src/Raffle.sol packages/contracts/src/RaffleFactory.sol | grep -v "///"   # time/randomness use sites
+packages/contracts/src/Raffle.sol:216:        if (block.timestamp >= endTime) revert SaleEnded(endTime, block.timestamp);
+packages/contracts/src/Raffle.sol:242:        if (block.timestamp < endTime) revert RaffleNotEnded(endTime, block.timestamp);
+packages/contracts/src/Raffle.sol:245:        if (block.timestamp >= requestDeadline) {
+packages/contracts/src/Raffle.sol:246:            revert DrawRequestWindowExpired(requestDeadline, block.timestamp);
+packages/contracts/src/Raffle.sol:253:        drawRequestedAt = uint64(block.timestamp);
+packages/contracts/src/Raffle.sol:282:                if (msg.sender != sponsor && block.timestamp < deadline) {
+packages/contracts/src/Raffle.sol:283:                    revert RefundsNotAvailable(deadline, block.timestamp);
+packages/contracts/src/Raffle.sol:287:                if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+packages/contracts/src/Raffle.sol:291:            if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+packages/contracts/src/Raffle.sol:509:    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+packages/contracts/src/Raffle.sol:511:            _requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1
+packages/contracts/src/Raffle.sol:512:                || block.timestamp >= callbackDeadline()
+packages/contracts/src/Raffle.sol:518:        uint128 resolvedEntry = uint128((randomWords[0] % uint256(totalEntries)) + 1);
+packages/contracts/src/Raffle.sol:520:        resolvedAt = uint64(block.timestamp);
+packages/contracts/src/RaffleFactory.sol:99:        uint256 currentTime = block.timestamp;
+
+$ grep -nE "payable|msg\.value|call\(|receive\(|fallback\(" -r packages/contracts/src   # native value handling
+packages/contracts/src/interfaces/IRaffle.sol:320:    function requestDraw() external payable returns (uint256 requestId);
+packages/contracts/src/Raffle.sol:146:    /// @notice Raised when native currency is sent outside the payable draw-request path.
+packages/contracts/src/Raffle.sol:171:    receive() external payable {
+packages/contracts/src/Raffle.sol:240:    function requestDraw() external payable override nonReentrant returns (uint256 requestId) {
+packages/contracts/src/Raffle.sol:250:        if (msg.value < quotedFee) revert InsufficientVrfFee(quotedFee, msg.value);
+packages/contracts/src/Raffle.sol:258:        if (paidPrice > msg.value) revert InsufficientVrfFee(paidPrice, msg.value);
+packages/contracts/src/Raffle.sol:262:        uint256 excess = msg.value - paidPrice;
+packages/contracts/src/Raffle.sol:267:                success := call(gas(), refundRecipient, excess, 0, 0, 0, 0)

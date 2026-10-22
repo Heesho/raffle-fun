@@ -1,0 +1,108 @@
+# Gebal assessment
+
+Run: a184629e-4470-49a4-96a4-44695a238c6a
+
+**Outcome: succeeded**
+
+An empty findings list is not a security certificate\. Completed checks establish only their stated coverage\.
+
+**Source-only run: no compiler, static analyzer or executable test coverage.**
+
+Snapshot: 1c720af585db73b5867c91437f75776b3ef6ee9c6d7aa70ee51fe85dbad994ad
+
+## Incomplete checks
+
+All planned tasks completed. Coverage remains limited to the checks below.
+
+## Scope and requirements
+
+Ethereum NFT raffle; immutable factory, ERC-1167 clones with immutable implementation\. One entry costs 1,000,000 units of canonical six-decimal USDC\. One purchase mints a transferable ERC721 ticket representing a contiguous inclusive range\. Exactly one ERC721 prize is escrowed atomically at creation\. Reserve met awards NFT and 95% sponsor / 5% treasury\. Reserve missed awards 80% gross to winner, 15% sponsor, 5% treasury\. Refund outcome pays 100% per entry and returns prize\. Rounding is floor on aggregate protocol fee; remainder must be allocated without loss\. No administrator, mutable configuration or upgrade\. Request window \[sale end, end\+2days\); callback accepted strictly before request timestamp\+2days\. Refunds open at deadline\. Callback records result only\. Settlement is permissionless, storage-only; redemption requires current ticket owner, burns claim atomically, and must revert all effects on delivery failure\. Sponsor and treasury can claim independently after settlement\. Never move assets between raffle clones\. Quote token and Chainlink wrapper are trusted canonical dependencies; arbitrary prize contracts and ticket recipients are untrusted\. Frontend discovery is advisory; transaction decisions must reread current chain state\. Requirements source: frozen clean-context DESIGN\.md \(audit r001\), composed before scanner results and historical findings; source determines actual behavior\.
+
+Authorized: packages/contracts/src, packages/contracts/foundry\.toml, packages/contracts/remappings\.txt, pnpm-lock\.yaml
+
+Project path: packages/contracts
+
+Explicit dependency paths: packages/contracts/node\_modules/@openzeppelin/contracts, packages/contracts/node\_modules/@chainlink/contracts
+
+Execution policy: Exact file remappings were resolved from uniquely matching authorized library paths and are included in the approved plan\. Only profile\.default is selected; other profiles, RPC endpoints and formatting configuration are not loaded\. Controller overrides output/cache/script paths, denies FFI/filesystem/RPC and dependency downloads, and disables automatic remappings\. Configured fuzz/invariant campaigns are replaced by the disclosed fixed seed and bounded campaign\. Tests requiring denied capabilities cannot be validated\. Source-only intake does not establish compiler, test, property or security coverage\.
+
+Excluded/absent: 
+
+## Check evidence
+
+- intake: succeeded. Recorded 39 authorized files\. Build configuration unsupported; see diagnosis\.
+  Evidence: 1edfcee4dba01314e4f3d3d56239cb1f1e173238759796866e0a9bbedc0de16c
+
+## Findings requiring human review
+
+### Prize escrow and delivery are verified only through the untrusted prize contract, and NftWon sponsor proceeds do not depend on delivery
+
+Severity: low; confidence: high; evidence: model; disposition: needs-review
+
+Stated requirement: exactly one ERC721 prize is escrowed atomically at creation, a met reserve awards the NFT, and arbitrary prize contracts are untrusted\. Observed code: the factory accepts escrow when the prize contract itself reports prize\.ownerOf\(tokenId\) == clone and the clone reports Active \(RaffleFactory\.sol 127-134\)\. The clone activates whenever msg\.sender == prizeToken calls onERC721Received with operator == factory and from == sponsor \(Raffle\.sol 421-428\), and a dishonest prize contract can make that call during the factory's safeTransferFrom without moving any token\. Winner delivery is confirmed only by prizeToken\.ownerOf as well \(Raffle\.sol 329-337\)\. In NftWon, settlement unconditionally allocates 95% of gross to sponsorProceeds \(Raffle\.sol 543-555\), and releaseSponsorProceeds pays it whether or not the prize was ever delivered \(Raffle\.sol 375-381\)\. Inferred impact: suppose the prize contract is fake, upgradeable, pausable, blocklisting or transfer-restricted, including a genuine collection whose admin colludes with the sponsor\. Then an NftWon raffle can pay the sponsor 95% of gross while the winner's redemption either reverts forever or reports success with no real transfer\. Refunds, CashWon cash redemption, sponsor/treasury USDC releases and other clones never call the prize contract, so the impact is limited to that raffle's buyers\. The interface states that supported prizes are honest, standards-compliant ERC-721s \(IRaffle\.sol 14-15\), which is narrower than the stated trust model\. Independent sponsor/treasury claims are themselves a stated requirement, so this is a residual design risk rather than an implementation slip\. The owner can either document it for buyers and integrators, or adopt the defensive property 'in NftWon, sponsor proceeds become releasable only after the NFT is actually delivered'\. That property would conflict with the current claim-independence requirement, and it would not protect against a contract that fakes ownerOf\. Assumptions: Per the stated requirements, prize contracts may be malicious, upgradeable or admin-controlled, and the sponsor may control or collude with that admin\.; Buyers rely on on-chain escrow signals \(PrizeDeposited, prizeToken\.ownerOf\) because frontend discovery is only advisory\.; No allowlist of prize collections is intended, since no administrator or mutable configuration is permitted\.
+
+Source: packages/contracts/src/RaffleFactory\.sol:127-134, packages/contracts/src/Raffle\.sol:421-428, packages/contracts/src/Raffle\.sol:329-337, packages/contracts/src/Raffle\.sol:543-555, packages/contracts/src/Raffle\.sol:375-381, packages/contracts/src/interfaces/IRaffle\.sol:14-15
+
+Artifacts: 24f406a76a4bd574fbef454d3509fc5f3126c5a0781711eb6eff954298e1fe06
+
+### Winning ticket can be identified from the pending VRF fulfillment while tickets remain transferable during Drawing
+
+Severity: informational; confidence: medium; evidence: model; disposition: needs-review
+
+Stated requirement: tickets are transferable ERC721 claims; frontend discovery is advisory and transaction decisions must reread current chain state\. Observed code: \_update allows transfers in every lifecycle state, including Drawing \(Raffle\.sol 491-502; IRaffle\.sol 12-13\)\. totalEntries is frozen once the sale ends \(Raffle\.sol 216 and 242\), and the callback maps the first random word deterministically to randomWords\[0\] % totalEntries \+ 1 \(Raffle\.sol 509-521\)\. Inferred: under Chainlink VRF v2\.5 the random words can be computed from the proof carried in the coordinator's fulfillment transaction\. A party that sees that transaction before inclusion \(public mempool or block builder\) therefore knows the winning entry, and through ticketRange the winning ticket, before any chain state changes\. It can place transactions ahead of the fulfillment that fill an outstanding marketplace listing for the winning ticket, or sell losing tickets into standing offers\. Rereading chain state cannot protect those counterparties because nothing has changed on-chain yet\. Raffle accounting is unaffected; the cost falls on holders or bidders with standing orders during Drawing\. One defensive property would be to freeze ticket transfers while status == Drawing\. That is a product decision against the current design of tickets being transferable in every lifecycle state\. Assumptions: The VRF wrapper and coordinator sources are not in the pinned context\. Based on general knowledge of VRF v2\.5, the random words are assumed to be derivable from the fulfillment calldata \(the proof's gamma\) before inclusion\.; The fulfillment transaction is visible to searchers or builders before inclusion, and tickets trade through on-chain orders that third parties can fill or that holders can accept\.
+
+Source: packages/contracts/src/Raffle\.sol:491-502, packages/contracts/src/Raffle\.sol:509-521, packages/contracts/src/Raffle\.sol:216-216, packages/contracts/src/Raffle\.sol:242-242, packages/contracts/src/interfaces/IRaffle\.sol:12-13
+
+Artifacts: 24f406a76a4bd574fbef454d3509fc5f3126c5a0781711eb6eff954298e1fe06
+
+### Sponsor prize return is not re-screened at release time, and counterfactual clone addresses pass creation-time destination checks
+
+Severity: informational; confidence: high; evidence: model; disposition: needs-review
+
+Stated requirement: never move assets between raffle clones\. Observed code: sponsorRecipient is screened only at creation\. The factory checks isRaffle\[sponsorRecipient\] \(RaffleFactory\.sol 163-169\), and initialize calls \_isProtocolDestination \(Raffle\.sol 193-195\), which checks the registry only when the address already has code \(Raffle\.sol 593-605\)\. CREATE addresses follow from the factory address and nonce, so future clone addresses are predictable, and an address the factory will later use for a clone passes both checks while it has no code\. At payout time, \_transferQuote re-screens and reverts for a registered raffle \(Raffle\.sol 564-567\), but releaseSponsorPrize sends the NFT to sponsorRecipient with no screen \(Raffle\.sol 395-407\)\. If that address later becomes a clone, anyone can call releaseSponsorPrize in CashWon or Refunding and move the prize into the other clone\. There it sits outside accounting with no way out, and releaseSponsorProceeds reverts permanently\. Ticket mints and transfers are screened only when they happen \(Raffle\.sol 497-500\), so a ticket sent to a counterfactual clone address becomes permanently unclaimable once that clone exists\. Either state requires the sponsor or holder to choose such an address, so the impact is self-inflicted and unlikely\. The point is that the requirement is enforced at runtime for USDC payouts but not for the prize-return path\. Assumptions: The sponsor or a ticket holder chooses, deliberately or by mistake, an address equal to a CREATE address the factory will use for a later clone\. No third party can force this choice\.; 'Never move assets between raffle clones' is read as an absolute custody invariant, not as best effort against already-registered clones only\.
+
+Source: packages/contracts/src/Raffle\.sol:395-407, packages/contracts/src/Raffle\.sol:564-567, packages/contracts/src/Raffle\.sol:593-605, packages/contracts/src/Raffle\.sol:193-195, packages/contracts/src/RaffleFactory\.sol:163-169, packages/contracts/src/Raffle\.sol:497-500
+
+Artifacts: 24f406a76a4bd574fbef454d3509fc5f3126c5a0781711eb6eff954298e1fe06
+
+### Empty-raffle exit timing differs from the stated refund deadline: the sponsor can exit at any time, anyone else at sale end
+
+Severity: informational; confidence: high; evidence: model; disposition: needs-review
+
+Stated requirement: request window \[sale end, end\+2days\) and refunds open at deadline\. Observed code: when status is Active and totalEntries == 0, enableRefunds uses endTime as the deadline and exempts the sponsor from it entirely \(Raffle\.sol 279-284\)\. The sponsor can therefore move an unsold raffle to Refunding at any time before the first purchase, after which releaseSponsorPrize returns the prize because it accepts Refunding \(Raffle\.sol 395-399\)\. Anyone else can do the same at endTime rather than endTime \+ 2 days\. The interface documents this sponsor cancellation right \(IRaffle\.sol 37 and 322-324\), but the stated requirements do not mention it\. No buyer funds are exposed: the branch requires zero sold entries, and a purchase racing the cancellation simply reverts\. The sponsor is a per-raffle role, not a protocol administrator\. Recorded so the owner can confirm that the requirements intend this sponsor right and the endTime deadline for empty raffles\. Assumptions: 'Refunds open at deadline' is read as the draw-request deadline \(endTime \+ 2 days\) or the callback deadline\. The requirements do not say which deadline applies to a raffle with no entries\.
+
+Source: packages/contracts/src/Raffle\.sol:279-284, packages/contracts/src/Raffle\.sol:395-399, packages/contracts/src/interfaces/IRaffle\.sol:37-37, packages/contracts/src/interfaces/IRaffle\.sol:322-324
+
+Artifacts: 24f406a76a4bd574fbef454d3509fc5f3126c5a0781711eb6eff954298e1fe06
+
+
+## Coverage gaps
+
+- No semantic, test, or property coverage established by intake\.
+- External agent provenance, token usage and spend are unknown\.
+- Imported observations do not complete blocked local checks or establish any property\.
+- Source-only pass: no compilation, test, fuzz, invariant, symbolic-execution or prover run was performed\. Nothing in this review is backed by execution evidence, and no coverage was measured\.
+- The Chainlink VRFV2PlusWrapper and VRF coordinator implementations are not in the pinned context; only IVRFV2PlusWrapper, VRFV2PlusWrapperConsumerBase and VRFV2PlusClient are\. The following was assumed from general knowledge: the callback is asynchronous and delivered at most once per request with the requested callback gas; a failed callback is not retried; the native price uses tx\.gasprice; request IDs are unique; random words can be derived from fulfillment calldata\. The timing-window and liveness conclusions depend on these assumptions\.
+- The canonical USDC implementation is not in context\. Standard ERC20 behavior without fees, hooks or rebasing was assumed, per the requirements\. USDC blacklisting or pausing could freeze a clone or permanently block payouts to the per-raffle immutable sponsorRecipient or protocolTreasury\. This was treated as an accepted trusted-dependency risk and not assessed further\.
+- Dependency sources were taken as given by the snapshot hashes and were not diffed against upstream @openzeppelin/contracts 5\.6\.1 or @chainlink/contracts 1\.5\.0, the versions pinned in pnpm-lock\.yaml\. Spot reads found nothing non-standard in ERC721, ERC721Utils, ReentrancyGuard, SafeERC20, Math\.mulDiv, Clones or VRFV2PlusWrapperConsumerBase\. ReentrancyGuard uses a namespaced slot whose zero value in uninitialized clones is treated as not entered\.
+- remappings\.txt maps only @openzeppelin/contracts and forge-std, so resolution of @chainlink/contracts relies on Foundry auto-remapping from libs = \[lib, node\_modules\]\. Import resolution and compilation with solc 0\.8\.36 / cancun were not verified\.
+- Existing tests, deployment scripts, Hardhat configuration, actual deployment parameters \(USDC, wrapper and treasury addresses\) and frontend or indexer code were outside the snapshot and not reviewed\.
+- Callback gas sufficiency was estimated from the code, not measured: 300,000 gas covers a handful of storage reads and writes plus one event through the clone delegatecall\. The worst-case gas of a 100-ticket refund batch was also estimated, not measured\.
+- Economic behavior was assessed only qualitatively\. No observation was raised because each of these cases follows the stated design: the sponsor buying entries to cross the reserve, who pays for the single VRF request, buyers preferring the refund path when the reserve is missed, and the requester's fee being lost if fulfillment fails\.
+- A winning ticket that is never redeemed has no deadline or fallback, for example one held by a contract that cannot call redeemWinningTicket\. The NFT or cash allocation can then stay locked indefinitely\. This matches the stated rule that redemption requires the current ticket owner, so it was not raised as an observation\.
+- Properties checked by reading only, with no defect found \(unproven\): \(1\) liabilities always sum to gross sales; \(2\) refunds pay exactly ENTRY\_PRICE per entry and burn before paying; \(3\) gross is always a multiple of 1e6, so the 5% and 80% splits are exact and the sponsor remainder leaves no dust; \(4\) the buy, request, callback and refund boundaries match the stated windows and cannot overlap at the same timestamp; \(5\) the callback only writes storage and does not revert on decodable input; \(6\) initialization is factory-only and one-time, and the implementation is locked; \(7\) every state-changing entry point is nonReentrant except the standard ERC721 functions, the status-gated receiver hook and the wrapper-only callback; \(8\) any raffle reaches an exit no later than 30 \+ 2 \+ 2 days after creation\.
+- Independence disclosure: this pass used only context\.json and the harness instructions in this directory\. No peer findings, analyzer output or evaluation labels were seen\. General background knowledge of OpenZeppelin, Chainlink VRF v2\.5 and USDC was used and is labeled as an assumption wherever relied on\.
+
+## Provenance and cost
+
+Method: native-review-v1; adapter: 0.2.0
+
+Tool image: unavailable; compiler: 0\.8\.36; EVM: cancun
+
+Planned direct provider/model: none
+
+External reviewers: claude-code-2\.1\.299 / claude-opus-5-5 \(effort max requested; provider-returned model claude-opus-5-5\). External provenance, usage and spend are unverified.
+
+Recorded direct API tokens: 0; reserved: 0. Monetary cost: unknown. Local compute cost is not measured.
+
+The JSON report retains manifests, settings, decisions, invocations, source hashes, timelines and coverage records. Artifact IDs resolve through the local store or CLI evidence command.

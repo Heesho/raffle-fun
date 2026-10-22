@@ -1,0 +1,75 @@
+Compiling 3 files with Solc 0.8.36
+Solc 0.8.36 finished in 2.91s
+Compiler run successful!
+
+Ran 2 tests for test/RaffleUnit.t.sol:F_ReentrancyTest
+[PASS] test_F1_ticketRecipientCannotReenterAnyGuardedEntryPoint() (gas: 1333490)
+[PASS] test_F2_maliciousPrizeCannotReenterDuringDelivery() (gas: 2229418)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 1.55ms (562.37µs CPU time)
+
+Ran 6 tests for test/RaffleUnit.t.sol:G_FindingsTest
+[PASS] test_G1_PoC_futureCloneSponsorRecipient_movesPrizeIntoAnotherClone() (gas: 1305991)
+[PASS] test_G2_PoC_ticketMintedToFutureCloneAddressIsStranded() (gas: 1357309)
+[PASS] test_G3_PoC_vrfRevealFrontRun_buysListedWinningTicketBeforeCallback() (gas: 1362212)
+[PASS] test_G4_PoC_frozenPrizeCollection_sponsorPaidWinnerUnpaid() (gas: 967417)
+[PASS] test_G5_PoC_emptyRaffleCancellationPaths() (gas: 993417)
+[PASS] test_G6_forcedValueIsStranded() (gas: 635633)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 1.78ms (1.18ms CPU time)
+
+Ran 4 tests for test/RaffleUnit.t.sol:E_AccessTest
+[PASS] test_E1_implementationIsLockedAndInert() (gas: 49877)
+[PASS] test_E2_cloneCannotBeReinitialized() (gas: 455158)
+[PASS] test_E3_factoryRejectsInvalidOrProtocolParameters() (gas: 192699)
+[PASS] test_E4_ticketsCannotBeSentToProtocolPlumbing() (gas: 1088195)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 3.76ms (396.79µs CPU time)
+
+Ran 6 tests for test/RaffleUnit.t.sol:C_VrfTest
+[PASS] test_C1_synchronousCallbackDuringRequestIsIgnored() (gas: 878810)
+[PASS] test_C2_wrongIdWrongLengthReplayAreIgnoredWithoutReverting() (gas: 877700)
+[PASS] test_C3_onlyWrapperCanDeliverRandomness() (gas: 460008)
+[PASS] test_C4_callbackGasIsFarBelowLimit() (gas: 851705)
+Logs:
+  fulfillRandomWords gas (incl. call overhead): 6052
+
+[PASS] test_C5_excessFeeRefundedAndRefundFailureRevertsWholeRequest() (gas: 1169705)
+[PASS] test_C6_insufficientFeeReverts() (gas: 708627)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 3.26ms (923.46µs CPU time)
+
+Ran 4 tests for test/HandlerSanity.t.sol:HandlerSanityTest
+[PASS] test_sanity_cashWonLifecycle() (gas: 1646021)
+[PASS] test_sanity_drawingTimeoutAndEmptyRaffle() (gas: 1485950)
+[PASS] test_sanity_failureModes() (gas: 1123085)
+[PASS] test_sanity_nftWonAndRefundLifecycles() (gas: 2731423)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 6.23ms (4.71ms CPU time)
+
+Ran 4 tests for test/RaffleUnit.t.sol:A_TimingTest
+[PASS] test_A1_saleEndsExclusivelyAtEndTime() (gas: 717784)
+[PASS] test_A2_requestWindowIsHalfOpen_endTime_to_endPlus2Days() (gas: 2155294)
+[PASS] test_A3_refundsOpenExactlyAtRequestDeadline() (gas: 700739)
+[PASS] test_A4_callbackAcceptedStrictlyBeforeCallbackDeadline() (gas: 1544418)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 823.04µs (783.96µs CPU time)
+
+Ran 4 tests for test/RaffleUnit.t.sol:D_RedemptionTest
+[PASS] test_D1_onlyCurrentOwnerRedeems() (gas: 1097466)
+[PASS] test_D2_deliveryFailureRevertsBurnAndInlineSettlement() (gas: 979628)
+[PASS] test_D3_sponsorAndTreasuryClaimIndependently_blocklistedSponsorRecipient() (gas: 969948)
+[PASS] test_D4_settlementWithNonWinningOrNonexistentTicketReverts() (gas: 1033427)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 8.41ms (5.68ms CPU time)
+
+Ran 6 tests for test/RaffleValidation.t.sol:H_ValidationTest
+[PASS] test_H1_factoryConstructorValidation() (gas: 492076)
+[PASS] test_H2_prizeContractAsSponsorIsRejectedAtInitialize() (gas: 198382)
+[PASS] test_H3_unsolicitedSafeTransferToActiveRaffleRejected() (gas: 494008)
+[PASS] test_H4_nonCompliantPrizeWithoutHookCannotEscrow() (gas: 1234312)
+[PASS] test_H5_PoC_lyingPrizeFakesEscrowAndDelivery() (gas: 1062304)
+[PASS] test_H6_doubleClaimsAndWrongStateClaimsRevert() (gas: 1635384)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 9.40ms (1.17ms CPU time)
+
+Ran 4 tests for test/RaffleUnit.t.sol:B_EconomicsTest
+[PASS] testFuzz_B1_settlementSplitsAreExactAndLossless(uint256,bool,uint256) (runs: 2000, μ: 957071, ~: 936294)
+[PASS] testFuzz_B2_refundPaysExactlyPerEntryAndReturnsPrize(uint256,uint256,uint256) (runs: 2000, μ: 920592, ~: 920592)
+[PASS] test_B3_entryCountOverflowGuardAndMaxRaffleStillSettles() (gas: 962451)
+[PASS] test_B4_refundBatchBoundsDuplicatesAndForeignTickets() (gas: 849295)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 447.41ms (843.52ms CPU time)
+
+Ran 9 test suites in 491.48ms (482.62ms CPU time): 40 tests passed, 0 failed, 0 skipped (40 total tests)

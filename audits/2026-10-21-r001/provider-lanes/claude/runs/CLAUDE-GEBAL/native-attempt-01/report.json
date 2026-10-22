@@ -1,0 +1,852 @@
+{
+  "schemaVersion": 1,
+  "brand": "Gebal",
+  "domain": "gebal.ai",
+  "run": {
+    "schemaVersion": 1,
+    "id": "a184629e-4470-49a4-96a4-44695a238c6a",
+    "createdAt": "2026-10-21T07:55:34.117Z",
+    "planId": "e31228e2-2890-4ed1-8a0f-e7b516245b4d",
+    "snapshotId": "510dbc9d-e57a-4288-be5d-d447893eecb9",
+    "state": "succeeded",
+    "finishedAt": "2026-10-21T07:55:34.134Z",
+    "cancelRequested": false,
+    "costUsd": null,
+    "reservedTokens": 0,
+    "usedTokens": 0
+  },
+  "plan": {
+    "schemaVersion": 1,
+    "id": "e31228e2-2890-4ed1-8a0f-e7b516245b4d",
+    "createdAt": "2026-10-21T07:55:24.410Z",
+    "snapshotId": "510dbc9d-e57a-4288-be5d-d447893eecb9",
+    "snapshotHash": "1c720af585db73b5867c91437f75776b3ef6ee9c6d7aa70ee51fe85dbad994ad",
+    "scopeId": "a5411d7a-f8a4-4da7-bb06-3350ba5f908d",
+    "diagnosis": {
+      "kind": "foundry",
+      "supported": false,
+      "compiler": "0.8.36",
+      "evm": "cancun",
+      "settings": {
+        "src": "packages/contracts/src",
+        "test": "packages/contracts/test/foundry",
+        "script": "script",
+        "out": "out",
+        "libs": [
+          "packages/contracts/lib",
+          "packages/contracts/node_modules"
+        ],
+        "solc_version": "0.8.36",
+        "evm_version": "cancun",
+        "optimizer": true,
+        "optimizer_runs": 200,
+        "via_ir": false,
+        "fuzz": {
+          "runs": 1000,
+          "seed": "0x524146464c45"
+        },
+        "invariant": {
+          "runs": 256,
+          "depth": 64,
+          "fail_on_revert": false
+        },
+        "gas_reports": [
+          "Raffle",
+          "RaffleFactory"
+        ],
+        "projectPath": "packages/contracts",
+        "remappings": [
+          "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+          "@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+          "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+          "@openzeppelin/contracts/=packages/contracts/node_modules/@openzeppelin/contracts/",
+          "forge-std/=packages/contracts/lib/forge-std/src/"
+        ]
+      },
+      "issues": [
+        "Unsupported configuration key: gas_reports"
+      ],
+      "notes": [
+        "Exact file remappings were resolved from uniquely matching authorized library paths and are included in the approved plan.",
+        "Only profile.default is selected; other profiles, RPC endpoints and formatting configuration are not loaded.",
+        "Controller overrides output/cache/script paths, denies FFI/filesystem/RPC and dependency downloads, and disables automatic remappings.",
+        "Configured fuzz/invariant campaigns are replaced by the disclosed fixed seed and bounded campaign. Tests requiring denied capabilities cannot be validated.",
+        "Source-only intake does not establish compiler, test, property or security coverage."
+      ]
+    },
+    "tasks": [
+      "intake"
+    ],
+    "limits": {
+      "seconds": 120,
+      "memoryMb": 1024,
+      "cpus": 1,
+      "pids": 64,
+      "diskMb": 128,
+      "maxOutputBytes": 2097152,
+      "tokens": 24000,
+      "maxTasks": 4
+    },
+    "image": null,
+    "provider": null,
+    "egress": [],
+    "methodology": "native-review-v1",
+    "adapterVersion": "0.2.0",
+    "hash": "79aa8bf3aefc39887d15c9240d7fe690ae5b32107c9622cd0f2f3c3599398b55"
+  },
+  "snapshot": {
+    "schemaVersion": 1,
+    "id": "510dbc9d-e57a-4288-be5d-d447893eecb9",
+    "createdAt": "2026-10-21T07:55:24.405Z",
+    "scopeId": "a5411d7a-f8a4-4da7-bb06-3350ba5f908d",
+    "hash": "1c720af585db73b5867c91437f75776b3ef6ee9c6d7aa70ee51fe85dbad994ad",
+    "files": [
+      {
+        "path": "packages/contracts/foundry.toml",
+        "hash": "0fdce809ea1675dac422cff420a3402b2f28aabed0631595e43823033fa8ef50",
+        "bytes": 1228,
+        "lines": 49
+      },
+      {
+        "path": "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+        "hash": "f81ec96e909daa2cd27536274a30d916b26d5fc91261bed8d7a6a3e157f3825c",
+        "bytes": 1164,
+        "lines": 32
+      },
+      {
+        "path": "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+        "hash": "a48aaaeaed60e65f04f6c8772e5673dda663dcfa7913fdadd14b412300b9d5f1",
+        "bytes": 3363,
+        "lines": 84
+      },
+      {
+        "path": "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+        "hash": "f3b89bb466c2a79b10c1816d342fbfbec49fe82695cba92bd46e7d31af698011",
+        "bytes": 650,
+        "lines": 28
+      },
+      {
+        "path": "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+        "hash": "8cf045f295b8c6035d14012a9bc2e8ab2b5ce24749a199ca0190519c4bf2dcc0",
+        "bytes": 5055,
+        "lines": 119
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+        "hash": "fa7068f56bc180571a6095be6eaef06d51dbe81e30cb128397d993c9599ecc30",
+        "bytes": 6540,
+        "lines": 163
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+        "hash": "9c3a75a925a6dac9e88b03cddc58d42fe3131b0aaaad84408521f3f7af2f991b",
+        "bytes": 4454,
+        "lines": 87
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+        "hash": "dfb3f56fa928a7c6cae41a7ce2c86b9210fa18d33fa26389099d66a0fa790368",
+        "bytes": 193,
+        "lines": 7
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+        "hash": "0158e2d3e0e28bedd99eec13dcf1a8aa3a70a5b7e4bb2ad709609c95fcc740d1",
+        "bytes": 182,
+        "lines": 7
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+        "hash": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+        "bytes": 14522,
+        "lines": 295
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+        "hash": "0b7132f17d14d1d84b41b0bb429be62dafdff00fd3470f68724d8018eb07f57a",
+        "bytes": 684,
+        "lines": 27
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "hash": "01b6f5c4fa45fd38822b286ecef6daf983d27306dd6362496fa71b3e4600b72c",
+        "bytes": 2781,
+        "lines": 80
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+        "hash": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+        "bytes": 13314,
+        "lines": 281
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        "hash": "ef8e2398c78851bd2ec12bc48d923058c557889d5a3d5ee4919c17ff0fb3517e",
+        "bytes": 16201,
+        "lines": 434
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+        "hash": "33223782ea652dca413702ce92f9f59d91d758a035065b24bbedb7dc60c63a78",
+        "bytes": 792,
+        "lines": 28
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+        "hash": "ff0eb9902bf0ac099205615fac90eacf34fae637571b05aab3ea35dea53d5f17",
+        "bytes": 4929,
+        "lines": 136
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+        "hash": "eafee3ffdc7cb2fba4bf6bd16fb28f8e5b4679742e81c2ad42a1b1df5c179feb",
+        "bytes": 997,
+        "lines": 29
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+        "hash": "b48e95db8c85866c1d88af8e82f346e0d22d24b5aac5b936079d958c72e13b9f",
+        "bytes": 1923,
+        "lines": 51
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+        "hash": "3ce9120a27934c75a074cb785d3a88868069ef6529dbe4dc6b845af0836f3c70",
+        "bytes": 14737,
+        "lines": 333
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+        "hash": "847fda5460fee70f56f4200f59b82ae622bb03c79c77e67af010e31b7e2cc5b6",
+        "bytes": 963,
+        "lines": 29
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+        "hash": "9623aa59745a23a72f313adc5adbf583968bf366a7cbf3fc43c1148d7d2c3c86",
+        "bytes": 4372,
+        "lines": 92
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+        "hash": "0704b9d6c032cca8512a3bc3f30f49f86f1f03102d2896a3d23e794b82efea66",
+        "bytes": 896,
+        "lines": 35
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+        "hash": "61a2b12c96857aaa35f48aeda67a4281637a42494c0b3795be0ae976aa7b3793",
+        "bytes": 879,
+        "lines": 26
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+        "hash": "9055c2994b37dea1a41b7b7926dcb510f05dbe2540b0aafc5fbee9558fffd0ca",
+        "bytes": 871,
+        "lines": 26
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol",
+        "hash": "e128cbe9c6c406d5a42c26e4079c0a95b369ce552f2d0c3dfd2fcb836c5708f2",
+        "bytes": 5547,
+        "lines": 128
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+        "hash": "bdfdbe133991c0c78042957ff5cd97167926fcaf6d15664f3835a076cb066457",
+        "bytes": 32664,
+        "lines": 764
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+        "hash": "5779bc848bde39f1ad7bc02b4f708a0040888e0083b1a33f119cd94639350134",
+        "bytes": 34940,
+        "lines": 1163
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+        "hash": "1ed50b1056af886752f0fb48a0165d381e69bb4a4b18b893b066dc144a7e08d7",
+        "bytes": 2613,
+        "lines": 69
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+        "hash": "270fc8401c1a13fae6a7a4a2dd6e381b95d658896701e51f0d3e2688acab3dec",
+        "bytes": 1973,
+        "lines": 58
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+        "hash": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8",
+        "bytes": 4766,
+        "lines": 120
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+        "hash": "75704538dcb223239280c6726d9a31cf769a7816718517c997fc7d63bdb70778",
+        "bytes": 4182,
+        "lines": 144
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+        "hash": "e318709bbe73a7831d64c1351e8bdc43780b245f25191234e361e6ab9b98c67b",
+        "bytes": 21538,
+        "lines": 533
+      },
+      {
+        "path": "packages/contracts/remappings.txt",
+        "hash": "cbf6730be9c6b6daa1855953ba581d96f14e2dbc3bc95ca3bc2d92cfd231acaa",
+        "bytes": 93,
+        "lines": 3
+      },
+      {
+        "path": "packages/contracts/src/interfaces/IRaffle.sol",
+        "hash": "a43ede9e8802d636a566fb225ed65bdf70f06d17f4734a1632a0a9f84aa5b2dd",
+        "bytes": 29703,
+        "lines": 522
+      },
+      {
+        "path": "packages/contracts/src/interfaces/IRaffleFactory.sol",
+        "hash": "747d238e4c7dc5b517f91c796dec87d9ddbfec9c626d1ff21467c60d780d03cf",
+        "bytes": 7875,
+        "lines": 151
+      },
+      {
+        "path": "packages/contracts/src/libraries/RaffleConstants.sol",
+        "hash": "0893f1a70ac03ad557e0b4c8bdf6a2f73d317f8417d1b4a3c1a571b893ed54b6",
+        "bytes": 2172,
+        "lines": 44
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "hash": "6e4c977922c3e39fafaa8c4c4fb74a971f1817eca9b6552eb8a540969f968617",
+        "bytes": 26421,
+        "lines": 615
+      },
+      {
+        "path": "packages/contracts/src/RaffleFactory.sol",
+        "hash": "d0e62b34faa42513fd968f915262728fe66a15c4b9af13a3c66f496704142ace",
+        "bytes": 8286,
+        "lines": 187
+      },
+      {
+        "path": "pnpm-lock.yaml",
+        "hash": "3c277879a07bda9a4bd9788b810a000b3cb58873fc84d515e4661e0a4ed422c4",
+        "bytes": 423390,
+        "lines": 15674
+      }
+    ],
+    "excluded": [],
+    "dependencyLocks": {
+      "pnpm-lock.yaml": "3c277879a07bda9a4bd9788b810a000b3cb58873fc84d515e4661e0a4ed422c4"
+    }
+  },
+  "scope": {
+    "schemaVersion": 1,
+    "id": "a5411d7a-f8a4-4da7-bb06-3350ba5f908d",
+    "createdAt": "2026-10-21T07:55:24.371Z",
+    "projectId": "efef35d7-28c3-4fd1-a3d6-78711419dba1",
+    "authorized": true,
+    "paths": [
+      "packages/contracts/src",
+      "packages/contracts/foundry.toml",
+      "packages/contracts/remappings.txt",
+      "pnpm-lock.yaml"
+    ],
+    "projectPath": "packages/contracts",
+    "dependencyPaths": [
+      "packages/contracts/node_modules/@openzeppelin/contracts",
+      "packages/contracts/node_modules/@chainlink/contracts"
+    ],
+    "exclusions": [],
+    "requirements": "Ethereum NFT raffle; immutable factory, ERC-1167 clones with immutable implementation. One entry costs 1,000,000 units of canonical six-decimal USDC. One purchase mints a transferable ERC721 ticket representing a contiguous inclusive range. Exactly one ERC721 prize is escrowed atomically at creation. Reserve met awards NFT and 95% sponsor / 5% treasury. Reserve missed awards 80% gross to winner, 15% sponsor, 5% treasury. Refund outcome pays 100% per entry and returns prize. Rounding is floor on aggregate protocol fee; remainder must be allocated without loss. No administrator, mutable configuration or upgrade. Request window [sale end, end+2days); callback accepted strictly before request timestamp+2days. Refunds open at deadline. Callback records result only. Settlement is permissionless, storage-only; redemption requires current ticket owner, burns claim atomically, and must revert all effects on delivery failure. Sponsor and treasury can claim independently after settlement. Never move assets between raffle clones. Quote token and Chainlink wrapper are trusted canonical dependencies; arbitrary prize contracts and ticket recipients are untrusted. Frontend discovery is advisory; transaction decisions must reread current chain state. Requirements source: frozen clean-context DESIGN.md (audit r001), composed before scanner results and historical findings; source determines actual behavior.",
+    "permission": "owned"
+  },
+  "project": {
+    "schemaVersion": 1,
+    "id": "efef35d7-28c3-4fd1-a3d6-78711419dba1",
+    "createdAt": "2026-10-21T07:55:24.367Z",
+    "name": "target",
+    "root": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-GEBAL/attempt-01/target",
+    "origin": "local-project"
+  },
+  "tasks": [
+    {
+      "schemaVersion": 1,
+      "id": "1e51545d-1922-4b73-b8e7-b64a8e1a81af",
+      "createdAt": "2026-10-21T07:55:34.119Z",
+      "runId": "a184629e-4470-49a4-96a4-44695a238c6a",
+      "kind": "intake",
+      "state": "succeeded",
+      "dependencies": [],
+      "attempts": 1,
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "detail": "Recorded 39 authorized files. Build configuration unsupported; see diagnosis.",
+      "evidence": [
+        "1edfcee4dba01314e4f3d3d56239cb1f1e173238759796866e0a9bbedc0de16c"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "schemaVersion": 1,
+      "id": "f9a7d6d4-21c9-43a1-9946-26c912dd49b3",
+      "createdAt": "2026-10-21T08:23:53.487Z",
+      "runId": "a184629e-4470-49a4-96a4-44695a238c6a",
+      "title": "Prize escrow and delivery are verified only through the untrusted prize contract, and NftWon sponsor proceeds do not depend on delivery",
+      "description": "Stated requirement: exactly one ERC721 prize is escrowed atomically at creation, a met reserve awards the NFT, and arbitrary prize contracts are untrusted. Observed code: the factory accepts escrow when the prize contract itself reports prize.ownerOf(tokenId) == clone and the clone reports Active (RaffleFactory.sol 127-134). The clone activates whenever msg.sender == prizeToken calls onERC721Received with operator == factory and from == sponsor (Raffle.sol 421-428), and a dishonest prize contract can make that call during the factory's safeTransferFrom without moving any token. Winner delivery is confirmed only by prizeToken.ownerOf as well (Raffle.sol 329-337). In NftWon, settlement unconditionally allocates 95% of gross to sponsorProceeds (Raffle.sol 543-555), and releaseSponsorProceeds pays it whether or not the prize was ever delivered (Raffle.sol 375-381). Inferred impact: suppose the prize contract is fake, upgradeable, pausable, blocklisting or transfer-restricted, including a genuine collection whose admin colludes with the sponsor. Then an NftWon raffle can pay the sponsor 95% of gross while the winner's redemption either reverts forever or reports success with no real transfer. Refunds, CashWon cash redemption, sponsor/treasury USDC releases and other clones never call the prize contract, so the impact is limited to that raffle's buyers. The interface states that supported prizes are honest, standards-compliant ERC-721s (IRaffle.sol 14-15), which is narrower than the stated trust model. Independent sponsor/treasury claims are themselves a stated requirement, so this is a residual design risk rather than an implementation slip. The owner can either document it for buyers and integrators, or adopt the defensive property 'in NftWon, sponsor proceeds become releasable only after the NFT is actually delivered'. That property would conflict with the current claim-independence requirement, and it would not protect against a contract that fakes ownerOf.\nAssumptions: Per the stated requirements, prize contracts may be malicious, upgradeable or admin-controlled, and the sponsor may control or collude with that admin.; Buyers rely on on-chain escrow signals (PrizeDeposited, prizeToken.ownerOf) because frontend discovery is only advisory.; No allowlist of prize collections is intended, since no administrator or mutable configuration is permitted.",
+      "severity": "low",
+      "confidence": "high",
+      "evidenceType": "model",
+      "source": [
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 127,
+          "end": 134
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 421,
+          "end": 428
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 329,
+          "end": 337
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 543,
+          "end": 555
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 375,
+          "end": 381
+        },
+        {
+          "path": "packages/contracts/src/interfaces/IRaffle.sol",
+          "start": 14,
+          "end": 15
+        }
+      ],
+      "evidence": [
+        "24f406a76a4bd574fbef454d3509fc5f3126c5a0781711eb6eff954298e1fe06"
+      ],
+      "observationIds": [
+        "4c3d1578-ad38-43ed-acd4-5c77c2c38974"
+      ],
+      "fingerprint": "783aa73a535fc556e06ace410ddefe23c0f32d210c04f7849166c63a1c970f57"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "66581a14-bbbe-4bf5-8e4a-de03607090a6",
+      "createdAt": "2026-10-21T08:23:53.487Z",
+      "runId": "a184629e-4470-49a4-96a4-44695a238c6a",
+      "title": "Winning ticket can be identified from the pending VRF fulfillment while tickets remain transferable during Drawing",
+      "description": "Stated requirement: tickets are transferable ERC721 claims; frontend discovery is advisory and transaction decisions must reread current chain state. Observed code: _update allows transfers in every lifecycle state, including Drawing (Raffle.sol 491-502; IRaffle.sol 12-13). totalEntries is frozen once the sale ends (Raffle.sol 216 and 242), and the callback maps the first random word deterministically to randomWords[0] % totalEntries + 1 (Raffle.sol 509-521). Inferred: under Chainlink VRF v2.5 the random words can be computed from the proof carried in the coordinator's fulfillment transaction. A party that sees that transaction before inclusion (public mempool or block builder) therefore knows the winning entry, and through ticketRange the winning ticket, before any chain state changes. It can place transactions ahead of the fulfillment that fill an outstanding marketplace listing for the winning ticket, or sell losing tickets into standing offers. Rereading chain state cannot protect those counterparties because nothing has changed on-chain yet. Raffle accounting is unaffected; the cost falls on holders or bidders with standing orders during Drawing. One defensive property would be to freeze ticket transfers while status == Drawing. That is a product decision against the current design of tickets being transferable in every lifecycle state.\nAssumptions: The VRF wrapper and coordinator sources are not in the pinned context. Based on general knowledge of VRF v2.5, the random words are assumed to be derivable from the fulfillment calldata (the proof's gamma) before inclusion.; The fulfillment transaction is visible to searchers or builders before inclusion, and tickets trade through on-chain orders that third parties can fill or that holders can accept.",
+      "severity": "informational",
+      "confidence": "medium",
+      "evidenceType": "model",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 491,
+          "end": 502
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 509,
+          "end": 521
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 216,
+          "end": 216
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 242,
+          "end": 242
+        },
+        {
+          "path": "packages/contracts/src/interfaces/IRaffle.sol",
+          "start": 12,
+          "end": 13
+        }
+      ],
+      "evidence": [
+        "24f406a76a4bd574fbef454d3509fc5f3126c5a0781711eb6eff954298e1fe06"
+      ],
+      "observationIds": [
+        "de7b5e4b-abf8-4ea5-b031-c8610a9b3733"
+      ],
+      "fingerprint": "d6bf7fe7045dcab29a43c5fdafacf21856ce236d100549a7ca69205752180f0c"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "ae4364bf-4e31-4704-8fc2-1c8a7fb1859d",
+      "createdAt": "2026-10-21T08:23:53.487Z",
+      "runId": "a184629e-4470-49a4-96a4-44695a238c6a",
+      "title": "Sponsor prize return is not re-screened at release time, and counterfactual clone addresses pass creation-time destination checks",
+      "description": "Stated requirement: never move assets between raffle clones. Observed code: sponsorRecipient is screened only at creation. The factory checks isRaffle[sponsorRecipient] (RaffleFactory.sol 163-169), and initialize calls _isProtocolDestination (Raffle.sol 193-195), which checks the registry only when the address already has code (Raffle.sol 593-605). CREATE addresses follow from the factory address and nonce, so future clone addresses are predictable, and an address the factory will later use for a clone passes both checks while it has no code. At payout time, _transferQuote re-screens and reverts for a registered raffle (Raffle.sol 564-567), but releaseSponsorPrize sends the NFT to sponsorRecipient with no screen (Raffle.sol 395-407). If that address later becomes a clone, anyone can call releaseSponsorPrize in CashWon or Refunding and move the prize into the other clone. There it sits outside accounting with no way out, and releaseSponsorProceeds reverts permanently. Ticket mints and transfers are screened only when they happen (Raffle.sol 497-500), so a ticket sent to a counterfactual clone address becomes permanently unclaimable once that clone exists. Either state requires the sponsor or holder to choose such an address, so the impact is self-inflicted and unlikely. The point is that the requirement is enforced at runtime for USDC payouts but not for the prize-return path.\nAssumptions: The sponsor or a ticket holder chooses, deliberately or by mistake, an address equal to a CREATE address the factory will use for a later clone. No third party can force this choice.; 'Never move assets between raffle clones' is read as an absolute custody invariant, not as best effort against already-registered clones only.",
+      "severity": "informational",
+      "confidence": "high",
+      "evidenceType": "model",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 395,
+          "end": 407
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 564,
+          "end": 567
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 593,
+          "end": 605
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 193,
+          "end": 195
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 163,
+          "end": 169
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 497,
+          "end": 500
+        }
+      ],
+      "evidence": [
+        "24f406a76a4bd574fbef454d3509fc5f3126c5a0781711eb6eff954298e1fe06"
+      ],
+      "observationIds": [
+        "f5cdace1-eef8-49e3-9721-1d2a5726571e"
+      ],
+      "fingerprint": "82f8737ae439202967c8bb41f47701e26447b79cc4d478bb3e34c9ff76af8ffc"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "35b573c0-f57f-4073-a720-318c1c9e56ab",
+      "createdAt": "2026-10-21T08:23:53.488Z",
+      "runId": "a184629e-4470-49a4-96a4-44695a238c6a",
+      "title": "Empty-raffle exit timing differs from the stated refund deadline: the sponsor can exit at any time, anyone else at sale end",
+      "description": "Stated requirement: request window [sale end, end+2days) and refunds open at deadline. Observed code: when status is Active and totalEntries == 0, enableRefunds uses endTime as the deadline and exempts the sponsor from it entirely (Raffle.sol 279-284). The sponsor can therefore move an unsold raffle to Refunding at any time before the first purchase, after which releaseSponsorPrize returns the prize because it accepts Refunding (Raffle.sol 395-399). Anyone else can do the same at endTime rather than endTime + 2 days. The interface documents this sponsor cancellation right (IRaffle.sol 37 and 322-324), but the stated requirements do not mention it. No buyer funds are exposed: the branch requires zero sold entries, and a purchase racing the cancellation simply reverts. The sponsor is a per-raffle role, not a protocol administrator. Recorded so the owner can confirm that the requirements intend this sponsor right and the endTime deadline for empty raffles.\nAssumptions: 'Refunds open at deadline' is read as the draw-request deadline (endTime + 2 days) or the callback deadline. The requirements do not say which deadline applies to a raffle with no entries.",
+      "severity": "informational",
+      "confidence": "high",
+      "evidenceType": "model",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 279,
+          "end": 284
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 395,
+          "end": 399
+        },
+        {
+          "path": "packages/contracts/src/interfaces/IRaffle.sol",
+          "start": 37,
+          "end": 37
+        },
+        {
+          "path": "packages/contracts/src/interfaces/IRaffle.sol",
+          "start": 322,
+          "end": 324
+        }
+      ],
+      "evidence": [
+        "24f406a76a4bd574fbef454d3509fc5f3126c5a0781711eb6eff954298e1fe06"
+      ],
+      "observationIds": [
+        "f86c8764-c063-49d7-921f-50821529a74e"
+      ],
+      "fingerprint": "aac43d26e5d2ea92ac37b504ffbeb57b3bc72b0464692e0a5eefe7aab2faaf36"
+    }
+  ],
+  "observations": [
+    {
+      "schemaVersion": 1,
+      "id": "4c3d1578-ad38-43ed-acd4-5c77c2c38974",
+      "createdAt": "2026-10-21T08:23:53.487Z",
+      "runId": "a184629e-4470-49a4-96a4-44695a238c6a",
+      "producer": "model",
+      "text": "Stated requirement: exactly one ERC721 prize is escrowed atomically at creation, a met reserve awards the NFT, and arbitrary prize contracts are untrusted. Observed code: the factory accepts escrow when the prize contract itself reports prize.ownerOf(tokenId) == clone and the clone reports Active (RaffleFactory.sol 127-134). The clone activates whenever msg.sender == prizeToken calls onERC721Received with operator == factory and from == sponsor (Raffle.sol 421-428), and a dishonest prize contract can make that call during the factory's safeTransferFrom without moving any token. Winner delivery is confirmed only by prizeToken.ownerOf as well (Raffle.sol 329-337). In NftWon, settlement unconditionally allocates 95% of gross to sponsorProceeds (Raffle.sol 543-555), and releaseSponsorProceeds pays it whether or not the prize was ever delivered (Raffle.sol 375-381). Inferred impact: suppose the prize contract is fake, upgradeable, pausable, blocklisting or transfer-restricted, including a genuine collection whose admin colludes with the sponsor. Then an NftWon raffle can pay the sponsor 95% of gross while the winner's redemption either reverts forever or reports success with no real transfer. Refunds, CashWon cash redemption, sponsor/treasury USDC releases and other clones never call the prize contract, so the impact is limited to that raffle's buyers. The interface states that supported prizes are honest, standards-compliant ERC-721s (IRaffle.sol 14-15), which is narrower than the stated trust model. Independent sponsor/treasury claims are themselves a stated requirement, so this is a residual design risk rather than an implementation slip. The owner can either document it for buyers and integrators, or adopt the defensive property 'in NftWon, sponsor proceeds become releasable only after the NFT is actually delivered'. That property would conflict with the current claim-independence requirement, and it would not protect against a contract that fakes ownerOf.\nAssumptions: Per the stated requirements, prize contracts may be malicious, upgradeable or admin-controlled, and the sponsor may control or collude with that admin.; Buyers rely on on-chain escrow signals (PrizeDeposited, prizeToken.ownerOf) because frontend discovery is only advisory.; No allowlist of prize collections is intended, since no administrator or mutable configuration is permitted.",
+      "source": [
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 127,
+          "end": 134
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 421,
+          "end": 428
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 329,
+          "end": 337
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 543,
+          "end": 555
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 375,
+          "end": 381
+        },
+        {
+          "path": "packages/contracts/src/interfaces/IRaffle.sol",
+          "start": 14,
+          "end": 15
+        }
+      ],
+      "evidence": [
+        "24f406a76a4bd574fbef454d3509fc5f3126c5a0781711eb6eff954298e1fe06"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "de7b5e4b-abf8-4ea5-b031-c8610a9b3733",
+      "createdAt": "2026-10-21T08:23:53.487Z",
+      "runId": "a184629e-4470-49a4-96a4-44695a238c6a",
+      "producer": "model",
+      "text": "Stated requirement: tickets are transferable ERC721 claims; frontend discovery is advisory and transaction decisions must reread current chain state. Observed code: _update allows transfers in every lifecycle state, including Drawing (Raffle.sol 491-502; IRaffle.sol 12-13). totalEntries is frozen once the sale ends (Raffle.sol 216 and 242), and the callback maps the first random word deterministically to randomWords[0] % totalEntries + 1 (Raffle.sol 509-521). Inferred: under Chainlink VRF v2.5 the random words can be computed from the proof carried in the coordinator's fulfillment transaction. A party that sees that transaction before inclusion (public mempool or block builder) therefore knows the winning entry, and through ticketRange the winning ticket, before any chain state changes. It can place transactions ahead of the fulfillment that fill an outstanding marketplace listing for the winning ticket, or sell losing tickets into standing offers. Rereading chain state cannot protect those counterparties because nothing has changed on-chain yet. Raffle accounting is unaffected; the cost falls on holders or bidders with standing orders during Drawing. One defensive property would be to freeze ticket transfers while status == Drawing. That is a product decision against the current design of tickets being transferable in every lifecycle state.\nAssumptions: The VRF wrapper and coordinator sources are not in the pinned context. Based on general knowledge of VRF v2.5, the random words are assumed to be derivable from the fulfillment calldata (the proof's gamma) before inclusion.; The fulfillment transaction is visible to searchers or builders before inclusion, and tickets trade through on-chain orders that third parties can fill or that holders can accept.",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 491,
+          "end": 502
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 509,
+          "end": 521
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 216,
+          "end": 216
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 242,
+          "end": 242
+        },
+        {
+          "path": "packages/contracts/src/interfaces/IRaffle.sol",
+          "start": 12,
+          "end": 13
+        }
+      ],
+      "evidence": [
+        "24f406a76a4bd574fbef454d3509fc5f3126c5a0781711eb6eff954298e1fe06"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "f5cdace1-eef8-49e3-9721-1d2a5726571e",
+      "createdAt": "2026-10-21T08:23:53.487Z",
+      "runId": "a184629e-4470-49a4-96a4-44695a238c6a",
+      "producer": "model",
+      "text": "Stated requirement: never move assets between raffle clones. Observed code: sponsorRecipient is screened only at creation. The factory checks isRaffle[sponsorRecipient] (RaffleFactory.sol 163-169), and initialize calls _isProtocolDestination (Raffle.sol 193-195), which checks the registry only when the address already has code (Raffle.sol 593-605). CREATE addresses follow from the factory address and nonce, so future clone addresses are predictable, and an address the factory will later use for a clone passes both checks while it has no code. At payout time, _transferQuote re-screens and reverts for a registered raffle (Raffle.sol 564-567), but releaseSponsorPrize sends the NFT to sponsorRecipient with no screen (Raffle.sol 395-407). If that address later becomes a clone, anyone can call releaseSponsorPrize in CashWon or Refunding and move the prize into the other clone. There it sits outside accounting with no way out, and releaseSponsorProceeds reverts permanently. Ticket mints and transfers are screened only when they happen (Raffle.sol 497-500), so a ticket sent to a counterfactual clone address becomes permanently unclaimable once that clone exists. Either state requires the sponsor or holder to choose such an address, so the impact is self-inflicted and unlikely. The point is that the requirement is enforced at runtime for USDC payouts but not for the prize-return path.\nAssumptions: The sponsor or a ticket holder chooses, deliberately or by mistake, an address equal to a CREATE address the factory will use for a later clone. No third party can force this choice.; 'Never move assets between raffle clones' is read as an absolute custody invariant, not as best effort against already-registered clones only.",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 395,
+          "end": 407
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 564,
+          "end": 567
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 593,
+          "end": 605
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 193,
+          "end": 195
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 163,
+          "end": 169
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 497,
+          "end": 500
+        }
+      ],
+      "evidence": [
+        "24f406a76a4bd574fbef454d3509fc5f3126c5a0781711eb6eff954298e1fe06"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "f86c8764-c063-49d7-921f-50821529a74e",
+      "createdAt": "2026-10-21T08:23:53.487Z",
+      "runId": "a184629e-4470-49a4-96a4-44695a238c6a",
+      "producer": "model",
+      "text": "Stated requirement: request window [sale end, end+2days) and refunds open at deadline. Observed code: when status is Active and totalEntries == 0, enableRefunds uses endTime as the deadline and exempts the sponsor from it entirely (Raffle.sol 279-284). The sponsor can therefore move an unsold raffle to Refunding at any time before the first purchase, after which releaseSponsorPrize returns the prize because it accepts Refunding (Raffle.sol 395-399). Anyone else can do the same at endTime rather than endTime + 2 days. The interface documents this sponsor cancellation right (IRaffle.sol 37 and 322-324), but the stated requirements do not mention it. No buyer funds are exposed: the branch requires zero sold entries, and a purchase racing the cancellation simply reverts. The sponsor is a per-raffle role, not a protocol administrator. Recorded so the owner can confirm that the requirements intend this sponsor right and the endTime deadline for empty raffles.\nAssumptions: 'Refunds open at deadline' is read as the draw-request deadline (endTime + 2 days) or the callback deadline. The requirements do not say which deadline applies to a raffle with no entries.",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 279,
+          "end": 284
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 395,
+          "end": 399
+        },
+        {
+          "path": "packages/contracts/src/interfaces/IRaffle.sol",
+          "start": 37,
+          "end": 37
+        },
+        {
+          "path": "packages/contracts/src/interfaces/IRaffle.sol",
+          "start": 322,
+          "end": 324
+        }
+      ],
+      "evidence": [
+        "24f406a76a4bd574fbef454d3509fc5f3126c5a0781711eb6eff954298e1fe06"
+      ]
+    }
+  ],
+  "properties": [],
+  "coverage": [
+    {
+      "schemaVersion": 1,
+      "id": "07698b18-f706-4456-8624-f90657e19ec6",
+      "createdAt": "2026-10-21T07:55:34.133Z",
+      "runId": "a184629e-4470-49a4-96a4-44695a238c6a",
+      "taskId": "1e51545d-1922-4b73-b8e7-b64a8e1a81af",
+      "state": "succeeded",
+      "claim": "Recorded 39 authorized files. Build configuration unsupported; see diagnosis.",
+      "gaps": [
+        "No semantic, test, or property coverage established by intake."
+      ],
+      "evidence": [
+        "1edfcee4dba01314e4f3d3d56239cb1f1e173238759796866e0a9bbedc0de16c"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "12d57288-ca64-4999-8844-f6a7be2e685e",
+      "createdAt": "2026-10-21T08:23:53.488Z",
+      "runId": "a184629e-4470-49a4-96a4-44695a238c6a",
+      "taskId": "external-review:149e78cf-3daa-414d-851c-10159c921565",
+      "state": "unknown",
+      "claim": "External agent observations imported and schema/source validated. Review quality and claimed model execution are unverified.",
+      "gaps": [
+        "External agent provenance, token usage and spend are unknown.",
+        "Imported observations do not complete blocked local checks or establish any property.",
+        "Source-only pass: no compilation, test, fuzz, invariant, symbolic-execution or prover run was performed. Nothing in this review is backed by execution evidence, and no coverage was measured.",
+        "The Chainlink VRFV2PlusWrapper and VRF coordinator implementations are not in the pinned context; only IVRFV2PlusWrapper, VRFV2PlusWrapperConsumerBase and VRFV2PlusClient are. The following was assumed from general knowledge: the callback is asynchronous and delivered at most once per request with the requested callback gas; a failed callback is not retried; the native price uses tx.gasprice; request IDs are unique; random words can be derived from fulfillment calldata. The timing-window and liveness conclusions depend on these assumptions.",
+        "The canonical USDC implementation is not in context. Standard ERC20 behavior without fees, hooks or rebasing was assumed, per the requirements. USDC blacklisting or pausing could freeze a clone or permanently block payouts to the per-raffle immutable sponsorRecipient or protocolTreasury. This was treated as an accepted trusted-dependency risk and not assessed further.",
+        "Dependency sources were taken as given by the snapshot hashes and were not diffed against upstream @openzeppelin/contracts 5.6.1 or @chainlink/contracts 1.5.0, the versions pinned in pnpm-lock.yaml. Spot reads found nothing non-standard in ERC721, ERC721Utils, ReentrancyGuard, SafeERC20, Math.mulDiv, Clones or VRFV2PlusWrapperConsumerBase. ReentrancyGuard uses a namespaced slot whose zero value in uninitialized clones is treated as not entered.",
+        "remappings.txt maps only @openzeppelin/contracts and forge-std, so resolution of @chainlink/contracts relies on Foundry auto-remapping from libs = [lib, node_modules]. Import resolution and compilation with solc 0.8.36 / cancun were not verified.",
+        "Existing tests, deployment scripts, Hardhat configuration, actual deployment parameters (USDC, wrapper and treasury addresses) and frontend or indexer code were outside the snapshot and not reviewed.",
+        "Callback gas sufficiency was estimated from the code, not measured: 300,000 gas covers a handful of storage reads and writes plus one event through the clone delegatecall. The worst-case gas of a 100-ticket refund batch was also estimated, not measured.",
+        "Economic behavior was assessed only qualitatively. No observation was raised because each of these cases follows the stated design: the sponsor buying entries to cross the reserve, who pays for the single VRF request, buyers preferring the refund path when the reserve is missed, and the requester's fee being lost if fulfillment fails.",
+        "A winning ticket that is never redeemed has no deadline or fallback, for example one held by a contract that cannot call redeemWinningTicket. The NFT or cash allocation can then stay locked indefinitely. This matches the stated rule that redemption requires the current ticket owner, so it was not raised as an observation.",
+        "Properties checked by reading only, with no defect found (unproven): (1) liabilities always sum to gross sales; (2) refunds pay exactly ENTRY_PRICE per entry and burn before paying; (3) gross is always a multiple of 1e6, so the 5% and 80% splits are exact and the sponsor remainder leaves no dust; (4) the buy, request, callback and refund boundaries match the stated windows and cannot overlap at the same timestamp; (5) the callback only writes storage and does not revert on decodable input; (6) initialization is factory-only and one-time, and the implementation is locked; (7) every state-changing entry point is nonReentrant except the standard ERC721 functions, the status-gated receiver hook and the wrapper-only callback; (8) any raffle reaches an exit no later than 30 + 2 + 2 days after creation.",
+        "Independence disclosure: this pass used only context.json and the harness instructions in this directory. No peer findings, analyzer output or evaluation labels were seen. General background knowledge of OpenZeppelin, Chainlink VRF v2.5 and USDC was used and is labeled as an assumption wherever relied on."
+      ],
+      "evidence": [
+        "24f406a76a4bd574fbef454d3509fc5f3126c5a0781711eb6eff954298e1fe06"
+      ]
+    }
+  ],
+  "executions": [],
+  "invocations": [
+    {
+      "schemaVersion": 1,
+      "id": "149e78cf-3daa-414d-851c-10159c921565",
+      "createdAt": "2026-10-21T08:23:53.486Z",
+      "runId": "a184629e-4470-49a4-96a4-44695a238c6a",
+      "provider": "external-agent",
+      "model": "claude-code-2.1.299 / claude-opus-5-5 (effort max requested; provider-returned model claude-opus-5-5)",
+      "contextHash": "cbec71422797334035a6a1ab2b5b6a22768aeb2d0a8b727b85d146017c351c7a",
+      "settings": {
+        "provenance": "operator-reported, not independently verified",
+        "methodology": "native-review-v1",
+        "execution": "outside Gebal",
+        "generationSettings": "unknown"
+      },
+      "inputTokens": null,
+      "outputTokens": null,
+      "costUsd": null,
+      "state": "succeeded",
+      "evidence": [
+        "24f406a76a4bd574fbef454d3509fc5f3126c5a0781711eb6eff954298e1fe06"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "schemaVersion": 1,
+      "id": "d907053a-2068-4a5d-aa98-2dab0aa0b1d5",
+      "createdAt": "2026-10-21T07:55:33.596Z",
+      "subjectId": "e31228e2-2890-4ed1-8a0f-e7b516245b4d",
+      "action": "approve-plan",
+      "rationale": "Delegated assistant authorization: the owner's overnight audit instruction (audits/2026-10-21-r001/prompts/claude-overnight.md) authorized source-only Gebal review of packages/contracts/src (5 production files) plus foundry.toml, remappings.txt, pnpm-lock.yaml and selected OZ/Chainlink dependency sources; no code execution or additional provider calls. Owner did not personally review this plan hash.",
+      "actor": "assistant:claude-code-2.1.299/claude-opus-5-5 (delegated)",
+      "boundHash": "79aa8bf3aefc39887d15c9240d7fe690ae5b32107c9622cd0f2f3c3599398b55"
+    }
+  ],
+  "events": [
+    {
+      "seq": 1,
+      "run_id": "a184629e-4470-49a4-96a4-44695a238c6a",
+      "at": "2026-10-21T07:55:34.120Z",
+      "message": "Approved plan enqueued."
+    },
+    {
+      "seq": 2,
+      "run_id": "a184629e-4470-49a4-96a4-44695a238c6a",
+      "at": "2026-10-21T07:55:34.125Z",
+      "message": "intake: running (attempt 1)"
+    },
+    {
+      "seq": 3,
+      "run_id": "a184629e-4470-49a4-96a4-44695a238c6a",
+      "at": "2026-10-21T07:55:34.133Z",
+      "message": "intake: succeeded — Recorded 39 authorized files. Build configuration unsupported; see diagnosis."
+    },
+    {
+      "seq": 4,
+      "run_id": "a184629e-4470-49a4-96a4-44695a238c6a",
+      "at": "2026-10-21T07:55:34.134Z",
+      "message": "Run succeeded. Review coverage gaps before relying on results."
+    },
+    {
+      "seq": 5,
+      "run_id": "a184629e-4470-49a4-96a4-44695a238c6a",
+      "at": "2026-10-21T08:23:53.488Z",
+      "message": "Imported external review from operator-reported reviewer claude-code-2.1.299 / claude-opus-5-5 (effort max requested; provider-returned model claude-opus-5-5); observations remain unreviewed."
+    }
+  ],
+  "disclaimer": "An empty findings list is not a security certificate. Completed checks establish only their stated coverage."
+}

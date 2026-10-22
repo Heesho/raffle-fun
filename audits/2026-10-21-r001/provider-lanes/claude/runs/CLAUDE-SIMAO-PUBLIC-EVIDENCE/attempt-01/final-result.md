@@ -1,0 +1,1 @@
+Turn 5: waiting. All 12 lens agents are running in the background on Opus 5.5 at max effort, and a background watcher will fire once all 12 raw output files exist. I'll pick up at Turn 6 (dedup, judge, report, preservation, first-pass hashes) when the completion notifications come in. Nothing has been reported back yet.

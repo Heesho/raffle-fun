@@ -1,0 +1,68 @@
+Raffle C3 linearization (most-derived first): ['Raffle', 'VRFV2PlusWrapperConsumerBase', 'IERC721Receiver', 'ReentrancyGuard', 'ERC721', 'IERC721Errors', 'IERC721Metadata', 'IERC721', 'ERC165', 'IERC165', 'Context', 'IRaffle']
+  explicit overrides in Raffle: 23
+    initialize(IRaffle.RaffleInitParams) <- overrides ['IRaffle', 'IRaffle']
+    buyEntries(address,uint128) <- overrides ['IRaffle', 'IRaffle']
+    requestDraw() <- overrides ['IRaffle', 'IRaffle']
+    enableRefunds() <- overrides ['IRaffle', 'IRaffle']
+    settleWinningTicket(uint256) <- overrides ['IRaffle', 'IRaffle']
+    redeemWinningTicket(uint256) <- overrides ['IRaffle', 'IRaffle']
+    refundTickets(uint256[]) <- overrides ['IRaffle', 'IRaffle']
+    releaseSponsorProceeds() <- overrides ['IRaffle', 'IRaffle']
+    releaseProtocolFees() <- overrides ['IRaffle', 'IRaffle']
+    releaseSponsorPrize() <- overrides ['IRaffle', 'IRaffle']
+    onERC721Received(address,address,uint256,bytes) <- overrides ['IERC721Receiver', 'IERC721Receiver']
+    getVrfRequestPrice() <- overrides ['IRaffle', 'IRaffle']
+    estimateVrfRequestPrice(uint256) <- overrides ['IRaffle', 'IRaffle']
+    vrfWrapper() <- overrides ['IRaffle', 'IRaffle']
+    ticketRange(uint256) <- overrides ['IRaffle', 'IRaffle']
+    drawRequestDeadline() <- overrides ['IRaffle', 'IRaffle']
+    callbackDeadline() <- overrides ['IRaffle', 'IRaffle']
+    accountedQuoteBalance() <- overrides ['IRaffle', 'IRaffle']
+    grossSales() <- overrides ['IRaffle', 'IRaffle']
+    name() <- overrides ['ERC721', 'ERC721']
+    symbol() <- overrides ['ERC721', 'ERC721']
+    _update(address,uint256,address) <- overrides ['ERC721', 'ERC721']
+    fulfillRandomWords(uint256,uint256[]) <- overrides ['VRFV2PlusWrapperConsumerBase', 'VRFV2PlusWrapperConsumerBase']
+  storage layout (Raffle):
+    slot   0 off  0  string ERC721._name
+    slot   1 off  0  string ERC721._symbol
+    slot   2 off  0  mapping(uint256 => address) ERC721._owners
+    slot   3 off  0  mapping(address => uint256) ERC721._balances
+    slot   4 off  0  mapping(uint256 => address) ERC721._tokenApprovals
+    slot   5 off  0  mapping(address => mapping(address => bool)) ERC721._operatorApprovals
+    slot   6 off  0  address Raffle.sponsor
+    slot   7 off  0  address Raffle.sponsorRecipient
+    slot   8 off  0  address Raffle.protocolTreasury
+    slot   9 off  0  IERC721 Raffle.prizeToken
+    slot  10 off  0  uint256 Raffle.prizeTokenId
+    slot  11 off  0  uint256 Raffle.raffleId
+    slot  12 off  0  uint128 Raffle.reserveEntries
+    slot  12 off 16  uint64 Raffle.endTime
+    slot  13 off  0  uint128 Raffle.totalEntries
+    slot  13 off 16  uint128 Raffle.ticketCount
+    slot  14 off  0  uint256 Raffle.unsettledPot
+    slot  15 off  0  uint256 Raffle.remainingRefundLiability
+    slot  16 off  0  address Raffle.winnerRecipient
+    slot  17 off  0  uint256 Raffle.winnerProceeds
+    slot  18 off  0  uint256 Raffle.sponsorProceeds
+    slot  19 off  0  uint256 Raffle.protocolFees
+    slot  20 off  0  uint256 Raffle.vrfRequestId
+    slot  21 off  0  uint64 Raffle.drawRequestedAt
+    slot  21 off  8  uint64 Raffle.resolvedAt
+    slot  21 off 16  uint128 Raffle.winningEntry
+    slot  22 off  0  uint256 Raffle.winningTicketId
+    slot  23 off  0  IRaffle.Status Raffle.status
+    slot  23 off  1  bool Raffle.settlementComplete
+    slot  23 off  2  bool Raffle.winnerRedeemed
+    slot  23 off  3  bool Raffle.prizeClaimed
+    slot  23 off  4  bool Raffle.initialized
+    slot  24 off  0  mapping(uint256 => Raffle.TicketRange) Raffle._ticketRanges
+    slot  25 off  0  bool Raffle._requestInFlight
+RaffleFactory C3 linearization (most-derived first): ['RaffleFactory', 'ReentrancyGuard', 'IRaffleFactory']
+  explicit overrides in RaffleFactory: 1
+    createRaffle(IRaffleFactory.CreateRaffleParams) <- overrides ['IRaffleFactory', 'IRaffleFactory']
+  storage layout (RaffleFactory):
+    slot   0 off  0  uint256 RaffleFactory.raffleCount
+    slot   1 off  0  mapping(uint256 => address) RaffleFactory.raffleById
+    slot   2 off  0  mapping(address => uint256) RaffleFactory.idByRaffle
+    slot   3 off  0  mapping(address => bool) RaffleFactory.isRaffle

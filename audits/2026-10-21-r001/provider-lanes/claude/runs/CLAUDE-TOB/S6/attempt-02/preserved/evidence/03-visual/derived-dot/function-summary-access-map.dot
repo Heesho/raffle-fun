@@ -1,0 +1,71 @@
+digraph "function_summary_access_map" {
+  graph [rankdir=LR, fontname="Helvetica", fontsize=12, labelloc=t, nodesep=0.25, ranksep=1.6,
+         label="raffle.fun — Slither function-summary + vars-and-auth authorization + transitive external interactions\ngreen = nonReentrant · amber = caller-gated without nonReentrant · blue = inherited ERC-721 auth · grey = always reverts · red parties = untrusted (DESIGN.md)"];
+  node [shape=plain, fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9];
+  subgraph "cluster_Raffle" { label="Raffle (state-changing entry points)"; style=rounded; color="#6b7280";
+    "Raffle__rawFulfillRandomWords" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3" BGCOLOR="#fef3c7"><TR><TD ALIGN="LEFT"><B>rawFulfillRandomWords(uint256,uint256[])</B></TD></TR><TR><TD ALIGN="LEFT">external · nonpayable · declared in VRFV2PlusWrapperConsumerBase · CC=2</TD></TR><TR><TD ALIGN="LEFT">modifiers: —</TD></TR><TR><TD ALIGN="LEFT">auth: msg.sender == VRF wrapper</TD></TR></TABLE>>];
+    "Raffle__approve" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3" BGCOLOR="#dbeafe"><TR><TD ALIGN="LEFT"><B>approve(address,uint256)</B></TD></TR><TR><TD ALIGN="LEFT">public · nonpayable · declared in ERC721 · CC=2</TD></TR><TR><TD ALIGN="LEFT">modifiers: —</TD></TR><TR><TD ALIGN="LEFT">auth: ERC721 owner/operator (_approve auth)</TD></TR></TABLE>>];
+    "Raffle__setApprovalForAll" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3" BGCOLOR="#dbeafe"><TR><TD ALIGN="LEFT"><B>setApprovalForAll(address,bool)</B></TD></TR><TR><TD ALIGN="LEFT">public · nonpayable · declared in ERC721 · CC=2</TD></TR><TR><TD ALIGN="LEFT">modifiers: —</TD></TR><TR><TD ALIGN="LEFT">auth: caller sets own approvals</TD></TR></TABLE>>];
+    "Raffle__transferFrom" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3" BGCOLOR="#dbeafe"><TR><TD ALIGN="LEFT"><B>transferFrom(address,address,uint256)</B></TD></TR><TR><TD ALIGN="LEFT">public · nonpayable · declared in ERC721 · CC=3</TD></TR><TR><TD ALIGN="LEFT">modifiers: —</TD></TR><TR><TD ALIGN="LEFT">auth: ERC721 owner/approved (_checkAuthorized)</TD></TR></TABLE>>];
+    "Raffle__safeTransferFrom" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3" BGCOLOR="#dbeafe"><TR><TD ALIGN="LEFT"><B>safeTransferFrom(address,address,uint256)</B></TD></TR><TR><TD ALIGN="LEFT">public · nonpayable · declared in ERC721 · CC=2</TD></TR><TR><TD ALIGN="LEFT">modifiers: —</TD></TR><TR><TD ALIGN="LEFT">auth: ERC721 owner/approved (_checkAuthorized)</TD></TR></TABLE>>];
+    "Raffle__safeTransferFrom_bytes" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3" BGCOLOR="#dbeafe"><TR><TD ALIGN="LEFT"><B>safeTransferFrom(address,address,uint256,bytes)</B></TD></TR><TR><TD ALIGN="LEFT">public · nonpayable · declared in ERC721 · CC=2</TD></TR><TR><TD ALIGN="LEFT">modifiers: —</TD></TR><TR><TD ALIGN="LEFT">auth: ERC721 owner/approved (_checkAuthorized)</TD></TR></TABLE>>];
+    "Raffle__receive" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3" BGCOLOR="#e5e7eb"><TR><TD ALIGN="LEFT"><B>receive()</B></TD></TR><TR><TD ALIGN="LEFT">external · payable · declared in Raffle · CC=1</TD></TR><TR><TD ALIGN="LEFT">modifiers: —</TD></TR><TR><TD ALIGN="LEFT">auth: always reverts (DirectNativeTransfer)</TD></TR></TABLE>>];
+    "Raffle__initialize" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3" BGCOLOR="#fef3c7"><TR><TD ALIGN="LEFT"><B>initialize(IRaffle.RaffleInitParams)</B></TD></TR><TR><TD ALIGN="LEFT">external · nonpayable · declared in Raffle · CC=7</TD></TR><TR><TD ALIGN="LEFT">modifiers: —</TD></TR><TR><TD ALIGN="LEFT">auth: msg.sender == factory; !initialized</TD></TR></TABLE>>];
+    "Raffle__buyEntries" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3" BGCOLOR="#d1fae5"><TR><TD ALIGN="LEFT"><B>buyEntries(address,uint128)</B></TD></TR><TR><TD ALIGN="LEFT">external · nonpayable · declared in Raffle · CC=5</TD></TR><TR><TD ALIGN="LEFT">modifiers: nonReentrant</TD></TR><TR><TD ALIGN="LEFT">auth: permissionless (anyone)</TD></TR></TABLE>>];
+    "Raffle__requestDraw" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3" BGCOLOR="#d1fae5"><TR><TD ALIGN="LEFT"><B>requestDraw()</B></TD></TR><TR><TD ALIGN="LEFT">external · payable · declared in Raffle · CC=8</TD></TR><TR><TD ALIGN="LEFT">modifiers: nonReentrant</TD></TR><TR><TD ALIGN="LEFT">auth: permissionless (anyone)</TD></TR></TABLE>>];
+    "Raffle__enableRefunds" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3" BGCOLOR="#d1fae5"><TR><TD ALIGN="LEFT"><B>enableRefunds()</B></TD></TR><TR><TD ALIGN="LEFT">external · nonpayable · declared in Raffle · CC=7</TD></TR><TR><TD ALIGN="LEFT">modifiers: nonReentrant</TD></TR><TR><TD ALIGN="LEFT">auth: deadline passed, or sponsor on empty Active raffle</TD></TR></TABLE>>];
+    "Raffle__settleWinningTicket" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3" BGCOLOR="#d1fae5"><TR><TD ALIGN="LEFT"><B>settleWinningTicket(uint256)</B></TD></TR><TR><TD ALIGN="LEFT">external · nonpayable · declared in Raffle · CC=1</TD></TR><TR><TD ALIGN="LEFT">modifiers: nonReentrant</TD></TR><TR><TD ALIGN="LEFT">auth: permissionless (anyone)</TD></TR></TABLE>>];
+    "Raffle__redeemWinningTicket" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3" BGCOLOR="#d1fae5"><TR><TD ALIGN="LEFT"><B>redeemWinningTicket(uint256)</B></TD></TR><TR><TD ALIGN="LEFT">external · nonpayable · declared in Raffle · CC=10</TD></TR><TR><TD ALIGN="LEFT">modifiers: nonReentrant</TD></TR><TR><TD ALIGN="LEFT">auth: msg.sender == ownerOf(winning ticket)</TD></TR></TABLE>>];
+    "Raffle__refundTickets" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3" BGCOLOR="#d1fae5"><TR><TD ALIGN="LEFT"><B>refundTickets(uint256[])</B></TD></TR><TR><TD ALIGN="LEFT">external · nonpayable · declared in Raffle · CC=4</TD></TR><TR><TD ALIGN="LEFT">modifiers: nonReentrant</TD></TR><TR><TD ALIGN="LEFT">auth: msg.sender == ownerOf(each ticket)</TD></TR></TABLE>>];
+    "Raffle__releaseSponsorProceeds" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3" BGCOLOR="#d1fae5"><TR><TD ALIGN="LEFT"><B>releaseSponsorProceeds()</B></TD></TR><TR><TD ALIGN="LEFT">external · nonpayable · declared in Raffle · CC=2</TD></TR><TR><TD ALIGN="LEFT">modifiers: nonReentrant</TD></TR><TR><TD ALIGN="LEFT">auth: permissionless (anyone)</TD></TR></TABLE>>];
+    "Raffle__releaseProtocolFees" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3" BGCOLOR="#d1fae5"><TR><TD ALIGN="LEFT"><B>releaseProtocolFees()</B></TD></TR><TR><TD ALIGN="LEFT">external · nonpayable · declared in Raffle · CC=2</TD></TR><TR><TD ALIGN="LEFT">modifiers: nonReentrant</TD></TR><TR><TD ALIGN="LEFT">auth: permissionless (anyone)</TD></TR></TABLE>>];
+    "Raffle__releaseSponsorPrize" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3" BGCOLOR="#d1fae5"><TR><TD ALIGN="LEFT"><B>releaseSponsorPrize()</B></TD></TR><TR><TD ALIGN="LEFT">external · nonpayable · declared in Raffle · CC=4</TD></TR><TR><TD ALIGN="LEFT">modifiers: nonReentrant</TD></TR><TR><TD ALIGN="LEFT">auth: permissionless (anyone)</TD></TR></TABLE>>];
+    "Raffle__onERC721Received" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3" BGCOLOR="#fef3c7"><TR><TD ALIGN="LEFT"><B>onERC721Received(address,address,uint256,bytes)</B></TD></TR><TR><TD ALIGN="LEFT">external · nonpayable · declared in Raffle · CC=2</TD></TR><TR><TD ALIGN="LEFT">modifiers: —</TD></TR><TR><TD ALIGN="LEFT">auth: AwaitingPrize; msg.sender == prizeToken; from == sponsor; operator == factory</TD></TR></TABLE>>];
+  }
+  subgraph "cluster_RaffleFactory" { label="RaffleFactory (state-changing entry points)"; style=rounded; color="#6b7280";
+    "RaffleFactory__createRaffle" [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3" BGCOLOR="#d1fae5"><TR><TD ALIGN="LEFT"><B>createRaffle(IRaffleFactory.CreateRaffleParams)</B></TD></TR><TR><TD ALIGN="LEFT">external · nonpayable · declared in RaffleFactory · CC=5</TD></TR><TR><TD ALIGN="LEFT">modifiers: nonReentrant</TD></TR><TR><TD ALIGN="LEFT">auth: anyone (msg.sender becomes sponsor; must own prize)</TD></TR></TABLE>>];
+  }
+  subgraph "cluster_ext" { label="External parties reached (transitively)"; style=dashed; color="#9ca3af";
+    "P_usdc" [shape=box, style="rounded,filled", fillcolor="#e8f0fe", color="#1a56db", penwidth=2, label="Canonical USDC (trusted)
+SafeERC20 transfer/transferFrom"];
+    "P_vrf" [shape=box, style="rounded,filled", fillcolor="#e8f0fe", color="#1a56db", penwidth=2, label="Chainlink VRF v2.5 wrapper (trusted)
+calculate/requestRandomWordsInNative"];
+    "P_registry" [shape=box, style="rounded,filled", fillcolor="#e8f0fe", color="#1a56db", penwidth=2, label="RaffleFactory registry views (trusted)
+raffleImplementation() / isRaffle()"];
+    "P_prize" [shape=box, style="rounded,filled", fillcolor="#fde8e8", color="#c81e1e", penwidth=2, label="Prize ERC-721 contract (UNTRUSTED)
+transferFrom / ownerOf / supportsInterface / safeTransferFrom"];
+    "P_receiver" [shape=box, style="rounded,filled", fillcolor="#fde8e8", color="#c81e1e", penwidth=2, label="Ticket recipient contract (UNTRUSTED)
+onERC721Received callback"];
+    "P_native" [shape=box, style="rounded,filled", fillcolor="#fde8e8", color="#c81e1e", penwidth=2, label="msg.sender (UNTRUSTED)
+native excess-fee refund call{value} (all gas)"];
+    "P_clone" [shape=box, style="rounded,filled", fillcolor="#f3f4f6", color="#374151", penwidth=2, label="Raffle clone (protocol code)
+initialize() / status()"];
+    "P_create" [shape=box, style="rounded,filled", fillcolor="#f3f4f6", color="#374151", penwidth=2, label="CREATE: ERC-1167 clone
+(Clones.clone)"];
+  }
+  "Raffle__transferFrom" -> "P_registry" [color="#1a56db", style=solid];
+  "Raffle__safeTransferFrom" -> "P_receiver" [color="#c81e1e", style=bold];
+  "Raffle__safeTransferFrom" -> "P_registry" [color="#1a56db", style=solid];
+  "Raffle__safeTransferFrom_bytes" -> "P_receiver" [color="#c81e1e", style=bold];
+  "Raffle__safeTransferFrom_bytes" -> "P_registry" [color="#1a56db", style=solid];
+  "Raffle__initialize" -> "P_registry" [color="#1a56db", style=solid];
+  "Raffle__buyEntries" -> "P_receiver" [color="#c81e1e", style=bold];
+  "Raffle__buyEntries" -> "P_registry" [color="#1a56db", style=solid];
+  "Raffle__buyEntries" -> "P_usdc" [color="#1a56db", style=solid];
+  "Raffle__requestDraw" -> "P_native" [color="#c81e1e", style=bold];
+  "Raffle__requestDraw" -> "P_vrf" [color="#1a56db", style=solid];
+  "Raffle__redeemWinningTicket" -> "P_prize" [color="#c81e1e", style=bold];
+  "Raffle__redeemWinningTicket" -> "P_registry" [color="#1a56db", style=solid];
+  "Raffle__redeemWinningTicket" -> "P_usdc" [color="#1a56db", style=solid];
+  "Raffle__refundTickets" -> "P_registry" [color="#1a56db", style=solid];
+  "Raffle__refundTickets" -> "P_usdc" [color="#1a56db", style=solid];
+  "Raffle__releaseSponsorProceeds" -> "P_registry" [color="#1a56db", style=solid];
+  "Raffle__releaseSponsorProceeds" -> "P_usdc" [color="#1a56db", style=solid];
+  "Raffle__releaseProtocolFees" -> "P_registry" [color="#1a56db", style=solid];
+  "Raffle__releaseProtocolFees" -> "P_usdc" [color="#1a56db", style=solid];
+  "Raffle__releaseSponsorPrize" -> "P_prize" [color="#c81e1e", style=bold];
+  "RaffleFactory__createRaffle" -> "P_clone" [color="#374151", style=solid];
+  "RaffleFactory__createRaffle" -> "P_create" [color="#374151", style=solid];
+  "RaffleFactory__createRaffle" -> "P_prize" [color="#c81e1e", style=bold];
+}

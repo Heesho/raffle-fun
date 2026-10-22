@@ -1,0 +1,24 @@
+Compiling 55 files with Solc 0.8.36
+Solc 0.8.36 finished in 18.48s
+Compiler run successful with warnings:
+Warning (5159): "selfdestruct" has been deprecated. Note that, starting from the Cancun hard fork, the underlying opcode no longer deletes the code and data associated with an account and only transfers its Ether to the beneficiary, unless executed in the same transaction in which the contract was created (see EIP-6780). Any use in newly deployed contracts is strongly discouraged even if the new behavior is taken into account. Future changes to the EVM might further reduce the functionality of the opcode.
+   --> /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/Helpers.sol:116:9:
+    |
+116 |         selfdestruct(to);
+    |         ^^^^^^^^^^^^
+
+
+Ran 2 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:G_FindingsTest
+[FAIL: next call did not revert as expected] test_G1_PoC_futureCloneSponsorRecipient_movesPrizeIntoAnotherClone() (gas: 1514698)
+[PASS] test_G2_PoC_ticketMintedToFutureCloneAddressIsStranded() (gas: 1354509)
+Suite result: FAILED. 1 passed; 1 failed; 0 skipped; finished in 10.85ms (834.58µs CPU time)
+
+Ran 1 test suite in 17.92ms (10.85ms CPU time): 1 tests passed, 1 failed, 0 skipped (2 total tests)
+
+Failing tests:
+Encountered 1 failing test in /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:G_FindingsTest
+[FAIL: next call did not revert as expected] test_G1_PoC_futureCloneSponsorRecipient_movesPrizeIntoAnotherClone() (gas: 1514698)
+
+Encountered a total of 1 failing tests, 1 tests succeeded
+
+Tip: Run `forge test --rerun` to retry only the 1 failed test

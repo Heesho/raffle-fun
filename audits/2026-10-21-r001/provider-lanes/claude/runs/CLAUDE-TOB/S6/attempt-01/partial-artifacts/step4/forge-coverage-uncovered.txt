@@ -1,0 +1,43 @@
+== raffle-src/Raffle.sol: 10 uncovered lines, 22 untaken branch arms
+   line L184: ) {
+   line L185: revert ZeroAddress();
+   line L188: revert UnsafeProtocolDestination(params.sponsor);
+   line L191: revert UnsafeProtocolDestination(params.protocolTreasury);
+   line L194: revert UnsafeProtocolDestination(params.sponsorRecipient);
+   line L267: success := call(gas(), refundRecipient, excess, 0, 0, 0, 0)
+   line L283: revert RefundsNotAvailable(deadline, block.timestamp);
+   line L330: if (prizeClaimed) revert PrizeAlreadyClaimed();
+   line L336: revert PrizeDeliveryVerificationFailed(winner);
+   line L612: validatedWrapper = wrapper;
+   branch L159: if (msg.sender == address(0) || quoteToken_ == address(0)) revert ZeroAddress();
+   branch L178: if (msg.sender != factory) revert OnlyFactory();
+   branch L184: ) {
+   branch L187: if (_isProtocolDestination(params.sponsor, params.prizeToken)) {
+   branch L190: if (_isProtocolDestination(params.protocolTreasury, params.prizeToken)) {
+   branch L193: if (_isProtocolDestination(params.sponsorRecipient, params.prizeToken)) {
+   branch L217: if (recipient == address(0)) revert InvalidRecipient();
+   branch L218: if (entryCount == 0) revert ZeroEntryCount();
+   branch L243: if (totalEntries == 0) revert NoEntriesSold();
+   branch L250: if (msg.value < quotedFee) revert InsufficientVrfFee(quotedFee, msg.value);
+   branch L258: if (paidPrice > msg.value) revert InsufficientVrfFee(paidPrice, msg.value);
+   branch L282: if (msg.sender != sponsor && block.timestamp < deadline) {
+   branch L289: } else if (status == Status.Drawing) {
+   branch L291: if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+   branch L312: if (result != Status.NftWon && result != Status.CashWon) revert InvalidStatus(result);
+   branch L329: if (result == Status.NftWon) {
+   branch L330: if (prizeClaimed) revert PrizeAlreadyClaimed();
+   branch L335: if (prizeToken.ownerOf(deliveredPrizeTokenId) != winner) {
+   branch L340: if (cashAmount == 0) revert NoWinnerProceeds();
+   branch L405: if (prizeToken.ownerOf(prizeTokenId) != recipient) revert PrizeDeliveryVerificationFailed(recipient);
+   branch L536: if (result != Status.NftWon && result != Status.CashWon) revert InvalidStatus(result);
+   branch L611: if (wrapper == address(0)) revert ZeroAddress();
+== raffle-src/RaffleFactory.sol: 5 uncovered lines, 4 untaken branch arms
+   line L81: {
+   line L82: revert UnsafeProtocolDestination(protocolTreasury_);
+   line L174: } catch {
+   line L175: revert UnsupportedPrizeToken(params.prizeToken);
+   line L177: if (!supports721) revert UnsupportedPrizeToken(params.prizeToken);
+   branch L81: {
+   branch L90: if (protocolTreasury_ == implementation) revert UnsafeProtocolDestination(protocolTreasury_);
+   branch L174: } catch {
+   branch L177: if (!supports721) revert UnsupportedPrizeToken(params.prizeToken);

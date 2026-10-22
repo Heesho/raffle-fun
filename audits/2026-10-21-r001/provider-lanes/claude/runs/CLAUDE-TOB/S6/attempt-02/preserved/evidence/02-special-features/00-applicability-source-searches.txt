@@ -1,0 +1,125 @@
+# Step 2 applicability searches over ORIGINAL packages/contracts (src + reachable node_modules deps)
+# generated 2026-10-21T18:13:58Z using /usr/bin/grep (grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+### A. Upgradeability / proxy indicators
+
+## /usr/bin/grep -rnE 'delegatecall|DELEGATECALL' src node_modules
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:73:    /// @dev Performs a Solidity function call using a low level `delegatecall` and ignoring the return data.
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:74:    function delegatecallNoReturn(address target, bytes memory data) internal returns (bool success) {
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:76:            success := delegatecall(gas(), target, add(data, 0x20), mload(data), 0x00, 0x00)
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:80:    /// @dev Performs a Solidity function call using a low level `delegatecall` and returns the first 64 bytes of the result
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:85:    function delegatecallReturn64Bytes(
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:90:            success := delegatecall(gas(), target, add(data, 0x20), mload(data), 0x00, 0x40)
+
+## /usr/bin/grep -rnE 'Initializable|initializer|reinitializer|_disableInitializers' src node_modules
+src/Raffle.sol:607:    /// @dev Validates the wrapper before passing it to the inherited constructor initializer.
+
+## /usr/bin/grep -rnE 'function initialize|initialized' src
+src/interfaces/IRaffle.sol:22:        /// @notice The clone is initialized and waiting for the factory to escrow the configured prize.
+src/interfaces/IRaffle.sol:308:    function initialize(RaffleInitParams calldata params) external;
+src/interfaces/IRaffle.sol:519:    /// @return complete True for the locked implementation and every initialized clone.
+src/interfaces/IRaffle.sol:520:    function initialized() external view returns (bool complete);
+src/interfaces/IRaffleFactory.sol:30:    /// @notice Emitted after a raffle clone is initialized, registered, funded, and active.
+src/Raffle.sol:136:    bool public override initialized;
+src/Raffle.sol:164:        initialized = true;
+src/Raffle.sol:176:    function initialize(RaffleInitParams calldata params) external override {
+src/Raffle.sol:177:        if (initialized) revert AlreadyInitialized();
+src/Raffle.sol:179:        initialized = true;
+
+## /usr/bin/grep -rnE 'upgradeTo|upgradeToAndCall|UUPS|ERC1967|TransparentUpgradeable|Beacon|_implementation|proxiableUUID' src node_modules
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:17: * contract ERC1967 {
+
+## /usr/bin/grep -rnE 'Clones\.|cloneDeterministic|predictDeterministicAddress|create\(|create2\(' src node_modules/@openzeppelin/contracts/proxy
+src/RaffleFactory.sol:4:import { Clones } from "@openzeppelin/contracts/proxy/Clones.sol";
+src/RaffleFactory.sol:106:        raffle = Clones.clone(raffleImplementation);
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:2:// OpenZeppelin Contracts (last updated v5.5.0) (proxy/Clones.sol)
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:57:            instance := create(value, 0x09, 0x37)
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:75:    function cloneDeterministic(address implementation, bytes32 salt) internal returns (address instance) {
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:76:        return cloneDeterministic(implementation, salt, 0);
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:80:     * @dev Same as {xref-Clones-cloneDeterministic-address-bytes32-}[cloneDeterministic], but with
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:90:    function cloneDeterministic(
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:104:            instance := create2(value, 0x09, 0x37, salt)
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:112:     * @dev Computes the address of a clone deployed using {Clones-cloneDeterministic}.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:114:    function predictDeterministicAddress(
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:132:     * @dev Computes the address of a clone deployed using {Clones-cloneDeterministic}.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:134:    function predictDeterministicAddress(
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:138:        return predictDeterministicAddress(implementation, salt, address(this));
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:177:            instance := create(value, add(bytecode, 0x20), mload(bytecode))
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:197:    function cloneDeterministicWithImmutableArgs(
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:202:        return cloneDeterministicWithImmutableArgs(implementation, args, salt, 0);
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:206:     * @dev Same as {xref-Clones-cloneDeterministicWithImmutableArgs-address-bytes-bytes32-}[cloneDeterministicWithImmutableArgs],
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:216:    function cloneDeterministicWithImmutableArgs(
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:227:     * @dev Computes the address of a clone deployed using {Clones-cloneDeterministicWithImmutableArgs}.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:229:    function predictDeterministicAddressWithImmutableArgs(
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:240:     * @dev Computes the address of a clone deployed using {Clones-cloneDeterministicWithImmutableArgs}.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:242:    function predictDeterministicAddressWithImmutableArgs(
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:247:        return predictDeterministicAddressWithImmutableArgs(implementation, args, salt, address(this));
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:253:     * - If `instance` is a clone that was deployed using `clone` or `cloneDeterministic`, this
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:256:     *   `cloneDeterministicWithImmutableArgs`, this function will return the args array used at
+
+## /usr/bin/grep -rnE 'selfdestruct|SELFDESTRUCT' src node_modules
+(no matches)
+
+### B. Token standards implemented or integrated
+
+## /usr/bin/grep -rnE '^(abstract )?contract |^interface |^library ' src
+src/libraries/RaffleConstants.sol:10:library RaffleConstants {
+src/RaffleFactory.sol:21:contract RaffleFactory is IRaffleFactory, ReentrancyGuard {
+src/interfaces/IRaffle.sol:17:interface IRaffle {
+src/interfaces/IRaffleFactory.sol:11:interface IRaffleFactory {
+src/Raffle.sol:28:contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusWrapperConsumerBase {
+
+## /usr/bin/grep -rnE 'is .*ERC721|ERC721\(|IERC721Receiver|onERC721Received' src
+src/RaffleFactory.sol:127:        IERC721 prize = IERC721(params.prizeToken);
+src/Raffle.sol:11:import { IERC721Receiver } from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+src/Raffle.sol:28:contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusWrapperConsumerBase {
+src/Raffle.sol:156:        ERC721("", "")
+src/Raffle.sol:200:        prizeToken = IERC721(params.prizeToken);
+src/Raffle.sol:416:    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata)
+src/Raffle.sol:430:        selector = IERC721Receiver.onERC721Received.selector;
+
+## /usr/bin/grep -rnE 'ERC20|IERC20|SafeERC20|safeTransfer|safeTransferFrom|balanceOf|approve\(|transferFrom\(' src
+src/RaffleFactory.sol:5:import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+src/RaffleFactory.sol:71:        try IERC20Metadata(quoteToken_).decimals() returns (uint8 decimals_) {
+src/RaffleFactory.sol:128:        prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId);
+src/interfaces/IRaffle.sol:5:import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+src/interfaces/IRaffle.sol:424:    function quoteToken() external view returns (IERC20 token);
+src/Raffle.sol:7:import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+src/Raffle.sol:8:import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+src/Raffle.sol:29:    using SafeERC20 for IERC20;
+src/Raffle.sol:58:    IERC20 public immutable override quoteToken;
+src/Raffle.sol:162:        quoteToken = IERC20(quoteToken_);
+src/Raffle.sol:224:        quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount);
+src/Raffle.sol:334:            prizeToken.transferFrom(address(this), winner, deliveredPrizeTokenId);
+src/Raffle.sol:404:        prizeToken.transferFrom(address(this), recipient, prizeTokenId);
+src/Raffle.sol:560:    /// @dev Transfers one complete current USDC claim through SafeERC20 after rejecting known protocol sinks. The
+src/Raffle.sol:566:        quoteToken.safeTransfer(to, amount);
+
+## /usr/bin/grep -rnE 'ERC1155|ERC777|ERC4626|ERC2612|permit\(|ERC2981|royalt' src
+(no matches)
+
+## /usr/bin/grep -rnE 'supportsInterface|IERC165|interfaceId' src
+src/RaffleFactory.sol:8:import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+src/RaffleFactory.sol:172:        try IERC165(params.prizeToken).supportsInterface(type(IERC721).interfaceId) returns (bool supported) {
+
+### C. Truffle / slither-prop prerequisites
+## find . -iname 'truffle*' (excluding node_modules)
+(end of find)
+
+## /usr/bin/grep -rnE 'truffle' package.json hardhat.config.ts foundry.toml remappings.txt
+(no matches)
+
+## /usr/bin/grep -rnE 'contract [A-Za-z0-9_]+ is [^{]*\bERC20\b' src
+(no matches)
+
+### D. VRF LINK-payment path reachability (dependency unused-return triage)
+
+## /usr/bin/grep -rnE 'requestRandomness\(|requestRandomnessPayInNative\(' src
+src/Raffle.sol:257:        (requestId, paidPrice) = requestRandomnessPayInNative(callbackGasLimit, requestConfirmations, 1, extraArgs);
+
+## /usr/bin/grep -rnE 'i_linkToken|LinkTokenInterface|transferAndCall' src
+(no matches)
+
+### E. Tests present in the provided clean context?
+## find . -path ./node_modules -prune -o \( -iname '*.t.sol' -o -iname '*test*' \) -print
+(end of find)

@@ -1,0 +1,72 @@
+Compiling 6 files with Solc 0.8.36
+Solc 0.8.36 finished in 11.98s
+Compiler run successful with warnings:
+Warning (5159): "selfdestruct" has been deprecated. Note that, starting from the Cancun hard fork, the underlying opcode no longer deletes the code and data associated with an account and only transfers its Ether to the beneficiary, unless executed in the same transaction in which the contract was created (see EIP-6780). Any use in newly deployed contracts is strongly discouraged even if the new behavior is taken into account. Future changes to the EVM might further reduce the functionality of the opcode.
+   --> test/Helpers.sol:116:9:
+    |
+116 |         selfdestruct(to);
+    |         ^^^^^^^^^^^^
+
+
+Ran 4 tests for test/RaffleUnit.t.sol:A_TimingTest
+[PASS] test_A1_saleEndsExclusivelyAtEndTime() (gas: 717784)
+[PASS] test_A2_requestWindowIsHalfOpen_endTime_to_endPlus2Days() (gas: 2155294)
+[PASS] test_A3_refundsOpenExactlyAtRequestDeadline() (gas: 700739)
+[PASS] test_A4_callbackAcceptedStrictlyBeforeCallbackDeadline() (gas: 1544418)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 1.02ms (885.87µs CPU time)
+
+Ran 2 tests for test/RaffleUnit.t.sol:F_ReentrancyTest
+[PASS] test_F1_ticketRecipientCannotReenterAnyGuardedEntryPoint() (gas: 1333490)
+[PASS] test_F2_maliciousPrizeCannotReenterDuringDelivery() (gas: 2229418)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 1.69ms (898.58µs CPU time)
+
+Ran 4 tests for test/RaffleUnit.t.sol:D_RedemptionTest
+[PASS] test_D1_onlyCurrentOwnerRedeems() (gas: 1097466)
+[PASS] test_D2_deliveryFailureRevertsBurnAndInlineSettlement() (gas: 979628)
+[PASS] test_D3_sponsorAndTreasuryClaimIndependently_blocklistedSponsorRecipient() (gas: 969948)
+[PASS] test_D4_settlementWithNonWinningOrNonexistentTicketReverts() (gas: 1033427)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 8.11ms (722.75µs CPU time)
+
+Ran 4 tests for test/RaffleUnit.t.sol:E_AccessTest
+[PASS] test_E1_implementationIsLockedAndInert() (gas: 49877)
+[PASS] test_E2_cloneCannotBeReinitialized() (gas: 455158)
+[PASS] test_E3_factoryRejectsInvalidOrProtocolParameters() (gas: 192699)
+[PASS] test_E4_ticketsCannotBeSentToProtocolPlumbing() (gas: 1088195)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 1.34ms (712.83µs CPU time)
+
+Ran 6 tests for test/RaffleUnit.t.sol:G_FindingsTest
+[PASS] test_G1_PoC_futureCloneSponsorRecipient_movesPrizeIntoAnotherClone() (gas: 1305991)
+[PASS] test_G2_PoC_ticketMintedToFutureCloneAddressIsStranded() (gas: 1357309)
+[PASS] test_G3_PoC_vrfRevealFrontRun_buysListedWinningTicketBeforeCallback() (gas: 1362212)
+[PASS] test_G4_PoC_frozenPrizeCollection_sponsorPaidWinnerUnpaid() (gas: 967417)
+[PASS] test_G5_PoC_emptyRaffleCancellationPaths() (gas: 993417)
+[PASS] test_G6_forcedValueIsStranded() (gas: 635633)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 4.74ms (2.97ms CPU time)
+
+Ran 6 tests for test/RaffleUnit.t.sol:C_VrfTest
+[PASS] test_C1_synchronousCallbackDuringRequestIsIgnored() (gas: 878810)
+[PASS] test_C2_wrongIdWrongLengthReplayAreIgnoredWithoutReverting() (gas: 877700)
+[PASS] test_C3_onlyWrapperCanDeliverRandomness() (gas: 460008)
+[PASS] test_C4_callbackGasIsFarBelowLimit() (gas: 851705)
+Logs:
+  fulfillRandomWords gas (incl. call overhead): 6052
+
+[PASS] test_C5_excessFeeRefundedAndRefundFailureRevertsWholeRequest() (gas: 1169705)
+[PASS] test_C6_insufficientFeeReverts() (gas: 708627)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 9.63ms (7.89ms CPU time)
+
+Ran 4 tests for test/RaffleUnit.t.sol:B_EconomicsTest
+[PASS] testFuzz_B1_settlementSplitsAreExactAndLossless(uint256,bool,uint256) (runs: 2000, μ: 957070, ~: 936294)
+[PASS] testFuzz_B2_refundPaysExactlyPerEntryAndReturnsPrize(uint256,uint256,uint256) (runs: 2000, μ: 920591, ~: 920592)
+[PASS] test_B3_entryCountOverflowGuardAndMaxRaffleStillSettles() (gas: 962451)
+[PASS] test_B4_refundBatchBoundsDuplicatesAndForeignTickets() (gas: 849295)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 539.48ms (1.07s CPU time)
+
+Ran 4 tests for test/HandlerSanity.t.sol:HandlerSanityTest
+[PASS] test_sanity_cashWonLifecycle() (gas: 1646021)
+[PASS] test_sanity_drawingTimeoutAndEmptyRaffle() (gas: 1485888)
+[PASS] test_sanity_failureModes() (gas: 1123085)
+[PASS] test_sanity_nftWonAndRefundLifecycles() (gas: 2731299)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 543.93ms (11.42ms CPU time)
+
+Ran 8 test suites in 546.29ms (1.11s CPU time): 34 tests passed, 0 failed, 0 skipped (34 total tests)

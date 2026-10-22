@@ -1,0 +1,124 @@
+
+Detector: events-maths
+Raffle.initialize(IRaffle.RaffleInitParams) (src/Raffle.sol#176-206) should emit an event for: 
+	- prizeTokenId = params.prizeTokenId (src/Raffle.sol#201) 
+	- reserveEntries = params.reserveEntries (src/Raffle.sol#203) 
+	- endTime = params.endTime (src/Raffle.sol#204) 
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing-events-arithmetic
+
+Detector: calls-loop
+Raffle._isProtocolDestination(address,address) (src/Raffle.sol#593-605) has external calls inside a loop: unsafeDestination = destination == address(this) || destination == factory || destination == address(quoteToken) || destination == address(i_vrfV2PlusWrapper) || destination == prizeToken_ || destination == canonicalFactory.raffleImplementation() (src/Raffle.sol#599-601)
+	Calls stack containing the loop:
+		Raffle.refundTickets(uint256[])
+		ERC721._burn(uint256)
+		Raffle._update(address,uint256,address)
+Raffle._isProtocolDestination(address,address) (src/Raffle.sol#593-605) has external calls inside a loop: unsafeDestination = canonicalFactory.isRaffle(destination) (src/Raffle.sol#603)
+	Calls stack containing the loop:
+		Raffle.refundTickets(uint256[])
+		ERC721._burn(uint256)
+		Raffle._update(address,uint256,address)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation/#calls-inside-a-loop
+
+Detector: reentrancy-benign
+Reentrancy in RaffleFactory.createRaffle(IRaffleFactory.CreateRaffleParams) (src/RaffleFactory.sol#97-148):
+	External calls:
+	- IRaffle(raffle).initialize(IRaffle.RaffleInitParams({sponsor:msg.sender,sponsorRecipient:params.sponsorRecipient,protocolTreasury:protocolTreasury,prizeToken:params.prizeToken,prizeTokenId:params.prizeTokenId,raffleId:raffleId,reserveEntries:params.reserveEntries,endTime:params.endTime})) (src/RaffleFactory.sol#109-121)
+	State variables written after the call(s):
+	- idByRaffle[raffle] = raffleId (src/RaffleFactory.sol#124)
+	- raffleById[raffleId] = raffle (src/RaffleFactory.sol#123)
+Reentrancy in Raffle.requestDraw() (src/Raffle.sol#240-273):
+	External calls:
+	- (requestId,paidPrice) = requestRandomnessPayInNative(callbackGasLimit,requestConfirmations,1,extraArgs) (src/Raffle.sol#257)
+		- (i_vrfV2PlusWrapper.requestRandomWordsInNative{value: requestPrice}(_callbackGasLimit,_requestConfirmations,_numWords,extraArgs),requestPrice) (node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol#83-88)
+	State variables written after the call(s):
+	- _requestInFlight = false (src/Raffle.sol#260)
+	- vrfRequestId = requestId (src/Raffle.sol#259)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-3
+
+Detector: timestamp
+Raffle.buyEntries(address,uint128) (src/Raffle.sol#209-237) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp >= endTime (src/Raffle.sol#216)
+Raffle.requestDraw() (src/Raffle.sol#240-273) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp < endTime (src/Raffle.sol#242)
+	- block.timestamp >= requestDeadline (src/Raffle.sol#245)
+Raffle.enableRefunds() (src/Raffle.sol#276-301) uses timestamp for comparisons
+	Dangerous comparisons:
+	- msg.sender != sponsor && block.timestamp < deadline (src/Raffle.sol#282)
+	- block.timestamp < deadline (src/Raffle.sol#287)
+	- block.timestamp < deadline (src/Raffle.sol#291)
+Raffle.callbackDeadline() (src/Raffle.sol#463-465) uses timestamp for comparisons
+	Dangerous comparisons:
+	- drawRequestedAt != 0 (src/Raffle.sol#464)
+Raffle.fulfillRandomWords(uint256,uint256[]) (src/Raffle.sol#509-524) uses timestamp for comparisons
+	Dangerous comparisons:
+	- _requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1 || block.timestamp >= callbackDeadline() (src/Raffle.sol#511-512)
+RaffleFactory.createRaffle(IRaffleFactory.CreateRaffleParams) (src/RaffleFactory.sol#97-148) uses timestamp for comparisons
+	Dangerous comparisons:
+	- params.endTime <= currentTime (src/RaffleFactory.sol#100)
+	- saleDuration > RaffleConstants.MAX_SALE_DURATION (src/RaffleFactory.sol#102)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+
+Detector: assembly
+Raffle.requestDraw() (src/Raffle.sol#240-273) uses assembly
+	- INLINE ASM (src/Raffle.sol#266-268)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#assembly-usage
+
+Detector: pragma
+9 different versions of Solidity are used:
+	- Version constraint ^0.8.0 is used by:
+		-^0.8.0 (node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol#2)
+		-^0.8.0 (node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol#2)
+		-^0.8.0 (node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol#2)
+	- Version constraint ^0.8.4 is used by:
+		-^0.8.4 (node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol#2)
+	- Version constraint >=0.6.2 is used by:
+		->=0.6.2 (node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol#4)
+		->=0.6.2 (node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol#4)
+		->=0.6.2 (node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol#4)
+		->=0.6.2 (node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol#4)
+	- Version constraint >=0.4.16 is used by:
+		->=0.4.16 (node_modules/@openzeppelin/contracts/interfaces/IERC165.sol#4)
+		->=0.4.16 (node_modules/@openzeppelin/contracts/interfaces/IERC20.sol#4)
+		->=0.4.16 (node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol#4)
+		->=0.4.16 (node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol#4)
+	- Version constraint >=0.8.4 is used by:
+		->=0.8.4 (node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol#4)
+	- Version constraint ^0.8.20 is used by:
+		-^0.8.20 (node_modules/@openzeppelin/contracts/proxy/Clones.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/Context.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/Create2.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/Errors.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/Panic.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/StorageSlot.sol#5)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/math/Math.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol#5)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol#4)
+	- Version constraint ^0.8.24 is used by:
+		-^0.8.24 (node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol#4)
+		-^0.8.24 (node_modules/@openzeppelin/contracts/utils/Bytes.sol#4)
+		-^0.8.24 (node_modules/@openzeppelin/contracts/utils/Strings.sol#4)
+	- Version constraint >=0.5.0 is used by:
+		->=0.5.0 (node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol#4)
+	- Version constraint 0.8.36 is used by:
+		-0.8.36 (src/Raffle.sol#2)
+		-0.8.36 (src/RaffleFactory.sol#2)
+		-0.8.36 (src/interfaces/IRaffle.sol#2)
+		-0.8.36 (src/interfaces/IRaffleFactory.sol#2)
+		-0.8.36 (src/libraries/RaffleConstants.sol#2)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#different-pragma-directives-are-used
+
+Detector: naming-convention
+Function IRaffle.ENTRY_PRICE() (src/interfaces/IRaffle.sol#396) is not in mixedCase
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+packages/contracts/src/RaffleFactory.sol analyzed (36 contracts with 102 detectors), 14 result(s) found
+Multiple frameworks detected: Foundry, solc, Solc-json. Using Foundry (highest priority). Use --compile-force-framework to override.
+'forge clean' running (wd: /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/packages/contracts)
+'forge config --json' running
+'forge build --build-info --deny never src/RaffleFactory.sol' running (wd: /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/packages/contracts)

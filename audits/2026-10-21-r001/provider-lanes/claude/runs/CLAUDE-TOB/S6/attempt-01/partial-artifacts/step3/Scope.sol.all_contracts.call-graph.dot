@@ -1,0 +1,1094 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_4232_SafeERC20 {
+label = "SafeERC20"
+"4232_safeTransfer(IERC20,address,uint256)" [label="safeTransfer(IERC20,address,uint256)"]
+"4232_approveAndCallRelaxed(IERC1363,address,uint256,bytes)" [label="approveAndCallRelaxed(IERC1363,address,uint256,bytes)"]
+"4232_safeIncreaseAllowance(IERC20,address,uint256)" [label="safeIncreaseAllowance(IERC20,address,uint256)"]
+"4232_transferFromAndCallRelaxed(IERC1363,address,address,uint256,bytes)" [label="transferFromAndCallRelaxed(IERC1363,address,address,uint256,bytes)"]
+"4232__safeTransfer(IERC20,address,uint256,bool)" [label="_safeTransfer(IERC20,address,uint256,bool)"]
+"4232__safeApprove(IERC20,address,uint256,bool)" [label="_safeApprove(IERC20,address,uint256,bool)"]
+"4232__safeTransferFrom(IERC20,address,address,uint256,bool)" [label="_safeTransferFrom(IERC20,address,address,uint256,bool)"]
+"4232_trySafeTransferFrom(IERC20,address,address,uint256)" [label="trySafeTransferFrom(IERC20,address,address,uint256)"]
+"4232_transferAndCallRelaxed(IERC1363,address,uint256,bytes)" [label="transferAndCallRelaxed(IERC1363,address,uint256,bytes)"]
+"4232_safeDecreaseAllowance(IERC20,address,uint256)" [label="safeDecreaseAllowance(IERC20,address,uint256)"]
+"4232_trySafeTransfer(IERC20,address,uint256)" [label="trySafeTransfer(IERC20,address,uint256)"]
+"4232_forceApprove(IERC20,address,uint256)" [label="forceApprove(IERC20,address,uint256)"]
+"4232_safeTransferFrom(IERC20,address,address,uint256)" [label="safeTransferFrom(IERC20,address,address,uint256)"]
+"4232_transferFromAndCallRelaxed(IERC1363,address,address,uint256,bytes)" -> "4232_safeTransferFrom(IERC20,address,address,uint256)"
+"4232_safeIncreaseAllowance(IERC20,address,uint256)" -> "4232_forceApprove(IERC20,address,uint256)"
+"4232_approveAndCallRelaxed(IERC1363,address,uint256,bytes)" -> "4232_forceApprove(IERC20,address,uint256)"
+"4232_safeTransferFrom(IERC20,address,address,uint256)" -> "4232__safeTransferFrom(IERC20,address,address,uint256,bool)"
+"4232_safeTransfer(IERC20,address,uint256)" -> "4232__safeTransfer(IERC20,address,uint256,bool)"
+"4232_safeDecreaseAllowance(IERC20,address,uint256)" -> "4232_forceApprove(IERC20,address,uint256)"
+"4232_trySafeTransfer(IERC20,address,uint256)" -> "4232__safeTransfer(IERC20,address,uint256,bool)"
+"4232_transferAndCallRelaxed(IERC1363,address,uint256,bytes)" -> "4232_safeTransfer(IERC20,address,uint256)"
+"4232_trySafeTransferFrom(IERC20,address,address,uint256)" -> "4232__safeTransferFrom(IERC20,address,address,uint256,bool)"
+"4232_forceApprove(IERC20,address,uint256)" -> "4232__safeApprove(IERC20,address,uint256,bool)"
+}subgraph cluster_3337_IRaffleFactory {
+label = "IRaffleFactory"
+"3337_quoteToken()" [label="quoteToken()"]
+"3337_createRaffle(IRaffleFactory.CreateRaffleParams)" [label="createRaffle(IRaffleFactory.CreateRaffleParams)"]
+"3337_idByRaffle(address)" [label="idByRaffle(address)"]
+"3337_raffleById(uint256)" [label="raffleById(uint256)"]
+"3337_vrfWrapper()" [label="vrfWrapper()"]
+"3337_raffleCount()" [label="raffleCount()"]
+"3337_requestConfirmations()" [label="requestConfirmations()"]
+"3337_protocolTreasury()" [label="protocolTreasury()"]
+"3337_raffleImplementation()" [label="raffleImplementation()"]
+"3337_isRaffle(address)" [label="isRaffle(address)"]
+"3337_callbackGasLimit()" [label="callbackGasLimit()"]
+}subgraph cluster_12559_SignedMath {
+label = "SignedMath"
+"12559_max(int256,int256)" [label="max(int256,int256)"]
+"12559_average(int256,int256)" [label="average(int256,int256)"]
+"12559_min(int256,int256)" [label="min(int256,int256)"]
+"12559_abs(int256)" [label="abs(int256)"]
+"12559_ternary(bool,int256,int256)" [label="ternary(bool,int256,int256)"]
+"12559_min(int256,int256)" -> "12559_ternary(bool,int256,int256)"
+"12559_max(int256,int256)" -> "12559_ternary(bool,int256,int256)"
+}subgraph cluster_7965_ERC721Utils {
+label = "ERC721Utils"
+"7965_checkOnERC721Received(address,address,address,uint256,bytes)" [label="checkOnERC721Received(address,address,address,uint256,bytes)"]
+}subgraph cluster_9505_Strings {
+label = "Strings"
+"9505__tryParseChr(bytes1)" [label="_tryParseChr(bytes1)"]
+"9505_escapeJSON(string)" [label="escapeJSON(string)"]
+"9505_parseAddress(string,uint256,uint256)" [label="parseAddress(string,uint256,uint256)"]
+"9505_toString(uint256)" [label="toString(uint256)"]
+"9505_parseUint(string)" [label="parseUint(string)"]
+"9505_parseUint(string,uint256,uint256)" [label="parseUint(string,uint256,uint256)"]
+"9505_tryParseUint(string,uint256,uint256)" [label="tryParseUint(string,uint256,uint256)"]
+"9505_equal(string,string)" [label="equal(string,string)"]
+"9505__unsafeWriteBytesOffset(bytes,uint256,bytes1)" [label="_unsafeWriteBytesOffset(bytes,uint256,bytes1)"]
+"9505__tryParseIntUncheckedBounds(string,uint256,uint256)" [label="_tryParseIntUncheckedBounds(string,uint256,uint256)"]
+"9505_parseAddress(string)" [label="parseAddress(string)"]
+"9505_parseInt(string,uint256,uint256)" [label="parseInt(string,uint256,uint256)"]
+"9505_tryParseHexUint(string)" [label="tryParseHexUint(string)"]
+"9505__unsafeReadBytesOffset(bytes,uint256)" [label="_unsafeReadBytesOffset(bytes,uint256)"]
+"9505_tryParseAddress(string,uint256,uint256)" [label="tryParseAddress(string,uint256,uint256)"]
+"9505_toHexString(bytes)" [label="toHexString(bytes)"]
+"9505_parseInt(string)" [label="parseInt(string)"]
+"9505_tryParseInt(string,uint256,uint256)" [label="tryParseInt(string,uint256,uint256)"]
+"9505__tryParseUintUncheckedBounds(string,uint256,uint256)" [label="_tryParseUintUncheckedBounds(string,uint256,uint256)"]
+"9505_toHexString(uint256)" [label="toHexString(uint256)"]
+"9505_parseHexUint(string,uint256,uint256)" [label="parseHexUint(string,uint256,uint256)"]
+"9505_toHexString(uint256,uint256)" [label="toHexString(uint256,uint256)"]
+"9505_tryParseInt(string)" [label="tryParseInt(string)"]
+"9505_toStringSigned(int256)" [label="toStringSigned(int256)"]
+"9505_tryParseAddress(string)" [label="tryParseAddress(string)"]
+"9505__tryParseHexUintUncheckedBounds(string,uint256,uint256)" [label="_tryParseHexUintUncheckedBounds(string,uint256,uint256)"]
+"9505_toChecksumHexString(address)" [label="toChecksumHexString(address)"]
+"9505_tryParseUint(string)" [label="tryParseUint(string)"]
+"9505_parseHexUint(string)" [label="parseHexUint(string)"]
+"9505_tryParseHexUint(string,uint256,uint256)" [label="tryParseHexUint(string,uint256,uint256)"]
+"9505_toHexString(address)" [label="toHexString(address)"]
+"9505__tryParseHexUintUncheckedBounds(string,uint256,uint256)" -> "9505__tryParseChr(bytes1)"
+"9505_tryParseHexUint(string)" -> "9505__tryParseHexUintUncheckedBounds(string,uint256,uint256)"
+"9505_tryParseAddress(string,uint256,uint256)" -> "9505__tryParseHexUintUncheckedBounds(string,uint256,uint256)"
+"9505_escapeJSON(string)" -> "9505__unsafeReadBytesOffset(bytes,uint256)"
+"9505_tryParseInt(string,uint256,uint256)" -> "9505__tryParseIntUncheckedBounds(string,uint256,uint256)"
+"9505__tryParseIntUncheckedBounds(string,uint256,uint256)" -> "9505__unsafeReadBytesOffset(bytes,uint256)"
+"9505_parseAddress(string)" -> "9505_parseAddress(string,uint256,uint256)"
+"9505_parseHexUint(string,uint256,uint256)" -> "9505_tryParseHexUint(string,uint256,uint256)"
+"9505_parseUint(string)" -> "9505_parseUint(string,uint256,uint256)"
+"9505_tryParseUint(string)" -> "9505__tryParseUintUncheckedBounds(string,uint256,uint256)"
+"9505_parseHexUint(string)" -> "9505_parseHexUint(string,uint256,uint256)"
+"9505_toChecksumHexString(address)" -> "9505_toHexString(address)"
+"9505_parseInt(string)" -> "9505_parseInt(string,uint256,uint256)"
+"9505_toHexString(address)" -> "9505_toHexString(uint256,uint256)"
+"9505_escapeJSON(string)" -> "9505__unsafeWriteBytesOffset(bytes,uint256,bytes1)"
+"9505_tryParseAddress(string)" -> "9505_tryParseAddress(string,uint256,uint256)"
+"9505__tryParseHexUintUncheckedBounds(string,uint256,uint256)" -> "9505__unsafeReadBytesOffset(bytes,uint256)"
+"9505_tryParseUint(string,uint256,uint256)" -> "9505__tryParseUintUncheckedBounds(string,uint256,uint256)"
+"9505_toStringSigned(int256)" -> "9505_toString(uint256)"
+"9505_parseUint(string,uint256,uint256)" -> "9505_tryParseUint(string,uint256,uint256)"
+"9505_parseInt(string,uint256,uint256)" -> "9505_tryParseInt(string,uint256,uint256)"
+"9505__tryParseIntUncheckedBounds(string,uint256,uint256)" -> "9505_tryParseUint(string,uint256,uint256)"
+"9505_toHexString(uint256)" -> "9505_toHexString(uint256,uint256)"
+"9505_tryParseHexUint(string,uint256,uint256)" -> "9505__tryParseHexUintUncheckedBounds(string,uint256,uint256)"
+"9505__tryParseUintUncheckedBounds(string,uint256,uint256)" -> "9505__unsafeReadBytesOffset(bytes,uint256)"
+"9505_tryParseInt(string)" -> "9505__tryParseIntUncheckedBounds(string,uint256,uint256)"
+"9505_parseAddress(string,uint256,uint256)" -> "9505_tryParseAddress(string,uint256,uint256)"
+"9505__tryParseUintUncheckedBounds(string,uint256,uint256)" -> "9505__tryParseChr(bytes1)"
+"9505_tryParseAddress(string,uint256,uint256)" -> "9505__unsafeReadBytesOffset(bytes,uint256)"
+}subgraph cluster_7723_IERC1363 {
+label = "IERC1363"
+"7723_transferFromAndCall(address,address,uint256)" [label="transferFromAndCall(address,address,uint256)"]
+"7723_transferAndCall(address,uint256,bytes)" [label="transferAndCall(address,uint256,bytes)"]
+"7723_approveAndCall(address,uint256)" [label="approveAndCall(address,uint256)"]
+"7723_transferFromAndCall(address,address,uint256,bytes)" [label="transferFromAndCall(address,address,uint256,bytes)"]
+"7723_transferAndCall(address,uint256)" [label="transferAndCall(address,uint256)"]
+"7723_approveAndCall(address,uint256,bytes)" [label="approveAndCall(address,uint256,bytes)"]
+}subgraph cluster_12718_LowLevelCall {
+label = "LowLevelCall"
+"12718_bubbleRevert(bytes)" [label="bubbleRevert(bytes)"]
+"12718_delegatecallNoReturn(address,bytes)" [label="delegatecallNoReturn(address,bytes)"]
+"12718_callReturn64Bytes(address,uint256,bytes)" [label="callReturn64Bytes(address,uint256,bytes)"]
+"12718_bubbleRevert()" [label="bubbleRevert()"]
+"12718_returnDataSize()" [label="returnDataSize()"]
+"12718_callReturn64Bytes(address,bytes)" [label="callReturn64Bytes(address,bytes)"]
+"12718_staticcallReturn64Bytes(address,bytes)" [label="staticcallReturn64Bytes(address,bytes)"]
+"12718_callNoReturn(address,uint256,bytes)" [label="callNoReturn(address,uint256,bytes)"]
+"12718_staticcallNoReturn(address,bytes)" [label="staticcallNoReturn(address,bytes)"]
+"12718_callNoReturn(address,bytes)" [label="callNoReturn(address,bytes)"]
+"12718_delegatecallReturn64Bytes(address,bytes)" [label="delegatecallReturn64Bytes(address,bytes)"]
+"12718_returnData()" [label="returnData()"]
+"12718_callReturn64Bytes(address,bytes)" -> "12718_callReturn64Bytes(address,uint256,bytes)"
+"12718_callNoReturn(address,bytes)" -> "12718_callNoReturn(address,uint256,bytes)"
+}subgraph cluster_9653_StorageSlot {
+label = "StorageSlot"
+"9653_getStringSlot(bytes32)" [label="getStringSlot(bytes32)"]
+"9653_getBooleanSlot(bytes32)" [label="getBooleanSlot(bytes32)"]
+"9653_getBytes32Slot(bytes32)" [label="getBytes32Slot(bytes32)"]
+"9653_getStringSlot(string)" [label="getStringSlot(string)"]
+"9653_getBytesSlot(bytes)" [label="getBytesSlot(bytes)"]
+"9653_getInt256Slot(bytes32)" [label="getInt256Slot(bytes32)"]
+"9653_getBytesSlot(bytes32)" [label="getBytesSlot(bytes32)"]
+"9653_getUint256Slot(bytes32)" [label="getUint256Slot(bytes32)"]
+"9653_getAddressSlot(bytes32)" [label="getAddressSlot(bytes32)"]
+}subgraph cluster_9529_ERC165 {
+label = "ERC165"
+"9529_supportsInterface(bytes4)" [label="supportsInterface(bytes4)"]
+}subgraph cluster_1977_Raffle {
+label = "Raffle"
+"1977_settleWinningTicket(uint256)" [label="settleWinningTicket(uint256)"]
+"1977_releaseProtocolFees()" [label="releaseProtocolFees()"]
+"1977_requestDraw()" [label="requestDraw()"]
+"1977_getVrfRequestPrice()" [label="getVrfRequestPrice()"]
+"1977_onERC721Received(address,address,uint256,bytes)" [label="onERC721Received(address,address,uint256,bytes)"]
+"1977__transferQuote(address,uint256)" [label="_transferQuote(address,uint256)"]
+"1977_releaseSponsorProceeds()" [label="releaseSponsorProceeds()"]
+"1977_buyEntries(address,uint128)" [label="buyEntries(address,uint128)"]
+"1977_accountedQuoteBalance()" [label="accountedQuoteBalance()"]
+"1977__requireWinningTicket(uint256)" [label="_requireWinningTicket(uint256)"]
+"1977_releaseSponsorPrize()" [label="releaseSponsorPrize()"]
+"1977_initialize(IRaffle.RaffleInitParams)" [label="initialize(IRaffle.RaffleInitParams)"]
+"1977_constructor(address,address)" [label="constructor(address,address)"]
+"1977_fulfillRandomWords(uint256,uint256[])" [label="fulfillRandomWords(uint256,uint256[])"]
+"1977_redeemWinningTicket(uint256)" [label="redeemWinningTicket(uint256)"]
+"1977_name()" [label="name()"]
+"1977__settleWinningTicket(uint256)" [label="_settleWinningTicket(uint256)"]
+"1977_drawRequestDeadline()" [label="drawRequestDeadline()"]
+"1977__update(address,uint256,address)" [label="_update(address,uint256,address)"]
+"1977_ticketRange(uint256)" [label="ticketRange(uint256)"]
+"1977_callbackDeadline()" [label="callbackDeadline()"]
+"1977__validatedVrfWrapper(address)" [label="_validatedVrfWrapper(address)"]
+"1977_refundTickets(uint256[])" [label="refundTickets(uint256[])"]
+"1977_receive()" [label="receive()"]
+"1977_enableRefunds()" [label="enableRefunds()"]
+"1977_grossSales()" [label="grossSales()"]
+"1977__requireStatus(IRaffle.Status)" [label="_requireStatus(IRaffle.Status)"]
+"1977__isProtocolDestination(address,address)" [label="_isProtocolDestination(address,address)"]
+"1977_estimateVrfRequestPrice(uint256)" [label="estimateVrfRequestPrice(uint256)"]
+"1977_symbol()" [label="symbol()"]
+"1977_vrfWrapper()" [label="vrfWrapper()"]
+"1977_redeemWinningTicket(uint256)" -> "1977__settleWinningTicket(uint256)"
+"1977_refundTickets(uint256[])" -> "1977__transferQuote(address,uint256)"
+"1977_requestDraw()" -> "1977_callbackDeadline()"
+"1977__update(address,uint256,address)" -> "1977__update(address,uint256,address)"
+"1977_refundTickets(uint256[])" -> "1977_nonReentrant()"
+"1977_constructor(address,address)" -> "1977_constructor(string,string)"
+"1977_requestDraw()" -> "1977__requireStatus(IRaffle.Status)"
+"1977_enableRefunds()" -> "1977_nonReentrant()"
+"1977_redeemWinningTicket(uint256)" -> "1977__transferQuote(address,uint256)"
+"1977_constructor(address,address)" -> "1977_constructor(address)"
+"1977_enableRefunds()" -> "1977_callbackDeadline()"
+"1977_initialize(IRaffle.RaffleInitParams)" -> "1977__isProtocolDestination(address,address)"
+"1977_releaseSponsorProceeds()" -> "1977__transferQuote(address,uint256)"
+"1977_refundTickets(uint256[])" -> "1977_ownerOf(uint256)"
+"1977__settleWinningTicket(uint256)" -> "1977__requireWinningTicket(uint256)"
+"1977_constructor(address,address)" -> "1977__validatedVrfWrapper(address)"
+"1977_redeemWinningTicket(uint256)" -> "1977__burn(uint256)"
+"1977__transferQuote(address,uint256)" -> "1977__isProtocolDestination(address,address)"
+"1977_enableRefunds()" -> "1977_drawRequestDeadline()"
+"1977_releaseSponsorProceeds()" -> "1977_nonReentrant()"
+"1977_fulfillRandomWords(uint256,uint256[])" -> "1977_callbackDeadline()"
+"1977_releaseSponsorPrize()" -> "1977_nonReentrant()"
+"1977__update(address,uint256,address)" -> "1977__isProtocolDestination(address,address)"
+"1977_releaseProtocolFees()" -> "1977__transferQuote(address,uint256)"
+"1977_requestDraw()" -> "1977_drawRequestDeadline()"
+"1977_settleWinningTicket(uint256)" -> "1977__settleWinningTicket(uint256)"
+"1977_settleWinningTicket(uint256)" -> "1977_nonReentrant()"
+"1977_redeemWinningTicket(uint256)" -> "1977_nonReentrant()"
+"1977_requestDraw()" -> "1977_getVrfRequestPrice()"
+"1977_requestDraw()" -> "1977_requestRandomnessPayInNative(uint32,uint16,uint32,bytes)"
+"1977_buyEntries(address,uint128)" -> "1977_nonReentrant()"
+"1977_buyEntries(address,uint128)" -> "1977__requireStatus(IRaffle.Status)"
+"1977__requireWinningTicket(uint256)" -> "1977_ticketRange(uint256)"
+"1977_refundTickets(uint256[])" -> "1977__requireStatus(IRaffle.Status)"
+"1977_redeemWinningTicket(uint256)" -> "1977_ownerOf(uint256)"
+"1977_refundTickets(uint256[])" -> "1977__burn(uint256)"
+"1977_releaseProtocolFees()" -> "1977_nonReentrant()"
+"1977_buyEntries(address,uint128)" -> "1977__safeMint(address,uint256)"
+"1977_requestDraw()" -> "1977_nonReentrant()"
+"1977_refundTickets(uint256[])" -> "1977_ticketRange(uint256)"
+}subgraph cluster_7995_Context {
+label = "Context"
+"7995__msgData()" [label="_msgData()"]
+"7995__contextSuffixLength()" [label="_contextSuffixLength()"]
+"7995__msgSender()" [label="_msgSender()"]
+}subgraph cluster_11584_Create2 {
+label = "Create2"
+"11584_deploy(uint256,bytes32,bytes)" [label="deploy(uint256,bytes32,bytes)"]
+"11584_computeAddress(bytes32,bytes32)" [label="computeAddress(bytes32,bytes32)"]
+"11584_computeAddress(bytes32,bytes32,address)" [label="computeAddress(bytes32,bytes32,address)"]
+"11584_computeAddress(bytes32,bytes32)" -> "11584_computeAddress(bytes32,bytes32,address)"
+}subgraph cluster_3777_IERC20 {
+label = "IERC20"
+"3777_approve(address,uint256)" [label="approve(address,uint256)"]
+"3777_balanceOf(address)" [label="balanceOf(address)"]
+"3777_allowance(address,address)" [label="allowance(address,address)"]
+"3777_transfer(address,uint256)" [label="transfer(address,uint256)"]
+"3777_totalSupply()" [label="totalSupply()"]
+"3777_transferFrom(address,address,uint256)" [label="transferFrom(address,address,uint256)"]
+}subgraph cluster_7109_Math {
+label = "Math"
+"7109_log10(uint256)" [label="log10(uint256)"]
+"7109_log256(uint256)" [label="log256(uint256)"]
+"7109_min(uint256,uint256)" [label="min(uint256,uint256)"]
+"7109_tryMul(uint256,uint256)" [label="tryMul(uint256,uint256)"]
+"7109_ternary(bool,uint256,uint256)" [label="ternary(bool,uint256,uint256)"]
+"7109__zeroBytes(bytes)" [label="_zeroBytes(bytes)"]
+"7109_clz(uint256)" [label="clz(uint256)"]
+"7109_saturatingAdd(uint256,uint256)" [label="saturatingAdd(uint256,uint256)"]
+"7109_mul512(uint256,uint256)" [label="mul512(uint256,uint256)"]
+"7109_mulShr(uint256,uint256,uint8)" [label="mulShr(uint256,uint256,uint8)"]
+"7109_ceilDiv(uint256,uint256)" [label="ceilDiv(uint256,uint256)"]
+"7109_log256(uint256,Math.Rounding)" [label="log256(uint256,Math.Rounding)"]
+"7109_modExp(uint256,uint256,uint256)" [label="modExp(uint256,uint256,uint256)"]
+"7109_tryModExp(uint256,uint256,uint256)" [label="tryModExp(uint256,uint256,uint256)"]
+"7109_average(uint256,uint256)" [label="average(uint256,uint256)"]
+"7109_invMod(uint256,uint256)" [label="invMod(uint256,uint256)"]
+"7109_unsignedRoundsUp(Math.Rounding)" [label="unsignedRoundsUp(Math.Rounding)"]
+"7109_mulDiv(uint256,uint256,uint256)" [label="mulDiv(uint256,uint256,uint256)"]
+"7109_log2(uint256)" [label="log2(uint256)"]
+"7109_saturatingSub(uint256,uint256)" [label="saturatingSub(uint256,uint256)"]
+"7109_add512(uint256,uint256)" [label="add512(uint256,uint256)"]
+"7109_trySub(uint256,uint256)" [label="trySub(uint256,uint256)"]
+"7109_modExp(bytes,bytes,bytes)" [label="modExp(bytes,bytes,bytes)"]
+"7109_sqrt(uint256,Math.Rounding)" [label="sqrt(uint256,Math.Rounding)"]
+"7109_tryAdd(uint256,uint256)" [label="tryAdd(uint256,uint256)"]
+"7109_log10(uint256,Math.Rounding)" [label="log10(uint256,Math.Rounding)"]
+"7109_tryDiv(uint256,uint256)" [label="tryDiv(uint256,uint256)"]
+"7109_log2(uint256,Math.Rounding)" [label="log2(uint256,Math.Rounding)"]
+"7109_saturatingMul(uint256,uint256)" [label="saturatingMul(uint256,uint256)"]
+"7109_tryModExp(bytes,bytes,bytes)" [label="tryModExp(bytes,bytes,bytes)"]
+"7109_max(uint256,uint256)" [label="max(uint256,uint256)"]
+"7109_tryMod(uint256,uint256)" [label="tryMod(uint256,uint256)"]
+"7109_sqrt(uint256)" [label="sqrt(uint256)"]
+"7109_invModPrime(uint256,uint256)" [label="invModPrime(uint256,uint256)"]
+"7109_mulDiv(uint256,uint256,uint256,Math.Rounding)" [label="mulDiv(uint256,uint256,uint256,Math.Rounding)"]
+"7109_mulShr(uint256,uint256,uint8,Math.Rounding)" [label="mulShr(uint256,uint256,uint8,Math.Rounding)"]
+"7109_min(uint256,uint256)" -> "7109_ternary(bool,uint256,uint256)"
+"7109_mulDiv(uint256,uint256,uint256)" -> "7109_ternary(bool,uint256,uint256)"
+"7109_mulDiv(uint256,uint256,uint256,Math.Rounding)" -> "7109_unsignedRoundsUp(Math.Rounding)"
+"7109_saturatingAdd(uint256,uint256)" -> "7109_ternary(bool,uint256,uint256)"
+"7109_log256(uint256,Math.Rounding)" -> "7109_log256(uint256)"
+"7109_modExp(bytes,bytes,bytes)" -> "7109_tryModExp(bytes,bytes,bytes)"
+"7109_log10(uint256,Math.Rounding)" -> "7109_log10(uint256)"
+"7109_invModPrime(uint256,uint256)" -> "7109_modExp(uint256,uint256,uint256)"
+"7109_mulDiv(uint256,uint256,uint256,Math.Rounding)" -> "7109_mulDiv(uint256,uint256,uint256)"
+"7109_sqrt(uint256,Math.Rounding)" -> "7109_unsignedRoundsUp(Math.Rounding)"
+"7109_clz(uint256)" -> "7109_ternary(bool,uint256,uint256)"
+"7109_mulShr(uint256,uint256,uint8)" -> "7109_mul512(uint256,uint256)"
+"7109_mulShr(uint256,uint256,uint8,Math.Rounding)" -> "7109_mulShr(uint256,uint256,uint8)"
+"7109_clz(uint256)" -> "7109_log2(uint256)"
+"7109_invMod(uint256,uint256)" -> "7109_ternary(bool,uint256,uint256)"
+"7109_log2(uint256,Math.Rounding)" -> "7109_unsignedRoundsUp(Math.Rounding)"
+"7109_sqrt(uint256,Math.Rounding)" -> "7109_sqrt(uint256)"
+"7109_tryModExp(bytes,bytes,bytes)" -> "7109__zeroBytes(bytes)"
+"7109_log2(uint256,Math.Rounding)" -> "7109_log2(uint256)"
+"7109_max(uint256,uint256)" -> "7109_ternary(bool,uint256,uint256)"
+"7109_mulShr(uint256,uint256,uint8,Math.Rounding)" -> "7109_unsignedRoundsUp(Math.Rounding)"
+"7109_modExp(uint256,uint256,uint256)" -> "7109_tryModExp(uint256,uint256,uint256)"
+"7109_log10(uint256,Math.Rounding)" -> "7109_unsignedRoundsUp(Math.Rounding)"
+"7109_saturatingAdd(uint256,uint256)" -> "7109_tryAdd(uint256,uint256)"
+"7109_saturatingMul(uint256,uint256)" -> "7109_tryMul(uint256,uint256)"
+"7109_log256(uint256,Math.Rounding)" -> "7109_unsignedRoundsUp(Math.Rounding)"
+"7109_saturatingSub(uint256,uint256)" -> "7109_trySub(uint256,uint256)"
+"7109_saturatingMul(uint256,uint256)" -> "7109_ternary(bool,uint256,uint256)"
+"7109__zeroBytes(bytes)" -> "7109_saturatingSub(uint256,uint256)"
+"7109_mulDiv(uint256,uint256,uint256)" -> "7109_mul512(uint256,uint256)"
+}subgraph cluster_5321_IERC721 {
+label = "IERC721"
+"5321_safeTransferFrom(address,address,uint256,bytes)" [label="safeTransferFrom(address,address,uint256,bytes)"]
+"5321_approve(address,uint256)" [label="approve(address,uint256)"]
+"5321_safeTransferFrom(address,address,uint256)" [label="safeTransferFrom(address,address,uint256)"]
+"5321_setApprovalForAll(address,bool)" [label="setApprovalForAll(address,bool)"]
+"5321_transferFrom(address,address,uint256)" [label="transferFrom(address,address,uint256)"]
+"5321_balanceOf(address)" [label="balanceOf(address)"]
+"5321_ownerOf(uint256)" [label="ownerOf(uint256)"]
+"5321_isApprovedForAll(address,address)" [label="isApprovedForAll(address,address)"]
+"5321_getApproved(uint256)" [label="getApproved(uint256)"]
+}subgraph cluster_3657_IVRFV2PlusWrapper {
+label = "IVRFV2PlusWrapper"
+"3657_calculateRequestPriceNative(uint32,uint32)" [label="calculateRequestPriceNative(uint32,uint32)"]
+"3657_requestRandomWordsInNative(uint32,uint16,uint32,bytes)" [label="requestRandomWordsInNative(uint32,uint16,uint32,bytes)"]
+"3657_lastRequestId()" [label="lastRequestId()"]
+"3657_linkNativeFeed()" [label="linkNativeFeed()"]
+"3657_estimateRequestPrice(uint32,uint32,uint256)" [label="estimateRequestPrice(uint32,uint32,uint256)"]
+"3657_calculateRequestPrice(uint32,uint32)" [label="calculateRequestPrice(uint32,uint32)"]
+"3657_link()" [label="link()"]
+"3657_estimateRequestPriceNative(uint32,uint32,uint256)" [label="estimateRequestPriceNative(uint32,uint32,uint256)"]
+}subgraph cluster_5452_ReentrancyGuard {
+label = "ReentrancyGuard"
+"5452_constructor()" [label="constructor()"]
+"5452__nonReentrantBefore()" [label="_nonReentrantBefore()"]
+"5452__reentrancyGuardEntered()" [label="_reentrancyGuardEntered()"]
+"5452__nonReentrantBeforeView()" [label="_nonReentrantBeforeView()"]
+"5452__reentrancyGuardStorageSlot()" [label="_reentrancyGuardStorageSlot()"]
+"5452__nonReentrantAfter()" [label="_nonReentrantAfter()"]
+"5452__nonReentrantBefore()" -> "5452__nonReentrantBeforeView()"
+"5452__reentrancyGuardEntered()" -> "5452__reentrancyGuardStorageSlot()"
+"5452__nonReentrantBefore()" -> "5452__reentrancyGuardStorageSlot()"
+"5452__nonReentrantAfter()" -> "5452__reentrancyGuardStorageSlot()"
+"5452__nonReentrantBeforeView()" -> "5452__reentrancyGuardEntered()"
+"5452_constructor()" -> "5452__reentrancyGuardStorageSlot()"
+}subgraph cluster_11470_SafeCast {
+label = "SafeCast"
+"11470_toUint104(uint256)" [label="toUint104(uint256)"]
+"11470_toUint24(uint256)" [label="toUint24(uint256)"]
+"11470_toInt128(int256)" [label="toInt128(int256)"]
+"11470_toUint88(uint256)" [label="toUint88(uint256)"]
+"11470_toInt40(int256)" [label="toInt40(int256)"]
+"11470_toInt200(int256)" [label="toInt200(int256)"]
+"11470_toUint240(uint256)" [label="toUint240(uint256)"]
+"11470_toUint248(uint256)" [label="toUint248(uint256)"]
+"11470_toUint192(uint256)" [label="toUint192(uint256)"]
+"11470_toUint128(uint256)" [label="toUint128(uint256)"]
+"11470_toInt104(int256)" [label="toInt104(int256)"]
+"11470_toInt88(int256)" [label="toInt88(int256)"]
+"11470_toInt184(int256)" [label="toInt184(int256)"]
+"11470_toUint32(uint256)" [label="toUint32(uint256)"]
+"11470_toInt160(int256)" [label="toInt160(int256)"]
+"11470_toInt152(int256)" [label="toInt152(int256)"]
+"11470_toUint216(uint256)" [label="toUint216(uint256)"]
+"11470_toUint200(uint256)" [label="toUint200(uint256)"]
+"11470_toUint72(uint256)" [label="toUint72(uint256)"]
+"11470_toUint48(uint256)" [label="toUint48(uint256)"]
+"11470_toUint184(uint256)" [label="toUint184(uint256)"]
+"11470_toUint120(uint256)" [label="toUint120(uint256)"]
+"11470_toUint168(uint256)" [label="toUint168(uint256)"]
+"11470_toUint56(uint256)" [label="toUint56(uint256)"]
+"11470_toInt168(int256)" [label="toInt168(int256)"]
+"11470_toInt120(int256)" [label="toInt120(int256)"]
+"11470_toInt72(int256)" [label="toInt72(int256)"]
+"11470_toInt32(int256)" [label="toInt32(int256)"]
+"11470_toUint224(uint256)" [label="toUint224(uint256)"]
+"11470_toUint80(uint256)" [label="toUint80(uint256)"]
+"11470_toInt256(uint256)" [label="toInt256(uint256)"]
+"11470_toUint152(uint256)" [label="toUint152(uint256)"]
+"11470_toUint144(uint256)" [label="toUint144(uint256)"]
+"11470_toUint96(uint256)" [label="toUint96(uint256)"]
+"11470_toUint64(uint256)" [label="toUint64(uint256)"]
+"11470_toInt232(int256)" [label="toInt232(int256)"]
+"11470_toInt136(int256)" [label="toInt136(int256)"]
+"11470_toInt248(int256)" [label="toInt248(int256)"]
+"11470_toUint40(uint256)" [label="toUint40(uint256)"]
+"11470_toInt64(int256)" [label="toInt64(int256)"]
+"11470_toInt48(int256)" [label="toInt48(int256)"]
+"11470_toUint208(uint256)" [label="toUint208(uint256)"]
+"11470_toInt224(int256)" [label="toInt224(int256)"]
+"11470_toUint16(uint256)" [label="toUint16(uint256)"]
+"11470_toInt240(int256)" [label="toInt240(int256)"]
+"11470_toUint112(uint256)" [label="toUint112(uint256)"]
+"11470_toInt144(int256)" [label="toInt144(int256)"]
+"11470_toInt112(int256)" [label="toInt112(int256)"]
+"11470_toInt16(int256)" [label="toInt16(int256)"]
+"11470_toInt8(int256)" [label="toInt8(int256)"]
+"11470_toUint232(uint256)" [label="toUint232(uint256)"]
+"11470_toUint160(uint256)" [label="toUint160(uint256)"]
+"11470_toInt96(int256)" [label="toInt96(int256)"]
+"11470_toInt216(int256)" [label="toInt216(int256)"]
+"11470_toInt192(int256)" [label="toInt192(int256)"]
+"11470_toUint(bool)" [label="toUint(bool)"]
+"11470_toInt56(int256)" [label="toInt56(int256)"]
+"11470_toUint256(int256)" [label="toUint256(int256)"]
+"11470_toInt24(int256)" [label="toInt24(int256)"]
+"11470_toUint8(uint256)" [label="toUint8(uint256)"]
+"11470_toUint136(uint256)" [label="toUint136(uint256)"]
+"11470_toInt208(int256)" [label="toInt208(int256)"]
+"11470_toInt80(int256)" [label="toInt80(int256)"]
+"11470_toInt176(int256)" [label="toInt176(int256)"]
+"11470_toUint176(uint256)" [label="toUint176(uint256)"]
+}subgraph cluster_7888_IERC721Metadata {
+label = "IERC721Metadata"
+"7888_name()" [label="name()"]
+"7888_symbol()" [label="symbol()"]
+"7888_tokenURI(uint256)" [label="tokenURI(uint256)"]
+}subgraph cluster_5204_ERC721 {
+label = "ERC721"
+"5204__mint(address,uint256)" [label="_mint(address,uint256)"]
+"5204_transferFrom(address,address,uint256)" [label="transferFrom(address,address,uint256)"]
+"5204_constructor(string,string)" [label="constructor(string,string)"]
+"5204__approve(address,uint256,address,bool)" [label="_approve(address,uint256,address,bool)"]
+"5204__setApprovalForAll(address,address,bool)" [label="_setApprovalForAll(address,address,bool)"]
+"5204_setApprovalForAll(address,bool)" [label="setApprovalForAll(address,bool)"]
+"5204_approve(address,uint256)" [label="approve(address,uint256)"]
+"5204__burn(uint256)" [label="_burn(uint256)"]
+"5204__requireOwned(uint256)" [label="_requireOwned(uint256)"]
+"5204__checkAuthorized(address,address,uint256)" [label="_checkAuthorized(address,address,uint256)"]
+"5204__baseURI()" [label="_baseURI()"]
+"5204__update(address,uint256,address)" [label="_update(address,uint256,address)"]
+"5204_isApprovedForAll(address,address)" [label="isApprovedForAll(address,address)"]
+"5204__approve(address,uint256,address)" [label="_approve(address,uint256,address)"]
+"5204_supportsInterface(bytes4)" [label="supportsInterface(bytes4)"]
+"5204__safeMint(address,uint256)" [label="_safeMint(address,uint256)"]
+"5204__safeMint(address,uint256,bytes)" [label="_safeMint(address,uint256,bytes)"]
+"5204_balanceOf(address)" [label="balanceOf(address)"]
+"5204_safeTransferFrom(address,address,uint256,bytes)" [label="safeTransferFrom(address,address,uint256,bytes)"]
+"5204__isAuthorized(address,address,uint256)" [label="_isAuthorized(address,address,uint256)"]
+"5204_safeTransferFrom(address,address,uint256)" [label="safeTransferFrom(address,address,uint256)"]
+"5204_symbol()" [label="symbol()"]
+"5204_tokenURI(uint256)" [label="tokenURI(uint256)"]
+"5204__transfer(address,address,uint256)" [label="_transfer(address,address,uint256)"]
+"5204__increaseBalance(address,uint128)" [label="_increaseBalance(address,uint128)"]
+"5204__safeTransfer(address,address,uint256)" [label="_safeTransfer(address,address,uint256)"]
+"5204_getApproved(uint256)" [label="getApproved(uint256)"]
+"5204__safeTransfer(address,address,uint256,bytes)" [label="_safeTransfer(address,address,uint256,bytes)"]
+"5204_name()" [label="name()"]
+"5204__ownerOf(uint256)" [label="_ownerOf(uint256)"]
+"5204__getApproved(uint256)" [label="_getApproved(uint256)"]
+"5204_ownerOf(uint256)" [label="ownerOf(uint256)"]
+"5204__safeMint(address,uint256)" -> "5204__safeMint(address,uint256,bytes)"
+"5204_tokenURI(uint256)" -> "5204__requireOwned(uint256)"
+"5204_getApproved(uint256)" -> "5204__getApproved(uint256)"
+"5204_transferFrom(address,address,uint256)" -> "5204__update(address,uint256,address)"
+"5204__safeTransfer(address,address,uint256,bytes)" -> "5204__msgSender()"
+"5204__approve(address,uint256,address,bool)" -> "5204_isApprovedForAll(address,address)"
+"5204_setApprovalForAll(address,bool)" -> "5204__msgSender()"
+"5204_safeTransferFrom(address,address,uint256)" -> "5204_safeTransferFrom(address,address,uint256,bytes)"
+"5204_approve(address,uint256)" -> "5204__msgSender()"
+"5204__mint(address,uint256)" -> "5204__update(address,uint256,address)"
+"5204__approve(address,uint256,address)" -> "5204__approve(address,uint256,address,bool)"
+"5204_approve(address,uint256)" -> "5204__approve(address,uint256,address)"
+"5204__update(address,uint256,address)" -> "5204__ownerOf(uint256)"
+"5204_transferFrom(address,address,uint256)" -> "5204__msgSender()"
+"5204__update(address,uint256,address)" -> "5204__checkAuthorized(address,address,uint256)"
+"5204_ownerOf(uint256)" -> "5204__requireOwned(uint256)"
+"5204__update(address,uint256,address)" -> "5204__approve(address,uint256,address,bool)"
+"5204__safeMint(address,uint256,bytes)" -> "5204__mint(address,uint256)"
+"5204__safeTransfer(address,address,uint256,bytes)" -> "5204__transfer(address,address,uint256)"
+"5204__transfer(address,address,uint256)" -> "5204__update(address,uint256,address)"
+"5204__burn(uint256)" -> "5204__update(address,uint256,address)"
+"5204_setApprovalForAll(address,bool)" -> "5204__setApprovalForAll(address,address,bool)"
+"5204__approve(address,uint256,address,bool)" -> "5204__requireOwned(uint256)"
+"5204_safeTransferFrom(address,address,uint256,bytes)" -> "5204_transferFrom(address,address,uint256)"
+"5204__checkAuthorized(address,address,uint256)" -> "5204__isAuthorized(address,address,uint256)"
+"5204_safeTransferFrom(address,address,uint256,bytes)" -> "5204__msgSender()"
+"5204__requireOwned(uint256)" -> "5204__ownerOf(uint256)"
+"5204__safeMint(address,uint256,bytes)" -> "5204__msgSender()"
+"5204_supportsInterface(bytes4)" -> "5204_supportsInterface(bytes4)"
+"5204_getApproved(uint256)" -> "5204__requireOwned(uint256)"
+"5204__isAuthorized(address,address,uint256)" -> "5204__getApproved(uint256)"
+"5204__isAuthorized(address,address,uint256)" -> "5204_isApprovedForAll(address,address)"
+"5204_tokenURI(uint256)" -> "5204__baseURI()"
+"5204__safeTransfer(address,address,uint256)" -> "5204__safeTransfer(address,address,uint256,bytes)"
+}subgraph cluster_7508_Clones {
+label = "Clones"
+"7508_cloneWithImmutableArgs(address,bytes)" [label="cloneWithImmutableArgs(address,bytes)"]
+"7508_predictDeterministicAddressWithImmutableArgs(address,bytes,bytes32)" [label="predictDeterministicAddressWithImmutableArgs(address,bytes,bytes32)"]
+"7508_predictDeterministicAddressWithImmutableArgs(address,bytes,bytes32,address)" [label="predictDeterministicAddressWithImmutableArgs(address,bytes,bytes32,address)"]
+"7508_cloneDeterministicWithImmutableArgs(address,bytes,bytes32)" [label="cloneDeterministicWithImmutableArgs(address,bytes,bytes32)"]
+"7508_cloneDeterministicWithImmutableArgs(address,bytes,bytes32,uint256)" [label="cloneDeterministicWithImmutableArgs(address,bytes,bytes32,uint256)"]
+"7508_clone(address,uint256)" [label="clone(address,uint256)"]
+"7508_predictDeterministicAddress(address,bytes32,address)" [label="predictDeterministicAddress(address,bytes32,address)"]
+"7508_predictDeterministicAddress(address,bytes32)" [label="predictDeterministicAddress(address,bytes32)"]
+"7508_cloneDeterministic(address,bytes32)" [label="cloneDeterministic(address,bytes32)"]
+"7508_clone(address)" [label="clone(address)"]
+"7508_fetchCloneArgs(address)" [label="fetchCloneArgs(address)"]
+"7508_cloneDeterministic(address,bytes32,uint256)" [label="cloneDeterministic(address,bytes32,uint256)"]
+"7508__cloneCodeWithImmutableArgs(address,bytes)" [label="_cloneCodeWithImmutableArgs(address,bytes)"]
+"7508_cloneWithImmutableArgs(address,bytes,uint256)" [label="cloneWithImmutableArgs(address,bytes,uint256)"]
+"7508_cloneWithImmutableArgs(address,bytes,uint256)" -> "7508__cloneCodeWithImmutableArgs(address,bytes)"
+"7508_cloneDeterministicWithImmutableArgs(address,bytes,bytes32,uint256)" -> "7508__cloneCodeWithImmutableArgs(address,bytes)"
+"7508_predictDeterministicAddressWithImmutableArgs(address,bytes,bytes32)" -> "7508_predictDeterministicAddressWithImmutableArgs(address,bytes,bytes32,address)"
+"7508_predictDeterministicAddress(address,bytes32)" -> "7508_predictDeterministicAddress(address,bytes32,address)"
+"7508_predictDeterministicAddressWithImmutableArgs(address,bytes,bytes32,address)" -> "7508__cloneCodeWithImmutableArgs(address,bytes)"
+"7508_clone(address)" -> "7508_clone(address,uint256)"
+"7508_cloneDeterministicWithImmutableArgs(address,bytes,bytes32)" -> "7508_cloneDeterministicWithImmutableArgs(address,bytes,bytes32,uint256)"
+"7508_cloneDeterministic(address,bytes32)" -> "7508_cloneDeterministic(address,bytes32,uint256)"
+"7508_cloneWithImmutableArgs(address,bytes)" -> "7508_cloneWithImmutableArgs(address,bytes,uint256)"
+}subgraph cluster_2518_RaffleFactory {
+label = "RaffleFactory"
+"2518__requireContract(address)" [label="_requireContract(address)"]
+"2518_constructor(address,address,address)" [label="constructor(address,address,address)"]
+"2518_createRaffle(IRaffleFactory.CreateRaffleParams)" [label="createRaffle(IRaffleFactory.CreateRaffleParams)"]
+"2518__validateCreateParams(IRaffleFactory.CreateRaffleParams)" [label="_validateCreateParams(IRaffleFactory.CreateRaffleParams)"]
+"2518__validateCreateParams(IRaffleFactory.CreateRaffleParams)" -> "2518__requireContract(address)"
+"2518_createRaffle(IRaffleFactory.CreateRaffleParams)" -> "2518_nonReentrant()"
+"2518_createRaffle(IRaffleFactory.CreateRaffleParams)" -> "2518__validateCreateParams(IRaffleFactory.CreateRaffleParams)"
+"2518_constructor(address,address,address)" -> "2518__requireContract(address)"
+}subgraph cluster_7641_LinkTokenInterface {
+label = "LinkTokenInterface"
+"7641_symbol()" [label="symbol()"]
+"7641_balanceOf(address)" [label="balanceOf(address)"]
+"7641_transferAndCall(address,uint256,bytes)" [label="transferAndCall(address,uint256,bytes)"]
+"7641_decimals()" [label="decimals()"]
+"7641_transferFrom(address,address,uint256)" [label="transferFrom(address,address,uint256)"]
+"7641_transfer(address,uint256)" [label="transfer(address,uint256)"]
+"7641_approve(address,uint256)" [label="approve(address,uint256)"]
+"7641_increaseApproval(address,uint256)" [label="increaseApproval(address,uint256)"]
+"7641_allowance(address,address)" [label="allowance(address,address)"]
+"7641_totalSupply()" [label="totalSupply()"]
+"7641_decreaseApproval(address,uint256)" [label="decreaseApproval(address,uint256)"]
+"7641_name()" [label="name()"]
+}subgraph cluster_5339_IERC721Receiver {
+label = "IERC721Receiver"
+"5339_onERC721Received(address,address,uint256,bytes)" [label="onERC721Received(address,address,uint256,bytes)"]
+}subgraph cluster_3167_IRaffle {
+label = "IRaffle"
+"3167_sponsor()" [label="sponsor()"]
+"3167_vrfRequestId()" [label="vrfRequestId()"]
+"3167_prizeToken()" [label="prizeToken()"]
+"3167_sponsorProceeds()" [label="sponsorProceeds()"]
+"3167_winnerRedeemed()" [label="winnerRedeemed()"]
+"3167_protocolFees()" [label="protocolFees()"]
+"3167_reserveEntries()" [label="reserveEntries()"]
+"3167_callbackDeadline()" [label="callbackDeadline()"]
+"3167_winningEntry()" [label="winningEntry()"]
+"3167_prizeClaimed()" [label="prizeClaimed()"]
+"3167_grossSales()" [label="grossSales()"]
+"3167_ENTRY_PRICE()" [label="ENTRY_PRICE()"]
+"3167_requestConfirmations()" [label="requestConfirmations()"]
+"3167_buyEntries(address,uint128)" [label="buyEntries(address,uint128)"]
+"3167_factory()" [label="factory()"]
+"3167_ticketCount()" [label="ticketCount()"]
+"3167_releaseProtocolFees()" [label="releaseProtocolFees()"]
+"3167_quoteToken()" [label="quoteToken()"]
+"3167_enableRefunds()" [label="enableRefunds()"]
+"3167_drawRequestDeadline()" [label="drawRequestDeadline()"]
+"3167_vrfWrapper()" [label="vrfWrapper()"]
+"3167_prizeTokenId()" [label="prizeTokenId()"]
+"3167_winnerRecipient()" [label="winnerRecipient()"]
+"3167_initialized()" [label="initialized()"]
+"3167_sponsorRecipient()" [label="sponsorRecipient()"]
+"3167_getVrfRequestPrice()" [label="getVrfRequestPrice()"]
+"3167_remainingRefundLiability()" [label="remainingRefundLiability()"]
+"3167_accountedQuoteBalance()" [label="accountedQuoteBalance()"]
+"3167_protocolTreasury()" [label="protocolTreasury()"]
+"3167_settleWinningTicket(uint256)" [label="settleWinningTicket(uint256)"]
+"3167_drawRequestedAt()" [label="drawRequestedAt()"]
+"3167_unsettledPot()" [label="unsettledPot()"]
+"3167_estimateVrfRequestPrice(uint256)" [label="estimateVrfRequestPrice(uint256)"]
+"3167_initialize(IRaffle.RaffleInitParams)" [label="initialize(IRaffle.RaffleInitParams)"]
+"3167_callbackGasLimit()" [label="callbackGasLimit()"]
+"3167_redeemWinningTicket(uint256)" [label="redeemWinningTicket(uint256)"]
+"3167_endTime()" [label="endTime()"]
+"3167_ticketRange(uint256)" [label="ticketRange(uint256)"]
+"3167_releaseSponsorPrize()" [label="releaseSponsorPrize()"]
+"3167_resolvedAt()" [label="resolvedAt()"]
+"3167_winnerProceeds()" [label="winnerProceeds()"]
+"3167_settlementComplete()" [label="settlementComplete()"]
+"3167_totalEntries()" [label="totalEntries()"]
+"3167_winningTicketId()" [label="winningTicketId()"]
+"3167_raffleId()" [label="raffleId()"]
+"3167_refundTickets(uint256[])" [label="refundTickets(uint256[])"]
+"3167_requestDraw()" [label="requestDraw()"]
+"3167_releaseSponsorProceeds()" [label="releaseSponsorProceeds()"]
+"3167_status()" [label="status()"]
+}subgraph cluster_9705_Panic {
+label = "Panic"
+"9705_panic(uint256)" [label="panic(uint256)"]
+}subgraph cluster_7534_IERC20Metadata {
+label = "IERC20Metadata"
+"7534_symbol()" [label="symbol()"]
+"7534_name()" [label="name()"]
+"7534_decimals()" [label="decimals()"]
+}subgraph cluster_3699_VRFV2PlusClient {
+label = "VRFV2PlusClient"
+"3699__argsToBytes(VRFV2PlusClient.ExtraArgsV1)" [label="_argsToBytes(VRFV2PlusClient.ExtraArgsV1)"]
+}subgraph cluster_7546_IERC165 {
+label = "IERC165"
+"7546_supportsInterface(bytes4)" [label="supportsInterface(bytes4)"]
+}subgraph cluster_3580_VRFV2PlusWrapperConsumerBase {
+label = "VRFV2PlusWrapperConsumerBase"
+"3580_fulfillRandomWords(uint256,uint256[])" [label="fulfillRandomWords(uint256,uint256[])"]
+"3580_requestRandomnessPayInNative(uint32,uint16,uint32,bytes)" [label="requestRandomnessPayInNative(uint32,uint16,uint32,bytes)"]
+"3580_getBalance()" [label="getBalance()"]
+"3580_requestRandomness(uint32,uint16,uint32,bytes)" [label="requestRandomness(uint32,uint16,uint32,bytes)"]
+"3580_rawFulfillRandomWords(uint256,uint256[])" [label="rawFulfillRandomWords(uint256,uint256[])"]
+"3580_getLinkToken()" [label="getLinkToken()"]
+"3580_constructor(address)" [label="constructor(address)"]
+"3580_rawFulfillRandomWords(uint256,uint256[])" -> "3580_fulfillRandomWords(uint256,uint256[])"
+}subgraph cluster_12415_Bytes {
+label = "Bytes"
+"12415_reverseBytes16(bytes16)" [label="reverseBytes16(bytes16)"]
+"12415_replace(bytes,uint256,bytes,uint256,uint256)" [label="replace(bytes,uint256,bytes,uint256,uint256)"]
+"12415__unsafeReadBytesOffset(bytes,uint256)" [label="_unsafeReadBytesOffset(bytes,uint256)"]
+"12415_clz(bytes)" [label="clz(bytes)"]
+"12415_splice(bytes,uint256)" [label="splice(bytes,uint256)"]
+"12415_reverseBytes8(bytes8)" [label="reverseBytes8(bytes8)"]
+"12415_lastIndexOf(bytes,bytes1,uint256)" [label="lastIndexOf(bytes,bytes1,uint256)"]
+"12415_replace(bytes,uint256,bytes)" [label="replace(bytes,uint256,bytes)"]
+"12415_reverseBytes32(bytes32)" [label="reverseBytes32(bytes32)"]
+"12415_indexOf(bytes,bytes1)" [label="indexOf(bytes,bytes1)"]
+"12415_slice(bytes,uint256)" [label="slice(bytes,uint256)"]
+"12415_concat(bytes[])" [label="concat(bytes[])"]
+"12415_splice(bytes,uint256,uint256)" [label="splice(bytes,uint256,uint256)"]
+"12415_reverseBytes4(bytes4)" [label="reverseBytes4(bytes4)"]
+"12415_lastIndexOf(bytes,bytes1)" [label="lastIndexOf(bytes,bytes1)"]
+"12415_slice(bytes,uint256,uint256)" [label="slice(bytes,uint256,uint256)"]
+"12415_toNibbles(bytes)" [label="toNibbles(bytes)"]
+"12415_reverseBytes2(bytes2)" [label="reverseBytes2(bytes2)"]
+"12415_equal(bytes,bytes)" [label="equal(bytes,bytes)"]
+"12415_indexOf(bytes,bytes1,uint256)" [label="indexOf(bytes,bytes1,uint256)"]
+"12415_clz(bytes)" -> "12415__unsafeReadBytesOffset(bytes,uint256)"
+"12415_replace(bytes,uint256,bytes)" -> "12415_replace(bytes,uint256,bytes,uint256,uint256)"
+"12415_indexOf(bytes,bytes1)" -> "12415_indexOf(bytes,bytes1,uint256)"
+"12415_splice(bytes,uint256)" -> "12415_splice(bytes,uint256,uint256)"
+"12415_slice(bytes,uint256)" -> "12415_slice(bytes,uint256,uint256)"
+"12415_lastIndexOf(bytes,bytes1,uint256)" -> "12415__unsafeReadBytesOffset(bytes,uint256)"
+"12415_indexOf(bytes,bytes1,uint256)" -> "12415__unsafeReadBytesOffset(bytes,uint256)"
+"12415_lastIndexOf(bytes,bytes1)" -> "12415_lastIndexOf(bytes,bytes1,uint256)"
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"revert SaleEnded(uint256,uint256)" 
+"returndatacopy(uint256,uint256,uint256)" 
+"revert UnsupportedQuoteToken(address)" 
+"abi.encodeWithSelector()" 
+"revert TotalEntriesOverflow(uint128,uint128)" 
+"string.concat()" 
+"type()" 
+"revert PrizeEscrowVerificationFailed(address,address,uint256)" 
+"revert SponsorPrizeUnavailable(IRaffle.Status)" 
+"revert PrizeDeliveryVerificationFailed(address)" 
+"revert SafeCastOverflowedUintToInt(uint256)" 
+"revert FailedDeployment()" 
+"revert ZeroAddress()" 
+"revert ZeroReserveEntries()" 
+"revert NotContract(address)" 
+"revert OnlyFactory()" 
+"revert NotTicketOwner(uint256,address,address)" 
+"revert UnsupportedPrizeToken(address)" 
+"revert DirectNativeTransfer()" 
+"mstore(uint256,uint256)" 
+"create2(uint256,uint256,uint256,uint256)" 
+"byte(uint256,uint256)" 
+"revert InsufficientVrfFee(uint256,uint256)" 
+"revert AlreadyInitialized()" 
+"revert InvalidTicketBatchSize(uint256,uint256)" 
+"revert ERC721InvalidReceiver(address)" 
+"revert InvalidStatus(IRaffle.Status)" 
+"revert SafeCastOverflowedIntToUint(int256)" 
+"revert WinningTicketAlreadyRedeemed()" 
+"abi.encode()" 
+"revert InvalidQuoteDestination(address)" 
+"revert ReentrancyGuardReentrantCall()" 
+"revert ZeroEntryCount()" 
+"mstore8(uint256,uint256)" 
+"revert DrawRequestWindowExpired(uint256,uint256)" 
+"revert StringsInsufficientHexLength(uint256,uint256)" 
+"revert InvalidRecipient()" 
+"revert StringsInvalidChar()" 
+"keccak256(bytes)" 
+"mulmod(uint256,uint256,uint256)" 
+"revert InvalidQuoteTokenDecimals(uint8,uint8)" 
+"mcopy(uint256,uint256,uint256)" 
+"revert UnsafeProtocolDestination(address)" 
+"gas()" 
+"revert SettlementAlreadyComplete()" 
+"revert ERC721InvalidOperator(address)" 
+"revert StringsInvalidAddressFormat()" 
+"revert ERC721InvalidSender(address)" 
+"create(uint256,uint256,uint256)" 
+"revert SafeCastOverflowedIntDowncast(uint8,int256)" 
+"revert ERC721IncorrectOwner(address,uint256,address)" 
+"code(address)" 
+"revert SaleDurationTooLong(uint256,uint256)" 
+"revert SafeERC20FailedOperation(address)" 
+"revert UnexpectedPrize(address,uint256,address,address)" 
+"revert WinningTicketMismatch(uint256,uint256)" 
+"revert PrizeAlreadyClaimed()" 
+"revert TicketDoesNotContainWinningEntry(uint256,uint128)" 
+"revert ERC721InvalidApprover(address)" 
+"call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)" 
+"revert NoWinnerProceeds()" 
+"revert SafeCastOverflowedUintDowncast(uint8,uint256)" 
+"keccak256(uint256,uint256)" 
+"revert NoEntriesSold()" 
+"staticcall(uint256,uint256,uint256,uint256,uint256,uint256)" 
+"delegatecall(uint256,uint256,uint256,uint256,uint256,uint256)" 
+"revert SafeERC20FailedDecreaseAllowance(address,uint256,uint256)" 
+"revert ERC721NonexistentToken(uint256)" 
+"revert InvalidEndTime(uint256,uint256)" 
+"mload(uint256)" 
+"revert Create2EmptyBytecode()" 
+"balance(address)" 
+"revert NoProtocolFees()" 
+"revert(uint256,uint256)" 
+"abi.encodePacked()" 
+"revert RaffleNotEnded(uint256,uint256)" 
+"revert NoSponsorProceeds()" 
+"revert RefundsNotAvailable(uint256,uint256)" 
+"revert NativeRefundFailed(address,uint256)" 
+"extcodecopy(uint256,uint256,uint256,uint256)" 
+"returndatasize()" 
+"revert InsufficientBalance(uint256,uint256)" 
+"revert ERC721InvalidOwner(address)" 
+"revert CloneArgumentsTooLong()" 
+"revert OnlyVRFWrapperCanFulfill(address,address)" 
+"revert ERC721InsufficientApproval(address,uint256)" 
+"11470_toInt40(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"7508_clone(address,uint256)" -> "revert FailedDeployment()"
+"12718_callNoReturn(address,uint256,bytes)" -> "gas()"
+"12415_concat(bytes[])" -> "mcopy(uint256,uint256,uint256)"
+"7508_cloneDeterministic(address,bytes32,uint256)" -> "revert InsufficientBalance(uint256,uint256)"
+"7508_predictDeterministicAddress(address,bytes32,address)" -> "mstore(uint256,uint256)"
+"1977_requestDraw()" -> "gas()"
+"9505_escapeJSON(string)" -> "mload(uint256)"
+"7508_cloneWithImmutableArgs(address,bytes,uint256)" -> "create(uint256,uint256,uint256)"
+"11584_computeAddress(bytes32,bytes32,address)" -> "mload(uint256)"
+"11470_toUint192(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"5204__checkAuthorized(address,address,uint256)" -> "revert ERC721InsufficientApproval(address,uint256)"
+"11470_toUint160(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"7109_tryModExp(bytes,bytes,bytes)" -> "mstore(uint256,uint256)"
+"9505_toStringSigned(int256)" -> "string.concat()"
+"1977_enableRefunds()" -> "revert RefundsNotAvailable(uint256,uint256)"
+"1977_releaseProtocolFees()" -> "revert NoProtocolFees()"
+"1977__validatedVrfWrapper(address)" -> "revert ZeroAddress()"
+"12718_returnData()" -> "returndatasize()"
+"1977_buyEntries(address,uint128)" -> "revert SaleEnded(uint256,uint256)"
+"7109__zeroBytes(bytes)" -> "mload(uint256)"
+"11470_toUint208(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"5204__requireOwned(uint256)" -> "revert ERC721NonexistentToken(uint256)"
+"1977_initialize(IRaffle.RaffleInitParams)" -> "revert ZeroAddress()"
+"4232__safeApprove(IERC20,address,uint256,bool)" -> "call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)"
+"1977_buyEntries(address,uint128)" -> "revert ZeroEntryCount()"
+"4232_transferAndCallRelaxed(IERC1363,address,uint256,bytes)" -> "code(address)"
+"9505_toHexString(uint256,uint256)" -> "revert StringsInsufficientHexLength(uint256,uint256)"
+"11584_deploy(uint256,bytes32,bytes)" -> "revert FailedDeployment()"
+"7508_cloneDeterministic(address,bytes32,uint256)" -> "create2(uint256,uint256,uint256,uint256)"
+"12718_callNoReturn(address,uint256,bytes)" -> "mload(uint256)"
+"11470_toUint200(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"7508_predictDeterministicAddress(address,bytes32,address)" -> "mload(uint256)"
+"12718_delegatecallNoReturn(address,bytes)" -> "delegatecall(uint256,uint256,uint256,uint256,uint256,uint256)"
+"7109_tryModExp(uint256,uint256,uint256)" -> "staticcall(uint256,uint256,uint256,uint256,uint256,uint256)"
+"11470_toUint144(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"11470_toInt64(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"1977_initialize(IRaffle.RaffleInitParams)" -> "revert UnsafeProtocolDestination(address)"
+"5204__mint(address,uint256)" -> "revert ERC721InvalidReceiver(address)"
+"7508_cloneWithImmutableArgs(address,bytes,uint256)" -> "mload(uint256)"
+"11470_toUint128(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"5204_tokenURI(uint256)" -> "string.concat()"
+"2518__validateCreateParams(IRaffleFactory.CreateRaffleParams)" -> "type()"
+"4232__safeTransferFrom(IERC20,address,address,uint256,bool)" -> "revert(uint256,uint256)"
+"12718_delegatecallNoReturn(address,bytes)" -> "gas()"
+"12718_delegatecallNoReturn(address,bytes)" -> "mload(uint256)"
+"11470_toUint48(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"11470_toInt168(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"11470_toInt152(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"1977_redeemWinningTicket(uint256)" -> "revert WinningTicketMismatch(uint256,uint256)"
+"7508__cloneCodeWithImmutableArgs(address,bytes)" -> "abi.encodePacked()"
+"12415_concat(bytes[])" -> "mload(uint256)"
+"7508_cloneDeterministic(address,bytes32,uint256)" -> "balance(address)"
+"4232_safeTransfer(IERC20,address,uint256)" -> "revert SafeERC20FailedOperation(address)"
+"11470_toUint56(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"11470_toInt48(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"11470_toUint64(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"5204_transferFrom(address,address,uint256)" -> "revert ERC721IncorrectOwner(address,uint256,address)"
+"3580_getBalance()" -> "balance(address)"
+"12718_callNoReturn(address,uint256,bytes)" -> "call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)"
+"4232__safeTransferFrom(IERC20,address,address,uint256,bool)" -> "mstore(uint256,uint256)"
+"12415_slice(bytes,uint256,uint256)" -> "mcopy(uint256,uint256,uint256)"
+"5204_supportsInterface(bytes4)" -> "type()"
+"7109_tryModExp(bytes,bytes,bytes)" -> "gas()"
+"1977__settleWinningTicket(uint256)" -> "revert InvalidStatus(IRaffle.Status)"
+"9505_toString(uint256)" -> "mstore8(uint256,uint256)"
+"7508_predictDeterministicAddressWithImmutableArgs(address,bytes,bytes32,address)" -> "keccak256(bytes)"
+"11470_toUint168(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"2518__validateCreateParams(IRaffleFactory.CreateRaffleParams)" -> "revert UnsupportedPrizeToken(address)"
+"11470_toInt136(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"2518_constructor(address,address,address)" -> "revert UnsafeProtocolDestination(address)"
+"4232__safeTransfer(IERC20,address,uint256,bool)" -> "returndatasize()"
+"4232__safeApprove(IERC20,address,uint256,bool)" -> "revert(uint256,uint256)"
+"12415_equal(bytes,bytes)" -> "keccak256(bytes)"
+"12718_bubbleRevert(bytes)" -> "mload(uint256)"
+"11470_toUint104(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"5204__burn(uint256)" -> "revert ERC721NonexistentToken(uint256)"
+"1977_constructor(address,address)" -> "revert ZeroAddress()"
+"4232__safeTransferFrom(IERC20,address,address,uint256,bool)" -> "call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)"
+"2518__validateCreateParams(IRaffleFactory.CreateRaffleParams)" -> "revert UnsafeProtocolDestination(address)"
+"1977__transferQuote(address,uint256)" -> "revert InvalidQuoteDestination(address)"
+"12415_splice(bytes,uint256,uint256)" -> "mcopy(uint256,uint256,uint256)"
+"9505_toString(uint256)" -> "byte(uint256,uint256)"
+"11470_toUint176(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"12718_callReturn64Bytes(address,uint256,bytes)" -> "call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)"
+"7508_cloneDeterministic(address,bytes32,uint256)" -> "revert FailedDeployment()"
+"12718_bubbleRevert(bytes)" -> "revert(uint256,uint256)"
+"7109_tryModExp(bytes,bytes,bytes)" -> "staticcall(uint256,uint256,uint256,uint256,uint256,uint256)"
+"11470_toUint112(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"2518_constructor(address,address,address)" -> "revert UnsupportedQuoteToken(address)"
+"11470_toInt248(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"7109_tryModExp(bytes,bytes,bytes)" -> "abi.encodePacked()"
+"7508_fetchCloneArgs(address)" -> "code(address)"
+"12718_callReturn64Bytes(address,uint256,bytes)" -> "mload(uint256)"
+"7508_clone(address,uint256)" -> "mstore(uint256,uint256)"
+"5204_transferFrom(address,address,uint256)" -> "revert ERC721InvalidReceiver(address)"
+"7109_mul512(uint256,uint256)" -> "mulmod(uint256,uint256,uint256)"
+"9505_parseUint(string,uint256,uint256)" -> "revert StringsInvalidChar()"
+"4232__safeTransferFrom(IERC20,address,address,uint256,bool)" -> "mload(uint256)"
+"12718_delegatecallReturn64Bytes(address,bytes)" -> "delegatecall(uint256,uint256,uint256,uint256,uint256,uint256)"
+"1977_buyEntries(address,uint128)" -> "revert InvalidRecipient()"
+"12718_staticcallReturn64Bytes(address,bytes)" -> "staticcall(uint256,uint256,uint256,uint256,uint256,uint256)"
+"4232__safeTransfer(IERC20,address,uint256,bool)" -> "mstore(uint256,uint256)"
+"4232__safeApprove(IERC20,address,uint256,bool)" -> "returndatasize()"
+"11470_toInt200(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"1977_initialize(IRaffle.RaffleInitParams)" -> "revert AlreadyInitialized()"
+"1977_refundTickets(uint256[])" -> "revert NotTicketOwner(uint256,address,address)"
+"3699__argsToBytes(VRFV2PlusClient.ExtraArgsV1)" -> "abi.encodeWithSelector()"
+"11470_toInt80(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"11470_toUint216(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"7508_fetchCloneArgs(address)" -> "extcodecopy(uint256,uint256,uint256,uint256)"
+"7965_checkOnERC721Received(address,address,address,uint256,bytes)" -> "revert ERC721InvalidReceiver(address)"
+"12718_returnData()" -> "mload(uint256)"
+"1977_redeemWinningTicket(uint256)" -> "revert InvalidStatus(IRaffle.Status)"
+"1977_requestDraw()" -> "revert NativeRefundFailed(address,uint256)"
+"4232__safeTransfer(IERC20,address,uint256,bool)" -> "mload(uint256)"
+"11470_toInt184(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"5204__setApprovalForAll(address,address,bool)" -> "revert ERC721InvalidApprover(address)"
+"4232__safeTransferFrom(IERC20,address,address,uint256,bool)" -> "returndatacopy(uint256,uint256,uint256)"
+"11470_toUint24(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"1977_buyEntries(address,uint128)" -> "revert TotalEntriesOverflow(uint128,uint128)"
+"7109_tryModExp(bytes,bytes,bytes)" -> "mload(uint256)"
+"11470_toInt120(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"11584_computeAddress(bytes32,bytes32,address)" -> "mstore8(uint256,uint256)"
+"9505_parseAddress(string,uint256,uint256)" -> "revert StringsInvalidAddressFormat()"
+"9505_escapeJSON(string)" -> "mstore(uint256,uint256)"
+"11470_toInt32(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"12718_delegatecallReturn64Bytes(address,bytes)" -> "mload(uint256)"
+"2518_createRaffle(IRaffleFactory.CreateRaffleParams)" -> "revert InvalidEndTime(uint256,uint256)"
+"1977_requestDraw()" -> "revert DrawRequestWindowExpired(uint256,uint256)"
+"11584_deploy(uint256,bytes32,bytes)" -> "balance(address)"
+"11470_toUint40(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"1977_initialize(IRaffle.RaffleInitParams)" -> "revert OnlyFactory()"
+"4232_safeTransferFrom(IERC20,address,address,uint256)" -> "revert SafeERC20FailedOperation(address)"
+"11470_toUint152(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"11470_toInt208(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"11470_toInt16(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"11470_toInt8(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"11584_deploy(uint256,bytes32,bytes)" -> "revert InsufficientBalance(uint256,uint256)"
+"5204__setApprovalForAll(address,address,bool)" -> "revert ERC721InvalidOperator(address)"
+"12415_replace(bytes,uint256,bytes,uint256,uint256)" -> "mcopy(uint256,uint256,uint256)"
+"11470_toInt256(uint256)" -> "revert SafeCastOverflowedUintToInt(uint256)"
+"9505_parseHexUint(string,uint256,uint256)" -> "revert StringsInvalidChar()"
+"4232_transferFromAndCallRelaxed(IERC1363,address,address,uint256,bytes)" -> "revert SafeERC20FailedOperation(address)"
+"7508_cloneWithImmutableArgs(address,bytes,uint256)" -> "balance(address)"
+"7508__cloneCodeWithImmutableArgs(address,bytes)" -> "revert CloneArgumentsTooLong()"
+"11470_toInt96(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"12718_bubbleRevert()" -> "returndatasize()"
+"1977_onERC721Received(address,address,uint256,bytes)" -> "revert UnexpectedPrize(address,uint256,address,address)"
+"1977_redeemWinningTicket(uint256)" -> "revert PrizeAlreadyClaimed()"
+"12718_returnData()" -> "mstore(uint256,uint256)"
+"7965_checkOnERC721Received(address,address,address,uint256,bytes)" -> "revert(uint256,uint256)"
+"12718_bubbleRevert()" -> "revert(uint256,uint256)"
+"1977__isProtocolDestination(address,address)" -> "code(address)"
+"4232__safeTransferFrom(IERC20,address,address,uint256,bool)" -> "returndatasize()"
+"11470_toUint184(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"4232_approveAndCallRelaxed(IERC1363,address,uint256,bytes)" -> "revert SafeERC20FailedOperation(address)"
+"9529_supportsInterface(bytes4)" -> "type()"
+"11470_toUint88(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"7508_clone(address,uint256)" -> "revert InsufficientBalance(uint256,uint256)"
+"2518__validateCreateParams(IRaffleFactory.CreateRaffleParams)" -> "revert ZeroAddress()"
+"11470_toInt240(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"12415_toNibbles(bytes)" -> "mstore(uint256,uint256)"
+"11470_toInt192(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"2518_constructor(address,address,address)" -> "revert InvalidQuoteTokenDecimals(uint8,uint8)"
+"11470_toUint80(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"11470_toInt232(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"2518_createRaffle(IRaffleFactory.CreateRaffleParams)" -> "revert PrizeEscrowVerificationFailed(address,address,uint256)"
+"5204__checkAuthorized(address,address,uint256)" -> "revert ERC721NonexistentToken(uint256)"
+"9705_panic(uint256)" -> "revert(uint256,uint256)"
+"11470_toInt128(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"7109_mulDiv(uint256,uint256,uint256)" -> "mulmod(uint256,uint256,uint256)"
+"7508_cloneWithImmutableArgs(address,bytes,uint256)" -> "revert FailedDeployment()"
+"5204__transfer(address,address,uint256)" -> "revert ERC721NonexistentToken(uint256)"
+"4232__safeTransfer(IERC20,address,uint256,bool)" -> "gas()"
+"7109_mulDiv(uint256,uint256,uint256,Math.Rounding)" -> "mulmod(uint256,uint256,uint256)"
+"11470_toInt160(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"1977_refundTickets(uint256[])" -> "revert InvalidTicketBatchSize(uint256,uint256)"
+"11584_computeAddress(bytes32,bytes32,address)" -> "keccak256(uint256,uint256)"
+"2518__requireContract(address)" -> "code(address)"
+"11470_toInt72(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"4232__safeApprove(IERC20,address,uint256,bool)" -> "returndatacopy(uint256,uint256,uint256)"
+"4232__safeTransferFrom(IERC20,address,address,uint256,bool)" -> "gas()"
+"9505_toChecksumHexString(address)" -> "keccak256(uint256,uint256)"
+"5204__transfer(address,address,uint256)" -> "revert ERC721IncorrectOwner(address,uint256,address)"
+"1977_releaseSponsorProceeds()" -> "revert NoSponsorProceeds()"
+"9505__unsafeWriteBytesOffset(bytes,uint256,bytes1)" -> "mstore8(uint256,uint256)"
+"11470_toInt104(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"7508_predictDeterministicAddress(address,bytes32,address)" -> "keccak256(uint256,uint256)"
+"3580_requestRandomness(uint32,uint16,uint32,bytes)" -> "abi.encode()"
+"11470_toInt112(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"7109_tryModExp(uint256,uint256,uint256)" -> "mload(uint256)"
+"1977_releaseSponsorPrize()" -> "revert PrizeDeliveryVerificationFailed(address)"
+"1977_requestDraw()" -> "revert NoEntriesSold()"
+"11470_toInt216(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"2518_createRaffle(IRaffleFactory.CreateRaffleParams)" -> "revert SaleDurationTooLong(uint256,uint256)"
+"9505__unsafeReadBytesOffset(bytes,uint256)" -> "mload(uint256)"
+"1977_redeemWinningTicket(uint256)" -> "revert NotTicketOwner(uint256,address,address)"
+"4232_transferAndCallRelaxed(IERC1363,address,uint256,bytes)" -> "revert SafeERC20FailedOperation(address)"
+"1977__update(address,uint256,address)" -> "revert UnsafeProtocolDestination(address)"
+"12718_staticcallReturn64Bytes(address,bytes)" -> "mload(uint256)"
+"12718_returnData()" -> "returndatacopy(uint256,uint256,uint256)"
+"5204__approve(address,uint256,address,bool)" -> "revert ERC721InvalidApprover(address)"
+"4232_forceApprove(IERC20,address,uint256)" -> "revert SafeERC20FailedOperation(address)"
+"11470_toUint8(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"7109_mulShr(uint256,uint256,uint8,Math.Rounding)" -> "mulmod(uint256,uint256,uint256)"
+"1977__requireStatus(IRaffle.Status)" -> "revert InvalidStatus(IRaffle.Status)"
+"5204_balanceOf(address)" -> "revert ERC721InvalidOwner(address)"
+"12718_callReturn64Bytes(address,uint256,bytes)" -> "gas()"
+"4232_safeDecreaseAllowance(IERC20,address,uint256)" -> "revert SafeERC20FailedDecreaseAllowance(address,uint256,uint256)"
+"5204__mint(address,uint256)" -> "revert ERC721InvalidSender(address)"
+"12415_splice(bytes,uint256,uint256)" -> "mstore(uint256,uint256)"
+"11470_toUint16(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"11470_toUint256(int256)" -> "revert SafeCastOverflowedIntToUint(int256)"
+"1977_redeemWinningTicket(uint256)" -> "revert WinningTicketAlreadyRedeemed()"
+"11470_toInt56(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"7109_tryModExp(uint256,uint256,uint256)" -> "mstore(uint256,uint256)"
+"4232_approveAndCallRelaxed(IERC1363,address,uint256,bytes)" -> "code(address)"
+"7508_cloneWithImmutableArgs(address,bytes,uint256)" -> "revert InsufficientBalance(uint256,uint256)"
+"5452__nonReentrantBeforeView()" -> "revert ReentrancyGuardReentrantCall()"
+"1977_requestDraw()" -> "revert RaffleNotEnded(uint256,uint256)"
+"12718_bubbleRevert()" -> "mload(uint256)"
+"4232__safeTransfer(IERC20,address,uint256,bool)" -> "returndatacopy(uint256,uint256,uint256)"
+"4232__safeApprove(IERC20,address,uint256,bool)" -> "mstore(uint256,uint256)"
+"2518__requireContract(address)" -> "revert NotContract(address)"
+"12415__unsafeReadBytesOffset(bytes,uint256)" -> "mload(uint256)"
+"11470_toUint248(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"9705_panic(uint256)" -> "mstore(uint256,uint256)"
+"1977_requestDraw()" -> "revert InsufficientVrfFee(uint256,uint256)"
+"11584_deploy(uint256,bytes32,bytes)" -> "revert Create2EmptyBytecode()"
+"2518_constructor(address,address,address)" -> "revert ZeroAddress()"
+"12718_staticcallReturn64Bytes(address,bytes)" -> "gas()"
+"7508_fetchCloneArgs(address)" -> "mload(uint256)"
+"1977_enableRefunds()" -> "revert InvalidStatus(IRaffle.Status)"
+"4232__safeApprove(IERC20,address,uint256,bool)" -> "gas()"
+"1977__requireWinningTicket(uint256)" -> "revert TicketDoesNotContainWinningEntry(uint256,uint128)"
+"7109_log2(uint256)" -> "byte(uint256,uint256)"
+"1977__settleWinningTicket(uint256)" -> "revert SettlementAlreadyComplete()"
+"1977_redeemWinningTicket(uint256)" -> "revert PrizeDeliveryVerificationFailed(address)"
+"12718_bubbleRevert()" -> "returndatacopy(uint256,uint256,uint256)"
+"4232__safeApprove(IERC20,address,uint256,bool)" -> "mload(uint256)"
+"5204__transfer(address,address,uint256)" -> "revert ERC721InvalidReceiver(address)"
+"7109_tryModExp(uint256,uint256,uint256)" -> "gas()"
+"1977_releaseSponsorPrize()" -> "revert PrizeAlreadyClaimed()"
+"12718_returnDataSize()" -> "returndatasize()"
+"12718_staticcallNoReturn(address,bytes)" -> "gas()"
+"11470_toInt144(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"1977_releaseSponsorPrize()" -> "revert SponsorPrizeUnavailable(IRaffle.Status)"
+"11470_toUint136(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"11470_toUint240(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"11470_toUint224(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"1977_requestDraw()" -> "call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)"
+"7508_cloneDeterministic(address,bytes32,uint256)" -> "mstore(uint256,uint256)"
+"11470_toUint120(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"11584_deploy(uint256,bytes32,bytes)" -> "mload(uint256)"
+"12415_toNibbles(bytes)" -> "mload(uint256)"
+"11470_toInt24(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"7965_checkOnERC721Received(address,address,address,uint256,bytes)" -> "code(address)"
+"2518__validateCreateParams(IRaffleFactory.CreateRaffleParams)" -> "revert ZeroReserveEntries()"
+"1977_receive()" -> "revert DirectNativeTransfer()"
+"11470_toUint96(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"11470_toUint72(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"1977_redeemWinningTicket(uint256)" -> "revert NoWinnerProceeds()"
+"9505_parseInt(string,uint256,uint256)" -> "revert StringsInvalidChar()"
+"12718_staticcallNoReturn(address,bytes)" -> "staticcall(uint256,uint256,uint256,uint256,uint256,uint256)"
+"12718_staticcallNoReturn(address,bytes)" -> "mload(uint256)"
+"3580_rawFulfillRandomWords(uint256,uint256[])" -> "revert OnlyVRFWrapperCanFulfill(address,address)"
+"12718_delegatecallReturn64Bytes(address,bytes)" -> "gas()"
+"11470_toUint232(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"4232__safeTransfer(IERC20,address,uint256,bool)" -> "revert(uint256,uint256)"
+"11470_toInt88(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"11584_computeAddress(bytes32,bytes32,address)" -> "mstore(uint256,uint256)"
+"11584_deploy(uint256,bytes32,bytes)" -> "create2(uint256,uint256,uint256,uint256)"
+"4232__safeTransfer(IERC20,address,uint256,bool)" -> "call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)"
+"4232_transferFromAndCallRelaxed(IERC1363,address,address,uint256,bytes)" -> "code(address)"
+"7508_clone(address,uint256)" -> "create(uint256,uint256,uint256)"
+"7965_checkOnERC721Received(address,address,address,uint256,bytes)" -> "mload(uint256)"
+"11470_toUint32(uint256)" -> "revert SafeCastOverflowedUintDowncast(uint8,uint256)"
+"11470_toInt224(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"11470_toInt176(int256)" -> "revert SafeCastOverflowedIntDowncast(uint8,int256)"
+"7508_clone(address,uint256)" -> "balance(address)"
+}"12415_lastIndexOf(bytes,bytes1,uint256)" -> "7109_min(uint256,uint256)"
+"7508_predictDeterministicAddressWithImmutableArgs(address,bytes,bytes32,address)" -> "11584_computeAddress(bytes32,bytes32,address)"
+"7109_ceilDiv(uint256,uint256)" -> "11470_toUint(bool)"
+"5452__nonReentrantBefore()" -> "9653_getUint256Slot(bytes32)"
+"12415_splice(bytes,uint256,uint256)" -> "7109_min(uint256,uint256)"
+"7109_sqrt(uint256)" -> "11470_toUint(bool)"
+"7109_log256(uint256,Math.Rounding)" -> "11470_toUint(bool)"
+"7109_log2(uint256,Math.Rounding)" -> "11470_toUint(bool)"
+"1977_requestDraw()" -> "3699__argsToBytes(VRFV2PlusClient.ExtraArgsV1)"
+"7109_log2(uint256)" -> "11470_toUint(bool)"
+"12415_lastIndexOf(bytes,bytes1,uint256)" -> "7109_saturatingAdd(uint256,uint256)"
+"5204_safeTransferFrom(address,address,uint256,bytes)" -> "7965_checkOnERC721Received(address,address,address,uint256,bytes)"
+"4232_approveAndCallRelaxed(IERC1363,address,uint256,bytes)" -> "7723_approveAndCall(address,uint256,bytes)"
+"7965_checkOnERC721Received(address,address,address,uint256,bytes)" -> "5339_onERC721Received(address,address,uint256,bytes)"
+"4232_safeIncreaseAllowance(IERC20,address,uint256)" -> "3777_allowance(address,address)"
+"9505_tryParseAddress(string,uint256,uint256)" -> "11470_toUint(bool)"
+"7109_tryMul(uint256,uint256)" -> "11470_toUint(bool)"
+"2518_createRaffle(IRaffleFactory.CreateRaffleParams)" -> "5321_ownerOf(uint256)"
+"7109_modExp(uint256,uint256,uint256)" -> "9705_panic(uint256)"
+"9505_equal(string,string)" -> "12415_equal(bytes,bytes)"
+"7109_tryAdd(uint256,uint256)" -> "11470_toUint(bool)"
+"5204__safeMint(address,uint256,bytes)" -> "7965_checkOnERC721Received(address,address,address,uint256,bytes)"
+"3580_constructor(address)" -> "3657_link()"
+"9505_toStringSigned(int256)" -> "12559_abs(int256)"
+"1977_releaseSponsorPrize()" -> "5321_transferFrom(address,address,uint256)"
+"7109_mulDiv(uint256,uint256,uint256)" -> "9705_panic(uint256)"
+"1977_estimateVrfRequestPrice(uint256)" -> "3657_estimateRequestPriceNative(uint32,uint32,uint256)"
+"7109_trySub(uint256,uint256)" -> "11470_toUint(bool)"
+"3580_requestRandomness(uint32,uint16,uint32,bytes)" -> "3657_lastRequestId()"
+"9505_toString(uint256)" -> "7109_log10(uint256)"
+"12415_clz(bytes)" -> "7109_clz(uint256)"
+"5204__safeTransfer(address,address,uint256,bytes)" -> "7965_checkOnERC721Received(address,address,address,uint256,bytes)"
+"7109_mulShr(uint256,uint256,uint8)" -> "9705_panic(uint256)"
+"9505__tryParseHexUintUncheckedBounds(string,uint256,uint256)" -> "11470_toUint(bool)"
+"1977__settleWinningTicket(uint256)" -> "7109_mulDiv(uint256,uint256,uint256)"
+"2518_createRaffle(IRaffleFactory.CreateRaffleParams)" -> "3167_status()"
+"11584_deploy(uint256,bytes32,bytes)" -> "12718_returnDataSize()"
+"12415_slice(bytes,uint256,uint256)" -> "7109_min(uint256,uint256)"
+"12415_clz(bytes)" -> "7109_min(uint256,uint256)"
+"3580_requestRandomnessPayInNative(uint32,uint16,uint32,bytes)" -> "3657_requestRandomWordsInNative(uint32,uint16,uint32,bytes)"
+"4232_safeDecreaseAllowance(IERC20,address,uint256)" -> "3777_allowance(address,address)"
+"1977_releaseSponsorPrize()" -> "5321_ownerOf(uint256)"
+"4232_transferAndCallRelaxed(IERC1363,address,uint256,bytes)" -> "7723_transferAndCall(address,uint256,bytes)"
+"2518_createRaffle(IRaffleFactory.CreateRaffleParams)" -> "5321_safeTransferFrom(address,address,uint256)"
+"2518_createRaffle(IRaffleFactory.CreateRaffleParams)" -> "3167_initialize(IRaffle.RaffleInitParams)"
+"5452__nonReentrantAfter()" -> "9653_getUint256Slot(bytes32)"
+"5452__reentrancyGuardEntered()" -> "9653_getUint256Slot(bytes32)"
+"2518_createRaffle(IRaffleFactory.CreateRaffleParams)" -> "7508_clone(address)"
+"3580_requestRandomnessPayInNative(uint32,uint16,uint32,bytes)" -> "3657_calculateRequestPriceNative(uint32,uint32)"
+"7508_cloneDeterministicWithImmutableArgs(address,bytes,bytes32,uint256)" -> "11584_deploy(uint256,bytes32,bytes)"
+"3580_requestRandomness(uint32,uint16,uint32,bytes)" -> "7641_transferAndCall(address,uint256,bytes)"
+"7109_log10(uint256,Math.Rounding)" -> "11470_toUint(bool)"
+"7109_ceilDiv(uint256,uint256)" -> "9705_panic(uint256)"
+"1977_getVrfRequestPrice()" -> "3657_calculateRequestPriceNative(uint32,uint32)"
+"7109_sqrt(uint256,Math.Rounding)" -> "11470_toUint(bool)"
+"3580_requestRandomness(uint32,uint16,uint32,bytes)" -> "3657_calculateRequestPrice(uint32,uint32)"
+"7109_ternary(bool,uint256,uint256)" -> "11470_toUint(bool)"
+"7109_log256(uint256)" -> "11470_toUint(bool)"
+"11584_deploy(uint256,bytes32,bytes)" -> "12718_bubbleRevert()"
+"1977__isProtocolDestination(address,address)" -> "3337_isRaffle(address)"
+"1977_redeemWinningTicket(uint256)" -> "5321_transferFrom(address,address,uint256)"
+"9505_toHexString(uint256)" -> "7109_log256(uint256)"
+"1977__transferQuote(address,uint256)" -> "4232_safeTransfer(IERC20,address,uint256)"
+"1977_redeemWinningTicket(uint256)" -> "5321_ownerOf(uint256)"
+"7109_mulDiv(uint256,uint256,uint256,Math.Rounding)" -> "11470_toUint(bool)"
+"7109_modExp(bytes,bytes,bytes)" -> "9705_panic(uint256)"
+"9505__tryParseIntUncheckedBounds(string,uint256,uint256)" -> "11470_toUint(bool)"
+"1977_buyEntries(address,uint128)" -> "4232_safeTransferFrom(IERC20,address,address,uint256)"
+"7109_mulShr(uint256,uint256,uint8,Math.Rounding)" -> "11470_toUint(bool)"
+"4232_transferFromAndCallRelaxed(IERC1363,address,address,uint256,bytes)" -> "7723_transferFromAndCall(address,address,uint256,bytes)"
+"12415_replace(bytes,uint256,bytes,uint256,uint256)" -> "7109_min(uint256,uint256)"
+"2518__validateCreateParams(IRaffleFactory.CreateRaffleParams)" -> "7546_supportsInterface(bytes4)"
+"2518_constructor(address,address,address)" -> "7534_decimals()"
+"5452_constructor()" -> "9653_getUint256Slot(bytes32)"
+"12559_ternary(bool,int256,int256)" -> "11470_toUint(bool)"
+"1977__isProtocolDestination(address,address)" -> "3337_raffleImplementation()"
+"5204_tokenURI(uint256)" -> "9505_toString(uint256)"subgraph cluster_toplevel {
+label = "[Top Level]"
+}
+}

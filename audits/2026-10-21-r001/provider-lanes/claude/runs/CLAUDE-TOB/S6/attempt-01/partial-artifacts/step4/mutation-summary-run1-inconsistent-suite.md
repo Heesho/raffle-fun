@@ -1,0 +1,14 @@
+| Mutant | Injected specification violation | Verdict | Mutant source compiled | Tests that failed (killing tests) |
+|---|---|---|---|---|
+| M01-callback-deadline-inclusive | VRF callback accepted at drawRequestedAt+2d (spec: strictly before) | **KILLED** (2 of 30 tests failed) | yes | `test_sanity_drawingTimeoutAndEmptyRaffle`, `test_A4_callbackAcceptedStrictlyBeforeCallbackDeadline` |
+| M02-refunds-open-at-sale-end | refunds open during the draw-request window | **KILLED** (2 of 30 tests failed) | yes | `test_A3_refundsOpenExactlyAtRequestDeadline` |
+| M03-cash-sponsor-overallocated | CashWon sponsor share ignores the protocol fee (over-allocation) | **KILLED** (6 of 30 tests failed) | yes | `test_D3_sponsorAndTreasuryClaimIndependently_blocklistedSponsorRecipient`, `testFuzz_B1_settlementSplitsAreExactAndLossless`, `test_sanity_cashWonLifecycle`, `test_sanity_failureModes` |
+| M04-refund-without-burn | refunded tickets are not burned (double refund) | **KILLED** (4 of 30 tests failed) | yes | `test_sanity_drawingTimeoutAndEmptyRaffle`, `test_sanity_nftWonAndRefundLifecycles`, `test_B4_refundBatchBoundsDuplicatesAndForeignTickets` |
+| M05-sponsor-reclaims-nft-in-nftwon | sponsor can take back the NFT after the reserve was met | **SURVIVED** (2 of 30 tests failed) | yes | — |
+| M06-overlapping-ranges | ticket ranges overlap / entry 0 assigned | **KILLED** (7 of 30 tests failed) | yes | `test_sanity_cashWonLifecycle`, `test_sanity_drawingTimeoutAndEmptyRaffle`, `test_sanity_failureModes`, `test_sanity_nftWonAndRefundLifecycles`, `testFuzz_B2_refundPaysExactlyPerEntryAndReturnsPrize` |
+| M07-redeem-without-owner-check | anyone can trigger redemption of the winning ticket | **KILLED** (3 of 30 tests failed) | yes | `test_D1_onlyCurrentOwnerRedeems`, `test_sanity_cashWonLifecycle` |
+| M08-request-window-inclusive | draw request accepted at endTime+2d (spec: half-open window) | **KILLED** (1 of 30 tests failed) | yes | `test_A2_requestWindowIsHalfOpen_endTime_to_endPlus2Days` |
+| M09-reserve-strict | reserve exactly met yields CashWon | **KILLED** (2 of 30 tests failed) | yes | `testFuzz_B1_settlementSplitsAreExactAndLossless`, `test_B3_entryCountOverflowGuardAndMaxRaffleStillSettles` |
+| M10-no-runtime-quote-screen | USDC payouts skip the runtime protocol-destination screen | **SURVIVED** (0 of 30 tests failed) | yes | — |
+| M11-prize-release-no-flag | releaseSponsorPrize does not record the claim | **KILLED** (7 of 36 tests failed) | yes | `test_H6_doubleClaimsAndWrongStateClaimsRevert`, `test_sanity_cashWonLifecycle`, `test_sanity_drawingTimeoutAndEmptyRaffle`, `test_sanity_failureModes`, `test_sanity_nftWonAndRefundLifecycles` |
+| M12-callback-ignores-request-id | callback for a foreign request id is accepted | **KILLED** (3 of 36 tests failed) | yes | `test_C2_wrongIdWrongLengthReplayAreIgnoredWithoutReverting`, `test_sanity_cashWonLifecycle` |

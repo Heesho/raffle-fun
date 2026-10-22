@@ -1,0 +1,370 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_4096_ReentrancyGuard {
+label = "ReentrancyGuard"
+"4096__nonReentrantAfter()" [label="_nonReentrantAfter()"]
+"4096__nonReentrantBeforeView()" [label="_nonReentrantBeforeView()"]
+"4096__reentrancyGuardEntered()" [label="_reentrancyGuardEntered()"]
+"4096__nonReentrantBefore()" [label="_nonReentrantBefore()"]
+"4096_constructor()" [label="constructor()"]
+"4096__reentrancyGuardStorageSlot()" [label="_reentrancyGuardStorageSlot()"]
+"4096__nonReentrantBeforeView()" -> "4096__reentrancyGuardEntered()"
+"4096__nonReentrantAfter()" -> "4096__reentrancyGuardStorageSlot()"
+"4096_constructor()" -> "4096__reentrancyGuardStorageSlot()"
+"4096__nonReentrantBefore()" -> "4096__reentrancyGuardStorageSlot()"
+"4096__reentrancyGuardEntered()" -> "4096__reentrancyGuardStorageSlot()"
+"4096__nonReentrantBefore()" -> "4096__nonReentrantBeforeView()"
+}subgraph cluster_289_VRFV2PlusWrapperConsumerBase {
+label = "VRFV2PlusWrapperConsumerBase"
+"289_getLinkToken()" [label="getLinkToken()"]
+"289_rawFulfillRandomWords(uint256,uint256[])" [label="rawFulfillRandomWords(uint256,uint256[])"]
+"289_fulfillRandomWords(uint256,uint256[])" [label="fulfillRandomWords(uint256,uint256[])"]
+"289_requestRandomnessPayInNative(uint32,uint16,uint32,bytes)" [label="requestRandomnessPayInNative(uint32,uint16,uint32,bytes)"]
+"289_constructor(address)" [label="constructor(address)"]
+"289_getBalance()" [label="getBalance()"]
+"289_requestRandomness(uint32,uint16,uint32,bytes)" [label="requestRandomness(uint32,uint16,uint32,bytes)"]
+"289_rawFulfillRandomWords(uint256,uint256[])" -> "289_fulfillRandomWords(uint256,uint256[])"
+}subgraph cluster_2565_ERC721 {
+label = "ERC721"
+"2565_balanceOf(address)" [label="balanceOf(address)"]
+"2565__update(address,uint256,address)" [label="_update(address,uint256,address)"]
+"2565__safeMint(address,uint256)" [label="_safeMint(address,uint256)"]
+"2565__mint(address,uint256)" [label="_mint(address,uint256)"]
+"2565_transferFrom(address,address,uint256)" [label="transferFrom(address,address,uint256)"]
+"2565_getApproved(uint256)" [label="getApproved(uint256)"]
+"2565_name()" [label="name()"]
+"2565__requireOwned(uint256)" [label="_requireOwned(uint256)"]
+"2565_approve(address,uint256)" [label="approve(address,uint256)"]
+"2565__safeTransfer(address,address,uint256)" [label="_safeTransfer(address,address,uint256)"]
+"2565_safeTransferFrom(address,address,uint256)" [label="safeTransferFrom(address,address,uint256)"]
+"2565__approve(address,uint256,address)" [label="_approve(address,uint256,address)"]
+"2565_tokenURI(uint256)" [label="tokenURI(uint256)"]
+"2565__ownerOf(uint256)" [label="_ownerOf(uint256)"]
+"2565_supportsInterface(bytes4)" [label="supportsInterface(bytes4)"]
+"2565__safeTransfer(address,address,uint256,bytes)" [label="_safeTransfer(address,address,uint256,bytes)"]
+"2565__isAuthorized(address,address,uint256)" [label="_isAuthorized(address,address,uint256)"]
+"2565__burn(uint256)" [label="_burn(uint256)"]
+"2565_ownerOf(uint256)" [label="ownerOf(uint256)"]
+"2565__safeMint(address,uint256,bytes)" [label="_safeMint(address,uint256,bytes)"]
+"2565__transfer(address,address,uint256)" [label="_transfer(address,address,uint256)"]
+"2565__getApproved(uint256)" [label="_getApproved(uint256)"]
+"2565__baseURI()" [label="_baseURI()"]
+"2565_constructor(string,string)" [label="constructor(string,string)"]
+"2565__approve(address,uint256,address,bool)" [label="_approve(address,uint256,address,bool)"]
+"2565__checkAuthorized(address,address,uint256)" [label="_checkAuthorized(address,address,uint256)"]
+"2565_setApprovalForAll(address,bool)" [label="setApprovalForAll(address,bool)"]
+"2565__setApprovalForAll(address,address,bool)" [label="_setApprovalForAll(address,address,bool)"]
+"2565__increaseBalance(address,uint128)" [label="_increaseBalance(address,uint128)"]
+"2565_isApprovedForAll(address,address)" [label="isApprovedForAll(address,address)"]
+"2565_safeTransferFrom(address,address,uint256,bytes)" [label="safeTransferFrom(address,address,uint256,bytes)"]
+"2565_symbol()" [label="symbol()"]
+"2565__approve(address,uint256,address,bool)" -> "2565_isApprovedForAll(address,address)"
+"2565__isAuthorized(address,address,uint256)" -> "2565__getApproved(uint256)"
+"2565__transfer(address,address,uint256)" -> "2565__update(address,uint256,address)"
+"2565__safeTransfer(address,address,uint256,bytes)" -> "2565__transfer(address,address,uint256)"
+"2565__safeMint(address,uint256)" -> "2565__safeMint(address,uint256,bytes)"
+"2565__update(address,uint256,address)" -> "2565__checkAuthorized(address,address,uint256)"
+"2565__update(address,uint256,address)" -> "2565__ownerOf(uint256)"
+"2565__mint(address,uint256)" -> "2565__update(address,uint256,address)"
+"2565_safeTransferFrom(address,address,uint256,bytes)" -> "2565_transferFrom(address,address,uint256)"
+"2565__safeTransfer(address,address,uint256,bytes)" -> "2565__msgSender()"
+"2565__checkAuthorized(address,address,uint256)" -> "2565__isAuthorized(address,address,uint256)"
+"2565_tokenURI(uint256)" -> "2565__requireOwned(uint256)"
+"2565_supportsInterface(bytes4)" -> "2565_supportsInterface(bytes4)"
+"2565__approve(address,uint256,address)" -> "2565__approve(address,uint256,address,bool)"
+"2565_setApprovalForAll(address,bool)" -> "2565__msgSender()"
+"2565__burn(uint256)" -> "2565__update(address,uint256,address)"
+"2565_getApproved(uint256)" -> "2565__getApproved(uint256)"
+"2565_ownerOf(uint256)" -> "2565__requireOwned(uint256)"
+"2565_safeTransferFrom(address,address,uint256)" -> "2565_safeTransferFrom(address,address,uint256,bytes)"
+"2565__safeTransfer(address,address,uint256)" -> "2565__safeTransfer(address,address,uint256,bytes)"
+"2565_approve(address,uint256)" -> "2565__approve(address,uint256,address)"
+"2565_safeTransferFrom(address,address,uint256,bytes)" -> "2565__msgSender()"
+"2565__requireOwned(uint256)" -> "2565__ownerOf(uint256)"
+"2565_transferFrom(address,address,uint256)" -> "2565__msgSender()"
+"2565_setApprovalForAll(address,bool)" -> "2565__setApprovalForAll(address,address,bool)"
+"2565_approve(address,uint256)" -> "2565__msgSender()"
+"2565_tokenURI(uint256)" -> "2565__baseURI()"
+"2565__safeMint(address,uint256,bytes)" -> "2565__mint(address,uint256)"
+"2565__safeMint(address,uint256,bytes)" -> "2565__msgSender()"
+"2565_transferFrom(address,address,uint256)" -> "2565__update(address,uint256,address)"
+"2565__update(address,uint256,address)" -> "2565__approve(address,uint256,address,bool)"
+"2565_getApproved(uint256)" -> "2565__requireOwned(uint256)"
+"2565__approve(address,uint256,address,bool)" -> "2565__requireOwned(uint256)"
+"2565__isAuthorized(address,address,uint256)" -> "2565_isApprovedForAll(address,address)"
+}subgraph cluster_5766_IERC165 {
+label = "IERC165"
+"5766_supportsInterface(bytes4)" [label="supportsInterface(bytes4)"]
+}subgraph cluster_11303_Raffle {
+label = "Raffle"
+"11303_settleWinningTicket(uint256)" [label="settleWinningTicket(uint256)"]
+"11303_drawRequestDeadline()" [label="drawRequestDeadline()"]
+"11303__requireStatus(IRaffle.Status)" [label="_requireStatus(IRaffle.Status)"]
+"11303_symbol()" [label="symbol()"]
+"11303__requireWinningTicket(uint256)" [label="_requireWinningTicket(uint256)"]
+"11303_buyEntries(address,uint128)" [label="buyEntries(address,uint128)"]
+"11303_receive()" [label="receive()"]
+"11303_callbackDeadline()" [label="callbackDeadline()"]
+"11303__update(address,uint256,address)" [label="_update(address,uint256,address)"]
+"11303_enableRefunds()" [label="enableRefunds()"]
+"11303__validatedVrfWrapper(address)" [label="_validatedVrfWrapper(address)"]
+"11303_refundTickets(uint256[])" [label="refundTickets(uint256[])"]
+"11303_releaseSponsorProceeds()" [label="releaseSponsorProceeds()"]
+"11303_estimateVrfRequestPrice(uint256)" [label="estimateVrfRequestPrice(uint256)"]
+"11303__isProtocolDestination(address,address)" [label="_isProtocolDestination(address,address)"]
+"11303__settleWinningTicket(uint256)" [label="_settleWinningTicket(uint256)"]
+"11303_initialize(IRaffle.RaffleInitParams)" [label="initialize(IRaffle.RaffleInitParams)"]
+"11303_redeemWinningTicket(uint256)" [label="redeemWinningTicket(uint256)"]
+"11303_grossSales()" [label="grossSales()"]
+"11303_requestDraw()" [label="requestDraw()"]
+"11303_releaseSponsorPrize()" [label="releaseSponsorPrize()"]
+"11303_constructor(address,address)" [label="constructor(address,address)"]
+"11303_slitherConstructorConstantVariables()" [label="slitherConstructorConstantVariables()"]
+"11303_getVrfRequestPrice()" [label="getVrfRequestPrice()"]
+"11303_accountedQuoteBalance()" [label="accountedQuoteBalance()"]
+"11303_fulfillRandomWords(uint256,uint256[])" [label="fulfillRandomWords(uint256,uint256[])"]
+"11303_ticketRange(uint256)" [label="ticketRange(uint256)"]
+"11303_vrfWrapper()" [label="vrfWrapper()"]
+"11303__transferQuote(address,uint256)" [label="_transferQuote(address,uint256)"]
+"11303_releaseProtocolFees()" [label="releaseProtocolFees()"]
+"11303_onERC721Received(address,address,uint256,bytes)" [label="onERC721Received(address,address,uint256,bytes)"]
+"11303_name()" [label="name()"]
+"11303_requestDraw()" -> "11303_requestRandomnessPayInNative(uint32,uint16,uint32,bytes)"
+"11303_refundTickets(uint256[])" -> "11303__requireStatus(IRaffle.Status)"
+"11303_fulfillRandomWords(uint256,uint256[])" -> "11303_callbackDeadline()"
+"11303_enableRefunds()" -> "11303_drawRequestDeadline()"
+"11303__requireWinningTicket(uint256)" -> "11303_ticketRange(uint256)"
+"11303_settleWinningTicket(uint256)" -> "11303_nonReentrant()"
+"11303_redeemWinningTicket(uint256)" -> "11303__transferQuote(address,uint256)"
+"11303_requestDraw()" -> "11303_drawRequestDeadline()"
+"11303_refundTickets(uint256[])" -> "11303__burn(uint256)"
+"11303__update(address,uint256,address)" -> "11303__update(address,uint256,address)"
+"11303_enableRefunds()" -> "11303_nonReentrant()"
+"11303_redeemWinningTicket(uint256)" -> "11303__burn(uint256)"
+"11303_redeemWinningTicket(uint256)" -> "11303_ownerOf(uint256)"
+"11303_constructor(address,address)" -> "11303__validatedVrfWrapper(address)"
+"11303_constructor(address,address)" -> "11303_constructor(string,string)"
+"11303_requestDraw()" -> "11303__requireStatus(IRaffle.Status)"
+"11303_releaseSponsorProceeds()" -> "11303__transferQuote(address,uint256)"
+"11303__settleWinningTicket(uint256)" -> "11303__requireWinningTicket(uint256)"
+"11303_refundTickets(uint256[])" -> "11303__transferQuote(address,uint256)"
+"11303_releaseSponsorProceeds()" -> "11303_nonReentrant()"
+"11303_redeemWinningTicket(uint256)" -> "11303_nonReentrant()"
+"11303_redeemWinningTicket(uint256)" -> "11303__settleWinningTicket(uint256)"
+"11303_requestDraw()" -> "11303_nonReentrant()"
+"11303_buyEntries(address,uint128)" -> "11303__safeMint(address,uint256)"
+"11303_releaseSponsorPrize()" -> "11303_nonReentrant()"
+"11303_constructor(address,address)" -> "11303_constructor(address)"
+"11303_refundTickets(uint256[])" -> "11303_nonReentrant()"
+"11303_refundTickets(uint256[])" -> "11303_ownerOf(uint256)"
+"11303_requestDraw()" -> "11303_callbackDeadline()"
+"11303__update(address,uint256,address)" -> "11303__isProtocolDestination(address,address)"
+"11303_buyEntries(address,uint128)" -> "11303_nonReentrant()"
+"11303__transferQuote(address,uint256)" -> "11303__isProtocolDestination(address,address)"
+"11303_refundTickets(uint256[])" -> "11303_ticketRange(uint256)"
+"11303_buyEntries(address,uint128)" -> "11303__requireStatus(IRaffle.Status)"
+"11303_settleWinningTicket(uint256)" -> "11303__settleWinningTicket(uint256)"
+"11303_releaseProtocolFees()" -> "11303__transferQuote(address,uint256)"
+"11303_releaseProtocolFees()" -> "11303_nonReentrant()"
+"11303_enableRefunds()" -> "11303_callbackDeadline()"
+"11303_initialize(IRaffle.RaffleInitParams)" -> "11303__isProtocolDestination(address,address)"
+"11303_requestDraw()" -> "11303_getVrfRequestPrice()"
+}subgraph cluster_2728_IERC721Metadata {
+label = "IERC721Metadata"
+"2728_symbol()" [label="symbol()"]
+"2728_tokenURI(uint256)" [label="tokenURI(uint256)"]
+"2728_name()" [label="name()"]
+}subgraph cluster_2700_IERC721Receiver {
+label = "IERC721Receiver"
+"2700_onERC721Received(address,address,uint256,bytes)" [label="onERC721Received(address,address,uint256,bytes)"]
+}subgraph cluster_12493_IRaffle {
+label = "IRaffle"
+"12493_initialized()" [label="initialized()"]
+"12493_sponsorProceeds()" [label="sponsorProceeds()"]
+"12493_releaseSponsorPrize()" [label="releaseSponsorPrize()"]
+"12493_callbackGasLimit()" [label="callbackGasLimit()"]
+"12493_protocolTreasury()" [label="protocolTreasury()"]
+"12493_prizeToken()" [label="prizeToken()"]
+"12493_sponsor()" [label="sponsor()"]
+"12493_winningEntry()" [label="winningEntry()"]
+"12493_winningTicketId()" [label="winningTicketId()"]
+"12493_winnerRecipient()" [label="winnerRecipient()"]
+"12493_reserveEntries()" [label="reserveEntries()"]
+"12493_winnerRedeemed()" [label="winnerRedeemed()"]
+"12493_status()" [label="status()"]
+"12493_settlementComplete()" [label="settlementComplete()"]
+"12493_getVrfRequestPrice()" [label="getVrfRequestPrice()"]
+"12493_settleWinningTicket(uint256)" [label="settleWinningTicket(uint256)"]
+"12493_endTime()" [label="endTime()"]
+"12493_vrfRequestId()" [label="vrfRequestId()"]
+"12493_drawRequestedAt()" [label="drawRequestedAt()"]
+"12493_releaseSponsorProceeds()" [label="releaseSponsorProceeds()"]
+"12493_releaseProtocolFees()" [label="releaseProtocolFees()"]
+"12493_callbackDeadline()" [label="callbackDeadline()"]
+"12493_protocolFees()" [label="protocolFees()"]
+"12493_resolvedAt()" [label="resolvedAt()"]
+"12493_ENTRY_PRICE()" [label="ENTRY_PRICE()"]
+"12493_accountedQuoteBalance()" [label="accountedQuoteBalance()"]
+"12493_prizeTokenId()" [label="prizeTokenId()"]
+"12493_ticketCount()" [label="ticketCount()"]
+"12493_enableRefunds()" [label="enableRefunds()"]
+"12493_redeemWinningTicket(uint256)" [label="redeemWinningTicket(uint256)"]
+"12493_estimateVrfRequestPrice(uint256)" [label="estimateVrfRequestPrice(uint256)"]
+"12493_requestDraw()" [label="requestDraw()"]
+"12493_drawRequestDeadline()" [label="drawRequestDeadline()"]
+"12493_quoteToken()" [label="quoteToken()"]
+"12493_requestConfirmations()" [label="requestConfirmations()"]
+"12493_refundTickets(uint256[])" [label="refundTickets(uint256[])"]
+"12493_unsettledPot()" [label="unsettledPot()"]
+"12493_factory()" [label="factory()"]
+"12493_vrfWrapper()" [label="vrfWrapper()"]
+"12493_winnerProceeds()" [label="winnerProceeds()"]
+"12493_prizeClaimed()" [label="prizeClaimed()"]
+"12493_ticketRange(uint256)" [label="ticketRange(uint256)"]
+"12493_sponsorRecipient()" [label="sponsorRecipient()"]
+"12493_buyEntries(address,uint128)" [label="buyEntries(address,uint128)"]
+"12493_initialize(IRaffle.RaffleInitParams)" [label="initialize(IRaffle.RaffleInitParams)"]
+"12493_remainingRefundLiability()" [label="remainingRefundLiability()"]
+"12493_totalEntries()" [label="totalEntries()"]
+"12493_raffleId()" [label="raffleId()"]
+"12493_grossSales()" [label="grossSales()"]
+}subgraph cluster_3636_Context {
+label = "Context"
+"3636__msgSender()" [label="_msgSender()"]
+"3636__contextSuffixLength()" [label="_contextSuffixLength()"]
+"3636__msgData()" [label="_msgData()"]
+}subgraph cluster_5754_ERC165 {
+label = "ERC165"
+"5754_supportsInterface(bytes4)" [label="supportsInterface(bytes4)"]
+}subgraph cluster_2682_IERC721 {
+label = "IERC721"
+"2682_getApproved(uint256)" [label="getApproved(uint256)"]
+"2682_safeTransferFrom(address,address,uint256)" [label="safeTransferFrom(address,address,uint256)"]
+"2682_approve(address,uint256)" [label="approve(address,uint256)"]
+"2682_transferFrom(address,address,uint256)" [label="transferFrom(address,address,uint256)"]
+"2682_isApprovedForAll(address,address)" [label="isApprovedForAll(address,address)"]
+"2682_ownerOf(uint256)" [label="ownerOf(uint256)"]
+"2682_setApprovalForAll(address,bool)" [label="setApprovalForAll(address,bool)"]
+"2682_safeTransferFrom(address,address,uint256,bytes)" [label="safeTransferFrom(address,address,uint256,bytes)"]
+"2682_balanceOf(address)" [label="balanceOf(address)"]
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"revert InvalidQuoteDestination(address)" 
+"revert NoSponsorProceeds()" 
+"revert TicketDoesNotContainWinningEntry(uint256,uint128)" 
+"revert RaffleNotEnded(uint256,uint256)" 
+"revert ERC721NonexistentToken(uint256)" 
+"gas()" 
+"type()" 
+"revert ERC721InvalidSender(address)" 
+"revert ERC721InvalidOperator(address)" 
+"revert InsufficientVrfFee(uint256,uint256)" 
+"revert NoProtocolFees()" 
+"revert InvalidTicketBatchSize(uint256,uint256)" 
+"revert ERC721InvalidOwner(address)" 
+"revert ReentrancyGuardReentrantCall()" 
+"abi.encode()" 
+"revert RefundsNotAvailable(uint256,uint256)" 
+"call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)" 
+"string.concat()" 
+"revert ERC721IncorrectOwner(address,uint256,address)" 
+"revert ZeroEntryCount()" 
+"revert PrizeDeliveryVerificationFailed(address)" 
+"revert WinningTicketMismatch(uint256,uint256)" 
+"revert ZeroAddress()" 
+"revert ERC721InvalidApprover(address)" 
+"revert PrizeAlreadyClaimed()" 
+"revert ERC721InsufficientApproval(address,uint256)" 
+"revert ERC721InvalidReceiver(address)" 
+"revert NotTicketOwner(uint256,address,address)" 
+"revert OnlyFactory()" 
+"revert InvalidStatus(IRaffle.Status)" 
+"revert OnlyVRFWrapperCanFulfill(address,address)" 
+"revert AlreadyInitialized()" 
+"revert InvalidRecipient()" 
+"code(address)" 
+"revert SponsorPrizeUnavailable(IRaffle.Status)" 
+"revert SettlementAlreadyComplete()" 
+"revert NoWinnerProceeds()" 
+"revert NoEntriesSold()" 
+"revert WinningTicketAlreadyRedeemed()" 
+"balance(address)" 
+"revert SaleEnded(uint256,uint256)" 
+"revert UnexpectedPrize(address,uint256,address,address)" 
+"revert DrawRequestWindowExpired(uint256,uint256)" 
+"revert UnsafeProtocolDestination(address)" 
+"revert NativeRefundFailed(address,uint256)" 
+"revert TotalEntriesOverflow(uint128,uint128)" 
+"revert DirectNativeTransfer()" 
+"2565_transferFrom(address,address,uint256)" -> "revert ERC721InvalidReceiver(address)"
+"2565__transfer(address,address,uint256)" -> "revert ERC721NonexistentToken(uint256)"
+"11303_requestDraw()" -> "revert DrawRequestWindowExpired(uint256,uint256)"
+"2565_transferFrom(address,address,uint256)" -> "revert ERC721IncorrectOwner(address,uint256,address)"
+"11303__settleWinningTicket(uint256)" -> "revert InvalidStatus(IRaffle.Status)"
+"11303_requestDraw()" -> "call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)"
+"11303_redeemWinningTicket(uint256)" -> "revert PrizeAlreadyClaimed()"
+"2565__mint(address,uint256)" -> "revert ERC721InvalidSender(address)"
+"2565_tokenURI(uint256)" -> "string.concat()"
+"289_rawFulfillRandomWords(uint256,uint256[])" -> "revert OnlyVRFWrapperCanFulfill(address,address)"
+"11303_requestDraw()" -> "revert InsufficientVrfFee(uint256,uint256)"
+"5754_supportsInterface(bytes4)" -> "type()"
+"2565__burn(uint256)" -> "revert ERC721NonexistentToken(uint256)"
+"11303_requestDraw()" -> "revert NativeRefundFailed(address,uint256)"
+"11303_releaseProtocolFees()" -> "revert NoProtocolFees()"
+"11303_redeemWinningTicket(uint256)" -> "revert WinningTicketAlreadyRedeemed()"
+"11303__update(address,uint256,address)" -> "revert UnsafeProtocolDestination(address)"
+"11303_redeemWinningTicket(uint256)" -> "revert NotTicketOwner(uint256,address,address)"
+"11303_redeemWinningTicket(uint256)" -> "revert PrizeDeliveryVerificationFailed(address)"
+"11303_initialize(IRaffle.RaffleInitParams)" -> "revert ZeroAddress()"
+"11303_redeemWinningTicket(uint256)" -> "revert WinningTicketMismatch(uint256,uint256)"
+"2565__transfer(address,address,uint256)" -> "revert ERC721IncorrectOwner(address,uint256,address)"
+"2565__mint(address,uint256)" -> "revert ERC721InvalidReceiver(address)"
+"11303_initialize(IRaffle.RaffleInitParams)" -> "revert OnlyFactory()"
+"11303_requestDraw()" -> "revert RaffleNotEnded(uint256,uint256)"
+"11303_constructor(address,address)" -> "revert ZeroAddress()"
+"2565__transfer(address,address,uint256)" -> "revert ERC721InvalidReceiver(address)"
+"2565__checkAuthorized(address,address,uint256)" -> "revert ERC721InsufficientApproval(address,uint256)"
+"289_getBalance()" -> "balance(address)"
+"11303_refundTickets(uint256[])" -> "revert NotTicketOwner(uint256,address,address)"
+"11303_initialize(IRaffle.RaffleInitParams)" -> "revert UnsafeProtocolDestination(address)"
+"11303_buyEntries(address,uint128)" -> "revert SaleEnded(uint256,uint256)"
+"11303_releaseSponsorPrize()" -> "revert PrizeDeliveryVerificationFailed(address)"
+"11303_refundTickets(uint256[])" -> "revert InvalidTicketBatchSize(uint256,uint256)"
+"11303_initialize(IRaffle.RaffleInitParams)" -> "revert AlreadyInitialized()"
+"11303__settleWinningTicket(uint256)" -> "revert SettlementAlreadyComplete()"
+"11303_receive()" -> "revert DirectNativeTransfer()"
+"11303_redeemWinningTicket(uint256)" -> "revert InvalidStatus(IRaffle.Status)"
+"11303_releaseSponsorPrize()" -> "revert PrizeAlreadyClaimed()"
+"11303_requestDraw()" -> "revert NoEntriesSold()"
+"11303_releaseSponsorProceeds()" -> "revert NoSponsorProceeds()"
+"2565__approve(address,uint256,address,bool)" -> "revert ERC721InvalidApprover(address)"
+"11303__requireWinningTicket(uint256)" -> "revert TicketDoesNotContainWinningEntry(uint256,uint128)"
+"4096__nonReentrantBeforeView()" -> "revert ReentrancyGuardReentrantCall()"
+"11303_enableRefunds()" -> "revert RefundsNotAvailable(uint256,uint256)"
+"11303_requestDraw()" -> "gas()"
+"11303_buyEntries(address,uint128)" -> "revert InvalidRecipient()"
+"11303_onERC721Received(address,address,uint256,bytes)" -> "revert UnexpectedPrize(address,uint256,address,address)"
+"11303__transferQuote(address,uint256)" -> "revert InvalidQuoteDestination(address)"
+"11303__requireStatus(IRaffle.Status)" -> "revert InvalidStatus(IRaffle.Status)"
+"2565__setApprovalForAll(address,address,bool)" -> "revert ERC721InvalidOperator(address)"
+"2565_balanceOf(address)" -> "revert ERC721InvalidOwner(address)"
+"289_requestRandomness(uint32,uint16,uint32,bytes)" -> "abi.encode()"
+"11303__validatedVrfWrapper(address)" -> "revert ZeroAddress()"
+"11303_redeemWinningTicket(uint256)" -> "revert NoWinnerProceeds()"
+"11303_enableRefunds()" -> "revert InvalidStatus(IRaffle.Status)"
+"11303__isProtocolDestination(address,address)" -> "code(address)"
+"2565__checkAuthorized(address,address,uint256)" -> "revert ERC721NonexistentToken(uint256)"
+"2565__setApprovalForAll(address,address,bool)" -> "revert ERC721InvalidApprover(address)"
+"11303_buyEntries(address,uint128)" -> "revert ZeroEntryCount()"
+"11303_releaseSponsorPrize()" -> "revert SponsorPrizeUnavailable(IRaffle.Status)"
+"2565__requireOwned(uint256)" -> "revert ERC721NonexistentToken(uint256)"
+"11303_buyEntries(address,uint128)" -> "revert TotalEntriesOverflow(uint128,uint128)"
+"2565_supportsInterface(bytes4)" -> "type()"
+}"11303_redeemWinningTicket(uint256)" -> "2682_ownerOf(uint256)"
+"11303_releaseSponsorPrize()" -> "2682_ownerOf(uint256)"
+"11303_releaseSponsorPrize()" -> "2682_transferFrom(address,address,uint256)"
+"11303_redeemWinningTicket(uint256)" -> "2682_transferFrom(address,address,uint256)"subgraph cluster_toplevel {
+label = "[Top Level]"
+}
+}

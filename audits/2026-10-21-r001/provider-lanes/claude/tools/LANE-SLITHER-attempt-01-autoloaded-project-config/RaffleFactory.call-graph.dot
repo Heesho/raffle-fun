@@ -1,0 +1,75 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_13178_IRaffleFactory {
+label = "IRaffleFactory"
+"13178_protocolTreasury()" [label="protocolTreasury()"]
+"13178_callbackGasLimit()" [label="callbackGasLimit()"]
+"13178_raffleCount()" [label="raffleCount()"]
+"13178_raffleById(uint256)" [label="raffleById(uint256)"]
+"13178_createRaffle(IRaffleFactory.CreateRaffleParams)" [label="createRaffle(IRaffleFactory.CreateRaffleParams)"]
+"13178_raffleImplementation()" [label="raffleImplementation()"]
+"13178_vrfWrapper()" [label="vrfWrapper()"]
+"13178_idByRaffle(address)" [label="idByRaffle(address)"]
+"13178_requestConfirmations()" [label="requestConfirmations()"]
+"13178_isRaffle(address)" [label="isRaffle(address)"]
+"13178_quoteToken()" [label="quoteToken()"]
+}subgraph cluster_4611_ReentrancyGuard {
+label = "ReentrancyGuard"
+"4611__reentrancyGuardEntered()" [label="_reentrancyGuardEntered()"]
+"4611__nonReentrantBefore()" [label="_nonReentrantBefore()"]
+"4611_constructor()" [label="constructor()"]
+"4611__nonReentrantAfter()" [label="_nonReentrantAfter()"]
+"4611__nonReentrantBeforeView()" [label="_nonReentrantBeforeView()"]
+"4611__reentrancyGuardStorageSlot()" [label="_reentrancyGuardStorageSlot()"]
+"4611__nonReentrantBeforeView()" -> "4611__reentrancyGuardEntered()"
+"4611__nonReentrantBefore()" -> "4611__reentrancyGuardStorageSlot()"
+"4611__reentrancyGuardEntered()" -> "4611__reentrancyGuardStorageSlot()"
+"4611__nonReentrantAfter()" -> "4611__reentrancyGuardStorageSlot()"
+"4611_constructor()" -> "4611__reentrancyGuardStorageSlot()"
+"4611__nonReentrantBefore()" -> "4611__nonReentrantBeforeView()"
+}subgraph cluster_12359_RaffleFactory {
+label = "RaffleFactory"
+"12359_slitherConstructorConstantVariables()" [label="slitherConstructorConstantVariables()"]
+"12359_createRaffle(IRaffleFactory.CreateRaffleParams)" [label="createRaffle(IRaffleFactory.CreateRaffleParams)"]
+"12359__requireContract(address)" [label="_requireContract(address)"]
+"12359_constructor(address,address,address)" [label="constructor(address,address,address)"]
+"12359__validateCreateParams(IRaffleFactory.CreateRaffleParams)" [label="_validateCreateParams(IRaffleFactory.CreateRaffleParams)"]
+"12359__validateCreateParams(IRaffleFactory.CreateRaffleParams)" -> "12359__requireContract(address)"
+"12359_constructor(address,address,address)" -> "12359__requireContract(address)"
+"12359_createRaffle(IRaffleFactory.CreateRaffleParams)" -> "12359__validateCreateParams(IRaffleFactory.CreateRaffleParams)"
+"12359_createRaffle(IRaffleFactory.CreateRaffleParams)" -> "12359_nonReentrant()"
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"revert InvalidQuoteTokenDecimals(uint8,uint8)" 
+"type()" 
+"revert UnsupportedQuoteToken(address)" 
+"revert UnsafeProtocolDestination(address)" 
+"revert UnsupportedPrizeToken(address)" 
+"revert InvalidEndTime(uint256,uint256)" 
+"revert NotContract(address)" 
+"revert PrizeEscrowVerificationFailed(address,address,uint256)" 
+"code(address)" 
+"revert ReentrancyGuardReentrantCall()" 
+"revert ZeroReserveEntries()" 
+"revert SaleDurationTooLong(uint256,uint256)" 
+"revert ZeroAddress()" 
+"12359_constructor(address,address,address)" -> "revert UnsafeProtocolDestination(address)"
+"12359_constructor(address,address,address)" -> "revert InvalidQuoteTokenDecimals(uint8,uint8)"
+"4611__nonReentrantBeforeView()" -> "revert ReentrancyGuardReentrantCall()"
+"12359__validateCreateParams(IRaffleFactory.CreateRaffleParams)" -> "revert UnsafeProtocolDestination(address)"
+"12359__validateCreateParams(IRaffleFactory.CreateRaffleParams)" -> "revert ZeroReserveEntries()"
+"12359__validateCreateParams(IRaffleFactory.CreateRaffleParams)" -> "type()"
+"12359__validateCreateParams(IRaffleFactory.CreateRaffleParams)" -> "revert ZeroAddress()"
+"12359__requireContract(address)" -> "revert NotContract(address)"
+"12359_createRaffle(IRaffleFactory.CreateRaffleParams)" -> "revert InvalidEndTime(uint256,uint256)"
+"12359_createRaffle(IRaffleFactory.CreateRaffleParams)" -> "revert PrizeEscrowVerificationFailed(address,address,uint256)"
+"12359__requireContract(address)" -> "code(address)"
+"12359__validateCreateParams(IRaffleFactory.CreateRaffleParams)" -> "revert UnsupportedPrizeToken(address)"
+"12359_createRaffle(IRaffleFactory.CreateRaffleParams)" -> "revert SaleDurationTooLong(uint256,uint256)"
+"12359_constructor(address,address,address)" -> "revert ZeroAddress()"
+"12359_constructor(address,address,address)" -> "revert UnsupportedQuoteToken(address)"
+}subgraph cluster_toplevel {
+label = "[Top Level]"
+}
+}

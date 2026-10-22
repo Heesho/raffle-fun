@@ -1,0 +1,858 @@
+{
+ "schema": 1,
+ "lane": "anthropic",
+ "generated_at": "2026-10-22T00:44:37.533643+00:00",
+ "frozen_target": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+ "cells": [
+  {
+   "id": "CLAUDE-SIMAO",
+   "harness": "0xsimao-ai",
+   "pin": "3f81e5803174182a7db07eca87849d2b3d571113",
+   "workflow_status": "BLOCKED",
+   "reason": "Provider safeguard refused all 12 lens subagents and the orchestrator ([reasoning_extraction]) on claude-opus-5-5; no lens output, so the native adjudication gates could not run. Not worked around (would modify the controller and evade a safety control); no model substitution.",
+   "stages": {
+    "money_map": "done",
+    "bundles": "done (12/12, preserved)",
+    "lenses": "0/12 completed (12 refused)",
+    "dedup_judge_report": "not reached",
+    "proof_followup": "not reached"
+   },
+   "interfaces_scoped": "yes (filename mode)",
+   "source_coverage": "money map only",
+   "findings": 0,
+   "attempts": [
+    {
+     "path": "runs/CLAUDE-SIMAO/attempt-01",
+     "init_model": "claude-opus-5-5",
+     "assistant_models": {
+      "claude-opus-5-5": 50,
+      "<synthetic>": 3
+     },
+     "subagent_assistant_models": {
+      "claude-opus-5-5": 83,
+      "<synthetic>": 12
+     },
+     "modelUsage_keys": [
+      "claude-opus-5-5"
+     ],
+     "claude_code_version": "2.1.299",
+     "exit_code": 1,
+     "timed_out": false,
+     "duration_s": 719.9,
+     "result_subtype": "success",
+     "is_error": true,
+     "total_cost_usd": 11.028783400000004,
+     "subagent_stats": {
+      "spawned": 12,
+      "requested": {
+       "background": 12,
+       "foreground": 0,
+       "unset": 0
+      },
+      "started_in_background": 12,
+      "max_depth": 1,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 12,
+      "killed": {
+       "parent": 0,
+       "user": 0,
+       "system": 0
+      },
+      "refused": {
+       "depth_limit": 0,
+       "concurrency_limit": 0,
+       "budget": 0
+      },
+      "by_type": {
+       "general-purpose": 12
+      }
+     },
+     "thinking_blocks": 25,
+     "requested_model": "claude-opus-5-5",
+     "requested_effort": "max",
+     "accepted_local_selection": {
+      "model": "claude-opus-5-5",
+      "effort": "max (accepted, no warning)"
+     },
+     "provider_returned_identity": [
+      "<synthetic>",
+      "claude-opus-5-5"
+     ],
+     "provider_returned_effort": "unknown (not echoed by provider)",
+     "fallbacks": "none configured; none observed",
+     "freeze-before": true,
+     "freeze-after": true,
+     "outcome": "FAILED (provider safeguard)"
+    }
+   ]
+  },
+  {
+   "id": "CLAUDE-PASHOV",
+   "harness": "pashov/skills solidity-auditor",
+   "pin": "8ce544c9c9affab448d3dc4c79191d052e3a57ec",
+   "workflow_status": "COMPLETE",
+   "stages": {
+    "memory": "off (--loop 1, no --memory)",
+    "specialists": "12/12 completed (12 spawned, 0 failed)",
+    "dedup_gates": "done (native)",
+    "assembler": "done (assemble.sh full-report.md)"
+   },
+   "interfaces_scoped": "yes (filename mode)",
+   "findings": "2 findings [75] + 9 leads",
+   "attempts": [
+    {
+     "path": "runs/CLAUDE-PASHOV/attempt-01",
+     "init_model": "claude-opus-5-5",
+     "assistant_models": {
+      "claude-opus-5-5": 104
+     },
+     "subagent_assistant_models": {
+      "claude-opus-5-5": 376
+     },
+     "modelUsage_keys": [
+      "claude-opus-5-5"
+     ],
+     "claude_code_version": "2.1.299",
+     "exit_code": 0,
+     "timed_out": false,
+     "duration_s": 2387.4,
+     "result_subtype": "success",
+     "is_error": false,
+     "total_cost_usd": 47.372727000000005,
+     "subagent_stats": {
+      "spawned": 12,
+      "requested": {
+       "background": 12,
+       "foreground": 0,
+       "unset": 0
+      },
+      "started_in_background": 12,
+      "max_depth": 1,
+      "spawned_by_subagents": 0,
+      "completed": 12,
+      "failed": 0,
+      "killed": {
+       "parent": 0,
+       "user": 0,
+       "system": 0
+      },
+      "refused": {
+       "depth_limit": 0,
+       "concurrency_limit": 0,
+       "budget": 0
+      },
+      "by_type": {
+       "general-purpose": 12
+      }
+     },
+     "thinking_blocks": 152,
+     "requested_model": "claude-opus-5-5",
+     "requested_effort": "max",
+     "accepted_local_selection": {
+      "model": "claude-opus-5-5",
+      "effort": "max (accepted, no warning)"
+     },
+     "provider_returned_identity": [
+      "claude-opus-5-5"
+     ],
+     "provider_returned_effort": "unknown (not echoed by provider)",
+     "fallbacks": "none configured; none observed",
+     "freeze-before": true,
+     "freeze-after": true,
+     "outcome": "COMPLETE"
+    }
+   ]
+  },
+  {
+   "id": "CLAUDE-OPENKRITT",
+   "harness": "open-kritt",
+   "pin": "43e1d19a00ce50bd93253d1c6c3a48cfffbcc4c3",
+   "workflow_status": "BLOCKED",
+   "reason": "Bundled Claude Code 2.1.215 is below the 2.1.280 minimum for claude-opus-5-5; the catalog has no claude-opus-5-5; no Docker daemon or dedicated container host; no API key; the subscription login is interactive OAuth only. 3/3 setup probes used.",
+   "findings": 0,
+   "attempts": []
+  },
+  {
+   "id": "CLAUDE-TOB",
+   "harness": "trailofbits/skills (6-skill declared aggregate; NOT the full catalog)",
+   "pin": "82fe8226252622fa807643bdca1710901198553a",
+   "workflow_status": "INCOMPLETE",
+   "reason": "5/6 declared stages completed; S6 secure-workflow-guide timed out at 75 min before final assembly (partial sections preserved); S5 native workflow checked 10/248 extracted requirements.",
+   "stages": {
+    "S1 audit-context-building": "COMPLETE (attempt-02)",
+    "S2 entry-point-analyzer": "COMPLETE",
+    "S3 token-integration-analyzer": "COMPLETE",
+    "S4 guidelines-advisor": "COMPLETE",
+    "S5 spec-to-code-compliance": "COMPLETE workflow, partial requirement coverage (attempt-03)",
+    "S6 secure-workflow-guide": "INCOMPLETE (timeout)"
+   },
+   "attempts": [
+    {
+     "path": "runs/CLAUDE-TOB/S1/attempt-01",
+     "init_model": "claude-opus-5-5",
+     "assistant_models": {
+      "claude-opus-5-5": 10
+     },
+     "subagent_assistant_models": {},
+     "modelUsage_keys": [],
+     "claude_code_version": "2.1.299",
+     "exit_code": 143,
+     "timed_out": false,
+     "duration_s": 96.2,
+     "result_subtype": null,
+     "is_error": null,
+     "total_cost_usd": null,
+     "subagent_stats": null,
+     "thinking_blocks": 3,
+     "requested_model": "claude-opus-5-5",
+     "requested_effort": "max",
+     "accepted_local_selection": {
+      "model": "claude-opus-5-5",
+      "effort": "max (accepted, no warning)"
+     },
+     "provider_returned_identity": [
+      "claude-opus-5-5"
+     ],
+     "provider_returned_effort": "unknown (not echoed by provider)",
+     "fallbacks": "none configured; none observed",
+     "freeze-before": true,
+     "freeze-after": true,
+     "outcome": "STOPPED by controller (filesystem search, no workflow)"
+    },
+    {
+     "path": "runs/CLAUDE-TOB/S1/attempt-02",
+     "init_model": "claude-opus-5-5",
+     "assistant_models": {
+      "claude-opus-5-5": 80
+     },
+     "subagent_assistant_models": {},
+     "modelUsage_keys": [
+      "claude-opus-5-5"
+     ],
+     "claude_code_version": "2.1.299",
+     "exit_code": 0,
+     "timed_out": false,
+     "duration_s": 4027.1,
+     "result_subtype": "success",
+     "is_error": false,
+     "total_cost_usd": 46.76726400000001,
+     "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+       "background": 0,
+       "foreground": 0,
+       "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+       "parent": 0,
+       "user": 0,
+       "system": 0
+      },
+      "refused": {
+       "depth_limit": 0,
+       "concurrency_limit": 0,
+       "budget": 0
+      },
+      "by_type": {}
+     },
+     "thinking_blocks": 35,
+     "requested_model": "claude-opus-5-5",
+     "requested_effort": "max",
+     "accepted_local_selection": {
+      "model": "claude-opus-5-5",
+      "effort": "max (accepted, no warning)"
+     },
+     "provider_returned_identity": [
+      "claude-opus-5-5"
+     ],
+     "provider_returned_effort": "unknown (not echoed by provider)",
+     "fallbacks": "none configured; none observed",
+     "freeze-before": true,
+     "freeze-after": true,
+     "outcome": "COMPLETE"
+    },
+    {
+     "path": "runs/CLAUDE-TOB/S2/attempt-01",
+     "init_model": "claude-opus-5-5",
+     "assistant_models": {
+      "claude-opus-5-5": 114
+     },
+     "subagent_assistant_models": {},
+     "modelUsage_keys": [
+      "claude-opus-5-5"
+     ],
+     "claude_code_version": "2.1.299",
+     "exit_code": 0,
+     "timed_out": false,
+     "duration_s": 1415.2,
+     "result_subtype": "success",
+     "is_error": false,
+     "total_cost_usd": 6.304619200000001,
+     "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+       "background": 0,
+       "foreground": 0,
+       "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+       "parent": 0,
+       "user": 0,
+       "system": 0
+      },
+      "refused": {
+       "depth_limit": 0,
+       "concurrency_limit": 0,
+       "budget": 0
+      },
+      "by_type": {}
+     },
+     "thinking_blocks": 45,
+     "requested_model": "claude-opus-5-5",
+     "requested_effort": "max",
+     "accepted_local_selection": {
+      "model": "claude-opus-5-5",
+      "effort": "max (accepted, no warning)"
+     },
+     "provider_returned_identity": [
+      "claude-opus-5-5"
+     ],
+     "provider_returned_effort": "unknown (not echoed by provider)",
+     "fallbacks": "none configured; none observed",
+     "freeze-before": true,
+     "freeze-after": true,
+     "outcome": "COMPLETE"
+    },
+    {
+     "path": "runs/CLAUDE-TOB/S3/attempt-01",
+     "init_model": "claude-opus-5-5",
+     "assistant_models": {
+      "claude-opus-5-5": 104
+     },
+     "subagent_assistant_models": {},
+     "modelUsage_keys": [
+      "claude-opus-5-5"
+     ],
+     "claude_code_version": "2.1.299",
+     "exit_code": 0,
+     "timed_out": false,
+     "duration_s": 2654.6,
+     "result_subtype": "success",
+     "is_error": false,
+     "total_cost_usd": 7.142467800000001,
+     "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+       "background": 0,
+       "foreground": 0,
+       "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+       "parent": 0,
+       "user": 0,
+       "system": 0
+      },
+      "refused": {
+       "depth_limit": 0,
+       "concurrency_limit": 0,
+       "budget": 0
+      },
+      "by_type": {}
+     },
+     "thinking_blocks": 38,
+     "requested_model": "claude-opus-5-5",
+     "requested_effort": "max",
+     "accepted_local_selection": {
+      "model": "claude-opus-5-5",
+      "effort": "max (accepted, no warning)"
+     },
+     "provider_returned_identity": [
+      "claude-opus-5-5"
+     ],
+     "provider_returned_effort": "unknown (not echoed by provider)",
+     "fallbacks": "none configured; none observed",
+     "freeze-before": true,
+     "freeze-after": true,
+     "outcome": "COMPLETE"
+    },
+    {
+     "path": "runs/CLAUDE-TOB/S4/attempt-01",
+     "init_model": "claude-opus-5-5",
+     "assistant_models": {
+      "claude-opus-5-5": 136
+     },
+     "subagent_assistant_models": {},
+     "modelUsage_keys": [
+      "claude-opus-5-5"
+     ],
+     "claude_code_version": "2.1.299",
+     "exit_code": 0,
+     "timed_out": false,
+     "duration_s": 1752.2,
+     "result_subtype": "success",
+     "is_error": false,
+     "total_cost_usd": 6.9247484,
+     "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+       "background": 0,
+       "foreground": 0,
+       "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+       "parent": 0,
+       "user": 0,
+       "system": 0
+      },
+      "refused": {
+       "depth_limit": 0,
+       "concurrency_limit": 0,
+       "budget": 0
+      },
+      "by_type": {}
+     },
+     "thinking_blocks": 63,
+     "requested_model": "claude-opus-5-5",
+     "requested_effort": "max",
+     "accepted_local_selection": {
+      "model": "claude-opus-5-5",
+      "effort": "max (accepted, no warning)"
+     },
+     "provider_returned_identity": [
+      "claude-opus-5-5"
+     ],
+     "provider_returned_effort": "unknown (not echoed by provider)",
+     "fallbacks": "none configured; none observed",
+     "freeze-before": true,
+     "freeze-after": true,
+     "outcome": "COMPLETE"
+    },
+    {
+     "path": "runs/CLAUDE-TOB/S5/attempt-01",
+     "init_model": "claude-opus-5-5",
+     "assistant_models": {
+      "claude-opus-5-5": 13
+     },
+     "subagent_assistant_models": {},
+     "modelUsage_keys": [],
+     "claude_code_version": "2.1.299",
+     "exit_code": 143,
+     "timed_out": false,
+     "duration_s": 96.3,
+     "result_subtype": null,
+     "is_error": null,
+     "total_cost_usd": null,
+     "subagent_stats": null,
+     "thinking_blocks": 5,
+     "requested_model": "claude-opus-5-5",
+     "requested_effort": "max",
+     "accepted_local_selection": {
+      "model": "claude-opus-5-5",
+      "effort": "max (accepted, no warning)"
+     },
+     "provider_returned_identity": [
+      "claude-opus-5-5"
+     ],
+     "provider_returned_effort": "unknown (not echoed by provider)",
+     "fallbacks": "none configured; none observed",
+     "freeze-before": true,
+     "freeze-after": true,
+     "outcome": "STOPPED by controller"
+    },
+    {
+     "path": "runs/CLAUDE-TOB/S5/attempt-02",
+     "init_model": "claude-opus-5-5",
+     "assistant_models": {
+      "claude-opus-5-5": 11
+     },
+     "subagent_assistant_models": {},
+     "modelUsage_keys": [
+      "claude-opus-5-5"
+     ],
+     "claude_code_version": "2.1.299",
+     "exit_code": 0,
+     "timed_out": false,
+     "duration_s": 623.0,
+     "result_subtype": "success",
+     "is_error": false,
+     "total_cost_usd": 1.9698874,
+     "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+       "background": 0,
+       "foreground": 0,
+       "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+       "parent": 0,
+       "user": 0,
+       "system": 0
+      },
+      "refused": {
+       "depth_limit": 0,
+       "concurrency_limit": 0,
+       "budget": 0
+      },
+      "by_type": {}
+     },
+     "thinking_blocks": 4,
+     "requested_model": "claude-opus-5-5",
+     "requested_effort": "max",
+     "accepted_local_selection": {
+      "model": "claude-opus-5-5",
+      "effort": "max (accepted, no warning)"
+     },
+     "provider_returned_identity": [
+      "claude-opus-5-5"
+     ],
+     "provider_returned_effort": "unknown (not echoed by provider)",
+     "fallbacks": "none configured; none observed",
+     "freeze-before": true,
+     "freeze-after": true,
+     "outcome": "INCOMPLETE (workflow killed when turn ended)"
+    },
+    {
+     "path": "runs/CLAUDE-TOB/S5/attempt-03",
+     "init_model": "claude-opus-5-5",
+     "assistant_models": {
+      "claude-opus-5-5": 77
+     },
+     "subagent_assistant_models": {},
+     "modelUsage_keys": [
+      "claude-opus-5-5"
+     ],
+     "claude_code_version": "2.1.299",
+     "exit_code": 0,
+     "timed_out": false,
+     "duration_s": 3989.4,
+     "result_subtype": "success",
+     "is_error": false,
+     "total_cost_usd": 30.950637000000018,
+     "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+       "background": 0,
+       "foreground": 0,
+       "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+       "parent": 0,
+       "user": 0,
+       "system": 0
+      },
+      "refused": {
+       "depth_limit": 0,
+       "concurrency_limit": 0,
+       "budget": 0
+      },
+      "by_type": {}
+     },
+     "thinking_blocks": 31,
+     "requested_model": "claude-opus-5-5",
+     "requested_effort": "max",
+     "accepted_local_selection": {
+      "model": "claude-opus-5-5",
+      "effort": "max (accepted, no warning)"
+     },
+     "provider_returned_identity": [
+      "claude-opus-5-5"
+     ],
+     "provider_returned_effort": "unknown (not echoed by provider)",
+     "fallbacks": "none configured; none observed",
+     "freeze-before": true,
+     "freeze-after": true,
+     "outcome": "COMPLETE (10/248 requirements)"
+    },
+    {
+     "path": "runs/CLAUDE-TOB/S6/attempt-01",
+     "init_model": "claude-opus-5-5",
+     "assistant_models": {
+      "claude-opus-5-5": 541
+     },
+     "subagent_assistant_models": {},
+     "modelUsage_keys": [],
+     "claude_code_version": "2.1.299",
+     "exit_code": 143,
+     "timed_out": true,
+     "duration_s": 4510.0,
+     "result_subtype": null,
+     "is_error": null,
+     "total_cost_usd": null,
+     "subagent_stats": null,
+     "thinking_blocks": 247,
+     "requested_model": "claude-opus-5-5",
+     "requested_effort": "max",
+     "accepted_local_selection": {
+      "model": "claude-opus-5-5",
+      "effort": "max (accepted, no warning)"
+     },
+     "provider_returned_identity": [
+      "claude-opus-5-5"
+     ],
+     "provider_returned_effort": "unknown (not echoed by provider)",
+     "fallbacks": "none configured; none observed",
+     "freeze-before": true,
+     "freeze-after": true,
+     "outcome": "INCOMPLETE (75-min timeout)"
+    }
+   ]
+  },
+  {
+   "id": "CLAUDE-GEBAL",
+   "harness": "Heesho/gebal",
+   "pin": "9ad24645f92a3821ae4539db5f1be52b48ed379e (historical 5c68ec0 unresolvable)",
+   "workflow_status": "COMPLETE (cold source-only); deterministic test-inclusive run BLOCKED",
+   "bound": {
+    "plan": "e31228e2-2890-4ed1-8a0f-e7b516245b4d",
+    "plan_hash": "79aa8bf3aefc39887d15c9240d7fe690ae5b32107c9622cd0f2f3c3599398b55",
+    "run": "a184629e-4470-49a4-96a4-44695a238c6a",
+    "snapshotHash": "1c720af585db73b5867c91437f75776b3ef6ee9c6d7aa70ee51fe85dbad994ad",
+    "contextHash": "cbec71422797334035a6a1ab2b5b6a22768aeb2d0a8b727b85d146017c351c7a",
+    "review_sha256": "b3d18d105ab058096e0939e298340f766d4da1c3019d4cb3d9414a332f354884",
+    "import_evidence": "24f406a76a4bd574fbef454d3509fc5f3126c5a0781711eb6eff954298e1fe06",
+    "approval": "delegated assistant actor"
+   },
+   "reason_blocked_part": "Gebal tool image supports solc 0.8.26/0.8.28/0.8.30 only (frozen 0.8.36); no dedicated Docker host",
+   "findings": "4 observations (1 low, 3 informational)",
+   "attempts": [
+    {
+     "path": "runs/CLAUDE-GEBAL/attempt-01-review",
+     "init_model": "claude-opus-5-5",
+     "assistant_models": {
+      "claude-opus-5-5": 61
+     },
+     "subagent_assistant_models": {},
+     "modelUsage_keys": [
+      "claude-opus-5-5"
+     ],
+     "claude_code_version": "2.1.299",
+     "exit_code": 0,
+     "timed_out": false,
+     "duration_s": 1044.8,
+     "result_subtype": "success",
+     "is_error": false,
+     "total_cost_usd": 4.0942300000000005,
+     "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+       "background": 0,
+       "foreground": 0,
+       "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+       "parent": 0,
+       "user": 0,
+       "system": 0
+      },
+      "refused": {
+       "depth_limit": 0,
+       "concurrency_limit": 0,
+       "budget": 0
+      },
+      "by_type": {}
+     },
+     "thinking_blocks": 21,
+     "requested_model": "claude-opus-5-5",
+     "requested_effort": "max",
+     "accepted_local_selection": {
+      "model": "claude-opus-5-5",
+      "effort": "max (accepted, no warning)"
+     },
+     "provider_returned_identity": [
+      "claude-opus-5-5"
+     ],
+     "provider_returned_effort": "unknown (not echoed by provider)",
+     "fallbacks": "none configured; none observed",
+     "freeze-before": true,
+     "freeze-after": true,
+     "outcome": "COMPLETE (reviewer session)"
+    }
+   ]
+  }
+ ],
+ "supplementary": [
+  {
+   "id": "CLAUDE-SUP",
+   "kind": "independent whole-system cold review (not a harness)",
+   "workflow_status": "COMPLETE",
+   "findings": "2 confirmed (Low, Info) + 5 config/integration + 3 leads",
+   "attempts": [
+    {
+     "path": "runs/CLAUDE-SUP/attempt-01",
+     "init_model": "claude-opus-5-5",
+     "assistant_models": {
+      "claude-opus-5-5": 95
+     },
+     "subagent_assistant_models": {},
+     "modelUsage_keys": [
+      "claude-opus-5-5"
+     ],
+     "claude_code_version": "2.1.299",
+     "exit_code": 0,
+     "timed_out": false,
+     "duration_s": 1772.4,
+     "result_subtype": "success",
+     "is_error": false,
+     "total_cost_usd": 6.840891,
+     "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+       "background": 0,
+       "foreground": 0,
+       "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+       "parent": 0,
+       "user": 0,
+       "system": 0
+      },
+      "refused": {
+       "depth_limit": 0,
+       "concurrency_limit": 0,
+       "budget": 0
+      },
+      "by_type": {}
+     },
+     "thinking_blocks": 39,
+     "requested_model": "claude-opus-5-5",
+     "requested_effort": "max",
+     "accepted_local_selection": {
+      "model": "claude-opus-5-5",
+      "effort": "max (accepted, no warning)"
+     },
+     "provider_returned_identity": [
+      "claude-opus-5-5"
+     ],
+     "provider_returned_effort": "unknown (not echoed by provider)",
+     "fallbacks": "none configured; none observed",
+     "freeze-before": true,
+     "freeze-after": true,
+     "outcome": "COMPLETE"
+    }
+   ]
+  },
+  {
+   "id": "CLAUDE-OPENKRITT-MOD",
+   "kind": "modified-controller OpenKritt run (Claude Code 2.1.299 + claude-opus-5-5 catalog entry), post-seal, owner-requested; NOT the native cell",
+   "workflow_status": "COMPLETE",
+   "findings": "0 (rawCandidates 0)",
+   "model_evidence": "job CLI args --model claude-opus-5-5 --effort max, CC 2.1.299, no fallback; provider-returned identity unknown",
+   "interventions": "harnessTimeoutSeconds 7200->2700, workerCount 2->4, two hung containers stopped and retried",
+   "duration": "17:54:22Z-00:42:50Z",
+   "attempts": []
+  }
+ ],
+ "tool_campaigns": [
+  {
+   "id": "LANE-SLITHER",
+   "status": "COMPLETE",
+   "result": "12 observations, 0 true positives (attempt-01 invalid: project config auto-loaded)"
+  },
+  {
+   "id": "LANE-ADERYN",
+   "status": "COMPLETE",
+   "result": "0 true positives"
+  },
+  {
+   "id": "LANE-FOUNDRY-INVARIANT",
+   "status": "COMPLETE (bounded)",
+   "result": "9/9 pass 512x128 and 2000x256"
+  },
+  {
+   "id": "LANE-ECHIDNA",
+   "status": "COMPLETE (bounded)",
+   "result": "9/9 pass, 330,205 calls, non-vacuous (attempt-05); attempt-04 vacuous after draw"
+  },
+  {
+   "id": "LANE-MEDUSA",
+   "status": "COMPLETE (bounded)",
+   "result": "9/9 pass, 900 s, non-vacuous (attempt-02); attempt-01 vacuous for draw"
+  },
+  {
+   "id": "LANE-HALMOS",
+   "status": "PARTIAL",
+   "result": "9 PASS; settlementSplit TIMEOUT (1800 s); general winnerInRange TIMEOUT"
+  },
+  {
+   "id": "LANE-SMTCHECKER",
+   "status": "TIMEOUT",
+   "result": "CHC run stopped at budget after ~92 min; no verdict; attempts 1-2 had no solver"
+  },
+  {
+   "id": "LANE-MUTATION",
+   "status": "COMPLETE",
+   "result": "20/24 killed after gap tests"
+  },
+  {
+   "id": "PROJECT-FOUNDRY",
+   "status": "COMPLETE",
+   "result": "79/79 default and ci; fmt ok; gas snapshot ok; coverage 99.6% lines Raffle"
+  },
+  {
+   "id": "PROJECT-HARDHAT",
+   "status": "COMPLETE",
+   "result": "compile ok; 22 passing"
+  },
+  {
+   "id": "DEPENDENCIES",
+   "status": "COMPLETE",
+   "result": "no applicable advisory for compiled deps"
+  },
+  {
+   "id": "FORK-ANVIL",
+   "status": "NOT_RUN",
+   "result": "no RPC authorized"
+  },
+  {
+   "id": "CERTORA",
+   "status": "NOT_RUN",
+   "result": "unavailable (paid prover)"
+  },
+  {
+   "id": "LANE-REPRO",
+   "status": "COMPLETE",
+   "result": "6/6 reproductions + 4/4 gap tests"
+  }
+ ]
+}

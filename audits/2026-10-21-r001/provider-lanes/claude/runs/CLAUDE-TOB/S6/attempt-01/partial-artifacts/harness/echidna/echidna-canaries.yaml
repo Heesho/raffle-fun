@@ -1,0 +1,18 @@
+# Echidna property campaign for the raffle.fun in-scope contracts (out-of-tree harness).
+testMode: property
+testLimit: 300000
+seqLen: 120
+shrinkLimit: 200
+timeout: 900
+deployer: "0x30000"
+sender: ["0x10000", "0x20000", "0x30000"]
+balanceContract: 1000000000000000000000000
+maxTimeDelay: 259200
+maxBlockDelay: 21600
+codeSize: 0xffffffff
+deployContracts: [["0x10000000", "MockUSDC"], ["0x20000000", "MockVRFV2PlusWrapper"], ["0x30000000", "MockPrizeNFT"], ["0x40000000", "FactoryDeployer"]]
+workers: 3
+corpusDir: "echidna/corpus-canaries"
+coverage: true
+coverageFormats: ["txt"]
+cryticArgs: ["--compile-force-framework", "solc", "--solc", "/Users/hishamel-husseini/.solc-select/artifacts/solc-0.8.36/solc-0.8.36", "--solc-remaps", "@openzeppelin/contracts/=../../packages/contracts/node_modules/@openzeppelin/contracts/ @chainlink/contracts/=../../packages/contracts/node_modules/@chainlink/contracts/ raffle/=../../packages/contracts/src/", "--solc-args", "--optimize --optimize-runs 200 --evm-version cancun --allow-paths ../../.."]

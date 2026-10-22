@@ -1,0 +1,230 @@
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ props/halmos/RaffleSymbolic.t.sol:55:30
+   │
+55 │                     endTime: uint64(T0 + 7 days)
+   │                              ━━━━━━━━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │       
+   │       // casting to 'uint64' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │       
+   │       
+   ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:216:13
+    │
+216 │         if (block.timestamp >= endTime) revert SaleEnded(endTime, block.timestamp);
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+   ╭▸ props/foundry/RaffleScenarios.t.sol:75:41
+   │
+75 │             b = abi.encodePacked(bytes1(uint8(48 + v % 10)), b);
+   │                                         ━━━━━━━━━━━━━━━━━━
+   │
+   ├ note: consider disabling this lint if you're certain the cast is safe
+   │       
+   │       // casting to 'uint8' is safe because [explain why]
+   │       // forge-lint: disable-next-line(unsafe-typecast)
+   │       
+   │       
+   ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ props/RaffleProperties.sol:193:64
+    │
+193 │         bool expected = r.status() == IRaffle.Status.Active && block.timestamp < r.endTime()
+    │                                                                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ props/RaffleProperties.sol:251:55
+    │
+251 │         return r.status() == IRaffle.Status.Active && block.timestamp >= endTime && r.totalEntries() > 0
+    │                                                       ━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ props/RaffleProperties.sol:252:16
+    │
+252 │             && block.timestamp < endTime + 2 days && value >= fee;
+    │                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ props/RaffleProperties.sol:259:16
+    │
+259 │         _check(r.drawRequestedAt() == block.timestamp, "SM-5 drawRequestedAt", address(r));
+    │                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ props/RaffleProperties.sol:288:75
+    │
+288 │         c.expected = c.before == IRaffle.Status.Drawing && c.mode == 0 && block.timestamp < r.callbackDeadline()
+    │                                                                           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ props/RaffleProperties.sol:317:16
+    │
+317 │         _check(r.resolvedAt() == block.timestamp, "SM-9 resolvedAt", address(r));
+    │                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ props/RaffleProperties.sol:328:62
+    │
+328 │                 expected = address(caller) == r.sponsor() || block.timestamp >= r.endTime();
+    │                                                              ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ props/RaffleProperties.sol:330:28
+    │
+330 │                 expected = block.timestamp >= uint256(r.endTime()) + 2 days;
+    │                            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ props/RaffleProperties.sol:333:24
+    │
+333 │             expected = block.timestamp >= uint256(r.drawRequestedAt()) + 2 days;
+    │                        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ props/RaffleProperties.sol:563:13
+    │
+563 │         if (target > block.timestamp) HEVM.warp(target);
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ props/RaffleProperties.sol:583:13
+    │
+583 │         if (t > int256(block.timestamp)) HEVM.warp(uint256(t));
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+    ╭▸ props/RaffleProperties.sol:353:32
+    │
+353 │         bool ok = _call(_actor(uint8(ticketSeed)), address(r), 0, abi.encodeCall(IRaffle.settleWinningTicket, (id)));
+    │                                ━━━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │       
+    │       // casting to 'uint8' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │       
+    │       
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+    ╭▸ props/RaffleProperties.sol:582:20
+    │
+582 │         int256 t = int256(target) + int256(offset % 3);
+    │                    ━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │       
+    │       // casting to 'int256' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │       
+    │       
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+    ╭▸ props/RaffleProperties.sol:583:52
+    │
+583 │         if (t > int256(block.timestamp)) HEVM.warp(uint256(t));
+    │                                                    ━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │       
+    │       // casting to 'uint256' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │       
+    │       
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+warning[erc20-unchecked-transfer]: ERC20 'transfer' and 'transferFrom' calls should check the return value
+    ╭▸ props/RaffleProperties.sol:599:9
+    │
+599 │         usdc.transfer(address(r), amount);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#erc20-unchecked-transfer
+
+warning[erc20-unchecked-transfer]: ERC20 'transfer' and 'transferFrom' calls should check the return value
+    ╭▸ props/foundry/RaffleScenarios.t.sol:394:9
+    │
+394 │         usdc.transfer(BOB, 1_000_000); // BOB's asking price, oblivious to the pending result
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#erc20-unchecked-transfer
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:242:13
+    │
+242 │         if (block.timestamp < endTime) revert RaffleNotEnded(endTime, block.timestamp);
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:245:13
+    │
+245 │         if (block.timestamp >= requestDeadline) {
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:282:46
+    │
+282 │                 if (msg.sender != sponsor && block.timestamp < deadline) {
+    │                                              ━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:287:21
+    │
+287 │                 if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+    │                     ━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:291:17
+    │
+291 │             if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+    │                 ━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:512:20
+    │
+512 │                 || block.timestamp >= callbackDeadline()
+    │                    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+

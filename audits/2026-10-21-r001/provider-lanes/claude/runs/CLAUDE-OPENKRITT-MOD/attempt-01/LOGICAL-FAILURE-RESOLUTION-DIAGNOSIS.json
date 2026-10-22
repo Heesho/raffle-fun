@@ -1,0 +1,52 @@
+{
+  "schema": "raffle-fun.claude-openkritt-logical-failure-resolution.v1",
+  "recordedUtc": "2026-10-22T00:12:30Z",
+  "scanId": 1,
+  "statusAtDiagnosis": "running",
+  "historicalFailuresPreserved": [
+    {
+      "metadataId": 21,
+      "logicalKey": {"stepId": 3, "prevId": 33, "prevTable": "workflows.step_results", "repeatRun": 1},
+      "status": "failed",
+      "phase": "failed",
+      "updatedAt": "2026-10-21T21:07:40.624366+00:00",
+      "errorType": "model_process_error"
+    },
+    {
+      "metadataId": 22,
+      "logicalKey": {"stepId": 3, "prevId": 35, "prevTable": "workflows.step_results", "repeatRun": 1},
+      "status": "failed",
+      "phase": "failed",
+      "updatedAt": "2026-10-21T21:07:41.354376+00:00",
+      "errorType": "model_process_error"
+    }
+  ],
+  "completedCounterparts": [
+    {
+      "metadataId": 17,
+      "logicalKey": {"stepId": 3, "prevId": 33, "prevTable": "workflows.step_results", "repeatRun": 1},
+      "status": "completed",
+      "phase": "completed",
+      "updatedAt": "2026-10-21T21:14:53.634919+00:00"
+    },
+    {
+      "metadataId": 19,
+      "logicalKey": {"stepId": 3, "prevId": 35, "prevTable": "workflows.step_results", "repeatRun": 1},
+      "status": "completed",
+      "phase": "completed",
+      "updatedAt": "2026-10-21T21:12:33.007594+00:00"
+    }
+  ],
+  "unresolvedFailedLogicalMetadataIds": [],
+  "adjudication": "NO_SUPPORTED_RESUME_REQUIRED_OR_PERMITTED_ON_THIS_EVIDENCE",
+  "reason": "Both preserved failed rows already have completed rows for the same logical keys. Historical attempt failures are not unresolved logical work.",
+  "originalRepairHelperExecuted": false,
+  "originalRepairHelperSha256": "61dd52b759bcc2b1201194ac7c975b1a65f03f6c50f1a17100bdda3b63682b65",
+  "correctedRepairHelperSha256BeforeStabilityAndDumpRepairs": "9efe063ec97ba8e0000908e525b71c2914d5706ff6400846f331d2a76f19186a",
+  "finalCorrectedRepairHelperSha256": "612f38632e5f56389a542f9869e299b38b0db17b1c121d654847d6842af7ad52",
+  "finalRepairSafety": "Requires two stable resumable terminal observations, zero active/running attempts, exact route fields, and unresolved logical keys 21/22; its dump selects public.scans plus workflows.*; any request uncertainty blocks automatic rerun pending diagnosis.",
+  "scanPatchedOrResumedByCoordinator": false,
+  "databaseMutated": false,
+  "historicalFailuresRelabeledSuccess": false,
+  "productionFilesChanged": false
+}

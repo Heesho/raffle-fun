@@ -1,0 +1,29 @@
+== src/Raffle.sol: 260 lines carry marks; '*'-executed: 260
+   L230  [*  ] buyEntries state update                       | totalEntries = lastEntry;
+   L253  [*  ] requestDraw: status = Drawing                 | drawRequestedAt = uint64(block.timestamp);
+   L263  [*  ] requestDraw: excess refund branch             | if (excess != 0) {
+   L281  [*  ] enableRefunds: empty-raffle branch            | deadline = endTime;
+   L286  [*  ] enableRefunds: sold-raffle deadline branch    | deadline = drawRequestDeadline();
+   L290  [*  ] enableRefunds: Drawing callback-deadline branch | deadline = callbackDeadline();
+   L299  [*  ] enableRefunds: status = Refunding             | status = Status.Refunding;
+   L315  [*  ] redeem: settle-on-redeem branch               | _settleWinningTicket(ticketId);
+   L317  [*  ] redeem: WinningTicketMismatch branch          | revert WinningTicketMismatch(ticketId, winningTicketId);
+   L331  [*  ] redeem: NftWon prize delivery                 | prizeClaimed = true;
+   L339  [*  ] redeem: CashWon cash delivery                 | cashAmount = winnerProceeds;
+   L363  [*  ] refundTickets: per-ticket accumulation        | aggregateEntries += uint256(lastEntry) - uint256(firstEntry) + 1;
+   L368  [*  ] refundTickets: liability decrement            | remainingRefundLiability -= amount;
+   L378  [*  ] releaseSponsorProceeds payout                 | sponsorProceeds = 0;
+   L388  [*  ] releaseProtocolFees payout                    | protocolFees = 0;
+   L403  [*  ] releaseSponsorPrize payout                    | prizeClaimed = true;
+   L428  [*  ] onERC721Received: activate                    | status = Status.Active;
+   L514  [*  ] fulfillRandomWords: ignored branch            | emit VrfCallbackIgnored(requestId, vrfRequestId, status);
+   L518  [*  ] fulfillRandomWords: resolution                | uint128 resolvedEntry = uint128((randomWords[0] % uint256(totalEntries
+   L544  [*  ] settle: NftWon split                          | sponsorAmount = grossPot - protocolFee;
+   L546  [*  ] settle: CashWon split                         | cashAmount = Math.mulDiv(grossPot, RaffleConstants.CASH_WINNER_BPS, Ra
+   L551  [*  ] settle: record                                | settlementComplete = true;
+   L565  [*  ] _transferQuote destination screen             | if (_isProtocolDestination(to, address(prizeToken))) revert InvalidQuo
+   L603  [*  ] _isProtocolDestination: registry isRaffle query | unsafeDestination = canonicalFactory.isRaffle(destination);
+== src/RaffleFactory.sol: 73 lines carry marks; '*'-executed: 73
+   L105  [*  ] createRaffle: id                              | uint256 raffleId = ++raffleCount;
+   L128  [*  ] createRaffle: prize escrow                    | prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId);
+   L136  [*  ] createRaffle: event                           | emit RaffleCreated(

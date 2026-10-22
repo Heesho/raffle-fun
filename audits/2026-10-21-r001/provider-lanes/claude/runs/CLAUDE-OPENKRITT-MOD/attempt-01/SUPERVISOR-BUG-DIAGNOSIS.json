@@ -1,0 +1,18 @@
+{
+  "schema": "raffle-fun.claude-openkritt-supervisor-diagnosis.v1",
+  "recordedUtc": "2026-10-22T00:00:48Z",
+  "scanId": 1,
+  "supervisor": "runtime-controller-repairs/monitor-claude-native-scan.py",
+  "supervisorSha256BeforeDiagnosis": "e485b6f4de3c0d437aac8719189ba6c8803a52bb6e1bafc817e303b0885a7db8",
+  "line": 87,
+  "problem": "The terminal retry branch queries workflows.scans, but the running database stores the scan table as public.scans.",
+  "readOnlyEvidence": {
+    "public.scans": "present; exactly one row",
+    "workflows.scans": "absent"
+  },
+  "currentImpact": "None while the scan remains running. If it reaches failed, paused, or stopped with no active job, the loaded supervisor will record an operational error before preservation or the supported API transition.",
+  "response": "Do not stop or restart the healthy scan or loaded supervisor. If the terminal condition occurs, use repair-claude-native-failed-lineages.py as a separate one-shot. It checks public.scans, preserves failed rows and saved outputs, seals a pre-resume dump, and only then sends the documented PATCH status=pending transition.",
+  "directDatabaseMutationAuthorized": false,
+  "replacementScanAuthorized": false,
+  "providerSafetyRejectionRetryAuthorized": false
+}

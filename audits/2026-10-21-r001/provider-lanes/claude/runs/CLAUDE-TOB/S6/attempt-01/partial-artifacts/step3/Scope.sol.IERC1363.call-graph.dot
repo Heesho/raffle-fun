@@ -1,0 +1,28 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_3777_IERC20 {
+label = "IERC20"
+"3777_approve(address,uint256)" [label="approve(address,uint256)"]
+"3777_balanceOf(address)" [label="balanceOf(address)"]
+"3777_allowance(address,address)" [label="allowance(address,address)"]
+"3777_transfer(address,uint256)" [label="transfer(address,uint256)"]
+"3777_totalSupply()" [label="totalSupply()"]
+"3777_transferFrom(address,address,uint256)" [label="transferFrom(address,address,uint256)"]
+}subgraph cluster_7546_IERC165 {
+label = "IERC165"
+"7546_supportsInterface(bytes4)" [label="supportsInterface(bytes4)"]
+}subgraph cluster_7723_IERC1363 {
+label = "IERC1363"
+"7723_transferFromAndCall(address,address,uint256)" [label="transferFromAndCall(address,address,uint256)"]
+"7723_transferAndCall(address,uint256,bytes)" [label="transferAndCall(address,uint256,bytes)"]
+"7723_approveAndCall(address,uint256)" [label="approveAndCall(address,uint256)"]
+"7723_transferFromAndCall(address,address,uint256,bytes)" [label="transferFromAndCall(address,address,uint256,bytes)"]
+"7723_transferAndCall(address,uint256)" [label="transferAndCall(address,uint256)"]
+"7723_approveAndCall(address,uint256,bytes)" [label="approveAndCall(address,uint256,bytes)"]
+}subgraph cluster_solidity {
+label = "[Solidity]"
+}subgraph cluster_toplevel {
+label = "[Top Level]"
+}
+}

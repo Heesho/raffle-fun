@@ -1,0 +1,86 @@
+Multiple frameworks detected: Foundry, Hardhat. Using Foundry (highest priority). Use --compile-force-framework to override.
+'forge clean' running (wd: /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/validation/snapshot/packages/contracts)
+'forge config --json' running
+'forge build --build-info --deny never --skip ./test/foundry/** ./script/** --force' running (wd: /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/validation/snapshot/packages/contracts)
+INFO:Printers:
+
+Contract [1m[93mRaffle[0m is VRFV2PlusWrapperConsumerBase is ReentrancyGuard is ERC721 is ERC165 is Context (src/Raffle.sol#28-614)
++--------------------------+----------------------------------------------+----------------+
+| Variables                | Types                                        | Inherited From |
++--------------------------+----------------------------------------------+----------------+
+| [1m[94m_name[0m                    | [92mstring[0m                                       | [95mERC721[0m         |
+| [1m[94m_symbol[0m                  | [92mstring[0m                                       | [95mERC721[0m         |
+| [1m[94m_owners[0m                  | [92mmapping(uint256 => address)[0m                  | [95mERC721[0m         |
+| [1m[94m_balances[0m                | [92mmapping(address => uint256)[0m                  | [95mERC721[0m         |
+| [1m[94m_tokenApprovals[0m          | [92mmapping(uint256 => address)[0m                  | [95mERC721[0m         |
+| [1m[94m_operatorApprovals[0m       | [92mmapping(address => mapping(address => bool))[0m | [95mERC721[0m         |
+| [1m[94msponsor[0m                  | [92maddress[0m                                      |                |
+| [1m[94msponsorRecipient[0m         | [92maddress[0m                                      |                |
+| [1m[94mprotocolTreasury[0m         | [92maddress[0m                                      |                |
+| [1m[94mprizeToken[0m               | [92mIERC721[0m                                      |                |
+| [1m[94mprizeTokenId[0m             | [92muint256[0m                                      |                |
+| [1m[94mraffleId[0m                 | [92muint256[0m                                      |                |
+| [1m[94mreserveEntries[0m           | [92muint128[0m                                      |                |
+| [1m[94mendTime[0m                  | [92muint64[0m                                       |                |
+| [1m[94mtotalEntries[0m             | [92muint128[0m                                      |                |
+| [1m[94mticketCount[0m              | [92muint128[0m                                      |                |
+| [1m[94munsettledPot[0m             | [92muint256[0m                                      |                |
+| [1m[94mremainingRefundLiability[0m | [92muint256[0m                                      |                |
+| [1m[94mwinnerRecipient[0m          | [92maddress[0m                                      |                |
+| [1m[94mwinnerProceeds[0m           | [92muint256[0m                                      |                |
+| [1m[94msponsorProceeds[0m          | [92muint256[0m                                      |                |
+| [1m[94mprotocolFees[0m             | [92muint256[0m                                      |                |
+| [1m[94mvrfRequestId[0m             | [92muint256[0m                                      |                |
+| [1m[94mdrawRequestedAt[0m          | [92muint64[0m                                       |                |
+| [1m[94mresolvedAt[0m               | [92muint64[0m                                       |                |
+| [1m[94mwinningEntry[0m             | [92muint128[0m                                      |                |
+| [1m[94mwinningTicketId[0m          | [92muint256[0m                                      |                |
+| [1m[94mstatus[0m                   | [92mIRaffle.Status[0m                               |                |
+| [1m[94msettlementComplete[0m       | [92mbool[0m                                         |                |
+| [1m[94mwinnerRedeemed[0m           | [92mbool[0m                                         |                |
+| [1m[94mprizeClaimed[0m             | [92mbool[0m                                         |                |
+| [1m[94minitialized[0m              | [92mbool[0m                                         |                |
+| [1m[94m_ticketRanges[0m            | [92mmapping(uint256 => Raffle.TicketRange)[0m       |                |
+| [1m[94m_requestInFlight[0m         | [92mbool[0m                                         |                |
++--------------------------+----------------------------------------------+----------------+
++-------------------------------------------------+-----------------------+------------------------------+
+| Functions                                       | Modifiers             | Inherited From               |
++-------------------------------------------------+-----------------------+------------------------------+
+| [1m[95mconstructor[0m(address,address)                    |                       |                              |
+| [1m[95mreceive[0m()                                       | [92mpayable[0m               |                              |
+| [1m[91minitialize[0m(IRaffle.RaffleInitParams)            |                       |                              |
+| [1m[91mbuyEntries[0m(address,uint128)                     | [92mnonReentrant[0m          |                              |
+| [1m[91mrequestDraw[0m()                                   | [92mnonReentrant, payable[0m |                              |
+| [1m[91menableRefunds[0m()                                 | [92mnonReentrant[0m          |                              |
+| [1m[91msettleWinningTicket[0m(uint256)                    | [92mnonReentrant[0m          |                              |
+| [1m[91mredeemWinningTicket[0m(uint256)                    | [92mnonReentrant[0m          |                              |
+| [1m[91mrefundTickets[0m(uint256[])                        | [92mnonReentrant[0m          |                              |
+| [1m[91mreleaseSponsorProceeds[0m()                        | [92mnonReentrant[0m          |                              |
+| [1m[91mreleaseProtocolFees[0m()                           | [92mnonReentrant[0m          |                              |
+| [1m[91mreleaseSponsorPrize[0m()                           | [92mnonReentrant[0m          |                              |
+| [1m[91monERC721Received[0m(address,address,uint256,bytes) |                       |                              |
+| [1m[91mapprove[0m(address,uint256)                        |                       | [95mERC721[0m                       |
+| [1m[91msetApprovalForAll[0m(address,bool)                 |                       | [95mERC721[0m                       |
+| [1m[91mtransferFrom[0m(address,address,uint256)           |                       | [95mERC721[0m                       |
+| [1m[91msafeTransferFrom[0m(address,address,uint256)       |                       | [95mERC721[0m                       |
+| [1m[91msafeTransferFrom[0m(address,address,uint256,bytes) |                       | [95mERC721[0m                       |
+| [1m[91mrawFulfillRandomWords[0m(uint256,uint256[])        |                       | [95mVRFV2PlusWrapperConsumerBase[0m |
++-------------------------------------------------+-----------------------+------------------------------+
+
+
+Contract [1m[93mRaffleFactory[0m is ReentrancyGuard (src/RaffleFactory.sol#21-186)
++-------------+-----------------------------+----------------+
+| Variables   | Types                       | Inherited From |
++-------------+-----------------------------+----------------+
+| [1m[94mraffleCount[0m | [92muint256[0m                     |                |
+| [1m[94mraffleById[0m  | [92mmapping(uint256 => address)[0m |                |
+| [1m[94midByRaffle[0m  | [92mmapping(address => uint256)[0m |                |
+| [1m[94misRaffle[0m    | [92mmapping(address => bool)[0m    |                |
++-------------+-----------------------------+----------------+
++-------------------------------------------------+--------------+----------------+
+| Functions                                       | Modifiers    | Inherited From |
++-------------------------------------------------+--------------+----------------+
+| [1m[95mconstructor[0m(address,address,address)            |              |                |
+| [1m[91mcreateRaffle[0m(IRaffleFactory.CreateRaffleParams) | [92mnonReentrant[0m |                |
++-------------------------------------------------+--------------+----------------+
+INFO:Slither:. analyzed (46 contracts)

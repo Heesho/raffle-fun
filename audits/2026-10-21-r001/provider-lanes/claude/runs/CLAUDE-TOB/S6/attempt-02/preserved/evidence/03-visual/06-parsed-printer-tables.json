@@ -1,0 +1,4124 @@
+{
+ "function_summary": {
+  "Raffle": {
+   "functions": [
+    {
+     "Function": "constructor(address)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "['i_linkToken', 'i_vrfV2PlusWrapper']",
+     "Internal Calls": "[]",
+     "External Calls": "['vrfV2PlusWrapper.link()']",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "requestRandomness(uint32,uint16,uint32,bytes)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "['i_linkToken', 'i_vrfV2PlusWrapper']",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1484(bytes) = SOLIDITY_CALL abi.encode()(_callbackGasLimit,_requestConfirmations,_numWords,extraArgs)']",
+     "External Calls": "['i_linkToken.transferAndCall(address(i_vrfV2PlusWrapper),reqPrice,abi.encode(_callbackGasLimit,_requestConfirmations,_numWords,extraArgs))', 'i_vrfV2PlusWrapper.calculateRequestPrice(_callbackGasLimit,_numWords)']",
+     "Cyclomatic Complexity": "0"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "",
+     "Internal Calls": "",
+     "External Calls": "['i_vrfV2PlusWrapper.lastRequestId()']",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "requestRandomnessPayInNative(uint32,uint16,uint32,bytes)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "['i_vrfV2PlusWrapper']",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "['i_vrfV2PlusWrapper.calculateRequestPriceNative(_callbackGasLimit,_numWords)', 'i_vrfV2PlusWrapper.requestRandomWordsInNative{value: requestPrice}(_callbackGasLimit,_requestConfirmations,_numWords,extraArgs)']",
+     "Cyclomatic Complexity": "0"
+    },
+    {
+     "Function": "fulfillRandomWords(uint256,uint256[])",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "rawFulfillRandomWords(uint256,uint256[])",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "['i_vrfV2PlusWrapper', 'msg.sender']",
+     "Write": "[]",
+     "Internal Calls": "['INTERNAL_CALL, Raffle.fulfillRandomWords(uint256,uint256[])(_requestId,_randomWords)', 'TMP_1491(None) = SOLIDITY_CALL revert OnlyVRFWrapperCanFulfill(address,address)(msg.sender,vrfWrapperAddr)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "getBalance()",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "['this']",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1494(uint256) = SOLIDITY_CALL balance(address)(TMP_1493)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "getLinkToken()",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "['i_linkToken']",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "onERC721Received(address,address,uint256,bytes)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "constructor()",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "['NOT_ENTERED']",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1495(bytes32) = INTERNAL_CALL, ReentrancyGuard._reentrancyGuardStorageSlot()()']",
+     "External Calls": "['_reentrancyGuardStorageSlot().getUint256Slot()']",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_nonReentrantBeforeView()",
+     "Visibility": "private",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1497(bool) = INTERNAL_CALL, ReentrancyGuard._reentrancyGuardEntered()()', 'TMP_1498(None) = SOLIDITY_CALL revert ReentrancyGuardReentrantCall()()']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "_nonReentrantBefore()",
+     "Visibility": "private",
+     "Modifiers": "[]",
+     "Read": "['ENTERED']",
+     "Write": "[]",
+     "Internal Calls": "['INTERNAL_CALL, ReentrancyGuard._nonReentrantBeforeView()()', 'TMP_1500(bytes32) = INTERNAL_CALL, ReentrancyGuard._reentrancyGuardStorageSlot()()']",
+     "External Calls": "['_reentrancyGuardStorageSlot().getUint256Slot()']",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_nonReentrantAfter()",
+     "Visibility": "private",
+     "Modifiers": "[]",
+     "Read": "['NOT_ENTERED']",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1502(bytes32) = INTERNAL_CALL, ReentrancyGuard._reentrancyGuardStorageSlot()()']",
+     "External Calls": "['_reentrancyGuardStorageSlot().getUint256Slot()']",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_reentrancyGuardEntered()",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "['ENTERED']",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1504(bytes32) = INTERNAL_CALL, ReentrancyGuard._reentrancyGuardStorageSlot()()']",
+     "External Calls": "['_reentrancyGuardStorageSlot().getUint256Slot()']",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_reentrancyGuardStorageSlot()",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "['REENTRANCY_GUARD_STORAGE']",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "constructor(string,string)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "['_name', '_symbol']",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "supportsInterface(bytes4)",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1507(type(IERC721)) = SOLIDITY_CALL type()(IERC721)', 'TMP_1509(type(IERC721Metadata)) = SOLIDITY_CALL type()(IERC721Metadata)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "",
+     "Internal Calls": "['TMP_1512(bool) = INTERNAL_CALL, ERC165.supportsInterface(bytes4)(interfaceId)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "balanceOf(address)",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "['_balances']",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1517(None) = SOLIDITY_CALL revert ERC721InvalidOwner(address)(TMP_1516)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "ownerOf(uint256)",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1518(address) = INTERNAL_CALL, ERC721._requireOwned(uint256)(tokenId)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "name()",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "['_name']",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "symbol()",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "['_symbol']",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "tokenURI(uint256)",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1519(address) = INTERNAL_CALL, ERC721._requireOwned(uint256)(tokenId)', 'TMP_1520(string) = INTERNAL_CALL, ERC721._baseURI()()']",
+     "External Calls": "['string.concat(baseURI,tokenId.toString())', 'tokenId.toString()']",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "",
+     "Internal Calls": "['TMP_1524(string) = SOLIDITY_CALL string.concat()(baseURI,TMP_1523)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "_baseURI()",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "approve(address,uint256)",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['INTERNAL_CALL, ERC721._approve(address,uint256,address)(to,tokenId,TMP_1525)', 'TMP_1525(address) = INTERNAL_CALL, Context._msgSender()()']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "getApproved(uint256)",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1527(address) = INTERNAL_CALL, ERC721._requireOwned(uint256)(tokenId)', 'TMP_1528(address) = INTERNAL_CALL, ERC721._getApproved(uint256)(tokenId)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "setApprovalForAll(address,bool)",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['INTERNAL_CALL, ERC721._setApprovalForAll(address,address,bool)(TMP_1529,operator,approved)', 'TMP_1529(address) = INTERNAL_CALL, Context._msgSender()()']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "isApprovedForAll(address,address)",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "['_operatorApprovals']",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "transferFrom(address,address,uint256)",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1534(None) = SOLIDITY_CALL revert ERC721InvalidReceiver(address)(TMP_1533)', 'TMP_1535(address) = INTERNAL_CALL, Context._msgSender()()']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "3"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "",
+     "Internal Calls": "['TMP_1536(address) = INTERNAL_CALL, Raffle._update(address,uint256,address)(to,tokenId,TMP_1535)', 'TMP_1538(None) = SOLIDITY_CALL revert ERC721IncorrectOwner(address,uint256,address)(from,tokenId,previousOwner)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "safeTransferFrom(address,address,uint256)",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['INTERNAL_CALL, ERC721.safeTransferFrom(address,address,uint256,bytes)(from,to,tokenId,)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "safeTransferFrom(address,address,uint256,bytes)",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['INTERNAL_CALL, ERC721.transferFrom(address,address,uint256)(from,to,tokenId)', 'TMP_1541(address) = INTERNAL_CALL, Context._msgSender()()']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_ownerOf(uint256)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "['_owners']",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_getApproved(uint256)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "['_tokenApprovals']",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_isAuthorized(address,address,uint256)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1546(bool) = INTERNAL_CALL, ERC721.isApprovedForAll(address,address)(owner,spender)', 'TMP_1548(address) = INTERNAL_CALL, ERC721._getApproved(uint256)(tokenId)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_checkAuthorized(address,address,uint256)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1552(bool) = INTERNAL_CALL, ERC721._isAuthorized(address,address,uint256)(owner,spender,tokenId)', 'TMP_1556(None) = SOLIDITY_CALL revert ERC721NonexistentToken(uint256)(tokenId)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "3"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "",
+     "Internal Calls": "['TMP_1557(None) = SOLIDITY_CALL revert ERC721InsufficientApproval(address,uint256)(spender,tokenId)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "_increaseBalance(address,uint128)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "['_balances']",
+     "Write": "['_balances']",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_update(address,uint256,address)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "['_balances']",
+     "Write": "['_balances', '_owners']",
+     "Internal Calls": "['INTERNAL_CALL, ERC721._approve(address,uint256,address,bool)(TMP_1564,tokenId,TMP_1565,False)', 'INTERNAL_CALL, ERC721._checkAuthorized(address,address,uint256)(from,auth,tokenId)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "4"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "",
+     "Internal Calls": "['TMP_1558(address) = INTERNAL_CALL, ERC721._ownerOf(uint256)(tokenId)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "_mint(address,uint256)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1573(None) = SOLIDITY_CALL revert ERC721InvalidReceiver(address)(TMP_1572)', 'TMP_1575(address) = INTERNAL_CALL, Raffle._update(address,uint256,address)(to,tokenId,TMP_1574)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "3"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "",
+     "Internal Calls": "['TMP_1579(None) = SOLIDITY_CALL revert ERC721InvalidSender(address)(TMP_1578)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "_safeMint(address,uint256)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['INTERNAL_CALL, ERC721._safeMint(address,uint256,bytes)(to,tokenId,)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_safeMint(address,uint256,bytes)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['INTERNAL_CALL, ERC721._mint(address,uint256)(to,tokenId)', 'TMP_1582(address) = INTERNAL_CALL, Context._msgSender()()']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_burn(uint256)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1587(address) = INTERNAL_CALL, Raffle._update(address,uint256,address)(TMP_1585,tokenId,TMP_1586)', 'TMP_1590(None) = SOLIDITY_CALL revert ERC721NonexistentToken(uint256)(tokenId)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "_transfer(address,address,uint256)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1594(None) = SOLIDITY_CALL revert ERC721InvalidReceiver(address)(TMP_1593)', 'TMP_1596(address) = INTERNAL_CALL, Raffle._update(address,uint256,address)(to,tokenId,TMP_1595)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "4"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "",
+     "Internal Calls": "['TMP_1599(None) = SOLIDITY_CALL revert ERC721NonexistentToken(uint256)(tokenId)', 'TMP_1601(None) = SOLIDITY_CALL revert ERC721IncorrectOwner(address,uint256,address)(from,tokenId,previousOwner)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "_safeTransfer(address,address,uint256)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['INTERNAL_CALL, ERC721._safeTransfer(address,address,uint256,bytes)(from,to,tokenId,)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_safeTransfer(address,address,uint256,bytes)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['INTERNAL_CALL, ERC721._transfer(address,address,uint256)(from,to,tokenId)', 'TMP_1604(address) = INTERNAL_CALL, Context._msgSender()()']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_approve(address,uint256,address)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['INTERNAL_CALL, ERC721._approve(address,uint256,address,bool)(to,tokenId,auth,True)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_approve(address,uint256,address,bool)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "['_tokenApprovals']",
+     "Internal Calls": "['TMP_1610(address) = INTERNAL_CALL, ERC721._requireOwned(uint256)(tokenId)', 'TMP_1615(bool) = INTERNAL_CALL, ERC721.isApprovedForAll(address,address)(owner,auth)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "4"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "",
+     "Internal Calls": "['TMP_1618(None) = SOLIDITY_CALL revert ERC721InvalidApprover(address)(auth)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "_setApprovalForAll(address,address,bool)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "['_operatorApprovals']",
+     "Internal Calls": "['TMP_1623(None) = SOLIDITY_CALL revert ERC721InvalidApprover(address)(TMP_1622)', 'TMP_1626(None) = SOLIDITY_CALL revert ERC721InvalidOperator(address)(operator)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "3"
+    },
+    {
+     "Function": "_requireOwned(uint256)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1628(address) = INTERNAL_CALL, ERC721._ownerOf(uint256)(tokenId)', 'TMP_1631(None) = SOLIDITY_CALL revert ERC721NonexistentToken(uint256)(tokenId)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "name()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "symbol()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "tokenURI(uint256)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "balanceOf(address)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "ownerOf(uint256)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "safeTransferFrom(address,address,uint256,bytes)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "safeTransferFrom(address,address,uint256)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "transferFrom(address,address,uint256)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "approve(address,uint256)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "setApprovalForAll(address,bool)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "getApproved(uint256)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "isApprovedForAll(address,address)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "supportsInterface(bytes4)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "supportsInterface(bytes4)",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1632(type(IERC165)) = SOLIDITY_CALL type()(IERC165)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_msgSender()",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "['msg.sender']",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_msgData()",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "['msg.data']",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_contextSuffixLength()",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "initialize(IRaffle.RaffleInitParams)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "buyEntries(address,uint128)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "requestDraw()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "enableRefunds()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "settleWinningTicket(uint256)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "redeemWinningTicket(uint256)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "refundTickets(uint256[])",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "releaseSponsorProceeds()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "releaseProtocolFees()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "releaseSponsorPrize()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "getVrfRequestPrice()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "estimateVrfRequestPrice(uint256)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "ticketRange(uint256)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "drawRequestDeadline()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "callbackDeadline()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "accountedQuoteBalance()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "grossSales()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "ENTRY_PRICE()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "callbackGasLimit()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "requestConfirmations()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "factory()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "sponsor()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "sponsorRecipient()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "protocolTreasury()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "quoteToken()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "vrfWrapper()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "prizeToken()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "prizeTokenId()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "raffleId()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "reserveEntries()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "endTime()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "totalEntries()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "ticketCount()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "unsettledPot()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "remainingRefundLiability()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "winnerRecipient()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "winnerProceeds()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "sponsorProceeds()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "protocolFees()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "vrfRequestId()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "drawRequestedAt()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "resolvedAt()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "winningEntry()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "winningTicketId()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "status()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "settlementComplete()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "winnerRedeemed()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "prizeClaimed()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "initialized()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "constructor(address,address)",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "['msg.sender']",
+     "Write": "['factory', 'initialized']",
+     "Internal Calls": "['INTERNAL_CALL, ERC721.constructor(string,string)(,)', 'INTERNAL_CALL, VRFV2PlusWrapperConsumerBase.constructor(address)(TMP_1642)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "['quoteToken', 'status']",
+     "Internal Calls": "['TMP_1639(None) = SOLIDITY_CALL revert ZeroAddress()()', 'TMP_1642(address) = INTERNAL_CALL, Raffle._validatedVrfWrapper(address)(vrfWrapper_)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "receive()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1644(None) = SOLIDITY_CALL revert DirectNativeTransfer()()']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "initialize(IRaffle.RaffleInitParams)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "['factory', 'initialized']",
+     "Write": "['endTime', 'initialized']",
+     "Internal Calls": "['TMP_1645(None) = SOLIDITY_CALL revert AlreadyInitialized()()', 'TMP_1647(None) = SOLIDITY_CALL revert OnlyFactory()()']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "7"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['msg.sender']",
+     "Write": "['prizeToken', 'prizeTokenId']",
+     "Internal Calls": "['TMP_1659(None) = SOLIDITY_CALL revert ZeroAddress()()', 'TMP_1660(bool) = INTERNAL_CALL, Raffle._isProtocolDestination(address,address)(REF_226,REF_227)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "['protocolTreasury', 'raffleId']",
+     "Internal Calls": "['TMP_1661(None) = SOLIDITY_CALL revert UnsafeProtocolDestination(address)(REF_228)', 'TMP_1662(bool) = INTERNAL_CALL, Raffle._isProtocolDestination(address,address)(REF_229,REF_230)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "['reserveEntries', 'sponsor']",
+     "Internal Calls": "['TMP_1663(None) = SOLIDITY_CALL revert UnsafeProtocolDestination(address)(REF_231)', 'TMP_1664(bool) = INTERNAL_CALL, Raffle._isProtocolDestination(address,address)(REF_232,REF_233)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "['sponsorRecipient', 'status']",
+     "Internal Calls": "['TMP_1665(None) = SOLIDITY_CALL revert UnsafeProtocolDestination(address)(REF_234)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "buyEntries(address,uint128)",
+     "Visibility": "external",
+     "Modifiers": "['nonReentrant']",
+     "Read": "['ENTRY_PRICE', 'block.timestamp']",
+     "Write": "['_ticketRanges', 'ticketCount']",
+     "Internal Calls": "['INTERNAL_CALL, ERC721._safeMint(address,uint256)(recipient,ticketId)', 'INTERNAL_CALL, Raffle._requireStatus(IRaffle.Status)(REF_244)']",
+     "External Calls": "['quoteToken.safeTransferFrom(msg.sender,address(this),grossAmount)']",
+     "Cyclomatic Complexity": "5"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['endTime', 'msg.sender']",
+     "Write": "['totalEntries', 'unsettledPot']",
+     "Internal Calls": "['MODIFIER_CALL, ReentrancyGuard.nonReentrant()()', 'TMP_1669(None) = SOLIDITY_CALL revert SaleEnded(uint256,uint256)(endTime,block.timestamp)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['quoteToken', 'this']",
+     "Write": "",
+     "Internal Calls": "['TMP_1672(None) = SOLIDITY_CALL revert InvalidRecipient()()', 'TMP_1674(None) = SOLIDITY_CALL revert ZeroEntryCount()()']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['ticketCount', 'totalEntries']",
+     "Write": "",
+     "Internal Calls": "['TMP_1679(None) = SOLIDITY_CALL revert TotalEntriesOverflow(uint128,uint128)(totalEntries,entryCount)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['unsettledPot']",
+     "Write": "",
+     "Internal Calls": "",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "requestDraw()",
+     "Visibility": "external",
+     "Modifiers": "['nonReentrant']",
+     "Read": "['block.timestamp', 'callbackGasLimit']",
+     "Write": "['_requestInFlight', 'drawRequestedAt']",
+     "Internal Calls": "['INTERNAL_CALL, Raffle._requireStatus(IRaffle.Status)(REF_247)', 'MODIFIER_CALL, ReentrancyGuard.nonReentrant()()']",
+     "External Calls": "['call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)(gas()(),refundRecipient,excess,0,0,0,0)']",
+     "Cyclomatic Complexity": "8"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['drawRequestedAt', 'endTime']",
+     "Write": "['status', 'vrfRequestId']",
+     "Internal Calls": "['TMP_1694(None) = SOLIDITY_CALL revert RaffleNotEnded(uint256,uint256)(endTime,block.timestamp)', 'TMP_1696(None) = SOLIDITY_CALL revert NoEntriesSold()()']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['msg.sender', 'msg.value']",
+     "Write": "",
+     "Internal Calls": "['TMP_1697(uint256) = INTERNAL_CALL, Raffle.drawRequestDeadline()()', 'TMP_1699(None) = SOLIDITY_CALL revert DrawRequestWindowExpired(uint256,uint256)(requestDeadline,block.timestamp)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['requestConfirmations', 'totalEntries']",
+     "Write": "",
+     "Internal Calls": "['TMP_1700(uint256) = INTERNAL_CALL, Raffle.getVrfRequestPrice()()', 'TMP_1702(None) = SOLIDITY_CALL revert InsufficientVrfFee(uint256,uint256)(quotedFee,msg.value)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "",
+     "Internal Calls": "['TMP_1707(None) = SOLIDITY_CALL revert InsufficientVrfFee(uint256,uint256)(paidPrice,msg.value)', 'TMP_1710(uint256) = SOLIDITY_CALL gas()()']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "",
+     "Internal Calls": "['TMP_1711(uint256) = SOLIDITY_CALL call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)(TMP_1710,refundRecipient,excess,0,0,0,0)', 'TMP_1713(None) = SOLIDITY_CALL revert NativeRefundFailed(address,uint256)(msg.sender,excess)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "",
+     "Internal Calls": "['TMP_1714(uint256) = INTERNAL_CALL, Raffle.callbackDeadline()()', 'TUPLE_21(uint256,uint256) = INTERNAL_CALL, VRFV2PlusWrapperConsumerBase.requestRandomnessPayInNative(uint32,uint16,uint32,bytes)(callbackGasLimit,requestConfirmations,1,extraArgs)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "enableRefunds()",
+     "Visibility": "external",
+     "Modifiers": "['nonReentrant']",
+     "Read": "['block.timestamp', 'endTime']",
+     "Write": "['remainingRefundLiability', 'status']",
+     "Internal Calls": "['MODIFIER_CALL, ReentrancyGuard.nonReentrant()()', 'TMP_1722(None) = SOLIDITY_CALL revert RefundsNotAvailable(uint256,uint256)(deadline,block.timestamp)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "7"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['msg.sender', 'sponsor']",
+     "Write": "['unsettledPot']",
+     "Internal Calls": "['TMP_1723(uint256) = INTERNAL_CALL, Raffle.drawRequestDeadline()()', 'TMP_1725(None) = SOLIDITY_CALL revert RefundsNotAvailable(uint256,uint256)(deadline,block.timestamp)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['status', 'totalEntries']",
+     "Write": "",
+     "Internal Calls": "['TMP_1727(uint256) = INTERNAL_CALL, Raffle.callbackDeadline()()', 'TMP_1729(None) = SOLIDITY_CALL revert RefundsNotAvailable(uint256,uint256)(deadline,block.timestamp)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['unsettledPot']",
+     "Write": "",
+     "Internal Calls": "['TMP_1730(None) = SOLIDITY_CALL revert InvalidStatus(IRaffle.Status)(status)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "settleWinningTicket(uint256)",
+     "Visibility": "external",
+     "Modifiers": "['nonReentrant']",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['MODIFIER_CALL, ReentrancyGuard.nonReentrant()()', 'TMP_1733(uint256) = INTERNAL_CALL, Raffle._settleWinningTicket(uint256)(ticketId)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "redeemWinningTicket(uint256)",
+     "Visibility": "external",
+     "Modifiers": "['nonReentrant']",
+     "Read": "['msg.sender', 'prizeClaimed']",
+     "Write": "['prizeClaimed', 'winnerProceeds']",
+     "Internal Calls": "['INTERNAL_CALL, ERC721._burn(uint256)(ticketId)', 'INTERNAL_CALL, Raffle._transferQuote(address,uint256)(winner,cashAmount)']",
+     "External Calls": "['prizeToken.ownerOf(deliveredPrizeTokenId)', 'prizeToken.transferFrom(address(this),winner,deliveredPrizeTokenId)']",
+     "Cyclomatic Complexity": "10"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['prizeToken', 'prizeTokenId']",
+     "Write": "['winnerRecipient', 'winnerRedeemed']",
+     "Internal Calls": "['MODIFIER_CALL, ReentrancyGuard.nonReentrant()()', 'TMP_1735(None) = SOLIDITY_CALL revert WinningTicketAlreadyRedeemed()()']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['settlementComplete', 'status']",
+     "Write": "",
+     "Internal Calls": "['TMP_1739(None) = SOLIDITY_CALL revert InvalidStatus(IRaffle.Status)(result)', 'TMP_1741(uint256) = INTERNAL_CALL, Raffle._settleWinningTicket(uint256)(ticketId)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['this', 'winnerProceeds']",
+     "Write": "",
+     "Internal Calls": "['TMP_1743(None) = SOLIDITY_CALL revert WinningTicketMismatch(uint256,uint256)(ticketId,winningTicketId)', 'TMP_1744(address) = INTERNAL_CALL, ERC721.ownerOf(uint256)(ticketId)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['winnerRedeemed', 'winningTicketId']",
+     "Write": "",
+     "Internal Calls": "['TMP_1746(None) = SOLIDITY_CALL revert NotTicketOwner(uint256,address,address)(ticketId,msg.sender,winner)', 'TMP_1750(None) = SOLIDITY_CALL revert PrizeAlreadyClaimed()()']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "",
+     "Internal Calls": "['TMP_1756(None) = SOLIDITY_CALL revert PrizeDeliveryVerificationFailed(address)(winner)', 'TMP_1758(None) = SOLIDITY_CALL revert NoWinnerProceeds()()']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "refundTickets(uint256[])",
+     "Visibility": "external",
+     "Modifiers": "['nonReentrant']",
+     "Read": "['ENTRY_PRICE', 'msg.sender']",
+     "Write": "['remainingRefundLiability']",
+     "Internal Calls": "['INTERNAL_CALL, ERC721._burn(uint256)(ticketId)', 'INTERNAL_CALL, Raffle._requireStatus(IRaffle.Status)(REF_259)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "4"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['remainingRefundLiability']",
+     "Write": "",
+     "Internal Calls": "['INTERNAL_CALL, Raffle._transferQuote(address,uint256)(msg.sender,amount)', 'MODIFIER_CALL, ReentrancyGuard.nonReentrant()()']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "",
+     "Internal Calls": "['TMP_1766(None) = SOLIDITY_CALL revert InvalidTicketBatchSize(uint256,uint256)(ticketQuantity,REF_262)', 'TMP_1768(address) = INTERNAL_CALL, ERC721.ownerOf(uint256)(ticketId)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "",
+     "Internal Calls": "['TMP_1770(None) = SOLIDITY_CALL revert NotTicketOwner(uint256,address,address)(ticketId,msg.sender,owner)', 'TUPLE_22(uint128,uint128) = INTERNAL_CALL, Raffle.ticketRange(uint256)(ticketId)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "releaseSponsorProceeds()",
+     "Visibility": "external",
+     "Modifiers": "['nonReentrant']",
+     "Read": "['msg.sender', 'sponsorProceeds']",
+     "Write": "['sponsorProceeds']",
+     "Internal Calls": "['INTERNAL_CALL, Raffle._transferQuote(address,uint256)(recipient,amount)', 'MODIFIER_CALL, ReentrancyGuard.nonReentrant()()']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['sponsorRecipient']",
+     "Write": "",
+     "Internal Calls": "['TMP_1781(None) = SOLIDITY_CALL revert NoSponsorProceeds()()']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "releaseProtocolFees()",
+     "Visibility": "external",
+     "Modifiers": "['nonReentrant']",
+     "Read": "['msg.sender', 'protocolFees']",
+     "Write": "['protocolFees']",
+     "Internal Calls": "['INTERNAL_CALL, Raffle._transferQuote(address,uint256)(treasury,amount)', 'MODIFIER_CALL, ReentrancyGuard.nonReentrant()()']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['protocolTreasury']",
+     "Write": "",
+     "Internal Calls": "['TMP_1786(None) = SOLIDITY_CALL revert NoProtocolFees()()']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "releaseSponsorPrize()",
+     "Visibility": "external",
+     "Modifiers": "['nonReentrant']",
+     "Read": "['msg.sender', 'prizeClaimed']",
+     "Write": "['prizeClaimed']",
+     "Internal Calls": "['MODIFIER_CALL, ReentrancyGuard.nonReentrant()()', 'TMP_1793(None) = SOLIDITY_CALL revert SponsorPrizeUnavailable(IRaffle.Status)(currentStatus)']",
+     "External Calls": "['prizeToken.ownerOf(prizeTokenId)', 'prizeToken.transferFrom(address(this),recipient,prizeTokenId)']",
+     "Cyclomatic Complexity": "4"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['prizeToken', 'prizeTokenId']",
+     "Write": "",
+     "Internal Calls": "['TMP_1794(None) = SOLIDITY_CALL revert PrizeAlreadyClaimed()()', 'TMP_1799(None) = SOLIDITY_CALL revert PrizeDeliveryVerificationFailed(address)(recipient)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['sponsorRecipient', 'status']",
+     "Write": "",
+     "Internal Calls": "",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['this']",
+     "Write": "",
+     "Internal Calls": "",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "onERC721Received(address,address,uint256,bytes)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "['factory', 'msg.sender']",
+     "Write": "['status']",
+     "Internal Calls": "['TMP_1813(None) = SOLIDITY_CALL revert UnexpectedPrize(address,uint256,address,address)(msg.sender,tokenId,from,operator)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['prizeToken', 'prizeTokenId']",
+     "Write": "",
+     "Internal Calls": "",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['sponsor', 'status']",
+     "Write": "",
+     "Internal Calls": "",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "getVrfRequestPrice()",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "['callbackGasLimit', 'i_vrfV2PlusWrapper']",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "['i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit,1)']",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "estimateVrfRequestPrice(uint256)",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "['callbackGasLimit', 'i_vrfV2PlusWrapper']",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "['i_vrfV2PlusWrapper.estimateRequestPriceNative(callbackGasLimit,1,requestGasPriceWei)']",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "vrfWrapper()",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "['i_vrfV2PlusWrapper']",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "ticketRange(uint256)",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "['_ticketRanges']",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "drawRequestDeadline()",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "['endTime']",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "callbackDeadline()",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "['drawRequestedAt']",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "accountedQuoteBalance()",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "['protocolFees', 'remainingRefundLiability']",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['sponsorProceeds', 'unsettledPot']",
+     "Write": "",
+     "Internal Calls": "",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['winnerProceeds']",
+     "Write": "",
+     "Internal Calls": "",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "grossSales()",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "['ENTRY_PRICE', 'totalEntries']",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "name()",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "symbol()",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_update(address,uint256,address)",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "['prizeToken']",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1831(bool) = INTERNAL_CALL, Raffle._isProtocolDestination(address,address)(to,TMP_1830)', 'TMP_1833(None) = SOLIDITY_CALL revert UnsafeProtocolDestination(address)(to)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "",
+     "Internal Calls": "['TMP_1834(address) = INTERNAL_CALL, ERC721._update(address,uint256,address)(to,ticketId,auth)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "fulfillRandomWords(uint256,uint256[])",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "['_requestInFlight', 'block.timestamp']",
+     "Write": "['resolvedAt', 'status']",
+     "Internal Calls": "['TMP_1841(uint256) = INTERNAL_CALL, Raffle.callbackDeadline()()']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['reserveEntries', 'status']",
+     "Write": "['winningEntry']",
+     "Internal Calls": "",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['totalEntries', 'vrfRequestId']",
+     "Write": "",
+     "Internal Calls": "",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "_settleWinningTicket(uint256)",
+     "Visibility": "private",
+     "Modifiers": "[]",
+     "Read": "['msg.sender', 'settlementComplete']",
+     "Write": "['protocolFees', 'settlementComplete']",
+     "Internal Calls": "['INTERNAL_CALL, Raffle._requireWinningTicket(uint256)(ticketId)', 'TMP_1852(None) = SOLIDITY_CALL revert SettlementAlreadyComplete()()']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "4"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['status', 'unsettledPot']",
+     "Write": "['sponsorProceeds', 'unsettledPot']",
+     "Internal Calls": "['TMP_1856(None) = SOLIDITY_CALL revert InvalidStatus(IRaffle.Status)(result)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "['winnerProceeds', 'winningTicketId']",
+     "Internal Calls": "",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "_transferQuote(address,uint256)",
+     "Visibility": "private",
+     "Modifiers": "[]",
+     "Read": "['prizeToken', 'quoteToken']",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1866(bool) = INTERNAL_CALL, Raffle._isProtocolDestination(address,address)(to,TMP_1865)', 'TMP_1867(None) = SOLIDITY_CALL revert InvalidQuoteDestination(address)(to)']",
+     "External Calls": "['quoteToken.safeTransfer(to,amount)']",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "_requireStatus(IRaffle.Status)",
+     "Visibility": "private",
+     "Modifiers": "[]",
+     "Read": "['status']",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1870(None) = SOLIDITY_CALL revert InvalidStatus(IRaffle.Status)(status)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "_requireWinningTicket(uint256)",
+     "Visibility": "private",
+     "Modifiers": "[]",
+     "Read": "['winningEntry']",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1874(None) = SOLIDITY_CALL revert TicketDoesNotContainWinningEntry(uint256,uint128)(ticketId,selectedEntry)', 'TUPLE_23(uint128,uint128) = INTERNAL_CALL, Raffle.ticketRange(uint256)(ticketId)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "_isProtocolDestination(address,address)",
+     "Visibility": "private",
+     "Modifiers": "[]",
+     "Read": "['factory', 'i_vrfV2PlusWrapper']",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1892(bytes) = SOLIDITY_CALL code(address)(destination)']",
+     "External Calls": "['canonicalFactory.isRaffle(destination)', 'canonicalFactory.raffleImplementation()']",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['quoteToken', 'this']",
+     "Write": "",
+     "Internal Calls": "",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "_validatedVrfWrapper(address)",
+     "Visibility": "private",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1898(None) = SOLIDITY_CALL revert ZeroAddress()()']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "slitherConstructorConstantVariables()",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "['ENTRY_PRICE', 'callbackGasLimit']",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "['requestConfirmations']",
+     "Internal Calls": "",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    }
+   ],
+   "modifiers": [
+    {
+     "Modifiers": "nonReentrant()",
+     "Visibility": "internal",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['INTERNAL_CALL, ReentrancyGuard._nonReentrantAfter()()', 'INTERNAL_CALL, ReentrancyGuard._nonReentrantBefore()()']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Modifiers": "nonReentrantView()",
+     "Visibility": "internal",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['INTERNAL_CALL, ReentrancyGuard._nonReentrantBeforeView()()']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    }
+   ]
+  },
+  "RaffleFactory": {
+   "functions": [
+    {
+     "Function": "constructor()",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "['NOT_ENTERED']",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1902(bytes32) = INTERNAL_CALL, ReentrancyGuard._reentrancyGuardStorageSlot()()']",
+     "External Calls": "['_reentrancyGuardStorageSlot().getUint256Slot()']",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_nonReentrantBeforeView()",
+     "Visibility": "private",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1904(bool) = INTERNAL_CALL, ReentrancyGuard._reentrancyGuardEntered()()', 'TMP_1905(None) = SOLIDITY_CALL revert ReentrancyGuardReentrantCall()()']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "_nonReentrantBefore()",
+     "Visibility": "private",
+     "Modifiers": "[]",
+     "Read": "['ENTERED']",
+     "Write": "[]",
+     "Internal Calls": "['INTERNAL_CALL, ReentrancyGuard._nonReentrantBeforeView()()', 'TMP_1907(bytes32) = INTERNAL_CALL, ReentrancyGuard._reentrancyGuardStorageSlot()()']",
+     "External Calls": "['_reentrancyGuardStorageSlot().getUint256Slot()']",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_nonReentrantAfter()",
+     "Visibility": "private",
+     "Modifiers": "[]",
+     "Read": "['NOT_ENTERED']",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1909(bytes32) = INTERNAL_CALL, ReentrancyGuard._reentrancyGuardStorageSlot()()']",
+     "External Calls": "['_reentrancyGuardStorageSlot().getUint256Slot()']",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_reentrancyGuardEntered()",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "['ENTERED']",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1911(bytes32) = INTERNAL_CALL, ReentrancyGuard._reentrancyGuardStorageSlot()()']",
+     "External Calls": "['_reentrancyGuardStorageSlot().getUint256Slot()']",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "_reentrancyGuardStorageSlot()",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "['REENTRANCY_GUARD_STORAGE']",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "createRaffle(IRaffleFactory.CreateRaffleParams)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "quoteToken()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "vrfWrapper()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "protocolTreasury()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "callbackGasLimit()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "requestConfirmations()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "raffleImplementation()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "raffleCount()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "isRaffle(address)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "raffleById(uint256)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "idByRaffle(address)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "constructor(address,address,address)",
+     "Visibility": "public",
+     "Modifiers": "[]",
+     "Read": "['this']",
+     "Write": "['protocolTreasury', 'quoteToken']",
+     "Internal Calls": "['INTERNAL_CALL, RaffleFactory._requireContract(address)(quoteToken_)', 'INTERNAL_CALL, RaffleFactory._requireContract(address)(vrfWrapper_)']",
+     "External Calls": "['IERC20Metadata(quoteToken_).decimals()', 'new Raffle(quoteToken_,vrfWrapper_)']",
+     "Cyclomatic Complexity": "7"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "['raffleImplementation', 'vrfWrapper']",
+     "Internal Calls": "['TMP_1918(None) = SOLIDITY_CALL revert ZeroAddress()()', 'TMP_1921(None) = SOLIDITY_CALL revert UnsupportedQuoteToken(address)(quoteToken_)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "",
+     "Internal Calls": "['TMP_1923(None) = SOLIDITY_CALL revert InvalidQuoteTokenDecimals(uint8,uint8)(quoteDecimals,REF_310)', 'TMP_1930(None) = SOLIDITY_CALL revert UnsafeProtocolDestination(address)(protocolTreasury_)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "",
+     "Internal Calls": "['TMP_1935(None) = SOLIDITY_CALL revert UnsafeProtocolDestination(address)(protocolTreasury_)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "createRaffle(IRaffleFactory.CreateRaffleParams)",
+     "Visibility": "external",
+     "Modifiers": "['nonReentrant']",
+     "Read": "['block.timestamp', 'msg.sender']",
+     "Write": "['idByRaffle', 'isRaffle']",
+     "Internal Calls": "['INTERNAL_CALL, RaffleFactory._validateCreateParams(IRaffleFactory.CreateRaffleParams)(params)', 'MODIFIER_CALL, ReentrancyGuard.nonReentrant()()']",
+     "External Calls": "['IRaffle(raffle).initialize(IRaffle.RaffleInitParams({sponsor:msg.sender,sponsorRecipient:params.sponsorRecipient,protocolTreasury:protocolTreasury,prizeToken:params.prizeToken,prizeTokenId:params.prizeTokenId,raffleId:raffleId,reserveEntries:params.reserveEntries,endTime:params.endTime}))', 'IRaffle(raffle).status()']",
+     "Cyclomatic Complexity": "5"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['protocolTreasury', 'quoteToken']",
+     "Write": "['raffleById', 'raffleCount']",
+     "Internal Calls": "['TMP_1938(None) = SOLIDITY_CALL revert InvalidEndTime(uint256,uint256)(currentTime,REF_312)', 'TMP_1942(None) = SOLIDITY_CALL revert SaleDurationTooLong(uint256,uint256)(saleDuration,REF_315)']",
+     "External Calls": "['IRaffle.RaffleInitParams({sponsor:msg.sender,sponsorRecipient:params.sponsorRecipient,protocolTreasury:protocolTreasury,prizeToken:params.prizeToken,prizeTokenId:params.prizeTokenId,raffleId:raffleId,reserveEntries:params.reserveEntries,endTime:params.endTime})', 'prize.ownerOf(params.prizeTokenId)']",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['raffleCount', 'raffleImplementation']",
+     "Write": "",
+     "Internal Calls": "['TMP_1951(None) = SOLIDITY_CALL revert PrizeEscrowVerificationFailed(address,address,uint256)(raffle,REF_332,REF_333)', 'TMP_1955(None) = SOLIDITY_CALL revert PrizeEscrowVerificationFailed(address,address,uint256)(raffle,REF_336,REF_337)']",
+     "External Calls": "['prize.safeTransferFrom(msg.sender,raffle,params.prizeTokenId)']",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "_validateCreateParams(IRaffleFactory.CreateRaffleParams)",
+     "Visibility": "private",
+     "Modifiers": "[]",
+     "Read": "['isRaffle', 'quoteToken']",
+     "Write": "[]",
+     "Internal Calls": "['INTERNAL_CALL, RaffleFactory._requireContract(address)(REF_343)', 'TMP_1961(None) = SOLIDITY_CALL revert ZeroAddress()()']",
+     "External Calls": "['IERC165(params.prizeToken).supportsInterface(type()(IERC721).interfaceId)']",
+     "Cyclomatic Complexity": "8"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['raffleImplementation', 'this']",
+     "Write": "",
+     "Internal Calls": "['TMP_1971(None) = SOLIDITY_CALL revert UnsafeProtocolDestination(address)(REF_351)', 'TMP_1983(None) = SOLIDITY_CALL revert UnsafeProtocolDestination(address)(REF_360)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "['vrfWrapper']",
+     "Write": "",
+     "Internal Calls": "['TMP_1985(type(IERC721)) = SOLIDITY_CALL type()(IERC721)', 'TMP_1987(None) = SOLIDITY_CALL revert UnsupportedPrizeToken(address)(REF_364)']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "",
+     "Internal Calls": "['TMP_1989(None) = SOLIDITY_CALL revert UnsupportedPrizeToken(address)(REF_365)', 'TMP_1991(None) = SOLIDITY_CALL revert ZeroReserveEntries()()']",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "_requireContract(address)",
+     "Visibility": "private",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['TMP_1992(bytes) = SOLIDITY_CALL code(address)(account)', 'TMP_1994(None) = SOLIDITY_CALL revert NotContract(address)(account)']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "slitherConstructorConstantVariables()",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "['callbackGasLimit', 'requestConfirmations']",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    }
+   ],
+   "modifiers": [
+    {
+     "Modifiers": "nonReentrant()",
+     "Visibility": "internal",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['INTERNAL_CALL, ReentrancyGuard._nonReentrantAfter()()', 'INTERNAL_CALL, ReentrancyGuard._nonReentrantBefore()()']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Modifiers": "nonReentrantView()",
+     "Visibility": "internal",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "['INTERNAL_CALL, ReentrancyGuard._nonReentrantBeforeView()()']",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    }
+   ]
+  },
+  "IRaffle": {
+   "functions": [
+    {
+     "Function": "initialize(IRaffle.RaffleInitParams)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "buyEntries(address,uint128)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "requestDraw()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "enableRefunds()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "settleWinningTicket(uint256)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "redeemWinningTicket(uint256)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "refundTickets(uint256[])",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "releaseSponsorProceeds()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "releaseProtocolFees()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "releaseSponsorPrize()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "getVrfRequestPrice()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "estimateVrfRequestPrice(uint256)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "ticketRange(uint256)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "drawRequestDeadline()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "callbackDeadline()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "accountedQuoteBalance()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "grossSales()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "ENTRY_PRICE()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "callbackGasLimit()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "requestConfirmations()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "factory()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "sponsor()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "sponsorRecipient()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "protocolTreasury()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "quoteToken()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "vrfWrapper()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "prizeToken()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "prizeTokenId()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "raffleId()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "reserveEntries()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "endTime()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "totalEntries()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "ticketCount()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "unsettledPot()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "remainingRefundLiability()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "winnerRecipient()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "winnerProceeds()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "sponsorProceeds()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "protocolFees()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "vrfRequestId()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "drawRequestedAt()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "resolvedAt()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "winningEntry()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "winningTicketId()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "status()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "settlementComplete()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "winnerRedeemed()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "prizeClaimed()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "initialized()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    }
+   ],
+   "modifiers": []
+  },
+  "IRaffleFactory": {
+   "functions": [
+    {
+     "Function": "createRaffle(IRaffleFactory.CreateRaffleParams)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "quoteToken()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "vrfWrapper()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "protocolTreasury()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "callbackGasLimit()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "requestConfirmations()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "raffleImplementation()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "raffleCount()",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "isRaffle(address)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "raffleById(uint256)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    },
+    {
+     "Function": "idByRaffle(address)",
+     "Visibility": "external",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "[]",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "2"
+    }
+   ],
+   "modifiers": []
+  },
+  "RaffleConstants": {
+   "functions": [
+    {
+     "Function": "slitherConstructorConstantVariables()",
+     "Visibility": "internal",
+     "Modifiers": "[]",
+     "Read": "[]",
+     "Write": "['BPS', 'CASH_WINNER_BPS']",
+     "Internal Calls": "[]",
+     "External Calls": "[]",
+     "Cyclomatic Complexity": "1"
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "['DRAW_CALLBACK_TIMEOUT', 'DRAW_REQUEST_TIMEOUT']",
+     "Internal Calls": "",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "['ENTRY_PRICE', 'MAX_REFUND_TICKET_BATCH_SIZE']",
+     "Internal Calls": "",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "['MAX_SALE_DURATION', 'PROTOCOL_FEE_BPS']",
+     "Internal Calls": "",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "['QUOTE_TOKEN_DECIMALS', 'VRF_CALLBACK_GAS_LIMIT']",
+     "Internal Calls": "",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    },
+    {
+     "Function": "",
+     "Visibility": "",
+     "Modifiers": "",
+     "Read": "",
+     "Write": "['VRF_REQUEST_CONFIRMATIONS']",
+     "Internal Calls": "",
+     "External Calls": "",
+     "Cyclomatic Complexity": ""
+    }
+   ],
+   "modifiers": []
+  }
+ },
+ "vars_and_auth": {
+  "Raffle": [
+   {
+    "Function": "constructor",
+    "State variables written": "['i_linkToken', 'i_vrfV2PlusWrapper']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "requestRandomness",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "requestRandomnessPayInNative",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "fulfillRandomWords",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "rawFulfillRandomWords",
+    "State variables written": "['resolvedAt', 'status', 'winningEntry']",
+    "Conditions on msg.sender": "['msg.sender != vrfWrapperAddr']"
+   },
+   {
+    "Function": "getBalance",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "getLinkToken",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "onERC721Received",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "constructor",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_nonReentrantBeforeView",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_nonReentrantBefore",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_nonReentrantAfter",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_reentrancyGuardEntered",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_reentrancyGuardStorageSlot",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "constructor",
+    "State variables written": "['_name', '_symbol']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "supportsInterface",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "balanceOf",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "ownerOf",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "name",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "symbol",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "tokenURI",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_baseURI",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "approve",
+    "State variables written": "['_tokenApprovals']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "getApproved",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "setApprovalForAll",
+    "State variables written": "['_operatorApprovals']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "isApprovedForAll",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "transferFrom",
+    "State variables written": "['_balances', '_owners', '_tokenApprovals']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "safeTransferFrom",
+    "State variables written": "['_balances', '_owners', '_tokenApprovals']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "safeTransferFrom",
+    "State variables written": "['_balances', '_owners', '_tokenApprovals']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_ownerOf",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_getApproved",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_isAuthorized",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_checkAuthorized",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_increaseBalance",
+    "State variables written": "['_balances']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_update",
+    "State variables written": "['_balances', '_owners', '_tokenApprovals']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_mint",
+    "State variables written": "['_balances', '_owners', '_tokenApprovals']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_safeMint",
+    "State variables written": "['_balances', '_owners', '_tokenApprovals']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_safeMint",
+    "State variables written": "['_balances', '_owners', '_tokenApprovals']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_burn",
+    "State variables written": "['_balances', '_owners', '_tokenApprovals']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_transfer",
+    "State variables written": "['_balances', '_owners', '_tokenApprovals']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_safeTransfer",
+    "State variables written": "['_balances', '_owners', '_tokenApprovals']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_safeTransfer",
+    "State variables written": "['_balances', '_owners', '_tokenApprovals']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_approve",
+    "State variables written": "['_tokenApprovals']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_approve",
+    "State variables written": "['_tokenApprovals']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_setApprovalForAll",
+    "State variables written": "['_operatorApprovals']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_requireOwned",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "name",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "symbol",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "tokenURI",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "balanceOf",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "ownerOf",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "safeTransferFrom",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "safeTransferFrom",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "transferFrom",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "approve",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "setApprovalForAll",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "getApproved",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "isApprovedForAll",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "supportsInterface",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "supportsInterface",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_msgSender",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_msgData",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_contextSuffixLength",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "initialize",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "buyEntries",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "requestDraw",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "enableRefunds",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "settleWinningTicket",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "redeemWinningTicket",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "refundTickets",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "releaseSponsorProceeds",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "releaseProtocolFees",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "releaseSponsorPrize",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "getVrfRequestPrice",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "estimateVrfRequestPrice",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "ticketRange",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "drawRequestDeadline",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "callbackDeadline",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "accountedQuoteBalance",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "grossSales",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "ENTRY_PRICE",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "callbackGasLimit",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "requestConfirmations",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "factory",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "sponsor",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "sponsorRecipient",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "protocolTreasury",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "quoteToken",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "vrfWrapper",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "prizeToken",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "prizeTokenId",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "raffleId",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "reserveEntries",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "endTime",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "totalEntries",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "ticketCount",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "unsettledPot",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "remainingRefundLiability",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "winnerRecipient",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "winnerProceeds",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "sponsorProceeds",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "protocolFees",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "vrfRequestId",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "drawRequestedAt",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "resolvedAt",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "winningEntry",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "winningTicketId",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "status",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "settlementComplete",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "winnerRedeemed",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "prizeClaimed",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "initialized",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "constructor",
+    "State variables written": "['_name', '_symbol', 'factory', 'i_linkToken', 'i_vrfV2PlusWrapper', 'initialized', 'quoteToken', 'status']",
+    "Conditions on msg.sender": "['msg.sender == address(0) || quoteToken_ == address(0)']"
+   },
+   {
+    "Function": "receive",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "initialize",
+    "State variables written": "['endTime', 'initialized', 'prizeToken', 'prizeTokenId', 'protocolTreasury', 'raffleId', 'reserveEntries', 'sponsor', 'sponsorRecipient', 'status']",
+    "Conditions on msg.sender": "['msg.sender != factory']"
+   },
+   {
+    "Function": "buyEntries",
+    "State variables written": "['_balances', '_owners', '_ticketRanges', '_tokenApprovals', 'ticketCount', 'totalEntries', 'unsettledPot']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "requestDraw",
+    "State variables written": "['_requestInFlight', 'drawRequestedAt', 'status', 'vrfRequestId']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "enableRefunds",
+    "State variables written": "['remainingRefundLiability', 'status', 'unsettledPot']",
+    "Conditions on msg.sender": "['msg.sender != sponsor && block.timestamp < deadline']"
+   },
+   {
+    "Function": "settleWinningTicket",
+    "State variables written": "['protocolFees', 'settlementComplete', 'sponsorProceeds', 'unsettledPot', 'winnerProceeds', 'winningTicketId']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "redeemWinningTicket",
+    "State variables written": "['_balances', '_owners', '_tokenApprovals', 'prizeClaimed', 'protocolFees', 'settlementComplete', 'sponsorProceeds', 'unsettledPot', 'winnerProceeds', 'winnerRecipient', 'winnerRedeemed', 'winningTicketId']",
+    "Conditions on msg.sender": "['msg.sender != winner']"
+   },
+   {
+    "Function": "refundTickets",
+    "State variables written": "['_balances', '_owners', '_tokenApprovals', 'remainingRefundLiability']",
+    "Conditions on msg.sender": "['msg.sender != owner']"
+   },
+   {
+    "Function": "releaseSponsorProceeds",
+    "State variables written": "['sponsorProceeds']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "releaseProtocolFees",
+    "State variables written": "['protocolFees']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "releaseSponsorPrize",
+    "State variables written": "['prizeClaimed']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "onERC721Received",
+    "State variables written": "['status']",
+    "Conditions on msg.sender": "['status != Status.AwaitingPrize || msg.sender != address(prizeToken) || tokenId != prizeTokenId || from != sponsor || operator != factory']"
+   },
+   {
+    "Function": "getVrfRequestPrice",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "estimateVrfRequestPrice",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "vrfWrapper",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "ticketRange",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "drawRequestDeadline",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "callbackDeadline",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "accountedQuoteBalance",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "grossSales",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "name",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "symbol",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_update",
+    "State variables written": "['_balances', '_owners', '_tokenApprovals']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "fulfillRandomWords",
+    "State variables written": "['resolvedAt', 'status', 'winningEntry']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_settleWinningTicket",
+    "State variables written": "['protocolFees', 'settlementComplete', 'sponsorProceeds', 'unsettledPot', 'winnerProceeds', 'winningTicketId']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_transferQuote",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_requireStatus",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_requireWinningTicket",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_isProtocolDestination",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_validatedVrfWrapper",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "slitherConstructorConstantVariables",
+    "State variables written": "['ENTRY_PRICE', 'callbackGasLimit', 'requestConfirmations']",
+    "Conditions on msg.sender": "[]"
+   }
+  ],
+  "RaffleFactory": [
+   {
+    "Function": "constructor",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_nonReentrantBeforeView",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_nonReentrantBefore",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_nonReentrantAfter",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_reentrancyGuardEntered",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_reentrancyGuardStorageSlot",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "createRaffle",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "quoteToken",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "vrfWrapper",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "protocolTreasury",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "callbackGasLimit",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "requestConfirmations",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "raffleImplementation",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "raffleCount",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "isRaffle",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "raffleById",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "idByRaffle",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "constructor",
+    "State variables written": "['protocolTreasury', 'quoteToken', 'raffleImplementation', 'vrfWrapper']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "createRaffle",
+    "State variables written": "['idByRaffle', 'isRaffle', 'raffleById', 'raffleCount']",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_validateCreateParams",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "_requireContract",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "slitherConstructorConstantVariables",
+    "State variables written": "['callbackGasLimit', 'requestConfirmations']",
+    "Conditions on msg.sender": "[]"
+   }
+  ],
+  "IRaffle": [
+   {
+    "Function": "initialize",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "buyEntries",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "requestDraw",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "enableRefunds",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "settleWinningTicket",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "redeemWinningTicket",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "refundTickets",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "releaseSponsorProceeds",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "releaseProtocolFees",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "releaseSponsorPrize",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "getVrfRequestPrice",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "estimateVrfRequestPrice",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "ticketRange",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "drawRequestDeadline",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "callbackDeadline",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "accountedQuoteBalance",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "grossSales",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "ENTRY_PRICE",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "callbackGasLimit",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "requestConfirmations",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "factory",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "sponsor",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "sponsorRecipient",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "protocolTreasury",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "quoteToken",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "vrfWrapper",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "prizeToken",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "prizeTokenId",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "raffleId",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "reserveEntries",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "endTime",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "totalEntries",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "ticketCount",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "unsettledPot",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "remainingRefundLiability",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "winnerRecipient",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "winnerProceeds",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "sponsorProceeds",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "protocolFees",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "vrfRequestId",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "drawRequestedAt",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "resolvedAt",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "winningEntry",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "winningTicketId",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "status",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "settlementComplete",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "winnerRedeemed",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "prizeClaimed",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "initialized",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   }
+  ],
+  "IRaffleFactory": [
+   {
+    "Function": "createRaffle",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "quoteToken",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "vrfWrapper",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "protocolTreasury",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "callbackGasLimit",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "requestConfirmations",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "raffleImplementation",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "raffleCount",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "isRaffle",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "raffleById",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   },
+   {
+    "Function": "idByRaffle",
+    "State variables written": "[]",
+    "Conditions on msg.sender": "[]"
+   }
+  ],
+  "RaffleConstants": [
+   {
+    "Function": "slitherConstructorConstantVariables",
+    "State variables written": "['BPS', 'CASH_WINNER_BPS', 'DRAW_CALLBACK_TIMEOUT', 'DRAW_REQUEST_TIMEOUT', 'ENTRY_PRICE', 'MAX_REFUND_TICKET_BATCH_SIZE', 'MAX_SALE_DURATION', 'PROTOCOL_FEE_BPS', 'QUOTE_TOKEN_DECIMALS', 'VRF_CALLBACK_GAS_LIMIT', 'VRF_REQUEST_CONFIRMATIONS']",
+    "Conditions on msg.sender": "[]"
+   }
+  ]
+ }
+}

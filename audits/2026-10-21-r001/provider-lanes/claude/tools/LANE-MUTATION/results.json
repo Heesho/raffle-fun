@@ -1,0 +1,300 @@
+[
+ {
+  "id": "BASELINE",
+  "exit": 0,
+  "duration_s": 71.8
+ },
+ {
+  "id": "M01",
+  "file": "Raffle.sol",
+  "desc": "sale end boundary",
+  "status": "SURVIVED",
+  "killed_by": [],
+  "duration_s": 60.2
+ },
+ {
+  "id": "M02",
+  "file": "Raffle.sol",
+  "desc": "draw opens late",
+  "status": "KILLED",
+  "killed_by": [
+   "[FAIL: RaffleNotEnded(1700086400 [1.7e9], 1700086400 [1.7e9]); counterexample: calldata=0x2711e36e0000000000000000000000000000000000000000000000000646f1257247aa8d0000000b82f529aeddbba5113827e481d02921f846491eaa8c4a46ee49801213 args=[452313955730696845 [4.523e17], 310350865391817789491163186435552858235770281205573846540154541445651 [3.103e68]]] testFuzz_callbackDeadline(uint64,uint256) (runs: 0, \u03bc: 0, ~: 0)",
+   "[FAIL: RaffleNotEnded(1700086400 [1.7e9], 1700086400 [1.7e9]); counterexample: calldata=0xa5df48400000000000000000000000000000000000000000000000000646f1257247aa8d000000000000000000000000db8f8111ae8b13eeaaf87fae7506478bca9bc6ba args=[452313955730696845 [4.523e17], 0xdB8f8111Ae8B13eeaaF87faE7506478bCA9Bc6bA]] testFuzz_enableRefundsFromDrawing(uint64,address) (runs: 0, \u03bc: 0, ~: 0)",
+   "[FAIL: RaffleNotEnded(1700086400 [1.7e9], 1700086400 [1.7e9]); counterexample: calldata=0x4f1d05eb0000000000000000000000005543e0dcfff68d255b61db8f8111ae8b13eeaaf800000000000000000000000000000000000000000000000034d8fa9bca0b18ca args=[0x5543E0dcFff68d255b61DB8F8111AE8B13eEAaF8, 3808069031958354122 [3.808e18]]] testFuzz_fulfillOnlyWrapper(address,uint256) (runs: 0, \u03bc: 0, ~: 0)",
+   "[FAIL: RaffleNotEnded(1700086400 [1.7e9], 1700086400 [1.7e9]); counterexample: calldata=0xebf1550b0000000000000000000000005543e0dcfff68d255b61db8f8111ae8b13eeaaf800000000000000000000000000000000000000000000000034d8fa9bca0b18ca args=[0x5543E0dcFff68d255b61DB8F8111AE8B13eEAaF8, 3808069031958354122 [3.808e18]]] testFuzz_redeemOnlyOwner(address,uint256) (runs: 0, \u03bc: 0, ~: 0)",
+   "[FAIL: RaffleNotEnded(1700086400 [1.7e9], 1700086400 [1.7e9]); counterexample: calldata=0xa1f8c8ee00000000000000000000000000000000000a50612b8e795b8e46f1257247aa8d00000000000000000000000000000000000121f846491eaa8c4a46ee49801213 args=[53553259965500277513367294661077645 [5.355e34], 5881286712105959684215617825542675 [5.881e33]]] testFuzz_settlementSplit(uint128,uint128) (runs: 0, \u03bc: 0, ~: 0)",
+   "[FAIL: RaffleNotEnded(1700086400 [1.7e9], 1700086400 [1.7e9]); counterexample: calldata=0xc255ad940000000000000000000000005543e0dcfff68d255b61db8f8111ae8b13eeaaf800000000000000000000000000000000000000000000000034d8fa9bca0b18ca args=[0x5543E0dcFff68d255b61DB8F8111AE8B13eEAaF8, 3808069031958354122 [3.808e18]]] testFuzz_sponsorPrizeLocked(address,uint256) (runs: 0, \u03bc: 0, ~: 0)"
+  ],
+  "duration_s": 40.6
+ },
+ {
+  "id": "M03",
+  "file": "Raffle.sol",
+  "desc": "draw window end",
+  "status": "KILLED",
+  "killed_by": [
+   "[FAIL: panic: assertion failed (0x01)] test_requestDrawWindowEdges() (gas: 26656281)",
+   "[FAIL: panic: assertion failed (0x01)] test_requestDrawWindowEdges() (gas: 26656281)"
+  ],
+  "duration_s": 46.6
+ },
+ {
+  "id": "M04",
+  "file": "Raffle.sol",
+  "desc": "callback deadline",
+  "status": "KILLED",
+  "killed_by": [
+   "[FAIL: panic: assertion failed (0x01)] test_callbackDeadlineEdges() (gas: 13462287)",
+   "[FAIL: panic: assertion failed (0x01)] test_callbackDeadlineEdges() (gas: 13462287)"
+  ],
+  "duration_s": 45.7
+ },
+ {
+  "id": "M05",
+  "file": "Raffle.sol",
+  "desc": "drawing refunds early",
+  "status": "KILLED",
+  "killed_by": [
+   "[FAIL: panic: assertion failed (0x01)] test_enableRefundsEdges() (gas: 6811161)",
+   "[FAIL: panic: assertion failed (0x01)] test_enableRefundsEdges() (gas: 6811161)"
+  ],
+  "duration_s": 38.5
+ },
+ {
+  "id": "M06",
+  "file": "Raffle.sol",
+  "desc": "active refunds early",
+  "status": "SURVIVED",
+  "killed_by": [],
+  "duration_s": 33.5
+ },
+ {
+  "id": "M07",
+  "file": "Raffle.sol",
+  "desc": "cash split double-counts fee",
+  "status": "KILLED",
+  "killed_by": [
+   "[FAIL: panic: assertion failed (0x01); counterexample: calldata=0xa1f8c8ee00000000000000000000000000000000000a50612b8e795b8e46f1257247aa8d00000000000000000000000000000000000121f846491eaa8c4a46ee49801213 args=[53553259965500277513367294661077645 [5.355e34], 5881286712105959684215617825542675 [5.881e33]]] testFuzz_settlementSplit(uint128,uint128) (runs: 0, \u03bc: 0, ~: 0)",
+   "[FAIL: conservation]",
+   "[FAIL: handler flags]",
+   "[FAIL: settlement totals]",
+   "[FAIL: solvency]",
+   "[FAIL: conservation]"
+  ],
+  "duration_s": 31.6
+ },
+ {
+  "id": "M08",
+  "file": "Raffle.sol",
+  "desc": "nft split double-counts fee",
+  "status": "KILLED",
+  "killed_by": [
+   "[FAIL: conservation]",
+   "[FAIL: handler flags]",
+   "[FAIL: settlement totals]",
+   "[FAIL: solvency]",
+   "[FAIL: panic: assertion failed (0x01); counterexample: calldata=0xa1f8c8ee0000000000000000000000000000000000000000000000000000000000007ea50000000000000000000000000000000000000000000000000000000000000d3b args=[32421 [3.242e4], 3387]] testFuzz_settlementSplit(uint128,uint128) (runs: 3, \u03bc: 6788752, ~: 6788752)",
+   "[FAIL: conservation]"
+  ],
+  "duration_s": 34.5
+ },
+ {
+  "id": "M09",
+  "file": "Raffle.sol",
+  "desc": "refund without burn",
+  "status": "KILLED",
+  "killed_by": [
+   "[FAIL: panic: assertion failed (0x01); counterexample: calldata=0x36fe46f700000000000000000000000000000000000a50612b8e795b8e46f1257247aa8d00000000000000000000000000000000000121f846491eaa8c4a46ee49801213 args=[53553259965500277513367294661077645 [5.355e34], 5881286712105959684215617825542675 [5.881e33]]] testFuzz_refundExact(uint128,uint128) (runs: 0, \u03bc: 0, ~: 0)",
+   "[FAIL: refund liability]",
+   "[FAIL: refund liability]",
+   "[FAIL: panic: assertion failed (0x01); counterexample: calldata=0x36fe46f700000000000000000000000000000000000a50612b8e795b8e46f1257247aa8d00000000000000000000000000000000000121f846491eaa8c4a46ee49801213 args=[53553259965500277513367294661077645 [5.355e34], 5881286712105959684215617825542675 [5.881e33]]] testFuzz_refundExact(uint128,uint128) (runs: 0, \u03bc: 0, ~: 0)"
+  ],
+  "duration_s": 37.1
+ },
+ {
+  "id": "M10",
+  "file": "Raffle.sol",
+  "desc": "no redeem-once guard",
+  "status": "SURVIVED",
+  "killed_by": [],
+  "duration_s": 35.3
+ },
+ {
+  "id": "M11",
+  "file": "Raffle.sol",
+  "desc": "reserve boundary",
+  "status": "KILLED",
+  "killed_by": [
+   "[FAIL: outcome]",
+   "[FAIL: outcome]"
+  ],
+  "duration_s": 33.6
+ },
+ {
+  "id": "M12",
+  "file": "Raffle.sol",
+  "desc": "winning entry off-by-one",
+  "status": "KILLED",
+  "killed_by": [
+   "[FAIL: outcome]",
+   "[FAIL: TicketDoesNotContainWinningEntry(1, 0); counterexample: calldata=0xebf1550b0000000000000000000000005543e0dcfff68d255b61db8f8111ae8b13eeaaf800000000000000000000000000000000000000000000000034d8fa9bca0b18ca args=[0x5543E0dcFff68d255b61DB8F8111AE8B13eEAaF8, 3808069031958354122 [3.808e18]]] testFuzz_redeemOnlyOwner(address,uint256) (runs: 0, \u03bc: 0, ~: 0)",
+   "[FAIL: TicketDoesNotContainWinningEntry(1, 0); counterexample: calldata=0xa1f8c8ee0000000000000000000000000000000000000000000000000000000000007ea50000000000000000000000000000000000000000000000000000000000000d3b args=[32421 [3.242e4], 3387]] testFuzz_settlementSplit(uint128,uint128) (runs: 0, \u03bc: 0, ~: 0)",
+   "[FAIL: panic: assertion failed (0x01); counterexample: calldata=0x4587d8fd0000000000000000000000000000000000000000000000000000000000001f40000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000000 args=[8000, 12, 0]] testFuzz_winnerInRange(uint128,uint128,uint256) (runs: 44, \u03bc: 6850098, ~: 6849683)",
+   "[FAIL: outcome]",
+   "[FAIL: TicketDoesNotContainWinningEntry(1, 0); counterexample: calldata=0xebf1550b0000000000000000000000005543e0dcfff68d255b61db8f8111ae8b13eeaaf800000000000000000000000000000000000000000000000034d8fa9bca0b18ca args=[0x5543E0dcFff68d255b61DB8F8111AE8B13eEAaF8, 3808069031958354122 [3.808e18]]] testFuzz_redeemOnlyOwner(address,uint256) (runs: 0, \u03bc: 0, ~: 0)"
+  ],
+  "duration_s": 36.1
+ },
+ {
+  "id": "M13",
+  "file": "Raffle.sol",
+  "desc": "winner range check widened",
+  "status": "KILLED",
+  "killed_by": [
+   "[FAIL: panic: assertion failed (0x01); counterexample: calldata=0x4587d8fd00000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000001a010000000000000000000000000000000000000000000000000000000000000100 args=[256, 6657, 256]] testFuzz_winnerInRange(uint128,uint128,uint256) (runs: 59, \u03bc: 6854570, ~: 6854075)",
+   "[FAIL: outcome]",
+   "[FAIL: outcome]",
+   "[FAIL: panic: assertion failed (0x01); counterexample: calldata=0x4587d8fd00000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000001a010000000000000000000000000000000000000000000000000000000000000100 args=[256, 6657, 256]] testFuzz_winnerInRange(uint128,uint128,uint256) (runs: 59, \u03bc: 6854570, ~: 6854075)"
+  ],
+  "duration_s": 34.5
+ },
+ {
+  "id": "M14",
+  "file": "Raffle.sol",
+  "desc": "redeem owner check removed",
+  "status": "KILLED",
+  "killed_by": [
+   "[FAIL: panic: assertion failed (0x01); counterexample: calldata=0xebf1550b0000000000000000000000005543e0dcfff68d255b61db8f8111ae8b13eeaaf800000000000000000000000000000000000000000000000034d8fa9bca0b18ca args=[0x5543E0dcFff68d255b61DB8F8111AE8B13eEAaF8, 3808069031958354122 [3.808e18]]] testFuzz_redeemOnlyOwner(address,uint256) (runs: 0, \u03bc: 0, ~: 0)",
+   "[FAIL: panic: assertion failed (0x01); counterexample: calldata=0xebf1550b0000000000000000000000005543e0dcfff68d255b61db8f8111ae8b13eeaaf800000000000000000000000000000000000000000000000034d8fa9bca0b18ca args=[0x5543E0dcFff68d255b61DB8F8111AE8B13eEAaF8, 3808069031958354122 [3.808e18]]] testFuzz_redeemOnlyOwner(address,uint256) (runs: 0, \u03bc: 0, ~: 0)"
+  ],
+  "duration_s": 34.1
+ },
+ {
+  "id": "M15",
+  "file": "Raffle.sol",
+  "desc": "sponsor prize released after NftWon",
+  "status": "KILLED",
+  "killed_by": [
+   "[FAIL: prize custody]",
+   "[FAIL: panic: assertion failed (0x01); counterexample: calldata=0xc255ad940000000000000000000000005543e0dcfff68d255b61db8f8111ae8b13eeaaf800000000000000000000000000000000000000000000000034d8fa9bca0b18ca args=[0x5543E0dcFff68d255b61DB8F8111AE8B13eEAaF8, 3808069031958354122 [3.808e18]]] testFuzz_sponsorPrizeLocked(address,uint256) (runs: 0, \u03bc: 0, ~: 0)",
+   "[FAIL: prize custody]",
+   "[FAIL: panic: assertion failed (0x01); counterexample: calldata=0xc255ad940000000000000000000000005543e0dcfff68d255b61db8f8111ae8b13eeaaf800000000000000000000000000000000000000000000000034d8fa9bca0b18ca args=[0x5543E0dcFff68d255b61DB8F8111AE8B13eEAaF8, 3808069031958354122 [3.808e18]]] testFuzz_sponsorPrizeLocked(address,uint256) (runs: 0, \u03bc: 0, ~: 0)"
+  ],
+  "duration_s": 32.8
+ },
+ {
+  "id": "M16",
+  "file": "Raffle.sol",
+  "desc": "pot not cleared on refunds",
+  "status": "KILLED",
+  "killed_by": [
+   "[FAIL: conservation]",
+   "[FAIL: solvency]",
+   "[FAIL: conservation]",
+   "[FAIL: solvency]"
+  ],
+  "duration_s": 26.5
+ },
+ {
+  "id": "M17",
+  "file": "Raffle.sol",
+  "desc": "pot not cleared on settle",
+  "status": "KILLED",
+  "killed_by": [
+   "[FAIL: panic: assertion failed (0x01); counterexample: calldata=0xa1f8c8ee0000000000000000000000000000000000000000000000000000000000007ea50000000000000000000000000000000000000000000000000000000000000d3b args=[32421 [3.242e4], 3387]] testFuzz_settlementSplit(uint128,uint128) (runs: 0, \u03bc: 0, ~: 0)",
+   "[FAIL: conservation]",
+   "[FAIL: solvency]",
+   "[FAIL: conservation]",
+   "[FAIL: solvency]",
+   "[FAIL: panic: assertion failed (0x01); counterexample: calldata=0xa1f8c8ee0000000000000000000000000000000000000000000000000000000000007ea50000000000000000000000000000000000000000000000000000000000000d3b args=[32421 [3.242e4], 3387]] testFuzz_settlementSplit(uint128,uint128) (runs: 0, \u03bc: 0, ~: 0)"
+  ],
+  "duration_s": 29.1
+ },
+ {
+  "id": "M18",
+  "file": "Raffle.sol",
+  "desc": "fees not zeroed on release",
+  "status": "KILLED",
+  "killed_by": [
+   "[FAIL: conservation]",
+   "[FAIL: settlement totals]",
+   "[FAIL: solvency]",
+   "[FAIL: conservation]",
+   "[FAIL: settlement totals]",
+   "[FAIL: solvency]"
+  ],
+  "duration_s": 27.8
+ },
+ {
+  "id": "M19",
+  "file": "Raffle.sol",
+  "desc": "refund owner check removed",
+  "status": "SURVIVED",
+  "killed_by": [],
+  "duration_s": 34.7
+ },
+ {
+  "id": "M20",
+  "file": "Raffle.sol",
+  "desc": "initialize auth removed",
+  "status": "SURVIVED",
+  "killed_by": [],
+  "duration_s": 35.1
+ },
+ {
+  "id": "M21",
+  "file": "Raffle.sol",
+  "desc": "in-flight guard removed (sync callback)",
+  "status": "SURVIVED",
+  "killed_by": [],
+  "duration_s": 35.6
+ },
+ {
+  "id": "M22",
+  "file": "Raffle.sol",
+  "desc": "sponsor prize claim-once removed",
+  "status": "SURVIVED",
+  "killed_by": [],
+  "duration_s": 54.4
+ },
+ {
+  "id": "M23",
+  "file": "libraries/RaffleConstants.sol",
+  "desc": "fee constant",
+  "status": "KILLED",
+  "killed_by": [
+   "[FAIL: panic: assertion failed (0x01); counterexample: calldata=0xa1f8c8ee0000000000000000000000000000000000000000000000000000000000007ea50000000000000000000000000000000000000000000000000000000000000d3b args=[32421 [3.242e4], 3387]] testFuzz_settlementSplit(uint128,uint128) (runs: 0, \u03bc: 0, ~: 0)",
+   "[FAIL: handler flags]",
+   "[FAIL: handler flags]",
+   "[FAIL: panic: assertion failed (0x01); counterexample: calldata=0xa1f8c8ee0000000000000000000000000000000000000000000000000000000000007ea50000000000000000000000000000000000000000000000000000000000000d3b args=[32421 [3.242e4], 3387]] testFuzz_settlementSplit(uint128,uint128) (runs: 0, \u03bc: 0, ~: 0)"
+  ],
+  "duration_s": 49.2
+ },
+ {
+  "id": "M24",
+  "file": "libraries/RaffleConstants.sol",
+  "desc": "callback timeout constant",
+  "status": "KILLED",
+  "killed_by": [
+   "[FAIL: panic: assertion failed (0x01); counterexample: calldata=0x2711e36e000000000000000000000000000000000000000000000000000000003daae3610000000000000000000000000000000000000000000001162458236b3c64e013 args=[1034609505 [1.034e9], 5130813734618053009427 [5.13e21]]] testFuzz_callbackDeadline(uint64,uint256) (runs: 7, \u03bc: 6703950, ~: 6704308)",
+   "[FAIL: panic: assertion failed (0x01); counterexample: calldata=0xa5df48400000000000000000000000000000000000000000000000000000000000093a800000000000000000000000000000000000000000000000000000000000000e48 args=[604800 [6.048e5], 0x0000000000000000000000000000000000000E48]] testFuzz_enableRefundsFromDrawing(uint64,address) (runs: 4, \u03bc: 6697537, ~: 6697537)",
+   "[FAIL: panic: assertion failed (0x01)] test_callbackDeadlineEdges() (gas: 13462693)",
+   "[FAIL: panic: assertion failed (0x01)] test_enableRefundsEdges() (gas: 13449501)",
+   "[FAIL: panic: assertion failed (0x01); counterexample: calldata=0x2711e36e000000000000000000000000000000000000000000000000000000003daae3610000000000000000000000000000000000000000000001162458236b3c64e013 args=[1034609505 [1.034e9], 5130813734618053009427 [5.13e21]]] testFuzz_callbackDeadline(uint64,uint256) (runs: 7, \u03bc: 6703950, ~: 6704308)",
+   "[FAIL: panic: assertion failed (0x01); counterexample: calldata=0xa5df48400000000000000000000000000000000000000000000000000000000000093a800000000000000000000000000000000000000000000000000000000000000e48 args=[604800 [6.048e5], 0x0000000000000000000000000000000000000E48]] testFuzz_enableRefundsFromDrawing(uint64,address) (runs: 4, \u03bc: 6697537, ~: 6697537)"
+  ],
+  "duration_s": 55.5
+ },
+ {
+  "restore_check": "Raffle.sol",
+  "ok": true
+ },
+ {
+  "restore_check": "RaffleFactory.sol",
+  "ok": true
+ },
+ {
+  "restore_check": "libraries/RaffleConstants.sol",
+  "ok": true
+ }
+]

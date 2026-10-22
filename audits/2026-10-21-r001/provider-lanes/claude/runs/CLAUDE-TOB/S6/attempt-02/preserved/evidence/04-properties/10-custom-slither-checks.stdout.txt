@@ -1,0 +1,25 @@
+[PASS] C1 Raffle state-changing entry points with external interactions are nonReentrant (except documented allowlist)
+       evidence: {"violations": [], "allowlist": {"initialize(IRaffle.RaffleInitParams)": "factory-only, one-shot; only trusted factory view calls", "rawFulfillRandomWords(uint256,uint256[])": "wrapper-only callback; must not revert, so not nonReentrant", "onERC721Received(address,address,uint256,bytes)": "prize-deposit acceptor; no external calls", "approve(address,uint256)": "inherited ERC721; factory view calls only via _update? (approve has none)", "setApprovalForAll(address,bool)": "inherited ERC721", "transferFrom(address,address,uint256)": "inherited ERC721; _update screens destination via trusted factory views", "safeTransferFrom(address,address,uint256)": "inherited ERC721; recipient callback after state update", "safeTransferFrom(address,address,uint256,bytes)": "inherited ERC721; recipient callback after state update"}, "checked": ["rawFulfillRandomWords(uint256,uint256[])", "approve(address,u
+[PASS] C2 All quote-token safeTransfer calls are inside _transferQuote
+       evidence: {"safeTransfer_sites": ["_transferQuote(address,uint256)"], "violations": []}
+[PASS] C3 Per-raffle configuration variables are written only by initialize()
+       evidence: {"sponsor": ["initialize(IRaffle.RaffleInitParams)"], "sponsorRecipient": ["initialize(IRaffle.RaffleInitParams)"], "protocolTreasury": ["initialize(IRaffle.RaffleInitParams)"], "prizeToken": ["initialize(IRaffle.RaffleInitParams)"], "prizeTokenId": ["initialize(IRaffle.RaffleInitParams)"], "raffleId": ["initialize(IRaffle.RaffleInitParams)"], "reserveEntries": ["initialize(IRaffle.RaffleInitParams)"], "endTime": ["initialize(IRaffle.RaffleInitParams)"]}
+[PASS] C4 status is written only by constructor/initialize/onERC721Received/requestDraw/enableRefunds/fulfillRandomWords
+       evidence: {"actual": ["constructor(address,address)", "enableRefunds()", "fulfillRandomWords(uint256,uint256[])", "initialize(IRaffle.RaffleInitParams)", "onERC721Received(address,address,uint256,bytes)", "requestDraw()"], "expected": ["constructor(address,address)", "enableRefunds()", "fulfillRandomWords(uint256,uint256[])", "initialize(IRaffle.RaffleInitParams)", "onERC721Received(address,address,uint256,bytes)", "requestDraw()"]}
+[PASS] C5 fulfillRandomWords: no explicit revert/require/assert, no external interaction, no loop
+       evidence: {"reverts": [], "external": [], "loops": [], "note": "implicit panics reviewed manually: modulo by totalEntries>0, index [0] guarded by length==1"}
+[PASS] C6 _settleWinningTicket performs no external interaction (storage-only settlement)
+       evidence: {"external": []}
+[PASS] C7 Prize transfers only in redeem/releaseSponsorPrize, each reads+writes prizeClaimed and verifies ownerOf
+       evidence: {"redeemWinningTicket(uint256)": {"calls": ["transferFrom", "ownerOf"], "writes_prizeClaimed": true, "reads_prizeClaimed": true}, "releaseSponsorPrize()": {"calls": ["transferFrom", "ownerOf"], "writes_prizeClaimed": true, "reads_prizeClaimed": true}}
+[PASS] C8 Raffle._update screens destinations via _isProtocolDestination and delegates to ERC721._update
+       evidence: {"screens": true, "calls_super": true, "expression_nodes": ["to != address(0) && _isProtocolDestination(to,address(prizeToken))", "revert UnsafeProtocolDestination(address)(to)", "previousOwner = super._update(to,ticketId,auth)", "previousOwner"]}
+[PASS] C9 No delegatecall/selfdestruct/ecrecover/blockhash/tx.origin/prevrandao in production contracts
+       evidence: {}
+[PASS] C10 createRaffle: clone -> initialize -> register(isRaffle) -> untrusted prize safeTransferFrom
+       evidence: {"ordered_effects": ["write:raffleCount", "clone:Clones.clone", "call:TMP_1944.initialize", "write:raffleById", "write:idByRaffle", "write:isRaffle", "call:prize.safeTransferFrom", "call:prize.ownerOf", "call:TMP_1952.status"]}
+[PASS] C11 unsettledPot written only by buyEntries/enableRefunds/_settleWinningTicket
+       evidence: {"writers": ["_settleWinningTicket(uint256)", "buyEntries(address,uint128)", "enableRefunds()"]}
+[PASS] C12 _transferQuote recipients are sponsorRecipient/protocolTreasury (fixed) or the authenticated owner
+       evidence: {"redeemWinningTicket(uint256)": ["winner"], "refundTickets(uint256[])": ["msg.sender"], "releaseSponsorProceeds()": ["recipient"], "releaseProtocolFees()": ["treasury"]}
+SUMMARY: 12/12 PASS

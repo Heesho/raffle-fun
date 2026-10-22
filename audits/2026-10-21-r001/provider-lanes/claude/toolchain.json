@@ -1,0 +1,90 @@
+{
+ "lane": "anthropic",
+ "runtime": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude",
+ "runner": {
+  "name": "Claude Code",
+  "version": "2.1.299 (Claude Code)",
+  "install": "npm install --prefix RT/claude-code @anthropic-ai/claude-code@2.1.299 (global installs untouched)",
+  "old_runner_failure": {
+   "version": "2.1.58",
+   "max_effort": "Effort level \"max\" is not available for Claude.ai subscribers",
+   "model": "API 400 claude_code_version_too_old: version 2.1.280 or newer is required",
+   "evidence": "RT/probes/old-2.1.58, runs/CLAUDE-OPENKRITT/attempt-01/evidence-*"
+  },
+  "model_requested": "claude-opus-5-5",
+  "effort_requested": "max",
+  "effort_probe": "max and xhigh accepted locally on 2.1.299 (no warning; an invalid value produces a warning). The provider does not echo effort, so applied effort is unknown. Under a clean env, max produced a thinking block on a trivial prompt where the inherited env (CLAUDE_EFFORT=high) produced none",
+  "fallback": "none (no --fallback-model; user settings incl. switchModelsOnFlag not loaded via --setting-sources project)",
+  "subagent_model": "CLAUDE_CODE_SUBAGENT_MODEL=claude-opus-5-5",
+  "memory": "autoMemoryEnabled=false + CLAUDE_CODE_DISABLE_AUTO_MEMORY=1; no ~/.claude/CLAUDE.md, skills or agents exist; enabledPlugins empty",
+  "auth": "existing local Claude subscription login (keychain); apiKeySource=none",
+  "mcp": "--strict-mcp-config (none)"
+ },
+ "harnesses": {
+  "0xsimao": {
+   "url": "https://github.com/0xsimao/0xsimao-ai",
+   "commit": "3f81e5803174182a7db07eca87849d2b3d571113",
+   "version": "1.0.0",
+   "modifications": "none; packaged as plugin wrapper RT/harness/plugins/simao (files byte-identical)"
+  },
+  "pashov": {
+   "url": "https://github.com/pashov/skills",
+   "commit": "8ce544c9c9affab448d3dc4c79191d052e3a57ec",
+   "skill": "solidity-auditor",
+   "version": "4",
+   "modifications": "none; plugin wrapper RT/harness/plugins/pashov"
+  },
+  "openkritt": {
+   "url": "https://github.com/Kritt-ai/open-kritt",
+   "commit": "43e1d19a00ce50bd93253d1c6c3a48cfffbcc4c3",
+   "version": "1.4.1",
+   "bundled_claude_code": "2.1.215",
+   "status": "BLOCKED"
+  },
+  "trailofbits": {
+   "url": "https://github.com/trailofbits/skills",
+   "commit": "82fe8226252622fa807643bdca1710901198553a",
+   "declared_aggregate": [
+    "audit-context-building (workflow audit-context)",
+    "entry-point-analyzer",
+    "building-secure-contracts:token-integration-analyzer",
+    "building-secure-contracts:guidelines-advisor",
+    "spec-to-code-compliance (workflow spec-compliance)",
+    "building-secure-contracts:secure-workflow-guide"
+   ],
+   "note": "six-skill aggregate, not the full catalog; spec-compliance workflow natively sets some agents to effort low/medium"
+  },
+  "gebal": {
+   "url": "https://github.com/Heesho/gebal",
+   "requested_historical_pin": "5c68ec0284dc642823abe81cbc0e02fcb080a69f (unresolvable remotely)",
+   "commit": "9ad24645f92a3821ae4539db5f1be52b48ed379e",
+   "version": "0.2.0",
+   "node": "22.23.3",
+   "pnpm": "10.34.6"
+  }
+ },
+ "validation_copy": {
+  "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/validation/snapshot",
+  "source": "target.tar.gz sha256 67d554dfd521c83a3383fe1b58b934647ff86ead6c3f3b9290af45e44d6aae1d",
+  "deps": "pnpm 11.18.0 / node 22.23.2, pnpm install --frozen-lockfile, isolated store RT/cache/pnpm-store-val",
+  "dependency_hashes_verified": "31/31",
+  "freeze_files_verified": "435/435"
+ },
+ "lane_harness": {
+  "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/validation/claude-harness",
+  "profile": "solc 0.8.36, cancun, optimizer 200, via_ir false (mirrors profile.default); production sources byte-identical copies"
+ },
+ "tools": {
+  "forge": "forge Version: 1.7.1",
+  "slither": "0.11.6",
+  "crytic-compile": "0.4.2",
+  "echidna": "Echidna 2.3.3",
+  "medusa": "medusa version 1.5.1",
+  "halmos": "halmos 0.3.3",
+  "z3": "Z3 version 4.12.6 - 64 bit",
+  "aderyn": "aderyn 0.6.8 (release tarball sha256 624c6652bb9478b38ddc255c27819cd5c6cb0448f5deb72036cc9cf5a27d4aac)",
+  "solc": "Version: 0.8.36+commit.8a079791.Darwin.appleclang",
+  "go": "go version go1.26.5 darwin/arm64",
+  "certora": "not installed; requires paid/keyed Certora Prover service, so NOT_RUN (no purchase authorized)"
+ }
+}

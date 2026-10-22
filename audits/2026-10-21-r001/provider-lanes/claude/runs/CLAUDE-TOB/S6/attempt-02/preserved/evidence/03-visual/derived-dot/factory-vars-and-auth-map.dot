@@ -1,0 +1,22 @@
+digraph "factory_vars_and_auth" {
+  graph [rankdir=LR, fontname="Helvetica", labelloc=t, label="RaffleFactory — vars-and-auth (printer): no msg.sender conditions; immutables set only in constructor"];
+  node [fontname="Helvetica", fontsize=10];
+  "F_constructor" [shape=box, style="rounded,filled", fillcolor="#f9fafb", label="constructor()\npermissionless"];
+  "V_protocolTreasury" [shape=ellipse, label="protocolTreasury"];
+  "F_constructor" -> "V_protocolTreasury";
+  "V_quoteToken" [shape=ellipse, label="quoteToken"];
+  "F_constructor" -> "V_quoteToken";
+  "V_raffleImplementation" [shape=ellipse, label="raffleImplementation"];
+  "F_constructor" -> "V_raffleImplementation";
+  "V_vrfWrapper" [shape=ellipse, label="vrfWrapper"];
+  "F_constructor" -> "V_vrfWrapper";
+  "F_createRaffle" [shape=box, style="rounded,filled", fillcolor="#f9fafb", label="createRaffle()\npermissionless"];
+  "V_idByRaffle" [shape=ellipse, label="idByRaffle"];
+  "F_createRaffle" -> "V_idByRaffle";
+  "V_isRaffle" [shape=ellipse, label="isRaffle"];
+  "F_createRaffle" -> "V_isRaffle";
+  "V_raffleById" [shape=ellipse, label="raffleById"];
+  "F_createRaffle" -> "V_raffleById";
+  "V_raffleCount" [shape=ellipse, label="raffleCount"];
+  "F_createRaffle" -> "V_raffleCount";
+}

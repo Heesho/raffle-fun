@@ -1,0 +1,54 @@
+Compiling 2 files with Solc 0.8.36
+Solc 0.8.36 finished in 7.73s
+Compiler run successful!
+
+Ran 1 test for props/foundry/HarnessReplay.t.sol:HarnessReplayTest
+[PASS] test_replay_smoke3_redeem_settles_cash() (gas: 16403664)
+Logs:
+  violations: 0
+  firstViolation: 
+
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 9.67ms (4.44ms CPU time)
+
+Ran 1 test for props/foundry/RaffleScenarios.t.sol:RaffleSlitherTriageEvidenceTest
+[PASS] test_callsLoop_isFalsePositive_registryQueriedOncePerRefundTx() (gas: 1380002)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 9.14ms (1.58ms CPU time)
+
+Ran 1 test for props/foundry/RaffleEconomics.t.sol:RaffleEconomicsTest
+[PASS] test_F5_sponsorSybilCrossesReserve_flipsOutcome() (gas: 2169387)
+Logs:
+  baseline sponsor USDC (keeps NFT too): 135000000
+  baseline winner cash (80% of buyers' 900 USDC): 720000000
+  flipped sponsor USDC gross: 950000000
+  flipped sponsor net USDC (after 100 USDC sybil buy): 850000000
+  buyers' collective cash payout after flip: 0
+
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 10.07ms (1.78ms CPU time)
+
+Ran 8 tests for props/foundry/RaffleScenarios.t.sol:RaffleLifecycleTest
+[PASS] test_cashWon_fullLifecycle_redeemSettles_and_prizeReturns() (gas: 1155270)
+[PASS] test_emptyRaffle_sponsorCancel_only_while_no_entries() (gas: 721304)
+[PASS] test_implementation_is_locked_and_inert() (gas: 41438)
+[PASS] test_nftWon_fullLifecycle_bearerTransfer_and_exactSplit() (gas: 1289237)
+[PASS] test_refundPath_requestWindowLapses_exactBoundaries() (gas: 910203)
+[PASS] test_syncCallback_inFlightGuard_then_asyncResolution() (gas: 861323)
+[PASS] test_timingWindows_disjoint_at_every_boundary() (gas: 997832)
+[PASS] test_vrf_unexpected_inputs_never_revert_and_never_resolve() (gas: 861974)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 20.98ms (4.49ms CPU time)
+
+Ran 7 tests for props/foundry/RaffleScenarios.t.sol:RaffleFindingDemonstrationsTest
+[PASS] test_F1_ticketsTradeableWhileDrawing_pendingWordDeterminesWinner() (gas: 1094973)
+[PASS] test_F2_sponsorControlledPrize_collectsProceeds_while_winnerCannotRedeem() (gas: 2207460)
+[PASS] test_F3_dishonestPrize_activatesRaffle_without_custody() (gas: 651617)
+[PASS] test_F4_futureCloneAsSponsorRecipient_movesPrizeIntoAnotherClone() (gas: 824441)
+[PASS] test_F4b_futureCloneAsSponsorRecipient_usdcProceedsStuck() (gas: 1325110)
+[PASS] test_blocklistedParties_liveness() (gas: 1183016)
+[PASS] test_factory_rejects_protocol_plumbing_and_bad_params() (gas: 1072509)
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 984.30ms (4.49ms CPU time)
+
+Ran 2 tests for props/foundry/RaffleScenarios.t.sol:RaffleArithmeticFuzzTest
+[PASS] testFuzz_refundConservation(uint8,uint64) (runs: 2000, μ: 1189642, ~: 1148220)
+[PASS] testFuzz_settlementSplitExact_fullDomain(uint128,bool,uint256) (runs: 2000, μ: 984318, ~: 964901)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 992.51ms (1.97s CPU time)
+
+Ran 6 test suites in 1.01s (2.03s CPU time): 20 tests passed, 0 failed, 0 skipped (20 total tests)

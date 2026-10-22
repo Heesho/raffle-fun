@@ -1,0 +1,43 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_13720_AdversarialVRFV2PlusWrapper {
+label = "AdversarialVRFV2PlusWrapper"
+"13720_estimateRequestPriceNative(uint32,uint32,uint256)" [label="estimateRequestPriceNative(uint32,uint32,uint256)"]
+"13720_calculateRequestPriceNative(uint32,uint32)" [label="calculateRequestPriceNative(uint32,uint32)"]
+"13720_fulfill(uint256,uint256)" [label="fulfill(uint256,uint256)"]
+"13720_fulfillAs(address,uint256,uint256)" [label="fulfillAs(address,uint256,uint256)"]
+"13720_link()" [label="link()"]
+"13720_requestRandomWordsInNative(uint32,uint16,uint32,bytes)" [label="requestRandomWordsInNative(uint32,uint16,uint32,bytes)"]
+"13720_configureFees(uint256,uint256)" [label="configureFees(uint256,uint256)"]
+"13720_configureSynchronousCallbacks(uint8,int256,uint256,bool)" [label="configureSynchronousCallbacks(uint8,int256,uint256,bool)"]
+"13720__callback(address,uint256,uint256,bool)" [label="_callback(address,uint256,uint256,bool)"]
+"13720_configureQuoteDrift(uint256,uint256,uint256)" [label="configureQuoteDrift(uint256,uint256,uint256)"]
+"13720_slitherConstructorVariables()" [label="slitherConstructorVariables()"]
+"13720_configureRequestId(uint256,bool)" [label="configureRequestId(uint256,bool)"]
+"13720_configureFailures(bool,bool,bool,bool)" [label="configureFailures(bool,bool,bool,bool)"]
+"13720_fulfillEmpty(address,uint256)" [label="fulfillEmpty(address,uint256)"]
+"13720_fulfillEmpty(address,uint256)" -> "13720__callback(address,uint256,uint256,bool)"
+"13720_requestRandomWordsInNative(uint32,uint16,uint32,bytes)" -> "13720__callback(address,uint256,uint256,bool)"
+"13720_fulfillAs(address,uint256,uint256)" -> "13720__callback(address,uint256,uint256,bool)"
+"13720_fulfill(uint256,uint256)" -> "13720__callback(address,uint256,uint256,bool)"
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"revert RequestFailed()" 
+"abi.decode()" 
+"revert FeeReadFailed()" 
+"abi.encodeWithSignature()" 
+"revert InsufficientFee(uint256,uint256)" 
+"revert UnknownRequest(uint256)" 
+"13720_calculateRequestPriceNative(uint32,uint32)" -> "abi.decode()"
+"13720_calculateRequestPriceNative(uint32,uint32)" -> "abi.encodeWithSignature()"
+"13720_requestRandomWordsInNative(uint32,uint16,uint32,bytes)" -> "revert InsufficientFee(uint256,uint256)"
+"13720_fulfill(uint256,uint256)" -> "revert UnknownRequest(uint256)"
+"13720_requestRandomWordsInNative(uint32,uint16,uint32,bytes)" -> "revert RequestFailed()"
+"13720_estimateRequestPriceNative(uint32,uint32,uint256)" -> "revert FeeReadFailed()"
+"13720_requestRandomWordsInNative(uint32,uint16,uint32,bytes)" -> "abi.encodeWithSignature()"
+"13720_calculateRequestPriceNative(uint32,uint32)" -> "revert FeeReadFailed()"
+}subgraph cluster_toplevel {
+label = "[Top Level]"
+}
+}

@@ -1,0 +1,404 @@
+Compiling 6 files with Solc 0.8.36
+Solc 0.8.36 finished in 2.87s
+Compiler run successful with warnings:
+Warning (2519): This declaration shadows an existing declaration.
+   --> test/LaneHandler.sol:183:13:
+    |
+183 |             bool ok;
+    |             ^^^^^^^
+Note: The shadowed declaration is here:
+  --> test/LaneHandler.sol:47:5:
+   |
+47 |     mapping(bytes32 => uint256) public ok;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Ran 13 tests for test/LaneProps.t.sol:LanePropsFuzz
+[PASS] testFuzz_callbackDeadline(uint64,uint256) (runs: 128, μ: 6702615, ~: 6702623)
+[PASS] testFuzz_enableRefundsFromDrawing(uint64,address) (runs: 128, μ: 6704582, ~: 6696880)
+[PASS] testFuzz_fulfillOnlyWrapper(address,uint256) (runs: 128, μ: 6697433, ~: 6697433)
+[PASS] testFuzz_initializeOnlyFactory(address) (runs: 128, μ: 6377153, ~: 6377153)
+[PASS] testFuzz_redeemOnlyOwner(address,uint256) (runs: 128, μ: 6830212, ~: 6830212)
+[PASS] testFuzz_refundExact(uint128,uint128) (runs: 128, μ: 6703058, ~: 6702950)
+[PASS] testFuzz_requestDrawWindow(uint64) (runs: 128, μ: 6609383, ~: 6587313)
+[PASS] testFuzz_settlementSplit(uint128,uint128) (runs: 128, μ: 6779828, ~: 6789067)
+[PASS] testFuzz_sponsorPrizeLocked(address,uint256) (runs: 128, μ: 6704996, ~: 6704996)
+[PASS] testFuzz_winnerInRange(uint128,uint128,uint256) (runs: 128, μ: 6851259, ~: 6850966)
+[PASS] test_callbackDeadlineEdges() (gas: 13300341)
+[PASS] test_enableRefundsEdges() (gas: 13312134)
+[PASS] test_requestDrawWindowEdges() (gas: 26247763)
+Suite result: ok. 13 passed; 0 failed; 0 skipped; finished in 18.50s (1.81s CPU time)
+
+Ran 10 tests for test/LaneInvariant.t.sol:LaneInvariantTest
+[FAIL: conservation]
+	[Sequence] (original: 67, shrunk: 6)
+		sender=0x000000000000000000000000000000000000150C addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=buy(uint256,uint256,uint256,uint128) args=[3524, 2835717308 [2.835e9], 2592000 [2.592e6], 86400 [8.64e4]]
+		sender=0x25c35B854A5cE91204f5f89E820C452Be632Bdf0 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[8509076313778551779903835035056084601735133532828005374838 [8.509e57]]
+		sender=0x0000000000000000000000000000000000005EC0 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[135719930049343322450464226 [1.357e26]]
+		sender=0xC0a939e50333aDBBE98af2De50142bdD92a649d5 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[2988682048594090858651820856079586021 [2.988e36]]
+		sender=0x0000000000000000000000000000000000000afC addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[41776976274913173356095592398101990573858740152148616697593 [4.177e58]]
+		sender=0x000000000000000000000000000000000000072E addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=enableRefunds(uint256,uint256,bool) args=[10560 [1.056e4], 4369, false]
+ invariant_conservation() (runs: 2, calls: 256, reverts: 0)
+
+╭-------------+-----------------+-------+---------+----------╮
+| Contract    | Selector        | Calls | Reverts | Discards |
++============================================================+
+| LaneHandler | buy             | 22    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | donate          | 22    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | enableRefunds   | 25    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | fulfill         | 27    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | redeem          | 27    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | refund          | 21    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releasePrize    | 33    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseProtocol | 29    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseSponsor  | 13    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | requestDraw     | 27    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | settle          | 23    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | transferTicket  | 23    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | warp            | 31    | 0       | 0        |
+╰-------------+-----------------+-------+---------+----------╯
+
+[PASS] invariant_noFlags() (runs: 512, calls: 65536, reverts: 0)
+
+╭-------------+-----------------+-------+---------+----------╮
+| Contract    | Selector        | Calls | Reverts | Discards |
++============================================================+
+| LaneHandler | buy             | 5089  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | donate          | 5009  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | enableRefunds   | 5164  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | fulfill         | 5101  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | redeem          | 4888  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | refund          | 4974  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releasePrize    | 5181  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseProtocol | 5044  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseSponsor  | 5043  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | requestDraw     | 4931  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | settle          | 4984  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | transferTicket  | 5080  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | warp            | 5048  | 0       | 0        |
+╰-------------+-----------------+-------+---------+----------╯
+
+[PASS] invariant_outcomeConsistent() (runs: 512, calls: 65536, reverts: 0)
+
+╭-------------+-----------------+-------+---------+----------╮
+| Contract    | Selector        | Calls | Reverts | Discards |
++============================================================+
+| LaneHandler | buy             | 5089  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | donate          | 5009  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | enableRefunds   | 5164  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | fulfill         | 5101  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | redeem          | 4888  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | refund          | 4974  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releasePrize    | 5181  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseProtocol | 5044  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseSponsor  | 5043  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | requestDraw     | 4931  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | settle          | 4984  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | transferTicket  | 5080  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | warp            | 5048  | 0       | 0        |
+╰-------------+-----------------+-------+---------+----------╯
+
+[PASS] invariant_potMatchesSales() (runs: 512, calls: 65536, reverts: 0)
+
+╭-------------+-----------------+-------+---------+----------╮
+| Contract    | Selector        | Calls | Reverts | Discards |
++============================================================+
+| LaneHandler | buy             | 5089  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | donate          | 5009  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | enableRefunds   | 5164  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | fulfill         | 5101  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | redeem          | 4888  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | refund          | 4974  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releasePrize    | 5181  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseProtocol | 5044  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseSponsor  | 5043  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | requestDraw     | 4931  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | settle          | 4984  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | transferTicket  | 5080  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | warp            | 5048  | 0       | 0        |
+╰-------------+-----------------+-------+---------+----------╯
+
+[PASS] invariant_prizeCustody() (runs: 512, calls: 65536, reverts: 0)
+
+╭-------------+-----------------+-------+---------+----------╮
+| Contract    | Selector        | Calls | Reverts | Discards |
++============================================================+
+| LaneHandler | buy             | 5089  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | donate          | 5009  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | enableRefunds   | 5164  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | fulfill         | 5101  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | redeem          | 4888  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | refund          | 4974  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releasePrize    | 5181  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseProtocol | 5044  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseSponsor  | 5043  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | requestDraw     | 4931  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | settle          | 4984  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | transferTicket  | 5080  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | warp            | 5048  | 0       | 0        |
+╰-------------+-----------------+-------+---------+----------╯
+
+[PASS] invariant_rangesPartition() (runs: 512, calls: 65536, reverts: 0)
+
+╭-------------+-----------------+-------+---------+----------╮
+| Contract    | Selector        | Calls | Reverts | Discards |
++============================================================+
+| LaneHandler | buy             | 5089  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | donate          | 5009  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | enableRefunds   | 5164  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | fulfill         | 5101  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | redeem          | 4888  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | refund          | 4974  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releasePrize    | 5181  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseProtocol | 5044  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseSponsor  | 5043  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | requestDraw     | 4931  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | settle          | 4984  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | transferTicket  | 5080  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | warp            | 5048  | 0       | 0        |
+╰-------------+-----------------+-------+---------+----------╯
+
+[PASS] invariant_refundLiability() (runs: 512, calls: 65536, reverts: 0)
+
+╭-------------+-----------------+-------+---------+----------╮
+| Contract    | Selector        | Calls | Reverts | Discards |
++============================================================+
+| LaneHandler | buy             | 5089  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | donate          | 5009  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | enableRefunds   | 5164  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | fulfill         | 5101  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | redeem          | 4888  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | refund          | 4974  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releasePrize    | 5181  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseProtocol | 5044  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseSponsor  | 5043  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | requestDraw     | 4931  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | settle          | 4984  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | transferTicket  | 5080  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | warp            | 5048  | 0       | 0        |
+╰-------------+-----------------+-------+---------+----------╯
+
+[PASS] invariant_settlementTotals() (runs: 512, calls: 65536, reverts: 0)
+
+╭-------------+-----------------+-------+---------+----------╮
+| Contract    | Selector        | Calls | Reverts | Discards |
++============================================================+
+| LaneHandler | buy             | 5089  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | donate          | 5009  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | enableRefunds   | 5164  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | fulfill         | 5101  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | redeem          | 4888  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | refund          | 4974  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releasePrize    | 5181  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseProtocol | 5044  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseSponsor  | 5043  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | requestDraw     | 4931  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | settle          | 4984  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | transferTicket  | 5080  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | warp            | 5048  | 0       | 0        |
+╰-------------+-----------------+-------+---------+----------╯
+
+[FAIL: solvency]
+	[Sequence] (original: 100, shrunk: 8)
+		sender=0x000000000000000000000000000000004e487B70 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=buy(uint256,uint256,uint256,uint128) args=[93768397501462402600473440311756875506868287543192551999312749 [9.376e61], 962459135000531983936615712431288614369057998 [9.624e44], 3076491883485152 [3.076e15], 24365799042278638327419027026671265 [2.436e34]]
+		sender=0x0000000000000000000000000000000000005EC0 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[135719930049343322450464226 [1.357e26]]
+		sender=0x0000000000000000000000000000000000000334 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[29679889935676157134072331933547583893737220 [2.967e43]]
+		sender=0x00000000000000000000000000000000755d05D2 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[43707245792753852851470067 [4.37e25]]
+		sender=0xC0a939e50333aDBBE98af2De50142bdD92a649d5 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[2988682048594090858651820856079586021 [2.988e36]]
+		sender=0x0000000000000000000000000000000000000afC addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[41776976274913173356095592398101990573858740152148616697593 [4.177e58]]
+		sender=0x0000000000000000000000000000000000002760 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[22595 [2.259e4]]
+		sender=0x00000000000000000000000000000000000002e0 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=enableRefunds(uint256,uint256,bool) args=[3711, 1160115143086498919240890242938810 [1.16e33], true]
+ invariant_solvency() (runs: 2, calls: 256, reverts: 0)
+
+╭-------------+-----------------+-------+---------+----------╮
+| Contract    | Selector        | Calls | Reverts | Discards |
++============================================================+
+| LaneHandler | buy             | 23    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | donate          | 25    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | enableRefunds   | 28    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | fulfill         | 29    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | redeem          | 30    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | refund          | 24    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releasePrize    | 35    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseProtocol | 33    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseSponsor  | 14    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | requestDraw     | 28    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | settle          | 28    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | transferTicket  | 26    | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | warp            | 33    | 0       | 0        |
+╰-------------+-----------------+-------+---------+----------╯
+
+[PASS] invariant_zz_callSummary() (runs: 512, calls: 65536, reverts: 0)
+
+╭-------------+-----------------+-------+---------+----------╮
+| Contract    | Selector        | Calls | Reverts | Discards |
++============================================================+
+| LaneHandler | buy             | 5089  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | donate          | 5009  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | enableRefunds   | 5164  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | fulfill         | 5101  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | redeem          | 4888  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | refund          | 4974  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releasePrize    | 5181  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseProtocol | 5044  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | releaseSponsor  | 5043  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | requestDraw     | 4931  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | settle          | 4984  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | transferTicket  | 5080  | 0       | 0        |
+|-------------+-----------------+-------+---------+----------|
+| LaneHandler | warp            | 5048  | 0       | 0        |
+╰-------------+-----------------+-------+---------+----------╯
+
+Suite result: FAILED. 8 passed; 2 failed; 0 skipped; finished in 21.98s (145.53s CPU time)
+
+Ran 2 test suites in 21.98s (40.48s CPU time): 21 tests passed, 2 failed, 0 skipped (23 total tests)
+
+Failing tests:
+Encountered 2 failing tests in test/LaneInvariant.t.sol:LaneInvariantTest
+[FAIL: conservation]
+	[Sequence] (original: 67, shrunk: 6)
+		sender=0x000000000000000000000000000000000000150C addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=buy(uint256,uint256,uint256,uint128) args=[3524, 2835717308 [2.835e9], 2592000 [2.592e6], 86400 [8.64e4]]
+		sender=0x25c35B854A5cE91204f5f89E820C452Be632Bdf0 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[8509076313778551779903835035056084601735133532828005374838 [8.509e57]]
+		sender=0x0000000000000000000000000000000000005EC0 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[135719930049343322450464226 [1.357e26]]
+		sender=0xC0a939e50333aDBBE98af2De50142bdD92a649d5 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[2988682048594090858651820856079586021 [2.988e36]]
+		sender=0x0000000000000000000000000000000000000afC addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[41776976274913173356095592398101990573858740152148616697593 [4.177e58]]
+		sender=0x000000000000000000000000000000000000072E addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=enableRefunds(uint256,uint256,bool) args=[10560 [1.056e4], 4369, false]
+ invariant_conservation() (runs: 2, calls: 256, reverts: 0)
+[FAIL: solvency]
+	[Sequence] (original: 100, shrunk: 8)
+		sender=0x000000000000000000000000000000004e487B70 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=buy(uint256,uint256,uint256,uint128) args=[93768397501462402600473440311756875506868287543192551999312749 [9.376e61], 962459135000531983936615712431288614369057998 [9.624e44], 3076491883485152 [3.076e15], 24365799042278638327419027026671265 [2.436e34]]
+		sender=0x0000000000000000000000000000000000005EC0 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[135719930049343322450464226 [1.357e26]]
+		sender=0x0000000000000000000000000000000000000334 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[29679889935676157134072331933547583893737220 [2.967e43]]
+		sender=0x00000000000000000000000000000000755d05D2 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[43707245792753852851470067 [4.37e25]]
+		sender=0xC0a939e50333aDBBE98af2De50142bdD92a649d5 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[2988682048594090858651820856079586021 [2.988e36]]
+		sender=0x0000000000000000000000000000000000000afC addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[41776976274913173356095592398101990573858740152148616697593 [4.177e58]]
+		sender=0x0000000000000000000000000000000000002760 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=warp(uint256) args=[22595 [2.259e4]]
+		sender=0x00000000000000000000000000000000000002e0 addr=[test/LaneHandler.sol:LaneHandler]0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f calldata=enableRefunds(uint256,uint256,bool) args=[3711, 1160115143086498919240890242938810 [1.16e33], true]
+ invariant_solvency() (runs: 2, calls: 256, reverts: 0)
+
+Encountered a total of 2 failing tests, 21 tests succeeded
+
+Tip: Run `forge test --rerun` to retry only the 2 failed tests
+
+Fuzz seed: 0x4d555441 (use `--fuzz-seed` to reproduce)
+{"timestamp":1792571794,"event":"failure","invariant":"invariant_conservation","target":"test/LaneInvariant.t.sol:LaneInvariantTest","reason":"conservation"}
+{"timestamp":1792571794,"event":"failure","invariant":"invariant_solvency","target":"test/LaneInvariant.t.sol:LaneInvariantTest","reason":"solvency"}

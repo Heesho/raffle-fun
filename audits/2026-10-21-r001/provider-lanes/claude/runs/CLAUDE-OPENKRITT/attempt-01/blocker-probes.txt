@@ -1,0 +1,68 @@
+## probe 1: docker daemon
+Wed Oct 21 07:59:51 UTC 2026
+Client: Docker Engine - Community
+ Version:           29.8.2
+ API version:       1.56
+ Go version:        go1.27.1
+ Git commit:        7fc2dff9bc
+ Built:             Wed Sep 23 09:45:10 2026
+ OS/Arch:           darwin/arm64
+ Context:           default
+failed to connect to the docker API at unix:///var/run/docker.sock; check if the path is correct and if the daemon is running: dial unix /var/run/docker.sock: connect: no such file or directory
+NAME        DESCRIPTION                               DOCKER ENDPOINT               ERROR
+default *   Current DOCKER_HOST based configuration   unix:///var/run/docker.sock   
+## probe 2: container runtimes / apps
+no Docker Desktop/OrbStack/Rancher/Podman app in /Applications
+colima not found
+podman not found
+orb not found
+/opt/homebrew/bin/lima
+ls: /Users/hishamel-husseini/.docker/run/docker.sock: No such file or directory
+ls: /var/run/docker.sock: No such file or directory
+## probe 3: model route
+/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/harness/openkritt/engine/Dockerfile:17:    && npm install --global --no-audit --no-fund --allow-scripts=@anthropic-ai/claude-code @anthropic-ai/claude-code@2.1.215 \
+/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/harness/openkritt/engine/Dockerfile.claude-runner:7:    && npm install -g @anthropic-ai/claude-code@2.1.215 \
+GPT_VERSION_RE = re.compile(r"^gpt-(\d+)(?:\.(\d+))?(?=$|[-.])", re.IGNORECASE)
+GPT_CYBER_RESTRICTION_AFTER = (5, 4)
+GPT_CYBER_RESTRICTION_NOTE = "This model may have cybersecurity usage restrictions."
+GPT_CYBER_RESTRICTION_URL = "https://chatgpt.com/cyber"
+MODEL_NOTES = {
+    "claude-fable-5": "Cyber requests may route to Opus 4.8.",
+}
+CLAUDE_MODEL_THINKING_EFFORTS = {
+    "claude-fable-5": ("low", "medium", "high", "xhigh", "max"),
+    "claude-opus-5": ("low", "medium", "high", "xhigh", "max"),
+    "claude-opus-4-8": ("low", "medium", "high", "xhigh", "max"),
+    "claude-opus-4-7": ("low", "medium", "high", "xhigh", "max"),
+    "claude-opus-4-6": ("low", "medium", "high", "max"),
+    "claude-sonnet-5": ("low", "medium", "high", "xhigh", "max"),
+    "claude-sonnet-4-6": ("low", "medium", "high", "max"),
+}
+
+
+class ModelCatalogError(RuntimeError):
+    """An upstream model catalog could not be safely retrieved."""
+
+
+def _clean_text(value: Any, *, limit: int = 200) -> str:
+    if not isinstance(value, str):
+        return ""
+    if any(ord(char) < 32 for char in value):
+        return ""
+    value = value.strip()
+    if not value or len(value) > limit:
+        return ""
+    return value
+grep claude-opus-5-5 count:        0
+ANTHROPIC_API_KEY set in clean runner env: no (apiKeySource=none in all probes)
+## probe 2b: lima
+limactl version 2.2.0
+NAME                        STATUS     SSH                VMTYPE    ARCH       CPUS    MEMORY    DISK     DIR
+gebal                       Running    127.0.0.1:62042    vz        aarch64    4       12GiB     20GiB    ~/.lima/gebal
+glaze-openkritt-daybreak    Running    127.0.0.1:65470    vz        aarch64    4       8GiB      80GiB    ~/.lima/glaze-openkritt-daybreak
+glaze-openkritt-fable       Stopped    127.0.0.1:58308    vz        aarch64    4       8GiB      80GiB    ~/.lima/glaze-openkritt-fable
+## note on existing lima VMs
+The VMs listed above (gebal, glaze-openkritt-daybreak, glaze-openkritt-fable) pre-exist this lane and belong to
+other workflows/projects. They were NOT used, started, stopped or inspected beyond `limactl list`, because the
+assignment requires a dedicated runtime that is not shared with other providers/projects, and because they may
+hold other accounts' credentials.

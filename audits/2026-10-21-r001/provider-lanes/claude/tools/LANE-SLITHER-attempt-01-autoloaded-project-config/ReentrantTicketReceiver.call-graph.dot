@@ -1,0 +1,18 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_15051_ReentrantTicketReceiver {
+label = "ReentrantTicketReceiver"
+"15051_onERC721Received(address,address,uint256,bytes)" [label="onERC721Received(address,address,uint256,bytes)"]
+"15051_approveQuote(IERC20)" [label="approveQuote(IERC20)"]
+"15051_buyTicket()" [label="buyTicket()"]
+"15051_configure(Raffle,bool)" [label="configure(Raffle,bool)"]
+}subgraph cluster_3215_IERC721Receiver {
+label = "IERC721Receiver"
+"3215_onERC721Received(address,address,uint256,bytes)" [label="onERC721Received(address,address,uint256,bytes)"]
+}subgraph cluster_solidity {
+label = "[Solidity]"
+}subgraph cluster_toplevel {
+label = "[Top Level]"
+}
+}

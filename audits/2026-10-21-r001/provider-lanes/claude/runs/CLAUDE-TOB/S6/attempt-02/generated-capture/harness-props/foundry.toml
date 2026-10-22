@@ -1,0 +1,17 @@
+# GENERATED SCRATCH CONFIG (S6 attempt-02) for the isolated property-testing harness. NOT the original
+# packages/contracts/foundry.toml (left untouched). Compiler settings mirror the original default profile:
+# solc 0.8.36, evm cancun, optimizer on, 200 runs, via_ir false. The local solc binary and offline mode are
+# supplied through FOUNDRY_SOLC / FOUNDRY_OFFLINE environment variables at run time (no downloads).
+[profile.default]
+src = "src"
+test = "props"
+script = "script"
+out = "out"
+libs = ["node_modules"]
+solc_version = "0.8.36"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 200
+via_ir = false
+fuzz = { runs = 2000, seed = "0x53362d6174746d70742d3032" }
+invariant = { runs = 64, depth = 64, fail_on_revert = false }

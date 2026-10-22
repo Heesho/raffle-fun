@@ -1,0 +1,94 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_9505_Strings {
+label = "Strings"
+"9505__tryParseChr(bytes1)" [label="_tryParseChr(bytes1)"]
+"9505_escapeJSON(string)" [label="escapeJSON(string)"]
+"9505_parseAddress(string,uint256,uint256)" [label="parseAddress(string,uint256,uint256)"]
+"9505_toString(uint256)" [label="toString(uint256)"]
+"9505_parseUint(string)" [label="parseUint(string)"]
+"9505_parseUint(string,uint256,uint256)" [label="parseUint(string,uint256,uint256)"]
+"9505_tryParseUint(string,uint256,uint256)" [label="tryParseUint(string,uint256,uint256)"]
+"9505_equal(string,string)" [label="equal(string,string)"]
+"9505__unsafeWriteBytesOffset(bytes,uint256,bytes1)" [label="_unsafeWriteBytesOffset(bytes,uint256,bytes1)"]
+"9505__tryParseIntUncheckedBounds(string,uint256,uint256)" [label="_tryParseIntUncheckedBounds(string,uint256,uint256)"]
+"9505_parseAddress(string)" [label="parseAddress(string)"]
+"9505_parseInt(string,uint256,uint256)" [label="parseInt(string,uint256,uint256)"]
+"9505_tryParseHexUint(string)" [label="tryParseHexUint(string)"]
+"9505__unsafeReadBytesOffset(bytes,uint256)" [label="_unsafeReadBytesOffset(bytes,uint256)"]
+"9505_tryParseAddress(string,uint256,uint256)" [label="tryParseAddress(string,uint256,uint256)"]
+"9505_toHexString(bytes)" [label="toHexString(bytes)"]
+"9505_parseInt(string)" [label="parseInt(string)"]
+"9505_tryParseInt(string,uint256,uint256)" [label="tryParseInt(string,uint256,uint256)"]
+"9505__tryParseUintUncheckedBounds(string,uint256,uint256)" [label="_tryParseUintUncheckedBounds(string,uint256,uint256)"]
+"9505_toHexString(uint256)" [label="toHexString(uint256)"]
+"9505_parseHexUint(string,uint256,uint256)" [label="parseHexUint(string,uint256,uint256)"]
+"9505_toHexString(uint256,uint256)" [label="toHexString(uint256,uint256)"]
+"9505_tryParseInt(string)" [label="tryParseInt(string)"]
+"9505_toStringSigned(int256)" [label="toStringSigned(int256)"]
+"9505_tryParseAddress(string)" [label="tryParseAddress(string)"]
+"9505__tryParseHexUintUncheckedBounds(string,uint256,uint256)" [label="_tryParseHexUintUncheckedBounds(string,uint256,uint256)"]
+"9505_slitherConstructorConstantVariables()" [label="slitherConstructorConstantVariables()"]
+"9505_toChecksumHexString(address)" [label="toChecksumHexString(address)"]
+"9505_tryParseUint(string)" [label="tryParseUint(string)"]
+"9505_parseHexUint(string)" [label="parseHexUint(string)"]
+"9505_tryParseHexUint(string,uint256,uint256)" [label="tryParseHexUint(string,uint256,uint256)"]
+"9505_toHexString(address)" [label="toHexString(address)"]
+"9505__tryParseHexUintUncheckedBounds(string,uint256,uint256)" -> "9505__tryParseChr(bytes1)"
+"9505_tryParseHexUint(string)" -> "9505__tryParseHexUintUncheckedBounds(string,uint256,uint256)"
+"9505_tryParseAddress(string,uint256,uint256)" -> "9505__tryParseHexUintUncheckedBounds(string,uint256,uint256)"
+"9505_escapeJSON(string)" -> "9505__unsafeReadBytesOffset(bytes,uint256)"
+"9505_tryParseInt(string,uint256,uint256)" -> "9505__tryParseIntUncheckedBounds(string,uint256,uint256)"
+"9505__tryParseIntUncheckedBounds(string,uint256,uint256)" -> "9505__unsafeReadBytesOffset(bytes,uint256)"
+"9505_parseAddress(string)" -> "9505_parseAddress(string,uint256,uint256)"
+"9505_parseHexUint(string,uint256,uint256)" -> "9505_tryParseHexUint(string,uint256,uint256)"
+"9505_parseUint(string)" -> "9505_parseUint(string,uint256,uint256)"
+"9505_tryParseUint(string)" -> "9505__tryParseUintUncheckedBounds(string,uint256,uint256)"
+"9505_parseHexUint(string)" -> "9505_parseHexUint(string,uint256,uint256)"
+"9505_toChecksumHexString(address)" -> "9505_toHexString(address)"
+"9505_parseInt(string)" -> "9505_parseInt(string,uint256,uint256)"
+"9505_toHexString(address)" -> "9505_toHexString(uint256,uint256)"
+"9505_escapeJSON(string)" -> "9505__unsafeWriteBytesOffset(bytes,uint256,bytes1)"
+"9505_tryParseAddress(string)" -> "9505_tryParseAddress(string,uint256,uint256)"
+"9505__tryParseHexUintUncheckedBounds(string,uint256,uint256)" -> "9505__unsafeReadBytesOffset(bytes,uint256)"
+"9505_tryParseUint(string,uint256,uint256)" -> "9505__tryParseUintUncheckedBounds(string,uint256,uint256)"
+"9505_toStringSigned(int256)" -> "9505_toString(uint256)"
+"9505_parseUint(string,uint256,uint256)" -> "9505_tryParseUint(string,uint256,uint256)"
+"9505_parseInt(string,uint256,uint256)" -> "9505_tryParseInt(string,uint256,uint256)"
+"9505__tryParseIntUncheckedBounds(string,uint256,uint256)" -> "9505_tryParseUint(string,uint256,uint256)"
+"9505_toHexString(uint256)" -> "9505_toHexString(uint256,uint256)"
+"9505_tryParseHexUint(string,uint256,uint256)" -> "9505__tryParseHexUintUncheckedBounds(string,uint256,uint256)"
+"9505__tryParseUintUncheckedBounds(string,uint256,uint256)" -> "9505__unsafeReadBytesOffset(bytes,uint256)"
+"9505_tryParseInt(string)" -> "9505__tryParseIntUncheckedBounds(string,uint256,uint256)"
+"9505_parseAddress(string,uint256,uint256)" -> "9505_tryParseAddress(string,uint256,uint256)"
+"9505__tryParseUintUncheckedBounds(string,uint256,uint256)" -> "9505__tryParseChr(bytes1)"
+"9505_tryParseAddress(string,uint256,uint256)" -> "9505__unsafeReadBytesOffset(bytes,uint256)"
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"byte(uint256,uint256)" 
+"string.concat()" 
+"revert StringsInsufficientHexLength(uint256,uint256)" 
+"revert StringsInvalidAddressFormat()" 
+"revert StringsInvalidChar()" 
+"mstore8(uint256,uint256)" 
+"mstore(uint256,uint256)" 
+"keccak256(uint256,uint256)" 
+"mload(uint256)" 
+"9505_parseInt(string,uint256,uint256)" -> "revert StringsInvalidChar()"
+"9505_parseAddress(string,uint256,uint256)" -> "revert StringsInvalidAddressFormat()"
+"9505_escapeJSON(string)" -> "mstore(uint256,uint256)"
+"9505_escapeJSON(string)" -> "mload(uint256)"
+"9505__unsafeReadBytesOffset(bytes,uint256)" -> "mload(uint256)"
+"9505_toHexString(uint256,uint256)" -> "revert StringsInsufficientHexLength(uint256,uint256)"
+"9505_parseUint(string,uint256,uint256)" -> "revert StringsInvalidChar()"
+"9505_toString(uint256)" -> "byte(uint256,uint256)"
+"9505_parseHexUint(string,uint256,uint256)" -> "revert StringsInvalidChar()"
+"9505_toChecksumHexString(address)" -> "keccak256(uint256,uint256)"
+"9505_toString(uint256)" -> "mstore8(uint256,uint256)"
+"9505__unsafeWriteBytesOffset(bytes,uint256,bytes1)" -> "mstore8(uint256,uint256)"
+"9505_toStringSigned(int256)" -> "string.concat()"
+}subgraph cluster_toplevel {
+label = "[Top Level]"
+}
+}

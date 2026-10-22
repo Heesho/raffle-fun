@@ -1,0 +1,121 @@
+--- S1-01 [reentrancy-no-eth] impact=Medium confidence=Medium id=bede2c142d12
+Reentrancy in RaffleFactory.createRaffle(IRaffleFactory.CreateRaffleParams) (packages/contracts/src/RaffleFactory.sol#97-148):
+	External calls:
+	- IRaffle(raffle).initialize(IRaffle.RaffleInitParams({sponsor:msg.sender,sponsorRecipient:params.sponsorRecipient,protocolTreasury:protocolTreasury,prizeToken:params.prizeToken,prizeTokenId:params.prizeTokenId,raffleId:raffleId,reserveEntries:params.reserveEntries,endTime:params.endTime})) (packages/contracts/src/RaffleFactory.sol#109-121)
+	State variables written after the call(s):
+	- isRaffle[raffle] = true (packages/contracts/src/RaffleFactory.sol#125)
+	RaffleFactory.isRaffle (packages/contracts/src/RaffleFactory.sol#54) can be used in cross function reentrancies:
+	- RaffleFactory.isRaffle (packages/contracts/src/RaffleFactory.sol#54)
+--- S1-02 [calls-loop] impact=Low confidence=Medium id=44009ff72b10
+Raffle._isProtocolDestination(address,address) (packages/contracts/src/Raffle.sol#593-605) has external calls inside a loop: unsafeDestination = canonicalFactory.isRaffle(destination) (packages/contracts/src/Raffle.sol#603)
+	Calls stack containing the loop:
+		Raffle.refundTickets(uint256[])
+		ERC721._burn(uint256)
+		Raffle._update(address,uint256,address)
+--- S1-03 [calls-loop] impact=Low confidence=Medium id=aed4c2ddfde1
+Raffle._isProtocolDestination(address,address) (packages/contracts/src/Raffle.sol#593-605) has external calls inside a loop: unsafeDestination = destination == address(this) || destination == factory || destination == address(quoteToken) || destination == address(i_vrfV2PlusWrapper) || destination == prizeToken_ || destination == canonicalFactory.raffleImplementation() (packages/contracts/src/Raffle.sol#599-601)
+	Calls stack containing the loop:
+		Raffle.refundTickets(uint256[])
+		ERC721._burn(uint256)
+		Raffle._update(address,uint256,address)
+--- S1-04 [events-maths] impact=Low confidence=Medium id=e7df86875f65
+Raffle.initialize(IRaffle.RaffleInitParams) (packages/contracts/src/Raffle.sol#176-206) should emit an event for: 
+	- prizeTokenId = params.prizeTokenId (packages/contracts/src/Raffle.sol#201) 
+	- reserveEntries = params.reserveEntries (packages/contracts/src/Raffle.sol#203) 
+	- endTime = params.endTime (packages/contracts/src/Raffle.sol#204)
+--- S1-05 [reentrancy-benign] impact=Low confidence=Medium id=b168b6b96741
+Reentrancy in RaffleFactory.createRaffle(IRaffleFactory.CreateRaffleParams) (packages/contracts/src/RaffleFactory.sol#97-148):
+	External calls:
+	- IRaffle(raffle).initialize(IRaffle.RaffleInitParams({sponsor:msg.sender,sponsorRecipient:params.sponsorRecipient,protocolTreasury:protocolTreasury,prizeToken:params.prizeToken,prizeTokenId:params.prizeTokenId,raffleId:raffleId,reserveEntries:params.reserveEntries,endTime:params.endTime})) (packages/contracts/src/RaffleFactory.sol#109-121)
+	State variables written after the call(s):
+	- idByRaffle[raffle] = raffleId (packages/contracts/src/RaffleFactory.sol#124)
+	- raffleById[raffleId] = raffle (packages/contracts/src/RaffleFactory.sol#123)
+--- S1-06 [reentrancy-benign] impact=Low confidence=Medium id=f70279209da3
+Reentrancy in Raffle.requestDraw() (packages/contracts/src/Raffle.sol#240-273):
+	External calls:
+	- (requestId,paidPrice) = requestRandomnessPayInNative(callbackGasLimit,requestConfirmations,1,extraArgs) (packages/contracts/src/Raffle.sol#257)
+		- (i_vrfV2PlusWrapper.requestRandomWordsInNative{value: requestPrice}(_callbackGasLimit,_requestConfirmations,_numWords,extraArgs),requestPrice) (packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol#83-88)
+	State variables written after the call(s):
+	- _requestInFlight = false (packages/contracts/src/Raffle.sol#260)
+	- vrfRequestId = requestId (packages/contracts/src/Raffle.sol#259)
+--- S1-07 [timestamp] impact=Low confidence=Medium id=072f5e75197c
+Raffle.fulfillRandomWords(uint256,uint256[]) (packages/contracts/src/Raffle.sol#509-524) uses timestamp for comparisons
+	Dangerous comparisons:
+	- _requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1 || block.timestamp >= callbackDeadline() (packages/contracts/src/Raffle.sol#511-512)
+--- S1-08 [timestamp] impact=Low confidence=Medium id=23f341e63140
+Raffle.enableRefunds() (packages/contracts/src/Raffle.sol#276-301) uses timestamp for comparisons
+	Dangerous comparisons:
+	- msg.sender != sponsor && block.timestamp < deadline (packages/contracts/src/Raffle.sol#282)
+	- block.timestamp < deadline (packages/contracts/src/Raffle.sol#287)
+	- block.timestamp < deadline (packages/contracts/src/Raffle.sol#291)
+--- S1-09 [timestamp] impact=Low confidence=Medium id=254fdc55578c
+RaffleFactory.createRaffle(IRaffleFactory.CreateRaffleParams) (packages/contracts/src/RaffleFactory.sol#97-148) uses timestamp for comparisons
+	Dangerous comparisons:
+	- params.endTime <= currentTime (packages/contracts/src/RaffleFactory.sol#100)
+	- saleDuration > RaffleConstants.MAX_SALE_DURATION (packages/contracts/src/RaffleFactory.sol#102)
+--- S1-10 [timestamp] impact=Low confidence=Medium id=27b0920ff8c2
+Raffle.buyEntries(address,uint128) (packages/contracts/src/Raffle.sol#209-237) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp >= endTime (packages/contracts/src/Raffle.sol#216)
+--- S1-11 [timestamp] impact=Low confidence=Medium id=8648c3809c3d
+Raffle.requestDraw() (packages/contracts/src/Raffle.sol#240-273) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp < endTime (packages/contracts/src/Raffle.sol#242)
+	- block.timestamp >= requestDeadline (packages/contracts/src/Raffle.sol#245)
+--- S1-12 [timestamp] impact=Low confidence=Medium id=939fde630c10
+Raffle.callbackDeadline() (packages/contracts/src/Raffle.sol#463-465) uses timestamp for comparisons
+	Dangerous comparisons:
+	- drawRequestedAt != 0 (packages/contracts/src/Raffle.sol#464)
+--- S1-13 [assembly] impact=Informational confidence=High id=37b9e7ddd4d3
+Raffle.requestDraw() (packages/contracts/src/Raffle.sol#240-273) uses assembly
+	- INLINE ASM (packages/contracts/src/Raffle.sol#266-268)
+--- S1-14 [naming-convention] impact=Informational confidence=High id=206c18a5eed6
+Function IRaffle.ENTRY_PRICE() (packages/contracts/src/interfaces/IRaffle.sol#396) is not in mixedCase
+--- S1-15 [pragma] impact=Informational confidence=High id=03029b5126e8
+9 different versions of Solidity are used:
+	- Version constraint ^0.8.0 is used by:
+		-^0.8.0 (packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol#2)
+		-^0.8.0 (packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol#2)
+		-^0.8.0 (packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol#2)
+	- Version constraint ^0.8.4 is used by:
+		-^0.8.4 (packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol#2)
+	- Version constraint >=0.6.2 is used by:
+		->=0.6.2 (packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol#4)
+		->=0.6.2 (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol#4)
+		->=0.6.2 (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol#4)
+		->=0.6.2 (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol#4)
+	- Version constraint >=0.4.16 is used by:
+		->=0.4.16 (packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol#4)
+		->=0.4.16 (packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol#4)
+		->=0.4.16 (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol#4)
+		->=0.4.16 (packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol#4)
+	- Version constraint >=0.8.4 is used by:
+		->=0.8.4 (packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol#4)
+	- Version constraint ^0.8.20 is used by:
+		-^0.8.20 (packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol#4)
+		-^0.8.20 (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol#4)
+		-^0.8.20 (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol#4)
+		-^0.8.20 (packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol#4)
+		-^0.8.20 (packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol#4)
+		-^0.8.20 (packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol#4)
+		-^0.8.20 (packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol#4)
+		-^0.8.20 (packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol#4)
+		-^0.8.20 (packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol#4)
+		-^0.8.20 (packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol#5)
+		-^0.8.20 (packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol#4)
+		-^0.8.20 (packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol#4)
+		-^0.8.20 (packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol#5)
+		-^0.8.20 (packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol#4)
+	- Version constraint ^0.8.24 is used by:
+		-^0.8.24 (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol#4)
+		-^0.8.24 (packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol#4)
+		-^0.8.24 (packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol#4)
+	- Version constraint >=0.5.0 is used by:
+		->=0.5.0 (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol#4)
+	- Version constraint 0.8.36 is used by:
+		-0.8.36 (packages/contracts/src/Raffle.sol#2)
+		-0.8.36 (packages/contracts/src/RaffleFactory.sol#2)
+		-0.8.36 (packages/contracts/src/interfaces/IRaffle.sol#2)
+		-0.8.36 (packages/contracts/src/interfaces/IRaffleFactory.sol#2)
+		-0.8.36 (packages/contracts/src/libraries/RaffleConstants.sol#2)
+in-scope total: 15

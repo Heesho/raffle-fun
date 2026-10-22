@@ -1,0 +1,17 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_3983_Panic {
+label = "Panic"
+"3983_slitherConstructorConstantVariables()" [label="slitherConstructorConstantVariables()"]
+"3983_panic(uint256)" [label="panic(uint256)"]
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"mstore(uint256,uint256)" 
+"revert(uint256,uint256)" 
+"3983_panic(uint256)" -> "mstore(uint256,uint256)"
+"3983_panic(uint256)" -> "revert(uint256,uint256)"
+}subgraph cluster_toplevel {
+label = "[Top Level]"
+}
+}

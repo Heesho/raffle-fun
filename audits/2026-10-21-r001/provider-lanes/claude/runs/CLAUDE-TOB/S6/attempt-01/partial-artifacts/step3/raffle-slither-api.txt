@@ -1,0 +1,178 @@
+====================================================================================================
+PART 1: COMPACT FUNCTION SUMMARY (entry points of in-scope contracts, incl. inherited)
+====================================================================================================
+
+## Raffle
+| Function | Declared in | Visibility | Mutability | Modifiers | msg.sender in condition | State vars written (transitively) | External calls (transitively) |
+|---|---|---|---|---|---|---|---|
+| `approve(address,uint256)` | ERC721 | public | nonpayable | - | no | _tokenApprovals | - |
+| `buyEntries(address,uint128)` | Raffle | external | nonpayable | nonReentrant | no | _balances, _owners, _ticketRanges, _tokenApprovals, ticketCount, totalEntries, unsettledPot | IERC721Receiver.onERC721Received, IRaffleFactory.isRaffle, IRaffleFactory.raffleImplementation |
+| `constructor(address,address)` | Raffle | public | nonpayable | - | yes | _name, _symbol, factory, i_linkToken, i_vrfV2PlusWrapper, initialized, quoteToken, status | IVRFV2PlusWrapper.link |
+| `enableRefunds()` | Raffle | external | nonpayable | nonReentrant | yes | remainingRefundLiability, status, unsettledPot | - |
+| `initialize(IRaffle.RaffleInitParams)` | Raffle | external | nonpayable | - | yes | endTime, initialized, prizeToken, prizeTokenId, protocolTreasury, raffleId, reserveEntries, sponsor, sponsorRecipient, status | IRaffleFactory.isRaffle, IRaffleFactory.raffleImplementation |
+| `onERC721Received(address,address,uint256,bytes)` | Raffle | external | nonpayable | - | yes | status | - |
+| `rawFulfillRandomWords(uint256,uint256[])` | VRFV2PlusWrapperConsumerBase | external | nonpayable | - | yes | resolvedAt, status, winningEntry | - |
+| `receive()` | Raffle | external | payable | - | no | - | - |
+| `redeemWinningTicket(uint256)` | Raffle | external | nonpayable | nonReentrant | yes | _balances, _owners, _tokenApprovals, prizeClaimed, protocolFees, settlementComplete, sponsorProceeds, unsettledPot, winnerProceeds, winnerRecipient, winnerRedeemed, winningTicketId | IERC721.ownerOf, IERC721.transferFrom, IRaffleFactory.isRaffle, IRaffleFactory.raffleImplementation |
+| `refundTickets(uint256[])` | Raffle | external | nonpayable | nonReentrant | yes | _balances, _owners, _tokenApprovals, remainingRefundLiability | IRaffleFactory.isRaffle, IRaffleFactory.raffleImplementation |
+| `releaseProtocolFees()` | Raffle | external | nonpayable | nonReentrant | no | protocolFees | IRaffleFactory.isRaffle, IRaffleFactory.raffleImplementation |
+| `releaseSponsorPrize()` | Raffle | external | nonpayable | nonReentrant | no | prizeClaimed | IERC721.ownerOf, IERC721.transferFrom |
+| `releaseSponsorProceeds()` | Raffle | external | nonpayable | nonReentrant | no | sponsorProceeds | IRaffleFactory.isRaffle, IRaffleFactory.raffleImplementation |
+| `requestDraw()` | Raffle | external | payable | nonReentrant | no | _requestInFlight, drawRequestedAt, status, vrfRequestId | IVRFV2PlusWrapper.calculateRequestPriceNative, IVRFV2PlusWrapper.requestRandomWordsInNative, inline-asm |
+| `safeTransferFrom(address,address,uint256)` | ERC721 | public | nonpayable | - | no | _balances, _owners, _tokenApprovals | IERC721Receiver.onERC721Received, IRaffleFactory.isRaffle, IRaffleFactory.raffleImplementation |
+| `safeTransferFrom(address,address,uint256,bytes)` | ERC721 | public | nonpayable | - | no | _balances, _owners, _tokenApprovals | IERC721Receiver.onERC721Received, IRaffleFactory.isRaffle, IRaffleFactory.raffleImplementation |
+| `setApprovalForAll(address,bool)` | ERC721 | public | nonpayable | - | no | _operatorApprovals | - |
+| `settleWinningTicket(uint256)` | Raffle | external | nonpayable | nonReentrant | no | protocolFees, settlementComplete, sponsorProceeds, unsettledPot, winnerProceeds, winningTicketId | - |
+| `transferFrom(address,address,uint256)` | ERC721 | public | nonpayable | - | no | _balances, _owners, _tokenApprovals | IRaffleFactory.isRaffle, IRaffleFactory.raffleImplementation |
+| `ENTRY_PRICE()` | IRaffle | external | view | - | no | - | - |
+| `accountedQuoteBalance()` | Raffle | public | view | - | no | - | - |
+| `balanceOf(address)` | ERC721 | public | view | - | no | - | - |
+| `callbackDeadline()` | Raffle | public | view | - | no | - | - |
+| `callbackGasLimit()` | IRaffle | external | view | - | no | - | - |
+| `drawRequestDeadline()` | Raffle | public | view | - | no | - | - |
+| `drawRequestedAt()` | IRaffle | external | view | - | no | - | - |
+| `endTime()` | IRaffle | external | view | - | no | - | - |
+| `estimateVrfRequestPrice(uint256)` | Raffle | public | view | - | no | - | IVRFV2PlusWrapper.estimateRequestPriceNative |
+| `factory()` | IRaffle | external | view | - | no | - | - |
+| `getApproved(uint256)` | ERC721 | public | view | - | no | - | - |
+| `getBalance()` | VRFV2PlusWrapperConsumerBase | public | view | - | no | - | - |
+| `getLinkToken()` | VRFV2PlusWrapperConsumerBase | public | view | - | no | - | - |
+| `getVrfRequestPrice()` | Raffle | public | view | - | no | - | IVRFV2PlusWrapper.calculateRequestPriceNative |
+| `grossSales()` | Raffle | public | view | - | no | - | - |
+| `initialized()` | IRaffle | external | view | - | no | - | - |
+| `isApprovedForAll(address,address)` | ERC721 | public | view | - | no | - | - |
+| `name()` | Raffle | public | pure | - | no | - | - |
+| `ownerOf(uint256)` | ERC721 | public | view | - | no | - | - |
+| `prizeClaimed()` | IRaffle | external | view | - | no | - | - |
+| `prizeToken()` | IRaffle | external | view | - | no | - | - |
+| `prizeTokenId()` | IRaffle | external | view | - | no | - | - |
+| `protocolFees()` | IRaffle | external | view | - | no | - | - |
+| `protocolTreasury()` | IRaffle | external | view | - | no | - | - |
+| `quoteToken()` | IRaffle | external | view | - | no | - | - |
+| `raffleId()` | IRaffle | external | view | - | no | - | - |
+| `remainingRefundLiability()` | IRaffle | external | view | - | no | - | - |
+| `requestConfirmations()` | IRaffle | external | view | - | no | - | - |
+| `reserveEntries()` | IRaffle | external | view | - | no | - | - |
+| `resolvedAt()` | IRaffle | external | view | - | no | - | - |
+| `settlementComplete()` | IRaffle | external | view | - | no | - | - |
+| `sponsor()` | IRaffle | external | view | - | no | - | - |
+| `sponsorProceeds()` | IRaffle | external | view | - | no | - | - |
+| `sponsorRecipient()` | IRaffle | external | view | - | no | - | - |
+| `status()` | IRaffle | external | view | - | no | - | - |
+| `supportsInterface(bytes4)` | ERC721 | public | view | - | no | - | - |
+| `symbol()` | Raffle | public | pure | - | no | - | - |
+| `ticketCount()` | IRaffle | external | view | - | no | - | - |
+| `ticketRange(uint256)` | Raffle | public | view | - | no | - | - |
+| `tokenURI(uint256)` | ERC721 | public | view | - | no | - | - |
+| `totalEntries()` | IRaffle | external | view | - | no | - | - |
+| `unsettledPot()` | IRaffle | external | view | - | no | - | - |
+| `vrfRequestId()` | IRaffle | external | view | - | no | - | - |
+| `vrfWrapper()` | Raffle | public | view | - | no | - | - |
+| `winnerProceeds()` | IRaffle | external | view | - | no | - | - |
+| `winnerRecipient()` | IRaffle | external | view | - | no | - | - |
+| `winnerRedeemed()` | IRaffle | external | view | - | no | - | - |
+| `winningEntry()` | IRaffle | external | view | - | no | - | - |
+| `winningTicketId()` | IRaffle | external | view | - | no | - | - |
+
+## RaffleFactory
+| Function | Declared in | Visibility | Mutability | Modifiers | msg.sender in condition | State vars written (transitively) | External calls (transitively) |
+|---|---|---|---|---|---|---|---|
+| `constructor(address,address,address)` | RaffleFactory | public | nonpayable | - | no | protocolTreasury, quoteToken, raffleImplementation, vrfWrapper | IERC20Metadata.decimals |
+| `createRaffle(IRaffleFactory.CreateRaffleParams)` | RaffleFactory | external | nonpayable | nonReentrant | no | idByRaffle, isRaffle, raffleById, raffleCount | IERC165.supportsInterface, IERC721.ownerOf, IERC721.safeTransferFrom, IRaffle.initialize, IRaffle.status |
+| `callbackGasLimit()` | IRaffleFactory | external | view | - | no | - | - |
+| `idByRaffle(address)` | IRaffleFactory | external | view | - | no | - | - |
+| `isRaffle(address)` | IRaffleFactory | external | view | - | no | - | - |
+| `protocolTreasury()` | IRaffleFactory | external | view | - | no | - | - |
+| `quoteToken()` | IRaffleFactory | external | view | - | no | - | - |
+| `raffleById(uint256)` | IRaffleFactory | external | view | - | no | - | - |
+| `raffleCount()` | IRaffleFactory | external | view | - | no | - | - |
+| `raffleImplementation()` | IRaffleFactory | external | view | - | no | - | - |
+| `requestConfirmations()` | IRaffleFactory | external | view | - | no | - | - |
+| `vrfWrapper()` | IRaffleFactory | external | view | - | no | - | - |
+
+====================================================================================================
+PART 2: STATE VARIABLE AUTHORIZATION MAP (who can write each variable)
+====================================================================================================
+
+## Raffle
+| State variable | Kind | Written by entry points | Entry points with msg.sender condition |
+|---|---|---|---|
+| `VRFV2PlusWrapperConsumerBase.i_linkToken` | immutable | constructor | constructor |
+| `VRFV2PlusWrapperConsumerBase.i_vrfV2PlusWrapper` | immutable | constructor | constructor |
+| `Raffle.ENTRY_PRICE` | constant | - | - |
+| `Raffle.callbackGasLimit` | constant | - | - |
+| `Raffle.requestConfirmations` | constant | - | - |
+| `Raffle.factory` | immutable | constructor | constructor |
+| `Raffle.quoteToken` | immutable | constructor | constructor |
+| `Raffle.sponsor` | storage | initialize | initialize |
+| `Raffle.sponsorRecipient` | storage | initialize | initialize |
+| `Raffle.protocolTreasury` | storage | initialize | initialize |
+| `Raffle.prizeToken` | storage | initialize | initialize |
+| `Raffle.prizeTokenId` | storage | initialize | initialize |
+| `Raffle.raffleId` | storage | initialize | initialize |
+| `Raffle.reserveEntries` | storage | initialize | initialize |
+| `Raffle.endTime` | storage | initialize | initialize |
+| `Raffle.totalEntries` | storage | buyEntries | - |
+| `Raffle.ticketCount` | storage | buyEntries | - |
+| `Raffle.unsettledPot` | storage | buyEntries, enableRefunds, redeemWinningTicket, settleWinningTicket | enableRefunds, redeemWinningTicket |
+| `Raffle.remainingRefundLiability` | storage | enableRefunds, refundTickets | enableRefunds, refundTickets |
+| `Raffle.winnerRecipient` | storage | redeemWinningTicket | redeemWinningTicket |
+| `Raffle.winnerProceeds` | storage | redeemWinningTicket, settleWinningTicket | redeemWinningTicket |
+| `Raffle.sponsorProceeds` | storage | redeemWinningTicket, releaseSponsorProceeds, settleWinningTicket | redeemWinningTicket |
+| `Raffle.protocolFees` | storage | redeemWinningTicket, releaseProtocolFees, settleWinningTicket | redeemWinningTicket |
+| `Raffle.vrfRequestId` | storage | requestDraw | - |
+| `Raffle.drawRequestedAt` | storage | requestDraw | - |
+| `Raffle.resolvedAt` | storage | rawFulfillRandomWords | rawFulfillRandomWords |
+| `Raffle.winningEntry` | storage | rawFulfillRandomWords | rawFulfillRandomWords |
+| `Raffle.winningTicketId` | storage | redeemWinningTicket, settleWinningTicket | redeemWinningTicket |
+| `Raffle.status` | storage | constructor, enableRefunds, initialize, onERC721Received, rawFulfillRandomWords, requestDraw | constructor, enableRefunds, initialize, onERC721Received, rawFulfillRandomWords |
+| `Raffle.settlementComplete` | storage | redeemWinningTicket, settleWinningTicket | redeemWinningTicket |
+| `Raffle.winnerRedeemed` | storage | redeemWinningTicket | redeemWinningTicket |
+| `Raffle.prizeClaimed` | storage | redeemWinningTicket, releaseSponsorPrize | redeemWinningTicket |
+| `Raffle.initialized` | storage | constructor, initialize | constructor, initialize |
+| `Raffle._ticketRanges` | storage | buyEntries | - |
+| `Raffle._requestInFlight` | storage | requestDraw | - |
+
+## RaffleFactory
+| State variable | Kind | Written by entry points | Entry points with msg.sender condition |
+|---|---|---|---|
+| `RaffleFactory.callbackGasLimit` | constant | - | - |
+| `RaffleFactory.requestConfirmations` | constant | - | - |
+| `RaffleFactory.quoteToken` | immutable | constructor | - |
+| `RaffleFactory.vrfWrapper` | immutable | constructor | - |
+| `RaffleFactory.protocolTreasury` | immutable | constructor | - |
+| `RaffleFactory.raffleImplementation` | immutable | constructor | - |
+| `RaffleFactory.raffleCount` | storage | createRaffle | - |
+| `RaffleFactory.raffleById` | storage | createRaffle | - |
+| `RaffleFactory.idByRaffle` | storage | createRaffle | - |
+| `RaffleFactory.isRaffle` | storage | createRaffle | - |
+
+====================================================================================================
+PART 3: CUSTOM BUSINESS-LOGIC CHECKS
+====================================================================================================
+
+[PASS] C1 every Raffle state-changing entry point with external calls is nonReentrant (exemptions documented)
+    OK. Unguarded but exempt: initialize (factory-only, one-shot, only calls trusted factory views); onERC721Received (callee-side hook; no external calls); rawFulfillRandomWords (wrapper-only; no external calls). Unguarded ERC721 entry points: approve(address,uint256) (ERC721, no guard; calls: -); setApprovalForAll(address,bool) (ERC721, no guard; calls: -); transferFrom(address,address,uint256) (ERC721, no guard; calls: IRaffleFactory.isRaffle, IRaffleFactory.raffleImplementation); safeTransferFrom(address,address,uint256) (ERC721, no guard; calls: IERC721Receiver.onERC721Received, IRaffleFactory.isRaffle, IRaffleFactory.raffleImplementation); safeTransferFrom(address,address,uint256,bytes) (ERC721, no guard; calls: IERC721Receiver.onERC721Received, IRaffleFactory.isRaffle, IRaffleFactory.raffleImplementation)
+
+[PASS] C2 all outgoing quote-token transfers are routed through _transferQuote (runtime destination screen)
+    outgoing USDC call sites: _transferQuote:safeTransfer@L566 | incoming USDC call sites: buyEntries:safeTransferFrom@L224 | callers of _transferQuote: redeemWinningTicket, refundTickets, releaseProtocolFees, releaseSponsorProceeds
+
+[FLAG] C3 every prize-NFT outflow re-screens its destination with _isProtocolDestination at transfer time
+    prize outflow sites: redeemWinningTicket@L334 to=winner screened-on-path=False, releaseSponsorPrize@L404 to=recipient screened-on-path=False
+
+[PASS] C4 `status` is written only by constructor/initialize/onERC721Received/requestDraw/enableRefunds/fulfillRandomWords
+    actual writers: ['constructor', 'enableRefunds', 'fulfillRandomWords', 'initialize', 'onERC721Received', 'requestDraw']
+
+[PASS] C5 per-raffle configuration variables are written only in initialize
+    OK
+
+[PASS] C6 RaffleFactory exposes exactly one state-changing entry point (createRaffle)
+    state-changing entry points: ['createRaffle(IRaffleFactory.CreateRaffleParams)']
+
+[PASS] C7 no delegatecall/callcode/selfdestruct reachable in the Raffle implementation
+    OK
+
+[PASS] C8 inventory: functions reading block.timestamp (deadline logic only)
+    buyEntries, createRaffle, enableRefunds, fulfillRandomWords, requestDraw
+
+SUMMARY: C1=PASS, C2=PASS, C3=FLAG, C4=PASS, C5=PASS, C6=PASS, C7=PASS, C8=PASS

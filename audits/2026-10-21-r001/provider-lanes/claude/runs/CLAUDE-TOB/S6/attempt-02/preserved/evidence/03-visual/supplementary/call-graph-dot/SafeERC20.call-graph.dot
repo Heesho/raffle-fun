@@ -1,0 +1,75 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_1593_SafeERC20 {
+label = "SafeERC20"
+"1593_safeTransferFrom(IERC20,address,address,uint256)" [label="safeTransferFrom(IERC20,address,address,uint256)"]
+"1593_safeDecreaseAllowance(IERC20,address,uint256)" [label="safeDecreaseAllowance(IERC20,address,uint256)"]
+"1593_trySafeTransfer(IERC20,address,uint256)" [label="trySafeTransfer(IERC20,address,uint256)"]
+"1593_transferAndCallRelaxed(IERC1363,address,uint256,bytes)" [label="transferAndCallRelaxed(IERC1363,address,uint256,bytes)"]
+"1593__safeTransferFrom(IERC20,address,address,uint256,bool)" [label="_safeTransferFrom(IERC20,address,address,uint256,bool)"]
+"1593__safeApprove(IERC20,address,uint256,bool)" [label="_safeApprove(IERC20,address,uint256,bool)"]
+"1593_safeIncreaseAllowance(IERC20,address,uint256)" [label="safeIncreaseAllowance(IERC20,address,uint256)"]
+"1593_approveAndCallRelaxed(IERC1363,address,uint256,bytes)" [label="approveAndCallRelaxed(IERC1363,address,uint256,bytes)"]
+"1593_trySafeTransferFrom(IERC20,address,address,uint256)" [label="trySafeTransferFrom(IERC20,address,address,uint256)"]
+"1593_forceApprove(IERC20,address,uint256)" [label="forceApprove(IERC20,address,uint256)"]
+"1593_transferFromAndCallRelaxed(IERC1363,address,address,uint256,bytes)" [label="transferFromAndCallRelaxed(IERC1363,address,address,uint256,bytes)"]
+"1593__safeTransfer(IERC20,address,uint256,bool)" [label="_safeTransfer(IERC20,address,uint256,bool)"]
+"1593_safeTransfer(IERC20,address,uint256)" [label="safeTransfer(IERC20,address,uint256)"]
+"1593_trySafeTransfer(IERC20,address,uint256)" -> "1593__safeTransfer(IERC20,address,uint256,bool)"
+"1593_safeTransfer(IERC20,address,uint256)" -> "1593__safeTransfer(IERC20,address,uint256,bool)"
+"1593_transferAndCallRelaxed(IERC1363,address,uint256,bytes)" -> "1593_safeTransfer(IERC20,address,uint256)"
+"1593_trySafeTransferFrom(IERC20,address,address,uint256)" -> "1593__safeTransferFrom(IERC20,address,address,uint256,bool)"
+"1593_safeIncreaseAllowance(IERC20,address,uint256)" -> "1593_forceApprove(IERC20,address,uint256)"
+"1593_safeTransferFrom(IERC20,address,address,uint256)" -> "1593__safeTransferFrom(IERC20,address,address,uint256,bool)"
+"1593_forceApprove(IERC20,address,uint256)" -> "1593__safeApprove(IERC20,address,uint256,bool)"
+"1593_safeDecreaseAllowance(IERC20,address,uint256)" -> "1593_forceApprove(IERC20,address,uint256)"
+"1593_transferFromAndCallRelaxed(IERC1363,address,address,uint256,bytes)" -> "1593_safeTransferFrom(IERC20,address,address,uint256)"
+"1593_approveAndCallRelaxed(IERC1363,address,uint256,bytes)" -> "1593_forceApprove(IERC20,address,uint256)"
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"mload(uint256)" 
+"revert SafeERC20FailedDecreaseAllowance(address,uint256,uint256)" 
+"revert SafeERC20FailedOperation(address)" 
+"call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)" 
+"mstore(uint256,uint256)" 
+"returndatacopy(uint256,uint256,uint256)" 
+"gas()" 
+"code(address)" 
+"returndatasize()" 
+"revert(uint256,uint256)" 
+"1593__safeApprove(IERC20,address,uint256,bool)" -> "returndatasize()"
+"1593_safeTransfer(IERC20,address,uint256)" -> "revert SafeERC20FailedOperation(address)"
+"1593__safeTransferFrom(IERC20,address,address,uint256,bool)" -> "gas()"
+"1593__safeTransferFrom(IERC20,address,address,uint256,bool)" -> "mstore(uint256,uint256)"
+"1593__safeTransferFrom(IERC20,address,address,uint256,bool)" -> "mload(uint256)"
+"1593_transferAndCallRelaxed(IERC1363,address,uint256,bytes)" -> "code(address)"
+"1593__safeTransferFrom(IERC20,address,address,uint256,bool)" -> "call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)"
+"1593_forceApprove(IERC20,address,uint256)" -> "revert SafeERC20FailedOperation(address)"
+"1593__safeTransfer(IERC20,address,uint256,bool)" -> "call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)"
+"1593__safeTransfer(IERC20,address,uint256,bool)" -> "mstore(uint256,uint256)"
+"1593_transferFromAndCallRelaxed(IERC1363,address,address,uint256,bytes)" -> "code(address)"
+"1593_approveAndCallRelaxed(IERC1363,address,uint256,bytes)" -> "revert SafeERC20FailedOperation(address)"
+"1593__safeTransferFrom(IERC20,address,address,uint256,bool)" -> "returndatacopy(uint256,uint256,uint256)"
+"1593__safeApprove(IERC20,address,uint256,bool)" -> "revert(uint256,uint256)"
+"1593__safeTransfer(IERC20,address,uint256,bool)" -> "mload(uint256)"
+"1593__safeApprove(IERC20,address,uint256,bool)" -> "returndatacopy(uint256,uint256,uint256)"
+"1593__safeApprove(IERC20,address,uint256,bool)" -> "mstore(uint256,uint256)"
+"1593__safeTransferFrom(IERC20,address,address,uint256,bool)" -> "returndatasize()"
+"1593__safeTransfer(IERC20,address,uint256,bool)" -> "gas()"
+"1593__safeApprove(IERC20,address,uint256,bool)" -> "mload(uint256)"
+"1593__safeTransfer(IERC20,address,uint256,bool)" -> "returndatasize()"
+"1593__safeTransfer(IERC20,address,uint256,bool)" -> "returndatacopy(uint256,uint256,uint256)"
+"1593_transferFromAndCallRelaxed(IERC1363,address,address,uint256,bytes)" -> "revert SafeERC20FailedOperation(address)"
+"1593__safeTransferFrom(IERC20,address,address,uint256,bool)" -> "revert(uint256,uint256)"
+"1593_approveAndCallRelaxed(IERC1363,address,uint256,bytes)" -> "code(address)"
+"1593_safeTransferFrom(IERC20,address,address,uint256)" -> "revert SafeERC20FailedOperation(address)"
+"1593_transferAndCallRelaxed(IERC1363,address,uint256,bytes)" -> "revert SafeERC20FailedOperation(address)"
+"1593__safeApprove(IERC20,address,uint256,bool)" -> "call(uint256,uint256,uint256,uint256,uint256,uint256,uint256)"
+"1593__safeTransfer(IERC20,address,uint256,bool)" -> "revert(uint256,uint256)"
+"1593__safeApprove(IERC20,address,uint256,bool)" -> "gas()"
+"1593_safeDecreaseAllowance(IERC20,address,uint256)" -> "revert SafeERC20FailedDecreaseAllowance(address,uint256,uint256)"
+}subgraph cluster_toplevel {
+label = "[Top Level]"
+}
+}

@@ -1,0 +1,90 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_1549_ERC20 {
+label = "ERC20"
+"1549_transfer(address,uint256)" [label="transfer(address,uint256)"]
+"1549_name()" [label="name()"]
+"1549_totalSupply()" [label="totalSupply()"]
+"1549__update(address,address,uint256)" [label="_update(address,address,uint256)"]
+"1549_allowance(address,address)" [label="allowance(address,address)"]
+"1549__spendAllowance(address,address,uint256)" [label="_spendAllowance(address,address,uint256)"]
+"1549_approve(address,uint256)" [label="approve(address,uint256)"]
+"1549__approve(address,address,uint256,bool)" [label="_approve(address,address,uint256,bool)"]
+"1549_constructor(string,string)" [label="constructor(string,string)"]
+"1549_symbol()" [label="symbol()"]
+"1549_transferFrom(address,address,uint256)" [label="transferFrom(address,address,uint256)"]
+"1549__mint(address,uint256)" [label="_mint(address,uint256)"]
+"1549__burn(address,uint256)" [label="_burn(address,uint256)"]
+"1549__transfer(address,address,uint256)" [label="_transfer(address,address,uint256)"]
+"1549_balanceOf(address)" [label="balanceOf(address)"]
+"1549__approve(address,address,uint256)" [label="_approve(address,address,uint256)"]
+"1549_decimals()" [label="decimals()"]
+"1549__spendAllowance(address,address,uint256)" -> "1549__approve(address,address,uint256,bool)"
+"1549_transfer(address,uint256)" -> "1549__transfer(address,address,uint256)"
+"1549_transferFrom(address,address,uint256)" -> "1549__transfer(address,address,uint256)"
+"1549_approve(address,uint256)" -> "1549__approve(address,address,uint256)"
+"1549__transfer(address,address,uint256)" -> "1549__update(address,address,uint256)"
+"1549__approve(address,address,uint256)" -> "1549__approve(address,address,uint256,bool)"
+"1549_transferFrom(address,address,uint256)" -> "1549__spendAllowance(address,address,uint256)"
+"1549__burn(address,uint256)" -> "1549__update(address,address,uint256)"
+"1549__spendAllowance(address,address,uint256)" -> "1549_allowance(address,address)"
+"1549_transferFrom(address,address,uint256)" -> "1549__msgSender()"
+"1549_transfer(address,uint256)" -> "1549__msgSender()"
+"1549_approve(address,uint256)" -> "1549__msgSender()"
+"1549__mint(address,uint256)" -> "1549__update(address,address,uint256)"
+}subgraph cluster_1653_IERC20Metadata {
+label = "IERC20Metadata"
+"1653_symbol()" [label="symbol()"]
+"1653_name()" [label="name()"]
+"1653_decimals()" [label="decimals()"]
+}subgraph cluster_4151_Context {
+label = "Context"
+"4151__contextSuffixLength()" [label="_contextSuffixLength()"]
+"4151__msgSender()" [label="_msgSender()"]
+"4151__msgData()" [label="_msgData()"]
+}subgraph cluster_14457_ReentrantERC20 {
+label = "ReentrantERC20"
+"14457_transfer(address,uint256)" [label="transfer(address,uint256)"]
+"14457_setFailOutboundTransfer(bool)" [label="setFailOutboundTransfer(bool)"]
+"14457_constructor()" [label="constructor()"]
+"14457_arm(address)" [label="arm(address)"]
+"14457_armOutbound(address)" [label="armOutbound(address)"]
+"14457_decimals()" [label="decimals()"]
+"14457_transferFrom(address,address,uint256)" [label="transferFrom(address,address,uint256)"]
+"14457_mint(address,uint256)" [label="mint(address,uint256)"]
+"14457_constructor()" -> "14457_constructor(string,string)"
+"14457_transferFrom(address,address,uint256)" -> "14457_transferFrom(address,address,uint256)"
+"14457_transfer(address,uint256)" -> "14457_transfer(address,uint256)"
+"14457_mint(address,uint256)" -> "14457__mint(address,uint256)"
+}subgraph cluster_1627_IERC20 {
+label = "IERC20"
+"1627_approve(address,uint256)" [label="approve(address,uint256)"]
+"1627_transfer(address,uint256)" [label="transfer(address,uint256)"]
+"1627_transferFrom(address,address,uint256)" [label="transferFrom(address,address,uint256)"]
+"1627_allowance(address,address)" [label="allowance(address,address)"]
+"1627_totalSupply()" [label="totalSupply()"]
+"1627_balanceOf(address)" [label="balanceOf(address)"]
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"revert ERC20InvalidApprover(address)" 
+"revert ERC20InvalidReceiver(address)" 
+"revert ERC20InvalidSpender(address)" 
+"revert ERC20InsufficientAllowance(address,uint256,uint256)" 
+"revert ERC20InsufficientBalance(address,uint256,uint256)" 
+"revert ERC20InvalidSender(address)" 
+"abi.encodeCall()" 
+"14457_transfer(address,uint256)" -> "abi.encodeCall()"
+"1549__transfer(address,address,uint256)" -> "revert ERC20InvalidReceiver(address)"
+"1549__approve(address,address,uint256,bool)" -> "revert ERC20InvalidApprover(address)"
+"1549__spendAllowance(address,address,uint256)" -> "revert ERC20InsufficientAllowance(address,uint256,uint256)"
+"1549__approve(address,address,uint256,bool)" -> "revert ERC20InvalidSpender(address)"
+"1549__mint(address,uint256)" -> "revert ERC20InvalidReceiver(address)"
+"1549__update(address,address,uint256)" -> "revert ERC20InsufficientBalance(address,uint256,uint256)"
+"1549__burn(address,uint256)" -> "revert ERC20InvalidSender(address)"
+"14457_transferFrom(address,address,uint256)" -> "abi.encodeCall()"
+"1549__transfer(address,address,uint256)" -> "revert ERC20InvalidSender(address)"
+}subgraph cluster_toplevel {
+label = "[Top Level]"
+}
+}

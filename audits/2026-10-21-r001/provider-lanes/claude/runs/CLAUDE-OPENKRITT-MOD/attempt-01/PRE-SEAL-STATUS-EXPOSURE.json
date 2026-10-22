@@ -1,0 +1,35 @@
+{
+  "schema": "raffle-fun.claude-openkritt-pre-seal-status-exposure.v1",
+  "recordedUtc": "2026-10-22T00:23:00Z",
+  "scanId": 1,
+  "exposure": "Before the final raw seal, whole scan-status diagnostics exposed recentEmptyResults explanation text produced by the running native lane.",
+  "knownReaders": [
+    {
+      "actor": "Daybreak audit coordinator",
+      "evidence": "runs/COORDINATOR-DAYBREAK/attempt-01/events.jsonl",
+      "eventItemIds": ["item_40", "item_134", "item_232", "item_310"],
+      "purpose": "runtime health and terminal-state diagnosis"
+    },
+    {
+      "actor": "parent administrative bridge",
+      "reportedUtcApprox": "2026-10-21T23:52:48Z",
+      "evidence": "reconciliation/finalization/PARENT-STATUS-EXPOSURE-ADDENDUM.json",
+      "evidenceSha256": "71512e40e7207efe6c63ce3861c9aab6bbf624c3d70b11592d60be8b67fc13ff"
+    },
+    {
+      "actor": "exclusive reconciliation owner",
+      "evidence": "runs/COORDINATOR-DAYBREAK/attempt-01/PARENT-INBOX.jsonl",
+      "parentNoticeUtc": "2026-10-22T00:11:29.526639+00:00"
+    }
+  ],
+  "handling": {
+    "assessedOrAdoptedAsFindingBeforeRawSeal": false,
+    "fedBackIntoNativeReviewer": false,
+    "changedNativeInputs": false,
+    "changedPreviouslySealedColdReviews": false,
+    "subsequentRoutineStatusQueriesRestrictedToLifecycleAndCounters": true
+  },
+  "qualification": "No complete pre-seal narrative non-exposure claim is made for parent, accounting, or this coordinator. The raw terminal API, database, export response, errors, and logs are still sealed before this lane's final semantic adoption. Native reviewer independence is unchanged because exposed text was not supplied to the lane.",
+  "productionFilesChanged": false,
+  "scanOrDatabaseMutated": false
+}

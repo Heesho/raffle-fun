@@ -1,0 +1,100 @@
+INFO:Printers:
+######################
+####### Raffle #######
+######################
+
+## Constructor Call Sequence
+	- ERC721
+	- ReentrancyGuard
+	- VRFV2PlusWrapperConsumerBase
+	- Raffle
+
+## Constructor Definitions
+
+### ERC721
+
+     constructor(string memory name_, string memory symbol_) {
+        _name = name_;
+        _symbol = symbol_;
+    }
+
+### ReentrancyGuard
+
+     constructor() {
+        _reentrancyGuardStorageSlot().getUint256Slot().value = NOT_ENTERED;
+    }
+
+### VRFV2PlusWrapperConsumerBase
+
+   constructor(
+    address _vrfV2PlusWrapper
+  ) {
+    IVRFV2PlusWrapper vrfV2PlusWrapper = IVRFV2PlusWrapper(_vrfV2PlusWrapper);
+
+    i_linkToken = LinkTokenInterface(vrfV2PlusWrapper.link());
+    i_vrfV2PlusWrapper = vrfV2PlusWrapper;
+  }
+
+### Raffle
+
+     constructor(address quoteToken_, address vrfWrapper_)
+        ERC721("", "")
+        VRFV2PlusWrapperConsumerBase(_validatedVrfWrapper(vrfWrapper_))
+    {
+        if (msg.sender == address(0) || quoteToken_ == address(0)) revert ZeroAddress();
+
+        factory = msg.sender;
+        quoteToken = IERC20(quoteToken_);
+
+        initialized = true;
+        status = Status.Refunding;
+    }
+
+#############################
+####### RaffleFactory #######
+#############################
+
+## Constructor Call Sequence
+	- ReentrancyGuard
+	- RaffleFactory
+
+## Constructor Definitions
+
+### ReentrancyGuard
+
+     constructor() {
+        _reentrancyGuardStorageSlot().getUint256Slot().value = NOT_ENTERED;
+    }
+
+### RaffleFactory
+
+     constructor(address quoteToken_, address vrfWrapper_, address protocolTreasury_) {
+        _requireContract(quoteToken_);
+        _requireContract(vrfWrapper_);
+        if (protocolTreasury_ == address(0)) revert ZeroAddress();
+
+        uint8 quoteDecimals = 0;
+        try IERC20Metadata(quoteToken_).decimals() returns (uint8 decimals_) {
+            quoteDecimals = decimals_;
+        } catch {
+            revert UnsupportedQuoteToken(quoteToken_);
+        }
+        if (quoteDecimals != RaffleConstants.QUOTE_TOKEN_DECIMALS) {
+            revert InvalidQuoteTokenDecimals(quoteDecimals, RaffleConstants.QUOTE_TOKEN_DECIMALS);
+        }
+
+        if (protocolTreasury_ == address(this) || protocolTreasury_ == quoteToken_ || protocolTreasury_ == vrfWrapper_)
+        {
+            revert UnsafeProtocolDestination(protocolTreasury_);
+        }
+
+        quoteToken = quoteToken_;
+        vrfWrapper = vrfWrapper_;
+        protocolTreasury = protocolTreasury_;
+
+        address implementation = address(new Raffle(quoteToken_, vrfWrapper_));
+        if (protocolTreasury_ == implementation) revert UnsafeProtocolDestination(protocolTreasury_);
+        raffleImplementation = implementation;
+    }
+
+INFO:Slither:. analyzed (36 contracts)

@@ -1,0 +1,24 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_13842_FalseERC20 {
+label = "FalseERC20"
+"13842_approve(address,uint256)" [label="approve(address,uint256)"]
+"13842_transferFrom(address,address,uint256)" [label="transferFrom(address,address,uint256)"]
+"13842_mint(address,uint256)" [label="mint(address,uint256)"]
+"13842_decimals()" [label="decimals()"]
+"13842_transfer(address,uint256)" [label="transfer(address,uint256)"]
+}subgraph cluster_1627_IERC20 {
+label = "IERC20"
+"1627_totalSupply()" [label="totalSupply()"]
+"1627_allowance(address,address)" [label="allowance(address,address)"]
+"1627_approve(address,uint256)" [label="approve(address,uint256)"]
+"1627_balanceOf(address)" [label="balanceOf(address)"]
+"1627_transferFrom(address,address,uint256)" [label="transferFrom(address,address,uint256)"]
+"1627_transfer(address,uint256)" [label="transfer(address,uint256)"]
+}subgraph cluster_solidity {
+label = "[Solidity]"
+}subgraph cluster_toplevel {
+label = "[Top Level]"
+}
+}

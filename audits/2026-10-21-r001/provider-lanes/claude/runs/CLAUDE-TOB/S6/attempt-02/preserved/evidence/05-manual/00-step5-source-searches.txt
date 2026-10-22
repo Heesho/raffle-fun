@@ -1,0 +1,224 @@
+# Step 5 manual-review searches (generated 2026-10-21T21:17:02Z); files: src/Raffle.sol src/RaffleFactory.sol src/interfaces/IRaffle.sol src/interfaces/IRaffleFactory.sol src/libraries/RaffleConstants.sol
+
+### 1. PRIVACY
+
+## [privacy-secrets] /usr/bin/grep -nE 'secret|password|seed|salt|commit|reveal|hidden|confidential' src/Raffle.sol src/RaffleFactory.sol src/interfaces/IRaffle.sol src/interfaces/IRaffleFactory.sol src/libraries/RaffleConstants.sol
+(no matches)
+
+## [privacy-private-state] /usr/bin/grep -nE 'private|internal' src/Raffle.sol src/RaffleFactory.sol
+src/Raffle.sol:139:    mapping(uint256 ticketId => TicketRange range) private _ticketRanges;
+src/Raffle.sol:142:    bool private _requestInFlight;
+src/Raffle.sol:497:    function _update(address to, uint256 ticketId, address auth) internal override returns (address previousOwner) {
+src/Raffle.sol:509:    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+src/Raffle.sol:533:    function _settleWinningTicket(uint256 ticketId) private returns (uint256 cashAmount) {
+src/Raffle.sol:564:    function _transferQuote(address to, uint256 amount) private {
+src/Raffle.sol:573:    function _requireStatus(Status expected) private view {
+src/Raffle.sol:579:    function _requireWinningTicket(uint256 ticketId) private view {
+src/Raffle.sol:594:        private
+src/Raffle.sol:610:    function _validatedVrfWrapper(address wrapper) private pure returns (address validatedWrapper) {
+src/RaffleFactory.sol:154:    function _validateCreateParams(CreateRaffleParams calldata params) private view {
+src/RaffleFactory.sol:183:    function _requireContract(address account) private view {
+
+## [privacy-hashing] /usr/bin/grep -nE 'keccak256|sha256|ripemd160|abi\.encodePacked' src/Raffle.sol src/RaffleFactory.sol src/interfaces/IRaffle.sol src/interfaces/IRaffleFactory.sol src/libraries/RaffleConstants.sol
+(no matches)
+
+### 2. FRONT-RUNNING / ORDERING / MEV
+
+## [fr-timestamp] /usr/bin/grep -nE 'block\.timestamp|block\.number' src/Raffle.sol src/RaffleFactory.sol src/interfaces/IRaffle.sol src/interfaces/IRaffleFactory.sol src/libraries/RaffleConstants.sol
+src/Raffle.sol:216:        if (block.timestamp >= endTime) revert SaleEnded(endTime, block.timestamp);
+src/Raffle.sol:242:        if (block.timestamp < endTime) revert RaffleNotEnded(endTime, block.timestamp);
+src/Raffle.sol:245:        if (block.timestamp >= requestDeadline) {
+src/Raffle.sol:246:            revert DrawRequestWindowExpired(requestDeadline, block.timestamp);
+src/Raffle.sol:253:        drawRequestedAt = uint64(block.timestamp);
+src/Raffle.sol:282:                if (msg.sender != sponsor && block.timestamp < deadline) {
+src/Raffle.sol:283:                    revert RefundsNotAvailable(deadline, block.timestamp);
+src/Raffle.sol:287:                if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+src/Raffle.sol:291:            if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+src/Raffle.sol:512:                || block.timestamp >= callbackDeadline()
+src/Raffle.sol:520:        resolvedAt = uint64(block.timestamp);
+src/RaffleFactory.sol:99:        uint256 currentTime = block.timestamp;
+
+## [fr-slippage-guards] /usr/bin/grep -nE 'slippage|minOut|maxPrice|amountOutMin|maxTotal|expected[A-Z]|deadline' src/Raffle.sol src/RaffleFactory.sol src/interfaces/IRaffle.sol src/interfaces/IRaffleFactory.sol src/libraries/RaffleConstants.sol
+src/Raffle.sol:277:        uint256 deadline;
+src/Raffle.sol:281:                deadline = endTime;
+src/Raffle.sol:282:                if (msg.sender != sponsor && block.timestamp < deadline) {
+src/Raffle.sol:283:                    revert RefundsNotAvailable(deadline, block.timestamp);
+src/Raffle.sol:286:                deadline = drawRequestDeadline();
+src/Raffle.sol:287:                if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+src/Raffle.sol:290:            deadline = callbackDeadline();
+src/Raffle.sol:291:            if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+src/Raffle.sol:425:            revert UnexpectedPrize(msg.sender, tokenId, from, operator);
+src/Raffle.sol:458:    function drawRequestDeadline() public view override returns (uint256 deadline) {
+src/Raffle.sol:459:        deadline = uint256(endTime) + RaffleConstants.DRAW_REQUEST_TIMEOUT;
+src/Raffle.sol:463:    function callbackDeadline() public view override returns (uint256 deadline) {
+src/Raffle.sol:464:        if (drawRequestedAt != 0) deadline = uint256(drawRequestedAt) + RaffleConstants.DRAW_CALLBACK_TIMEOUT;
+src/interfaces/IRaffle.sol:88:    /// @param callbackDeadline Exclusive Unix-timestamp deadline for accepting the authenticated callback.
+src/interfaces/IRaffle.sol:100:    /// @param expectedRequestId Request ID currently recorded by the raffle, or zero before request persistence.
+src/interfaces/IRaffle.sol:102:    event VrfCallbackIgnored(uint256 indexed receivedRequestId, uint256 indexed expectedRequestId, Status status);
+src/interfaces/IRaffle.sol:202:    error UnexpectedPrize(address token, uint256 tokenId, address from, address operator);
+src/interfaces/IRaffle.sol:234:    /// @notice Raised when a draw request is submitted at or after the exclusive request deadline.
+src/interfaces/IRaffle.sol:235:    /// @param deadline Exclusive draw-request Unix-timestamp deadline, in seconds.
+src/interfaces/IRaffle.sol:237:    error DrawRequestWindowExpired(uint256 deadline, uint256 currentTime);
+src/interfaces/IRaffle.sol:242:    /// @notice Raised when refunds are requested before the applicable liveness deadline.
+src/interfaces/IRaffle.sol:243:    /// @param deadline Unix timestamp, in seconds, at which refunds become available.
+src/interfaces/IRaffle.sol:245:    error RefundsNotAvailable(uint256 deadline, uint256 currentTime);
+src/interfaces/IRaffle.sol:322:    /// @notice Enables full refunds after the sold-raffle request deadline or an accepted request's callback deadline.
+src/interfaces/IRaffle.sol:375:    /// @notice Returns the exclusive deadline for initiating the draw.
+src/interfaces/IRaffle.sol:376:    /// @return deadline Unix timestamp, in seconds, equal to `endTime + 2 days`.
+src/interfaces/IRaffle.sol:377:    function drawRequestDeadline() external view returns (uint256 deadline);
+src/interfaces/IRaffle.sol:379:    /// @notice Returns the exclusive deadline for accepting the authenticated callback.
+src/interfaces/IRaffle.sol:380:    /// @return deadline Unix timestamp, in seconds, equal to `drawRequestedAt + 2 days`, or zero before a request.
+src/interfaces/IRaffle.sol:381:    function callbackDeadline() external view returns (uint256 deadline);
+
+## [fr-status-gates-in-transfer-hook] /usr/bin/grep -nE 'function _update|_isProtocolDestination\(to|Status\.Drawing' src/Raffle.sol
+252:        status = Status.Drawing;
+289:        } else if (status == Status.Drawing) {
+497:    function _update(address to, uint256 ticketId, address auth) internal override returns (address previousOwner) {
+498:        if (to != address(0) && _isProtocolDestination(to, address(prizeToken))) {
+511:            _requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1
+565:        if (_isProtocolDestination(to, address(prizeToken))) revert InvalidQuoteDestination(to);
+
+## [fr-permissionless-entrypoints] /usr/bin/grep -nE 'function (buyEntries|requestDraw|enableRefunds|settleWinningTicket|redeemWinningTicket|refundTickets|releaseSponsorProceeds|releaseProtocolFees|releaseSponsorPrize|createRaffle)' src/Raffle.sol src/RaffleFactory.sol src/interfaces/IRaffle.sol src/interfaces/IRaffleFactory.sol src/libraries/RaffleConstants.sol
+src/Raffle.sol:209:    function buyEntries(address recipient, uint128 entryCount)
+src/Raffle.sol:240:    function requestDraw() external payable override nonReentrant returns (uint256 requestId) {
+src/Raffle.sol:276:    function enableRefunds() external override nonReentrant {
+src/Raffle.sol:304:    function settleWinningTicket(uint256 ticketId) external override nonReentrant returns (uint256 cashAmount) {
+src/Raffle.sol:309:    function redeemWinningTicket(uint256 ticketId) external override nonReentrant returns (uint256 cashAmount) {
+src/Raffle.sol:349:    function refundTickets(uint256[] calldata ticketIds) external override nonReentrant returns (uint256 amount) {
+src/Raffle.sol:375:    function releaseSponsorProceeds() external override nonReentrant returns (uint256 amount) {
+src/Raffle.sol:385:    function releaseProtocolFees() external override nonReentrant returns (uint256 amount) {
+src/Raffle.sol:395:    function releaseSponsorPrize() external override nonReentrant {
+src/RaffleFactory.sol:97:    function createRaffle(CreateRaffleParams calldata params) external override nonReentrant returns (address raffle) {
+src/interfaces/IRaffle.sol:314:    function buyEntries(address recipient, uint128 entryCount) external returns (uint256 ticketId);
+src/interfaces/IRaffle.sol:320:    function requestDraw() external payable returns (uint256 requestId);
+src/interfaces/IRaffle.sol:324:    function enableRefunds() external;
+src/interfaces/IRaffle.sol:331:    function settleWinningTicket(uint256 ticketId) external returns (uint256 cashAmount);
+src/interfaces/IRaffle.sol:338:    function redeemWinningTicket(uint256 ticketId) external returns (uint256 cashAmount);
+src/interfaces/IRaffle.sol:344:    function refundTickets(uint256[] calldata ticketIds) external returns (uint256 amount);
+src/interfaces/IRaffle.sol:348:    function releaseSponsorProceeds() external returns (uint256 amount);
+src/interfaces/IRaffle.sol:352:    function releaseProtocolFees() external returns (uint256 amount);
+src/interfaces/IRaffle.sol:355:    function releaseSponsorPrize() external;
+src/interfaces/IRaffleFactory.sol:104:    function createRaffle(CreateRaffleParams calldata params) external returns (address raffle);
+
+## [fr-reserve-outcome] /usr/bin/grep -nE 'reserveEntries' src/Raffle.sol
+79:    uint128 public override reserveEntries;
+203:        reserveEntries = params.reserveEntries;
+521:        status = totalEntries >= reserveEntries ? Status.NftWon : Status.CashWon;
+
+## [fr-msg-value] /usr/bin/grep -nE 'msg\.value' src/Raffle.sol
+250:        if (msg.value < quotedFee) revert InsufficientVrfFee(quotedFee, msg.value);
+258:        if (paidPrice > msg.value) revert InsufficientVrfFee(paidPrice, msg.value);
+262:        uint256 excess = msg.value - paidPrice;
+
+### 3. CRYPTOGRAPHY / RANDOMNESS
+
+## [crypto-signatures] /usr/bin/grep -nE 'ecrecover|ECDSA|signature|permit\(|nonces|EIP712|isValidSignature' src/Raffle.sol src/RaffleFactory.sol src/interfaces/IRaffle.sol src/interfaces/IRaffleFactory.sol src/libraries/RaffleConstants.sol
+(no matches)
+
+## [crypto-weak-randomness] /usr/bin/grep -nE 'blockhash|block\.prevrandao|block\.difficulty|block\.coinbase|random' src/Raffle.sol src/RaffleFactory.sol src/interfaces/IRaffle.sol src/interfaces/IRaffleFactory.sol src/libraries/RaffleConstants.sol
+src/Raffle.sol:504:    /// @dev Authenticated randomness selects only an entry. No ticket search, loop, user call, or token transfer
+src/Raffle.sol:508:    /// @param randomWords Callback words; exactly one word is required for resolution.
+src/Raffle.sol:509:    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+src/Raffle.sol:511:            _requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1
+src/Raffle.sol:518:        uint128 resolvedEntry = uint128((randomWords[0] % uint256(totalEntries)) + 1);
+src/interfaces/IRaffle.sol:105:    /// @param requestId Request ID that produced the accepted randomness.
+src/interfaces/IRaffle.sol:316:    /// @notice Pays the current native Chainlink fee and requests the raffle's one random word.
+src/interfaces/IRaffle.sol:365:    /// @return fee Estimated native-token wei for the configured callback and one random word.
+
+## [crypto-vrf-usage] /usr/bin/grep -nE 'randomWords|requestConfirmations|callbackGasLimit|requestRandomness|fulfillRandomWords|nativePayment' src/Raffle.sol src/libraries/RaffleConstants.sol
+src/Raffle.sol:47:    uint32 public constant override callbackGasLimit = RaffleConstants.VRF_CALLBACK_GAS_LIMIT;
+src/Raffle.sol:50:    uint16 public constant override requestConfirmations = RaffleConstants.VRF_REQUEST_CONFIRMATIONS;
+src/Raffle.sol:255:        bytes memory extraArgs = VRFV2PlusClient._argsToBytes(VRFV2PlusClient.ExtraArgsV1({ nativePayment: true }));
+src/Raffle.sol:257:        (requestId, paidPrice) = requestRandomnessPayInNative(callbackGasLimit, requestConfirmations, 1, extraArgs);
+src/Raffle.sol:437:        fee = i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit, 1);
+src/Raffle.sol:442:        fee = i_vrfV2PlusWrapper.estimateRequestPriceNative(callbackGasLimit, 1, requestGasPriceWei);
+src/Raffle.sol:508:    /// @param randomWords Callback words; exactly one word is required for resolution.
+src/Raffle.sol:509:    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+src/Raffle.sol:511:            _requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1
+src/Raffle.sol:518:        uint128 resolvedEntry = uint128((randomWords[0] % uint256(totalEntries)) + 1);
+
+## [crypto-modulo-on-randomness] /usr/bin/grep -nE '%' src/Raffle.sol
+518:        uint128 resolvedEntry = uint128((randomWords[0] % uint256(totalEntries)) + 1);
+
+## [crypto-create-address-predictability] /usr/bin/grep -nE 'Clones\.clone|cloneDeterministic|create2' src/RaffleFactory.sol
+106:        raffle = Clones.clone(raffleImplementation);
+
+## [crypto-vrf-deps] /usr/bin/grep -nE 'transferAndCall|lastRequestId|EXTRA_ARGS_V1_TAG|OnlyVRFWrapperCanFulfill' node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:32:  error OnlyVRFWrapperCanFulfill(address have, address want);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:69:    i_linkToken.transferAndCall(
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:72:    return (i_vrfV2PlusWrapper.lastRequestId(), reqPrice);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:104:      revert OnlyVRFWrapperCanFulfill(msg.sender, vrfWrapperAddr);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:9:  function lastRequestId() external view returns (uint256);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol:7:  bytes4 public constant EXTRA_ARGS_V1_TAG = bytes4(keccak256("VRF ExtraArgsV1"));
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol:25:    return abi.encodeWithSelector(EXTRA_ARGS_V1_TAG, extraArgs);
+
+### 4. DeFi INTERACTIONS (oracles, flash loans, external protocol assumptions)
+
+## [defi-oracles] /usr/bin/grep -nE 'oracle|latestRoundData|AggregatorV3|priceFeed|linkNativeFeed|TWAP|getReserves|observe\(' src/Raffle.sol src/RaffleFactory.sol src/interfaces/IRaffle.sol src/interfaces/IRaffleFactory.sol src/libraries/RaffleConstants.sol node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:82:  function linkNativeFeed() external view returns (address);
+
+## [defi-flash] /usr/bin/grep -nE 'flash|swap|uniswap|curve|balancer|aave|liquidity|borrow' src/Raffle.sol src/RaffleFactory.sol src/interfaces/IRaffle.sol src/interfaces/IRaffleFactory.sol src/libraries/RaffleConstants.sol
+(no matches)
+
+## [defi-balance-dependence] /usr/bin/grep -nE 'balanceOf\(address\(this\)\)|address\(this\)\.balance|totalSupply\(' src/Raffle.sol src/RaffleFactory.sol
+(no matches)
+
+## [defi-token-assumptions] /usr/bin/grep -nE 'safeTransfer|safeTransferFrom|transferFrom\(|decimals\(|QUOTE_TOKEN_DECIMALS|ENTRY_PRICE' src/Raffle.sol src/RaffleFactory.sol src/interfaces/IRaffle.sol src/interfaces/IRaffleFactory.sol src/libraries/RaffleConstants.sol
+src/Raffle.sol:44:    uint256 public constant override ENTRY_PRICE = RaffleConstants.ENTRY_PRICE;
+src/Raffle.sol:223:        uint256 grossAmount = uint256(entryCount) * ENTRY_PRICE;
+src/Raffle.sol:224:        quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount);
+src/Raffle.sol:334:            prizeToken.transferFrom(address(this), winner, deliveredPrizeTokenId);
+src/Raffle.sol:367:        amount = aggregateEntries * ENTRY_PRICE;
+src/Raffle.sol:404:        prizeToken.transferFrom(address(this), recipient, prizeTokenId);
+src/Raffle.sol:474:        amount = uint256(totalEntries) * ENTRY_PRICE;
+src/Raffle.sol:566:        quoteToken.safeTransfer(to, amount);
+src/RaffleFactory.sol:71:        try IERC20Metadata(quoteToken_).decimals() returns (uint8 decimals_) {
+src/RaffleFactory.sol:76:        if (quoteDecimals != RaffleConstants.QUOTE_TOKEN_DECIMALS) {
+src/RaffleFactory.sol:77:            revert InvalidQuoteTokenDecimals(quoteDecimals, RaffleConstants.QUOTE_TOKEN_DECIMALS);
+src/RaffleFactory.sol:128:        prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId);
+src/interfaces/IRaffle.sol:71:    /// @param grossAmount Raw six-decimal quote-token units paid, equal to `entryCount * ENTRY_PRICE`.
+src/interfaces/IRaffle.sol:151:    /// @param amount Raw six-decimal quote-token units refunded, equal to `entryQuantity * ENTRY_PRICE`.
+src/interfaces/IRaffle.sol:343:    /// @return amount Raw six-decimal quote-token units paid, equal to represented entries times `ENTRY_PRICE`.
+src/interfaces/IRaffle.sol:389:    /// @return amount Raw six-decimal quote-token units equal to `totalEntries * ENTRY_PRICE`.
+src/interfaces/IRaffle.sol:396:    function ENTRY_PRICE() external view returns (uint256 price);
+src/libraries/RaffleConstants.sol:21:    uint256 internal constant ENTRY_PRICE = 1_000_000;
+src/libraries/RaffleConstants.sol:24:    uint8 internal constant QUOTE_TOKEN_DECIMALS = 6;
+
+## [defi-native-eth] /usr/bin/grep -nE 'receive\(\)|payable|call\(gas\(\)' src/Raffle.sol src/RaffleFactory.sol
+src/Raffle.sol:146:    /// @notice Raised when native currency is sent outside the payable draw-request path.
+src/Raffle.sol:171:    receive() external payable {
+src/Raffle.sol:240:    function requestDraw() external payable override nonReentrant returns (uint256 requestId) {
+src/Raffle.sol:267:                success := call(gas(), refundRecipient, excess, 0, 0, 0, 0)
+
+## [defi-vrf-pricing] /usr/bin/grep -nE 'calculateRequestPriceNative|estimateRequestPriceNative|requestRandomWordsInNative' src/Raffle.sol node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol
+src/Raffle.sol:437:        fee = i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit, 1);
+src/Raffle.sol:442:        fee = i_vrfV2PlusWrapper.estimateRequestPriceNative(callbackGasLimit, 1, requestGasPriceWei);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:82:    requestPrice = i_vrfV2PlusWrapper.calculateRequestPriceNative(_callbackGasLimit, _numWords);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:84:      i_vrfV2PlusWrapper.requestRandomWordsInNative{value: requestPrice}(
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:33:  function calculateRequestPriceNative(uint32 _callbackGasLimit, uint32 _numWords) external view returns (uint256);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:61:  function estimateRequestPriceNative(
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:74:  function requestRandomWordsInNative(
+
+### 5. TRUST / DESTINATION SCREENING (supports manual findings)
+
+## [trust-prize-calls] /usr/bin/grep -nE 'prizeToken\.|prize\.' src/Raffle.sol src/RaffleFactory.sol
+src/Raffle.sol:26:///      atomically burns the ticket while receiving the NFT or cash prize.
+src/Raffle.sol:334:            prizeToken.transferFrom(address(this), winner, deliveredPrizeTokenId);
+src/Raffle.sol:335:            if (prizeToken.ownerOf(deliveredPrizeTokenId) != winner) {
+src/Raffle.sol:404:        prizeToken.transferFrom(address(this), recipient, prizeTokenId);
+src/Raffle.sol:405:        if (prizeToken.ownerOf(prizeTokenId) != recipient) revert PrizeDeliveryVerificationFailed(recipient);
+src/Raffle.sol:414:    /// @param tokenId Transferred token ID, which must match the configured prize.
+src/RaffleFactory.sol:128:        prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId);
+src/RaffleFactory.sol:129:        if (prize.ownerOf(params.prizeTokenId) != raffle) {
+
+## [trust-registry] /usr/bin/grep -nE 'isRaffle|raffleImplementation\(\)' src/Raffle.sol src/RaffleFactory.sol
+src/Raffle.sol:601:            || destination == canonicalFactory.raffleImplementation();
+src/Raffle.sol:603:            unsafeDestination = canonicalFactory.isRaffle(destination);
+src/RaffleFactory.sol:54:    mapping(address raffle => bool registered) public override isRaffle;
+src/RaffleFactory.sol:125:        isRaffle[raffle] = true;
+src/RaffleFactory.sol:159:                || params.prizeToken == raffleImplementation || isRaffle[params.prizeToken]
+src/RaffleFactory.sol:166:                || params.sponsorRecipient == raffleImplementation || isRaffle[params.sponsorRecipient]
+
+## [trust-code-length] /usr/bin/grep -nE 'code\.length' src/Raffle.sol src/RaffleFactory.sol
+src/Raffle.sol:602:        if (!unsafeDestination && destination.code.length != 0) {
+src/RaffleFactory.sol:184:        if (account.code.length == 0) revert NotContract(account);

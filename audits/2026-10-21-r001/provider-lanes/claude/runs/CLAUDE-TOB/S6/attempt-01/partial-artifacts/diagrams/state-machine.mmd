@@ -1,0 +1,14 @@
+stateDiagram-v2
+    direction LR
+    [*] --> AwaitingPrize: createRaffle -> clone.initialize (factory only, once)
+    AwaitingPrize --> Active: onERC721Received (msg.sender==prizeToken, from==sponsor, operator==factory, id==prizeTokenId)
+    Active --> Active: buyEntries [now < endTime]
+    Active --> Drawing: requestDraw [endTime <= now < endTime+2d, entries > 0, fee paid]
+    Active --> Refunding: enableRefunds [entries>0: now >= endTime+2d | entries==0: sponsor anytime, anyone from endTime]
+    Drawing --> NftWon: VRF callback [now < drawRequestedAt+2d, totalEntries >= reserve]
+    Drawing --> CashWon: VRF callback [now < drawRequestedAt+2d, totalEntries < reserve]
+    Drawing --> Refunding: enableRefunds [now >= drawRequestedAt+2d]
+    NftWon --> NftWon: settle | redeem NFT (owner) | release fees/sponsor
+    CashWon --> CashWon: settle | redeem 80% (owner) | release fees/sponsor | releaseSponsorPrize
+    Refunding --> Refunding: refundTickets (owner) | releaseSponsorPrize
+    note right of Refunding: implementation contract is constructed directly in Refunding (locked)

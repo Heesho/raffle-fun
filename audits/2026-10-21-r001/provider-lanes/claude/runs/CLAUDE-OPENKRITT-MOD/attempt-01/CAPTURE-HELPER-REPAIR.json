@@ -1,0 +1,55 @@
+{
+  "schema": "raffle-fun.claude-openkritt-capture-helper-repair.v1",
+  "recordedUtc": "2026-10-22T00:12:30Z",
+  "scanId": 1,
+  "statusAtDiagnosis": "running",
+  "originalHelperExecuted": false,
+  "originalHelperSha256": "e7c890c5e50870568e1fc93fb36bba8f9df1097a4edb0f4ef08f29a79e0f88d3",
+  "defect": "The qualification-issue construction referenced logical_completed before assigning it, which would have raised NameError after raw capture and structured export.",
+  "repair": [
+    "Assign status_counts, logical_completed and post_executed before qualification-issue construction.",
+    "Install an invocation-owned exception hook that preserves only a partial capture created by this invocation under a unique failed-final-capture timestamp and frees the canonical path for a corrected rerun; a pre-existing successful capture is never moved.",
+    "Create the canonical capture directory atomically before marking it invocation-owned, preventing a concurrent invocation from moving another process's capture.",
+    "Require the existing native supervisor's terminal receipt before copying its directory.",
+    "Bind the capture helper itself in the final integrity manifest and reverify every manifest artifact before writing the final seal.",
+    "Pin and byte-compare the recorded four-file method patch to the non-lockfile engine diff, and separately pin the full five-file diff, package-lock-only diff, and resulting lockfile bytes.",
+    "Require exactly one scan row and pin the externally sealed 43-file source manifest hash before capture.",
+    "Narrow the credential statement to environments and provider homes not intentionally copied; do not claim raw native logs were secret-value-sanitized.",
+    "Preserve either the native HTTP 200 canonical ZIP or the native HTTP 409 no-canonical-findings JSON response before parsing; never synthesize an empty ZIP.",
+    "Issue zero-new-root status only for a zero-record native result; any native finding records produce a separate semantic-gate-pending disposition.",
+    "Bind and disclose the pre-seal status-narrative exposure: explanation text was visible to coordination readers but not adopted or fed back to the independent native lane."
+  ],
+  "correctedHelperSha256BeforeEvidenceListAddition": "d1b62632a0c35a4dfa0e4eba91b51a37826e607c5ee0babba0c1a346cae963aa",
+  "finalCorrectedHelperSha256": "4d9af001054f1e0932b2d9679cff93906b587bb0a73356c67bc169289ddc039b",
+  "postTerminalRepairs": {
+    "recordedUtc": "2026-10-22T00:43:53Z",
+    "priorHelperSha256": "4d9af001054f1e0932b2d9679cff93906b587bb0a73356c67bc169289ddc039b",
+    "terminalCounterDefect": "For a completed scan the API exposes expectedStepLineages as all 195 metadata attempts, including failed rows 21 and 22, while completedStepLineages, completedAttempts and jobsStarted are 193. The prior gate incorrectly required 193 completed distinct logical keys to equal the 195 raw-attempt counter.",
+    "repair": [
+      "Require the 193 completed distinct logical keys to match completedStepLineages, completedAttempts and jobsStarted.",
+      "Require the 195 captured metadata rows to match expectedStepLineages and equal 193 completed logical keys plus the two preserved failed rows.",
+      "Require all 193 distinct logical keys to have a completed row and both failed rows to retain completed logical counterparts.",
+      "Bind the append-only terminal pre-seal status-exposure addendum after a read-only diagnostic displayed recentEmptyResults prose again without adoption or feedback."
+    ],
+    "terminalExposureAddendum": "TERMINAL-PRE-SEAL-STATUS-EXPOSURE-ADDENDUM.json",
+    "terminalExposureAddendumSha256": "6cf37a680b04108073839beb02fd89e94da639a18053f607aafaea527146af00",
+    "currentHelperSha256": "4cdc34ffc50a3bc3b1df214dbf4146ef55237b4186e7495fd7a23224fd21ba4e"
+  },
+  "failedCaptureRepair": {
+    "recordedUtc": "2026-10-22T00:49:27Z",
+    "failedCapture": "failed-final-capture-20261022T004814476258Z",
+    "failedCaptureReceipt": "failed-final-capture-20261022T004814476258Z/CAPTURE-FAILURE.json",
+    "failureStage": "The first terminal capture stopped at the frozen-source-manifest hash assertion during partial raw capture, after terminal API, native export-response, and selected-database acquisition but before source-identity capture, raw manifest/seal creation, semantic parsing, or qualification.",
+    "diagnosis": "The helper's expected SHA-256 literal was 63 hexadecimal characters and omitted the final b. The source manifest itself was unchanged and independently recorded with the correct 64-character digest in the existing Gemini, OpenAI and Daybreak OpenKritt seals and reconciliation bindings.",
+    "incorrectExpectedSourceSha256": "b5de09082c6e954d0a9a3e70ca393f37e0cc28e861e62ce64ac67b6b0a3ebe8",
+    "actualAndCorrectedExpectedSourceSha256": "b5de09082c6e954d0a9a3e70ca393f37e0cc28e861e62ce64ac67b6b0a3ebe8b",
+    "repair": "Correct only the transcription-defective expected-hash constant; preserve the failed capture and rerun the same terminal capture helper without changing scan, database, workflow, route, source, or qualification gates.",
+    "helperSha256AfterHashLiteralRepair": "b3fd44041c6722df05bad5f6c6b7afdb33c9cdaf3985de736cd5f1d4f3129af6",
+    "failedCapturePreserved": true,
+    "scanOrDatabaseMutatedByFailedCapture": false
+  },
+  "scanStateChangedByRepair": false,
+  "databaseChangedByRepair": false,
+  "providerRequestMadeByRepair": false,
+  "productionFilesChanged": false
+}
