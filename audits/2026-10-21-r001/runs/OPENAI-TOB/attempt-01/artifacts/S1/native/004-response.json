@@ -1,0 +1,123 @@
+{
+  "function": "requestDraw",
+  "file": "target/packages/contracts/src/Raffle.sol",
+  "lines": "L240-L273",
+  "analysisFile": "audit/S1/audit-context/functions/03-requestDraw.md",
+  "invariants": [
+    {
+      "claim": "Admits only Active raffles with nonzero entries during [endTime,endTime+2 days).",
+      "evidence": "Raffle.sol L241-L247, L458-L460, L573-L575; RaffleConstants.sol L32-L33"
+    },
+    {
+      "claim": "Sets Drawing and in-flight state before external request; stores returned request ID before clearing in-flight state.",
+      "evidence": "Raffle.sol L252-L260; callback ignores in-flight requests at L511-L515"
+    },
+    {
+      "claim": "Successful payment accounting has paidPrice <= msg.value and excess = msg.value-paidPrice; positive excess must transfer successfully before DrawRequested.",
+      "evidence": "Raffle.sol L258-L272"
+    },
+    {
+      "claim": "The adapter pays its own second wrapper quote and returns that quote as paidPrice.",
+      "evidence": "VRFV2PlusWrapperConsumerBase.sol L76-L88"
+    },
+    {
+      "claim": "The shared guard remains entered during wrapper payment and excess refund.",
+      "evidence": "Raffle.sol L240-L273; ReentrancyGuard.sol L69-L73, L94-L105"
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "Canonical wrapper prices, request identity and eventual asynchronous fulfillment are faithful; local code does not establish these service properties.",
+      "establishedBy": "nothing found; only interface at IVRFV2PlusWrapper.sol L23-L33, L67-L79. Immutable address binding: consumer base L43-L46; code-only factory validation: RaffleFactory.sol L65-L67, L183-L185"
+    },
+    {
+      "claim": "Local Active equality and request deadline arithmetic are enforced by helpers rather than repeated inline.",
+      "establishedBy": "Raffle._requireStatus L573-L575; drawRequestDeadline L458-L460; RaffleConstants.sol L32-L33"
+    },
+    {
+      "claim": "Native extra arguments contain the expected V1 tag and true payment flag.",
+      "establishedBy": "Raffle.sol L255; VRFV2PlusClient._argsToBytes L7-L10, L22-L26"
+    },
+    {
+      "claim": "Positive-excess callers accept empty-calldata native transfer; exact-fee callers do not need this.",
+      "establishedBy": "Only successful refund call at Raffle.sol L263-L269; otherwise the whole call reverts"
+    },
+    {
+      "claim": "The uint64 request timestamp faithfully represents block.timestamp.",
+      "establishedBy": "nothing found for an explicit full-width bound; narrowing cast at Raffle.sol L253"
+    },
+    {
+      "claim": "A nonzero callback deadline requires a nonzero stored request timestamp.",
+      "establishedBy": "Raffle.callbackDeadline L463-L465 returns default zero otherwise; requestDraw stores uint64(block.timestamp) at L253"
+    }
+  ],
+  "calls": [
+    {
+      "callee": "ReentrancyGuard.nonReentrant and _nonReentrantBefore/_nonReentrantBeforeView/_reentrancyGuardEntered/_nonReentrantAfter",
+      "kind": "internal",
+      "propagates": "Shared fixed-slot exclusion for guarded functions throughout the body; entry predicate rejects ENTERED and accepts an initial zero slot (ReentrancyGuard.sol L69-L73, L88-L117)."
+    },
+    {
+      "callee": "ReentrancyGuard._reentrancyGuardStorageSlot; StorageSlot.getUint256Slot",
+      "kind": "internal",
+      "propagates": "Returns fixed guard slot and exact uint256 storage alias (ReentrancyGuard.sol L35-L37, L116-L118; StorageSlot.sol L93-L97)."
+    },
+    {
+      "callee": "Raffle._requireStatus",
+      "kind": "internal",
+      "propagates": "Returns only with expected Active equality, otherwise InvalidStatus (Raffle.sol L241, L573-L575)."
+    },
+    {
+      "callee": "Raffle.drawRequestDeadline",
+      "kind": "internal",
+      "propagates": "Returns uint256(endTime)+2 days on its only path (Raffle.sol L458-L460; RaffleConstants.sol L32-L33)."
+    },
+    {
+      "callee": "Raffle.getVrfRequestPrice",
+      "kind": "internal",
+      "propagates": "Forwards wrapper native quote for callbackGasLimit and one word; no independent validation (Raffle.sol L436-L438)."
+    },
+    {
+      "callee": "IVRFV2PlusWrapper.calculateRequestPriceNative",
+      "kind": "external-black-box",
+      "propagates": "Called once before lifecycle mutation and once inside native adapter; returned quote controls funding and payment, but implementation is absent (Raffle.sol L249-L250, L436-L438; consumer base L82; wrapper interface L23-L33)."
+    },
+    {
+      "callee": "VRFV2PlusClient._argsToBytes",
+      "kind": "internal",
+      "propagates": "Encodes V1 selector and nativePayment:true struct (Raffle.sol L255; client L7-L10, L22-L26)."
+    },
+    {
+      "callee": "VRFV2PlusWrapperConsumerBase.requestRandomnessPayInNative",
+      "kind": "internal",
+      "propagates": "Requotes, pays exactly the quote, returns external request ID and quoted price; reverts propagate and request-ID semantics remain external assumptions (consumer base L76-L88)."
+    },
+    {
+      "callee": "IVRFV2PlusWrapper.requestRandomWordsInNative",
+      "kind": "external-black-box",
+      "propagates": "Receives quoted value, 300000 callback gas, 30 confirmations, one word and native encoding; must supply meaningful request ID and asynchronous service (consumer base L84-L87; RaffleConstants.sol L38-L42; interface L67-L79)."
+    },
+    {
+      "callee": "msg.sender empty-calldata native call",
+      "kind": "external-black-box",
+      "propagates": "Positive excess transfer must return success; arbitrary recipient behavior and reentry are possible, with guarded entry blocked (Raffle.sol L263-L269; ReentrancyGuard.sol L69-L73, L88-L100)."
+    },
+    {
+      "callee": "Raffle.callbackDeadline",
+      "kind": "internal",
+      "propagates": "Returns stored request time plus two days if nonzero, otherwise default zero; value is emitted (Raffle.sol L272, L463-L465; RaffleConstants.sol L35-L36)."
+    }
+  ],
+  "callers": [
+    "Permissionless payable ABI callers; lifecycle/time/funding checks at Raffle.sol L240-L250, IRaffle.sol L316-L320."
+  ],
+  "sharedState": [
+    "status shared with initialization, prize receipt, purchases, timeout refunds and callback resolution (Raffle.sol L197-L205, L215, L252, L279-L300, L421-L428, L511-L521).",
+    "vrfRequestId, drawRequestedAt and _requestInFlight couple request creation to callback identity/time checks and refunds (Raffle.sol L253-L260, L289-L291, L463-L465, L511-L512).",
+    "totalEntries remains unchanged through request and supplies callback modulo denominator (Raffle.sol L243, L240-L273, L518)."
+  ],
+  "openQuestions": [
+    "unclear; need to inspect configured canonical wrapper implementation/configuration for price, request-ID and asynchronous service guarantees; only interface available (IVRFV2PlusWrapper.sol L23-L33, L67-L79).",
+    "unclear; need to inspect any individual contract caller receive/fallback to establish successful positive-excess receipt (Raffle.sol L263-L269)."
+  ]
+}

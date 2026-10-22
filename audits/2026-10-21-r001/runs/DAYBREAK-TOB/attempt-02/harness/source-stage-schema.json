@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["stageId", "reportMarkdown", "filesReviewed", "fileCoverage", "propertyCoverage", "leads", "nativeSubsteps", "blockers"],
+  "properties": {
+    "stageId": {"type": "string"},
+    "reportMarkdown": {"type": "string"},
+    "filesReviewed": {"type": "array", "items": {"type": "string"}},
+    "fileCoverage": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["file", "coverage"], "properties": {"file": {"type": "string"}, "coverage": {"type": "string"}}}},
+    "propertyCoverage": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["property", "status", "evidence", "notes"], "properties": {"property": {"type": "string"}, "status": {"type": "string", "enum": ["covered", "partial", "not-applicable", "blocked"]}, "evidence": {"type": "array", "items": {"type": "string"}}, "notes": {"type": "string"}}}},
+    "leads": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["title", "classification", "confidence", "evidence", "path", "prerequisites"], "properties": {"title": {"type": "string"}, "classification": {"type": "string", "enum": ["confirmed-source-path", "lead"]}, "confidence": {"type": "string", "enum": ["high", "medium", "low"]}, "evidence": {"type": "array", "items": {"type": "string"}}, "path": {"type": "string"}, "prerequisites": {"type": "array", "items": {"type": "string"}}}},
+    "nativeSubsteps": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["name", "status", "evidence"], "properties": {"name": {"type": "string"}, "status": {"type": "string", "enum": ["complete", "incomplete", "blocked", "not-applicable", "deferred-by-order"]}, "evidence": {"type": "string"}}}},
+    "blockers": {"type": "array", "items": {"type": "string"}}
+  }
+}

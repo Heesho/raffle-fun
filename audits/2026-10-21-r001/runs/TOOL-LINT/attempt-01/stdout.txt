@@ -1,0 +1,157 @@
+A new version of Solhint is available: 6.2.5
+Please consider updating your Solhint package.
+
+src/RaffleFactory.sol
+   25:5   warning  Constant name must be in capitalized SNAKE_CASE                   const-name-snakecase
+   28:5   warning  Constant name must be in capitalized SNAKE_CASE                   const-name-snakecase
+   33:5   warning  Immutable variables name are set to be in capitalized SNAKE_CASE  immutable-vars-naming
+   36:5   warning  Immutable variables name are set to be in capitalized SNAKE_CASE  immutable-vars-naming
+   39:5   warning  Immutable variables name are set to be in capitalized SNAKE_CASE  immutable-vars-naming
+   42:5   warning  Immutable variables name are set to be in capitalized SNAKE_CASE  immutable-vars-naming
+  100:13  warning  GC: Non strict inequality found. Try converting to a strict one   gas-strict-inequalities
+
+src/Raffle.sol
+   28:1   warning  Contract has 28 states declarations but allowed no more than 15    max-states-count
+   47:5   warning  Constant name must be in capitalized SNAKE_CASE                    const-name-snakecase
+   50:5   warning  Constant name must be in capitalized SNAKE_CASE                    const-name-snakecase
+   55:5   warning  Immutable variables name are set to be in capitalized SNAKE_CASE   immutable-vars-naming
+   58:5   warning  Immutable variables name are set to be in capitalized SNAKE_CASE   immutable-vars-naming
+  216:13  warning  GC: Non strict inequality found. Try converting to a strict one    gas-strict-inequalities
+  245:13  warning  GC: Non strict inequality found. Try converting to a strict one    gas-strict-inequalities
+  266:13  warning  Avoid to use inline assembly. It is acceptable only in rare cases  no-inline-assembly
+  512:20  warning  GC: Non strict inequality found. Try converting to a strict one    gas-strict-inequalities
+  521:18  warning  GC: Non strict inequality found. Try converting to a strict one    gas-strict-inequalities
+
+src/mocks/ReentrantPrizeERC721.sol
+  114:5   warning  Function order is incorrect, external  function can not go after public  function (line 89)  ordering
+  140:17  warning  GC: Non strict inequality found. Try converting to a strict one                              gas-strict-inequalities
+  142:17  warning  Avoid to use inline assembly. It is acceptable only in rare cases                            no-inline-assembly
+
+src/mocks/ReentrantERC20.sol
+  32:5   warning  Function order is incorrect, external  function can not go after public pure function (line 25)  ordering
+  61:37  warning  Avoid to use low level calls                                                                     avoid-low-level-calls
+  73:37  warning  Avoid to use low level calls                                                                     avoid-low-level-calls
+
+src/mocks/MockVRFV2PlusWrapper.sol
+  15:5   warning  Function order is incorrect, event definition can not go after custom error definition (line 13)  ordering
+  15:5   warning  GC: [callbackGasLimit] on Event [RequestRegistered] could be Indexed                              gas-indexed-events
+  15:5   warning  GC: [requestConfirmations] on Event [RequestRegistered] could be Indexed                          gas-indexed-events
+  18:5   warning  GC: [randomWord] on Event [RequestFulfilled] could be Indexed                                     gas-indexed-events
+  40:29  warning  Provide an error message for revert                                                               reason-string
+  40:29  warning  GC: Use Custom Errors instead of revert statements                                                gas-custom-errors
+  45:29  warning  Provide an error message for revert                                                               reason-string
+  45:29  warning  GC: Use Custom Errors instead of revert statements                                                gas-custom-errors
+
+src/mocks/MockERC20.sol
+  21:5  warning  Function order is incorrect, external  function can not go after public pure function (line 14)  ordering
+
+src/mocks/FalseERC20.sol
+  14:5  warning  Function order is incorrect, state variable declaration can not go after external pure function (line 9)  ordering
+
+src/mocks/AdversarialVRFV2PlusWrapper.sol
+    7:1   warning  Contract has 21 states declarations but allowed no more than 15                                             max-states-count
+   13:5   warning  Function order is incorrect, state variable declaration can not go after custom error definition (line 11)  ordering
+   75:28  warning  GC: Non strict inequality found. Try converting to a strict one                                             gas-strict-inequalities
+  101:39  warning  Avoid to use low level calls                                                                                avoid-low-level-calls
+
+src/interfaces/IRaffle.sol
+   89:5  warning  GC: [fee] on Event [DrawRequested] could be Indexed                         gas-indexed-events
+   89:5  warning  GC: [excessReturned] on Event [DrawRequested] could be Indexed              gas-indexed-events
+   89:5  warning  GC: [drawRequestedAt] on Event [DrawRequested] could be Indexed             gas-indexed-events
+   89:5  warning  GC: [callbackDeadline] on Event [DrawRequested] could be Indexed            gas-indexed-events
+  113:5  warning  GC: [remainingRefundLiability] on Event [RefundsEnabled] could be Indexed   gas-indexed-events
+  153:5  warning  GC: [ticketQuantity] on Event [TicketsRefunded] could be Indexed            gas-indexed-events
+  153:5  warning  GC: [entryQuantity] on Event [TicketsRefunded] could be Indexed             gas-indexed-events
+  153:5  warning  GC: [amount] on Event [TicketsRefunded] could be Indexed                    gas-indexed-events
+  153:5  warning  GC: [remainingRefundLiability] on Event [TicketsRefunded] could be Indexed  gas-indexed-events
+  165:5  warning  GC: [amount] on Event [SponsorProceedsReleased] could be Indexed            gas-indexed-events
+  171:5  warning  GC: [amount] on Event [ProtocolFeesReleased] could be Indexed               gas-indexed-events
+
+test/foundry/unit/Raffle.t.sol
+     2:1   warning  Found more than One contract per file. 10 contracts found!                                           one-contract-per-file
+     4:1   warning  Import in test/foundry/unit/Raffle.t.sol doesn't exist in: forge-std/Test.sol                        import-path-check
+    27:9   warning  Provide an error message for revert                                                                  reason-string
+    27:9   warning  GC: Use Custom Errors instead of revert statements                                                   gas-custom-errors
+    58:30  warning  GC: Use Custom Errors instead of revert statements                                                   gas-custom-errors
+    83:9   warning  GC: Use Custom Errors instead of require statements                                                  gas-custom-errors
+   104:5   warning  Function order is incorrect, receive function can not go after external payable function (line 100)  ordering
+   105:9   warning  GC: Use Custom Errors instead of revert statements                                                   gas-custom-errors
+   162:27  warning  GC: For [ nextPrizeId ] variable, increment/decrement by 1 using: [ ++variable ] to save gas         gas-increment-by-one
+   284:5   warning  Function body contains 66 lines but allowed no more than 50 lines                                    function-max-lines
+   354:27  warning  GC: For [ nextPrizeId ] variable, increment/decrement by 1 using: [ ++variable ] to save gas         gas-increment-by-one
+   970:5   warning  Function body contains 54 lines but allowed no more than 50 lines                                    function-max-lines
+  1264:5   warning  Function order is incorrect, external pure function can not go after public  function (line 1227)    ordering
+  1269:27  warning  GC: For [ nextPrizeId ] variable, increment/decrement by 1 using: [ ++variable ] to save gas         gas-increment-by-one
+
+test/foundry/security/VrfAdversarial.t.sol
+    4:1   warning  Import in test/foundry/security/VrfAdversarial.t.sol doesn't exist in: forge-std/Test.sol     import-path-check
+  218:27  warning  GC: For [ nextPrizeId ] variable, increment/decrement by 1 using: [ ++variable ] to save gas  gas-increment-by-one
+
+test/foundry/security/RaffleSecurity.t.sol
+    4:1   warning  Import in test/foundry/security/RaffleSecurity.t.sol doesn't exist in: forge-std/Test.sol     import-path-check
+  313:27  warning  GC: For [ nextPrizeId ] variable, increment/decrement by 1 using: [ ++variable ] to save gas  gas-increment-by-one
+
+test/foundry/invariant/RaffleInvariant.t.sol
+    4:1   warning  Import in test/foundry/invariant/RaffleInvariant.t.sol doesn't exist in: forge-std/StdInvariant.sol  import-path-check
+    5:1   warning  Import in test/foundry/invariant/RaffleInvariant.t.sol doesn't exist in: forge-std/Test.sol          import-path-check
+  108:17  warning  GC: Non strict inequality found. Try converting to a strict one                                      gas-strict-inequalities
+  108:56  warning  GC: Non strict inequality found. Try converting to a strict one                                      gas-strict-inequalities
+  192:17  warning  GC: String exceeds 32 bytes                                                                          gas-small-strings
+
+test/foundry/invariant/RaffleHandler.sol
+    5:1   warning  Import in test/foundry/invariant/RaffleHandler.sol doesn't exist in: forge-std/Test.sol            import-path-check
+   12:1   warning  Contract has 17 states declarations but allowed no more than 15                                    max-states-count
+   15:5   warning  Immutable variables name are set to be in capitalized SNAKE_CASE                                   immutable-vars-naming
+   16:5   warning  Immutable variables name are set to be in capitalized SNAKE_CASE                                   immutable-vars-naming
+   17:5   warning  Immutable variables name are set to be in capitalized SNAKE_CASE                                   immutable-vars-naming
+   18:5   warning  Immutable variables name are set to be in capitalized SNAKE_CASE                                   immutable-vars-naming
+   45:9   warning  GC: Use Custom Errors instead of require statements                                                gas-custom-errors
+   61:5   warning  Function order is incorrect, external  function can not go after external view function (line 57)  ordering
+   62:57  warning  GC: Non strict inequality found. Try converting to a strict one                                    gas-strict-inequalities
+   64:13  warning  GC: Non strict inequality found. Try converting to a strict one                                    gas-strict-inequalities
+  118:20  warning  GC: Non strict inequality found. Try converting to a strict one                                    gas-strict-inequalities
+  154:20  warning  GC: Non strict inequality found. Try converting to a strict one                                    gas-strict-inequalities
+  155:64  warning  GC: Non strict inequality found. Try converting to a strict one                                    gas-strict-inequalities
+
+test/foundry/fuzz/RaffleFuzz.t.sol
+    4:1   warning  Import in test/foundry/fuzz/RaffleFuzz.t.sol doesn't exist in: forge-std/Test.sol             import-path-check
+  110:29  warning  GC: Non strict inequality found. Try converting to a strict one                               gas-strict-inequalities
+  241:27  warning  GC: For [ nextPrizeId ] variable, increment/decrement by 1 using: [ ++variable ] to save gas  gas-increment-by-one
+
+test/foundry/fork/EthereumFork.t.sol
+   8:1  warning  Import in test/foundry/fork/EthereumFork.t.sol doesn't exist in: forge-std/Test.sol  import-path-check
+  50:5  warning  Function body contains 56 lines but allowed no more than 50 lines                    function-max-lines
+
+test/echidna/RaffleEchidna.sol
+    2:1   warning  Found more than One contract per file. 3 contracts found!         one-contract-per-file
+   18:5   warning  Immutable variables name are set to be in capitalized SNAKE_CASE  immutable-vars-naming
+   19:5   warning  Immutable variables name are set to be in capitalized SNAKE_CASE  immutable-vars-naming
+   20:5   warning  Immutable variables name are set to be in capitalized SNAKE_CASE  immutable-vars-naming
+   21:5   warning  Immutable variables name are set to be in capitalized SNAKE_CASE  immutable-vars-naming
+   22:5   warning  Immutable variables name are set to be in capitalized SNAKE_CASE  immutable-vars-naming
+   55:57  warning  GC: Non strict inequality found. Try converting to a strict one   gas-strict-inequalities
+   56:20  warning  GC: Non strict inequality found. Try converting to a strict one   gas-strict-inequalities
+   70:20  warning  GC: Non strict inequality found. Try converting to a strict one   gas-strict-inequalities
+   90:20  warning  GC: Non strict inequality found. Try converting to a strict one   gas-strict-inequalities
+   91:64  warning  GC: Non strict inequality found. Try converting to a strict one   gas-strict-inequalities
+  157:5   warning  Function name must be in mixedCase                                func-name-mixedcase
+  161:5   warning  Function name must be in mixedCase                                func-name-mixedcase
+  171:5   warning  Function name must be in mixedCase                                func-name-mixedcase
+  175:65  warning  GC: Non strict inequality found. Try converting to a strict one   gas-strict-inequalities
+  179:5   warning  Function name must be in mixedCase                                func-name-mixedcase
+  181:16  warning  GC: Non strict inequality found. Try converting to a strict one   gas-strict-inequalities
+  181:46  warning  GC: Non strict inequality found. Try converting to a strict one   gas-strict-inequalities
+  184:5   warning  Function name must be in mixedCase                                func-name-mixedcase
+  189:5   warning  Function name must be in mixedCase                                func-name-mixedcase
+  193:51  warning  GC: Non strict inequality found. Try converting to a strict one   gas-strict-inequalities
+  197:36  warning  GC: Non strict inequality found. Try converting to a strict one   gas-strict-inequalities
+
+✖ 111 problems (0 errors, 111 warnings)
+
+┌──────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ ===>          NEW  500+ Formal Verification checks → Free scan: https://bit.ly/dowsers          <=== │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ ===>                     Smart contract Audits by Protofire  |  Book a Call                     <=== │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────┘
+

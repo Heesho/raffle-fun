@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "task": "supplementary_native_execution_availability",
+  "status": "BLOCKED",
+  "created_at_utc": "2026-10-21T07:58:00.594171+00:00",
+  "harness": {
+    "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal",
+    "expected_revision": "9ad24645f92a3821ae4539db5f1be52b48ed379e",
+    "observed_revision": "9ad24645f92a3821ae4539db5f1be52b48ed379e",
+    "revision_matches": true
+  },
+  "requested_model": "gpt-6-astra",
+  "requested_reasoning_effort": "ultra",
+  "fallback_enabled": false,
+  "provider_attested_identity": "unknown",
+  "model_identity_independently_verified": false,
+  "docker": {
+    "cli_present": true,
+    "cli_path": "/opt/homebrew/bin/docker",
+    "default_socket_present": false,
+    "desktop_socket_present": false,
+    "lima_socket_present": true,
+    "default_daemon_access": "BLOCKED_SOCKET_ABSENT",
+    "lima_daemon_access": "BLOCKED_PERMISSION_DENIED",
+    "daemon_running_state": "UNKNOWN",
+    "pinned_tool_image_availability": "BLOCKED_UNKNOWN",
+    "verified_immutable_image_id": null
+  },
+  "native_execution": {
+    "plan_created": false,
+    "plan_approved": false,
+    "assessed_code_executed": false,
+    "host_fallback_used": false,
+    "isolation_preflight": "BLOCKED",
+    "forge_compile": "BLOCKED",
+    "existing_tests": "BLOCKED",
+    "slither": "BLOCKED",
+    "integration_tests": "BLOCKED"
+  },
+  "scope_guarantees": {
+    "target_source_read": false,
+    "target_reports_read": false,
+    "peer_outputs_read": false,
+    "network_retrieval": false,
+    "daemon_or_vm_created": false,
+    "containers_created": false,
+    "images_pulled_or_built": false,
+    "target_mutated": false,
+    "harness_mutated": false
+  },
+  "source_findings": [],
+  "limitations": [
+    "A Unix socket exists for Lima, but permission denied prevents checking whether its daemon is running or inspecting local images.",
+    "Missing default socket does not establish that every possible local Docker runtime is unavailable.",
+    "No provider-attested model/settings verification is available."
+  ],
+  "evidence": [
+    "RAW.md",
+    "resources.json",
+    "initial-commands.json",
+    "harness-read-commands.json",
+    "availability-commands.json",
+    "image-commands.json",
+    "selected-runtime-environment.json",
+    "docker-execution-environment.json"
+  ]
+}

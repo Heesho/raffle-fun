@@ -1,0 +1,3 @@
+# Seal scope correction
+
+The initial aggregate SEAL.json also captured runner-owned events.jsonl and stderr.txt. Those logs continued changing as tools reported completion, so their hashes did not remain stable. Verification found exactly those two mismatches; FIRST-PASS.md, stage-ledger.json and audit artifacts matched. Original seal and reports are retained without replacement. SEAL-v2.json is the corrected immutable artifact manifest: it covers the audit-owned report, ledger, all copied artifacts including stage seals, and correction records, while excluding live runner logs. Native S6 driver completed at 2026-10-21T08:16:22.702117Z; subsequent report generation and packaging exceeded the requested deadline, as already recorded.

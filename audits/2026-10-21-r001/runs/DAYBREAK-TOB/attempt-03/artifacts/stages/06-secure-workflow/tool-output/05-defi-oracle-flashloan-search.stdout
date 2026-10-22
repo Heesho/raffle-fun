@@ -1,0 +1,331 @@
+src/Raffle.sol:4:import { VRFV2PlusWrapperConsumerBase } from "@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol";
+src/Raffle.sol:5:import { IVRFV2PlusWrapper } from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol";
+src/Raffle.sol:21:/// @notice Escrows one NFT and sells fixed-price USDC entries through one transferable ERC-721 ticket per purchase.
+src/Raffle.sol:23:///      callbacks, and winner proofs are O(1) in entry count. Tickets remain transferable bearer claims until their
+src/Raffle.sol:28:contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusWrapperConsumerBase {
+src/Raffle.sol:44:    uint256 public constant override ENTRY_PRICE = RaffleConstants.ENTRY_PRICE;
+src/Raffle.sol:47:    uint32 public constant override callbackGasLimit = RaffleConstants.VRF_CALLBACK_GAS_LIMIT;
+src/Raffle.sol:58:    IERC20 public immutable override quoteToken;
+src/Raffle.sol:138:    /// @dev Historical ticket ranges remain stored after burns so indexers and callers can reconstruct entry coverage.
+src/Raffle.sol:141:    /// @dev True only while the wrapper request call is executing, so a synchronous callback cannot resolve early.
+src/Raffle.sol:153:    /// @param quoteToken_ Canonical six-decimal USDC contract fixed for the implementation and every clone.
+src/Raffle.sol:154:    /// @param vrfWrapper_ Chainlink VRF v2.5 native direct-funding wrapper fixed for the implementation and all clones.
+src/Raffle.sol:155:    constructor(address quoteToken_, address vrfWrapper_)
+src/Raffle.sol:157:        VRFV2PlusWrapperConsumerBase(_validatedVrfWrapper(vrfWrapper_))
+src/Raffle.sol:159:        if (msg.sender == address(0) || quoteToken_ == address(0)) revert ZeroAddress();
+src/Raffle.sol:162:        quoteToken = IERC20(quoteToken_);
+src/Raffle.sol:223:        uint256 grossAmount = uint256(entryCount) * ENTRY_PRICE;
+src/Raffle.sol:224:        quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount);
+src/Raffle.sol:249:        uint256 quotedFee = getVrfRequestPrice();
+src/Raffle.sol:256:        uint256 paidPrice;
+src/Raffle.sol:257:        (requestId, paidPrice) = requestRandomnessPayInNative(callbackGasLimit, requestConfirmations, 1, extraArgs);
+src/Raffle.sol:258:        if (paidPrice > msg.value) revert InsufficientVrfFee(paidPrice, msg.value);
+src/Raffle.sol:262:        uint256 excess = msg.value - paidPrice;
+src/Raffle.sol:272:        emit DrawRequested(requestId, msg.sender, paidPrice, excess, drawRequestedAt, callbackDeadline());
+src/Raffle.sol:290:            deadline = callbackDeadline();
+src/Raffle.sol:334:            prizeToken.transferFrom(address(this), winner, deliveredPrizeTokenId);
+src/Raffle.sol:357:        for (uint256 index; index < ticketQuantity; ++index) {
+src/Raffle.sol:358:            uint256 ticketId = ticketIds[index];
+src/Raffle.sol:367:        amount = aggregateEntries * ENTRY_PRICE;
+src/Raffle.sol:404:        prizeToken.transferFrom(address(this), recipient, prizeTokenId);
+src/Raffle.sol:410:    /// @dev Unrelated NFTs forced here with unsafe `transferFrom` remain outside protocol accounting and cannot be
+src/Raffle.sol:436:    function getVrfRequestPrice() public view override returns (uint256 fee) {
+src/Raffle.sol:437:        fee = i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit, 1);
+src/Raffle.sol:441:    function estimateVrfRequestPrice(uint256 requestGasPriceWei) public view override returns (uint256 fee) {
+src/Raffle.sol:442:        fee = i_vrfV2PlusWrapper.estimateRequestPriceNative(callbackGasLimit, 1, requestGasPriceWei);
+src/Raffle.sol:446:    function vrfWrapper() public view override returns (IVRFV2PlusWrapper wrapper) {
+src/Raffle.sol:447:        wrapper = i_vrfV2PlusWrapper;
+src/Raffle.sol:463:    function callbackDeadline() public view override returns (uint256 deadline) {
+src/Raffle.sol:464:        if (drawRequestedAt != 0) deadline = uint256(drawRequestedAt) + RaffleConstants.DRAW_CALLBACK_TIMEOUT;
+src/Raffle.sol:474:        amount = uint256(totalEntries) * ENTRY_PRICE;
+src/Raffle.sol:505:    ///      occurs. In-flight, late, wrong-request, duplicate, and ABI-decodable wrong-length callbacks are ignored for
+src/Raffle.sol:507:    /// @param requestId Wrapper-authenticated request identifier supplied by the callback.
+src/Raffle.sol:508:    /// @param randomWords Callback words; exactly one word is required for resolution.
+src/Raffle.sol:512:                || block.timestamp >= callbackDeadline()
+src/Raffle.sol:514:            emit VrfCallbackIgnored(requestId, vrfRequestId, status);
+src/Raffle.sol:560:    /// @dev Transfers one complete current USDC claim through SafeERC20 after rejecting known protocol sinks. The
+src/Raffle.sol:561:    ///      canonical USDC trust model assumes standard, non-rebasing, fee-free transfer semantics.
+src/Raffle.sol:563:    /// @param amount Raw six-decimal USDC units transferred.
+src/Raffle.sol:566:        quoteToken.safeTransfer(to, amount);
+src/Raffle.sol:599:        unsafeDestination = destination == address(this) || destination == factory || destination == address(quoteToken)
+src/Raffle.sol:600:            || destination == address(i_vrfV2PlusWrapper) || destination == prizeToken_
+src/Raffle.sol:607:    /// @dev Validates the wrapper before passing it to the inherited constructor initializer.
+src/Raffle.sol:608:    /// @param wrapper Prospective Chainlink wrapper address.
+src/Raffle.sol:609:    /// @return validatedWrapper The same nonzero wrapper address.
+src/Raffle.sol:610:    function _validatedVrfWrapper(address wrapper) private pure returns (address validatedWrapper) {
+src/Raffle.sol:611:        if (wrapper == address(0)) revert ZeroAddress();
+src/Raffle.sol:612:        validatedWrapper = wrapper;
+node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:14: * after `transfer` or `transferFrom`, or code on a spender contract after `approve`, in a single transaction.
+node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:22:     *   bytes4(keccak256('transferFromAndCall(address,address,uint256)')) ^
+node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:23:     *   bytes4(keccak256('transferFromAndCall(address,address,uint256,bytes)')) ^
+node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:55:    function transferFromAndCall(address from, address to, uint256 value) external returns (bool);
+node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:66:    function transferFromAndCall(address from, address to, uint256 value, bytes calldata data) external returns (bool);
+src/interfaces/IRaffleFactory.sol:6:/// @notice Defines atomic ERC-1167 raffle creation for one immutable USDC, treasury, and Chainlink configuration.
+src/interfaces/IRaffleFactory.sol:8:///      verify that the immutable quote-token address is the target chain's official USDC; onchain construction checks
+src/interfaces/IRaffleFactory.sol:37:    /// @param quoteToken Immutable canonical six-decimal USDC contract used by the raffle.
+src/interfaces/IRaffleFactory.sol:42:        uint256 indexed raffleId,
+src/interfaces/IRaffleFactory.sol:43:        address indexed raffle,
+src/interfaces/IRaffleFactory.sol:44:        address indexed sponsor,
+src/interfaces/IRaffleFactory.sol:48:        address quoteToken,
+src/interfaces/IRaffleFactory.sol:64:    /// @param quoteToken Rejected quote-token contract.
+src/interfaces/IRaffleFactory.sol:65:    error UnsupportedQuoteToken(address quoteToken);
+src/interfaces/IRaffleFactory.sol:70:    error InvalidQuoteTokenDecimals(uint8 actualDecimals, uint8 requiredDecimals);
+src/interfaces/IRaffleFactory.sol:108:    /// @notice Returns the immutable canonical six-decimal USDC contract used by every raffle.
+src/interfaces/IRaffleFactory.sol:109:    /// @return quoteTokenAddress Canonical USDC contract address trusted by this deployment.
+src/interfaces/IRaffleFactory.sol:110:    function quoteToken() external view returns (address quoteTokenAddress);
+src/interfaces/IRaffleFactory.sol:112:    /// @notice Returns the immutable Chainlink VRF v2.5 native direct-funding wrapper used by every raffle.
+src/interfaces/IRaffleFactory.sol:113:    /// @return wrapperAddress Wrapper contract address.
+src/interfaces/IRaffleFactory.sol:114:    function vrfWrapper() external view returns (address wrapperAddress);
+src/interfaces/IRaffleFactory.sol:120:    /// @notice Returns the fixed Chainlink callback execution limit used by every raffle.
+src/interfaces/IRaffleFactory.sol:121:    /// @return gasLimit Callback gas units requested from the wrapper.
+src/interfaces/IRaffleFactory.sol:122:    function callbackGasLimit() external view returns (uint32 gasLimit);
+src/interfaces/IRaffleFactory.sol:125:    /// @return confirmations Blocks requested before callback fulfillment.
+node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol:156:     * @dev Indicates an array length mismatch between ids and values in a safeBatchTransferFrom operation.
+src/interfaces/IRaffle.sol:4:import { IVRFV2PlusWrapper } from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol";
+src/interfaces/IRaffle.sol:10:/// @notice Defines one autonomous NFT raffle using fixed-price USDC entries and one transferable ERC-721 ticket per
+src/interfaces/IRaffle.sol:14:///      canonical six-decimal USDC with standard, non-rebasing, fee-free transfers. Supported prizes are honest,
+src/interfaces/IRaffle.sol:26:        /// @notice A Chainlink VRF request was accepted and its callback window is open.
+src/interfaces/IRaffle.sol:62:    event PrizeDeposited(address indexed prizeToken, uint256 indexed prizeTokenId, address indexed sponsor);
+src/interfaces/IRaffle.sol:71:    /// @param grossAmount Raw six-decimal quote-token units paid, equal to `entryCount * ENTRY_PRICE`.
+src/interfaces/IRaffle.sol:73:        address indexed buyer,
+src/interfaces/IRaffle.sol:74:        address indexed recipient,
+src/interfaces/IRaffle.sol:75:        uint256 indexed ticketId,
+src/interfaces/IRaffle.sol:83:    /// @param requestId Wrapper-assigned request identifier.
+src/interfaces/IRaffle.sol:85:    /// @param fee Native-token wei actually paid to the wrapper for the request.
+src/interfaces/IRaffle.sol:88:    /// @param callbackDeadline Exclusive Unix-timestamp deadline for accepting the authenticated callback.
+src/interfaces/IRaffle.sol:90:        uint256 indexed requestId,
+src/interfaces/IRaffle.sol:91:        address indexed requester,
+src/interfaces/IRaffle.sol:95:        uint256 callbackDeadline
+src/interfaces/IRaffle.sol:98:    /// @notice Emitted when an authenticated, ABI-decodable callback cannot resolve the raffle.
+src/interfaces/IRaffle.sol:99:    /// @param receivedRequestId Request ID supplied by the wrapper callback.
+src/interfaces/IRaffle.sol:101:    /// @param status Current raffle status when the callback is ignored.
+src/interfaces/IRaffle.sol:102:    event VrfCallbackIgnored(uint256 indexed receivedRequestId, uint256 indexed expectedRequestId, Status status);
+src/interfaces/IRaffle.sol:104:    /// @notice Emitted when an authenticated callback selects the winning entry and final result.
+src/interfaces/IRaffle.sol:108:    event RaffleResolved(uint256 indexed requestId, uint128 indexed winningEntry, Status indexed result);
+src/interfaces/IRaffle.sol:113:    event RefundsEnabled(address indexed finalizer, uint256 remainingRefundLiability);
+src/interfaces/IRaffle.sol:123:        uint256 indexed ticketId,
+src/interfaces/IRaffle.sol:124:        address indexed settler,
+src/interfaces/IRaffle.sol:125:        Status indexed result,
+src/interfaces/IRaffle.sol:139:        uint256 indexed ticketId,
+src/interfaces/IRaffle.sol:140:        address indexed winner,
+src/interfaces/IRaffle.sol:141:        Status indexed result,
+src/interfaces/IRaffle.sol:151:    /// @param amount Raw six-decimal quote-token units refunded, equal to `entryQuantity * ENTRY_PRICE`.
+src/interfaces/IRaffle.sol:154:        address indexed owner,
+src/interfaces/IRaffle.sol:165:    event SponsorProceedsReleased(address indexed caller, address indexed recipient, uint256 amount);
+src/interfaces/IRaffle.sol:171:    event ProtocolFeesReleased(address indexed caller, address indexed treasury, uint256 amount);
+src/interfaces/IRaffle.sol:179:        address indexed caller, address indexed recipient, address indexed prizeToken, uint256 prizeTokenId
+src/interfaces/IRaffle.sol:197:    /// @notice Raised when an ERC-721 receiver callback does not exactly match the configured factory prize deposit.
+src/interfaces/IRaffle.sol:198:    /// @param token ERC-721 contract that invoked the receiver callback.
+src/interfaces/IRaffle.sol:199:    /// @param tokenId Token ID supplied by the callback.
+src/interfaces/IRaffle.sol:318:    ///      value above the wrapper's actual fee is returned to the caller atomically.
+src/interfaces/IRaffle.sol:319:    /// @return requestId Wrapper-assigned request identifier recorded by the raffle.
+src/interfaces/IRaffle.sol:322:    /// @notice Enables full refunds after the sold-raffle request deadline or an accepted request's callback deadline.
+src/interfaces/IRaffle.sol:343:    /// @return amount Raw six-decimal quote-token units paid, equal to represented entries times `ENTRY_PRICE`.
+src/interfaces/IRaffle.sol:359:    /// @notice Returns the wrapper's current native direct-funding price for the configured callback.
+src/interfaces/IRaffle.sol:360:    /// @return fee Native-token wei currently quoted by the wrapper; the value may change before request inclusion.
+src/interfaces/IRaffle.sol:361:    function getVrfRequestPrice() external view returns (uint256 fee);
+src/interfaces/IRaffle.sol:363:    /// @notice Estimates the native direct-funding price at a caller-selected gas price.
+src/interfaces/IRaffle.sol:364:    /// @param requestGasPriceWei Prospective transaction gas price in wei per gas.
+src/interfaces/IRaffle.sol:365:    /// @return fee Estimated native-token wei for the configured callback and one random word.
+src/interfaces/IRaffle.sol:366:    function estimateVrfRequestPrice(uint256 requestGasPriceWei) external view returns (uint256 fee);
+src/interfaces/IRaffle.sol:379:    /// @notice Returns the exclusive deadline for accepting the authenticated callback.
+src/interfaces/IRaffle.sol:381:    function callbackDeadline() external view returns (uint256 deadline);
+src/interfaces/IRaffle.sol:389:    /// @return amount Raw six-decimal quote-token units equal to `totalEntries * ENTRY_PRICE`.
+src/interfaces/IRaffle.sol:394:    /// @notice Returns the fixed raw six-decimal quote-token price of one entry.
+src/interfaces/IRaffle.sol:395:    /// @return price One entry price, exactly 1,000,000 raw units.
+src/interfaces/IRaffle.sol:396:    function ENTRY_PRICE() external view returns (uint256 price);
+src/interfaces/IRaffle.sol:398:    /// @notice Returns the fixed Chainlink callback execution limit.
+src/interfaces/IRaffle.sol:399:    /// @return gasLimit Callback gas units requested from the wrapper.
+src/interfaces/IRaffle.sol:400:    function callbackGasLimit() external view returns (uint32 gasLimit);
+src/interfaces/IRaffle.sol:403:    /// @return confirmations Blocks requested before callback fulfillment.
+src/interfaces/IRaffle.sol:422:    /// @notice Returns the immutable canonical six-decimal USDC contract.
+src/interfaces/IRaffle.sol:423:    /// @return token Canonical USDC contract trusted by this factory deployment.
+src/interfaces/IRaffle.sol:424:    function quoteToken() external view returns (IERC20 token);
+src/interfaces/IRaffle.sol:426:    /// @notice Returns the immutable Chainlink VRF v2.5 native direct-funding wrapper.
+src/interfaces/IRaffle.sol:427:    /// @return wrapper Wrapper contract.
+src/interfaces/IRaffle.sol:428:    function vrfWrapper() external view returns (IVRFV2PlusWrapper wrapper);
+src/interfaces/IRaffle.sol:483:    /// @return requestId Wrapper-assigned ID, or zero before request persistence.
+src/interfaces/IRaffle.sol:490:    /// @notice Returns when an authenticated callback resolved the raffle.
+src/RaffleFactory.sol:15:/// @title raffle.fun Canonical USDC Raffle Factory
+src/RaffleFactory.sol:18:/// @dev The implementation, canonical six-decimal USDC, treasury, fee, and Chainlink configuration are immutable. The
+src/RaffleFactory.sol:25:    uint32 public constant override callbackGasLimit = RaffleConstants.VRF_CALLBACK_GAS_LIMIT;
+src/RaffleFactory.sol:33:    address public immutable override quoteToken;
+src/RaffleFactory.sol:36:    address public immutable override vrfWrapper;
+src/RaffleFactory.sol:59:    /// @dev The quote token must report exactly six decimals; the wrapper and quote token must contain deployed code.
+src/RaffleFactory.sol:60:    ///      Deployment tooling must supply and verify the target chain's official USDC address because the constructor
+src/RaffleFactory.sol:62:    /// @param quoteToken_ Target chain's official six-decimal USDC contract trusted by every raffle.
+src/RaffleFactory.sol:63:    /// @param vrfWrapper_ Official Chainlink VRF v2.5 native direct-funding wrapper for the target chain.
+src/RaffleFactory.sol:65:    constructor(address quoteToken_, address vrfWrapper_, address protocolTreasury_) {
+src/RaffleFactory.sol:66:        _requireContract(quoteToken_);
+src/RaffleFactory.sol:67:        _requireContract(vrfWrapper_);
+src/RaffleFactory.sol:71:        try IERC20Metadata(quoteToken_).decimals() returns (uint8 decimals_) {
+src/RaffleFactory.sol:74:            revert UnsupportedQuoteToken(quoteToken_);
+src/RaffleFactory.sol:77:            revert InvalidQuoteTokenDecimals(quoteDecimals, RaffleConstants.QUOTE_TOKEN_DECIMALS);
+src/RaffleFactory.sol:80:        if (protocolTreasury_ == address(this) || protocolTreasury_ == quoteToken_ || protocolTreasury_ == vrfWrapper_)
+src/RaffleFactory.sol:85:        quoteToken = quoteToken_;
+src/RaffleFactory.sol:86:        vrfWrapper = vrfWrapper_;
+src/RaffleFactory.sol:89:        address implementation = address(new Raffle(quoteToken_, vrfWrapper_));
+src/RaffleFactory.sol:128:        prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId);
+src/RaffleFactory.sol:143:            quoteToken,
+src/RaffleFactory.sol:158:            params.prizeToken == address(this) || params.prizeToken == quoteToken || params.prizeToken == vrfWrapper
+src/RaffleFactory.sol:164:            params.sponsorRecipient == address(this) || params.sponsorRecipient == quoteToken
+src/RaffleFactory.sol:165:                || params.sponsorRecipient == vrfWrapper || params.sponsorRecipient == params.prizeToken
+src/libraries/RaffleConstants.sol:20:    /// @notice Global entry price: exactly 1,000,000 raw six-decimal quote-token units, or one USDC.
+src/libraries/RaffleConstants.sol:21:    uint256 internal constant ENTRY_PRICE = 1_000_000;
+src/libraries/RaffleConstants.sol:35:    /// @notice Duration after an accepted request during which its authenticated callback may resolve, in seconds.
+src/libraries/RaffleConstants.sol:36:    uint256 internal constant DRAW_CALLBACK_TIMEOUT = 2 days;
+src/libraries/RaffleConstants.sol:38:    /// @notice Gas-unit limit requested for the single-word Chainlink callback.
+src/libraries/RaffleConstants.sol:39:    uint32 internal constant VRF_CALLBACK_GAS_LIMIT = 300_000;
+src/libraries/RaffleConstants.sol:41:    /// @notice Block confirmations requested from Chainlink before callback fulfillment.
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:14:     * * If `s` is present in the buffer, returns the index of the first instance
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:17:     * NOTE: replicates the behavior of https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf[Javascript's `Array.indexOf`]
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:19:    function indexOf(bytes memory buffer, bytes1 s) internal pure returns (uint256) {
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:20:        return indexOf(buffer, s, 0);
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:25:     * * If `s` is present in the buffer (at or after `pos`), returns the index of the next instance
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:28:     * NOTE: replicates the behavior of https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf[Javascript's `Array.indexOf`]
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:30:    function indexOf(bytes memory buffer, bytes1 s, uint256 pos) internal pure returns (uint256) {
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:42:     * * If `s` is present in the buffer, returns the index of the last instance
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:45:     * NOTE: replicates the behavior of https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/lastIndexOf[Javascript's `Array.lastIndexOf`]
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:47:    function lastIndexOf(bytes memory buffer, bytes1 s) internal pure returns (uint256) {
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:48:        return lastIndexOf(buffer, s, type(uint256).max);
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:53:     * * If `s` is present in the buffer (at or before `pos`), returns the index of the previous instance
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:56:     * NOTE: replicates the behavior of https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/lastIndexOf[Javascript's `Array.lastIndexOf`]
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:58:    function lastIndexOf(bytes memory buffer, bytes1 s, uint256 pos) internal pure returns (uint256) {
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:259:        value = // swap bytes
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:262:        value = // swap 2-byte long pairs
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:265:        value = // swap 4-byte long pairs
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:268:        value = // swap 8-byte long pairs
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:271:        return (value >> 128) | (value << 128); // swap 16-byte long pairs
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:276:        value = // swap bytes
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:279:        value = // swap 2-byte long pairs
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:282:        value = // swap 4-byte long pairs
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:285:        return (value >> 64) | (value << 64); // swap 8-byte long pairs
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:290:        value = ((value & 0xFF00FF00FF00FF00) >> 8) | ((value & 0x00FF00FF00FF00FF) << 8); // swap bytes
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:291:        value = ((value & 0xFFFF0000FFFF0000) >> 16) | ((value & 0x0000FFFF0000FFFF) << 16); // swap 2-byte long pairs
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:292:        return (value >> 32) | (value << 32); // swap 4-byte long pairs
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:297:        value = ((value & 0xFF00FF00) >> 8) | ((value & 0x00FF00FF) << 8); // swap bytes
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:298:        return (value >> 16) | (value << 16); // swap 2-byte long pairs
+node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:8: * @dev Wrappers over Solidity's uintXX/intXX/bool casting operators with added overflow
+node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol:8: * @dev Interface for any contract that wants to support safeTransfers
+node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol:13:     * @dev Whenever an {IERC721} `tokenId` token is transferred to this contract via {IERC721-safeTransferFrom}
+node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:15:    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:20:    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
+node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:25:    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
+node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:55:    function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external;
+node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:73:    function safeTransferFrom(address from, address to, uint256 tokenId) external;
+node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:79:     * or else they may be permanently lost. Usage of {safeTransferFrom} prevents loss, though the caller must
+node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:80:     * understand this adds an external call which potentially creates a reentrancy vulnerability.
+node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:91:    function transferFrom(address from, address to, uint256 tokenId) external;
+node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:110:     * Operators can call {transferFrom} or {safeTransferFrom} for any token owned by the caller.
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:115:    function transferFrom(address from, address to, uint256 tokenId) public virtual {
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:128:    function safeTransferFrom(address from, address to, uint256 tokenId) public {
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:129:        safeTransferFrom(from, to, tokenId, "");
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:133:    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public virtual {
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:134:        transferFrom(from, to, tokenId);
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:312:     *  As opposed to {transferFrom}, this imposes no restrictions on msg.sender.
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:339:     * This internal function is like {safeTransferFrom} in the sense that it invokes
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:352:    function _safeTransfer(address from, address to, uint256 tokenId) internal {
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:353:        _safeTransfer(from, to, tokenId, "");
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:357:     * @dev Same as {xref-ERC721-_safeTransfer-address-address-uint256-}[`_safeTransfer`], with an additional `data` parameter which is
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:360:    function _safeTransfer(address from, address to, uint256 tokenId, bytes memory data) internal virtual {
+node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol:16:    event Transfer(address indexed from, address indexed to, uint256 value);
+node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol:22:    event Approval(address indexed owner, address indexed spender, uint256 value);
+node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol:45:     * allowed to spend on behalf of `owner` through {transferFrom}. This is
+node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol:48:     * This value changes when {approve} or {transferFrom} are called.
+node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol:78:    function transferFrom(address from, address to, uint256 value) external returns (bool);
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:204:     * Uniswap Labs also under MIT license.
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:315:     * inverse using `Math.modExp(a, n - 2, n)`. See {invModPrime}.
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:376:            return Math.modExp(a, p - 2, p);
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:393:    function modExp(uint256 b, uint256 e, uint256 m) internal view returns (uint256) {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:394:        (bool success, uint256 result) = tryModExp(b, e, m);
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:411:    function tryModExp(uint256 b, uint256 e, uint256 m) internal view returns (bool success, uint256 result) {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:438:     * @dev Variant of {modExp} that supports inputs of arbitrary length.
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:440:    function modExp(bytes memory b, bytes memory e, bytes memory m) internal view returns (bytes memory) {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:441:        (bool success, bytes memory result) = tryModExp(b, e, m);
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:449:     * @dev Variant of {tryModExp} that supports inputs of arbitrary length.
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:451:    function tryModExp(
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:633:        // Shifts value right by the current result and use it as an index into this lookup table:
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:635:        // | x (4 bits) |  index  | table[index] = MSB position |
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:11: * @dev Wrappers around ERC-20 operations that throw on failure (when the token
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:16: * which allows you to call the safe operations as `token.safeTransfer(...)`, etc.
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:33:    function safeTransfer(IERC20 token, address to, uint256 value) internal {
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:34:        if (!_safeTransfer(token, to, value, true)) {
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:43:    function safeTransferFrom(IERC20 token, address from, address to, uint256 value) internal {
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:44:        if (!_safeTransferFrom(token, from, to, value, true)) {
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:50:     * @dev Variant of {safeTransfer} that returns a bool instead of reverting if the operation is not successful.
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:52:    function trySafeTransfer(IERC20 token, address to, uint256 value) internal returns (bool) {
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:53:        return _safeTransfer(token, to, value, false);
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:57:     * @dev Variant of {safeTransferFrom} that returns a bool instead of reverting if the operation is not successful.
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:59:    function trySafeTransferFrom(IERC20 token, address from, address to, uint256 value) internal returns (bool) {
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:60:        return _safeTransferFrom(token, from, to, value, false);
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:121:            safeTransfer(token, to, value);
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:128:     * @dev Performs an {ERC1363} transferFromAndCall, with a fallback to the simple {ERC20} transferFrom if the target
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:134:    function transferFromAndCallRelaxed(
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:142:            safeTransferFrom(token, from, to, value);
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:143:        } else if (!token.transferFromAndCall(from, to, value, data)) {
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:176:    function _safeTransfer(IERC20 token, address to, uint256 value, bool bubble) private returns (bool success) {
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:203:     * @dev Imitates a Solidity `token.transferFrom(from, to, value)` call, relaxing the requirement on the return
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:212:    function _safeTransferFrom(
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:219:        bytes4 selector = IERC20.transferFrom.selector;
+node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol:30:  function transferFrom(address from, address to, uint256 value) external returns (bool success);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:4:interface IVRFV2PlusWrapper {
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:6:   * @return the request ID of the most recent VRF V2 request made by this wrapper. This should only
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:12:   * @notice Calculates the price of a VRF request with the given callbackGasLimit at the current
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:15:   * @dev This function relies on the transaction gas price which is not automatically set during
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:16:   * @dev simulation. To estimate the price at a specific gas price, use the estimatePrice function.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:18:   * @param _callbackGasLimit is the gas limit used to estimate the price.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:21:  function calculateRequestPrice(uint32 _callbackGasLimit, uint32 _numWords) external view returns (uint256);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:24:   * @notice Calculates the price of a VRF request in native with the given callbackGasLimit at the current
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:27:   * @dev This function relies on the transaction gas price which is not automatically set during
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:28:   * @dev simulation. To estimate the price at a specific gas price, use the estimatePrice function.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:30:   * @param _callbackGasLimit is the gas limit used to estimate the price.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:33:  function calculateRequestPriceNative(uint32 _callbackGasLimit, uint32 _numWords) external view returns (uint256);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:36:   * @notice Estimates the price of a VRF request with a specific gas limit and gas price.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:41:   * @param _callbackGasLimit is the gas limit used to estimate the price.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:43:   * @param _requestGasPriceWei is the gas price in wei used for the estimation.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:45:  function estimateRequestPrice(
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:46:    uint32 _callbackGasLimit,
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:48:    uint256 _requestGasPriceWei
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:52:   * @notice Estimates the price of a VRF request in native with a specific gas limit and gas price.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:57:   * @param _callbackGasLimit is the gas limit used to estimate the price.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:59:   * @param _requestGasPriceWei is the gas price in wei used for the estimation.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:61:  function estimateRequestPriceNative(
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:62:    uint32 _callbackGasLimit,
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:64:    uint256 _requestGasPriceWei
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:68:   * @notice Requests randomness from the VRF V2 wrapper, paying in native token.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:70:   * @param _callbackGasLimit is the gas limit for the request.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:75:    uint32 _callbackGasLimit,
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:82:  function linkNativeFeed() external view returns (address);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol:17:    uint32 callbackGasLimit;
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:5:import {IVRFV2PlusWrapper} from "./interfaces/IVRFV2PlusWrapper.sol";
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:9: * @notice Interface for contracts using VRF randomness through the VRF V2 wrapper
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:14: * @dev and funding a VRF V2+ subscription, a user can use this wrapper to create one off requests,
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:17: * @dev Since the price is determined using the gas price of the request transaction rather than
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:18: * @dev the fulfillment transaction, the wrapper charges an additional premium on callback gas
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:19: * @dev usage, in addition to some extra overhead costs associated with the VRFV2Wrapper contract.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:23: * @dev Calling contracts must inherit from VRFV2PlusWrapperConsumerBase. The consumer must be funded
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:31:abstract contract VRFV2PlusWrapperConsumerBase {
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:32:  error OnlyVRFWrapperCanFulfill(address have, address want);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:35:  IVRFV2PlusWrapper public immutable i_vrfV2PlusWrapper;
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:38:   * @param _vrfV2PlusWrapper is the address of the VRFV2Wrapper contract
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:41:    address _vrfV2PlusWrapper
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:43:    IVRFV2PlusWrapper vrfV2PlusWrapper = IVRFV2PlusWrapper(_vrfV2PlusWrapper);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:45:    i_linkToken = LinkTokenInterface(vrfV2PlusWrapper.link());
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:46:    i_vrfV2PlusWrapper = vrfV2PlusWrapper;
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:50:   * @dev Requests randomness from the VRF V2+ wrapper.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:52:   * @param _callbackGasLimit is the gas limit that should be used when calling the consumer's
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:63:    uint32 _callbackGasLimit,
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:67:  ) internal returns (uint256 requestId, uint256 reqPrice) {
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:68:    reqPrice = i_vrfV2PlusWrapper.calculateRequestPrice(_callbackGasLimit, _numWords);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:70:      address(i_vrfV2PlusWrapper), reqPrice, abi.encode(_callbackGasLimit, _requestConfirmations, _numWords, extraArgs)
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:72:    return (i_vrfV2PlusWrapper.lastRequestId(), reqPrice);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:77:    uint32 _callbackGasLimit,
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:81:  ) internal returns (uint256 requestId, uint256 requestPrice) {
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:82:    requestPrice = i_vrfV2PlusWrapper.calculateRequestPriceNative(_callbackGasLimit, _numWords);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:84:      i_vrfV2PlusWrapper.requestRandomWordsInNative{value: requestPrice}(
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:85:        _callbackGasLimit, _requestConfirmations, _numWords, extraArgs
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:87:      requestPrice
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:92:   * @notice fulfillRandomWords handles the VRF V2 wrapper response. The consuming contract must
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:102:    address vrfWrapperAddr = address(i_vrfV2PlusWrapper);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:103:    if (msg.sender != vrfWrapperAddr) {
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:104:      revert OnlyVRFWrapperCanFulfill(msg.sender, vrfWrapperAddr);

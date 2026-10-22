@@ -1,0 +1,54 @@
+{
+  "type": "object",
+  "required": [
+    "documents",
+    "codePaths"
+  ],
+  "properties": {
+    "documents": {
+      "type": "array",
+      "description": "Files that describe intended behavior, most authoritative first.",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "describes"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "describes": {
+            "type": "string",
+            "description": "what part of the system this document specifies"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "whitepaper",
+              "design-doc",
+              "readme",
+              "inline-docs",
+              "transcript",
+              "other"
+            ]
+          },
+          "unreadable": {
+            "type": "string",
+            "description": "Set only if the file could not be read as text (e.g. a binary .docx with no converter available). Name the file and why."
+          }
+        }
+      }
+    },
+    "codePaths": {
+      "type": "array",
+      "description": "Directories or files holding the implementation these documents describe.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "language": {
+      "type": "string"
+    }
+  }
+}

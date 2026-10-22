@@ -1,0 +1,22 @@
+# Explicit High Simao/Pashov leaf runtime
+
+`native_high_leaf_adapter.py` is a disclosed execution adapter for the pinned model-agnostic leaf methods. It uses direct native Antigravity CLI processes with explicit `gemini-4-argon-high` and high effort. It does not accept built-in `research` children as verified High calls, perform judgment or assembly, import reviews, or claim a security result from transport completion.
+
+No assessed model call was launched during preparation. Twenty-four fresh child workspaces were prepared under each cell's `attempt-04/leaf-workspaces/`. Evidence manifests are under `runs/GEMINI-{SIMAO,PASHOV}-REPAIRED/attempt-04/explicit-high-leaves/`.
+
+The adapter accepts only the same cell's `attempt-03/work` pre-lens stage. It verifies all 43 frozen inputs against the clean template, including all five owned Solidity sources and 31 dependency Solidity files. It validates each of the twelve bundles byte-for-byte against its exact native concatenation and verifies every upstream method resource against its pinned Git blob. Every child receives all 43 actual files, the common `source.md`, Simao's common pre-lens `money-map.md` where applicable, and only its own selected bundle. Other leaves' perspectives and outputs are not copied. All input and bundle hashes are recorded before execution and checked after execution.
+
+Simao's exact prompt comes from pinned `SKILL.md`. Pashov's exact prompts come from pinned `references/agent-prompts.md`: nine single-specialty prompts and three distinct gap-hunter prompts. Only documented bundle-path, leaf-number, and line-count placeholders are resolved. Pashov's conditional known-findings paragraph is omitted because these are plain scans with no appended memory. A separately recorded runtime policy sets the child workspace boundary and forbids delegation, external findings, personal-memory access, and model changes. Native `FINDING`/`LEAD` output syntax is preserved without forcing a different JSON schema.
+
+The prepared input manifest binds the source-stage files, money map, twelve bundle compositions, upstream prompt hashes, source revision, each child directory, and exact rendered prompts. Before assessed execution, the coordinator must establish same-cell attempt03 pre-lens provenance and write a `qualification.json` using the prepared `qualification.template.json`. Its `inputManifestSha256` must match exactly; `qualified` must be true, `preLensStageVerifiedBy` must identify the coordinator, and `evidence` must point to that verification. This is an execution-provenance record, not a request for additional user authorization. An adapter cannot infer whether a model-authored money map preceded findings merely from its current contents.
+
+The `run` command schedules two or three independent native CLI processes at a time, waits for every requested leaf to finish, and has no outer wall-clock cap, automatic retry, model fallback, conversation continuation, or provider-private API access. CLI `--print-timeout 0` permits natural completion. Raw NDJSON, native log, stderr, argv, exact native terminal response, tool trace, conversation identity, native init model, token usage, and pre/post hashes are preserved per leaf. Unexpected delegation, a model mismatch, reused identities, missing output, or altered inputs prevents a complete transport status. These checks do not grade the findings; the coordinating native judge still must do that.
+
+Prepared manifest bindings:
+
+- SIMAO: `1486c7f87a7194d51e0fc898bcffc2785eca96da3ad5474c96982235a5921080`.
+- PASHOV: `4baf5e92a998edefdfc0e5df7db3d58b91b744ba4121169ea92a40e14f7ba9de`.
+
+Launch metadata and exact command arrays are in `native-high-leaf-setup-result.json`. Preparation configuration files are `native-high-simao-prepare-config.json` and `native-high-pashov-prepare-config.json`. Do not repeat preparation into the same directories or rerun a manifest: the adapter refuses to overwrite existing launch evidence.
+
+Five setup-only tests passed using synthetic source fixtures and a fake CLI. They exercise exact template conditions and all twelve perspectives, actual copying of all 43 files and 31 dependencies, isolation to one bundle, rejection of foreign appended bundle content and attempt02 inputs, native model/delegation mismatch rejection, source-mutation detection, manifest-bound qualification, twelve unique fake conversations, and prevention of implicit reruns. No actual model or assessed source was executed by these tests.

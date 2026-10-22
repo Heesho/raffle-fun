@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["requirements"],
+  "additionalProperties": false,
+  "properties": {
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "quote", "location", "kind", "force", "checkable"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string"},
+          "quote": {"type": "string"},
+          "location": {"type": "string"},
+          "kind": {"type": "string", "enum": ["invariant", "formula", "access-control", "state-machine", "error-handling", "ordering", "economic", "trust-boundary", "other"]},
+          "force": {"type": "string", "enum": ["mandatory", "recommended", "optional", "descriptive"]},
+          "checkable": {"type": "string"}
+        }
+      }
+    }
+  }
+}

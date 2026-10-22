@@ -1,0 +1,68 @@
+{
+  "id": "001",
+  "prompt": "Find the documentation describing intended behavior for the codebase at target, and the code it describes.\nThe user pointed at target/DESIGN.md — start there, and include anything else that also specifies behavior.\n\nDocumentation is whatever states what the system is supposed to do: a whitepaper, a design note, a README section,\na protocol description, doc comments carrying real semantics. Judge by content, not filename. Skip changelogs,\ncontributor guides, build instructions, and license text — they describe the project, not its behavior.\n\nIf a file plainly holds a specification but you cannot read it as text, record it under 'unreadable' rather than\nguessing at its contents.",
+  "options": {
+    "schema": {
+      "type": "object",
+      "required": [
+        "documents",
+        "codePaths"
+      ],
+      "properties": {
+        "documents": {
+          "type": "array",
+          "description": "Files that describe intended behavior, most authoritative first.",
+          "items": {
+            "type": "object",
+            "required": [
+              "path",
+              "describes"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "describes": {
+                "type": "string",
+                "description": "what part of the system this document specifies"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "whitepaper",
+                  "design-doc",
+                  "readme",
+                  "inline-docs",
+                  "transcript",
+                  "other"
+                ]
+              },
+              "unreadable": {
+                "type": "string",
+                "description": "Set only if the file could not be read as text (e.g. a binary .docx with no converter available). Name the file and why."
+              }
+            }
+          }
+        },
+        "codePaths": {
+          "type": "array",
+          "description": "Directories or files holding the implementation these documents describe.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "language": {
+          "type": "string"
+        }
+      }
+    },
+    "label": "discover",
+    "phase": "Extract",
+    "effort": "low"
+  },
+  "accepted_model": "gpt-6-astra",
+  "accepted_effort": "ultra",
+  "provider_returned_model": "unknown",
+  "provider_returned_effort": "unknown",
+  "fallback_enabled": false
+}

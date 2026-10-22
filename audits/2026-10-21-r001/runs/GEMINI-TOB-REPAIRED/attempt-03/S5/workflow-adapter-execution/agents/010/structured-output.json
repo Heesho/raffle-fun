@@ -1,0 +1,67 @@
+{
+  "analysisFile": "spec-compliance/requirements/02-REQ-11.md",
+  "confidence": "high",
+  "evidence": [
+    {
+      "file": "packages/contracts/src/RaffleFactory.sol",
+      "lines": "L21-L55",
+      "quote": "contract RaffleFactory is IRaffleFactory, ReentrancyGuard {\n    // Constants\n\n    /// @inheritdoc IRaffleFactory\n    uint32 public constant override callbackGasLimit = RaffleConstants.VRF_CALLBACK_GAS_LIMIT;\n\n    /// @inheritdoc IRaffleFactory\n    uint16 public constant override requestConfirmations = RaffleConstants.VRF_REQUEST_CONFIRMATIONS;\n\n    // Immutables and state\n\n    /// @inheritdoc IRaffleFactory\n    address public immutable override quoteToken;\n\n    /// @inheritdoc IRaffleFactory\n    address public immutable override vrfWrapper;\n\n    /// @inheritdoc IRaffleFactory\n    address public immutable override protocolTreasury;\n\n    /// @inheritdoc IRaffleFactory\n    address public immutable override raffleImplementation;",
+      "role": "Defines all factory-level configuration as constant or immutable and inherits no owner, admin, pausable, or upgradeable base contract."
+    },
+    {
+      "file": "packages/contracts/src/RaffleFactory.sol",
+      "lines": "L85-L92",
+      "quote": "        quoteToken = quoteToken_;\n        vrfWrapper = vrfWrapper_;\n        protocolTreasury = protocolTreasury_;\n\n        address implementation = address(new Raffle(quoteToken_, vrfWrapper_));\n        if (protocolTreasury_ == implementation) revert UnsafeProtocolDestination(protocolTreasury_);\n        raffleImplementation = implementation;",
+      "role": "Initializes all factory configuration and the shared Raffle implementation as immutables once in the constructor with no setter or upgrade functions."
+    },
+    {
+      "file": "packages/contracts/src/RaffleFactory.sol",
+      "lines": "L105-L125",
+      "quote": "        uint256 raffleId = ++raffleCount;\n        raffle = Clones.clone(raffleImplementation);\n        // The fresh fixed-target clone can initialize only once; this function is nonReentrant and atomic.\n        // slither-disable-next-line reentrancy-no-eth\n        IRaffle(raffle)\n            .initialize(\n                IRaffle.RaffleInitParams({\n                sponsor: msg.sender,\n                sponsorRecipient: params.sponsorRecipient,\n                protocolTreasury: protocolTreasury,\n                prizeToken: params.prizeToken,\n                prizeTokenId: params.prizeTokenId,\n                raffleId: raffleId,\n                reserveEntries: params.reserveEntries,\n                endTime: params.endTime\n            })\n            );\n\n        raffleById[raffleId] = raffle;\n        idByRaffle[raffle] = raffleId;\n        isRaffle[raffle] = true;",
+      "role": "Deploys each raffle as a fixed-target EIP-1167 minimal proxy clone of raffleImplementation and initializes it atomically once."
+    },
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L155-L166",
+      "quote": "    constructor(address quoteToken_, address vrfWrapper_)\n        ERC721(\"\", \"\")\n        VRFV2PlusWrapperConsumerBase(_validatedVrfWrapper(vrfWrapper_))\n    {\n        if (msg.sender == address(0) || quoteToken_ == address(0)) revert ZeroAddress();\n\n        factory = msg.sender;\n        quoteToken = IERC20(quoteToken_);\n\n        initialized = true;\n        status = Status.Refunding;\n    }",
+      "role": "Locks the shared Raffle implementation at deployment (initialized = true) and fixes factory, quoteToken, and VRF wrapper as immutables."
+    },
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L176-L206",
+      "quote": "    function initialize(RaffleInitParams calldata params) external override {\n        if (initialized) revert AlreadyInitialized();\n        if (msg.sender != factory) revert OnlyFactory();\n        initialized = true;\n...\n        sponsor = params.sponsor;\n        sponsorRecipient = params.sponsorRecipient;\n        protocolTreasury = params.protocolTreasury;\n        prizeToken = IERC721(params.prizeToken);\n        prizeTokenId = params.prizeTokenId;\n        raffleId = params.raffleId;\n        reserveEntries = params.reserveEntries;\n        endTime = params.endTime;\n        status = Status.AwaitingPrize;\n    }",
+      "role": "Enforces one-time factory-only initialization of per-raffle configuration; no other function writes to these configuration variables."
+    },
+    {
+      "file": "packages/contracts/src/libraries/RaffleConstants.sol",
+      "lines": "L10-L43",
+      "quote": "library RaffleConstants {\n    /// @notice Denominator used for every global protocol basis-point rate.\n    uint256 internal constant BPS = 10_000;\n...\n    /// @notice Block confirmations requested from Chainlink before callback fulfillment.\n    uint16 internal constant VRF_REQUEST_CONFIRMATIONS = 30;\n}",
+      "role": "Defines all protocol fee, entry price, batch size, timeout, and VRF parameters as compile-time constants."
+    }
+  ],
+  "reasoning": "Implemented (and not partial or contradicted) because every protocol parameter in RaffleConstants and RaffleFactory is constant or immutable, every clone is a fixed-target EIP-1167 proxy deployed via Clones.clone(raffleImplementation) with no upgrade mechanism, per-clone configuration in Raffle is written exclusively during one-time factory-only initialize(), and an exhaustive audit of all inheritance bases, state writes, and msg.sender checks confirms the complete absence of any admin/owner role, post-initialization config setter, pause gate, or token/NFT/ETH rescue path.",
+  "requirementId": "REQ-11",
+  "searched": [
+    {
+      "result": "0 hits for contract-level owner/admin roles; owner and operator appear only as ERC-721 ticket owner/operator parameters/locals in Raffle.sol:L359-L360, L416-L426",
+      "where": "onlyOwner, Ownable, AccessControl, ConfirmedOwner, admin, authority, governor, operator in packages/contracts/src/**/*.sol and inherited base contracts"
+    },
+    {
+      "result": "0 hits in executable code; mentioned only negatively in NatSpec comments (Raffle.sol:L25, L411; RaffleFactory.sol:L19; IRaffleFactory.sol:L7)",
+      "where": "pause, unpause, Pausable, rescue, sweep, recover, emergency, withdraw in packages/contracts/src/**/*.sol"
+    },
+    {
+      "result": "0 hits in executable code of src/; delegatecall exists only inside the immutable 45-byte EIP-1167 clone bytecode in Clones.sol:L56",
+      "where": "delegatecall, selfdestruct, upgrade, UUPS, ERC1967, setImplementation in packages/contracts/src/**/*.sol and Clones.sol"
+    },
+    {
+      "result": "All 29 sites inspected; none grants administrative, configuration, pause, rescue, or upgrade privileges",
+      "where": "msg.sender and _msgSender() across RaffleFactory.sol, Raffle.sol, VRFV2PlusWrapperConsumerBase.sol, and ERC721.sol"
+    },
+    {
+      "result": "All storage writes inspected; configuration fields are written only in constructor and one-time initialize()",
+      "where": "All state variable declarations and assignments in RaffleFactory.sol and Raffle.sol"
+    }
+  ],
+  "verdict": "implemented"
+}

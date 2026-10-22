@@ -1,0 +1,149 @@
+{
+  "accepted_selection": {
+    "model": "gpt-daybreak-blue-latest",
+    "reasoning_effort": "ultra",
+    "access_program": "daybreak_blue",
+    "fallback": false
+  },
+  "provider_returned_model": "unknown",
+  "function": "RaffleFactory.createRaffle",
+  "file": "target/packages/contracts/src/RaffleFactory.sol",
+  "lines": "L97-L148",
+  "analysisFile": ".audit-work/stages/01-audit-context/functions/01-RaffleFactory.createRaffle.md",
+  "invariants": [
+    {
+      "claim": "On success, the selected prize address contains code, both selected addresses avoid the enumerated protocol destinations, the token returned ERC-721 interface support, and reserveEntries is nonzero.",
+      "evidence": "target/packages/contracts/src/RaffleFactory.sol:L154-L179"
+    },
+    {
+      "claim": "On success, endTime was strictly later than the sampled creation timestamp and the sale duration was no more than 30 days.",
+      "evidence": "target/packages/contracts/src/RaffleFactory.sol:L99-L104; target/packages/contracts/src/libraries/RaffleConstants.sol:L29-L30"
+    },
+    {
+      "claim": "The returned clone's identifier equals the incremented raffleCount and the factory's forward, reverse, and membership registries contain the same clone/ID pair.",
+      "evidence": "target/packages/contracts/src/RaffleFactory.sol:L105-L125"
+    },
+    {
+      "claim": "The clone initialization returning path is factory-only and one-time, stores the supplied configuration, marks initialized, and leaves status AwaitingPrize before escrow.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L176-L205"
+    },
+    {
+      "claim": "The expected receiver path accepts only the configured prize token, token ID, sponsor, factory operator, and AwaitingPrize state, then stores Active.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L416-L430"
+    },
+    {
+      "claim": "RaffleCreated is emitted only after the selected token reports the clone as owner and the clone reports Active.",
+      "evidence": "target/packages/contracts/src/RaffleFactory.sol:L127-L147"
+    },
+    {
+      "claim": "A nested createRaffle call during sponsor-selected external code execution is rejected by the entered factory guard.",
+      "evidence": "target/packages/contracts/src/RaffleFactory.sol:L97; target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:L69-L73; target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:L88-L106"
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "raffleImplementation is the Raffle instance deployed by this factory and embeds this factory plus the configured quote token and wrapper.",
+      "establishedBy": "target/packages/contracts/src/RaffleFactory.sol:L89-L91; target/packages/contracts/src/Raffle.sol:L155-L165"
+    },
+    {
+      "claim": "The minimal proxy begins with isolated clone storage so initialized is false on its first initialize call.",
+      "establishedBy": "target/packages/contracts/src/Raffle.sol:L151-L165; target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:L47-L58"
+    },
+    {
+      "claim": "A true ERC-165 response from the sponsor-selected prize address corresponds to actual ERC-721 safe-transfer and ownership behavior.",
+      "establishedBy": "nothing found; target/packages/contracts/src/RaffleFactory.sol:L171-L177 records only the black-box self-report"
+    },
+    {
+      "claim": "The sponsor-selected prize contract enforces ownership or approval, transfers the selected token, invokes the receiver with the standard arguments, and honors the returned selector.",
+      "establishedBy": "nothing found; these are interface requirements at target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:L42-L73 and target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol:L11-L27, but the selected implementation is absent"
+    },
+    {
+      "claim": "The sponsor-selected prize contract's ownerOf result truthfully represents persistent ownership by the clone.",
+      "establishedBy": "nothing found; createRaffle checks one black-box return at target/packages/contracts/src/RaffleFactory.sol:L129-L131"
+    },
+    {
+      "claim": "Sponsor-selected code does not leave the Active clone with additional creation-time state changes beyond those checked by the factory.",
+      "establishedBy": "nothing found; after target/packages/contracts/src/Raffle.sol:L428-L430 returns control to the token, createRaffle verifies only ownerOf and status at target/packages/contracts/src/RaffleFactory.sol:L129-L134"
+    },
+    {
+      "claim": "The factory's pre-call raffleCount and three registry mappings are mutually consistent.",
+      "establishedBy": "createRaffle is the only visible writer and updates the same local pair at target/packages/contracts/src/RaffleFactory.sol:L105-L125"
+    }
+  ],
+  "calls": [
+    {
+      "callee": "ReentrancyGuard.nonReentrant and guard helpers",
+      "kind": "internal",
+      "propagates": "Rejects an entered guard, marks the factory entered before all body calls, and restores it after normal completion (target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:L69-L73, L88-L106)."
+    },
+    {
+      "callee": "RaffleFactory._validateCreateParams",
+      "kind": "internal",
+      "propagates": "Establishes code presence, enumerated destination exclusions, a true ERC-165 response, and nonzero reserve, while actual token behavior remains assumed (target/packages/contracts/src/RaffleFactory.sol:L154-L179)."
+    },
+    {
+      "callee": "RaffleFactory._requireContract",
+      "kind": "internal",
+      "propagates": "Establishes only that prizeToken.code.length is nonzero at validation time (target/packages/contracts/src/RaffleFactory.sol:L181-L185)."
+    },
+    {
+      "callee": "IERC165.supportsInterface",
+      "kind": "external-black-box",
+      "propagates": "Returns the capability claim consumed by validation; false and revert paths are rejected, but truthfulness is not established (target/packages/contracts/src/RaffleFactory.sol:L171-L177)."
+    },
+    {
+      "callee": "Clones.clone",
+      "kind": "internal",
+      "propagates": "Deploys fixed-target minimal-proxy bytecode and returns a nonzero instance or reverts on failed creation (target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:L32-L34, L47-L61)."
+    },
+    {
+      "callee": "Raffle.initialize",
+      "kind": "external-source-available",
+      "propagates": "On its only returning path, performs factory/one-time/address checks, stores every raffle parameter, and establishes AwaitingPrize (target/packages/contracts/src/Raffle.sol:L176-L205)."
+    },
+    {
+      "callee": "Raffle._isProtocolDestination",
+      "kind": "internal",
+      "propagates": "Screens initialization destinations against clone/factory/token/wrapper/prize/implementation identities and, for remaining contract addresses, the factory registry (target/packages/contracts/src/Raffle.sol:L593-L604)."
+    },
+    {
+      "callee": "RaffleFactory.raffleImplementation and isRaffle getters",
+      "kind": "external-source-available",
+      "propagates": "Expose the immutable implementation and registration mapping to the initializing clone's destination checks (target/packages/contracts/src/RaffleFactory.sol:L41-L54, L89-L91, L123-L125)."
+    },
+    {
+      "callee": "IERC721.safeTransferFrom",
+      "kind": "external-black-box",
+      "propagates": "Is relied on to escrow the configured token and invoke the receiver; its implementation can revert or execute arbitrary calls, and no in-scope body establishes standard behavior (target/packages/contracts/src/RaffleFactory.sol:L127-L128)."
+    },
+    {
+      "callee": "Raffle.onERC721Received",
+      "kind": "external-source-available",
+      "propagates": "The expected callback rejects every tuple/state mismatch and otherwise moves AwaitingPrize to Active, emits PrizeDeposited, and returns the selector (target/packages/contracts/src/Raffle.sol:L416-L430)."
+    },
+    {
+      "callee": "IERC721.ownerOf",
+      "kind": "external-black-box",
+      "propagates": "Its current return must equal the clone; the caller assumes the report corresponds to real ownership (target/packages/contracts/src/RaffleFactory.sol:L129-L131)."
+    },
+    {
+      "callee": "IRaffle.status",
+      "kind": "external-source-available",
+      "propagates": "Reads the clone's stored status, which must equal Active before the factory emits (target/packages/contracts/src/RaffleFactory.sol:L132-L147; target/packages/contracts/src/Raffle.sol:L123-L124, L428-L430)."
+    }
+  ],
+  "callers": [
+    "No in-scope production Solidity caller; any external actor can call IRaffleFactory.createRaffle (target/packages/contracts/src/interfaces/IRaffleFactory.sol:L99-L104; target/packages/contracts/src/RaffleFactory.sol:L97)."
+  ],
+  "sharedState": [
+    "raffleCount, raffleById, idByRaffle, and isRaffle are declared at target/packages/contracts/src/RaffleFactory.sol:L44-L54 and updated together at L105-L125; isRaffle is also consumed by factory validation at L157-L169 and clone destination checks at target/packages/contracts/src/Raffle.sol:L593-L604.",
+    "quoteToken, vrfWrapper, protocolTreasury, and raffleImplementation are immutable constructor outputs at target/packages/contracts/src/RaffleFactory.sol:L30-L43 and L65-L91 and are read during validation, initialization, event emission, or clone destination checks.",
+    "Clone initialized/sponsor/sponsorRecipient/protocolTreasury/prizeToken/prizeTokenId/raffleId/reserveEntries/endTime/status are written at target/packages/contracts/src/Raffle.sol:L176-L205; the receiver consumes sponsor/prize/status at L416-L430, later lifecycle paths consume endTime and reserveEntries at L215-L216, L240-L247, L279-L288, L518-L523, and release paths consume recipients at L374-L406.",
+    "The factory reentrancy slot is entered around the whole body by target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:L69-L73 and L88-L106."
+  ],
+  "openQuestions": [
+    "unclear; need to inspect the deployed prize-token implementation and upgrade controls to establish its ERC-165, transfer, callback, and ownerOf behavior relied on at target/packages/contracts/src/RaffleFactory.sol:L127-L134 and L171-L177",
+    "unclear; need to inspect the intended creation-time state contract to determine whether RaffleCreated is meant to imply zero entries or no other clone mutations after the callback activates the clone (target/packages/contracts/src/Raffle.sol:L208-L237, L428-L430; target/packages/contracts/src/RaffleFactory.sol:L129-L147)",
+    "unclear; need to inspect external integrations to know how callers reconcile RaffleCreated with current registry, clone, and token state; no caller exists under target/packages/contracts/src (target/packages/contracts/src/interfaces/IRaffleFactory.sol:L28-L52, L99-L149)"
+  ]
+}

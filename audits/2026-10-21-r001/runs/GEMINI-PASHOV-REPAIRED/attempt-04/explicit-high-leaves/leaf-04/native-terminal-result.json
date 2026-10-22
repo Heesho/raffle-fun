@@ -1,0 +1,15 @@
+{
+  "conversation_id": "b42ab403-31aa-48a7-a84c-264e7292c689",
+  "status": "ERROR",
+  "response": "LEAD | contract: Raffle | function: _isProtocolDestination | bug_class: across-tx-clone-destination-bypass | group_key: Raffle | _isProtocolDestination | across-tx-clone-destination-bypass\ncode_smells: `Raffle._isProtocolDestination` checks `destination.code.length != 0` and `canonicalFactory.isRaffle(destination)`, so a future clone address from `Clones.clone` passes validation before `createRaffle` deploys that clone. Once `createRaffle` deploys the clone at that address, `releaseSponsorProceeds` reverts with `InvalidQuoteDestination`, and `releaseSponsorPrize` sends the prize token to that clone.\ndescription: A caller can supply a future clone address before deployment to lock payouts, and a path that forces a victim remains unproven.\n\nLEAD | contract: Raffle | function: enableRefunds | bug_class: operation-interleaving-cancellation-block | group_key: Raffle | enableRefunds | operation-interleaving-cancellation-block\ncode_smells: `Raffle.enableRefunds` lets `sponsor` cancel a raffle before `endTime` only when `totalEntries == 0`. A buyer who calls `buyEntries` for one entry sets `totalEntries = 1`, so `enableRefunds` reverts until `drawRequestDeadline` and `refundTickets` returns the payment.\ndescription: An attacker can buy one entry before the sponsor cancels an empty raffle to lock the prize, and profit for the attacker remains unproven.\n",
+  "error": "The stream was interrupted. Please continue the task you were working on.",
+  "duration_seconds": 9343.108215,
+  "num_turns": 1,
+  "usage": {
+    "input_tokens": 173518,
+    "output_tokens": 59376,
+    "thinking_tokens": 56899,
+    "cache_read_tokens": 217586,
+    "total_tokens": 232894
+  }
+}

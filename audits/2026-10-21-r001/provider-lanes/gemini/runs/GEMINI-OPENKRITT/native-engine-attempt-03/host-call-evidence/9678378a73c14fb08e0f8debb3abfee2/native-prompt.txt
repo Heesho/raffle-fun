@@ -1,0 +1,112 @@
+Workspace context:
+Current working directory / primary repository root: /workspace
+Workspace manifest: WORKSPACE.json
+Dependency repositories are checked out as top-level directories inside the same workspace root.
+When reporting file_path for dependency code, prefix it with the dependency alias directory.
+Primary repository: clean-context @ LOCAL_SNAPSHOT
+No dependency checkouts are listed in WORKSPACE.json.
+
+WORKSPACE.json:
+{
+  "dependencies": [],
+  "primary": {
+    "commit": "LOCAL_SNAPSHOT",
+    "kind": "local",
+    "path": "/workspace",
+    "repo": "clean-context",
+    "requested_commit": "LOCAL_SNAPSHOT"
+  }
+}
+
+You are tracing production execution flows from one externally reachable entrypoint in clean-context.
+
+Entrypoint:
+- kind: smart_contract_external_function
+- label: Raffle.releaseProtocolFees()
+- handler: Raffle.releaseProtocolFees
+- location: packages/contracts/src/Raffle.sol:385
+- external actor: Any external EVM account or contract after winning ticket settlement
+- controlled input: Caller context (msg.sender)
+- reachability evidence: Permissionless external function on any Raffle clone whenever protocolFees > 0; zeroes protocolFees and transfers the accumulated quoteToken amount to protocolTreasury.
+
+Map every materially distinct flow that this external actor can reach from the entrypoint through production code. A flow should capture a meaningful route, dispatch target, validation outcome, authorization boundary, asynchronous continuation, state mutation, external call, sensitive sink, or terminal response. Do not create separate results for cosmetic helper calls, but do separate paths whose conditions, privileged actions, data handling, or security consequences differ.
+
+For each flow:
+- Summarize what the flow does and where it ends.
+- Provide an ordered `flow_trace` with the important hops as `path:line symbol - behavior`, including parsing, validation, dispatch, and security-sensitive operations.
+- Identify the terminal action and the externally controlled input as it reaches that action.
+- Give the most security-relevant source location in the flow and why the flow deserves security review.
+
+Keep the analysis grounded in the supplied configuration and production code. Exclude impossible, test-only, local-only, and dead paths. Do not report vulnerabilities yet; this stage is an accurate flow map.
+
+Return only the structured data requested by the provided JSON schema. Always include the top-level boolean field `stub`, the top-level string field `stub_explanation`, and the top-level array `results`. Valid output combinations are strict: if you did not find anything for this step, return `stub` set to true, `results` set to an empty array, and `stub_explanation` set to a concise reason explaining why no result was found. A stub/no-finding response is a valid successful outcome for a lead that does not establish an actual bug; do not invent a result to avoid using `stub`. If you found one or more results, set `stub` to false, set `stub_explanation` to an empty string, and place at least one application record in `results`. Never return `stub: false` with an empty `results` array; that is invalid and fails the attempt. This is a multi-output step: return every application record in results.
+
+The exact JSON Schema for your final answer is:
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "_kritt_extractor_helper": {
+      "const": true,
+      "type": "boolean"
+    },
+    "results": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "flow_file_path": {
+            "type": "string"
+          },
+          "flow_input_to_sink": {
+            "type": "string"
+          },
+          "flow_line": {
+            "type": "number"
+          },
+          "flow_security_relevance": {
+            "type": "string"
+          },
+          "flow_summary": {
+            "type": "string"
+          },
+          "flow_terminal_action": {
+            "type": "string"
+          },
+          "flow_trace": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "flow_summary",
+          "flow_trace",
+          "flow_terminal_action",
+          "flow_file_path",
+          "flow_line",
+          "flow_input_to_sink",
+          "flow_security_relevance"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "stub": {
+      "type": "boolean"
+    },
+    "stub_explanation": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "_kritt_extractor_helper",
+    "stub",
+    "stub_explanation",
+    "results"
+  ],
+  "type": "object"
+}
+```
+The final top-level JSON object must include `_kritt_extractor_helper: true`; this is an extraction marker, not a finding field. Return only a JSON object that validates against this schema. Do not include markdown, commentary, or any text outside the JSON object.

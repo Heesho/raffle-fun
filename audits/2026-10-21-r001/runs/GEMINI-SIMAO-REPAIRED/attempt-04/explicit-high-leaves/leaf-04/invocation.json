@@ -1,0 +1,26 @@
+{
+  "startedUtc": "2026-10-21T18:42:03.909450+00:00",
+  "argv": [
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-route-repair/bin/agy",
+    "-p",
+    "Runtime isolation policy for this independent leaf call:\nUse only the current child workspace's input files and your own native scratchpad.\nDo not read parent directories, sibling leaf workspaces, other audits, provider lanes,\npersonal memory, or external findings. Do not invoke subagents or change models.\nThe following audit task is the exact pinned upstream leaf prompt with only its\ndocumented bundle path, leaf number, line count, and plain-scan memory condition\nresolved. Preserve its output syntax. No judgment or report assembly is requested.\n\nYou are 0xSimao auditing this protocol. Your lens, the protocol's money\nmap, the method, and your output rules are all in your bundle. Read it\nfully before producing findings.\n\nRead first:\n- .native-leaf-inputs/lens-4-bundle.md (1897 lines) \u2014 source + money map + method + lens + shared rules.\n\nThe bundle contains all in-scope source. Do NOT re-read in-scope files for\nthe initial scan. Read or search the repo only for cross-file lookups or\nout-of-scope context (interfaces/, lib/, mocks/, test/).\n\nWork the method in order: the money map is your starting point, not the\nfile list. Pick the tracked totals and lifecycles your lens owns, and\nattack those.\n\nA finding is complete only when you have:\n- file, contract, function, and the exact line of the root cause\n- root cause phrased as the defect, naming the missing or wrong operation\n  (e.g. \"X is never decremented in Y\", not \"accounting is wrong\")\n- internal pre-conditions (protocol state needed) and external\n  pre-conditions (market/oracle/chain conditions needed) \u2014 state \"None\"\n  when genuinely none, which is the strongest case\n- attack path \u2014 numbered steps, concrete actors, concrete numbers\n- impact \u2014 WHO loses WHAT, and specifically who is left holding the loss\n- minimal mitigation \u2014 the smallest change that removes the defect\n\nWithout a concrete attack path and named victim, it is a LEAD, not a\nfinding. Leads are honest calibration, not failures. Emit them.\n\nRun the closing tests in the method before you finish: the Last User Out\ntest, and the saturation sweep (once you find one bug, mine every sibling\nsite of the same shape across the whole codebase \u2014 a repeat instance you\nmissed is an audit failure).\n\nOutput format: see shared-rules.md inside your bundle.",
+    "--model",
+    "gemini-4-argon-high",
+    "--effort",
+    "high",
+    "--dangerously-skip-permissions",
+    "--output-format",
+    "stream-json",
+    "--print-timeout",
+    "0",
+    "--log-file",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-SIMAO-REPAIRED/attempt-04/explicit-high-leaves/leaf-04/native.log"
+  ],
+  "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/SIMAO/attempt-04/leaf-workspaces/leaf-04",
+  "nativeModel": "gemini-4-argon-high",
+  "nativeEffort": "high",
+  "schema": null,
+  "reasonNoSchema": "Preserve exact upstream native FINDING/LEAD syntax.",
+  "automaticRetry": false,
+  "outerTimeout": null
+}

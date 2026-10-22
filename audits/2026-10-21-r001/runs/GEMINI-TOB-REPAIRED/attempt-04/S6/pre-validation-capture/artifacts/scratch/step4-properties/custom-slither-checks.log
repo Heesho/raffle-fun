@@ -1,0 +1,76 @@
+WARNING:CryticCompile:Multiple frameworks detected: Foundry, Hardhat. Using Foundry (highest priority). Use --compile-force-framework to override.
+================================================================================
+CUSTOM SLITHER PYTHON API CHECKS: raffle-fun (Solidity 0.8.36)
+Target workspace: /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/scratch/contracts-exact
+================================================================================
+
+[Check 1] ReentrancyGuard (`nonReentrant`) Coverage on External/Public Mutating Functions
+  - Raffle.rawFulfillRandomWords(uint256,uint256[]): modifiers=[] -> PASS (documented custom guard)
+  - Raffle.approve(address,uint256): modifiers=[] -> PASS (documented custom guard)
+  - Raffle.setApprovalForAll(address,bool): modifiers=[] -> PASS (documented custom guard)
+  - Raffle.transferFrom(address,address,uint256): modifiers=[] -> PASS (documented custom guard)
+  - Raffle.safeTransferFrom(address,address,uint256): modifiers=[] -> PASS (documented custom guard)
+  - Raffle.safeTransferFrom(address,address,uint256,bytes): modifiers=[] -> PASS (documented custom guard)
+  - Raffle.initialize(IRaffle.RaffleInitParams): modifiers=[] -> PASS (documented custom guard)
+  - Raffle.buyEntries(address,uint128): modifiers=['nonReentrant'] -> PASS (nonReentrant)
+  - Raffle.requestDraw(): modifiers=['nonReentrant'] -> PASS (nonReentrant)
+  - Raffle.enableRefunds(): modifiers=['nonReentrant'] -> PASS (nonReentrant)
+  - Raffle.settleWinningTicket(uint256): modifiers=['nonReentrant'] -> PASS (nonReentrant)
+  - Raffle.redeemWinningTicket(uint256): modifiers=['nonReentrant'] -> PASS (nonReentrant)
+  - Raffle.refundTickets(uint256[]): modifiers=['nonReentrant'] -> PASS (nonReentrant)
+  - Raffle.releaseSponsorProceeds(): modifiers=['nonReentrant'] -> PASS (nonReentrant)
+  - Raffle.releaseProtocolFees(): modifiers=['nonReentrant'] -> PASS (nonReentrant)
+  - Raffle.releaseSponsorPrize(): modifiers=['nonReentrant'] -> PASS (nonReentrant)
+  - Raffle.onERC721Received(address,address,uint256,bytes): modifiers=[] -> PASS (documented custom guard)
+  - RaffleFactory.createRaffle(IRaffleFactory.CreateRaffleParams): modifiers=['nonReentrant'] -> PASS (nonReentrant)
+
+[Check 2] Protocol Destination Guard (`_isProtocolDestination`) Coverage
+  - Raffle._update(address,uint256,address): calls _isProtocolDestination = False
+  - Raffle.initialize(IRaffle.RaffleInitParams): calls _isProtocolDestination = True
+  - Raffle.buyEntries(address,uint128): calls _isProtocolDestination = False
+  - Raffle._update(address,uint256,address): calls _isProtocolDestination = True
+  - Raffle._transferQuote(address,uint256): calls _isProtocolDestination = True
+  - RaffleFactory._validateCreateParams reads state vars: ['isRaffle', 'quoteToken', 'raffleImplementation', 'vrfWrapper']
+  - Observation: RaffleFactory._validateCreateParams validates sponsorRecipient and prizeToken,
+    while msg.sender (sponsor) is validated inside Raffle.initialize via _isProtocolDestination(params.sponsor, params.prizeToken).
+
+[Check 3] Lifecycle Status Machine Guard Verification on Raffle Entry Points
+  - Raffle.rawFulfillRandomWords(uint256,uint256[]): reads_status=True, calls_requireStatus=False
+  - Raffle.approve(address,uint256): reads_status=False, calls_requireStatus=False
+  - Raffle.setApprovalForAll(address,bool): reads_status=False, calls_requireStatus=False
+  - Raffle.transferFrom(address,address,uint256): reads_status=False, calls_requireStatus=False
+  - Raffle.safeTransferFrom(address,address,uint256): reads_status=False, calls_requireStatus=False
+  - Raffle.safeTransferFrom(address,address,uint256,bytes): reads_status=False, calls_requireStatus=False
+  - Raffle.receive(): reads_status=False, calls_requireStatus=False
+  - Raffle.initialize(IRaffle.RaffleInitParams): reads_status=False, calls_requireStatus=False
+  - Raffle.buyEntries(address,uint128): reads_status=True, calls_requireStatus=True
+  - Raffle.requestDraw(): reads_status=True, calls_requireStatus=True
+  - Raffle.enableRefunds(): reads_status=True, calls_requireStatus=False
+  - Raffle.settleWinningTicket(uint256): reads_status=True, calls_requireStatus=False
+  - Raffle.redeemWinningTicket(uint256): reads_status=True, calls_requireStatus=False
+  - Raffle.refundTickets(uint256[]): reads_status=True, calls_requireStatus=True
+  - Raffle.releaseSponsorProceeds(): reads_status=False, calls_requireStatus=False
+  - Raffle.releaseProtocolFees(): reads_status=False, calls_requireStatus=False
+  - Raffle.releaseSponsorPrize(): reads_status=True, calls_requireStatus=False
+  - Raffle.onERC721Received(address,address,uint256,bytes): reads_status=True, calls_requireStatus=False
+
+[Check 4] ERC-1167 Clone Constructor State vs Clone Initializer Audit
+  - Constructor state variables written (affect implementation only, unless immutable): ['_name', '_symbol', 'factory', 'i_linkToken', 'i_vrfV2PlusWrapper', 'initialized', 'quoteToken', 'status']
+  - Immutables (embedded in bytecode, shared by ERC-1167 clones): ['factory', 'i_linkToken', 'i_vrfV2PlusWrapper', 'quoteToken']
+  - Constants: ['ENTRY_PRICE', 'callbackGasLimit', 'requestConfirmations']
+  - initialize() state variables written (in clone storage): ['endTime', 'initialized', 'prizeToken', 'prizeTokenId', 'protocolTreasury', 'raffleId', 'reserveEntries', 'sponsor', 'sponsorRecipient', 'status']
+  - Verification: ERC721 `_name` and `_symbol` are written in constructor, but Raffle overrides `name()` and `symbol()` as `pure` functions.
+  - Verification: ReentrancyGuard writes `_status = 1` in constructor; in clones slot starts at 0 (which != ENTERED(2)) and sets to 1 after first nonReentrant call.
+
+[Check 5] Quote Accounting State Variable Writers & Solvency Invariant Audit
+  - totalEntries: written only by ['buyEntries(address,uint128)']
+  - unsettledPot: written only by ['_settleWinningTicket(uint256)', 'buyEntries(address,uint128)', 'enableRefunds()']
+  - remainingRefundLiability: written only by ['enableRefunds()', 'refundTickets(uint256[])']
+  - winnerProceeds: written only by ['_settleWinningTicket(uint256)', 'redeemWinningTicket(uint256)']
+  - sponsorProceeds: written only by ['_settleWinningTicket(uint256)', 'releaseSponsorProceeds()']
+  - protocolFees: written only by ['_settleWinningTicket(uint256)', 'releaseProtocolFees()']
+  - settlementComplete: written only by ['_settleWinningTicket(uint256)']
+  - winnerRedeemed: written only by ['redeemWinningTicket(uint256)']
+  - prizeClaimed: written only by ['redeemWinningTicket(uint256)', 'releaseSponsorPrize()']
+
+Saved structured custom check report to /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/scratch/step4-properties/custom-slither-checks.json

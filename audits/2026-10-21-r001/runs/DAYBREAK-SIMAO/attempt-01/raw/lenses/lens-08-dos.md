@@ -1,0 +1,72 @@
+[Model: raffle creation and prize escrow] A sponsor gives one chosen NFT and receives a newly registered raffle that can sell tickets. The factory's raffle count and three registry records advance once, the NFT is expected to move into the raffle, and no buyer money exists yet.
+
+[Why: RaffleFactory.sol:172] Why is a token's one-time, self-reported ERC-721 compatibility answer treated as proof that the escrowed prize will remain transferable later? The flow implicitly equates interface identification and a current ownership answer with durable future delivery, even though the sponsor controls the untrusted contract that supplies both answers.
+
+[Defeat: _validateCreateParams] (1) A sponsor deploys token `P`, makes `P.supportsInterface(0x80ac58cd)` return true, permits token ID 1 to enter raffle `R`, and makes `P.transferFrom(R, W, 1)` revert once `R` is `NftWon`. (2) The sponsor deposits token ID 1 from an upgradeable `P` while implementation V1 transfers normally, then upgrades `P` to V2 that rejects transfers from `R` before redemption. (3) The sponsor deposits from a pausable `P` while unpaused, then pauses after the winning entry and winner `W` are known. All three concrete states pass the factory's code, interface, callback, `ownerOf`, and activation checks.
+
+[LastOut: creation and escrow] If cloning, initialization, the inbound prize call, the ownership check, or activation fails, the entire creation and all registry writes revert. With an honest token, the sole prize is held for the terminal path. With sponsor-controlled `P`, the apparent last asset can be only a revocable promise because `P` controls both transfer behavior and the ownership answer.
+
+[Model: entry purchase] A buyer gives exactly one USDC per entry and a chosen recipient gets one ticket covering a consecutive entry range. The lifetime sold-entry count rises by the purchased entries, the lifetime ticket count rises by one, and the unallocated sale pot rises by the exact payment.
+
+[Defeat: buyEntries] (1) Buying one entry for receiver contract `X` whose receipt hook reverts rolls back only that purchase and its payment. (2) Asking for `2^128-1` entries is bounded by the sold-entry overflow check and in any event requires the same enormous USDC payment; it cannot cheaply saturate execution. (3) Receiver `X` trying to buy again during its receipt hook meets the reentrancy guard, and a propagated failure rolls the original purchase back. There is no attacker-growable loop on the purchase path.
+
+[Model: draw request] A caller gives native currency for one randomness request, the randomness provider receives its actual price, and any excess goes back to that same caller. The raffle changes from selling to drawing and records one request time and one request identifier; the USDC pot does not move.
+
+[Why: Raffle.sol:267] Why must excess native currency be returned synchronously after the randomness request? The intended belief is that a requester should pay exactly the provider's actual charge; a requester that refuses its own refund can revert its own transaction, but cannot leave the raffle half-transitioned because the provider call and all raffle writes revert with it.
+
+[Defeat: requestDraw] (1) An EOA submitting one wei below the current quote reverts before the state changes. (2) Contract `X` deliberately overpaying by one wei and reverting when that wei is returned reverts its own request, including the provider-side effects; another account remains able to request. (3) An attacker requesting at `endTime + 2 days - 1` pays the full provider fee and can enter only the single fixed callback window; the request cannot be repeated, and either a callback resolves it or refunds open two days later. This is the specified bounded lifecycle, not a sustainable lock.
+
+[Model: timeout-to-refunds] No one contributes new value. Once the applicable deadline arrives, the whole unallocated sale pot is relabeled as the ticket holders' refund liability, the unallocated pot becomes zero, and the raffle enters its refund-only result.
+
+[Defeat: enableRefunds] (1) A non-sponsor calling before an empty raffle ends is rejected. (2) A caller at the exact draw-request or callback deadline is accepted, matching the exclusive request/callback windows. (3) If a callback and refund transaction compete at the boundary, transaction order yields only one terminal state: before the deadline the refund fails, and at or after it the callback is ignored. No attacker can reopen either window or reset either deadline.
+
+[Model: draw resolution] The authenticated randomness response contributes no user value. It selects one already-paid entry and changes the result to an NFT win when sold entries meet the reserve or a cash win otherwise; it does not transfer or allocate the sale pot.
+
+[Defeat: fulfillRandomWords] (1) A response with request ID 0 when the stored ID is 7 is ignored. (2) A response containing zero or two words instead of one is ignored. (3) A response for ID 7 at the exact callback deadline is ignored and the refund route is available. Under the stated trusted-wrapper boundary, none of these inputs can trap funds past the fixed timeout.
+
+[Model: winning-ticket settlement] A caller gives no asset and identifies the historical ticket containing the selected entry. The full unallocated pot becomes fixed winner, sponsor, and treasury claims, the pot becomes zero, and the winning ticket identifier is recorded once.
+
+[Why: Raffle.sol:554] Why does an NFT result make the sponsor's 95% claim spendable before the untrusted prize has been delivered? The code assumes that having appeared escrowed at creation guarantees future transferability, but neither ERC-165 nor the factory's one-time ownership query establishes that property.
+
+[Defeat: _settleWinningTicket] (1) Supplying ticket 0 fails because its stored range is `[0,0]` and the selected entry is at least 1. (2) Supplying an adjacent losing ticket fails the inclusive-range check. (3) Supplying the real winning ticket while prize token `P` is already paused succeeds, fixes `sponsorProceeds` at 95% and `protocolFees` at 5%, and leaves those claims independently releasable even though `P` can no longer deliver the prize. The third move defeats the terminal value guarantee rather than the range guard.
+
+[Model: winner redemption] The current winning-ticket owner gives up and burns that ticket. In a cash result the owner receives the entire fixed cash claim and that claim becomes zero; in an NFT result the owner is supposed to receive the escrowed NFT and the delivery flags become final only if the call completes.
+
+[Why: Raffle.sol:334] Why is reverting the local burn and flags on failed NFT delivery sufficient after settlement and sponsor withdrawal occurred in earlier transactions? Atomicity protects only the redemption call; it cannot restore the already-released 95% sale proceeds or reopen ticket refunds.
+
+[Defeat: redeemWinningTicket] (1) At `NftWon`, `P.transferFrom(R, W, 1)` can revert forever, so every redemption attempt reverts. (2) `P.transferFrom` can return without moving token 1 and `P.ownerOf(1)` can report `R`, causing the verification to revert forever. (3) A fully malicious `P` can no-op and report `W` once, making redemption appear complete while retaining privileged ability to freeze or rewrite the purported prize. The post-transfer ownership query therefore cannot establish honest delivery against the expressly untrusted prize contract.
+
+[Model: ticket refunds] A current ticket owner gives up between one and 100 tickets and receives exactly one USDC for every entry those tickets represent. The tickets are burned and the aggregate refund liability falls by exactly the payment; a failed payment restores every burn and total.
+
+[Why: Raffle.sol:357] Why is one bad ticket allowed to revert a whole refund batch? The owner alone chooses the batch, the maximum is 100, and the owner can remove a duplicate, nonexistent, or foreign ticket and resubmit, so no outsider can poison another owner's batch.
+
+[Defeat: refundTickets] (1) `[4,4]` reverts on the second burn, but only its submitting owner chose that duplicate. (2) `[4,9]` where ticket 9 belongs to another address reverts, but the owner can retry `[4]`. (3) A 101-ticket batch is rejected before its loop and can be split into 100 plus one. With canonical USDC trusted as specified, these all-or-nothing cases do not create attacker-controlled shared denial of service.
+
+[LastOut: draw timeout and refunds] A request made at the last permitted second can add at most the one fixed two-day callback period; it cannot be renewed. Once refunds start, arbitrary owner order removes each represented entry exactly once. The last unburned ticket receives its complete range value and both refund liability and accounted USDC reach zero; the protocol is short by zero.
+
+[Model: quote-claim release] A permissionless caller contributes nothing and cannot choose the recipient. The entire current sponsor or treasury claim is paid to its fixed address and that claim becomes zero; a failed payment reverts the zeroing.
+
+[Defeat: releaseSponsorProceeds] (1) A third party calling the function cannot redirect the 95 USDC claim away from the fixed sponsor recipient. (2) A recipient attempting reentrancy encounters a zeroed claim and the reentrancy guard. (3) In the malicious-prize state, however, the sponsor can receive the full 95 USDC before winner `W` attempts delivery; no condition ties this release to `prizeClaimed`. This is the exploitable sibling of the redemption denial.
+
+[LastOut: cash-win lifecycle] For a 100 USDC pot, settlement creates 80 USDC for the winner, 15 USDC for the sponsor, and 5 USDC for the treasury. Winner redemption, sponsor release, treasury release, and sponsor-prize return are independent and can occur in the worst order. With the trusted quote token and an honest prize token, the last quote claimant is paid in full and the quote shortfall is zero.
+
+[LastOut: NFT-win lifecycle] For a 100 USDC pot, settlement creates 95 USDC for the sponsor and 5 USDC for the treasury; either can be the last quote claimant and both are paid in full. With an honest prize token, the winning owner also receives the sole NFT. With sponsor-controlled `P`, both quote claims can instead reach zero while the NFT transfer remains permanently impossible, leaving the winning-ticket owner as the last claimant holding the entire prize loss.
+
+[Model: sponsor-prize return] In a cash or refund result, a permissionless caller contributes nothing and the chosen sponsor recipient is supposed to receive the sole escrowed NFT. The prize-delivered flag becomes final only if transfer and the ownership check both complete.
+
+[Defeat: releaseSponsorPrize] (1) `P` can revert the outbound transfer. (2) `P` can no-op and keep reporting the raffle as owner, reverting verification. (3) `P` can lie that the sponsor recipient owns token 1 while retaining administrative control over it. In the cash/refund branches this directly harms the sponsor's own chosen recipient, so it does not exceed the NFT-win exploit; it confirms that every outbound use of the same untrusted prize assumption is affected.
+
+[LastOut: empty lifecycle] No quote claimant exists. With an honest token the sole NFT returns to the sponsor recipient and nothing remains. A malicious token can block that return forever, but because the sponsor selected both the token and recipient, this sibling is self-harm; the cross-cohort loss arises in the NFT-win lifecycle after buyers fund the pot.
+
+FINDING | contract: Raffle | function: settleWinningTicket | bug_class: untrusted-prize-payout-theft | group_key: Raffle | settleWinningTicket | untrusted-prize-payout-theft
+root_cause: In `_settleWinningTicket` at Raffle.sol:543-555, an NFT result converts the entire buyer-funded pot into immediately releasable sponsor and treasury claims without requiring successful prize delivery; RaffleFactory.sol:172 only checks the sponsor-selected token's self-reported interface support, so the missing operation is to keep NFT-result proceeds unavailable until the untrusted prize has actually been delivered or the raffle has fallen back to refunds.
+internal_pre: An attacker sponsors a raffle using an ERC-721 contract they control, honest entrants buy 100 entries for 100 USDC in total, `reserveEntries` is at most 100, and the authenticated result is `NftWon`.
+external_pre: None
+path:
+  1. The attacker deploys prize contract `P`; `P` reports ERC-721 support, permits token ID 1 to appear owned by new raffle `R` during creation, and gives the attacker a pause, upgrade, blacklist, or hard-revert switch over later transfers from `R`.
+  2. Honest entrants pay 100 USDC into `R`. After the sale, the draw selects one of their entries and the raffle becomes `NftWon`.
+  3. The attacker or any account calls `settleWinningTicket` with the range containing that entry. `R` sets `sponsorProceeds` to 95 USDC, `protocolFees` to 5 USDC, and `unsettledPot` to zero without calling `P`.
+  4. The attacker calls `releaseSponsorProceeds` and receives 95 USDC at the fixed attacker-controlled sponsor recipient; the treasury's 5 USDC can also be released.
+  5. The winning owner calls `redeemWinningTicket`. `P` reverts its outbound transfer or ownership query, so the whole redemption reverts every time, while the earlier settlement and releases remain final. There is no `NftWon` timeout or route back to refunds.
+impact: This is permanent denial of prize redemption escalated to theft: the winning-ticket owner can never collect the advertised NFT, and the honest entrant cohort has already funded the attacker's 95 USDC payout plus the 5 USDC fee. The attacker spends only prize-contract deployment and transaction gas, plus the native randomness fee only if no other caller funds it; the attacker supplies no sale capital, locks no valuable asset when `P` is self-issued, and cannot recover the gas or any voluntarily paid randomness fee. The block lasts permanently when `P` hard-reverts or remains attacker-paused, and the winning-ticket owner is left holding the prize loss.
+mitigation: Make NFT-result settlement atomic with successful prize delivery: do not create or release sponsor/treasury proceeds until the NFT transfer and ownership verification succeed, and if delivery has not succeeded by a fixed deadline, move the still-unallocated pot to `Refunding` so every ticket can recover its purchase price.

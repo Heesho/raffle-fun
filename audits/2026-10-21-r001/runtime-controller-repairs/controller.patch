@@ -1,0 +1,20 @@
+--- /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/bin/run_cell.py
++++ audits/2026-10-21-r001/runtime-controller-repairs/claude-native-continuation.py
+@@ -18,7 +18,7 @@
+ CLAUDE_BIN = RT / 'claude-code/node_modules/.bin/claude'
+ MODEL = 'claude-opus-5-5'
+ EFFORT = 'max'
+-NODE_BIN = '/Users/hishamel-husseini/.nvm/versions/node/v20.19.6/bin'
++NODE_BIN = '/Users/hishamel-husseini/.nvm/versions/node/v22.23.2/bin'
+ 
+ 
+ def now():
+@@ -140,7 +140,7 @@
+         proc = subprocess.Popen(cmd, cwd=work, env=env, stdin=subprocess.PIPE, stdout=ev, stderr=er, start_new_session=True)
+         proc.stdin.write(prompt.encode()); proc.stdin.close()
+         try:
+-            rc = proc.wait(timeout=a.timeout_min * 60)
++            rc = proc.wait(timeout=None if a.timeout_min == 0 else a.timeout_min * 60)
+         except subprocess.TimeoutExpired:
+             timed_out = True
+             os.killpg(proc.pid, signal.SIGTERM); time.sleep(10)

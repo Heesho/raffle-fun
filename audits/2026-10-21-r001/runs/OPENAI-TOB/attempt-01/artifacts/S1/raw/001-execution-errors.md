@@ -1,0 +1,3 @@
+First artifact-generation attempt: shell exited 127 with exact output `zsh:186: command not found: python`. Retried unchanged generator with python3; exit 0. Generator initially resided at /tmp/write_orient_001.py; copied into the cell below.
+
+Preservation order correction: 001-response-original.json was copied from exact published response bytes immediately after publication; it was not copied before publication as newly supplied AGENT-RULES.md requested. The original response, prose and initial resource manifest are retained without replacement. Resource byte sizes and the added rules path are in 001-resources-correction-01.json.

@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "snapshotHash": "d0b726edfae0c24ed708c5c0f1908c40f4ab85da8d1708de38fe437a384dcc0a",
+  "contextHash": "c5b7124850800b51b1a5b5346ac3abe133da1f07d34f2d0764eab305fbb6947d",
+  "review": {
+    "observations": [
+      {
+        "title": "L-01 adjudication: verified prize-trust mismatch with conditional terminal-delivery exposure",
+        "description": "The clean requirements treat arbitrary prizes as untrusted while the interface assumes honest standards-compliant ERC721s. Initial interface, callback and ownership checks cannot establish future transferability. For NftWon, separately completed settlement and independent sponsor/treasury releases can precede winner delivery. If an admitted asset permanently refuses transfer, winner redemption correctly reverts atomically but NftWon has no refund or alternate terminal exit. This source-supported conditional consequence does not require constructing a hostile-token artifact to discuss, yet the supplied requirements explicitly require rollback on failed delivery and do not define a hostile-asset terminal-failure policy. Retain the trust mismatch as informational, with a conditional medium economic-liveness candidate if a usable winner outcome under permanent prize noncooperation is an intended promise. An unconditional high-severity vulnerability, actual loss, or unauthorized withdrawal is not established. Defensive property: the prize support boundary and failure policy must be explicit, and any promised alternate economic outcome must remain satisfiable after all allowed sponsor and treasury releases.",
+        "severity": "informational",
+        "confidence": "high",
+        "source": [
+          { "path": "packages/contracts/src/interfaces/IRaffle.sol", "start": 12, "end": 15 },
+          { "path": "packages/contracts/src/RaffleFactory.sol", "start": 127, "end": 134 },
+          { "path": "packages/contracts/src/RaffleFactory.sol", "start": 171, "end": 177 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 276, "end": 300 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 309, "end": 337 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 375, "end": 391 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 416, "end": 430 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 509, "end": 523 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 533, "end": 555 }
+        ],
+        "assumptions": [
+          "The mismatch itself is directly observed; the economic consequence is conditional on later noncooperation by an admitted asset and reserve-met successful resolution.",
+          "No honest-prize restriction is silently added to the clean requirements, and no unstated refund guarantee is silently added either.",
+          "If arbitrary untrusted prizes must preserve an economically usable terminal outcome, medium severity and medium confidence are appropriate for that broader candidate; if honest permanent transferability is an explicit support precondition, the consequence is outside that narrower model.",
+          "Canonical quote-token and wrapper behavior are trusted as stated. No executable or deployed adversarial asset was examined."
+        ]
+      },
+      {
+        "title": "L-02 refinement: sponsor prize return omits current same-factory destination screening",
+        "description": "A distinct future clone address can pass sponsor-recipient checks before it contains code or is registered. If that address later becomes a registered clone of the same factory, sponsor-prize return in CashWon or Refunding still uses raw transferFrom and verifies only the resulting owner, without rechecking the destination. An ordinary ERC721 therefore can move the first raffle's prize into a currently known second clone, bypassing receiver acceptance, and prizeClaimed can become final. The second clone's exits act only on its own configured prize and provide no generic recovery for this distinct NFT. This is a source-supported violation of the categorical no-clone-to-clone-assets requirement. Impact is sponsor-directed misconfiguration or deliberate self-loss, not demonstrated redirection of another user's correctly configured claim, theft, or impairment of the receiving clone's accounted cash. Defensive property: every prize delivery must apply the current destination classification, with an explicit policy for an immutable recipient that later becomes invalid; adding a recheck alone does not establish eventual recovery.",
+        "severity": "low",
+        "confidence": "high",
+        "source": [
+          { "path": "packages/contracts/src/RaffleFactory.sol", "start": 105, "end": 125 },
+          { "path": "packages/contracts/src/RaffleFactory.sol", "start": 163, "end": 168 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 193, "end": 205 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 395, "end": 430 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 564, "end": 566 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 593, "end": 604 },
+          { "path": "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol", "start": 32, "end": 60 },
+          { "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol", "start": 115, "end": 135 }
+        ],
+        "assumptions": [
+          "The sponsor selects an unregistered code-less future same-factory clone address, distinct from the current raffle and fixed prohibited addresses, and that clone is successfully deployed before sponsor-prize release.",
+          "The original raffle reaches CashWon or Refunding; its ordinary honest prize is distinct from the receiving clone's configured prize.",
+          "The explicit no-assets-between-clones requirement includes sponsor-directed protocol releases. Excluding sponsor-recipient misuse would support an informational rating instead, but that exclusion is not stated in the supplied requirements.",
+          "No clone address was computed, no deployment or transaction was performed, and no unrelated-user loss is claimed."
+        ]
+      }
+    ],
+    "gaps": [
+      "This is post-seal reconciliation after exposure to root, lifecycle and accounting conclusions; it is not an independent cold pass. The sealed original artifacts were not modified.",
+      "L-01 disagreement is preserved: root informational/high confidence, lifecycle medium/medium, accounting high/medium. This adjudication keeps the observed mismatch informational/high and labels the stronger medium economic-liveness assessment conditional on the promised terminal outcome. The disagreements are not resolved by vote.",
+      "The L-02 refinement goes beyond the original root's generic integration lead and is attributable to the cold specialist analysis; the root independently identified only the broader destination-isolation concern.",
+      "Source-only adjudication: no assessed code, compilation, tests, static analysis, fuzzing, formal proof, exploit artifact, address calculation, deployment lookup, or transaction was executed. Administrative file reads, inert artifact writes and hashing do not constitute security execution evidence.",
+      "The source obligation cannot force a hostile external asset to transfer. A stronger economic guarantee needs a clear design policy; runtime destination checks likewise preserve isolation without by themselves solving delivery to an immutable recipient that later becomes forbidden.",
+      "Other-factory isolation, actual deployments, frontend behavior, and actual hostile-prize behavior remain unestablished. No additional generic cross-factory finding is asserted.",
+      "Requested model selection was gpt-6-astra with ultra reasoning and no fallback. Provider-returned identity, effective effort, access program, usage and cost are unknown. No fallback, alternate model or provider adapter was invoked by this adjudicator.",
+      "The complete adjudication rationale and resource hashes are retained separately. No native import or owner acceptance was performed by this adjudicator."
+    ]
+  }
+}

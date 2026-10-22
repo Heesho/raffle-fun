@@ -1,0 +1,123 @@
+Workspace context:
+Current working directory / primary repository root: /workspace
+Workspace manifest: WORKSPACE.json
+Dependency repositories are checked out as top-level directories inside the same workspace root.
+When reporting file_path for dependency code, prefix it with the dependency alias directory.
+Primary repository: clean-context @ LOCAL_SNAPSHOT
+No dependency checkouts are listed in WORKSPACE.json.
+
+WORKSPACE.json:
+{
+  "dependencies": [],
+  "primary": {
+    "commit": "LOCAL_SNAPSHOT",
+    "kind": "local",
+    "path": "/workspace",
+    "repo": "clean-context",
+    "requested_commit": "LOCAL_SNAPSHOT"
+  }
+}
+
+You are investigating one externally reachable production flow in clean-context for concrete security vulnerabilities.
+
+Entrypoint:
+- kind: smart_contract_receive_fallback
+- label: Raffle.receive()
+- handler: Raffle.receive
+- location: packages/contracts/src/Raffle.sol:171
+- external actor: Any external EVM account or contract sending native currency with empty calldata
+- controlled input: msg.value (native currency amount) and msg.sender
+
+Flow under review:
+- summary: When any external account or contract sends native currency (or zero value) with empty calldata to the Raffle implementation or an ERC-1167 Raffle clone, EVM dispatch routes execution to Raffle.receive(), which unconditionally reverts with DirectNativeTransfer().
+- trace: ["packages/contracts/src/Raffle.sol:171 Raffle.receive - Entrypoint reached when the contract is called with empty calldata and arbitrary msg.value", "packages/contracts/src/Raffle.sol:172 Raffle.receive - Unconditionally reverts with DirectNativeTransfer()"]
+- terminal action: Unconditional revert with custom error DirectNativeTransfer(), rejecting any supplied msg.value from msg.sender.
+- focal location: packages/contracts/src/Raffle.sol:172
+- input to sink: Caller-controlled native value (msg.value) and sender identity (msg.sender) transferred with empty calldata reach the receive() handler and are unconditionally rejected when the transaction reverts with DirectNativeTransfer().
+- security relevance: packages/contracts/src/Raffle.sol:172 rejects all direct native-currency transfers with empty calldata to prevent accidental ETH/native-token locking in Raffle clones or the implementation outside the payable requestDraw() flow, and also ensures that a Raffle contract cannot act as a passive native-currency receiver (e.g., if targeted by native-currency refunds or payouts).
+
+Review the source code for this exact flow, including the surrounding implementation and any necessary callers or callees. Report only vulnerabilities that are concrete, reachable from the stated external actor, and supported by code evidence. A valid finding must identify the vulnerable operation, the missing or flawed protection, a realistic malicious input or sequence, and the full trigger path.
+
+Do not report style issues, hypothetical concerns, test-only behavior, or vulnerabilities that require unsupported configuration or unproven assumptions. Set `exploitable` to true only when the stated external actor can realistically trigger the issue in the configured production path. When the flow contains no supported vulnerability, return a stub instead of inventing a finding.
+
+For each finding, point `file_path` and `line` to the actual vulnerable code, make `trigger_flow` an ordered list from attacker ingress to the vulnerable operation, and use `malicious_input_example` for a minimal realistic payload or sequence.
+
+Return only the structured data requested by the provided JSON schema. Always include the top-level boolean field `stub`, the top-level string field `stub_explanation`, and the top-level array `results`. Valid output combinations are strict: if you did not find anything for this step, return `stub` set to true, `results` set to an empty array, and `stub_explanation` set to a concise reason explaining why no result was found. A stub/no-finding response is a valid successful outcome for a lead that does not establish an actual bug; do not invent a result to avoid using `stub`. If you found one or more results, set `stub` to false, set `stub_explanation` to an empty string, and place at least one application record in `results`. Never return `stub: false` with an empty `results` array; that is invalid and fails the attempt. This is a multi-output step: return every application record in results.
+
+The exact JSON Schema for your final answer is:
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "_kritt_extractor_helper": {
+      "const": true,
+      "type": "boolean"
+    },
+    "results": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "explanation": {
+            "type": "string"
+          },
+          "exploitable": {
+            "type": "boolean"
+          },
+          "file_path": {
+            "type": "string"
+          },
+          "line": {
+            "type": "number"
+          },
+          "malicious_actor": {
+            "type": "string"
+          },
+          "malicious_input_example": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "trigger_flow": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "vulnerability_type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "explanation",
+          "file_path",
+          "line",
+          "malicious_input_example",
+          "summary",
+          "trigger_flow",
+          "vulnerability_type",
+          "malicious_actor",
+          "exploitable"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "stub": {
+      "type": "boolean"
+    },
+    "stub_explanation": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "_kritt_extractor_helper",
+    "stub",
+    "stub_explanation",
+    "results"
+  ],
+  "type": "object"
+}
+```
+The final top-level JSON object must include `_kritt_extractor_helper: true`; this is an extraction marker, not a finding field. Return only a JSON object that validates against this schema. Do not include markdown, commentary, or any text outside the JSON object.

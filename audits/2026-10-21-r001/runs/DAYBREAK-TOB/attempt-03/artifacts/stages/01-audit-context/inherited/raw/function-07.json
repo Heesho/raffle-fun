@@ -1,0 +1,120 @@
+{
+  "schema": "audit-context-building.function-record.v1",
+  "selection": {
+    "requested_model": "gpt-daybreak-blue-latest",
+    "accepted_local_selection": "gpt-daybreak-blue-latest",
+    "reasoning_effort": "ultra",
+    "access_program": "daybreak_blue",
+    "fallback": false,
+    "provider_returned_model": "unknown",
+    "provider_identity": "unknown"
+  },
+  "target": {
+    "sha": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+    "function": "Raffle.refundTickets(uint256[])",
+    "path": "target/packages/contracts/src/Raffle.sol",
+    "lines": "L349-L372"
+  },
+  "prose_path": ".audit-work/stages/01-audit-context/functions/07-Raffle.refundTickets.md",
+  "invariants": [
+    {
+      "claim": "A continuing call is in Status.Refunding and has a batch length in [1,100].",
+      "evidence": ["Raffle.sol:L349-L354", "Raffle.sol:L571-L575", "RaffleConstants.sol:L26-L27"]
+    },
+    {
+      "claim": "Each completed loop iteration consumed a live ticket owned exactly by msg.sender; approvals alone are insufficient.",
+      "evidence": ["Raffle.sol:L357-L365", "ERC721.sol:L60-L63", "ERC721.sol:L426-L432"]
+    },
+    {
+      "claim": "A source-created live ticket has one stored inclusive range whose length equals its purchased entryCount, and the range survives burning.",
+      "evidence": ["Raffle.sol:L218-L235", "Raffle.sol:L138-L139", "Raffle.sol:L451-L455"]
+    },
+    {
+      "claim": "On success, every submitted ticket is burned, remainingRefundLiability and the quote balance are reduced by the same calculated amount under the quote-token trust model, and TicketsRefunded reports the post-decrement liability.",
+      "evidence": ["Raffle.sol:L356-L371", "Raffle.sol:L560-L567"]
+    },
+    {
+      "claim": "No external call occurs inside the ticket loop; the external factory/token boundary is reached only after all burns and the liability decrement.",
+      "evidence": ["Raffle.sol:L356-L369", "Raffle.sol:L451-L455", "Raffle.sol:L497-L502", "ERC721.sol:L216-L245"]
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "remainingRefundLiability covers all still-live refund claims.",
+      "established_by": "Purchases add entryCount * ENTRY_PRICE to unsettledPot; enableRefunds moves that pot to remainingRefundLiability; each successful refund burns before subtracting the identical claim amount.",
+      "evidence": ["Raffle.sol:L223-L235", "Raffle.sol:L296-L300", "Raffle.sol:L356-L368"]
+    },
+    {
+      "claim": "The concrete quote token is official, standard, fee-free, non-rebasing six-decimal USDC and credits exactly amount on accepted transfer.",
+      "established_by": "Declared trust/deployment assumption; exact on-chain identity and recipient/balance delta verification: nothing found.",
+      "evidence": ["IRaffle.sol:L12-L15", "Raffle.sol:L560-L566", "RaffleFactory.sol:L65-L78", "IRaffleFactory.sol:L6-L9"]
+    },
+    {
+      "claim": "factory implements the IRaffleFactory getters used during payout destination screening.",
+      "established_by": "Canonical RaffleFactory construction path deploys the implementation; direct noncanonical Raffle deployment is not type-checked.",
+      "evidence": ["RaffleFactory.sol:L89-L92", "Raffle.sol:L155-L162", "Raffle.sol:L598-L604"]
+    }
+  ],
+  "loop_paths": [
+    "Empty or >100-element batch reverts before iteration.",
+    "Nonexistent/already-burned ID reverts in ownerOf.",
+    "Foreign-owned ID reverts before range accounting.",
+    "A duplicate burns on its first occurrence, then reverts in ownerOf on the second; transaction rollback restores prior iteration effects.",
+    "Every-success path aggregates each inclusive range, burns every ticket, prices the aggregate, decrements liability, transfers quote tokens, and emits the aggregate event."
+  ],
+  "callees": [
+    {
+      "name": "nonReentrant",
+      "kind": "inherited-source-available",
+      "depends_on": "Reject nested guarded calls and keep the guard entered through the final external transfer.",
+      "evidence": ["ReentrancyGuard.sol:L69-L73", "ReentrancyGuard.sol:L88-L105"]
+    },
+    {
+      "name": "_requireStatus",
+      "kind": "private",
+      "depends_on": "Establish Status.Refunding or revert.",
+      "evidence": ["Raffle.sol:L350", "Raffle.sol:L571-L575"]
+    },
+    {
+      "name": "ownerOf/_requireOwned",
+      "kind": "inherited-source-available",
+      "depends_on": "Return the current nonzero owner or revert for never-minted/burned IDs.",
+      "evidence": ["ERC721.sol:L60-L63", "ERC721.sol:L426-L432"]
+    },
+    {
+      "name": "ticketRange",
+      "kind": "public-internal-dispatch",
+      "depends_on": "Return the stored historical endpoints; existence/order come from ownerOf and buyEntries, not this callee.",
+      "evidence": ["Raffle.sol:L451-L455", "Raffle.sol:L218-L235"]
+    },
+    {
+      "name": "_burn/_update",
+      "kind": "inherited-and-override-source-available",
+      "depends_on": "Clear approval/ownership, decrement owner balance, and emit Transfer without an external call; exact-owner authorization is supplied by the caller.",
+      "evidence": ["Raffle.sol:L497-L502", "ERC721.sol:L216-L245", "ERC721.sol:L303-L307"]
+    },
+    {
+      "name": "_transferQuote/_isProtocolDestination",
+      "kind": "private-with-external-source-available-factory-reads",
+      "depends_on": "Reject known protocol sinks, then transfer the complete claim; factory getter ABI calls must succeed.",
+      "evidence": ["Raffle.sol:L560-L567", "Raffle.sol:L587-L605", "RaffleFactory.sol:L42-L54"]
+    },
+    {
+      "name": "SafeERC20.safeTransfer/quoteToken.transfer",
+      "kind": "library-source-available/external-black-box",
+      "depends_on": "Bubble revert; accept true or code-bearing empty-return success; trusted token must actually move exactly amount.",
+      "evidence": ["SafeERC20.sol:L30-L37", "SafeERC20.sol:L168-L200", "IERC20.sol:L35-L41"]
+    }
+  ],
+  "shared_state": [
+    "status: lifecycle writers gate entry into the refund branch.",
+    "ERC721 owners/balances/approvals: minted by buyEntries, transferable in every state, burned here and by winner redemption in disjoint result states.",
+    "_ticketRanges/totalEntries/ticketCount: purchase-time lifetime records; read but not reduced by refunds.",
+    "remainingRefundLiability: initialized by enableRefunds, decremented only by successful refunds, included by accountedQuoteBalance.",
+    "quote-token balance: increased by purchases and decreased by the final external transfer."
+  ],
+  "open_questions": [
+    "Need deployed quote-token bytecode/configuration to establish exact official-USDC identity and fee-free, non-rebasing, no-callback transfer semantics.",
+    "Need concrete deployment provenance when applying this record outside the canonical RaffleFactory construction path, because Raffle later ABI-calls its constructor caller as IRaffleFactory."
+  ]
+}

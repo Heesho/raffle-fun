@@ -1,0 +1,123 @@
+Workspace context:
+Current working directory / primary repository root: /workspace
+Workspace manifest: WORKSPACE.json
+Dependency repositories are checked out as top-level directories inside the same workspace root.
+When reporting file_path for dependency code, prefix it with the dependency alias directory.
+Primary repository: clean-context @ LOCAL_SNAPSHOT
+No dependency checkouts are listed in WORKSPACE.json.
+
+WORKSPACE.json:
+{
+  "dependencies": [],
+  "primary": {
+    "commit": "LOCAL_SNAPSHOT",
+    "kind": "local",
+    "path": "/workspace",
+    "repo": "clean-context",
+    "requested_commit": "LOCAL_SNAPSHOT"
+  }
+}
+
+You are investigating one externally reachable production flow in clean-context for concrete security vulnerabilities.
+
+Entrypoint:
+- kind: smart_contract_inherited_public_function
+- label: ERC721.safeTransferFrom(address,address,uint256,bytes)
+- handler: ERC721.safeTransferFrom
+- location: packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:133
+- external actor: Current ticket owner, approved address, or approved operator on a Raffle clone
+- controlled input: from (address), to (address), tokenId (uint256), data (bytes memory), and caller context (msg.sender)
+
+Flow under review:
+- summary: Transfer attempt for an unminted/burned `tokenId` or by an unauthorized `msg.sender` reverts in `ERC721._checkAuthorized`. After `Raffle._update` screens `to`, `ERC721._update` loads the current owner and calls `_checkAuthorized`, which reverts if the token has no owner or if `msg.sender` is not authorized.
+- trace: ["packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:133 ERC721.safeTransferFrom - Entrypoint receiving `from`, `to`, `tokenId`, and `data`", "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:115 ERC721.transferFrom - Validates `to != address(0)` and calls `Raffle._update(to, tokenId, _msgSender())`", "packages/contracts/src/Raffle.sol:497 Raffle._update - Verifies `to` is not a protocol destination and calls `super._update(to, tokenId, auth)`", "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:216 ERC721._update - Reads `address from = _ownerOf(tokenId)` and calls `_checkAuthorized(from, auth, tokenId)`", "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:164 ERC721._isAuthorized - Evaluates whether `spender` is `owner`, approved for all via `isApprovedForAll`, or approved for `tokenId` via `_getApproved`", "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:179 ERC721._checkAuthorized - Reverts with `ERC721NonexistentToken(tokenId)` (line 182) if `owner == address(0)` or `ERC721InsufficientApproval(spender, tokenId)` (line 184) if unauthorized"]
+- terminal action: Reverts with `ERC721NonexistentToken(tokenId)` when `_ownerOf(tokenId) == address(0)`, or `ERC721InsufficientApproval(spender, tokenId)` when `msg.sender` is not authorized for `tokenId`.
+- focal location: packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:179
+- input to sink: Caller-controlled `tokenId` and `msg.sender` (`auth`) reach `ERC721._checkAuthorized(from, auth, tokenId)`, triggering `revert ERC721NonexistentToken(tokenId)` if `_owners[tokenId] == address(0)` or `revert ERC721InsufficientApproval(auth, tokenId)` if `msg.sender` lacks owner/approved authority.
+- security relevance: Enforces the access control boundary on ticket transfers so that only the current ticket owner, a token-approved address, or an operator approved via `setApprovalForAll` can move a ticket, and prevents any transfer of unminted or already-burned tickets (tickets burned during `redeemWinningTicket` or `refundTickets`).
+
+Review the source code for this exact flow, including the surrounding implementation and any necessary callers or callees. Report only vulnerabilities that are concrete, reachable from the stated external actor, and supported by code evidence. A valid finding must identify the vulnerable operation, the missing or flawed protection, a realistic malicious input or sequence, and the full trigger path.
+
+Do not report style issues, hypothetical concerns, test-only behavior, or vulnerabilities that require unsupported configuration or unproven assumptions. Set `exploitable` to true only when the stated external actor can realistically trigger the issue in the configured production path. When the flow contains no supported vulnerability, return a stub instead of inventing a finding.
+
+For each finding, point `file_path` and `line` to the actual vulnerable code, make `trigger_flow` an ordered list from attacker ingress to the vulnerable operation, and use `malicious_input_example` for a minimal realistic payload or sequence.
+
+Return only the structured data requested by the provided JSON schema. Always include the top-level boolean field `stub`, the top-level string field `stub_explanation`, and the top-level array `results`. Valid output combinations are strict: if you did not find anything for this step, return `stub` set to true, `results` set to an empty array, and `stub_explanation` set to a concise reason explaining why no result was found. A stub/no-finding response is a valid successful outcome for a lead that does not establish an actual bug; do not invent a result to avoid using `stub`. If you found one or more results, set `stub` to false, set `stub_explanation` to an empty string, and place at least one application record in `results`. Never return `stub: false` with an empty `results` array; that is invalid and fails the attempt. This is a multi-output step: return every application record in results.
+
+The exact JSON Schema for your final answer is:
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "_kritt_extractor_helper": {
+      "const": true,
+      "type": "boolean"
+    },
+    "results": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "explanation": {
+            "type": "string"
+          },
+          "exploitable": {
+            "type": "boolean"
+          },
+          "file_path": {
+            "type": "string"
+          },
+          "line": {
+            "type": "number"
+          },
+          "malicious_actor": {
+            "type": "string"
+          },
+          "malicious_input_example": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "trigger_flow": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "vulnerability_type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "explanation",
+          "file_path",
+          "line",
+          "malicious_input_example",
+          "summary",
+          "trigger_flow",
+          "vulnerability_type",
+          "malicious_actor",
+          "exploitable"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "stub": {
+      "type": "boolean"
+    },
+    "stub_explanation": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "_kritt_extractor_helper",
+    "stub",
+    "stub_explanation",
+    "results"
+  ],
+  "type": "object"
+}
+```
+The final top-level JSON object must include `_kritt_extractor_helper: true`; this is an extraction marker, not a finding field. Return only a JSON object that validates against this schema. Do not include markdown, commentary, or any text outside the JSON object.

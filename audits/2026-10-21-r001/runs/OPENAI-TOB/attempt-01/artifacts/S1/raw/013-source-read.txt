@@ -1,0 +1,317 @@
+target/packages/contracts/src/interfaces/IRaffle.sol
+   1 // SPDX-License-Identifier: MIT
+   2 pragma solidity 0.8.36;
+   3 
+   4 import { IVRFV2PlusWrapper } from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol";
+   5 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+   6 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+   7 
+   8 /// @title raffle.fun Raffle Interface
+   9 /// @author heesho
+  10 /// @notice Defines one autonomous NFT raffle using fixed-price USDC entries and one transferable ERC-721 ticket per
+  11 ///         purchase.
+  12 /// @dev Ticket IDs are sequential. Each ticket stores one inclusive uint128 entry range and remains a transferable
+  13 ///      bearer claim until its owner atomically burns it for redemption or refund. The immutable quote token is trusted
+  14 ///      canonical six-decimal USDC with standard, non-rebasing, fee-free transfers. Supported prizes are honest,
+  15 ///      standards-compliant ERC-721s.
+  16 /// @custom:version 1.0.0
+  17 interface IRaffle {
+  18     // Types
+  19 
+  20     /// @notice The single authoritative raffle lifecycle and economic result.
+  21     enum Status {
+  22         /// @notice The clone is initialized and waiting for the factory to escrow the configured prize.
+  23         AwaitingPrize,
+  24         /// @notice The prize is escrowed and entry sales or post-sale draw initiation are available.
+  25         Active,
+  26         /// @notice A Chainlink VRF request was accepted and its callback window is open.
+  27         Drawing,
+  28         /// @notice The reserve was met and the winning ticket may redeem the prize NFT.
+  29         NftWon,
+  30         /// @notice The reserve was missed and the winning ticket may redeem its cash allocation.
+  31         CashWon,
+  32         /// @notice Full ticket refunds are enabled and the sponsor may recover the prize NFT.
+  33         Refunding
+  34     }
+  35 
+  36     /// @notice Complete clone-specific configuration supplied once by the canonical factory.
+  37     /// @param sponsor Prize depositor and empty-raffle cancellation authority.
+  38     /// @param sponsorRecipient Immutable recipient of sponsor quote proceeds and any returned prize.
+  39     /// @param protocolTreasury Immutable recipient of protocol fees.
+  40     /// @param prizeToken Standards-compliant ERC-721 prize contract.
+  41     /// @param prizeTokenId Token ID of the prize escrowed by this raffle.
+  42     /// @param raffleId One-based canonical factory identifier for this raffle.
+  43     /// @param reserveEntries Global raw entry-count threshold selecting the NFT outcome when met or exceeded.
+  44     /// @param endTime Unix timestamp, in seconds, at which entry sales end exclusively.
+  45     struct RaffleInitParams {
+  46         address sponsor;
+  47         address sponsorRecipient;
+  48         address protocolTreasury;
+  49         address prizeToken;
+  50         uint256 prizeTokenId;
+  51         uint256 raffleId;
+  52         uint128 reserveEntries;
+  53         uint64 endTime;
+  54     }
+  55 
+  56     // Events
+  57 
+  58     /// @notice Emitted when the factory deposits the configured prize and activates the raffle.
+  59     /// @param prizeToken ERC-721 contract of the deposited prize.
+  60     /// @param prizeTokenId Token ID of the deposited prize.
+  61     /// @param sponsor Address that deposited the prize through the factory.
+  62     event PrizeDeposited(address indexed prizeToken, uint256 indexed prizeTokenId, address indexed sponsor);
+  63 
+  64     /// @notice Emitted when a buyer pays for entries and one range ticket is minted.
+  65     /// @param buyer Address that paid the six-decimal quote-token amount.
+  66     /// @param recipient Address that received the newly minted ticket.
+  67     /// @param ticketId Sequential ticket ID assigned to the purchase.
+  68     /// @param firstEntry First global raffle entry represented by the ticket, inclusive.
+  69     /// @param lastEntry Last global raffle entry represented by the ticket, inclusive.
+  70     /// @param entryCount Number of entries represented by the ticket.
+  71     /// @param grossAmount Raw six-decimal quote-token units paid, equal to `entryCount * ENTRY_PRICE`.
+  72     event TicketPurchased(
+  73         address indexed buyer,
+  74         address indexed recipient,
+  75         uint256 indexed ticketId,
+  76         uint128 firstEntry,
+  77         uint128 lastEntry,
+  78         uint128 entryCount,
+  79         uint256 grossAmount
+  80     );
+  81 
+  82     /// @notice Emitted when the raffle pays for and records its one Chainlink VRF request.
+  83     /// @param requestId Wrapper-assigned request identifier.
+  84     /// @param requester Address that initiated and funded the request.
+  85     /// @param fee Native-token wei actually paid to the wrapper for the request.
+  86     /// @param excessReturned Native-token wei returned to the requester after paying the actual fee.
+  87     /// @param drawRequestedAt Unix timestamp, in seconds, when the request was accepted.
+  88     /// @param callbackDeadline Exclusive Unix-timestamp deadline for accepting the authenticated callback.
+  89     event DrawRequested(
+  90         uint256 indexed requestId,
+  91         address indexed requester,
+  92         uint256 fee,
+  93         uint256 excessReturned,
+  94         uint256 drawRequestedAt,
+  95         uint256 callbackDeadline
+  96     );
+  97 
+  98     /// @notice Emitted when an authenticated, ABI-decodable callback cannot resolve the raffle.
+  99     /// @param receivedRequestId Request ID supplied by the wrapper callback.
+ 100     /// @param expectedRequestId Request ID currently recorded by the raffle, or zero before request persistence.
+
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol
+   1 // SPDX-License-Identifier: MIT
+   2 // OpenZeppelin Contracts (last updated v5.4.0) (token/ERC721/IERC721Receiver.sol)
+   3 
+   4 pragma solidity >=0.5.0;
+   5 
+   6 /**
+   7  * @title ERC-721 token receiver interface
+   8  * @dev Interface for any contract that wants to support safeTransfers
+   9  * from ERC-721 asset contracts.
+  10  */
+  11 interface IERC721Receiver {
+  12     /**
+  13      * @dev Whenever an {IERC721} `tokenId` token is transferred to this contract via {IERC721-safeTransferFrom}
+  14      * by `operator` from `from`, this function is called.
+  15      *
+  16      * It must return its Solidity selector to confirm the token transfer.
+  17      * If any other value is returned or the interface is not implemented by the recipient, the transfer will be
+  18      * reverted.
+  19      *
+  20      * The selector can be obtained in Solidity with `IERC721Receiver.onERC721Received.selector`.
+  21      */
+  22     function onERC721Received(
+  23         address operator,
+  24         address from,
+  25         uint256 tokenId,
+  26         bytes calldata data
+  27     ) external returns (bytes4);
+  28 }
+
+target/packages/contracts/src/Raffle.sol
+ 240     function requestDraw() external payable override nonReentrant returns (uint256 requestId) {
+ 241         _requireStatus(Status.Active);
+ 242         if (block.timestamp < endTime) revert RaffleNotEnded(endTime, block.timestamp);
+ 243         if (totalEntries == 0) revert NoEntriesSold();
+ 244         uint256 requestDeadline = drawRequestDeadline();
+ 245         if (block.timestamp >= requestDeadline) {
+ 246             revert DrawRequestWindowExpired(requestDeadline, block.timestamp);
+ 247         }
+ 248 
+ 249         uint256 quotedFee = getVrfRequestPrice();
+ 250         if (msg.value < quotedFee) revert InsufficientVrfFee(quotedFee, msg.value);
+ 251 
+ 252         status = Status.Drawing;
+ 253         drawRequestedAt = uint64(block.timestamp);
+ 254         _requestInFlight = true;
+ 255         bytes memory extraArgs = VRFV2PlusClient._argsToBytes(VRFV2PlusClient.ExtraArgsV1({ nativePayment: true }));
+ 256         uint256 paidPrice;
+ 257         (requestId, paidPrice) = requestRandomnessPayInNative(callbackGasLimit, requestConfirmations, 1, extraArgs);
+ 258         if (paidPrice > msg.value) revert InsufficientVrfFee(paidPrice, msg.value);
+ 259         vrfRequestId = requestId;
+ 260         _requestInFlight = false;
+ 261 
+ 262         uint256 excess = msg.value - paidPrice;
+ 263         if (excess != 0) {
+ 264             bool success;
+ 265             address refundRecipient = msg.sender;
+ 266             assembly ("memory-safe") {
+ 267                 success := call(gas(), refundRecipient, excess, 0, 0, 0, 0)
+ 268             }
+ 269             if (!success) revert NativeRefundFailed(msg.sender, excess);
+ 270         }
+ 271 
+ 272         emit DrawRequested(requestId, msg.sender, paidPrice, excess, drawRequestedAt, callbackDeadline());
+ 273     }
+ 274 
+ 275     /// @inheritdoc IRaffle
+ 276     function enableRefunds() external override nonReentrant {
+ 277         uint256 deadline;
+ 278 
+ 279         if (status == Status.Active) {
+ 280             if (totalEntries == 0) {
+ 281                 deadline = endTime;
+ 282                 if (msg.sender != sponsor && block.timestamp < deadline) {
+ 283                     revert RefundsNotAvailable(deadline, block.timestamp);
+ 284                 }
+ 285             } else {
+ 286                 deadline = drawRequestDeadline();
+ 287                 if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+ 288             }
+ 289         } else if (status == Status.Drawing) {
+ 290             deadline = callbackDeadline();
+ 291             if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+ 292         } else {
+ 293             revert InvalidStatus(status);
+ 294         }
+ 295 
+ 296         uint256 liability = unsettledPot;
+ 297         unsettledPot = 0;
+ 298         remainingRefundLiability = liability;
+ 299         status = Status.Refunding;
+ 300         emit RefundsEnabled(msg.sender, liability);
+ 301     }
+ 435     /// @inheritdoc IRaffle
+ 436     function getVrfRequestPrice() public view override returns (uint256 fee) {
+ 437         fee = i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit, 1);
+ 438     }
+ 439 
+ 440     /// @inheritdoc IRaffle
+ 441     function estimateVrfRequestPrice(uint256 requestGasPriceWei) public view override returns (uint256 fee) {
+ 442         fee = i_vrfV2PlusWrapper.estimateRequestPriceNative(callbackGasLimit, 1, requestGasPriceWei);
+ 443     }
+ 444 
+ 445     /// @inheritdoc IRaffle
+ 446     function vrfWrapper() public view override returns (IVRFV2PlusWrapper wrapper) {
+ 447         wrapper = i_vrfV2PlusWrapper;
+ 448     }
+ 449 
+ 450     /// @inheritdoc IRaffle
+ 451     function ticketRange(uint256 ticketId) public view override returns (uint128 firstEntry, uint128 lastEntry) {
+ 452         TicketRange storage range = _ticketRanges[ticketId];
+ 453         firstEntry = range.firstEntry;
+ 454         lastEntry = range.lastEntry;
+ 455     }
+ 456 
+ 457     /// @inheritdoc IRaffle
+ 458     function drawRequestDeadline() public view override returns (uint256 deadline) {
+ 459         deadline = uint256(endTime) + RaffleConstants.DRAW_REQUEST_TIMEOUT;
+ 460     }
+ 461 
+ 462     /// @inheritdoc IRaffle
+ 463     function callbackDeadline() public view override returns (uint256 deadline) {
+ 464         if (drawRequestedAt != 0) deadline = uint256(drawRequestedAt) + RaffleConstants.DRAW_CALLBACK_TIMEOUT;
+ 465     }
+ 466 
+ 467     /// @inheritdoc IRaffle
+ 468     function accountedQuoteBalance() public view override returns (uint256 amount) {
+ 469         amount = unsettledPot + remainingRefundLiability + winnerProceeds + sponsorProceeds + protocolFees;
+ 470     }
+ 471 
+ 472     /// @inheritdoc IRaffle
+ 473     function grossSales() public view override returns (uint256 amount) {
+ 474         amount = uint256(totalEntries) * ENTRY_PRICE;
+ 475     }
+ 476 
+ 477     /// @notice Returns the fixed display name shared by every raffle ticket collection.
+ 478     /// @return Exact ERC-721 collection name, `raffle.fun Ticket`.
+ 479     function name() public pure override returns (string memory) {
+ 480         return "raffle.fun Ticket";
+ 481     }
+ 482 
+ 483     /// @notice Returns the fixed display symbol shared by every raffle ticket collection.
+ 484     /// @return Exact ERC-721 collection symbol, `RAFFLE`.
+ 485     function symbol() public pure override returns (string memory) {
+ 486         return "RAFFLE";
+ 487     }
+ 500         }
+ 501         previousOwner = super._update(to, ticketId, auth);
+ 502     }
+ 503 
+ 504     /// @dev Authenticated randomness selects only an entry. No ticket search, loop, user call, or token transfer
+ 505     ///      occurs. In-flight, late, wrong-request, duplicate, and ABI-decodable wrong-length callbacks are ignored for
+ 506     ///      liveness; malformed ABI calldata reverts during Solidity decoding before this handler runs.
+ 507     /// @param requestId Wrapper-authenticated request identifier supplied by the callback.
+ 508     /// @param randomWords Callback words; exactly one word is required for resolution.
+ 509     function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+ 510         if (
+ 511             _requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1
+ 512                 || block.timestamp >= callbackDeadline()
+ 513         ) {
+ 514             emit VrfCallbackIgnored(requestId, vrfRequestId, status);
+ 515             return;
+ 516         }
+ 517 
+ 518         uint128 resolvedEntry = uint128((randomWords[0] % uint256(totalEntries)) + 1);
+ 519         winningEntry = resolvedEntry;
+ 520         resolvedAt = uint64(block.timestamp);
+ 521         status = totalEntries >= reserveEntries ? Status.NftWon : Status.CashWon;
+ 522 
+ 523         emit RaffleResolved(requestId, resolvedEntry, status);
+ 524     }
+ 525 
+ 526     // Private state-changing helpers
+ 527 
+ 528     /// @dev Validates the winning range once and allocates all terminal quote-token liabilities without transferring
+ 529     ///      an asset or reading ticket ownership. Both percentage allocations round down; sponsor proceeds are the
+ 530     ///      remainder.
+ 531     /// @param ticketId Ticket whose inclusive range must contain the selected winning entry.
+ 532     /// @return cashAmount Raw six-decimal quote-token units allocated to the cash winner, or zero for `NftWon`.
+ 533     function _settleWinningTicket(uint256 ticketId) private returns (uint256 cashAmount) {
+
+target/packages/contracts/src/RaffleFactory.sol
+ 154     function _validateCreateParams(CreateRaffleParams calldata params) private view {
+ 155         _requireContract(params.prizeToken);
+ 156         if (params.sponsorRecipient == address(0)) revert ZeroAddress();
+ 157         if (
+ 158             params.prizeToken == address(this) || params.prizeToken == quoteToken || params.prizeToken == vrfWrapper
+ 159                 || params.prizeToken == raffleImplementation || isRaffle[params.prizeToken]
+ 160         ) {
+ 161             revert UnsafeProtocolDestination(params.prizeToken);
+ 162         }
+ 163         if (
+ 164             params.sponsorRecipient == address(this) || params.sponsorRecipient == quoteToken
+ 165                 || params.sponsorRecipient == vrfWrapper || params.sponsorRecipient == params.prizeToken
+ 166                 || params.sponsorRecipient == raffleImplementation || isRaffle[params.sponsorRecipient]
+ 167         ) {
+ 168             revert UnsafeProtocolDestination(params.sponsorRecipient);
+ 169         }
+ 170 
+ 171         bool supports721 = false;
+ 172         try IERC165(params.prizeToken).supportsInterface(type(IERC721).interfaceId) returns (bool supported) {
+ 173             supports721 = supported;
+ 174         } catch {
+ 175             revert UnsupportedPrizeToken(params.prizeToken);
+ 176         }
+ 177         if (!supports721) revert UnsupportedPrizeToken(params.prizeToken);
+ 178         if (params.reserveEntries == 0) revert ZeroReserveEntries();
+ 179     }
+ 180 
+ 181     /// @dev Reverts unless an address contains deployed code.
+ 182     /// @param account Address required to be a contract.
+ 183     function _requireContract(address account) private view {
+ 184         if (account.code.length == 0) revert NotContract(account);
+ 185     }
+ 186 }

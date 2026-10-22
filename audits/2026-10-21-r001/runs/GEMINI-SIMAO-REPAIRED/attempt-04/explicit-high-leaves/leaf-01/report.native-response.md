@@ -1,0 +1,166 @@
+### Phase 0 & Phase 1 — Protocol Vocabulary and Tracked Totals Walkthrough
+
+In `raffle.fun`, a sponsor locks one NFT into a newly cloned raffle contract with an entry reserve threshold and a sale end timestamp. Buyers pay 1 USDC (1,000,000 raw six-decimal units) per entry and receive one sequential ERC-721 ticket whose stored range `[firstEntry, lastEntry]` covers the entries purchased in that transaction. All collected USDC sits in `unsettledPot` until the raffle either resolves via Chainlink VRF v2.5 (`NftWon` if `totalEntries >= reserveEntries`, `CashWon` if `totalEntries < reserveEntries`) or enters `Refunding` if a draw request or VRF callback deadline expires (or if an empty raffle is cancelled). Upon settlement in `NftWon`, 5% (rounded down) goes to `protocolFees` and 95% (the remainder) goes to `sponsorProceeds`, while the winning ticket holder claims the NFT. Upon settlement in `CashWon`, 5% goes to `protocolFees`, 80% goes to `winnerProceeds`, and the remaining 15% goes to `sponsorProceeds`, while the sponsor recovers the NFT. Upon `Refunding`, `unsettledPot` moves into `remainingRefundLiability`, allowing every ticket holder to burn their ticket for 1 USDC per entry while the sponsor recovers the NFT.
+
+---
+
+### Phase 2 & Phase 3 — Function Models, Deep Questions, Defeat Attempts, and Lifecycle Walks
+
+#### Lifecycle 1: Creation & Escrow (`RaffleFactory::createRaffle` → `Raffle::initialize` → `Raffle::onERC721Received`)
+
+`[Model: RaffleFactory::createRaffle]`
+A sponsor supplies a prize NFT, a payout address for sponsor proceeds, a minimum entry threshold for awarding the NFT, and a sale end time. The factory increments its lifetime counter of raffles, creates a new isolated raffle contract, records the new raffle in its directory, and moves the sponsor's prize NFT into the new raffle contract so the sale becomes active.
+
+`[Model: Raffle::initialize]`
+The factory configures a freshly created raffle contract with its sponsor, sponsor payout address, protocol fee address, prize NFT details, raffle number, reserve threshold, and sale end time. No money moves yet, and the raffle status is set to waiting for the prize NFT to arrive.
+
+`[Model: Raffle::onERC721Received]`
+When the prize NFT arrives from the sponsor through the factory while the raffle is waiting for its prize, the raffle accepts the NFT and switches its status to active so entry sales can begin.
+
+`[Why: RaffleFactory.sol:756]`
+Why does `RaffleFactory::createRaffle` write `raffleById[raffleId] = raffle`, `idByRaffle[raffle] = raffleId`, and `isRaffle[raffle] = true` after `IRaffle(raffle).initialize(...)` rather than before?
+Because `initialize` checks `_isProtocolDestination` on `sponsor`, `protocolTreasury`, and `sponsorRecipient`; `destination == address(this)` inside `initialize` already catches the new clone address itself, and setting `isRaffle[raffle] = true` before `prize.safeTransferFrom` ensures the new clone is registered as a protocol destination before any external code on the untrusted `prizeToken` executes.
+
+`[Why: Raffle.sol:615]`
+Why does `_isProtocolDestination` check `destination.code.length != 0` before querying `canonicalFactory.isRaffle(destination)`?
+The code assumes that a registered raffle clone will always have deployed bytecode when `_isProtocolDestination` is called, and avoids an external staticcall for EOAs. However, this also rests on the implicit belief that an address with `code.length == 0` today can never become a registered raffle clone in the future—which does not hold for pre-computed `CREATE` addresses of future `RaffleFactory` clones (`Clones.clone(raffleImplementation)`).
+
+`[Defeat: RaffleFactory::createRaffle]`
+1. Attacker `0xA11ce` deploys a custom ERC-721 contract `0xBEEF` where `safeTransferFrom` calls `raffle.onERC721Received` (setting `status = Status.Active`) and then has `0xA11ce` immediately call `raffle.enableRefunds()` inside the transfer hook before `createRaffle` finishes, attempting to register a raffle that starts in `Status.Refunding`. This is defeated by `if (IRaffle(raffle).status() != IRaffle.Status.Active) revert PrizeEscrowVerificationFailed(...)` at `RaffleFactory.sol:765`.
+2. Attacker `0xA11ce` deploys a custom ERC-721 contract `0xBEEF` that calls `raffle.onERC721Received(factory, 0xA11ce, 1, "")` during `safeTransferFrom` without actually changing token ownership from `0xA11ce` to `raffle`. This is defeated by `if (prize.ownerOf(params.prizeTokenId) != raffle) revert PrizeEscrowVerificationFailed(...)` at `RaffleFactory.sol:762`.
+3. Attacker `0xA11ce` pre-transfers `prizeTokenId = 42` directly to the deterministic next clone address `computeCreateAddress(factory, raffleCount + 2)` via `ERC721::transferFrom` before calling `createRaffle`, hoping to bypass `onERC721Received`. This is defeated because `prize.safeTransferFrom(msg.sender, raffle, 42)` reverts when `ownerOf(42) == raffle != msg.sender`, and even if bypassed, `status` would remain `Status.AwaitingPrize` and revert at `RaffleFactory.sol:765`.
+
+`[LastOut: Creation & Escrow Lifecycle]`
+If a raffle is created by `sponsor` with `prizeTokenId = 1` and `totalEntries = 0`, and no entries are bought (`unsettledPot = 0`), `sponsor` (before `endTime`) or any caller (at `block.timestamp >= endTime`) calls `enableRefunds()`, setting `remainingRefundLiability = 0` and `status = Status.Refunding`. Then `releaseSponsorPrize()` sets `prizeClaimed = true` and transfers `prizeTokenId = 1` to `sponsorRecipient` (provided `sponsorRecipient` was not set by the sponsor to a future raffle clone address). The last and only participant (`sponsorRecipient`) receives the exact escrowed NFT, and `accountedQuoteBalance()` is `0 <= 0`.
+
+---
+
+#### Lifecycle 2: Entry Purchase (`Raffle::buyEntries` & `Raffle::_update`)
+
+`[Model: Raffle::buyEntries]`
+A buyer specifies a recipient address and a positive number of entries to purchase before the sale end time. The buyer pays 1 USDC per entry into the raffle contract. In return, the raffle increases the lifetime entry count by the purchased entries, increases the lifetime ticket count by one, records the new ticket's inclusive entry range from the previous total plus one up to the new total, adds the USDC paid to the unsettled pot, and mints the new ticket to the recipient.
+
+`[Model: Raffle::_update]`
+Whenever a ticket is minted, transferred between holders, or burned, the raffle checks that any non-zero recipient address is not a restricted protocol contract, and then updates the ticket's recorded owner and the ERC-721 ticket counts of the previous and new owners.
+
+`[Why: Raffle.sol:248]`
+Why does `buyEntries` execute `_safeMint(recipient, ticketId)` at line 248 after updating `totalEntries`, `ticketCount`, `_ticketRanges[ticketId]`, and `unsettledPot` at lines 243–246?
+Because `_safeMint` invokes `onERC721Received` on a contract `recipient`, and updating all accounting variables beforehand (combined with `nonReentrant`) ensures that even if `recipient` transfers the newly minted ticket inside `onERC721Received`, the ticket's range `[firstEntry, lastEntry]` and `unsettledPot` are already finalized.
+
+`[Defeat: Raffle::buyEntries]`
+1. Attacker `0xA11ce` calls `buyEntries(0xA11ce, type(uint128).max)` after 1 entry has already been sold (`totalEntries = 1`), attempting to wrap `uint128 lastEntry = totalEntries + entryCount` to `0`. This is defeated by `if (entryCount > type(uint128).max - totalEntries) revert TotalEntriesOverflow(totalEntries, entryCount)` at `Raffle.sol:232`.
+2. Attacker `0xA11ce` deploys receiver contract `0xC0DE` whose `onERC721Received` callback calls `raffle.transferFrom(0xC0DE, 0xB0B, ticketId)` during `_safeMint` inside `buyEntries(0xC0DE, 10)`, attempting to desync `_ticketRanges[ticketId]` or mint two tickets. This is defeated because `buyEntries` is `nonReentrant`, `_ticketRanges[ticketId]` and `unsettledPot` are written before `_safeMint`, and `_mint` already set `_owners[ticketId] = 0xC0DE` before invoking `onERC721Received`.
+3. Attacker `0xA11ce` transfers `5_000_000` raw USDC directly to `address(raffle)` via `quoteToken.transfer(raffle, 5_000_000)` before calling `buyEntries(0xA11ce, 5)`, hoping the donated balance credits entries or corrupts `accountedQuoteBalance()`. This is defeated because `Raffle` never reads `quoteToken.balanceOf(address(this))`; `buyEntries` always pulls `grossAmount` via `safeTransferFrom` and increments `unsettledPot += grossAmount`.
+
+`[LastOut: Entry Purchase Lifecycle]`
+Suppose Buyer 1 buys 3 entries (`3,000,000` USDC, Ticket 1 `[1, 3]`) and Buyer 2 buys 7 entries (`7,000,000` USDC, Ticket 2 `[4, 10]`). At the end of the purchase phase, `totalEntries = 10`, `ticketCount = 2`, `unsettledPot = 10,000,000`, and `quoteToken.balanceOf(raffle) = 10,000,000`. All subsequent lifecycles (`NftWon`, `CashWon`, `Refunding`) start with `unsettledPot == 10,000,000 == quoteToken.balanceOf(raffle)`, with zero drift between `unsettledPot` and the actual USDC balance.
+
+---
+
+#### Lifecycle 3: Draw & Resolution (`Raffle::requestDraw` → `Raffle::fulfillRandomWords`)
+
+`[Model: Raffle::requestDraw]`
+After the sale end time and before the two-day request deadline on a raffle with at least one sold entry, any caller sends native ETH to cover the Chainlink randomness fee. The raffle switches its status to drawing, records the request timestamp and the wrapper's request ID, pays the exact wrapper fee in native ETH, and returns any excess native ETH sent by the caller back to the caller.
+
+`[Model: Raffle::fulfillRandomWords]`
+When the Chainlink wrapper returns one random number for the active request before the two-day callback deadline, the raffle maps that random number uniformly onto an entry number between 1 and total entries sold, records the winning entry and resolution timestamp, and sets the final status to either NFT-won (if total entries sold is at least the reserve threshold) or cash-won (if total entries sold is below the reserve threshold).
+
+`[Why: Raffle.sol:267]`
+Why does `requestDraw` set `_requestInFlight = true` before `requestRandomnessPayInNative` and `_requestInFlight = false` after storing `vrfRequestId = requestId`?
+Because `vrfRequestId` is only obtained from the return value of `requestRandomnessPayInNative`. Without `_requestInFlight`, if `vrfRequestId` were still `0` during the external call to the wrapper and a synchronous callback occurred with `requestId = 0`, `requestId == vrfRequestId` (`0 == 0`) would pass before `vrfRequestId` was recorded.
+
+`[Defeat: Raffle::requestDraw]`
+1. Attacker `0xA11ce` force-sends `0.05 ether` to `address(raffle)` via `selfdestruct` and then calls `requestDraw()` with `msg.value = 0` when `quotedFee = 0.01 ether`, attempting to steal the contract's forced ETH via the refund logic. This is defeated because `if (msg.value < quotedFee) revert InsufficientVrfFee(quotedFee, msg.value)` at `Raffle.sol:263` requires `msg.value >= quotedFee`, and `excess = msg.value - paidPrice` only refunds the difference from `msg.value`, never reading `address(this).balance`.
+2. Attacker `0xA11ce` deploys a caller contract `0xD00D` that calls `requestDraw{value: quotedFee + 1 wei}()` and inside its `receive()` hook (triggered by the `1 wei` excess refund at `Raffle.sol:280`) calls `enableRefunds()` or `requestDraw()` again. This is defeated because `requestDraw` and `enableRefunds` both carry `nonReentrant` (and `block.timestamp < callbackDeadline()` in `Status.Drawing` also blocks `enableRefunds`).
+3. Attacker `0xA11ce` waits until `block.timestamp == callbackDeadline()` and front-runs a late Chainlink VRF fulfillment with `enableRefunds()`, or lets the VRF fulfillment land at `block.timestamp == callbackDeadline()`. At `block.timestamp >= callbackDeadline()`, `fulfillRandomWords` hits `block.timestamp >= callbackDeadline()` at `Raffle.sol:525`, emits `VrfCallbackIgnored`, and returns without mutating `status`, allowing `enableRefunds()` to succeed cleanly.
+
+`[LastOut: Draw & Resolution Lifecycle]`
+In `requestDraw`, the caller supplies `msg.value >= paidPrice`; `paidPrice` is transferred to `i_vrfV2PlusWrapper` and `excess = msg.value - paidPrice` is transferred back to `msg.sender`. Net native ETH retained or lost by `Raffle` is `0`, and `unsettledPot` remains intact at `totalEntries * ENTRY_PRICE` for settlement or refund.
+
+---
+
+#### Lifecycle 4: Settlement & Claims (`Raffle::_settleWinningTicket`, `Raffle::redeemWinningTicket`, `Raffle::releaseSponsorProceeds`, `Raffle::releaseProtocolFees`, `Raffle::releaseSponsorPrize`)
+
+`[Model: Raffle::_settleWinningTicket]`
+Once the raffle has resolved to NFT-won or cash-won, any caller supplies the ticket ID whose entry range contains the winning entry. The raffle verifies that the ticket's range includes the winning entry, moves the entire unsettled pot to zero, allocates 5% of the pot (rounded down) to protocol fees, allocates 80% of the pot (rounded down) to winner proceeds if the outcome is cash-won, and allocates the entire remaining pot to sponsor proceeds, marking settlement complete and recording the winning ticket ID.
+
+`[Model: Raffle::redeemWinningTicket]`
+The current owner of the winning ticket burns their ticket to collect the prize. If settlement has not been run yet, the raffle settles the winning ticket first. The raffle records the winner's address, marks the winning ticket as redeemed, burns the ticket, and either transfers the prize NFT to the winner (if the reserve was met) or zeroes out and transfers the winner's USDC proceeds to the winner (if the reserve was missed).
+
+`[Model: Raffle::releaseSponsorProceeds]`
+Any caller triggers the payout of the sponsor's allocated USDC proceeds. The raffle reads the sponsor proceeds balance, zeroes it out, and transfers that exact USDC amount to the configured sponsor payout address.
+
+`[Model: Raffle::releaseProtocolFees]`
+Any caller triggers the payout of the protocol's allocated USDC fees. The raffle reads the protocol fee balance, zeroes it out, and transfers that exact USDC amount to the configured protocol treasury address.
+
+`[Model: Raffle::releaseSponsorPrize]`
+When a raffle ends in a cash-won outcome or enters refund mode and the prize NFT has not yet been claimed, any caller triggers the return of the prize NFT. The raffle marks the prize as claimed and transfers the prize NFT to the configured sponsor payout address, verifying that the sponsor payout address now owns the NFT.
+
+`[Model: Raffle::_transferQuote]`
+Before sending any USDC payout to a recipient, the raffle checks that the recipient is not a restricted protocol contract and then transfers the exact USDC amount to the recipient.
+
+`[Why: Raffle.sol:560]`
+Why does `_settleWinningTicket` compute `sponsorAmount = grossPot - protocolFee - cashAmount` by subtraction instead of `Math.mulDiv(grossPot, 1500, 10_000)`?
+To guarantee exact conservation (`protocolFee + cashAmount + sponsorAmount == grossPot`) without leaving rounding dust unallocated in the contract. Furthermore, because `grossPot = totalEntries * 1_000_000` is always a multiple of `1_000_000` and `BPS = 10_000` divides `1_000_000` evenly (`1_000_000 / 10_000 = 100`), `protocolFee = totalEntries * 50_000`, `cashAmount = totalEntries * 800_000`, and `sponsorAmount = totalEntries * 150_000` (or `totalEntries * 950_000` in `NftWon`) never even produce fractional dust and are strictly positive for all `totalEntries >= 1`.
+
+`[Why: Raffle.sol:578]`
+Why does `_transferQuote` re-check `if (_isProtocolDestination(to, address(prizeToken))) revert InvalidQuoteDestination(to)` when `sponsorRecipient`, `protocolTreasury`, and ticket owners (`_update`) were already checked earlier?
+Because an address `to` that had `to.code.length == 0` when `initialize` or `_update` ran could subsequently have a `Raffle` clone deployed to it via `RaffleFactory::createRaffle` (`Clones.clone` uses `CREATE` with sequential factory nonces). However, if `sponsorRecipient` is set to a future `RaffleFactory` clone address before that clone is created, `_transferQuote` reverting at claim time permanently locks `sponsorProceeds` in `Raffle`, whereas `releaseSponsorPrize` (at `Raffle.sol:408-420`) omits `_isProtocolDestination` and transfers the prize NFT into the other raffle clone.
+
+`[Defeat: Raffle::redeemWinningTicket]`
+1. Attacker `0xA11ce` owns non-winning Ticket 2 (`[2, 5]`) when `winningEntry = 1` (covered by Ticket 1 `[1, 1]`), and calls `settleWinningTicket(2)` or `redeemWinningTicket(2)`. This is defeated by `_requireWinningTicket(2)` at `Raffle.sol:592-598`, which checks `selectedEntry < firstEntry || selectedEntry > lastEntry` (`1 < 2`) and reverts with `TicketDoesNotContainWinningEntry(2, 1)`.
+2. Winner `0xB0B` owns winning Ticket 1 in `Status.CashWon` (`totalEntries = 1`, `winnerProceeds = 800_000`) and calls `redeemWinningTicket(1)` twice, or transfers Ticket 1 to `0xC0DE` after redeeming. This is defeated because `redeemWinningTicket(1)` sets `winnerRedeemed = true`, `winnerProceeds = 0`, and calls `_burn(1)` in the first transaction, so any second call reverts at `if (winnerRedeemed) revert WinningTicketAlreadyRedeemed()` (`Raffle.sol:323`).
+3. Sponsor `0xA11ce` sets `sponsorRecipient = winner` (or `protocolTreasury`), hoping that when `releaseSponsorProceeds()` zeroes `sponsorProceeds`, it fails to zero `winnerProceeds` or `protocolFees` or vice versa. Each cohort's claim is stored in an independent variable (`winnerProceeds`, `sponsorProceeds`, `protocolFees`) that is zeroed before transfer in its own dedicated function (`redeemWinningTicket`, `releaseSponsorProceeds`, `releaseProtocolFees`).
+
+`[LastOut: Settlement & Claims Lifecycle]`
+- **Branch A (`Status.NftWon`, `totalEntries = N >= reserveEntries`):**
+  - `unsettledPot = N * 1_000_000` is split into `protocolFees = N * 50_000`, `sponsorProceeds = N * 950_000`, `winnerProceeds = 0`.
+  - Regardless of withdrawal order among `winner` (`redeemWinningTicket`), `sponsorRecipient` (`releaseSponsorProceeds`), and `protocolTreasury` (`releaseProtocolFees`):
+    1. `releaseProtocolFees()` pays `N * 50_000` USDC, leaving `N * 950_000` USDC.
+    2. `releaseSponsorProceeds()` pays `N * 950_000` USDC, leaving `0` USDC (`accountedQuoteBalance() == 0`).
+    3. `redeemWinningTicket(winningTicketId)` burns `winningTicketId` and transfers `prizeTokenId` to `winner`.
+    The last user out is paid in full; protocol shortfall is `0`.
+- **Branch B (`Status.CashWon`, `1 <= totalEntries = N < reserveEntries`):**
+  - `unsettledPot = N * 1_000_000` is split into `protocolFees = N * 50_000`, `winnerProceeds = N * 800_000`, `sponsorProceeds = N * 150_000`.
+  - Sum of claims: `N * (50_000 + 800_000 + 150_000) == N * 1_000_000 == quoteToken.balanceOf(raffle)`.
+  - In any withdrawal order (`redeemWinningTicket`, `releaseSponsorProceeds`, `releaseProtocolFees`, `releaseSponsorPrize`), the last claimant receives their full allocation (`N * 800_000`, `N * 150_000`, or `N * 50_000` USDC, plus `prizeTokenId` to `sponsorRecipient`), leaving `accountedQuoteBalance() == 0` and shortfall `0`.
+
+---
+
+#### Lifecycle 5: Refund Lifecycle (`Raffle::enableRefunds` → `Raffle::refundTickets` + `Raffle::releaseSponsorPrize`)
+
+`[Model: Raffle::enableRefunds]`
+When an active raffle has zero entries sold (cancelled by the sponsor before the sale end time or by anyone at or after the sale end time), or when a raffle with entries sold passes its two-day draw request deadline without a draw request, or when a drawing raffle passes its two-day callback deadline without a valid randomness callback, any caller enables refunds. The raffle moves the entire unsettled pot into the remaining refund liability, zeroes out the unsettled pot, and sets the raffle status to refunding.
+
+`[Model: Raffle::refundTickets]`
+In refunding status, a ticket owner submits a batch of between 1 and 100 ticket IDs that they own. For each ticket in the batch, the raffle verifies that the caller owns the ticket, adds the number of entries in that ticket's range to the batch total, and burns the ticket. The raffle then multiplies the total burned entries by 1 USDC per entry, subtracts that amount from the remaining refund liability, and transfers that exact USDC amount to the caller.
+
+`[Why: Raffle.sol:377]`
+Why does `refundTickets` call `_burn(ticketId)` inside the loop at line 377 without deleting `_ticketRanges[ticketId]`?
+Because `ownerOf(ticketId)` at line 372 reverts with `ERC721NonexistentToken(ticketId)` once `_burn(ticketId)` sets `_owners[ticketId] = address(0)`. Burning each ticket immediately inside the loop prevents both duplicate `ticketId`s within the same `ticketIds` calldata array and re-submission of a burned `ticketId` in a future `refundTickets` call, while preserving `_ticketRanges[ticketId]` for off-chain historical indexing.
+
+`[Defeat: Raffle::refundTickets]`
+1. Attacker `0xA11ce` owns Ticket 1 (`[1, 5]`, worth `5,000,000` USDC) and calls `refundTickets([1, 1])` in a single batch to claim `10,000,000` USDC from a `10,000,000` USDC refund pool. In loop iteration `index = 0`, `_burn(1)` clears `_owners[1] = address(0)`; in iteration `index = 1`, `ownerOf(1)` at `Raffle.sol:372` reverts with `ERC721NonexistentToken(1)`.
+2. Attacker `0xA11ce` passes a never-minted `ticketId = 999` (where `_ticketRanges[999]` is `{0, 0}`, so `uint256(lastEntry) - uint256(firstEntry) + 1` would evaluate to `1` if unguarded) to `refundTickets([999])`. This is defeated because `ownerOf(999)` at `Raffle.sol:372` runs before `ticketRange(999)` and reverts with `ERC721NonexistentToken(999)`.
+3. Attacker `0xA11ce` buys 150 separate 1-entry tickets to exceed `MAX_REFUND_TICKET_BATCH_SIZE = 100`, attempting to lock refunds. Because `refundTickets` takes a caller-chosen subset `uint256[] calldata ticketIds` of up to 100 tickets per call, any owner with >100 tickets can refund in multiple transactions (e.g., 100 tickets then 50 tickets).
+
+`[LastOut: Refund Lifecycle]`
+Suppose `k` tickets are minted with entry counts `e_1, e_2, ..., e_k` where `Σ_{i=1}^k e_i = totalEntries`. During `buyEntries`, `unsettledPot` accumulated `Σ_{i=1}^k (e_i * 1_000_000) == totalEntries * 1_000_000`, which equals `quoteToken.balanceOf(raffle)`. When `enableRefunds()` executes, `remainingRefundLiability = unsettledPot = totalEntries * 1_000_000` and `unsettledPot = 0`. Each ticket `i` has `lastEntry_i - firstEntry_i + 1 == e_i`. As ticket owners call `refundTickets` in any order and in any batch grouping, each ticket `i` is burned at most once and withdraws `e_i * 1_000_000` USDC while decrementing `remainingRefundLiability` by `e_i * 1_000_000`. When the last ticket owner withdraws, `remainingRefundLiability` transitions from `e_last * 1_000_000` to `0`, and `quoteToken.balanceOf(raffle)` covers the full `e_last * 1_000_000` USDC payment with `0` shortfall. Meanwhile, `releaseSponsorPrize()` returns `prizeTokenId` to `sponsorRecipient`.
+
+---
+
+### Phase 4 & Phase 5 — Leads and Saturation Sweep
+
+```
+LEAD | contract: Raffle | function: _isProtocolDestination | bug_class: accounting-desync | group_key: Raffle | _isProtocolDestination | accounting-desync
+smell: In Raffle.sol:615-617, _isProtocolDestination skips canonicalFactory.isRaffle(destination) when destination.code.length == 0, even though RaffleFactory::createRaffle deploys clones via Clones.clone (EVM CREATE) at deterministic future addresses that have code.length == 0 and isRaffle == false before creation and flip to isRaffle == true once created.
+unverified: A non-self-harming exploit path where an attacker causes an honest sponsor or ticket holder to use a pre-computed future RaffleFactory clone address as sponsorRecipient or ticket recipient before that future clone is deployed.
+description: If an address matching a future RaffleFactory CREATE clone is set as sponsorRecipient in initialize or receives a ticket via _update before that clone is created, deploying the subsequent raffle flips _isProtocolDestination to true at runtime, permanently reverting releaseSponsorProceeds with InvalidQuoteDestination and stranding sponsorProceeds, remainingRefundLiability, or winnerProceeds in Raffle.
+```
+
+```
+LEAD | contract: Raffle | function: releaseSponsorPrize | bug_class: missing-check | group_key: Raffle | releaseSponsorPrize | missing-check
+smell: In Raffle.sol:408-420, releaseSponsorPrize transfers prizeTokenId to sponsorRecipient without calling _isProtocolDestination(recipient, address(prizeToken)), whereas _transferQuote (Raffle.sol:578) re-checks _isProtocolDestination(to, address(prizeToken)) on every payout.
+unverified: How sponsorRecipient could become a registered protocol destination after initialize without the sponsor deliberately passing a predicted future RaffleFactory clone address at creation time.
+description: Because releaseSponsorPrize omits the runtime _isProtocolDestination check present in _transferQuote, a sponsorRecipient address that later becomes a registered Raffle clone via CREATE can receive the returned prizeTokenId in CashWon or Refunding, moving an asset between raffle clones and permanently locking the NFT inside the receiving clone.
+```

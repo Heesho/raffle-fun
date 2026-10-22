@@ -1,0 +1,329 @@
+   209	    function buyEntries(address recipient, uint128 entryCount)
+   210	        external
+   211	        override
+   212	        nonReentrant
+   213	        returns (uint256 ticketId)
+   214	    {
+   215	        _requireStatus(Status.Active);
+   216	        if (block.timestamp >= endTime) revert SaleEnded(endTime, block.timestamp);
+   217	        if (recipient == address(0)) revert InvalidRecipient();
+   218	        if (entryCount == 0) revert ZeroEntryCount();
+   219	        if (entryCount > type(uint128).max - totalEntries) {
+   220	            revert TotalEntriesOverflow(totalEntries, entryCount);
+   221	        }
+   222	
+   223	        uint256 grossAmount = uint256(entryCount) * ENTRY_PRICE;
+   224	        quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount);
+   225	
+   226	        uint128 firstEntry = totalEntries + 1;
+   227	        uint128 lastEntry = totalEntries + entryCount;
+   228	        ticketId = uint256(ticketCount) + 1;
+   229	
+   230	        totalEntries = lastEntry;
+   231	        ++ticketCount;
+   232	        _ticketRanges[ticketId] = TicketRange({ firstEntry: firstEntry, lastEntry: lastEntry });
+   233	        unsettledPot += grossAmount;
+   234	
+   235	        _safeMint(recipient, ticketId);
+   236	        emit TicketPurchased(msg.sender, recipient, ticketId, firstEntry, lastEntry, entryCount, grossAmount);
+   237	    }
+   276	    function enableRefunds() external override nonReentrant {
+   277	        uint256 deadline;
+   278	
+   279	        if (status == Status.Active) {
+   280	            if (totalEntries == 0) {
+   281	                deadline = endTime;
+   282	                if (msg.sender != sponsor && block.timestamp < deadline) {
+   283	                    revert RefundsNotAvailable(deadline, block.timestamp);
+   284	                }
+   285	            } else {
+   286	                deadline = drawRequestDeadline();
+   287	                if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+   288	            }
+   289	        } else if (status == Status.Drawing) {
+   290	            deadline = callbackDeadline();
+   291	            if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+   292	        } else {
+   293	            revert InvalidStatus(status);
+   294	        }
+   295	
+   296	        uint256 liability = unsettledPot;
+   297	        unsettledPot = 0;
+   298	        remainingRefundLiability = liability;
+   299	        status = Status.Refunding;
+   300	        emit RefundsEnabled(msg.sender, liability);
+   301	    }
+   349	    function refundTickets(uint256[] calldata ticketIds) external override nonReentrant returns (uint256 amount) {
+   350	        _requireStatus(Status.Refunding);
+   351	        uint256 ticketQuantity = ticketIds.length;
+   352	        if (ticketQuantity == 0 || ticketQuantity > RaffleConstants.MAX_REFUND_TICKET_BATCH_SIZE) {
+   353	            revert InvalidTicketBatchSize(ticketQuantity, RaffleConstants.MAX_REFUND_TICKET_BATCH_SIZE);
+   354	        }
+   355	
+   356	        uint256 aggregateEntries = 0;
+   357	        for (uint256 index; index < ticketQuantity; ++index) {
+   358	            uint256 ticketId = ticketIds[index];
+   359	            address owner = ownerOf(ticketId);
+   360	            if (msg.sender != owner) revert NotTicketOwner(ticketId, msg.sender, owner);
+   361	
+   362	            (uint128 firstEntry, uint128 lastEntry) = ticketRange(ticketId);
+   363	            aggregateEntries += uint256(lastEntry) - uint256(firstEntry) + 1;
+   364	            _burn(ticketId);
+   365	        }
+   366	
+   367	        amount = aggregateEntries * ENTRY_PRICE;
+   368	        remainingRefundLiability -= amount;
+   369	        _transferQuote(msg.sender, amount);
+   370	        uint256 liabilityAfter = remainingRefundLiability;
+   371	        emit TicketsRefunded(msg.sender, ticketQuantity, aggregateEntries, amount, liabilityAfter);
+   372	    }
+   490	
+   491	    /// @dev Tickets remain transferable bearer claims in every lifecycle state. Known protocol sinks are rejected
+   492	    ///      before their ownership could make a claim unreachable. Burns pass the zero address and remain permitted.
+   493	    /// @param to Prospective ticket recipient, or the zero address for a burn.
+   494	    /// @param ticketId Ticket being minted, transferred, or burned.
+   495	    /// @param auth Caller whose owner or operator authority is checked by ERC-721.
+   496	    /// @return previousOwner Ticket owner before the update, or the zero address for a mint.
+   497	    function _update(address to, uint256 ticketId, address auth) internal override returns (address previousOwner) {
+   498	        if (to != address(0) && _isProtocolDestination(to, address(prizeToken))) {
+   499	            revert UnsafeProtocolDestination(to);
+   500	        }
+   501	        previousOwner = super._update(to, ticketId, auth);
+   502	    }
+   503	
+   504	    /// @dev Authenticated randomness selects only an entry. No ticket search, loop, user call, or token transfer
+   505	    ///      occurs. In-flight, late, wrong-request, duplicate, and ABI-decodable wrong-length callbacks are ignored for
+   506	    ///      liveness; malformed ABI calldata reverts during Solidity decoding before this handler runs.
+   507	    /// @param requestId Wrapper-authenticated request identifier supplied by the callback.
+   508	    /// @param randomWords Callback words; exactly one word is required for resolution.
+   509	    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+   510	        if (
+   511	            _requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1
+   512	                || block.timestamp >= callbackDeadline()
+   513	        ) {
+   514	            emit VrfCallbackIgnored(requestId, vrfRequestId, status);
+   515	            return;
+   516	        }
+   517	
+   518	        uint128 resolvedEntry = uint128((randomWords[0] % uint256(totalEntries)) + 1);
+   519	        winningEntry = resolvedEntry;
+   520	        resolvedAt = uint64(block.timestamp);
+   521	        status = totalEntries >= reserveEntries ? Status.NftWon : Status.CashWon;
+   522	
+   523	        emit RaffleResolved(requestId, resolvedEntry, status);
+   524	    }
+   525	
+   526	    // Private state-changing helpers
+   527	
+   528	    /// @dev Validates the winning range once and allocates all terminal quote-token liabilities without transferring
+   529	    ///      an asset or reading ticket ownership. Both percentage allocations round down; sponsor proceeds are the
+   530	    ///      remainder.
+   531	    /// @param ticketId Ticket whose inclusive range must contain the selected winning entry.
+   532	    /// @return cashAmount Raw six-decimal quote-token units allocated to the cash winner, or zero for `NftWon`.
+   590	    /// @param destination Address being screened.
+   591	    /// @param prizeToken_ Configured or prospective prize-token address to reject.
+   592	    /// @return unsafeDestination True when the address is known same-factory protocol plumbing.
+   593	    function _isProtocolDestination(address destination, address prizeToken_)
+   594	        private
+   595	        view
+   596	        returns (bool unsafeDestination)
+   597	    {
+   598	        IRaffleFactory canonicalFactory = IRaffleFactory(factory);
+   599	        unsafeDestination = destination == address(this) || destination == factory || destination == address(quoteToken)
+   600	            || destination == address(i_vrfV2PlusWrapper) || destination == prizeToken_
+   601	            || destination == canonicalFactory.raffleImplementation();
+   602	        if (!unsafeDestination && destination.code.length != 0) {
+   603	            unsafeDestination = canonicalFactory.isRaffle(destination);
+   604	        }
+   605	    }
+   606	
+   607	    /// @dev Validates the wrapper before passing it to the inherited constructor initializer.
+   608	    /// @param wrapper Prospective Chainlink wrapper address.
+   609	    /// @return validatedWrapper The same nonzero wrapper address.
+   610	    function _validatedVrfWrapper(address wrapper) private pure returns (address validatedWrapper) {
+   611	        if (wrapper == address(0)) revert ZeroAddress();
+   612	        validatedWrapper = wrapper;
+   613	    }
+   614	}
+    60	    /// @inheritdoc IERC721
+    61	    function ownerOf(uint256 tokenId) public view virtual returns (address) {
+    62	        return _requireOwned(tokenId);
+    63	    }
+    64	
+    65	    /// @inheritdoc IERC721Metadata
+    66	    function name() public view virtual returns (string memory) {
+    67	        return _name;
+    68	    }
+    69	
+    70	    /// @inheritdoc IERC721Metadata
+   165	        return
+   166	            spender != address(0) &&
+   167	            (owner == spender || isApprovedForAll(owner, spender) || _getApproved(tokenId) == spender);
+   168	    }
+   169	
+   170	    /**
+   171	     * @dev Checks if `spender` can operate on `tokenId`, assuming the provided `owner` is the actual owner.
+   172	     * Reverts if:
+   173	     * - `spender` does not have approval from `owner` for `tokenId`.
+   174	     * - `spender` does not have approval to manage all of `owner`'s assets.
+   175	     *
+   176	     * WARNING: This function assumes that `owner` is the actual owner of `tokenId` and does not verify this
+   177	     * assumption.
+   178	     */
+   179	    function _checkAuthorized(address owner, address spender, uint256 tokenId) internal view virtual {
+   180	        if (!_isAuthorized(owner, spender, tokenId)) {
+   235	            unchecked {
+   236	                _balances[to] += 1;
+   237	            }
+   238	        }
+   239	
+   240	        _owners[tokenId] = to;
+   241	
+   242	        emit Transfer(from, to, tokenId);
+   243	
+   244	        return from;
+   245	    }
+   246	
+   247	    /**
+   248	     * @dev Mints `tokenId` and transfers it to `to`.
+   249	     *
+   250	     * WARNING: Usage of this method is discouraged, use {_safeMint} whenever possible
+   251	     *
+   252	     * Requirements:
+   253	     *
+   254	     * - `tokenId` must not exist.
+   255	     * - `to` cannot be the zero address.
+   256	     *
+   257	     * Emits a {Transfer} event.
+   258	     */
+   259	    function _mint(address to, uint256 tokenId) internal {
+   260	        if (to == address(0)) {
+   261	            revert ERC721InvalidReceiver(address(0));
+   262	        }
+   263	        address previousOwner = _update(to, tokenId, address(0));
+   264	        if (previousOwner != address(0)) {
+   265	            revert ERC721InvalidSender(address(0));
+   266	        }
+   267	    }
+   268	
+   269	    /**
+   270	     * @dev Mints `tokenId`, transfers it to `to` and checks for `to` acceptance.
+   323	            revert ERC721InvalidReceiver(address(0));
+   324	        }
+   325	        address previousOwner = _update(to, tokenId, address(0));
+   326	        if (previousOwner == address(0)) {
+   327	            revert ERC721NonexistentToken(tokenId);
+   328	        } else if (previousOwner != from) {
+   329	            revert ERC721IncorrectOwner(from, tokenId, previousOwner);
+   330	        }
+   331	    }
+   332	
+   333	    /**
+   334	     * @dev Safely transfers `tokenId` token from `from` to `to`, checking that contract recipients
+   335	     * are aware of the ERC-721 standard to prevent tokens from being forever locked.
+   336	     *
+   337	     * `data` is additional data, it has no specified format and it is sent in call to `to`.
+   338	     *
+   339	     * This internal function is like {safeTransferFrom} in the sense that it invokes
+   340	     * {IERC721Receiver-onERC721Received} on the receiver, and can be used to e.g.
+   375	    function _approve(address to, uint256 tokenId, address auth) internal {
+   376	        _approve(to, tokenId, auth, true);
+   377	    }
+   378	
+   379	    /**
+   380	     * @dev Variant of `_approve` with an optional flag to enable or disable the {Approval} event. The event is not
+   381	     * emitted in the context of transfers.
+   382	     */
+   383	    function _approve(address to, uint256 tokenId, address auth, bool emitEvent) internal virtual {
+   384	        // Avoid reading the owner unless necessary
+   385	        if (emitEvent || auth != address(0)) {
+   386	            address owner = _requireOwned(tokenId);
+   387	
+   388	            // We do not use _isAuthorized because single-token approvals should not be able to call approve
+   389	            if (auth != address(0) && owner != auth && !isApprovedForAll(owner, auth)) {
+   390	                revert ERC721InvalidApprover(auth);
+   391	            }
+   392	
+   393	            if (emitEvent) {
+   394	                emit Approval(owner, to, tokenId);
+   395	            }
+   396	        }
+   397	
+   398	        _tokenApprovals[tokenId] = to;
+   399	    }
+   400	
+   401	    /**
+   402	     * @dev Approve `operator` to operate on all of `owner` tokens
+   403	     *
+   426	    function _requireOwned(uint256 tokenId) internal view returns (address) {
+   427	        address owner = _ownerOf(tokenId);
+   428	        if (owner == address(0)) {
+   429	            revert ERC721NonexistentToken(tokenId);
+   430	        }
+   431	        return owner;
+   432	    }
+   433	}
+    90	    /**
+    91	     * @dev Returns a `Uint256Slot` with member `value` located at `slot`.
+    92	     */
+    93	    function getUint256Slot(bytes32 slot) internal pure returns (Uint256Slot storage r) {
+    94	        assembly ("memory-safe") {
+    95	            r.slot := slot
+    96	        }
+    97	    }
+    98	
+    99	    /**
+   100	     * @dev Returns a `Int256Slot` with member `value` located at `slot`.
+   101	     */
+   102	    function getInt256Slot(bytes32 slot) internal pure returns (Int256Slot storage r) {
+   103	        assembly ("memory-safe") {
+   104	            r.slot := slot
+   105	        }
+   106	    }
+   107	
+   108	    /**
+   109	     * @dev Returns a `StringSlot` with member `value` located at `slot`.
+   110	     */
+     1	// SPDX-License-Identifier: MIT
+     2	pragma solidity 0.8.36;
+     3	
+     4	/// @title raffle.fun Protocol Constants
+     5	/// @author heesho
+     6	/// @notice Defines the fixed v1 economics, timing, and bounded-execution limits shared by the factory and raffles.
+     7	/// @dev Quote-token amounts use raw six-decimal units. Basis-point calculations round down through `Math.mulDiv`, and
+     8	///      the sponsor receives the remaining raw units after winner and protocol allocations.
+     9	/// @custom:version 1.0.0
+    10	library RaffleConstants {
+    11	    /// @notice Denominator used for every global protocol basis-point rate.
+    12	    uint256 internal constant BPS = 10_000;
+    13	
+    14	    /// @notice Global protocol fee rate: 500 basis points, or 5% of gross sales.
+    15	    uint256 internal constant PROTOCOL_FEE_BPS = 500;
+    16	
+    17	    /// @notice Cash-result winner rate: 8,000 basis points, or 80% of gross sales.
+    18	    uint256 internal constant CASH_WINNER_BPS = 8000;
+    19	
+    20	    /// @notice Global entry price: exactly 1,000,000 raw six-decimal quote-token units, or one USDC.
+    21	    uint256 internal constant ENTRY_PRICE = 1_000_000;
+    22	
+    23	    /// @notice Decimal precision required from the immutable quote token.
+    24	    uint8 internal constant QUOTE_TOKEN_DECIMALS = 6;
+    25	
+    26	    /// @notice Refund execution is bounded by tickets, while each ticket may represent any uint128 entry count.
+    27	    uint256 internal constant MAX_REFUND_TICKET_BATCH_SIZE = 100;
+    28	
+    29	    /// @notice Maximum prospective raffle sale duration, measured from creation to the exclusive sale end.
+    30	    uint256 internal constant MAX_SALE_DURATION = 30 days;
+    31	
+    32	    /// @notice Duration after sale end during which a sold raffle may initiate its draw, in seconds.
+    33	    uint256 internal constant DRAW_REQUEST_TIMEOUT = 2 days;
+    34	
+    35	    /// @notice Duration after an accepted request during which its authenticated callback may resolve, in seconds.
+    36	    uint256 internal constant DRAW_CALLBACK_TIMEOUT = 2 days;
+    37	
+    38	    /// @notice Gas-unit limit requested for the single-word Chainlink callback.
+    39	    uint32 internal constant VRF_CALLBACK_GAS_LIMIT = 300_000;
+    40	
+    41	    /// @notice Block confirmations requested from Chainlink before callback fulfillment.
+    42	    uint16 internal constant VRF_REQUEST_CONFIRMATIONS = 30;
+    43	}

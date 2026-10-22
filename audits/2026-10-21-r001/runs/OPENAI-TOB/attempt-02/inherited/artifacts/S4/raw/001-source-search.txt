@@ -1,0 +1,736 @@
+COMMAND: ['rg', '-n', 'delegatecall|clone|upgrade|initialize|assembly|tx.origin|block.timestamp|unchecked|safeTransfer|transferFrom|emit |function |contract .* is', 'target/packages/contracts/src', 'target/packages/contracts/node_modules']
+target/packages/contracts/src/Raffle.sol:24:///      owners burn them for redemption or refund. Each raffle is a fixed, non-upgradeable ERC-1167 clone with no
+target/packages/contracts/src/Raffle.sol:28:contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusWrapperConsumerBase {
+target/packages/contracts/src/Raffle.sol:136:    bool public override initialized;
+target/packages/contracts/src/Raffle.sol:153:    /// @param quoteToken_ Canonical six-decimal USDC contract fixed for the implementation and every clone.
+target/packages/contracts/src/Raffle.sol:154:    /// @param vrfWrapper_ Chainlink VRF v2.5 native direct-funding wrapper fixed for the implementation and all clones.
+target/packages/contracts/src/Raffle.sol:164:        initialized = true;
+target/packages/contracts/src/Raffle.sol:176:    function initialize(RaffleInitParams calldata params) external override {
+target/packages/contracts/src/Raffle.sol:177:        if (initialized) revert AlreadyInitialized();
+target/packages/contracts/src/Raffle.sol:179:        initialized = true;
+target/packages/contracts/src/Raffle.sol:209:    function buyEntries(address recipient, uint128 entryCount)
+target/packages/contracts/src/Raffle.sol:216:        if (block.timestamp >= endTime) revert SaleEnded(endTime, block.timestamp);
+target/packages/contracts/src/Raffle.sol:224:        quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount);
+target/packages/contracts/src/Raffle.sol:236:        emit TicketPurchased(msg.sender, recipient, ticketId, firstEntry, lastEntry, entryCount, grossAmount);
+target/packages/contracts/src/Raffle.sol:240:    function requestDraw() external payable override nonReentrant returns (uint256 requestId) {
+target/packages/contracts/src/Raffle.sol:242:        if (block.timestamp < endTime) revert RaffleNotEnded(endTime, block.timestamp);
+target/packages/contracts/src/Raffle.sol:245:        if (block.timestamp >= requestDeadline) {
+target/packages/contracts/src/Raffle.sol:246:            revert DrawRequestWindowExpired(requestDeadline, block.timestamp);
+target/packages/contracts/src/Raffle.sol:253:        drawRequestedAt = uint64(block.timestamp);
+target/packages/contracts/src/Raffle.sol:266:            assembly ("memory-safe") {
+target/packages/contracts/src/Raffle.sol:272:        emit DrawRequested(requestId, msg.sender, paidPrice, excess, drawRequestedAt, callbackDeadline());
+target/packages/contracts/src/Raffle.sol:276:    function enableRefunds() external override nonReentrant {
+target/packages/contracts/src/Raffle.sol:282:                if (msg.sender != sponsor && block.timestamp < deadline) {
+target/packages/contracts/src/Raffle.sol:283:                    revert RefundsNotAvailable(deadline, block.timestamp);
+target/packages/contracts/src/Raffle.sol:287:                if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+target/packages/contracts/src/Raffle.sol:291:            if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+target/packages/contracts/src/Raffle.sol:300:        emit RefundsEnabled(msg.sender, liability);
+target/packages/contracts/src/Raffle.sol:304:    function settleWinningTicket(uint256 ticketId) external override nonReentrant returns (uint256 cashAmount) {
+target/packages/contracts/src/Raffle.sol:309:    function redeemWinningTicket(uint256 ticketId) external override nonReentrant returns (uint256 cashAmount) {
+target/packages/contracts/src/Raffle.sol:334:            prizeToken.transferFrom(address(this), winner, deliveredPrizeTokenId);
+target/packages/contracts/src/Raffle.sol:345:        emit WinningTicketRedeemed(ticketId, winner, result, cashAmount, deliveredPrizeToken, deliveredPrizeTokenId);
+target/packages/contracts/src/Raffle.sol:349:    function refundTickets(uint256[] calldata ticketIds) external override nonReentrant returns (uint256 amount) {
+target/packages/contracts/src/Raffle.sol:371:        emit TicketsRefunded(msg.sender, ticketQuantity, aggregateEntries, amount, liabilityAfter);
+target/packages/contracts/src/Raffle.sol:375:    function releaseSponsorProceeds() external override nonReentrant returns (uint256 amount) {
+target/packages/contracts/src/Raffle.sol:381:        emit SponsorProceedsReleased(msg.sender, recipient, amount);
+target/packages/contracts/src/Raffle.sol:385:    function releaseProtocolFees() external override nonReentrant returns (uint256 amount) {
+target/packages/contracts/src/Raffle.sol:391:        emit ProtocolFeesReleased(msg.sender, treasury, amount);
+target/packages/contracts/src/Raffle.sol:395:    function releaseSponsorPrize() external override nonReentrant {
+target/packages/contracts/src/Raffle.sol:404:        prizeToken.transferFrom(address(this), recipient, prizeTokenId);
+target/packages/contracts/src/Raffle.sol:406:        emit SponsorPrizeReleased(msg.sender, recipient, address(prizeToken), prizeTokenId);
+target/packages/contracts/src/Raffle.sol:410:    /// @dev Unrelated NFTs forced here with unsafe `transferFrom` remain outside protocol accounting and cannot be
+target/packages/contracts/src/Raffle.sol:416:    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata)
+target/packages/contracts/src/Raffle.sol:429:        emit PrizeDeposited(msg.sender, tokenId, from);
+target/packages/contracts/src/Raffle.sol:436:    function getVrfRequestPrice() public view override returns (uint256 fee) {
+target/packages/contracts/src/Raffle.sol:441:    function estimateVrfRequestPrice(uint256 requestGasPriceWei) public view override returns (uint256 fee) {
+target/packages/contracts/src/Raffle.sol:446:    function vrfWrapper() public view override returns (IVRFV2PlusWrapper wrapper) {
+target/packages/contracts/src/Raffle.sol:451:    function ticketRange(uint256 ticketId) public view override returns (uint128 firstEntry, uint128 lastEntry) {
+target/packages/contracts/src/Raffle.sol:458:    function drawRequestDeadline() public view override returns (uint256 deadline) {
+target/packages/contracts/src/Raffle.sol:463:    function callbackDeadline() public view override returns (uint256 deadline) {
+target/packages/contracts/src/Raffle.sol:468:    function accountedQuoteBalance() public view override returns (uint256 amount) {
+target/packages/contracts/src/Raffle.sol:473:    function grossSales() public view override returns (uint256 amount) {
+target/packages/contracts/src/Raffle.sol:479:    function name() public pure override returns (string memory) {
+target/packages/contracts/src/Raffle.sol:485:    function symbol() public pure override returns (string memory) {
+target/packages/contracts/src/Raffle.sol:497:    function _update(address to, uint256 ticketId, address auth) internal override returns (address previousOwner) {
+target/packages/contracts/src/Raffle.sol:509:    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+target/packages/contracts/src/Raffle.sol:512:                || block.timestamp >= callbackDeadline()
+target/packages/contracts/src/Raffle.sol:514:            emit VrfCallbackIgnored(requestId, vrfRequestId, status);
+target/packages/contracts/src/Raffle.sol:520:        resolvedAt = uint64(block.timestamp);
+target/packages/contracts/src/Raffle.sol:523:        emit RaffleResolved(requestId, resolvedEntry, status);
+target/packages/contracts/src/Raffle.sol:533:    function _settleWinningTicket(uint256 ticketId) private returns (uint256 cashAmount) {
+target/packages/contracts/src/Raffle.sol:557:        emit WinningTicketSettled(ticketId, msg.sender, result, cashAmount, protocolFee, sponsorAmount);
+target/packages/contracts/src/Raffle.sol:564:    function _transferQuote(address to, uint256 amount) private {
+target/packages/contracts/src/Raffle.sol:566:        quoteToken.safeTransfer(to, amount);
+target/packages/contracts/src/Raffle.sol:573:    function _requireStatus(Status expected) private view {
+target/packages/contracts/src/Raffle.sol:579:    function _requireWinningTicket(uint256 ticketId) private view {
+target/packages/contracts/src/Raffle.sol:588:    ///      Initialization supplies the prospective prize token because clone storage is not populated yet; runtime
+target/packages/contracts/src/Raffle.sol:593:    function _isProtocolDestination(address destination, address prizeToken_)
+target/packages/contracts/src/Raffle.sol:607:    /// @dev Validates the wrapper before passing it to the inherited constructor initializer.
+target/packages/contracts/src/Raffle.sol:610:    function _validatedVrfWrapper(address wrapper) private pure returns (address validatedWrapper) {
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:7:/// @dev The factory has no owner, pause, upgrade, rescue, or mutable protocol configuration. Deployment tooling must
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:30:    /// @notice Emitted after a raffle clone is initialized, registered, funded, and active.
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:32:    /// @param raffle Newly created fixed-target ERC-1167 clone.
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:79:    /// @notice Raised when the sale end is not strictly after the creation block timestamp.
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:93:    /// @notice Raised when the exact configured prize is not owned by an active clone after escrow.
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:94:    /// @param raffle Newly created clone expected to hold the prize and report `Active`.
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:101:    /// @notice Creates, initializes, registers, and funds one autonomous fixed-target raffle clone atomically.
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:103:    /// @return raffle Address of the newly created and activated clone.
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:104:    function createRaffle(CreateRaffleParams calldata params) external returns (address raffle);
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:110:    function quoteToken() external view returns (address quoteTokenAddress);
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:114:    function vrfWrapper() external view returns (address wrapperAddress);
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:118:    function protocolTreasury() external view returns (address treasuryAddress);
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:122:    function callbackGasLimit() external view returns (uint32 gasLimit);
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:126:    function requestConfirmations() external view returns (uint16 confirmations);
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:128:    /// @notice Returns the immutable implementation targeted by every registered ERC-1167 clone.
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:130:    function raffleImplementation() external view returns (address implementation);
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:134:    function raffleCount() external view returns (uint256 count);
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:138:    /// @return registered True only for a successfully created canonical clone.
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:139:    function isRaffle(address raffle) external view returns (bool registered);
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:143:    /// @return raffle Registered clone address, or the zero address for an unknown identifier.
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:144:    function raffleById(uint256 raffleId) external view returns (address raffle);
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:149:    function idByRaffle(address raffle) external view returns (uint256 raffleId);
+target/packages/contracts/src/interfaces/IRaffle.sol:22:        /// @notice The clone is initialized and waiting for the factory to escrow the configured prize.
+target/packages/contracts/src/interfaces/IRaffle.sol:36:    /// @notice Complete clone-specific configuration supplied once by the canonical factory.
+target/packages/contracts/src/interfaces/IRaffle.sol:184:    /// @notice Raised when a caller other than the immutable factory attempts clone initialization.
+target/packages/contracts/src/interfaces/IRaffle.sol:305:    /// @notice Initializes a fresh fixed-target clone with its immutable-per-raffle configuration.
+target/packages/contracts/src/interfaces/IRaffle.sol:308:    function initialize(RaffleInitParams calldata params) external;
+target/packages/contracts/src/interfaces/IRaffle.sol:314:    function buyEntries(address recipient, uint128 entryCount) external returns (uint256 ticketId);
+target/packages/contracts/src/interfaces/IRaffle.sol:320:    function requestDraw() external payable returns (uint256 requestId);
+target/packages/contracts/src/interfaces/IRaffle.sol:324:    function enableRefunds() external;
+target/packages/contracts/src/interfaces/IRaffle.sol:331:    function settleWinningTicket(uint256 ticketId) external returns (uint256 cashAmount);
+target/packages/contracts/src/interfaces/IRaffle.sol:338:    function redeemWinningTicket(uint256 ticketId) external returns (uint256 cashAmount);
+target/packages/contracts/src/interfaces/IRaffle.sol:344:    function refundTickets(uint256[] calldata ticketIds) external returns (uint256 amount);
+target/packages/contracts/src/interfaces/IRaffle.sol:348:    function releaseSponsorProceeds() external returns (uint256 amount);
+target/packages/contracts/src/interfaces/IRaffle.sol:352:    function releaseProtocolFees() external returns (uint256 amount);
+target/packages/contracts/src/interfaces/IRaffle.sol:355:    function releaseSponsorPrize() external;
+target/packages/contracts/src/interfaces/IRaffle.sol:361:    function getVrfRequestPrice() external view returns (uint256 fee);
+target/packages/contracts/src/interfaces/IRaffle.sol:366:    function estimateVrfRequestPrice(uint256 requestGasPriceWei) external view returns (uint256 fee);
+target/packages/contracts/src/interfaces/IRaffle.sol:373:    function ticketRange(uint256 ticketId) external view returns (uint128 firstEntry, uint128 lastEntry);
+target/packages/contracts/src/interfaces/IRaffle.sol:377:    function drawRequestDeadline() external view returns (uint256 deadline);
+target/packages/contracts/src/interfaces/IRaffle.sol:381:    function callbackDeadline() external view returns (uint256 deadline);
+target/packages/contracts/src/interfaces/IRaffle.sol:385:    function accountedQuoteBalance() external view returns (uint256 amount);
+target/packages/contracts/src/interfaces/IRaffle.sol:390:    function grossSales() external view returns (uint256 amount);
+target/packages/contracts/src/interfaces/IRaffle.sol:396:    function ENTRY_PRICE() external view returns (uint256 price);
+target/packages/contracts/src/interfaces/IRaffle.sol:400:    function callbackGasLimit() external view returns (uint32 gasLimit);
+target/packages/contracts/src/interfaces/IRaffle.sol:404:    function requestConfirmations() external view returns (uint16 confirmations);
+target/packages/contracts/src/interfaces/IRaffle.sol:406:    /// @notice Returns the immutable factory authorized to initialize this implementation's clones.
+target/packages/contracts/src/interfaces/IRaffle.sol:408:    function factory() external view returns (address factoryAddress);
+target/packages/contracts/src/interfaces/IRaffle.sol:412:    function sponsor() external view returns (address sponsorAddress);
+target/packages/contracts/src/interfaces/IRaffle.sol:416:    function sponsorRecipient() external view returns (address recipient);
+target/packages/contracts/src/interfaces/IRaffle.sol:420:    function protocolTreasury() external view returns (address treasury);
+target/packages/contracts/src/interfaces/IRaffle.sol:424:    function quoteToken() external view returns (IERC20 token);
+target/packages/contracts/src/interfaces/IRaffle.sol:428:    function vrfWrapper() external view returns (IVRFV2PlusWrapper wrapper);
+target/packages/contracts/src/interfaces/IRaffle.sol:432:    function prizeToken() external view returns (IERC721 token);
+target/packages/contracts/src/interfaces/IRaffle.sol:436:    function prizeTokenId() external view returns (uint256 tokenId);
+target/packages/contracts/src/interfaces/IRaffle.sol:440:    function raffleId() external view returns (uint256 id);
+target/packages/contracts/src/interfaces/IRaffle.sol:444:    function reserveEntries() external view returns (uint128 entries);
+target/packages/contracts/src/interfaces/IRaffle.sol:448:    function endTime() external view returns (uint64 timestamp);
+target/packages/contracts/src/interfaces/IRaffle.sol:452:    function totalEntries() external view returns (uint128 entries);
+target/packages/contracts/src/interfaces/IRaffle.sol:456:    function ticketCount() external view returns (uint128 tickets);
+target/packages/contracts/src/interfaces/IRaffle.sol:460:    function unsettledPot() external view returns (uint256 amount);
+target/packages/contracts/src/interfaces/IRaffle.sol:464:    function remainingRefundLiability() external view returns (uint256 amount);
+target/packages/contracts/src/interfaces/IRaffle.sol:468:    function winnerRecipient() external view returns (address recipient);
+target/packages/contracts/src/interfaces/IRaffle.sol:472:    function winnerProceeds() external view returns (uint256 amount);
+target/packages/contracts/src/interfaces/IRaffle.sol:476:    function sponsorProceeds() external view returns (uint256 amount);
+target/packages/contracts/src/interfaces/IRaffle.sol:480:    function protocolFees() external view returns (uint256 amount);
+target/packages/contracts/src/interfaces/IRaffle.sol:484:    function vrfRequestId() external view returns (uint256 requestId);
+target/packages/contracts/src/interfaces/IRaffle.sol:488:    function drawRequestedAt() external view returns (uint64 timestamp);
+target/packages/contracts/src/interfaces/IRaffle.sol:492:    function resolvedAt() external view returns (uint64 timestamp);
+target/packages/contracts/src/interfaces/IRaffle.sol:496:    function winningEntry() external view returns (uint128 entry);
+target/packages/contracts/src/interfaces/IRaffle.sol:500:    function winningTicketId() external view returns (uint256 ticketId);
+target/packages/contracts/src/interfaces/IRaffle.sol:504:    function status() external view returns (Status currentStatus);
+target/packages/contracts/src/interfaces/IRaffle.sol:508:    function settlementComplete() external view returns (bool complete);
+target/packages/contracts/src/interfaces/IRaffle.sol:512:    function winnerRedeemed() external view returns (bool redeemed);
+target/packages/contracts/src/interfaces/IRaffle.sol:516:    function prizeClaimed() external view returns (bool claimed);
+target/packages/contracts/src/interfaces/IRaffle.sol:518:    /// @notice Returns whether this implementation or clone has completed its one-time initialization step.
+target/packages/contracts/src/interfaces/IRaffle.sol:519:    /// @return complete True for the locked implementation and every initialized clone.
+target/packages/contracts/src/interfaces/IRaffle.sol:520:    function initialized() external view returns (bool complete);
+target/packages/contracts/src/RaffleFactory.sol:17:/// @notice Atomically creates, funds, and registers autonomous fixed-implementation raffle clones.
+target/packages/contracts/src/RaffleFactory.sol:19:///      factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.
+target/packages/contracts/src/RaffleFactory.sol:21:contract RaffleFactory is IRaffleFactory, ReentrancyGuard {
+target/packages/contracts/src/RaffleFactory.sol:97:    function createRaffle(CreateRaffleParams calldata params) external override nonReentrant returns (address raffle) {
+target/packages/contracts/src/RaffleFactory.sol:99:        uint256 currentTime = block.timestamp;
+target/packages/contracts/src/RaffleFactory.sol:106:        raffle = Clones.clone(raffleImplementation);
+target/packages/contracts/src/RaffleFactory.sol:107:        // The fresh fixed-target clone can initialize only once; this function is nonReentrant and atomic.
+target/packages/contracts/src/RaffleFactory.sol:110:            .initialize(
+target/packages/contracts/src/RaffleFactory.sol:128:        prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId);
+target/packages/contracts/src/RaffleFactory.sol:136:        emit RaffleCreated(
+target/packages/contracts/src/RaffleFactory.sol:154:    function _validateCreateParams(CreateRaffleParams calldata params) private view {
+target/packages/contracts/src/RaffleFactory.sol:183:    function _requireContract(address account) private view {
+target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:14: * after `transfer` or `transferFrom`, or code on a spender contract after `approve`, in a single transaction.
+target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:22:     *   bytes4(keccak256('transferFromAndCall(address,address,uint256)')) ^
+target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:23:     *   bytes4(keccak256('transferFromAndCall(address,address,uint256,bytes)')) ^
+target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:35:    function transferAndCall(address to, uint256 value) external returns (bool);
+target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:45:    function transferAndCall(address to, uint256 value, bytes calldata data) external returns (bool);
+target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:55:    function transferFromAndCall(address from, address to, uint256 value) external returns (bool);
+target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:66:    function transferFromAndCall(address from, address to, uint256 value, bytes calldata data) external returns (bool);
+target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:75:    function approveAndCall(address spender, uint256 value) external returns (bool);
+target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:85:    function approveAndCall(address spender, uint256 value, bytes calldata data) external returns (bool);
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:11: * deploying minimal proxy contracts, also known as "clones".
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:13: * > To simply and cheaply clone contract functionality in an immutable way, this standard specifies
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:17: * (salted deterministic deployment). It also includes functions to predict the addresses of clones deployed using the
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:24:     * @dev Deploys and returns the address of a clone that mimics the behavior of `implementation`.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:26:     * This function uses the create opcode, which should never revert.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:28:     * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:29:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:30:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:32:    function clone(address implementation) internal returns (address instance) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:33:        return clone(implementation, 0);
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:37:     * @dev Same as {xref-Clones-clone-address-}[clone], but with a `value` parameter to send native currency
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:40:     * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:41:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:42:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:44:     * NOTE: Using a non-zero value at creation will require the contract using this function (e.g. a factory)
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:45:     * to always have enough balance for new deployments. Consider exposing this function under a payable method.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:47:    function clone(address implementation, uint256 value) internal returns (address instance) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:51:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:65:     * @dev Deploys and returns the address of a clone that mimics the behavior of `implementation`.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:67:     * This function uses the create2 opcode and a `salt` to deterministically deploy
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:68:     * the clone. Using the same `implementation` and `salt` multiple times will revert, since
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:69:     * the clones cannot be deployed twice at the same address.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:71:     * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:72:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:73:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:75:    function cloneDeterministic(address implementation, bytes32 salt) internal returns (address instance) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:76:        return cloneDeterministic(implementation, salt, 0);
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:80:     * @dev Same as {xref-Clones-cloneDeterministic-address-bytes32-}[cloneDeterministic], but with
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:83:     * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:84:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:85:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:87:     * NOTE: Using a non-zero value at creation will require the contract using this function (e.g. a factory)
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:88:     * to always have enough balance for new deployments. Consider exposing this function under a payable method.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:90:    function cloneDeterministic(
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:98:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:112:     * @dev Computes the address of a clone deployed using {Clones-cloneDeterministic}.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:114:    function predictDeterministicAddress(
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:119:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:132:     * @dev Computes the address of a clone deployed using {Clones-cloneDeterministic}.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:134:    function predictDeterministicAddress(
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:142:     * @dev Deploys and returns the address of a clone that mimics the behavior of `implementation` with custom
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:146:     * This function uses the create opcode, which should never revert.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:148:     * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:149:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:150:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:152:    function cloneWithImmutableArgs(address implementation, bytes memory args) internal returns (address instance) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:153:        return cloneWithImmutableArgs(implementation, args, 0);
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:157:     * @dev Same as {xref-Clones-cloneWithImmutableArgs-address-bytes-}[cloneWithImmutableArgs], but with a `value`
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:160:     * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:161:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:162:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:164:     * NOTE: Using a non-zero value at creation will require the contract using this function (e.g. a factory)
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:165:     * to always have enough balance for new deployments. Consider exposing this function under a payable method.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:167:    function cloneWithImmutableArgs(
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:175:        bytes memory bytecode = _cloneCodeWithImmutableArgs(implementation, args);
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:176:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:185:     * @dev Deploys and returns the address of a clone that mimics the behavior of `implementation` with custom
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:189:     * This function uses the create2 opcode and a `salt` to deterministically deploy the clone. Using the same
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:190:     * `implementation`, `args` and `salt` multiple times will revert, since the clones cannot be deployed twice
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:193:     * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:194:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:195:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:197:    function cloneDeterministicWithImmutableArgs(
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:202:        return cloneDeterministicWithImmutableArgs(implementation, args, salt, 0);
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:206:     * @dev Same as {xref-Clones-cloneDeterministicWithImmutableArgs-address-bytes-bytes32-}[cloneDeterministicWithImmutableArgs],
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:209:     * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:210:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:211:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:213:     * NOTE: Using a non-zero value at creation will require the contract using this function (e.g. a factory)
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:214:     * to always have enough balance for new deployments. Consider exposing this function under a payable method.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:216:    function cloneDeterministicWithImmutableArgs(
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:222:        bytes memory bytecode = _cloneCodeWithImmutableArgs(implementation, args);
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:227:     * @dev Computes the address of a clone deployed using {Clones-cloneDeterministicWithImmutableArgs}.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:229:    function predictDeterministicAddressWithImmutableArgs(
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:235:        bytes memory bytecode = _cloneCodeWithImmutableArgs(implementation, args);
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:240:     * @dev Computes the address of a clone deployed using {Clones-cloneDeterministicWithImmutableArgs}.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:242:    function predictDeterministicAddressWithImmutableArgs(
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:251:     * @dev Get the immutable args attached to a clone.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:253:     * - If `instance` is a clone that was deployed using `clone` or `cloneDeterministic`, this
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:254:     *   function will return an empty array.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:255:     * - If `instance` is a clone that was deployed using `cloneWithImmutableArgs` or
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:256:     *   `cloneDeterministicWithImmutableArgs`, this function will return the args array used at
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:258:     * - If `instance` is NOT a clone deployed using this library, the behavior is undefined. This
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:259:     *   function should only be used to check addresses that are known to be clones.
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:261:    function fetchCloneArgs(address instance) internal view returns (bytes memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:263:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:272:     * An assembly variant of this function requires copying the `args` array, which can be efficiently done using
+target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:279:    function _cloneCodeWithImmutableArgs(
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol:16:    function name() external view returns (string memory);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol:21:    function symbol() external view returns (string memory);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol:26:    function tokenURI(uint256 tokenId) external view returns (string memory);
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:13:    /// @dev Performs a Solidity function call using a low level `call` and ignoring the return data.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:14:    function callNoReturn(address target, bytes memory data) internal returns (bool success) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:19:    function callNoReturn(address target, uint256 value, bytes memory data) internal returns (bool success) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:20:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:25:    /// @dev Performs a Solidity function call using a low level `call` and returns the first 64 bytes of the result
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:29:    /// and this function doesn't zero it out.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:30:    function callReturn64Bytes(
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:38:    function callReturn64Bytes(
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:43:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:50:    /// @dev Performs a Solidity function call using a low level `staticcall` and ignoring the return data.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:51:    function staticcallNoReturn(address target, bytes memory data) internal view returns (bool success) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:52:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:57:    /// @dev Performs a Solidity function call using a low level `staticcall` and returns the first 64 bytes of the result
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:61:    /// and this function doesn't zero it out.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:62:    function staticcallReturn64Bytes(
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:66:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:73:    /// @dev Performs a Solidity function call using a low level `delegatecall` and ignoring the return data.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:74:    function delegatecallNoReturn(address target, bytes memory data) internal returns (bool success) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:75:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:76:            success := delegatecall(gas(), target, add(data, 0x20), mload(data), 0x00, 0x00)
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:80:    /// @dev Performs a Solidity function call using a low level `delegatecall` and returns the first 64 bytes of the result
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:84:    /// and this function doesn't zero it out.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:85:    function delegatecallReturn64Bytes(
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:89:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:90:            success := delegatecall(gas(), target, add(data, 0x20), mload(data), 0x00, 0x40)
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:97:    function returnDataSize() internal pure returns (uint256 size) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:98:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:104:    function returnData() internal pure returns (bytes memory result) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:105:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:114:    function bubbleRevert() internal pure {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:115:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:122:    function bubbleRevert(bytes memory returndata) internal pure {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:123:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol:25:    function checkOnERC721Received(
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol:43:                    assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:10: * Storage slots are often used to avoid storage conflict when dealing with upgradeable contracts.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:11: * This library helps with reading and writing to such slots without the need for inline assembly.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:21: *     function _getImplementation() internal view returns (address) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:25: *     function _setImplementation(address newImplementation) internal {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:66:    function getAddressSlot(bytes32 slot) internal pure returns (AddressSlot storage r) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:67:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:75:    function getBooleanSlot(bytes32 slot) internal pure returns (BooleanSlot storage r) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:76:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:84:    function getBytes32Slot(bytes32 slot) internal pure returns (Bytes32Slot storage r) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:85:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:93:    function getUint256Slot(bytes32 slot) internal pure returns (Uint256Slot storage r) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:94:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:102:    function getInt256Slot(bytes32 slot) internal pure returns (Int256Slot storage r) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:103:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:111:    function getStringSlot(bytes32 slot) internal pure returns (StringSlot storage r) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:112:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:120:    function getStringSlot(string storage store) internal pure returns (StringSlot storage r) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:121:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:129:    function getBytesSlot(bytes32 slot) internal pure returns (BytesSlot storage r) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:130:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:138:    function getBytesSlot(bytes storage store) internal pure returns (BytesSlot storage r) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:139:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:30:    function balanceOf(address owner) external view returns (uint256 balance);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:39:    function ownerOf(uint256 tokenId) external view returns (address owner);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:55:    function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external;
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:73:    function safeTransferFrom(address from, address to, uint256 tokenId) external;
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:79:     * or else they may be permanently lost. Usage of {safeTransferFrom} prevents loss, though the caller must
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:91:    function transferFrom(address from, address to, uint256 tokenId) external;
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:106:    function approve(address to, uint256 tokenId) external;
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:110:     * Operators can call {transferFrom} or {safeTransferFrom} for any token owned by the caller.
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:118:    function setApprovalForAll(address operator, bool approved) external;
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:127:    function getApproved(uint256 tokenId) external view returns (address operator);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:134:    function isApprovedForAll(address owner, address operator) external view returns (bool);
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:42:    function toString(uint256 value) internal pure returns (string memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:43:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:47:            assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:52:                assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:65:    function toStringSigned(int256 value) internal pure returns (string memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:72:    function toHexString(uint256 value) internal pure returns (string memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:73:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:81:    function toHexString(uint256 value, uint256 length) internal pure returns (string memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:100:    function toHexString(address addr) internal pure returns (string memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:108:    function toChecksumHexString(address addr) internal pure returns (string memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:113:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:131:    function toHexString(bytes memory input) internal pure returns (string memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:132:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:148:    function equal(string memory a, string memory b) internal pure returns (bool) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:159:    function parseUint(string memory input) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:171:    function parseUint(string memory input, uint256 begin, uint256 end) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:180:     * NOTE: This function will revert if the result does not fit in a `uint256`.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:182:    function tryParseUint(string memory input) internal pure returns (bool success, uint256 value) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:190:     * NOTE: This function will revert if the result does not fit in a `uint256`.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:192:    function tryParseUint(
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:205:    function _tryParseUintUncheckedBounds(
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:229:    function parseInt(string memory input) internal pure returns (int256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:241:    function parseInt(string memory input, uint256 begin, uint256 end) internal pure returns (int256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:251:     * NOTE: This function will revert if the absolute value of the result does not fit in a `uint256`.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:253:    function tryParseInt(string memory input) internal pure returns (bool success, int256 value) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:263:     * NOTE: This function will revert if the absolute value of the result does not fit in a `uint256`.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:265:    function tryParseInt(
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:278:    function _tryParseIntUncheckedBounds(
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:307:    function parseHexUint(string memory input) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:319:    function parseHexUint(string memory input, uint256 begin, uint256 end) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:328:     * NOTE: This function will revert if the result does not fit in a `uint256`.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:330:    function tryParseHexUint(string memory input) internal pure returns (bool success, uint256 value) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:338:     * NOTE: This function will revert if the result does not fit in a `uint256`.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:340:    function tryParseHexUint(
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:353:    function _tryParseHexUintUncheckedBounds(
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:369:            unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:371:                // This guarantees that adding a value < 16 will not cause an overflow, hence the unchecked.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:384:    function parseAddress(string memory input) internal pure returns (address) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:395:    function parseAddress(string memory input, uint256 begin, uint256 end) internal pure returns (address) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:405:    function tryParseAddress(string memory input) internal pure returns (bool success, address value) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:413:    function tryParseAddress(
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:433:    function _tryParseChr(bytes1 chr) private pure returns (uint8) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:441:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:454:     * WARNING: This function should only be used in double quoted JSON strings. Single quotes are not escaped.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:456:     * NOTE: This function escapes backslashes (including those in \uXXXX sequences) and the characters in ranges
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:461:    function escapeJSON(string memory input) internal pure returns (string memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:468:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:499:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:510:     * NOTE: making this function internal would mean it could be used with memory unsafe offset, and marking the
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:511:     * assembly block as such would prevent some optimizations.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:513:    function _unsafeReadBytesOffset(bytes memory buffer, uint256 offset) private pure returns (bytes32 value) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:514:        // This is not memory safe in the general case, but all calls to this private function are within bounds.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:515:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:523:     * NOTE: making this function internal would mean it could be used with memory unsafe offset, and marking the
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:524:     * assembly block as such would prevent some optimizations.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:526:    function _unsafeWriteBytesOffset(bytes memory buffer, uint256 offset, bytes1 value) private pure {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:527:        // This is not memory safe in the general case, but all calls to this private function are within bounds.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol:528:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:19:abstract contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Errors {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:45:    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:53:    function balanceOf(address owner) public view virtual returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:61:    function ownerOf(uint256 tokenId) public view virtual returns (address) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:66:    function name() public view virtual returns (string memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:71:    function symbol() public view virtual returns (string memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:76:    function tokenURI(uint256 tokenId) public view virtual returns (string memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:88:    function _baseURI() internal view virtual returns (string memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:93:    function approve(address to, uint256 tokenId) public virtual {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:98:    function getApproved(uint256 tokenId) public view virtual returns (address) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:105:    function setApprovalForAll(address operator, bool approved) public virtual {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:110:    function isApprovedForAll(address owner, address operator) public view virtual returns (bool) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:115:    function transferFrom(address from, address to, uint256 tokenId) public virtual {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:128:    function safeTransferFrom(address from, address to, uint256 tokenId) public {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:129:        safeTransferFrom(from, to, tokenId, "");
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:133:    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public virtual {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:134:        transferFrom(from, to, tokenId);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:141:     * IMPORTANT: Any overrides to this function that add ownership of tokens not tracked by the
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:146:    function _ownerOf(uint256 tokenId) internal view virtual returns (address) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:153:    function _getApproved(uint256 tokenId) internal view virtual returns (address) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:161:     * WARNING: This function assumes that `owner` is the actual owner of `tokenId` and does not verify this
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:164:    function _isAuthorized(address owner, address spender, uint256 tokenId) internal view virtual returns (bool) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:176:     * WARNING: This function assumes that `owner` is the actual owner of `tokenId` and does not verify this
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:179:    function _checkAuthorized(address owner, address spender, uint256 tokenId) internal view virtual {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:195:     * WARNING: Increasing an account's balance using this function tends to be paired with an override of the
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:196:     * {_ownerOf} function to resolve the ownership of the corresponding tokens so that balances and ownership
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:199:    function _increaseBalance(address account, uint128 value) internal virtual {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:200:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:209:     * The `auth` argument is optional. If the value passed is non 0, then this function will check that
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:214:     * NOTE: If overriding this function in a way that tracks balances, see also {_increaseBalance}.
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:216:    function _update(address to, uint256 tokenId, address auth) internal virtual returns (address) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:226:            // Clear approval. No need to re-authorize or emit the Approval event
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:229:            unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:235:            unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:242:        emit Transfer(from, to, tokenId);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:259:    function _mint(address to, uint256 tokenId) internal {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:279:    function _safeMint(address to, uint256 tokenId) internal {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:287:    function _safeMint(address to, uint256 tokenId, bytes memory data) internal virtual {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:295:     * This is an internal function that does not check if the sender is authorized to operate on the token.
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:303:    function _burn(uint256 tokenId) internal {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:312:     *  As opposed to {transferFrom}, this imposes no restrictions on msg.sender.
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:321:    function _transfer(address from, address to, uint256 tokenId) internal {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:339:     * This internal function is like {safeTransferFrom} in the sense that it invokes
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:352:    function _safeTransfer(address from, address to, uint256 tokenId) internal {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:353:        _safeTransfer(from, to, tokenId, "");
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:357:     * @dev Same as {xref-ERC721-_safeTransfer-address-address-uint256-}[`_safeTransfer`], with an additional `data` parameter which is
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:360:    function _safeTransfer(address from, address to, uint256 tokenId, bytes memory data) internal virtual {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:368:     * The `auth` argument is optional. If the value passed is non 0, then this function will check that `auth` is
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:375:    function _approve(address to, uint256 tokenId, address auth) internal {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:383:    function _approve(address to, uint256 tokenId, address auth, bool emitEvent) internal virtual {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:394:                emit Approval(owner, to, tokenId);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:409:    function _setApprovalForAll(address owner, address operator, bool approved) internal virtual {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:417:        emit ApprovalForAll(owner, operator, approved);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:426:    function _requireOwned(uint256 tokenId) internal view returns (address) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol:17:    function _msgSender() internal view virtual returns (address) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol:21:    function _msgData() internal view virtual returns (bytes calldata) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol:25:    function _contextSuffixLength() internal view virtual returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol:22:     * This function call must use less than 30 000 gas.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol:24:    function supportsInterface(bytes4 interfaceId) external view returns (bool);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol:8: * @dev Interface for any contract that wants to support safeTransfers
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol:13:     * @dev Whenever an {IERC721} `tokenId` token is transferred to this contract via {IERC721-safeTransferFrom}
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol:14:     * by `operator` from `from`, this function is called.
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol:22:    function onERC721Received(
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol:27:    function totalSupply() external view returns (uint256);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol:32:    function balanceOf(address account) external view returns (uint256);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol:41:    function transfer(address to, uint256 value) external returns (bool);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol:45:     * allowed to spend on behalf of `owner` through {transferFrom}. This is
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol:48:     * This value changes when {approve} or {transferFrom} are called.
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol:50:    function allowance(address owner, address spender) external view returns (uint256);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol:67:    function approve(address spender, uint256 value) external returns (bool);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol:78:    function transferFrom(address from, address to, uint256 value) external returns (bool);
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:42:    // back. This is the compiler's defense against contract upgrades and
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:64:     * Calling a `nonReentrant` function from another `nonReentrant`
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:65:     * function is not supported. It is possible to prevent this from happening
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:66:     * by making the `nonReentrant` function external, and making it call a
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:67:     * `private` function that does the actual work.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:88:    function _nonReentrantBeforeView() private view {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:94:    function _nonReentrantBefore() private {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:102:    function _nonReentrantAfter() private {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:110:     * `nonReentrant` function in the call stack.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:112:    function _reentrancyGuardEntered() internal view returns (bool) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:116:    function _reentrancyGuardStorageSlot() internal pure virtual returns (bytes32) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:16: * which allows you to call the safe operations as `token.safeTransfer(...)`, etc.
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:33:    function safeTransfer(IERC20 token, address to, uint256 value) internal {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:34:        if (!_safeTransfer(token, to, value, true)) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:43:    function safeTransferFrom(IERC20 token, address from, address to, uint256 value) internal {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:44:        if (!_safeTransferFrom(token, from, to, value, true)) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:50:     * @dev Variant of {safeTransfer} that returns a bool instead of reverting if the operation is not successful.
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:52:    function trySafeTransfer(IERC20 token, address to, uint256 value) internal returns (bool) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:53:        return _safeTransfer(token, to, value, false);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:57:     * @dev Variant of {safeTransferFrom} that returns a bool instead of reverting if the operation is not successful.
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:59:    function trySafeTransferFrom(IERC20 token, address from, address to, uint256 value) internal returns (bool) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:60:        return _safeTransferFrom(token, from, to, value, false);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:72:    function safeIncreaseAllowance(IERC20 token, address spender, uint256 value) internal {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:86:    function safeDecreaseAllowance(IERC20 token, address spender, uint256 requestedDecrease) internal {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:87:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:101:     * NOTE: If the token implements ERC-7674, this function will not modify any temporary allowance. This function
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:105:    function forceApprove(IERC20 token, address spender, uint256 value) internal {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:119:    function transferAndCallRelaxed(IERC1363 token, address to, uint256 value, bytes memory data) internal {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:121:            safeTransfer(token, to, value);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:128:     * @dev Performs an {ERC1363} transferFromAndCall, with a fallback to the simple {ERC20} transferFrom if the target
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:134:    function transferFromAndCallRelaxed(
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:142:            safeTransferFrom(token, from, to, value);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:143:        } else if (!token.transferFromAndCall(from, to, value, data)) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:153:     * NOTE: When the recipient address (`to`) has no code (i.e. is an EOA), this function behaves as {forceApprove}.
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:154:     * Oppositely, when the recipient address (`to`) has code, this function only attempts to call {ERC1363-approveAndCall}
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:159:    function approveAndCallRelaxed(IERC1363 token, address to, uint256 value, bytes memory data) internal {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:176:    function _safeTransfer(IERC20 token, address to, uint256 value, bool bubble) private returns (bool success) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:179:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:203:     * @dev Imitates a Solidity `token.transferFrom(from, to, value)` call, relaxing the requirement on the return
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:212:    function _safeTransferFrom(
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:219:        bytes4 selector = IERC20.transferFrom.selector;
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:221:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:255:    function _safeApprove(IERC20 token, address spender, uint256 value, bool bubble) private returns (bool success) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:258:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:25:    function add512(uint256 a, uint256 b) internal pure returns (uint256 high, uint256 low) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:26:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:37:    function mul512(uint256 a, uint256 b) internal pure returns (uint256 high, uint256 low) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:41:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:51:    function tryAdd(uint256 a, uint256 b) internal pure returns (bool success, uint256 result) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:52:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:62:    function trySub(uint256 a, uint256 b) internal pure returns (bool success, uint256 result) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:63:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:73:    function tryMul(uint256 a, uint256 b) internal pure returns (bool success, uint256 result) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:74:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:76:            assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:89:    function tryDiv(uint256 a, uint256 b) internal pure returns (bool success, uint256 result) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:90:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:92:            assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:102:    function tryMod(uint256 a, uint256 b) internal pure returns (bool success, uint256 result) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:103:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:105:            assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:115:    function saturatingAdd(uint256 a, uint256 b) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:123:    function saturatingSub(uint256 a, uint256 b) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:131:    function saturatingMul(uint256 a, uint256 b) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:139:     * IMPORTANT: This function may reduce bytecode size and consume less gas when used standalone.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:141:     * one branch when needed, making this function more expensive.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:143:    function ternary(bool condition, uint256 a, uint256 b) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:144:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:155:    function max(uint256 a, uint256 b) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:162:    function min(uint256 a, uint256 b) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:170:    function average(uint256 a, uint256 b) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:171:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:183:    function ceilDiv(uint256 a, uint256 b) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:194:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:206:    function mulDiv(uint256 x, uint256 y, uint256 denominator) internal pure returns (uint256 result) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:207:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:213:                // The surrounding unchecked block does not change this fact.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:214:                // See https://docs.soliditylang.org/en/latest/control-structures.html#checked-or-unchecked-arithmetic.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:229:            assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:242:            assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:282:    function mulDiv(uint256 x, uint256 y, uint256 denominator, Rounding rounding) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:289:    function mulShr(uint256 x, uint256 y, uint8 n) internal pure returns (uint256 result) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:290:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:302:    function mulShr(uint256 x, uint256 y, uint8 n, Rounding rounding) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:317:    function invMod(uint256 a, uint256 n) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:318:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:372:     * NOTE: this function does NOT check that `p` is a prime greater than `2`.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:374:    function invModPrime(uint256 a, uint256 p) internal view returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:375:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:390:     * the underlying function will succeed given the lack of a revert, but the result may be incorrectly
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:393:    function modExp(uint256 b, uint256 e, uint256 m) internal view returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:408:     * https://eips.ethereum.org/EIPS/eip-198[EIP-198]. Otherwise, the underlying function will succeed given the lack
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:411:    function tryModExp(uint256 b, uint256 e, uint256 m) internal view returns (bool success, uint256 result) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:413:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:440:    function modExp(bytes memory b, bytes memory e, bytes memory m) internal view returns (bytes memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:451:    function tryModExp(
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:463:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:478:    function _zeroBytes(bytes memory buffer) private pure returns (bool) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:482:            assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:499:    function sqrt(uint256 a) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:500:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:608:    function sqrt(uint256 a, Rounding rounding) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:609:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:619:    function log2(uint256 x) internal pure returns (uint256 r) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:655:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:664:    function log2(uint256 value, Rounding rounding) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:665:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:675:    function log10(uint256 value) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:677:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:713:    function log10(uint256 value, Rounding rounding) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:714:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:726:    function log256(uint256 x) internal pure returns (uint256 r) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:743:    function log256(uint256 value, Rounding rounding) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:744:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:753:    function unsignedRoundsUp(Rounding rounding) internal pure returns (bool) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:760:    function clz(uint256 x) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:9:  function lastRequestId() external view returns (uint256);
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:15:   * @dev This function relies on the transaction gas price which is not automatically set during
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:21:  function calculateRequestPrice(uint32 _callbackGasLimit, uint32 _numWords) external view returns (uint256);
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:27:   * @dev This function relies on the transaction gas price which is not automatically set during
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:33:  function calculateRequestPriceNative(uint32 _callbackGasLimit, uint32 _numWords) external view returns (uint256);
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:38:   * @dev This is a convenience function that can be called in simulation to better understand
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:45:  function estimateRequestPrice(
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:54:   * @dev This is a convenience function that can be called in simulation to better understand
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:61:  function estimateRequestPriceNative(
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:74:  function requestRandomWordsInNative(
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:81:  function link() external view returns (address);
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:82:  function linkNativeFeed() external view returns (address);
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol:22:  function _argsToBytes(
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:25: * @dev call the 'requestRandomWords' function with the desired VRF parameters. This function handles
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:62:  function requestRandomness(
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:76:  function requestRandomnessPayInNative(
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:99:  function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) internal virtual;
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:101:  function rawFulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) external {
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:110:  function getBalance() public view returns (uint256) {
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:115:  function getLinkToken() public view returns (LinkTokenInterface) {
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol:6:  function allowance(address owner, address spender) external view returns (uint256 remaining);
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol:8:  function approve(address spender, uint256 value) external returns (bool success);
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol:10:  function balanceOf(
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol:14:  function decimals() external view returns (uint8 decimalPlaces);
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol:16:  function decreaseApproval(address spender, uint256 addedValue) external returns (bool success);
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol:18:  function increaseApproval(address spender, uint256 subtractedValue) external;
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol:20:  function name() external view returns (string memory tokenName);
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol:22:  function symbol() external view returns (string memory tokenSymbol);
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol:24:  function totalSupply() external view returns (uint256 totalTokensIssued);
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol:26:  function transfer(address to, uint256 value) external returns (bool success);
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol:28:  function transferAndCall(address to, uint256 value, bytes calldata data) external returns (bool success);
+target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol:30:  function transferFrom(address from, address to, uint256 value) external returns (bool success);
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol:15:     * IMPORTANT: This function may reduce bytecode size and consume less gas when used standalone.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol:17:     * one branch when needed, making this function more expensive.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol:19:    function ternary(bool condition, int256 a, int256 b) internal pure returns (int256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol:20:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol:31:    function max(int256 a, int256 b) internal pure returns (int256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol:38:    function min(int256 a, int256 b) internal pure returns (int256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol:46:    function average(int256 a, int256 b) internal pure returns (int256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol:55:    function abs(int256 n) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol:56:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol:14: *      function foo() { Panic.GENERIC.panic(); }
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol:17: *      function foo() { Panic.panic(Panic.GENERIC); }
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol:50:    function panic(uint256 code) internal pure {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol:51:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol:15: * function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol:20:abstract contract ERC165 is IERC165 {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol:22:    function supportsInterface(bytes4 interfaceId) public view virtual returns (bool) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:19:    function indexOf(bytes memory buffer, bytes1 s) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:30:    function indexOf(bytes memory buffer, bytes1 s, uint256 pos) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:47:    function lastIndexOf(bytes memory buffer, bytes1 s) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:58:    function lastIndexOf(bytes memory buffer, bytes1 s, uint256 pos) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:59:        unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:76:    function slice(bytes memory buffer, uint256 start) internal pure returns (bytes memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:86:    function slice(bytes memory buffer, uint256 start, uint256 end) internal pure returns (bytes memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:93:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:104:     * NOTE: This function modifies the provided buffer in place. If you need to preserve the original buffer, use {slice} instead
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:106:    function splice(bytes memory buffer, uint256 start) internal pure returns (bytes memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:115:     * NOTE: This function modifies the provided buffer in place. If you need to preserve the original buffer, use {slice} instead
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:117:    function splice(bytes memory buffer, uint256 start, uint256 end) internal pure returns (bytes memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:123:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:137:     * NOTE: This function modifies the provided buffer in place.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:139:    function replace(bytes memory buffer, uint256 pos, bytes memory replacement) internal pure returns (bytes memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:152:     * NOTE: This function modifies the provided buffer in place.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:154:    function replace(
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:167:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:180:     * NOTE: this could be done in assembly with a single loop that expands starting at the FMP, but that would be
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:181:     * significantly less readable. It might be worth benchmarking the savings of the full-assembly approach.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:183:    function concat(bytes[] memory buffers) internal pure returns (bytes memory) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:194:            assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:197:            unchecked {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:210:    function toNibbles(bytes memory input) internal pure returns (bytes memory output) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:211:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:250:    function equal(bytes memory a, bytes memory b) internal pure returns (bool) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:258:    function reverseBytes32(bytes32 value) internal pure returns (bytes32) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:275:    function reverseBytes16(bytes16 value) internal pure returns (bytes16) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:289:    function reverseBytes8(bytes8 value) internal pure returns (bytes8) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:296:    function reverseBytes4(bytes4 value) internal pure returns (bytes4) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:302:    function reverseBytes2(bytes2 value) internal pure returns (bytes2) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:310:    function clz(bytes memory buffer) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:323:     * NOTE: making this function internal would mean it could be used with memory unsafe offset, and marking the
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:324:     * assembly block as such would prevent some optimizations.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:326:    function _unsafeReadBytesOffset(bytes memory buffer, uint256 offset) private pure returns (bytes32 value) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:327:        // This is not memory safe in the general case, but all calls to this private function are within bounds.
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol:328:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol:38:    function deploy(uint256 amount, bytes32 salt, bytes memory bytecode) internal returns (address addr) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol:45:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol:61:    function computeAddress(bytes32 salt, bytes32 bytecodeHash) internal view returns (address) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol:69:    function computeAddress(bytes32 salt, bytes32 bytecodeHash, address deployer) internal pure returns (address addr) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol:70:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:16: * Using this library instead of the unchecked operations eliminates an entire
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:50:    function toUint248(uint256 value) internal pure returns (uint248) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:67:    function toUint240(uint256 value) internal pure returns (uint240) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:84:    function toUint232(uint256 value) internal pure returns (uint232) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:101:    function toUint224(uint256 value) internal pure returns (uint224) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:118:    function toUint216(uint256 value) internal pure returns (uint216) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:135:    function toUint208(uint256 value) internal pure returns (uint208) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:152:    function toUint200(uint256 value) internal pure returns (uint200) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:169:    function toUint192(uint256 value) internal pure returns (uint192) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:186:    function toUint184(uint256 value) internal pure returns (uint184) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:203:    function toUint176(uint256 value) internal pure returns (uint176) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:220:    function toUint168(uint256 value) internal pure returns (uint168) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:237:    function toUint160(uint256 value) internal pure returns (uint160) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:254:    function toUint152(uint256 value) internal pure returns (uint152) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:271:    function toUint144(uint256 value) internal pure returns (uint144) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:288:    function toUint136(uint256 value) internal pure returns (uint136) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:305:    function toUint128(uint256 value) internal pure returns (uint128) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:322:    function toUint120(uint256 value) internal pure returns (uint120) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:339:    function toUint112(uint256 value) internal pure returns (uint112) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:356:    function toUint104(uint256 value) internal pure returns (uint104) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:373:    function toUint96(uint256 value) internal pure returns (uint96) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:390:    function toUint88(uint256 value) internal pure returns (uint88) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:407:    function toUint80(uint256 value) internal pure returns (uint80) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:424:    function toUint72(uint256 value) internal pure returns (uint72) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:441:    function toUint64(uint256 value) internal pure returns (uint64) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:458:    function toUint56(uint256 value) internal pure returns (uint56) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:475:    function toUint48(uint256 value) internal pure returns (uint48) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:492:    function toUint40(uint256 value) internal pure returns (uint40) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:509:    function toUint32(uint256 value) internal pure returns (uint32) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:526:    function toUint24(uint256 value) internal pure returns (uint24) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:543:    function toUint16(uint256 value) internal pure returns (uint16) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:560:    function toUint8(uint256 value) internal pure returns (uint8) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:574:    function toUint256(int256 value) internal pure returns (uint256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:592:    function toInt248(int256 value) internal pure returns (int248 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:610:    function toInt240(int256 value) internal pure returns (int240 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:628:    function toInt232(int256 value) internal pure returns (int232 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:646:    function toInt224(int256 value) internal pure returns (int224 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:664:    function toInt216(int256 value) internal pure returns (int216 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:682:    function toInt208(int256 value) internal pure returns (int208 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:700:    function toInt200(int256 value) internal pure returns (int200 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:718:    function toInt192(int256 value) internal pure returns (int192 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:736:    function toInt184(int256 value) internal pure returns (int184 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:754:    function toInt176(int256 value) internal pure returns (int176 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:772:    function toInt168(int256 value) internal pure returns (int168 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:790:    function toInt160(int256 value) internal pure returns (int160 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:808:    function toInt152(int256 value) internal pure returns (int152 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:826:    function toInt144(int256 value) internal pure returns (int144 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:844:    function toInt136(int256 value) internal pure returns (int136 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:862:    function toInt128(int256 value) internal pure returns (int128 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:880:    function toInt120(int256 value) internal pure returns (int120 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:898:    function toInt112(int256 value) internal pure returns (int112 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:916:    function toInt104(int256 value) internal pure returns (int104 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:934:    function toInt96(int256 value) internal pure returns (int96 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:952:    function toInt88(int256 value) internal pure returns (int88 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:970:    function toInt80(int256 value) internal pure returns (int80 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:988:    function toInt72(int256 value) internal pure returns (int72 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:1006:    function toInt64(int256 value) internal pure returns (int64 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:1024:    function toInt56(int256 value) internal pure returns (int56 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:1042:    function toInt48(int256 value) internal pure returns (int48 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:1060:    function toInt40(int256 value) internal pure returns (int40 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:1078:    function toInt32(int256 value) internal pure returns (int32 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:1096:    function toInt24(int256 value) internal pure returns (int24 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:1114:    function toInt16(int256 value) internal pure returns (int16 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:1132:    function toInt8(int256 value) internal pure returns (int8 downcasted) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:1146:    function toInt256(uint256 value) internal pure returns (int256) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:1157:    function toUint(bool b) internal pure returns (uint256 u) {
+target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:1158:        assembly ("memory-safe") {
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol:15:    function name() external view returns (string memory);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol:20:    function symbol() external view returns (string memory);
+target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol:25:    function decimals() external view returns (uint8);
+
+STDERR:
+
+EXIT: 0

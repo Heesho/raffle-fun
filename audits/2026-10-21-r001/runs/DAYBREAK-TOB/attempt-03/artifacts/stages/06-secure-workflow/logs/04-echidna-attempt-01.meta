@@ -1,0 +1,8 @@
+label=04-echidna-attempt-01
+started_at_utc=2026-10-21T23:13:16Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation
+command=/usr/bin/env DOCKER_HOST=unix:///Users/hishamel-husseini/.lima/gebal/sock/docker.sock /bin/zsh -c set\ -e\;\ docker=/opt/homebrew/bin/docker\;\ name=daybreak-s6-echidna\;\ \$docker\ rm\ -f\ \$name\ \>/dev/null\ 2\>\&1\ \|\|\ true\;\ trap\ \"\$docker\ rm\ -f\ \$name\ \>/dev/null\ 2\>\&1\ \|\|\ true\"\ EXIT\;\ \$docker\ create\ --name\ \$name\ ghcr.io/crytic/echidna/echidna:latest\ sleep\ infinity\;\ \$docker\ start\ \$name\;\ \$docker\ exec\ \$name\ mkdir\ -p\ /work\;\ \$docker\ cp\ .audit-runtime/secure-workflow/target/packages/contracts\ \$name:/work/contracts\;\ \$docker\ exec\ \$name\ /bin/bash\ -lc\ \"solc-select\ install\ 0.8.36\ \&\&\ solc-select\ use\ 0.8.36\ \&\&\ cd\ /work/contracts\ \&\&\ echidna-test\ test/foundry/s6/S6Echidna.sol\ --contract\ S6Echidna\ --config\ echidna.s6.yaml\ --format\ text\ --test-limit\ 100\ --seq-len\ 16\ --crytic-args\ \\\"--compile-force-framework\ foundry\\\"\" 
+finished_at_utc=2026-10-21T23:13:24Z
+exit_code=0
+stdout=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tool-output/04-echidna-attempt-01.stdout
+stderr=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tool-output/04-echidna-attempt-01.stderr

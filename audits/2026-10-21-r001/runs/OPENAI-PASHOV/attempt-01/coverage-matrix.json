@@ -1,0 +1,361 @@
+{
+  "overall_status": "INCOMPLETE",
+  "successful_specialists": [
+    1,
+    4,
+    5,
+    7,
+    10
+  ],
+  "failed_specialists": [
+    2,
+    3,
+    6,
+    8,
+    9,
+    11,
+    12
+  ],
+  "files": [
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/src/RaffleFactory.sol",
+      "sha256": "d0e62b34faa42513fd968f915262728fe66a15c4b9af13a3c66f496704142ace",
+      "reviewed_by_returned_specialists": [
+        1,
+        4,
+        5,
+        7,
+        10
+      ],
+      "overall_coverage": "INCOMPLETE: seven required specialty reports absent"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/src/Raffle.sol",
+      "sha256": "6e4c977922c3e39fafaa8c4c4fb74a971f1817eca9b6552eb8a540969f968617",
+      "reviewed_by_returned_specialists": [
+        1,
+        4,
+        5,
+        7,
+        10
+      ],
+      "overall_coverage": "INCOMPLETE: seven required specialty reports absent"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/src/libraries/RaffleConstants.sol",
+      "sha256": "0893f1a70ac03ad557e0b4c8bdf6a2f73d317f8417d1b4a3c1a571b893ed54b6",
+      "reviewed_by_returned_specialists": [
+        1,
+        4,
+        5,
+        7,
+        10
+      ],
+      "overall_coverage": "INCOMPLETE: seven required specialty reports absent"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/src/interfaces/IRaffle.sol",
+      "sha256": "a43ede9e8802d636a566fb225ed65bdf70f06d17f4734a1632a0a9f84aa5b2dd",
+      "reviewed_by_returned_specialists": [
+        1,
+        4,
+        5,
+        7,
+        10
+      ],
+      "overall_coverage": "INCOMPLETE: seven required specialty reports absent"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/src/interfaces/IRaffleFactory.sol",
+      "sha256": "747d238e4c7dc5b517f91c796dec87d9ddbfec9c626d1ff21467c60d780d03cf",
+      "reviewed_by_returned_specialists": [
+        1,
+        4,
+        5,
+        7,
+        10
+      ],
+      "overall_coverage": "INCOMPLETE: seven required specialty reports absent"
+    }
+  ],
+  "properties": [
+    {
+      "id": "factory-configuration",
+      "property": "Factory construction fixes token, wrapper, treasury, and implementation; source exposes no setters.",
+      "functions": [
+        "RaffleFactory.constructor",
+        "Raffle.constructor"
+      ],
+      "result": "holds under canonical dependency assumptions"
+    },
+    {
+      "id": "atomic-creation",
+      "property": "Each successful registration corresponds to one initialized active clone and the configured reported prize owner.",
+      "functions": [
+        "createRaffle",
+        "initialize",
+        "onERC721Received"
+      ],
+      "result": "holds for honest prize semantics; malicious ownership reports remain external trust"
+    },
+    {
+      "id": "initialization",
+      "property": "Only the immutable factory can initialize once; implementation storage is locked.",
+      "functions": [
+        "Raffle.constructor",
+        "initialize"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "quote-conservation",
+      "property": "Accounted quote equals unspent entry receipts; direct donations are excluded from liabilities.",
+      "functions": [
+        "buyEntries",
+        "enableRefunds",
+        "_settleWinningTicket",
+        "refundTickets",
+        "releaseSponsorProceeds",
+        "releaseProtocolFees",
+        "redeemWinningTicket",
+        "accountedQuoteBalance"
+      ],
+      "result": "holds under standard USDC transfers"
+    },
+    {
+      "id": "range-partition",
+      "property": "Tickets form contiguous disjoint ranges that cover [1,totalEntries].",
+      "functions": [
+        "buyEntries",
+        "ticketRange"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "ticket-capacity",
+      "property": "ticketCount <= totalEntries <= uint128.max; each purchase adds at least one entry.",
+      "functions": [
+        "buyEntries"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "arithmetic-bounds",
+      "property": "grossSales <= uint128.max * 1000000 and percentage allocations remain within uint256.",
+      "functions": [
+        "buyEntries",
+        "grossSales",
+        "_settleWinningTicket",
+        "refundTickets"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "winner-membership",
+      "property": "An accepted VRF word selects one entry covered by exactly one historical range.",
+      "functions": [
+        "fulfillRandomWords",
+        "_requireWinningTicket",
+        "ticketRange"
+      ],
+      "result": "holds; modulo bias is negligible at the uint128 cap"
+    },
+    {
+      "id": "callback-authentication",
+      "property": "Only the immutable wrapper can reach the random-word handler.",
+      "functions": [
+        "rawFulfillRandomWords",
+        "fulfillRandomWords"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "callback-state",
+      "property": "Only the recorded request before its deadline resolves a Drawing raffle; duplicate, late, in-flight, and wrong-length callbacks do not resolve.",
+      "functions": [
+        "requestDraw",
+        "fulfillRandomWords"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "exclusive-deadlines",
+      "property": "Buying, draw initiation, and full-refund availability use consistent exclusive boundaries.",
+      "functions": [
+        "buyEntries",
+        "requestDraw",
+        "enableRefunds",
+        "drawRequestDeadline",
+        "callbackDeadline"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "terminal-monotonicity",
+      "property": "NftWon, CashWon, and Refunding cannot return to Active or Drawing.",
+      "functions": [
+        "initialize",
+        "onERC721Received",
+        "requestDraw",
+        "fulfillRandomWords",
+        "enableRefunds"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "settlement-once",
+      "property": "Settlement consumes unsettledPot once without ownership reads or asset transfers.",
+      "functions": [
+        "settleWinningTicket",
+        "_settleWinningTicket"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "economic-allocation",
+      "property": "NFT payout is 95/5 and cash payout is 80/15/5; allocations sum to the sale pot.",
+      "functions": [
+        "_settleWinningTicket"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "redemption-ownership",
+      "property": "Only the current winning-ticket owner receives the prize; approvals alone do not permit redemption.",
+      "functions": [
+        "redeemWinningTicket",
+        "ownerOf",
+        "_burn"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "burn-atomicity",
+      "property": "A failed redemption or refund transfer restores the burn, balances, liabilities, and claim flags.",
+      "functions": [
+        "redeemWinningTicket",
+        "refundTickets",
+        "_transferQuote",
+        "SafeERC20.safeTransfer"
+      ],
+      "result": "holds by transaction reversion"
+    },
+    {
+      "id": "refund-conservation",
+      "property": "Each surviving owner may burn each ticket once for its full represented entry value.",
+      "functions": [
+        "enableRefunds",
+        "refundTickets",
+        "ownerOf",
+        "_burn"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "batch-safety",
+      "property": "Refund batches require 1..100 tickets and duplicates, foreign tickets, or nonexistent IDs revert.",
+      "functions": [
+        "refundTickets"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "independent-release",
+      "property": "Sponsor, treasury, and winner releases cannot consume each other's quote allocations.",
+      "functions": [
+        "releaseSponsorProceeds",
+        "releaseProtocolFees",
+        "redeemWinningTicket"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "prize-exclusivity",
+      "property": "One prizeClaimed flag gates the winner NFT branch and sponsor return branches.",
+      "functions": [
+        "redeemWinningTicket",
+        "releaseSponsorPrize"
+      ],
+      "result": "holds under honest prize semantics"
+    },
+    {
+      "id": "ticket-transfer-coupling",
+      "property": "Inherited ticket transfers change ownership but preserve entry ranges, totalEntries, and liabilities.",
+      "functions": [
+        "_update",
+        "transferFrom",
+        "safeTransferFrom",
+        "approve",
+        "setApprovalForAll"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "reentrancy-isolation",
+      "property": "Each money-mutating public path uses the same clone-local guard; burn precedes prize calls.",
+      "functions": [
+        "buyEntries",
+        "requestDraw",
+        "enableRefunds",
+        "settleWinningTicket",
+        "redeemWinningTicket",
+        "refundTickets",
+        "releaseSponsorProceeds",
+        "releaseProtocolFees",
+        "releaseSponsorPrize",
+        "ReentrancyGuard.nonReentrant"
+      ],
+      "result": "holds for traced caller-controlled callbacks"
+    },
+    {
+      "id": "native-fee-conservation",
+      "property": "Draw requester funds the actual fee and receives only its own excess; rejected refunds revert the request.",
+      "functions": [
+        "requestDraw",
+        "requestRandomnessPayInNative",
+        "receive"
+      ],
+      "result": "holds; forced donations remain outside claims"
+    },
+    {
+      "id": "destination-filter",
+      "property": "Ticket writes and quote releases reject current same-factory protocol sinks.",
+      "functions": [
+        "_isProtocolDestination",
+        "_update",
+        "_transferQuote",
+        "_validateCreateParams"
+      ],
+      "result": "holds for current registry; future-address and foreign-factory self-harm paths excluded"
+    },
+    {
+      "id": "view-write-consistency",
+      "property": "Generated getters, grossSales, deadlines, ticket ranges, and liabilities match the state mutations.",
+      "functions": [
+        "ticketRange",
+        "grossSales",
+        "drawRequestDeadline",
+        "callbackDeadline",
+        "accountedQuoteBalance",
+        "name",
+        "symbol",
+        "getVrfRequestPrice",
+        "estimateVrfRequestPrice",
+        "vrfWrapper"
+      ],
+      "result": "holds under their documented temporal scope"
+    },
+    {
+      "id": "untrusted-prize-delivery",
+      "property": "Sponsor payment does not depend on successful winner NFT delivery.",
+      "functions": [
+        "_settleWinningTicket",
+        "releaseSponsorProceeds",
+        "redeemWinningTicket"
+      ],
+      "result": "LEAD: explicit design/source trust-boundary mismatch; no concrete bundled prize refusal path"
+    }
+  ],
+  "property_evidence": "raw/agent-5.coverage.json; additional per-specialty detail in all five returned coverage artifacts",
+  "wording_note": "Agent property results such as holds are source/model observations under stated assumptions, not a whole-protocol security guarantee."
+}

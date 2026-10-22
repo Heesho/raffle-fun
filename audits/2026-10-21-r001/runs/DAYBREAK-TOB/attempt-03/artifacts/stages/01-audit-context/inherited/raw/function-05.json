@@ -1,0 +1,158 @@
+{
+  "stage_id": "S1-FUNCTION-05",
+  "accepted_local_selection": {
+    "model": "gpt-daybreak-blue-latest",
+    "reasoning_effort": "ultra",
+    "cyber_access_program": "daybreak_blue",
+    "fallback": "disabled"
+  },
+  "provider_returned_model": "unknown",
+  "function": "Raffle.redeemWinningTicket",
+  "file": "target/packages/contracts/src/Raffle.sol",
+  "lines": "L309-L346",
+  "analysisFile": ".audit-work/stages/01-audit-context/functions/05-Raffle.redeemWinningTicket.md",
+  "invariants": [
+    {
+      "claim": "Every continuing path has winnerRedeemed false and status exactly NftWon or CashWon.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L310-L312"
+    },
+    {
+      "claim": "Before ownership is accepted, ticketId is bound to the winning entry by inline range validation or to the already recorded winningTicketId by equality.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L314-L318,L538-L555,L579-L584"
+    },
+    {
+      "claim": "Only the exact current ticket owner, not merely an approved operator, can redeem.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L320-L321"
+    },
+    {
+      "claim": "On success, winnerRecipient, the burned ticket's last owner, and the NFT or cash recipient are the same winner address.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L320-L345"
+    },
+    {
+      "claim": "The winning ticket is burned before either external asset-delivery interaction; its range remains historical.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L138-L139,L323-L334,L338-L342; target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L216-L245,L303-L307"
+    },
+    {
+      "claim": "The NFT path sets prizeClaimed before transfer and completes only if the prize reports winner as owner afterward.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L329-L337"
+    },
+    {
+      "claim": "The cash path consumes the entire nonzero winnerProceeds bucket and zeroes it before quote-token interaction.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L338-L343"
+    },
+    {
+      "claim": "WinningTicketRedeemed is emitted only after the selected delivery path completes; branch-inapplicable fields remain zero.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L327-L345"
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "Terminal status is authoritative and paired with a one-based winningEntry.",
+      "establishedBy": "Raffle.fulfillRandomWords writes winningEntry and terminal status together at target/packages/contracts/src/Raffle.sol:L518-L523."
+    },
+    {
+      "claim": "settlementComplete implies winningTicketId and all terminal liabilities were written coherently.",
+      "establishedBy": "The sole settlement write block is target/packages/contracts/src/Raffle.sol:L551-L555; callers enter it through L304-L315."
+    },
+    {
+      "claim": "The sponsor-selected prize contract honors ERC-721 transfer and ownership semantics and its ownerOf result represents actual ownership.",
+      "establishedBy": "Protocol trust assumption at target/packages/contracts/src/interfaces/IRaffle.sol:L12-L15; factory checks ERC-165 and initial escrow ownership at target/packages/contracts/src/RaffleFactory.sol:L127-L134,L171-L177. Actual deployed implementation: nothing found in target/."
+    },
+    {
+      "claim": "A successful quote-token call moves exactly cashAmount without fees or rebasing.",
+      "establishedBy": "Protocol trust assumption at target/packages/contracts/src/interfaces/IRaffle.sol:L12-L15 and helper documentation at target/packages/contracts/src/Raffle.sol:L560-L566; SafeERC20 checks only call/return behavior at target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:L176-L199. Actual deployed implementation: nothing found in target/."
+    },
+    {
+      "claim": "Ticket ownership remains unchanged between ownerOf and _burn.",
+      "establishedBy": "There is no external call between target/packages/contracts/src/Raffle.sol:L320 and L325; inherited ownerOf and burn behavior is at target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L61-L63,L216-L245,L303-L307."
+    }
+  ],
+  "calls": [
+    {
+      "callee": "Raffle._settleWinningTicket",
+      "kind": "internal",
+      "propagates": "Validates winning-range containment, allocates terminal liabilities on both result paths, records winningTicketId, and marks settlement complete (Raffle.sol:L533-L557)."
+    },
+    {
+      "callee": "Raffle._requireWinningTicket / ticketRange",
+      "kind": "internal",
+      "propagates": "Establishes only that the stored historical range contains winningEntry; it does not establish token existence or ownership (Raffle.sol:L451-L455,L579-L584)."
+    },
+    {
+      "callee": "Math.mulDiv",
+      "kind": "internal",
+      "propagates": "Provides floor division for protocol and cash-winner allocations (Raffle.sol:L540,L546; Math.sol:L200-L216)."
+    },
+    {
+      "callee": "ERC721.ownerOf",
+      "kind": "internal",
+      "propagates": "Returns the current ticket owner and rejects an unminted or burned token (ERC721.sol:L61-L63,L426-L431)."
+    },
+    {
+      "callee": "ERC721._burn via Raffle._update and ERC721._update",
+      "kind": "internal",
+      "propagates": "Clears approval, decrements balance, writes zero ownership, emits Transfer, and rejects a nonexistent ticket (Raffle.sol:L497-L502; ERC721.sol:L216-L245,L303-L307)."
+    },
+    {
+      "callee": "prizeToken.transferFrom",
+      "kind": "external-black-box",
+      "propagates": "Receives raffle, winner, and configured prizeTokenId; revert, callbacks, gas exhaustion, or nonstandard transfer behavior prevent completion or remain governed by the declared prize trust assumption (Raffle.sol:L334; IRaffle.sol:L12-L15)."
+    },
+    {
+      "callee": "prizeToken.ownerOf",
+      "kind": "external-black-box",
+      "propagates": "Must return winner after transfer; revert or another value aborts redemption, while truthfulness relies on the prize trust assumption (Raffle.sol:L335-L337)."
+    },
+    {
+      "callee": "Raffle._transferQuote / _isProtocolDestination",
+      "kind": "internal",
+      "propagates": "Rechecks the cash recipient against current protocol destinations before token transfer (Raffle.sol:L564-L567,L593-L604)."
+    },
+    {
+      "callee": "RaffleFactory.raffleImplementation / isRaffle",
+      "kind": "external-source-available",
+      "propagates": "Supplies immutable implementation identity and current raffle-registry membership to destination screening (RaffleFactory.sol:L41-L54,L105-L125)."
+    },
+    {
+      "callee": "SafeERC20.safeTransfer / quoteToken.transfer",
+      "kind": "external-black-box",
+      "propagates": "The wrapper rejects revert or explicit false and accepts true or code-bearing no-return completion; exact amount semantics come from the canonical-token assumption (SafeERC20.sol:L30-L36,L176-L199)."
+    },
+    {
+      "callee": "ReentrancyGuard.nonReentrant",
+      "kind": "internal",
+      "propagates": "Brackets settlement, burn, delivery, verification, and event emission with the shared guard (ReentrancyGuard.sol:L69-L72,L88-L105)."
+    }
+  ],
+  "callers": [
+    "Any external address through IRaffle.redeemWinningTicket; continuation requires exact current ownership at target/packages/contracts/src/Raffle.sol:L320-L321 (interface declaration: target/packages/contracts/src/interfaces/IRaffle.sol:L333-L338).",
+    "No internal production caller found in target/."
+  ],
+  "sharedState": [
+    "status and winningEntry: written by fulfillRandomWords (Raffle.sol:L518-L523), read here at L311-L312 and through winning-range validation.",
+    "settlementComplete, winningTicketId, unsettledPot, winnerProceeds, sponsorProceeds, protocolFees: written by _settleWinningTicket through standalone or inline settlement (Raffle.sol:L304-L315,L533-L557).",
+    "winnerRecipient and winnerRedeemed: written only by this function before burn/delivery (Raffle.sol:L323-L325).",
+    "Ticket ownership, balance, and approvals: minted by buyEntries, transferable through inherited ERC721 entrypoints and Raffle._update, burned by redemption/refund (Raffle.sol:L226-L236,L349-L365,L497-L502; ERC721.sol:L92-L136,L216-L245).",
+    "prizeClaimed and external prize custody: initial custody is verified by factory creation; this function consumes it for NftWon, while releaseSponsorPrize consumes it only for CashWon or Refunding (RaffleFactory.sol:L127-L134; Raffle.sol:L329-L337,L395-L405).",
+    "Quote custody and accounted liabilities: buyEntries funds unsettledPot; settlement allocates it; redemption and independent release functions consume their respective buckets (Raffle.sol:L223-L233,L339-L342,L375-L390,L468-L470,L539-L555).",
+    "Shared reentrancy guard: all raffle claim/release entrypoints use the same guard, while inherited ERC721 transfer/approval entrypoints do not (Raffle.sol:L304-L395; ERC721.sol:L92-L136; ReentrancyGuard.sol:L69-L105)."
+  ],
+  "openQuestions": [
+    "unclear; deployed prize-token source is unavailable, so actual transferFrom callback behavior and ownerOf ledger semantics cannot be inspected (RaffleFactory.sol:L127-L134,L171-L177; IRaffle.sol:L12-L15).",
+    "unclear; deployed quote-token source is unavailable, so the assumed exact fee-free, non-rebasing balance movement cannot be verified (IRaffle.sol:L12-L15; SafeERC20.sol:L176-L199).",
+    "unclear; an arbitrary contract ticket owner receives the prize via transferFrom, so this path does not establish IERC721Receiver support or the winner contract's ability to operate the prize (Raffle.sol:L320-L334; IERC721.sol:L76-L91)."
+  ],
+  "filesReviewed": [
+    "target/DESIGN.md",
+    "target/packages/contracts/src/Raffle.sol",
+    "target/packages/contracts/src/RaffleFactory.sol",
+    "target/packages/contracts/src/interfaces/IRaffle.sol",
+    "target/packages/contracts/src/libraries/RaffleConstants.sol",
+    "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+    "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+    "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+    "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+    "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+    "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol"
+  ]
+}

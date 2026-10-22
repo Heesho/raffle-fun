@@ -1,0 +1,25 @@
+^D
+> gebal@0.2.0 gebal /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal
+> tsx packages/cli/src/main.ts --help
+
+node:net:1919
+      const error = new UVExceptionWithHostPort(rval, 'listen', address, port);
+                    ^
+
+Error: listen EPERM: operation not permitted /var/folders/p9/6rp4n0x93tv6ptwkp0jj6lvc0000gn/T/tsx-501/39211.pipe
+    at Server.setupListenHandle [as _listen2] (node:net:1919:21)
+    at listenInCluster (node:net:1998:12)
+    at Server.listen (node:net:2120:5)
+    at file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/cli.mjs:53:32174
+    at new Promise (<anonymous>)
+    at createIpcServer (file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/cli.mjs:53:32152)
+    at async file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/cli.mjs:55:542 {
+  code: 'EPERM',
+  errno: -1,
+  syscall: 'listen',
+  address: '/var/folders/p9/6rp4n0x93tv6ptwkp0jj6lvc0000gn/T/tsx-501/39211.pipe',
+  port: -1
+}
+
+Node.js v22.23.3
+ ELIFECYCLE  Command failed with exit code 1.

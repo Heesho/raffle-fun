@@ -1,0 +1,1941 @@
+{
+  "validated_at": "2026-10-21T17:59:45.761330+00:00",
+  "target": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "scope": "Ten external provider harness cells; provenance and workflow only; no finding judgement",
+  "counts": {
+    "INCOMPLETE": 6,
+    "COMPLETE": 2,
+    "RUNNING": 2
+  },
+  "genuine_completed_required_cells": 2,
+  "checks": {
+    "claude": {
+      "firstPassSHA256": "16cb0e68e79fba00c1ba91878e682184db08a175fbcf9164dd7b51cc469aefb2",
+      "firstPassSealMatches": true,
+      "firstPassSealFile": "provider-lanes/claude/FIRST-PASS.md.sha256",
+      "latestArtifactMtimeUTC": "2026-10-21T17:54:29.165782+00:00",
+      "boundArtifactChecks": {
+        "count": 151,
+        "mismatches": []
+      },
+      "CLAUDE-PASHOV": {
+        "assistantMessageModels": {
+          "claude-opus-5-5": 480
+        },
+        "finalResultSubtype": "success",
+        "isError": false,
+        "subagentStats": {
+          "spawned": 12,
+          "requested": {
+            "background": 12,
+            "foreground": 0,
+            "unset": 0
+          },
+          "started_in_background": 12,
+          "max_depth": 1,
+          "spawned_by_subagents": 0,
+          "completed": 12,
+          "failed": 0,
+          "killed": {
+            "parent": 0,
+            "user": 0,
+            "system": 0
+          },
+          "refused": {
+            "depth_limit": 0,
+            "concurrency_limit": 0,
+            "budget": 0
+          },
+          "by_type": {
+            "general-purpose": 12
+          }
+        },
+        "raw": "provider-lanes/claude/runs/CLAUDE-PASHOV/attempt-01/events.jsonl"
+      },
+      "CLAUDE-SIMAO": {
+        "assistantMessageModels": {
+          "claude-opus-5-5": 133,
+          "<synthetic>": 15
+        },
+        "finalResultSubtype": "success",
+        "isError": true,
+        "subagentStats": {
+          "spawned": 12,
+          "requested": {
+            "background": 12,
+            "foreground": 0,
+            "unset": 0
+          },
+          "started_in_background": 12,
+          "max_depth": 1,
+          "spawned_by_subagents": 0,
+          "completed": 0,
+          "failed": 12,
+          "killed": {
+            "parent": 0,
+            "user": 0,
+            "system": 0
+          },
+          "refused": {
+            "depth_limit": 0,
+            "concurrency_limit": 0,
+            "budget": 0
+          },
+          "by_type": {
+            "general-purpose": 12
+          }
+        },
+        "raw": "provider-lanes/claude/runs/CLAUDE-SIMAO/attempt-01/events.jsonl"
+      },
+      "CLAUDE-GEBAL": {
+        "assistantMessageModels": {
+          "claude-opus-5-5": 61
+        },
+        "finalResultSubtype": "success",
+        "isError": false,
+        "subagentStats": {
+          "spawned": 0,
+          "requested": {
+            "background": 0,
+            "foreground": 0,
+            "unset": 0
+          },
+          "started_in_background": 0,
+          "max_depth": 0,
+          "spawned_by_subagents": 0,
+          "completed": 0,
+          "failed": 0,
+          "killed": {
+            "parent": 0,
+            "user": 0,
+            "system": 0
+          },
+          "refused": {
+            "depth_limit": 0,
+            "concurrency_limit": 0,
+            "budget": 0
+          },
+          "by_type": {}
+        },
+        "raw": "provider-lanes/claude/runs/CLAUDE-GEBAL/attempt-01-review/events.jsonl"
+      }
+    },
+    "gemini": {
+      "firstPassSHA256": "43a0a0efa35ae70f82b0311b29aea14a66aedf0b1f97d50f14e780d44ab5d3a3",
+      "firstPassSealMatches": true,
+      "firstPassSealFile": "provider-lanes/gemini/FIRST-PASS.md.sha256",
+      "latestArtifactMtimeUTC": "2026-10-21T17:58:00.698339+00:00",
+      "firstPassPerCellHashBinding": "Consolidated seal matches, but FIRST-PASS does not hash-bind or embed all 30 original stage reports; it contains contradictory harness pins.",
+      "stagedResourceComparison": {
+        "0xsimao": {
+          "files": [
+            {
+              "path": "README.md",
+              "sha256": "3c2ede864e255579e294b62e1f709f9b0769aae316881063e163644f9cdc841d",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "SKILL.md",
+              "sha256": "815e1bb9b494d2f4e1bec23b13862207dd4d59069cc56c04c5f80e7c2bf5b800",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "references/severity-calibration.md",
+              "sha256": "cae5e812cf472d6cd2751492bbbea9b36cc8a47bd0c16e181eca2c877b6a030c",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "references/report-formatting.md",
+              "sha256": "8d0bac5bb8dcaf1dcb384ca360c6c814760a544c24396a691ba402984534d422",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "references/simao-method.md",
+              "sha256": "66c056ef7066feb89148df1a68aae0843521d07a97d404f54c3e0fed7bc8ad5e",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "references/attack-lenses/edge-states.md",
+              "sha256": "27f61577a3af8bd8ab5f41d623fd177b5bf6f91b1bbd3a506b0251f5ef9547df",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "references/attack-lenses/shared-rules.md",
+              "sha256": "53a644d22165ba10408baba78aa752bda8cbe116a000316925d3b10cf6b59652",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "references/attack-lenses/share-exchange-rate.md",
+              "sha256": "054b5418be2abac94b7b7ac080019798d269c0351a00601a9d208cc7db40f61d",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "references/attack-lenses/rounding-precision.md",
+              "sha256": "624aed6584f37947879873e3d4859df578869b353f085801bebc2596b9e70abe",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "references/attack-lenses/dos-griefing.md",
+              "sha256": "617bbb5a8786f93878c22a53bb6526ba1b6fa7e477c9ceb4ae1046749cdc9314",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "references/attack-lenses/liquidation-solvency.md",
+              "sha256": "3ea85297b0685da39e051975fda4b85a04ac42bba2e5bc5bc596b6768d5fb0bf",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "references/attack-lenses/cross-chain-state.md",
+              "sha256": "5c307191bed41d6d537b28644e9a35af017a6d74682599b6f9aea700d3161905",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "references/attack-lenses/flow-completeness.md",
+              "sha256": "481bd7778ec3af4d6908af5406627246ec712b885c9e389987473e2e07a50e57",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "references/attack-lenses/access-trust.md",
+              "sha256": "8825100002c181999e82986e136c99f786ad7aff12f18d9b07df67d69fa9724b",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "references/attack-lenses/ordering-mev.md",
+              "sha256": "51b48622aaf8d43e07ac2aacd31734d8fbebf97e84a1ae54e8ccbe8a9a75f9e6",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "references/attack-lenses/accounting-desync.md",
+              "sha256": "d7108aab2bddd45aef713a937cd34fba9fb4f573b6b3a454a084f6c6fe2492f9",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "references/attack-lenses/temporal-cohort.md",
+              "sha256": "7f0053c41f6f8feec48e201bf0b45aa794ad64df0baf117eec177d4529c5bdcb",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "references/attack-lenses/integration-assumptions.md",
+              "sha256": "4b175ac1921abd230cb0ea97be13c9b63ddf2736c6da81432280311240f2da91",
+              "sameAsPinnedUpstream": true
+            }
+          ],
+          "matching": 18,
+          "differentOrGenerated": []
+        },
+        "pashov": {
+          "files": [
+            {
+              "path": "README.md",
+              "sha256": "82c0a7149e53f98509086c021c9f22dce83fe14904bb0c6dd1956ee225fafc0a",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/README.md",
+              "sha256": "b2a8283309f8916d0edeead505e28ebcb29a72a61f6f5850e7929e3a23195a66",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/SKILL.md",
+              "sha256": "4e3fa4b23b62fa5e32cbc2ec041ac3143ddf89f721434c59e2c10da06ad637a3",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/assemble.sh",
+              "sha256": "f81c647ea530f0d0827e67b8a822673ebd559e07194f934f3096dc68a30675b7",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/senior-auditor-sop.md",
+              "sha256": "44a265f9af0068a2eb14d285320285f7907fde7eed27b30d61aee5b56052b063",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/report-language.md",
+              "sha256": "20e162ff6dd57e1b267594f4f543183f6043dbd913556fe34b4bea47296f3a2d",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/dedup-and-assembly.md",
+              "sha256": "35c53f5bbd841109e9a324b2de55cb92bf3e0b495b62cd610a79bcd212a65141",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/agent-prompts.md",
+              "sha256": "5285c7bac64ac11e56b6ee36b2a0e9d62b22510ad53be577c00beba573e837e5",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/report-formatting.md",
+              "sha256": "2597b23f9e216df7b4c7877a9cb07b44d2cea2f8ef3fb8526881b6589016f349",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/judging.md",
+              "sha256": "c49b0f60777f5fae71c7b79ea41d36f0e38e114b476529a998c01133c157b43d",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/hacking-agents/periphery-agent.md",
+              "sha256": "de0b3b0ce44ade13f263ea06f127b94599594c89b39348dd6fc870a949649406",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/hacking-agents/shared-rules.md",
+              "sha256": "4aacf567ceee1d2ee9a29f30574221e3b636bf829697a9440bfc0a685031f66a",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/hacking-agents/flow-gap-agent.md",
+              "sha256": "93756415a7ca1610c3e9dc7f14d1d86298bf23b474d64dbfe5a6791ce3390b0b",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/hacking-agents/execution-trace-agent.md",
+              "sha256": "970afaeb794047b62abcb27751c51c3b5cdb245761f0bfd643461bdccd4e80ff",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/hacking-agents/numerical-gap-agent.md",
+              "sha256": "257ef47089f020fe8f63b8c8229fef163bd82eb51bdf2d41bcb060db47591cec",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/hacking-agents/economic-security-agent.md",
+              "sha256": "94d36d8d5faffedf9adab1571ad67daa0cb257f04de4b6ded699d646f1ddf378",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/hacking-agents/asymmetry-agent.md",
+              "sha256": "8180f5542c3cca3e7abf5816314879df44fe2f5f3840f780a17de67d504e10ad",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/hacking-agents/trust-gap-agent.md",
+              "sha256": "56d4cc61dd6d6486788d25a2581acf8792b05583e2996d32c5fd5914f84bb946",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/hacking-agents/math-precision-agent.md",
+              "sha256": "e43bd597e9cceb9a542795c05393dbaea1b9810393d7fc0ec5db1162ef2f213e",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/hacking-agents/invariant-agent.md",
+              "sha256": "c224fd26b179ccd00525ee72376a270290c3121be4bc02960733b8c9bc329e0f",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/hacking-agents/first-principles-agent.md",
+              "sha256": "68d3c81d51479ab5f748791c4f27442095d23f38f07de4302c38ea1422333470",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/hacking-agents/access-control-agent.md",
+              "sha256": "8904a3ae34b25fc070e3be323542607fd1aa241403fac912c0a1a5ab63e66595",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "solidity-auditor/references/hacking-agents/boundary-agent.md",
+              "sha256": "45973022ea62c73cd406c3ffaa318c2ba2a6f68c92e4a6ada6dfb32fb69823dc",
+              "sameAsPinnedUpstream": true
+            }
+          ],
+          "matching": 23,
+          "differentOrGenerated": []
+        },
+        "trailofbits": {
+          "files": [
+            {
+              "path": "README.md",
+              "sha256": "5238447ee6608f638ae01fc114b05cde2d2a57f56832fe9d699b5951621c9d1e",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "AGENTS.md",
+              "sha256": "78f5a80f6f25b7eafa632ab0e31354620e0efdfca287202a99f4a610e23dead6",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "CLAUDE.md",
+              "sha256": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/entry-point-analyzer/README.md",
+              "sha256": "5ac567b32f81ca7b9c01790e9279713a3610c7c36e391b21b7ef2c3a1bc57a10",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/building-secure-contracts/README.md",
+              "sha256": "d70a9c95e6ea8d2b1a26e97981cdae1c525170afbdc4fb63c9535b27935f8807",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/building-secure-contracts/skills/token-integration-analyzer/SKILL.md",
+              "sha256": "4b7f5cb3c52f9b45e2216963a49458e1f23f5a279a0296e702fd9d8df268b301",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/building-secure-contracts/skills/code-maturity-assessor/SKILL.md",
+              "sha256": "a5e1427ae04cb0ed32b003c332becc0c8adb8e382d8d1d489edc997148b57ab1",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/building-secure-contracts/skills/secure-workflow-guide/SKILL.md",
+              "sha256": "7c0e7fb45f97c073ec9599cbe0b2acf44f31bbece38636bc5c3fcc9bc7703015",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/building-secure-contracts/skills/guidelines-advisor/SKILL.md",
+              "sha256": "5bb8ba34d363c419e1769a59d0fcc7444a04dc6d9e59032cb93019befdc2e464",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/building-secure-contracts/skills/guidelines-advisor/resources/EXAMPLE_REPORT.md",
+              "sha256": "4c31c1718afaece6c7ba2c3519373167ca5d81f937fb4356c8d9b45d280833f0",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/building-secure-contracts/skills/guidelines-advisor/resources/DELIVERABLES.md",
+              "sha256": "5a9a6e14acb0be5dd8e15440227d5cf659931ec79cca346661f9ef22bc5f21c2",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/building-secure-contracts/skills/guidelines-advisor/resources/ASSESSMENT_AREAS.md",
+              "sha256": "951352a5e7c3afa717ed62770ae1b7c152c4792480e3beebefc68f9c96d2a46c",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/building-secure-contracts/skills/secure-workflow-guide/resources/EXAMPLE_REPORT.md",
+              "sha256": "c55fb9e549a38c9bebc9b23f5f16fb498bd20a8f867868232623a4bd721df340",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/building-secure-contracts/skills/secure-workflow-guide/resources/WORKFLOW_STEPS.md",
+              "sha256": "8b048011407a9a123a01ba4548b62a944f8cd5f271e4e0cdfe58b09583bd9291",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/building-secure-contracts/skills/code-maturity-assessor/resources/EXAMPLE_REPORT.md",
+              "sha256": "47f37a7460cf281cb4ca2aeb3abced762ce4b7dd4db21e7b12772b2202e4fc42",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/building-secure-contracts/skills/code-maturity-assessor/resources/ASSESSMENT_CRITERIA.md",
+              "sha256": "0ffe131842b209de7910cc2ac77fc1e2cdea1e16455bfba79505c8ba8179009f",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/building-secure-contracts/skills/code-maturity-assessor/resources/REPORT_FORMAT.md",
+              "sha256": "28474cce17be996e839353978fc06a830ac3fbd1219efbacc914de567fcdd7dc",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/building-secure-contracts/skills/token-integration-analyzer/resources/REPORT_TEMPLATES.md",
+              "sha256": "77dc2195901cbca8f0a04687e6ac51347520b6320cfe2ca7c39d9725ffae1177",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/building-secure-contracts/skills/token-integration-analyzer/resources/ASSESSMENT_CATEGORIES.md",
+              "sha256": "bf1313e59c960688cc73bda5b7a98579336a277c521b9b37937aa1cda3a122a7",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/spec-to-code-compliance/skills/spec-to-code-compliance/SKILL.md",
+              "sha256": "eb0d91b50a9c06f50baf8763d1e23566897b9fa3e7ffcf13134eee4e1ccaefe5",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/spec-to-code-compliance/skills/spec-to-code-compliance/resources/ANALYSIS_FORMAT.md",
+              "sha256": "802674d5a0622fba7c32d1e480fd236f4bddcd2435841fcf48b17044d5d4d273",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/spec-to-code-compliance/skills/spec-to-code-compliance/resources/DOMAIN_NOTES.md",
+              "sha256": "435459c75d21208ea73a6cda7dfc6910efc468a903f62e20f4837d5bd8b92c4a",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/spec-to-code-compliance/skills/spec-to-code-compliance/resources/WORKED_EXAMPLE.md",
+              "sha256": "7b9ff43b20ba83e1ce934bc9161b14ce58617b65a9ae9c4583026dbf0299e927",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/spec-to-code-compliance/skills/spec-to-code-compliance/resources/DIVERGENCE_RUBRIC.md",
+              "sha256": "c7192803ae5c489501788ae5be56a5dd36b3f0b64f88982bf41f69a4245303f1",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/entry-point-analyzer/skills/entry-point-analyzer/SKILL.md",
+              "sha256": "0d0e2956bdf9bf5be7efdfcefc754cabd2c1deb015731f3341f919eae2a0e3ca",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/entry-point-analyzer/skills/entry-point-analyzer/references/solidity.md",
+              "sha256": "831559ce437ce2b2e4c2070b4e4e0bb16e27092a4ff160832d2ee9309edde79b",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/audit-context-building/skills/audit-context-building/SKILL.md",
+              "sha256": "33fa693dc6e166cfa4919e4373cb6578c009d296234c2ae7cb3cd4e79b443765",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/audit-context-building/skills/audit-context-building/resources/FUNCTION_MICRO_ANALYSIS_EXAMPLE.md",
+              "sha256": "3351010d83b61bfb34a0359498f153817fdfa6528cead54536b06e035ff2399c",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/audit-context-building/skills/audit-context-building/resources/ANALYSIS_FORMAT.md",
+              "sha256": "029532945776fb0fcbc866f19cd6114fe4152cd3dea1c0f44b266ec13a2cc6e8",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "plugins/audit-context-building/skills/audit-context-building/resources/DOMAIN_NOTES.md",
+              "sha256": "ca3090f7f8d18f7145b253b283f5d33c36b314cea231aae8466bf23f122e2ed1",
+              "sameAsPinnedUpstream": true
+            }
+          ],
+          "matching": 30,
+          "differentOrGenerated": []
+        },
+        "gebal": {
+          "files": [
+            {
+              "path": "START_HERE.md",
+              "sha256": "a4391cdbafbea7c963dd7881ce0251e96ca44a08124b830e5698e1f2a5c3cb36",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "README.md",
+              "sha256": "b6a0ad698f0dbb801b1143275b9ccc2aa1c756655b1eccef7ac273f49caa689f",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "package.json",
+              "sha256": "d198e20186eea0077b13462847c74abfb4d26e7323aae9aa80c9aef24bf0e276",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "tsconfig.json",
+              "sha256": "96da0e8974a176f9b6f5a304716ab4053dc053faf91d40230b0c30c0af96bef3",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "pnpm-workspace.yaml",
+              "sha256": "685c40cc27d7db8efd1fd331a8688ef6ec1d9ef2a774c8a6e66eaa5ea0474621",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "migrations/001_initial.sql",
+              "sha256": "af57780171b23bd1f7f62e9952bb36e001bdcf7db712bcfd57635e657a693462",
+              "sameAsPinnedUpstream": false
+            },
+            {
+              "path": "agents/response.example.json",
+              "sha256": "86d92216e470a4338437ea0bfc838ff804e69a9f103b57f795a89572561b2621",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "agents/REVIEW.md",
+              "sha256": "6be0a96e138fbc86a9d3c80fbab38840b5ced20eddd2ec6aef087db937bda117",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "agents/response.schema.json",
+              "sha256": "91bbbc126a265d37789ab4e54a64fa0d3845d28e979faebbe8ac8e5d3d8ff240",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "scripts/demo.ts",
+              "sha256": "98de58c37721c947411c69bdb3f53e817e2bd5be0765441c3278e952abdee47c",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "scripts/evaluate.ts",
+              "sha256": "687350c15258a1004185f34ac4f572c155ce4cda20a11218b05fc47fde19ad8c",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "scripts/agent-schema.ts",
+              "sha256": "bb98383e829c869d866d496561cb1f221bda05965e7808c30e5643e333706f6a",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "scripts/prepare-tools.py",
+              "sha256": "36724936d081ae453c8867a1ac4d7bd740c26bcddf813bbf5e9ca09f2dafd0c4",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "scripts/evaluate.js",
+              "sha256": "e24559aa9222714c6aeeb4c305419e6743a261e30d8f619a763898ecfafbb3d1",
+              "sameAsPinnedUpstream": false
+            },
+            {
+              "path": "scripts/agent-schema.js",
+              "sha256": "023f9a4bad7134380c26c74e8cf66d751c43b3b7d76eaf2586fc6155cf65cc0f",
+              "sameAsPinnedUpstream": false
+            },
+            {
+              "path": "packages/core/package.json",
+              "sha256": "b9313b403323287c0680baaca2f001991b9f926d462629a441e27fe23669c625",
+              "sameAsPinnedUpstream": false
+            },
+            {
+              "path": "packages/cli/package.json",
+              "sha256": "f6f1eff7451d3d453a31867ab985742a11113bc8819266d65032dcb12c1a8bf9",
+              "sameAsPinnedUpstream": false
+            },
+            {
+              "path": "packages/adapters/package.json",
+              "sha256": "d8fb87611c637087bb2bd1804ac9dc954103cee8c6759c6788047e01f30c81b4",
+              "sameAsPinnedUpstream": false
+            },
+            {
+              "path": "packages/worker/package.json",
+              "sha256": "5389ae81b4883f45b47484cc11e016f49e4e9ac562fc6edb2ed0497cc254a585",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "packages/worker/src/main.ts",
+              "sha256": "cda7170d14e4f8f47c56c64289e49fe3972b132747f97091ccb5990d58575de0",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "packages/adapters/src/tools.js",
+              "sha256": "41b9bc8a15aa895b7bcfb174f37d67b50716744b3c5a74d21aba2eb601f7b85d",
+              "sameAsPinnedUpstream": false
+            },
+            {
+              "path": "packages/adapters/src/sandbox.ts",
+              "sha256": "534d538e9a4c8649699a0e3ad34d31e5fb918c2e0d69c2548e42f7231c283241",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "packages/adapters/src/providers.ts",
+              "sha256": "7fbba7f6a2e3e67dd0cabb4738721e8ded89a22e0fa654637353fbd0ffd0936c",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "packages/adapters/src/tools.ts",
+              "sha256": "b6308e5024e17c7856ae755d0b87d0304ae3e8dfc548eb5deb8845e1ad8e4391",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "packages/adapters/src/sandbox.js",
+              "sha256": "7849c41098b656030b07cc55f6ca3ede3233e1b8005a894073a4dd94aa69129b",
+              "sameAsPinnedUpstream": false
+            },
+            {
+              "path": "packages/adapters/src/providers.js",
+              "sha256": "e77ad677a61bd219f35d48337fca808d57bb6596da0c46daa7aaa773a4483f52",
+              "sameAsPinnedUpstream": false
+            },
+            {
+              "path": "packages/cli/src/main.ts",
+              "sha256": "210b2962a89c57736be1c607c6f49490f4b6607d7b441f791e4449ca48d482fd",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "packages/cli/src/main.js",
+              "sha256": "927972a5d7dd690c75ce8e4c265aa0258bd070eae087110392be6560cfba71c6",
+              "sameAsPinnedUpstream": false
+            },
+            {
+              "path": "packages/core/src/schema.ts",
+              "sha256": "4c07989980d8cdb8812367222a04c2da53b6f2a79973145906051389fcc74862",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "packages/core/src/report.ts",
+              "sha256": "4c26d91b725519e6331e862f8110972293401b036f6004e4d379fcd9a9457aa9",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "packages/core/src/export.js",
+              "sha256": "6d113e1632d27e1cd53ce999c56861907353144aa4bd9aaa24af71b29a30a966",
+              "sameAsPinnedUpstream": false
+            },
+            {
+              "path": "packages/core/src/agent.ts",
+              "sha256": "0cc404cabcbdf88fc39da1f15353036780278d5dd8b69141a489360b58c6c743",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "packages/core/src/store.js",
+              "sha256": "2a4186923dff0090d6eca141a533be648c14f4914fb418d201315c37bb3ab01e",
+              "sameAsPinnedUpstream": false
+            },
+            {
+              "path": "packages/core/src/intake.js",
+              "sha256": "cb278019b8a4916322584c0926a897c7b1e535eb0a5bc4897767aaea92672775",
+              "sameAsPinnedUpstream": false
+            },
+            {
+              "path": "packages/core/src/engine.ts",
+              "sha256": "39a06f27cd5f2b6e1bacd1130ddddfd041bfe3faf6bff33e3d39f0af7d7fbd9d",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "packages/core/src/export.ts",
+              "sha256": "3b6f8649d7496d7d3e9f5753b3cac0613c5ccd344f409a5d365237ffde6ee441",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "packages/core/src/schema.js",
+              "sha256": "20c106da1b7ca510571872a3b08075a143bc369d2131060361964c55d5fd0323",
+              "sameAsPinnedUpstream": false
+            },
+            {
+              "path": "packages/core/src/report.js",
+              "sha256": "752313e1f9cf054240c0039a31f0901a705f98a1de2040f505faf0d1cac079b4",
+              "sameAsPinnedUpstream": false
+            },
+            {
+              "path": "packages/core/src/engine.js",
+              "sha256": "55adb6b1aa2ff7f8708d79e1a73114966e68d2ea93d2988bd93e42e96dadd1d2",
+              "sameAsPinnedUpstream": false
+            },
+            {
+              "path": "packages/core/src/agent.js",
+              "sha256": "e7a0ce6c72642b79e9e6868cd00ba367295188f745af88a34a308bd47a3c4f0b",
+              "sameAsPinnedUpstream": false
+            },
+            {
+              "path": "packages/core/src/store.ts",
+              "sha256": "8506d7e6c848d4b91522a04c640b5deee273c5e7026b02d8b18ca6dcd1fe055d",
+              "sameAsPinnedUpstream": true
+            },
+            {
+              "path": "packages/core/src/intake.ts",
+              "sha256": "904629264cd0d5abfec5173f5c6f52232067c9e899211c055b5cbcfc7ada4ef8",
+              "sameAsPinnedUpstream": true
+            }
+          ],
+          "matching": 25,
+          "differentOrGenerated": [
+            "migrations/001_initial.sql",
+            "scripts/evaluate.js",
+            "scripts/agent-schema.js",
+            "packages/core/package.json",
+            "packages/cli/package.json",
+            "packages/adapters/package.json",
+            "packages/adapters/src/tools.js",
+            "packages/adapters/src/sandbox.js",
+            "packages/adapters/src/providers.js",
+            "packages/cli/src/main.js",
+            "packages/core/src/export.js",
+            "packages/core/src/store.js",
+            "packages/core/src/intake.js",
+            "packages/core/src/schema.js",
+            "packages/core/src/report.js",
+            "packages/core/src/engine.js",
+            "packages/core/src/agent.js"
+          ]
+        }
+      },
+      "rawTranscript": {
+        "path": "/Users/hishamel-husseini/.gemini/antigravity/brain/2e9c188b-5d8e-48b7-bce3-b1f2ebc4987c/.system_generated/logs/transcript.jsonl",
+        "sha256AtInspection": "8d2cda79b539e7f5868eb5f7759e39eeb6f9801fd0cf1ae7154926f78c712636",
+        "lastEventTimestamp": "2026-10-21T17:58:09Z",
+        "rowCountAtInspection": 755,
+        "subagentInvocationsTotal": 40,
+        "subagentRequestedModelValues": [
+          "\"inherit\""
+        ],
+        "actualModelEvidence": "USER_SETTINGS_CHANGE reports display selection Gemini 4 Argon (High); subagents request inherit. Transcript response records omit exact provider-returned model ID and applied thinking field. gemini-4-argon exact ID remains operator-reported.",
+        "documentationEvidence": "search_web step101/102 produced summary and redirect citations; not retained direct official model-card comparison/account catalog.",
+        "fallbackEvidence": "lane claims disabled; no explicit native fallback-disable setting or provider fallback trace retained."
+      }
+    },
+    "runtimeInputs": {
+      "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work": {
+        "production": {
+          "matching": [
+            "packages/contracts/src/Raffle.sol",
+            "packages/contracts/src/RaffleFactory.sol",
+            "packages/contracts/src/interfaces/IRaffle.sol",
+            "packages/contracts/src/interfaces/IRaffleFactory.sol",
+            "packages/contracts/src/libraries/RaffleConstants.sol"
+          ],
+          "missing": [],
+          "different": []
+        },
+        "reachableDependencies": {
+          "matching": [
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol"
+          ],
+          "missing": [],
+          "different": []
+        }
+      },
+      "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S1/attempt-02/work": {
+        "production": {
+          "matching": [
+            "packages/contracts/src/Raffle.sol",
+            "packages/contracts/src/RaffleFactory.sol",
+            "packages/contracts/src/interfaces/IRaffle.sol",
+            "packages/contracts/src/interfaces/IRaffleFactory.sol",
+            "packages/contracts/src/libraries/RaffleConstants.sol"
+          ],
+          "missing": [],
+          "different": []
+        },
+        "reachableDependencies": {
+          "matching": [
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol"
+          ],
+          "missing": [],
+          "different": []
+        }
+      },
+      "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S1/attempt-01/work": {
+        "production": {
+          "matching": [
+            "packages/contracts/src/Raffle.sol",
+            "packages/contracts/src/RaffleFactory.sol",
+            "packages/contracts/src/interfaces/IRaffle.sol",
+            "packages/contracts/src/interfaces/IRaffleFactory.sol",
+            "packages/contracts/src/libraries/RaffleConstants.sol"
+          ],
+          "missing": [],
+          "different": []
+        },
+        "reachableDependencies": {
+          "matching": [
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol"
+          ],
+          "missing": [],
+          "different": []
+        }
+      },
+      "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S4/attempt-01/work": {
+        "production": {
+          "matching": [
+            "packages/contracts/src/Raffle.sol",
+            "packages/contracts/src/RaffleFactory.sol",
+            "packages/contracts/src/interfaces/IRaffle.sol",
+            "packages/contracts/src/interfaces/IRaffleFactory.sol",
+            "packages/contracts/src/libraries/RaffleConstants.sol"
+          ],
+          "missing": [],
+          "different": []
+        },
+        "reachableDependencies": {
+          "matching": [
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol"
+          ],
+          "missing": [],
+          "different": []
+        }
+      },
+      "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S3/attempt-01/work": {
+        "production": {
+          "matching": [
+            "packages/contracts/src/Raffle.sol",
+            "packages/contracts/src/RaffleFactory.sol",
+            "packages/contracts/src/interfaces/IRaffle.sol",
+            "packages/contracts/src/interfaces/IRaffleFactory.sol",
+            "packages/contracts/src/libraries/RaffleConstants.sol"
+          ],
+          "missing": [],
+          "different": []
+        },
+        "reachableDependencies": {
+          "matching": [
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol"
+          ],
+          "missing": [],
+          "different": []
+        }
+      },
+      "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S2/attempt-01/work": {
+        "production": {
+          "matching": [
+            "packages/contracts/src/Raffle.sol",
+            "packages/contracts/src/RaffleFactory.sol",
+            "packages/contracts/src/interfaces/IRaffle.sol",
+            "packages/contracts/src/interfaces/IRaffleFactory.sol",
+            "packages/contracts/src/libraries/RaffleConstants.sol"
+          ],
+          "missing": [],
+          "different": []
+        },
+        "reachableDependencies": {
+          "matching": [
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol"
+          ],
+          "missing": [],
+          "different": []
+        }
+      },
+      "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S5/attempt-02/work": {
+        "production": {
+          "matching": [
+            "packages/contracts/src/Raffle.sol",
+            "packages/contracts/src/RaffleFactory.sol",
+            "packages/contracts/src/interfaces/IRaffle.sol",
+            "packages/contracts/src/interfaces/IRaffleFactory.sol",
+            "packages/contracts/src/libraries/RaffleConstants.sol"
+          ],
+          "missing": [],
+          "different": []
+        },
+        "reachableDependencies": {
+          "matching": [
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol"
+          ],
+          "missing": [],
+          "different": []
+        }
+      },
+      "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S5/attempt-03/work": {
+        "production": {
+          "matching": [
+            "packages/contracts/src/Raffle.sol",
+            "packages/contracts/src/RaffleFactory.sol",
+            "packages/contracts/src/interfaces/IRaffle.sol",
+            "packages/contracts/src/interfaces/IRaffleFactory.sol",
+            "packages/contracts/src/libraries/RaffleConstants.sol"
+          ],
+          "missing": [],
+          "different": []
+        },
+        "reachableDependencies": {
+          "matching": [
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol"
+          ],
+          "missing": [],
+          "different": []
+        }
+      },
+      "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S5/attempt-01/work": {
+        "production": {
+          "matching": [
+            "packages/contracts/src/Raffle.sol",
+            "packages/contracts/src/RaffleFactory.sol",
+            "packages/contracts/src/interfaces/IRaffle.sol",
+            "packages/contracts/src/interfaces/IRaffleFactory.sol",
+            "packages/contracts/src/libraries/RaffleConstants.sol"
+          ],
+          "missing": [],
+          "different": []
+        },
+        "reachableDependencies": {
+          "matching": [
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol"
+          ],
+          "missing": [],
+          "different": []
+        }
+      },
+      "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-PASHOV/attempt-01/work": {
+        "production": {
+          "matching": [
+            "packages/contracts/src/Raffle.sol",
+            "packages/contracts/src/RaffleFactory.sol",
+            "packages/contracts/src/interfaces/IRaffle.sol",
+            "packages/contracts/src/interfaces/IRaffleFactory.sol",
+            "packages/contracts/src/libraries/RaffleConstants.sol"
+          ],
+          "missing": [],
+          "different": []
+        },
+        "reachableDependencies": {
+          "matching": [
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol"
+          ],
+          "missing": [],
+          "different": []
+        }
+      },
+      "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-GEBAL/attempt-01-review/work": {
+        "production": {
+          "matching": [],
+          "missing": [
+            "packages/contracts/src/Raffle.sol",
+            "packages/contracts/src/RaffleFactory.sol",
+            "packages/contracts/src/interfaces/IRaffle.sol",
+            "packages/contracts/src/interfaces/IRaffleFactory.sol",
+            "packages/contracts/src/libraries/RaffleConstants.sol"
+          ],
+          "different": []
+        },
+        "reachableDependencies": {
+          "matching": [],
+          "missing": [
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol"
+          ],
+          "different": []
+        }
+      },
+      "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-SUP/attempt-01/work": {
+        "production": {
+          "matching": [
+            "packages/contracts/src/Raffle.sol",
+            "packages/contracts/src/RaffleFactory.sol",
+            "packages/contracts/src/interfaces/IRaffle.sol",
+            "packages/contracts/src/interfaces/IRaffleFactory.sol",
+            "packages/contracts/src/libraries/RaffleConstants.sol"
+          ],
+          "missing": [],
+          "different": []
+        },
+        "reachableDependencies": {
+          "matching": [
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol"
+          ],
+          "missing": [],
+          "different": []
+        }
+      },
+      "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-SIMAO/attempt-01/work": {
+        "production": {
+          "matching": [
+            "packages/contracts/src/Raffle.sol",
+            "packages/contracts/src/RaffleFactory.sol",
+            "packages/contracts/src/interfaces/IRaffle.sol",
+            "packages/contracts/src/interfaces/IRaffleFactory.sol",
+            "packages/contracts/src/libraries/RaffleConstants.sol"
+          ],
+          "missing": [],
+          "different": []
+        },
+        "reachableDependencies": {
+          "matching": [
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol"
+          ],
+          "missing": [],
+          "different": []
+        }
+      },
+      "/Users/hishamel-husseini/.gemini/antigravity/brain/2e9c188b-5d8e-48b7-bce3-b1f2ebc4987c/scratch/raffle-audit-r001-gemini/runs/GEMINI-SIMAO/attempt-01/clean-context": {
+        "production": {
+          "matching": [
+            "packages/contracts/src/Raffle.sol",
+            "packages/contracts/src/RaffleFactory.sol",
+            "packages/contracts/src/interfaces/IRaffle.sol",
+            "packages/contracts/src/interfaces/IRaffleFactory.sol",
+            "packages/contracts/src/libraries/RaffleConstants.sol"
+          ],
+          "missing": [],
+          "different": []
+        },
+        "reachableDependencies": {
+          "matching": [
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol"
+          ],
+          "missing": [],
+          "different": []
+        }
+      },
+      "/Users/hishamel-husseini/.gemini/antigravity/brain/2e9c188b-5d8e-48b7-bce3-b1f2ebc4987c/scratch/raffle-audit-r001-gemini/runs/GEMINI-TOB/attempt-01/clean-context": {
+        "production": {
+          "matching": [
+            "packages/contracts/src/Raffle.sol",
+            "packages/contracts/src/RaffleFactory.sol",
+            "packages/contracts/src/interfaces/IRaffle.sol",
+            "packages/contracts/src/interfaces/IRaffleFactory.sol",
+            "packages/contracts/src/libraries/RaffleConstants.sol"
+          ],
+          "missing": [],
+          "different": []
+        },
+        "reachableDependencies": {
+          "matching": [
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol"
+          ],
+          "missing": [],
+          "different": []
+        }
+      },
+      "/Users/hishamel-husseini/.gemini/antigravity/brain/2e9c188b-5d8e-48b7-bce3-b1f2ebc4987c/scratch/raffle-audit-r001-gemini/runs/GEMINI-PASHOV/attempt-01/clean-context": {
+        "production": {
+          "matching": [
+            "packages/contracts/src/Raffle.sol",
+            "packages/contracts/src/RaffleFactory.sol",
+            "packages/contracts/src/interfaces/IRaffle.sol",
+            "packages/contracts/src/interfaces/IRaffleFactory.sol",
+            "packages/contracts/src/libraries/RaffleConstants.sol"
+          ],
+          "missing": [],
+          "different": []
+        },
+        "reachableDependencies": {
+          "matching": [
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol"
+          ],
+          "missing": [],
+          "different": []
+        }
+      },
+      "/Users/hishamel-husseini/.gemini/antigravity/brain/2e9c188b-5d8e-48b7-bce3-b1f2ebc4987c/scratch/raffle-audit-r001-gemini/runs/GEMINI-SUPPLEMENTARY/attempt-01/clean-context": {
+        "production": {
+          "matching": [
+            "packages/contracts/src/Raffle.sol",
+            "packages/contracts/src/RaffleFactory.sol",
+            "packages/contracts/src/interfaces/IRaffle.sol",
+            "packages/contracts/src/interfaces/IRaffleFactory.sol",
+            "packages/contracts/src/libraries/RaffleConstants.sol"
+          ],
+          "missing": [],
+          "different": []
+        },
+        "reachableDependencies": {
+          "matching": [
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol"
+          ],
+          "missing": [],
+          "different": []
+        }
+      },
+      "/Users/hishamel-husseini/.gemini/antigravity/brain/2e9c188b-5d8e-48b7-bce3-b1f2ebc4987c/scratch/raffle-audit-r001-gemini/runs/GEMINI-OPENKRITT/attempt-02/clean-context": {
+        "production": {
+          "matching": [
+            "packages/contracts/src/Raffle.sol",
+            "packages/contracts/src/RaffleFactory.sol",
+            "packages/contracts/src/interfaces/IRaffle.sol",
+            "packages/contracts/src/interfaces/IRaffleFactory.sol",
+            "packages/contracts/src/libraries/RaffleConstants.sol"
+          ],
+          "missing": [],
+          "different": []
+        },
+        "reachableDependencies": {
+          "matching": [
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+            "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+            "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol"
+          ],
+          "missing": [],
+          "different": []
+        }
+      }
+    },
+    "nativeGebal": {
+      "claude/native-attempt-01": {
+        "runId": "a184629e-4470-49a4-96a4-44695a238c6a",
+        "snapshotHash": "1c720af585db73b5867c91437f75776b3ef6ee9c6d7aa70ee51fe85dbad994ad",
+        "reviewSnapshotHashMatches": true,
+        "contextHash": "cbec71422797334035a6a1ab2b5b6a22768aeb2d0a8b727b85d146017c351c7a",
+        "invocationContextMatches": true,
+        "productionHashMatch": {
+          "packages/contracts/src/Raffle.sol": true,
+          "packages/contracts/src/RaffleFactory.sol": true,
+          "packages/contracts/src/interfaces/IRaffle.sol": true,
+          "packages/contracts/src/interfaces/IRaffleFactory.sol": true,
+          "packages/contracts/src/libraries/RaffleConstants.sol": true
+        },
+        "dependencyHashMatchCount": 31,
+        "dependencyCountRequired": 31,
+        "tasks": [
+          "intake"
+        ],
+        "image": null,
+        "executionCount": 0,
+        "fileCount": 39,
+        "providerReturnedIdentity": "unknown; Gebal import label is operator-reported"
+      },
+      "gemini/attempt-01": {
+        "runId": "9b66bccf-5138-42e3-911d-48da23cf375d",
+        "snapshotHash": "4d791fd1b91c282a49b1db1ec34fc406e11a75d7cb7fe4fea8a93c9b81d22ecb",
+        "reviewSnapshotHashMatches": true,
+        "contextHash": "d44d7dc1bfe4a4f5701ca3df68cb0ce890897f7ca817345a331aa0d44655ec0e",
+        "invocationContextMatches": true,
+        "productionHashMatch": {
+          "packages/contracts/src/Raffle.sol": true,
+          "packages/contracts/src/RaffleFactory.sol": true,
+          "packages/contracts/src/interfaces/IRaffle.sol": true,
+          "packages/contracts/src/interfaces/IRaffleFactory.sol": true,
+          "packages/contracts/src/libraries/RaffleConstants.sol": true
+        },
+        "dependencyHashMatchCount": 0,
+        "dependencyCountRequired": 31,
+        "tasks": [
+          "intake"
+        ],
+        "image": null,
+        "executionCount": 0,
+        "fileCount": 7,
+        "providerReturnedIdentity": "unknown; Gebal import label is operator-reported"
+      },
+      "gemini/attempt-02": {
+        "runId": "e9ac7aa6-401c-4083-8460-819838dc0eec",
+        "snapshotHash": "3fd1f63658c7b24801622a8342c3d17453a39c67ccd21f8870f117257444e59a",
+        "reviewSnapshotHashMatches": true,
+        "contextHash": "8f909bab66fa0eefa799b63d9e952006c71133f4b3b5d691b2f4227deae1263d",
+        "invocationContextMatches": true,
+        "productionHashMatch": {
+          "packages/contracts/src/Raffle.sol": true,
+          "packages/contracts/src/RaffleFactory.sol": true,
+          "packages/contracts/src/interfaces/IRaffle.sol": true,
+          "packages/contracts/src/interfaces/IRaffleFactory.sol": true,
+          "packages/contracts/src/libraries/RaffleConstants.sol": true
+        },
+        "dependencyHashMatchCount": 0,
+        "dependencyCountRequired": 31,
+        "tasks": [
+          "intake"
+        ],
+        "image": null,
+        "executionCount": 0,
+        "fileCount": 15,
+        "providerReturnedIdentity": "unknown; Gebal import label is operator-reported"
+      }
+    }
+  },
+  "cells": [
+    {
+      "id": "CLAUDE-SIMAO",
+      "validated_status": "INCOMPLETE",
+      "lane_claimed_status": "BLOCKED",
+      "source_coverage": "5/5 production and31/31 dependencies supplied;money-map only,0/12 lens completions",
+      "model": "claude-opus-5-5",
+      "provider_returned_identity": "claude-opus-5-5",
+      "requested_effort": "max",
+      "provider_returned_effort": "unknown",
+      "evidence": [
+        "provider-lanes/claude/runs/CLAUDE-SIMAO/attempt-01/runner-selection.json",
+        "provider-lanes/claude/runs/CLAUDE-SIMAO/attempt-01/BLOCKED.md"
+      ],
+      "gaps": [
+        "Actual provider safeguard [reasoning_extraction] refused all12lenses. Adjudication/proof/report stages not reached. Original refusal retained."
+      ]
+    },
+    {
+      "id": "CLAUDE-PASHOV",
+      "validated_status": "COMPLETE",
+      "lane_claimed_status": "COMPLETE",
+      "source_coverage": "5/5 production+31/31dependency bytes match;12specialist passes;semantic completeness bounded by native workflow",
+      "model": "claude-opus-5-5",
+      "provider_returned_identity": "claude-opus-5-5",
+      "requested_effort": "max",
+      "provider_returned_effort": "unknown",
+      "evidence": [
+        "provider-lanes/claude/runs/CLAUDE-PASHOV/attempt-01/command.json",
+        "provider-lanes/claude/runs/CLAUDE-PASHOV/attempt-01/runner-selection.json",
+        "provider-lanes/claude/runs/CLAUDE-PASHOV/attempt-01/preserved/.solidity-auditor/runs/20261021-005507/full-report.md"
+      ],
+      "gaps": [
+        "Highest max accepted locally;server-applied effort not echoed and remainsunknown. Native tool-assisted proof sketches do not make this strictly source-only."
+      ],
+      "validated_stages": "12/12 native specialists; native judge/dedup and assemble.sh; memory disabled;480raw assistantmessages all exactOpus5.5;12completed0failed"
+    },
+    {
+      "id": "CLAUDE-OPENKRITT",
+      "validated_status": "RUNNING",
+      "lane_claimed_status": "BLOCKED original; modified attempt started",
+      "source_coverage": "Original route no source coverage; new modified-controller progress pending",
+      "model": "claude-opus-5-5",
+      "provider_returned_identity": "unknown",
+      "requested_effort": "max",
+      "provider_returned_effort": "unknown",
+      "evidence": [
+        "provider-lanes/claude/runs/CLAUDE-OPENKRITT/attempt-01/BLOCKED.md",
+        "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/scan-create-response.json",
+        "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/openkritt-mod.patch"
+      ],
+      "gaps": [
+        "Original route blocked by bundled runner version. Later modified engine scan pending/running, last retained monitor17:54:29UTC0%;not completed. Need exact engine/workflow/skill/ranker/postprocess stage outputs and returned identities."
+      ],
+      "latest_retained_status": "2026-10-21T17:54:29Z running0%; no active host PID found for old Claude ToB controller",
+      "method": "Separate modified controller; original blocked record remains"
+    },
+    {
+      "id": "CLAUDE-TOB",
+      "validated_status": "INCOMPLETE",
+      "lane_claimed_status": "INCOMPLETE",
+      "source_coverage": "5/5+31/31 matching inputs each stage;S1\u2013S4 complete;S5 only10/248 requirements;S6 partial",
+      "model": "claude-opus-5-5",
+      "provider_returned_identity": "claude-opus-5-5",
+      "requested_effort": "max",
+      "provider_returned_effort": "unknown",
+      "evidence": [
+        "provider-lanes/claude/runs/CLAUDE-TOB/S5/attempt-03/runner-selection.json",
+        "provider-lanes/claude/runs/CLAUDE-TOB/S6/attempt-01/runner-selection.json",
+        "provider-lanes/claude/EXPOSURE-AUDIT.json"
+      ],
+      "gaps": [
+        "238 extracted requirements not judged;secure-workflow S6 timedout before final assembly. No active old ToB host PID observed. All6declaredskills not fully completed."
+      ]
+    },
+    {
+      "id": "CLAUDE-GEBAL",
+      "validated_status": "COMPLETE",
+      "lane_claimed_status": "COMPLETE cold",
+      "source_coverage": "Native39-file context includes5/5 production and31/31dependencies, hashesverified; coldimport origin-bound",
+      "model": "claude-opus-5-5",
+      "provider_returned_identity": "claude-opus-5-5",
+      "requested_effort": "max",
+      "provider_returned_effort": "unknown",
+      "evidence": [
+        "provider-lanes/claude/runs/CLAUDE-GEBAL/native-attempt-01/context.json",
+        "provider-lanes/claude/runs/CLAUDE-GEBAL/native-attempt-01/report.json",
+        "provider-lanes/claude/runs/CLAUDE-GEBAL/attempt-01-review/events.jsonl"
+      ],
+      "gaps": [
+        "Complete cold native external-agent review only;native deterministic tasklist intake-only, no build/tests/scanner. Separate parent deterministic compatibility campaign doesnotrebind this coldreview."
+      ]
+    },
+    {
+      "id": "GEMINI-SIMAO",
+      "validated_status": "INCOMPLETE",
+      "lane_claimed_status": "COMPLETED",
+      "source_coverage": "5/5+31/31 byteverified isolated inputs;12lens report artifacts andrawinvoke calls present",
+      "model": "Gemini 4 Argon (High) display selection; exactIDunverified",
+      "provider_returned_identity": "unknown",
+      "requested_effort": "High/inherit",
+      "provider_returned_effort": "unknown",
+      "evidence": [
+        "provider-lanes/gemini/runs/GEMINI-SIMAO/attempt-01/REPORT.md",
+        "/Users/hishamel-husseini/.gemini/antigravity/brain/2e9c188b-5d8e-48b7-bce3-b1f2ebc4987c/.system_generated/logs/transcript.jsonl"
+      ],
+      "gaps": [
+        "Exact returned model ID/applied High absent from raw transcript; display selection/inherit supported, exact gemini-4-argon ID operator-reported.",
+        "Official strongest-accessible model comparison/account catalog and explicit fallback-disable evidence incomplete.",
+        "FIRST-PASS/FINAL/toolchain/matrix conflict on several harness repositories/pins; actual staged resource checks partially repair provenance, but original records require append-only correction.",
+        "18stagedresourcesbyte-identical tocorrect3f81e58upstream, despitecontradictorywrittenpins. Need explicit fullstage/identity/loadedresource ledger and proof-stage evidence."
+      ]
+    },
+    {
+      "id": "GEMINI-PASHOV",
+      "validated_status": "INCOMPLETE",
+      "lane_claimed_status": "COMPLETED",
+      "source_coverage": "5/5+31/31 byteverified isolated inputs;12agent report artifacts present",
+      "model": "Gemini 4 Argon (High) display selection; exactIDunverified",
+      "provider_returned_identity": "unknown",
+      "requested_effort": "High/inherit",
+      "provider_returned_effort": "unknown",
+      "evidence": [
+        "provider-lanes/gemini/runs/GEMINI-PASHOV/attempt-01/full-report.md",
+        "/Users/hishamel-husseini/.gemini/antigravity/brain/2e9c188b-5d8e-48b7-bce3-b1f2ebc4987c/.system_generated/logs/transcript.jsonl"
+      ],
+      "gaps": [
+        "Exact returned model ID/applied High absent from raw transcript; display selection/inherit supported, exact gemini-4-argon ID operator-reported.",
+        "Official strongest-accessible model comparison/account catalog and explicit fallback-disable evidence incomplete.",
+        "FIRST-PASS/FINAL/toolchain/matrix conflict on several harness repositories/pins; actual staged resource checks partially repair provenance, but original records require append-only correction.",
+        "23stagedresourcesmatch8ce544c;claimedotherpinsincorrect. Need bind12specialist identities, nativejudging andactualassembler execution to preservedrawstages; firstpass doesnot hashbindall originalstages."
+      ]
+    },
+    {
+      "id": "GEMINI-OPENKRITT",
+      "validated_status": "RUNNING",
+      "lane_claimed_status": "BLOCKED original;attempt02nowactive",
+      "source_coverage": "New clean-context5/5+31/31match;depth0/1/2 andpostdedupe invokeactivity observed inrawlog",
+      "model": "inherit; exactIDunverified",
+      "provider_returned_identity": "unknown",
+      "requested_effort": "High/inherit",
+      "provider_returned_effort": "unknown",
+      "evidence": [
+        "provider-lanes/gemini/runs/GEMINI-OPENKRITT/attempt-01/BLOCKER.md",
+        "/Users/hishamel-husseini/.gemini/antigravity/brain/2e9c188b-5d8e-48b7-bce3-b1f2ebc4987c/.system_generated/logs/transcript.jsonl"
+      ],
+      "gaps": [
+        "Exact returned model ID/applied High absent from raw transcript; display selection/inherit supported, exact gemini-4-argon ID operator-reported.",
+        "Official strongest-accessible model comparison/account catalog and explicit fallback-disable evidence incomplete.",
+        "FIRST-PASS/FINAL/toolchain/matrix conflict on several harness repositories/pins; actual staged resource checks partially repair provenance, but original records require append-only correction.",
+        "New attempt02 is a distinct native-module/controller adaptation, including DBmodule stubs. Final nativeworkflow/ranker/postprocess completeness and exactpatch disclosure pending; no completednativeengine scan established."
+      ],
+      "latest_observed_stage": "rawstep745 postdedupe invoke at2026-10-21T17:55:58Z; process stillwriting transcript atinspection"
+    },
+    {
+      "id": "GEMINI-TOB",
+      "validated_status": "INCOMPLETE",
+      "lane_claimed_status": "COMPLETED",
+      "source_coverage": "5/5+31/31matchinginputs;6stage artifacts present; notfullcatalog",
+      "model": "Gemini 4 Argon (High) display selection; exactIDunverified",
+      "provider_returned_identity": "unknown",
+      "requested_effort": "High/inherit",
+      "provider_returned_effort": "unknown",
+      "evidence": [
+        "provider-lanes/gemini/runs/GEMINI-TOB/attempt-01/REPORT.md",
+        "/Users/hishamel-husseini/.gemini/antigravity/brain/2e9c188b-5d8e-48b7-bce3-b1f2ebc4987c/.system_generated/logs/transcript.jsonl"
+      ],
+      "gaps": [
+        "Exact returned model ID/applied High absent from raw transcript; display selection/inherit supported, exact gemini-4-argon ID operator-reported.",
+        "Official strongest-accessible model comparison/account catalog and explicit fallback-disable evidence incomplete.",
+        "FIRST-PASS/FINAL/toolchain/matrix conflict on several harness repositories/pins; actual staged resource checks partially repair provenance, but original records require append-only correction.",
+        "30stagedresourcesmatch82fe822;needdeclared6-skillnativecompletion/resourceledger, actualskillmethodstagechecks and provideridentity perstage. Artifactexistence alone isnotcompletion."
+      ]
+    },
+    {
+      "id": "GEMINI-GEBAL",
+      "validated_status": "INCOMPLETE",
+      "lane_claimed_status": "COMPLETED cold+testinclusive",
+      "source_coverage": "Cold7-file nativecontext has5productionfilesand2configs,0/31reachabledependencies. Review snapshot/context/contenthashesverified; attempt02 is15-file separatelybound test-exposed intake",
+      "model": "Gemini 4 Argon (High) display selection; exactIDunverified",
+      "provider_returned_identity": "unknown",
+      "requested_effort": "High/inherit",
+      "provider_returned_effort": "unknown",
+      "evidence": [
+        "provider-lanes/gemini/runs/GEMINI-GEBAL/attempt-01/context.json",
+        "provider-lanes/gemini/runs/GEMINI-GEBAL/attempt-02/report.json"
+      ],
+      "gaps": [
+        "Exact returned model ID/applied High absent from raw transcript; display selection/inherit supported, exact gemini-4-argon ID operator-reported.",
+        "Official strongest-accessible model comparison/account catalog and explicit fallback-disable evidence incomplete.",
+        "FIRST-PASS/FINAL/toolchain/matrix conflict on several harness repositories/pins; actual staged resource checks partially repair provenance, but original records require append-only correction.",
+        "Coldcontext excludesrequireddependencyclosure.",
+        "Bothnativeplans tasks=[intake],image=null,executions=[];attempt02doesnotexecute testsorstaticanalysis.",
+        "StagedGebal25filesmatchbut4metadata/migrationfilesdifferplus13generatedJSfiles;exactexecutedcontrollerdiff/hashnotdeclared.",
+        "Contextbindingvaliddoesnotproveprovideridentity or completecoverage."
+      ]
+    }
+  ],
+  "external_artifacts_modified": false,
+  "followup": "Repair remaining provenance/setup/stages under fresh attempts where feasible; current incomplete statuses are evidence snapshots, not permission to stop eligible work.",
+  "appendOnlyCorrections": [
+    {
+      "at": "2026-10-21T18:04:26.688581+00:00",
+      "id": "CLAUDE-TOB",
+      "currentStatus": "RUNNING",
+      "corrections": [
+        "S5 native workflow deliberatelydefaults limit10 atpinnedworkflows/spec-compliance.js:309\u2013319;theprompt omittedlimit.10/248isCOMPLETEdeclarednativeworkflowwith238deferredcoverage,not238unfinisheddeclaredchecks.",
+        "S6freshattempt02started exactclaude-opus-5-5/max,nooutercontrollercap;originaltimeoutandsealedreportsunchanged."
+      ],
+      "evidence": [
+        "provider-lanes/claude/runs/CLAUDE-TOB/S6/attempt-02/command.json",
+        "runtime-controller-repairs/provenance.json"
+      ]
+    }
+  ]
+}

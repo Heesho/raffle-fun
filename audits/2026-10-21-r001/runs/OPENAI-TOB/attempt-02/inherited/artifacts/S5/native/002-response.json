@@ -1,0 +1,356 @@
+{
+  "requirements": [
+    {
+      "id": "REQ-01",
+      "quote": "immutable factory",
+      "location": "target/DESIGN.md:L2",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Factory behavior and configuration are immutable."
+    },
+    {
+      "id": "REQ-02",
+      "quote": "ERC-1167 clones",
+      "location": "target/DESIGN.md:L2",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "Raffles use the ERC-1167 clone architecture."
+    },
+    {
+      "id": "REQ-03",
+      "quote": "immutable implementation",
+      "location": "target/DESIGN.md:L2",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The implementation associated with deployed clones cannot be changed."
+    },
+    {
+      "id": "REQ-04",
+      "quote": "One entry costs 1,000,000 units of canonical six-decimal USDC.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "Each entry costs exactly 1,000,000 base units."
+    },
+    {
+      "id": "REQ-05",
+      "quote": "canonical six-decimal USDC",
+      "location": "target/DESIGN.md:L2",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "The payment token is canonical USDC with six decimals; the deployment network is not identified in this document."
+    },
+    {
+      "id": "REQ-06",
+      "quote": "One purchase mints a transferable ERC721 ticket representing a contiguous inclusive range.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "Each purchase mints one ERC721 ticket."
+    },
+    {
+      "id": "REQ-07",
+      "quote": "transferable ERC721 ticket",
+      "location": "target/DESIGN.md:L2",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "Tickets support transfer of ownership."
+    },
+    {
+      "id": "REQ-08",
+      "quote": "representing a contiguous inclusive range",
+      "location": "target/DESIGN.md:L2",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Each ticket represents a contiguous entry range with both endpoints included."
+    },
+    {
+      "id": "REQ-09",
+      "quote": "Exactly one ERC721 prize is escrowed atomically at creation.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Each raffle escrows exactly one ERC721 prize."
+    },
+    {
+      "id": "REQ-10",
+      "quote": "Exactly one ERC721 prize is escrowed atomically at creation.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "Creation and custody of the prize succeed or revert atomically."
+    },
+    {
+      "id": "REQ-11",
+      "quote": "Reserve met awards NFT",
+      "location": "target/DESIGN.md:L2",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "The reserve-met outcome awards the NFT prize."
+    },
+    {
+      "id": "REQ-12",
+      "quote": "Reserve met awards NFT and 95% sponsor / 5% treasury.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "In the reserve-met outcome the sponsor allocation is 95%; the denominator is implicit in this clause and should be checked against gross proceeds."
+    },
+    {
+      "id": "REQ-13",
+      "quote": "Reserve met awards NFT and 95% sponsor / 5% treasury.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "In the reserve-met outcome the treasury allocation is 5%; the denominator is implicit in this clause and should be checked against gross proceeds."
+    },
+    {
+      "id": "REQ-14",
+      "quote": "Reserve missed awards 80% gross to winner, 15% sponsor, 5% treasury.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "In the reserve-missed outcome the winner receives 80% of gross proceeds."
+    },
+    {
+      "id": "REQ-15",
+      "quote": "Reserve missed awards 80% gross to winner, 15% sponsor, 5% treasury.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "In the reserve-missed outcome the sponsor receives 15% of gross proceeds."
+    },
+    {
+      "id": "REQ-16",
+      "quote": "Reserve missed awards 80% gross to winner, 15% sponsor, 5% treasury.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "In the reserve-missed outcome the treasury receives 5% of gross proceeds."
+    },
+    {
+      "id": "REQ-17",
+      "quote": "Refund outcome pays 100% per entry",
+      "location": "target/DESIGN.md:L2",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "The refund outcome returns the full entry price for each entry."
+    },
+    {
+      "id": "REQ-18",
+      "quote": "Refund outcome pays 100% per entry and returns prize.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "The refund outcome returns the prize; the recipient is not explicitly named in this clause."
+    },
+    {
+      "id": "REQ-19",
+      "quote": "Rounding is floor on aggregate protocol fee",
+      "location": "target/DESIGN.md:L2",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "The aggregate protocol fee is rounded down."
+    },
+    {
+      "id": "REQ-20",
+      "quote": "remainder must be allocated without loss.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "invariant",
+      "force": "mandatory",
+      "checkable": "All residual amounts from rounding remain allocated and are not lost."
+    },
+    {
+      "id": "REQ-21",
+      "quote": "No administrator, mutable configuration or upgrade.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "The protocol has no administrator."
+    },
+    {
+      "id": "REQ-22",
+      "quote": "No administrator, mutable configuration or upgrade.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Deployed protocol configuration cannot be changed."
+    },
+    {
+      "id": "REQ-23",
+      "quote": "No administrator, mutable configuration or upgrade.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The protocol cannot be upgraded."
+    },
+    {
+      "id": "REQ-24",
+      "quote": "Request window [sale end, end+2days)",
+      "location": "target/DESIGN.md:L2",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "Draw requests are accepted at sale end and rejected before sale end."
+    },
+    {
+      "id": "REQ-25",
+      "quote": "Request window [sale end, end+2days)",
+      "location": "target/DESIGN.md:L2",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "Draw requests are rejected at or after two days following sale end."
+    },
+    {
+      "id": "REQ-26",
+      "quote": "callback accepted strictly before request timestamp+2days.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "Randomness callbacks are accepted only before the request timestamp plus two days."
+    },
+    {
+      "id": "REQ-27",
+      "quote": "Refunds open at deadline.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "Refunds become available at the applicable deadline; this clause does not explicitly distinguish request expiry from callback expiry."
+    },
+    {
+      "id": "REQ-28",
+      "quote": "Callback records result only.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "The callback records the result without settling or transferring assets."
+    },
+    {
+      "id": "REQ-29",
+      "quote": "Settlement is permissionless",
+      "location": "target/DESIGN.md:L2",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "Any caller may perform settlement when settlement prerequisites hold."
+    },
+    {
+      "id": "REQ-30",
+      "quote": "Settlement is permissionless, storage-only",
+      "location": "target/DESIGN.md:L2",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "Settlement changes storage without asset transfers or other external execution; storage-only is not further defined."
+    },
+    {
+      "id": "REQ-31",
+      "quote": "redemption requires current ticket owner",
+      "location": "target/DESIGN.md:L2",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "Redemption authority is checked against the current ticket owner."
+    },
+    {
+      "id": "REQ-32",
+      "quote": "burns claim atomically",
+      "location": "target/DESIGN.md:L2",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "Redemption consumes the claim atomically with redemption."
+    },
+    {
+      "id": "REQ-33",
+      "quote": "must revert all effects on delivery failure.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "error-handling",
+      "force": "mandatory",
+      "checkable": "If delivery fails all effects of redemption revert."
+    },
+    {
+      "id": "REQ-34",
+      "quote": "Sponsor and treasury can claim independently after settlement.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "The sponsor can claim its allocation after settlement."
+    },
+    {
+      "id": "REQ-35",
+      "quote": "Sponsor and treasury can claim independently after settlement.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "The treasury can claim its allocation after settlement."
+    },
+    {
+      "id": "REQ-36",
+      "quote": "Sponsor and treasury can claim independently after settlement.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The sponsor claim does not depend on the treasury claim succeeding."
+    },
+    {
+      "id": "REQ-37",
+      "quote": "Sponsor and treasury can claim independently after settlement.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The treasury claim does not depend on the sponsor claim succeeding."
+    },
+    {
+      "id": "REQ-38",
+      "quote": "Never move assets between raffle clones.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "invariant",
+      "force": "mandatory",
+      "checkable": "No execution path transfers assets from one raffle clone to another."
+    },
+    {
+      "id": "REQ-39",
+      "quote": "Quote token and Chainlink wrapper are trusted canonical dependencies",
+      "location": "target/DESIGN.md:L2",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "The quote token is a trusted canonical dependency; correctness of that external token is assumed."
+    },
+    {
+      "id": "REQ-40",
+      "quote": "Quote token and Chainlink wrapper are trusted canonical dependencies",
+      "location": "target/DESIGN.md:L2",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "The Chainlink wrapper is a trusted canonical dependency; correctness of that external wrapper is assumed."
+    },
+    {
+      "id": "REQ-41",
+      "quote": "arbitrary prize contracts and ticket recipients are untrusted.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "Prize contracts are arbitrary untrusted external contracts."
+    },
+    {
+      "id": "REQ-42",
+      "quote": "arbitrary prize contracts and ticket recipients are untrusted.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "Ticket recipients are untrusted external actors or contracts."
+    },
+    {
+      "id": "REQ-43",
+      "quote": "Frontend discovery is advisory",
+      "location": "target/DESIGN.md:L2",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "Frontend discovery results alone are not authoritative for transaction decisions."
+    },
+    {
+      "id": "REQ-44",
+      "quote": "transaction decisions must reread current chain state.",
+      "location": "target/DESIGN.md:L2",
+      "kind": "ordering",
+      "force": "mandatory",
+      "checkable": "Transaction decisions refresh relevant state from the chain before acting."
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "function": "createRaffle",
+  "file": "target/packages/contracts/src/RaffleFactory.sol",
+  "lines": "L97-L148",
+  "analysisFile": "audit/S1/audit-context/functions/01-createRaffle.md",
+  "invariants": [
+    {
+      "claim": "On successful return, the new ID and clone are registered bidirectionally and isRaffle is true.",
+      "evidence": "target/packages/contracts/src/RaffleFactory.sol:L105-L125"
+    },
+    {
+      "claim": "End time is strictly future and at most 30 days ahead; reserve is positive.",
+      "evidence": "target/packages/contracts/src/RaffleFactory.sol:L99-L104,L178; target/packages/contracts/src/libraries/RaffleConstants.sol:L29-L30"
+    },
+    {
+      "claim": "Creation returns only after the prize reports the clone owner and the clone reports Active.",
+      "evidence": "target/packages/contracts/src/RaffleFactory.sol:L128-L134"
+    },
+    {
+      "claim": "Factory nested creation is rejected by its instance guard; registry publication precedes prize transfer.",
+      "evidence": "target/packages/contracts/src/RaffleFactory.sol:L97,L123-L128; target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:L69-L105"
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "Clone target contains the intended fixed implementation; Clones does not check code (Clones.sol:L28-L30).",
+      "establishedBy": "target/packages/contracts/src/RaffleFactory.sol:L89-L91 deploys and stores the immutable implementation; Clones.sol:L54-L57 embeds it."
+    },
+    {
+      "claim": "Clone initialization is once-only and factory-only, and screens sponsor, treasury and recipient including the new clone itself.",
+      "establishedBy": "target/packages/contracts/src/Raffle.sol:L176-L195,L593-L604"
+    },
+    {
+      "claim": "Actual transfer enforces sponsor ownership and factory approval; ownership reports truthfully describe an honest persistent prize ledger (factory call/check at L128-L134).",
+      "establishedBy": "nothing found"
+    },
+    {
+      "claim": "Active means the configured prize caller supplied matching token ID, sponsor and factory callback arguments while AwaitingPrize.",
+      "establishedBy": "target/packages/contracts/src/Raffle.sol:L421-L430; factory requires Active at RaffleFactory.sol:L132-L134"
+    }
+  ],
+  "calls": [
+    {
+      "callee": "_validateCreateParams \u2192 _requireContract",
+      "kind": "internal",
+      "propagates": "target/packages/contracts/src/RaffleFactory.sol:L154-L185: code presence, screened addresses, reported ERC721 support, positive reserve; every rejected path reverts."
+    },
+    {
+      "callee": "ReentrancyGuard.nonReentrant \u2192 before/after/entered/slot helpers \u2192 StorageSlot.getUint256Slot",
+      "kind": "internal",
+      "propagates": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:L69-L117 and StorageSlot.sol:L93-L97 establish factory instance lock for the body and restore it on success."
+    },
+    {
+      "callee": "Clones.clone(address) \u2192 clone(address,uint256)",
+      "kind": "internal",
+      "propagates": "target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:L32-L61 deploys zero-value fixed-target proxy or reverts; no implementation-code verification."
+    },
+    {
+      "callee": "Raffle.initialize",
+      "kind": "external-source-available",
+      "propagates": "target/packages/contracts/src/Raffle.sol:L176-L206 establishes initialized latch, factory authorization, destination checks, stored configuration and AwaitingPrize on success."
+    },
+    {
+      "callee": "Raffle._isProtocolDestination",
+      "kind": "internal",
+      "propagates": "target/packages/contracts/src/Raffle.sol:L593-L604 screens same-factory plumbing and queries registration only on nonmatching destinations with code."
+    },
+    {
+      "callee": "RaffleFactory.raffleImplementation / isRaffle generated getters",
+      "kind": "external-source-available",
+      "propagates": "target/packages/contracts/src/RaffleFactory.sol:L42,L54 read trusted implementation/registry for Raffle.sol:L601-L603; no mutations."
+    },
+    {
+      "callee": "IERC165(params.prizeToken).supportsInterface",
+      "kind": "external-black-box",
+      "propagates": "target/packages/contracts/src/RaffleFactory.sol:L171-L177 requires a true ERC721 support report; failure/false revert, honesty not established. IERC165.sol:L24 is a declaration only."
+    },
+    {
+      "callee": "IERC721(params.prizeToken).safeTransferFrom",
+      "kind": "external-black-box",
+      "propagates": "target/packages/contracts/src/RaffleFactory.sol:L128 sends sponsor, clone, token ID without value; assumes real transfer semantics, can revert or execute callbacks; source for selected token unavailable."
+    },
+    {
+      "callee": "Raffle.onERC721Received (token callback)",
+      "kind": "external-source-available",
+      "propagates": "target/packages/contracts/src/Raffle.sol:L416-L431 checks exact configured caller, token ID, from, operator and AwaitingPrize then activates and emits deposit; token determines whether to invoke it."
+    },
+    {
+      "callee": "IERC721(params.prizeToken).ownerOf",
+      "kind": "external-black-box",
+      "propagates": "target/packages/contracts/src/RaffleFactory.sol:L129-L131 accepts only returned clone address; truthful external ledger not established; IERC721.sol:L39 is declaration only."
+    },
+    {
+      "callee": "Raffle.status generated getter",
+      "kind": "external-source-available",
+      "propagates": "target/packages/contracts/src/Raffle.sol:L124 exposes lifecycle; factory L132-L134 requires Active."
+    }
+  ],
+  "callers": [
+    "target/packages/contracts/src/RaffleFactory.sol:L97 external entry available to public sponsors; Raffle.sol:L187-L189 additionally screens stored sponsor."
+  ],
+  "sharedState": [
+    "target/packages/contracts/src/RaffleFactory.sol:L45-L54,L105,L123-L125 count and registry; read by validation L159,L166 and Raffle.sol:L603.",
+    "target/packages/contracts/src/Raffle.sol:L176-L206 initializes configuration, latch and status; callback L428 changes status."
+  ],
+  "openQuestions": [
+    "unclear; need to inspect each actual sponsor-selected prize implementation for authorization, ownership honesty and callback ordering; RaffleFactory.sol:L128-L134 only checks reports and clone status."
+  ]
+}

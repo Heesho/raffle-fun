@@ -1,0 +1,97 @@
+from pathlib import Path
+import datetime,json,hashlib,re,collections
+A=Path('/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001');D=A/'reconciliation/finalization';P=A/'runs/DAYBREAK-TOB/attempt-03';key='DAYBREAK-TOB/attempt-03';now=datetime.datetime.now(datetime.timezone.utc).isoformat();sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+def dump(p,o):p.write_text(json.dumps(o,indent=2)+'\n')
+w=json.loads((D/'working-register.json').read_text());assert key not in [x['report_key'] for x in w['source_reports']];v=json.loads((D/'DAYBREAK-TOB-03-RECEIPT-VERIFICATION.json').read_text());t=json.loads((D/'DAYBREAK-TOB-03-TARGET-BINDING-CORRECTION.json').read_text());sv=json.loads((D/'DAYBREAK-TOB-03-SEAL-VERSION-OBSERVATION.json').read_text());assert not v['errors'] and not t['errors']
+for x in v['hash_records']:assert sha(Path(x['path']))==x['expected_sha256']
+assert sha(P/'SEAL.json')==v['seal_sha256']==sv['verified_adopted_seal_sha256'];assert sha(P/'FIRST-PASS.md')==sv['first_pass_sha256']
+src={'report_key':key,'path':str(P/'FIRST-PASS.md'),'sha256':sha(P/'FIRST-PASS.md'),'seal':str(P/'SEAL.json'),'seal_sha256':sha(P/'SEAL.json'),'seal_verified':True,'all_bound_artifacts_verified':v['hash_record_count'],'distinct_bound_paths':v['distinct_hash_paths'],'frozen_target':'9238b6ce8eb7f768c0dcd0cfcef26e1427a03155','target_binding':'43 files in actual controller target/ independently match frozen clean context. Initial controller-cwd lookup had no files; correction retained.','source_only':True,'source_only_note':'S1-S5 source analysis only, with an isolated S4 compiler-only build. S6 is explicitly pending.','qualification':'Five source stages sealed. S1 is same-cell inherited12records, S2 fresh local retry retained, S3/S4 fresh initial stages, S5 all56requirements via authorized MAX_LIMIT extension. No full S6 or global method qualification inferred.','route':{'model_requested':'gpt-daybreak-blue-latest','cyber_access_program':'daybreak_blue','reasoning_effort':'ultra','fallback':False,'multi_agent':False,'provider_returned_identity':'unknown'},'provenance_limitations':[sv['limitation']],'adopted_native_seal_copy':str(D/'DAYBREAK-TOB-03-ADOPTED-NATIVE-SEAL.json')}
+w['source_reports'].append(src);idx={f['id']:f for f in w['findings']};ls=(P/'FIRST-PASS.md').read_text().splitlines();added=[]
+def add(target,ident,line,severity,reason,path=P/'FIRST-PASS.md',extra=None):
+ a={'report_key':key,'report_path':str(path),'report_line':line,'original_id':ident,'original_severity':severity,'original_status':'sealed source-only observation; S6 pending','proof_status':'Written source reasoning, no dynamic proof in this first pass; independent existing tool evidence remains separately attributed','reconciled_reason':reason}
+ if extra:a.update(extra)
+ idx[target]['original_attributions'].append(a);added.append({'target':target,**a})
+final={
+'FP-SEC-01':(71,'Critical',[('RF-001','Same conditional malicious-prize admission/delivery/proceeds chain. Preserve Critical uplift versus High/Medium/Low disagreement. Uncapped sales alone do not establish protocol-wide compromise or remove victim-participation/prize-control assumptions; reconciled conditional High remains.'),('OBS-006','Paid creation-time callback purchase is a separate ordering observation folded into the native chain; no free entries or escaped outer rollback.')]),
+'FP-SEC-02':(113,'Medium',[('OBS-004','Contract receiver compatibility requires an actual contract able to originate redemption yet unable to manage the particular prize. Native first pass supplies no executable recipient; Medium hypothesis preserved without generic theft claim.'),('RF-002','Sponsor-return future-clone subset is independently reproduced elsewhere; broader unsafe receiver claim is not a second proven root.')]),
+'FP-SEC-03':(148,'Low',[('RF-002','Matches restricted sponsor-selected future-clone own-prize/entitlement loss, not EOA theft.'),('CONFIG-001','Treasury-at-future-clone configuration fails matching-clone initialize before registry and can block creation at that nonce; native final wording correctly narrows this.')]),
+'FP-DIV-01':(183,'Low',[('DOC-001','Interface explicitly permits empty sponsor cancellation. General DESIGN wording should state the exception; no existing buyer loss. Preserve native Low and S5Medium versus reconciled Informational.')]),
+'FP-OOS-01':(210,'Informational',[('EVIDENCE-001','Frontend omitted from contract-only scope. Missing artifact is not an unsafe frontend implementation or absence from repository; exact integration revision remains unreviewed here.')])}
+for ident,(line,sev,targets) in final.items():
+ assert ls[line-1].startswith('### '+ident)
+ for target,reason in targets:add(target,ident,line,sev,reason,extra={'original_title':ls[line-1]})
+S3=P/'artifacts/stages/03-token-integration/REPORT.md';S4=P/'artifacts/stages/04-guidelines/REPORT.md';S5=P/'artifacts/stages/05-spec-compliance/REPORT.md';S1=P/'artifacts/stages/01-audit-context/inherited/DOSSIER.md'
+for ident,line,sev,targets,reason,path in [
+('H-01',73,'High',['RF-001'],'S3 High view of existing prize-trust chain.',S3),('M-01',116,'Medium',['OBS-003'],'S3 expressly conditional on unsupported noncanonical quote behavior; later native refutation preserves trusted canonical-token premise.',S3),('M-02',152,'Medium',['OBS-004','RF-002'],'S3 unsafe recipient hypothesis; preserve actual caller/asset capability requirements and narrower executed sponsor-return subset.',S3),('L-01',179,'Low',['OBS-006'],'S3 paid creation-callback ordering with outer rollback; no free entry.',S3),
+('S4-SEC-01',455,'High',['RF-001'],'S4 High classification retained beside later native Critical uplift.',S4),('S4-SEC-02',485,'Low',['RF-002','CONFIG-001'],'S4 future-destination claim; treasury deployment rollback correction applies.',S4),
+('F-01',24,'Critical',['RF-001'],'S5 prize trust divergence; same root, not extra critical defect.',S5),('F-02',47,'High',['RF-002','CONFIG-001'],'S5 High view expressly reduced to Low in aggregate; preserve disagreement and own-recipient preconditions.',S5),('F-03',69,'Medium',['DOC-001'],'S5 Medium timing divergence reduced to Low by aggregate and Informational by reconciliation.',S5),('F-04',81,'Low',['EVIDENCE-001'],'S5 Low frontend absence reduced to Informational in aggregate; no excluded-artifact defect inferred.',S5)]:
+ for target in targets:add(target,ident,line,sev,reason,path)
+# All56 compliance IDs retained as a coverage ledger; statuses are native claims, not additional proofs.
+req=[]
+for line,text in enumerate(ls,1):
+ m=re.match(r'\| (REQ-\d{2}) \| ([^|]+) \| (.*) \|$',text)
+ if m:req.append({'original_id':m.group(1),'report_line':line,'native_status':m.group(2).strip(),'native_cross_reference':m.group(3).strip(),'native_row':text})
+assert len(req)==56
+reqtargets={14:['RF-001'],48:['RF-001'],53:['RF-001'],44:['RF-002'],47:['RF-002'],35:['DOC-001'],56:['EVIDENCE-001'],6:['EVIDENCE-001','OBS-003'],25:['ADVISORY-001'],46:['RF-002'],51:['EVIDENCE-001']}
+for x in req:
+ n=int(x['original_id'][4:])
+ for target in reqtargets.get(n,[]):add(target,x['original_id'],x['report_line'],None,'Exact native requirement disposition retained; considered-and-dropped IDs are not findings.',extra={'native_status':x['native_status'],'native_row':x['native_row']})
+# Eleven reverse-sweep IDs and corresponding exact source rows.
+umap=[['ADVISORY-001'],['ADVISORY-001'],['OBS-004'],['OBS-008'],['EVIDENCE-001'],['CLOSED-001'],['DOC-001'],['OBS-008'],['OBS-002','OBS-004'],['OBS-004','RF-002'],['OBS-005']]
+for n,targets in enumerate(umap,1):
+ line=251+n;assert ls[line-1].startswith('| U-'+f'{n:02}')
+ for target in targets:add(target,f'U-{n:02}',line,'Unrated undocumented behavior','Native reverse-sweep documentation/compatibility observation; not automatically a production defect.',extra={'native_row':ls[line-1]})
+# Eight consolidated leads.
+leadmap=[['RF-001'],['OBS-004','RF-002'],['OBS-003'],['EVIDENCE-001'],['RF-002','CONFIG-001'],['CLOSED-003'],['EVIDENCE-001'],['EVIDENCE-001','OBS-007']]
+for n,targets in enumerate(leadmap,1):
+ line=445+n
+ for target in targets:add(target,f'L-{n:02}',line,'Unrated lead','Exact aggregate unresolved lead preserved. Later external proofs/fork tests remain separately scoped and do not turn this source-only lane into executed validation.',extra={'native_row':ls[line-1]})
+# Source-only unresolved questions, never manufactured native IDs.
+def ordinals(path,start,end,targets,label):
+ pl=path.read_text().splitlines();picked=[(i,l) for i,l in enumerate(pl,1) if start<=i<=end and (re.match(r'^\d+\. ',l) or l.startswith('- '))];assert len(picked)==len(targets),(label,len(picked),len(targets))
+ for n,((line,text),ts) in enumerate(zip(picked,targets),1):
+  for target in ts:add(target,f'{label} item {n} (source ordinal; no native ID)',line,None,'Source limitation/assumption retained; not an independently confirmed finding.',path,{'original_text':text})
+ordinals(S1,105,123,[['RF-001'],['RF-001'],['RF-001'],['OBS-006'],['EVIDENCE-001'],['EVIDENCE-001'],['CLOSED-003'],['EVIDENCE-001'],['EVIDENCE-001'],['CLOSED-003'],['RF-001'],['OBS-003'],['OBS-003'],['OBS-003'],['RF-001'],['RF-001'],['EVIDENCE-001'],['RF-001'],['EVIDENCE-001']],'S1 Unenforced assumptions')
+ordinals(S1,133,180,[['RF-001'],['OBS-006'],['OBS-007'],['EVIDENCE-001'],['EVIDENCE-001'],['OBS-003'],['EVIDENCE-001'],['EVIDENCE-001'],['CLOSED-003'],['RF-001'],['OBS-003'],['OBS-004'],['OBS-003'],['OBS-003'],['EVIDENCE-001'],['RF-001'],['EVIDENCE-001'],['RF-001'],['EVIDENCE-001'],['EVIDENCE-001'],['EVIDENCE-001']],'S1 Unresolved questions')
+ordinals(S3,600,609,[['EVIDENCE-001'],['OBS-003','OBS-002'],['RF-001'],['EVIDENCE-001'],['OBS-006'],['OBS-004'],['OBS-007'],['EVIDENCE-001'],['ADVISORY-001'],['EVIDENCE-001']],'S3 Unresolved leads')
+ordinals(S4,829,843,[['OBS-003','OBS-002'],['EVIDENCE-001'],['RF-001'],['RF-001'],['RF-001'],['EVIDENCE-001'],['EVIDENCE-001','OBS-007'],['OBS-006'],['OBS-004'],['RF-002','CONFIG-001'],['ADVISORY-001'],['EVIDENCE-001'],['EVIDENCE-001'],['EVIDENCE-001'],['CLOSED-003']],'S4 Unresolved leads')
+ordinals(S5,206,210,[['RF-001'],['DOC-001'],['ADVISORY-001'],['EVIDENCE-001'],['ADVISORY-001']],'S5 Documentation problems')
+# Recommendations preserve priority versus security severity distinction.
+recmap=[['RF-001'],['EVIDENCE-001'],['EVIDENCE-001'],['ADVISORY-001'],['RF-002','CONFIG-001'],['ADVISORY-001'],['EVIDENCE-001'],['EVIDENCE-001'],['EVIDENCE-001'],['OBS-005','OBS-006','OBS-004'],['ADVISORY-001'],['CLOSED-003'],['ADVISORY-001'],['EVIDENCE-001']]
+ordinals(S4,747,808,recmap,'S4 Prioritized recommendations')
+for target,ident,rating in [('RF-001','FP-SEC-01','Critical'),('RF-001','S3 H-01 / S4 S4-SEC-01','High'),('RF-002','S5 F-02','High'),('RF-002','FP-SEC-03','Low'),('OBS-004','FP-SEC-02','Medium'),('DOC-001','S5 F-03','Medium'),('DOC-001','FP-DIV-01','Low')]:idx[target].setdefault('model_disagreements',[]).append({'report_key':key,'original_id':ident,'rating':rating,'reconciliation':'Original rating preserved; source reachability, scope, capability and practical impact control reconciled assessment. No agreement-based proof.'})
+corrections=[
+'RF-001 Critical uplift is a native severity disagreement. Arbitrary gross sales does not itself establish system-wide compromise; sponsor asset control, buyer participation and trust-scope contradiction remain conditions. Reconciled conditional High remains unchanged.',
+'Unsafe winner delivery requires a real contract capable of initiating redemption but unable to manage this prize. This first pass supplies no deployed or executed example. The root honest-token sponsor-return reproduction supports only the specified narrow subset.',
+'Creation callback ordering remains OBS-006; folding it into malicious-prize FP-SEC-01 does not make every paid callback a harmful exploit.',
+'Native first-pass seal hash changed from watcher5fa3ac85... to verifiedc7d730eb... before findings adoption; FIRST-PASS hash stayed981bea8... . Old seal bytes were not captured, so no formatting-only explanation is asserted. Current seal and all546boundhashrecords verified and copied.',
+'S6 secure-workflow-guide tests/scanners/printers are expressly pending; five source stages and56checked specification statements are not a completed six-stage cell or universal security proof.',
+'Initial source check used controller cwd instead of target/ and found43missingfiles. Corrected target/ hashes allmatch; both receipts retained. No findings were read before corrected target binding.'
+]
+for q in w['assurance_issues']:
+ if q['id']=='AQ-007':q.setdefault('late_provenance_limits',[]).append({'report_key':key,'items':corrections[3:]})
+ if q['id']=='AQ-009':q.setdefault('post_seal_corrections',[]).append({'report_key':key,'items':corrections[:3]})
+w['working_updated_utc']=now;w['counts'].update(source_report_paths=len(w['source_reports']),distinct_first_pass_hashes=len({x['sha256'] for x in w['source_reports']}),original_attributions_preserved_and_added=sum(len(f['original_attributions']) for f in w['findings']))
+state=json.loads((D/'state.json').read_text());assert 'DAYBREAK-TOB/attempt-03' in state['expected_lanes'];state['expected_lanes'].remove('DAYBREAK-TOB/attempt-03');state.setdefault('received_scoped_artifact_receipts',[]).append({'lane':key,'source_adopted':True,'source_stages':5,'S6':'pending'});state.setdefault('post_source_workflow_pending',[]).append('DAYBREAK-TOB/attempt-03/S6 secure-workflow-guide');state['updated_utc']=now;w['current_reconciliation_state'].update(updated_utc=now,pending_lanes=state['expected_lanes'],post_source_workflow_pending=state['post_source_workflow_pending']);w.setdefault('late_scoped_source_artifacts',[]).append(src)
+dump(D/'working-register.json',w);dump(D/'working-original-id-index.json',[{'target':f['id'],**a} for f in w['findings'] for a in f['original_attributions']]);dump(D/'state.json',state)
+J=D/'DAYBREAK-TOB-03-RECONCILIATION.json';MD=D/'DAYBREAK-TOB-03-RECONCILIATION.md';S=D/'DAYBREAK-TOB-03-RECONCILIATION-SEAL.json';assert not any(p.exists() for p in [J,MD,S]);dump(J,{'reconciled_utc':now,'source_report':src,'append_attributions':added,'requirement_ledger':req,'requirement_status_counts':dict(collections.Counter(x['native_status'] for x in req)),'native_counts':{'source_stages':5,'final_findings_and_statuses':5,'consolidated_leads':8,'S5_requirements_checked':56,'S5_nonimplemented_candidates':11,'S5_refutation_contexts':22,'S5_survived_requirements':7,'S5_dropped':4,'S5_undocumented_behaviors':11},'post_seal_corrections':corrections,'new_production_root_causes':0,'S6_pending':True,'whole_cell_completion_qualified':False,'owner_acceptance':'not requested or inferred'})
+MD.write_text('''# Daybreak Trail of Bits attempt-03 post-seal reconciliation
+
+The source first pass is verified against frozen target `9238b6ce8eb7f768c0dcd0cfcef26e1427a03155`. Its SHA-256 is `981bea8dd6fe0e96328c38cf8375f93bc8bdf272476b4defcbeca71fdfdd9bc6`. All 546 bound hash records verified, covering 541 distinct path strings. The actual `target/` directory matches all 43 clean-context files. An initial check used the controller directory instead; the failed lookup and correction are both retained.
+
+A provenance limitation is explicit: the watcher first observed seal hash `5fa3ac85bf972415c2d711b35f72bda9d8e6193911abcd85e4179c16333eb07e`; before findings adoption it changed to the complete verified seal `c7d730eb6687f33fbc6e10bc43671ad1975813a03e05d37cbb2d85b6ca2ba82b`. The first-pass hash did not change. Older seal bytes were not captured, so this review cannot assert a formatting-only difference. The current complete seal is copied and verified; this limitation is preserved in AQ-007 and the receipt registry.
+
+This is five source stages, not a completed Trail of Bits cell. S1 inherits 12 same-cell function records from 24 ranked candidates; S2 preserves its local retry; S3/S4 are fresh source stages with an isolated compiler-only build in S4. S5 checks all 56 extracted requirements through the disclosed extension of the native limit, with 22 refutation contexts for 11 candidates. S6 tests, scanners and printers remain expressly pending. The requested route is Daybreak Blue at ultra; actual provider-returned identity remains unknown.
+
+The five aggregate IDs, all underlying stage finding IDs, eight aggregate leads, 56 requirement IDs, 11 reverse-sweep IDs, documentation items, recommendations and unresolved source assumptions are retained. No new production root cause is established. FP-SEC-01 elevates the existing RF-001 malicious-prize chain to Critical, while S3/S4 rate it High and other reports retain Medium or Low/integration views. The register preserves that disagreement; uncapped sales alone does not justify protocol-wide severity or remove prize control, buyer participation and scope conditions. Reconciled conditional High remains unchanged.
+
+FP-SEC-02 is the broader unsafe-recipient hypothesis, rated Medium. A winner contract must actually be able to call redemption while lacking the ability to manage the prize; this first pass supplies no executed concrete recipient. The separately executed sponsor-selected future-clone case remains RF-002. FP-SEC-03 agrees with its restricted Low classification and correctly distinguishes treasury creation-nonce blockage from successful treasury-clone registration. S5's High view remains visible.
+
+FP-DIV-01 rates empty sponsor cancellation Low, with S5 Medium preserved; reconciliation retains the Informational documentation mismatch because the interface expressly permits it and no ticket holder exists in that branch. FP-OOS-01 correctly treats omitted frontend code as an evidence boundary. It is not a vulnerable frontend finding. Canonical quote/wrapper identity and separate claim independence refutations remain recorded, without erasing deployment checks.
+
+Existing remedies and re-audit priorities remain: resolve the prize trust model; cover all settled and unsettled payout/refund states; define recipient authority and failed-delivery behavior; bind intended deployments and real service behavior; then strengthen non-vacuous multi-actor tests and mutation/reference-model evidence. No policy relaxation, source fix, deployment, new exploit experiment or owner acceptance was performed. Root coordinator rejection and incomplete global delivery remain separate from this newly received source artifact.
+''')
+artifacts={J.name:sha(J),MD.name:sha(MD),'integrate_daybreak_tob03.py':sha(Path(__file__))}
+for f in ['DAYBREAK-TOB-03-RECEIPT-VERIFICATION.json','DAYBREAK-TOB-03-TARGET-BINDING-CORRECTION.json','DAYBREAK-TOB-03-SEAL-VERSION-OBSERVATION.json','DAYBREAK-TOB-03-ADOPTED-NATIVE-SEAL.json']:artifacts[f]=sha(D/f)
+dump(S,{'sealed_utc':now,'artifacts':artifacts,'native_firstpass_sha256':src['sha256'],'native_seal_sha256':src['seal_sha256'],'working_register_snapshot_sha256':sha(D/'working-register.json'),'working_register_remains_mutable':True,'S6_pending':True,'no_whole_cell_or_global_completion':True})
+print(json.dumps({'source_reports':len(w['source_reports']),'distinct_firstpass_hashes':w['counts']['distinct_first_pass_hashes'],'attribution_links':w['counts']['original_attributions_preserved_and_added'],'requirement_status_counts':dict(collections.Counter(x['native_status'] for x in req)),'new_root_causes':0,'remaining_source_receipts':state['expected_lanes'],'seal_sha256':sha(S)}))

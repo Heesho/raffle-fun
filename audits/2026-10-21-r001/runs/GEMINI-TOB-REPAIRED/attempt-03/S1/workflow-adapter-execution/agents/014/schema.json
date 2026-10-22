@@ -1,0 +1,61 @@
+{
+  "type": "object",
+  "required": [
+    "dossierFile",
+    "trustBoundaries",
+    "fragilityClusters",
+    "unresolved"
+  ],
+  "properties": {
+    "dossierFile": {
+      "type": "string"
+    },
+    "trustBoundaries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "actor",
+          "entrypoint",
+          "reaches"
+        ],
+        "properties": {
+          "actor": {
+            "type": "string"
+          },
+          "entrypoint": {
+            "type": "string"
+          },
+          "reaches": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "fragilityClusters": {
+      "type": "array",
+      "description": "Where complexity concentrates. Guides the later hunting phase; not findings.",
+      "items": {
+        "type": "object",
+        "required": [
+          "area",
+          "why"
+        ],
+        "properties": {
+          "area": {
+            "type": "string"
+          },
+          "why": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "unresolved": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "stageId": "10-findings",
+  "command": [
+    "npx",
+    "--offline",
+    "--yes",
+    "--package=node@22.23.3",
+    "--package=pnpm@10.34.6",
+    "pnpm",
+    "--dir",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal",
+    "exec",
+    "node",
+    "--import",
+    "tsx",
+    "packages/cli/src/main.ts",
+    "findings",
+    "25b0b84c-7eda-45e2-9d81-440aa16fcb7b"
+  ],
+  "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/toolchain",
+  "environmentOverrides": {
+    "GEBAL_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/gebal-state",
+    "TMPDIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/tmp",
+    "npm_config_logs_dir": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/logs/npm",
+    "npm_config_update_notifier": "false",
+    "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/npm-cache",
+    "npm_config_prefix": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/toolchain"
+  },
+  "startedAt": "2026-10-21T08:05:33.430884+00:00",
+  "finishedAt": "2026-10-21T08:05:33.916287+00:00",
+  "exitCode": 0,
+  "stdout": "[\n  {\n    \"schemaVersion\": 1,\n    \"id\": \"66ad2452-90fb-476e-b82a-2ce3debd9c61\",\n    \"createdAt\": \"2026-10-21T08:05:32.274Z\",\n    \"runId\": \"25b0b84c-7eda-45e2-9d81-440aa16fcb7b\",\n    \"title\": \"Sponsor prize release can transfer into a subsequently registered raffle clone\",\n    \"description\": \"Source-supported candidate, low severity and needs human review. Sponsor-recipient screening is performed at creation/initialization against the current same-factory registry. A sponsorRecipient equal to a future clone address is then code-less and unregistered, so it can pass. If that address subsequently becomes another raffle clone before the first raffle returns its NFT, releaseSponsorPrize uses transferFrom to the stored recipient without repeating _isProtocolDestination. A standard ERC721 transfer bypasses the receiving clone receiver hook and ownerOf then confirms the new clone, so the first raffle marks the prize claimed even though the second clone only has release paths for its own configured prize. This violates the stated no movement between raffle clones property and can strand the returned NFT. The quote-token release path does repeat the destination check, making this omission specific to the sponsor NFT return. Impact requires the sponsor-selected future-address recipient; no arbitrary theft from normally configured raffles is established. Defensive property: prize return must reject a recipient that is registered protocol plumbing at delivery time. An execution check remains outstanding.\\nAssumptions: The sponsor selects an as-yet undeployed future same-factory clone address as sponsorRecipient, distinct from the clone being initialized.; That address is deployed and registered before a CashWon or Refunding sponsor-prize return.; The prize is an ordinary standards-compliant ERC721 and differs from the receiving clone's configured prize.; This is a recipient-selection edge case, not demonstrated theft from an honest sponsor who selected an address they control.\",\n    \"severity\": \"low\",\n    \"confidence\": \"high\",\n    \"evidenceType\": \"model\",\n    \"source\": [\n      {\n        \"path\": \"packages/contracts/src/RaffleFactory.sol\",\n        \"start\": 163,\n        \"end\": 169\n      },\n      {\n        \"path\": \"packages/contracts/src/RaffleFactory.sol\",\n        \"start\": 105,\n        \"end\": 125\n      },\n      {\n        \"path\": \"packages/contracts/src/Raffle.sol\",\n        \"start\": 187,\n        \"end\": 205\n      },\n      {\n        \"path\": \"packages/contracts/src/Raffle.sol\",\n        \"start\": 395,\n        \"end\": 406\n      },\n      {\n        \"path\": \"packages/contracts/src/Raffle.sol\",\n        \"start\": 593,\n        \"end\": 604\n      },\n      {\n        \"path\": \"packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol\",\n        \"start\": 47,\n        \"end\": 61\n      },\n      {\n        \"path\": \"packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol\",\n        \"start\": 115,\n        \"end\": 135\n      }\n    ],\n    \"evidence\": [\n      \"0500524c7fc7ed20bbbf89713e5a82f1e6cbb68c7001ac582a21f8417acc5be0\"\n    ],\n    \"observationIds\": [\n      \"8adefa2b-a5a0-4812-a0a7-5afccaeacfd2\"\n    ],\n    \"fingerprint\": \"42597e169d0cc8d819a45e69252251196ae0d0abe908492ef6089c7e467865f9\"\n  }\n]\n",
+  "stderr": "(node:68908) ExperimentalWarning: SQLite is an experimental feature and might change at any time\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+}

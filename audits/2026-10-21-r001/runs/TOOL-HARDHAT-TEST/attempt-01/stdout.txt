@@ -1,0 +1,39 @@
+
+Compiled 21 Solidity files with solc 0.8.36 (evm target: cancun)
+
+Running node:test tests
+
+  Raffle Fun sequential-ticket integration
+    ✔ deploys only the fixed factory and locked clone implementation (907ms)
+    ✔ settles an NFT raffle permissionlessly for the current bearer
+    ✔ finalizes cash at 80/5/15 gross and lets each party claim independently
+    ✔ refunds weighted tickets when no draw request is accepted by the hard deadline
+
+  deployment record
+    ✔ writes the canonical network filename after strict validation
+    ✔ rejects placeholders and mismatched network labels
+
+  deployment source verification
+    ✔ accepts only an exact independently fetched Etherscan record
+    ✔ rejects missing publication and non-exact or proxy matches
+    ✔ requires exact compiler, optimizer, and Cancun settings
+    ✔ rejects a missing API key before making a request
+
+  deployment validation
+    ✔ accepts an ownerless six-decimal mainnet deployment
+    ✔ rejects incompatible or paused quote-token state
+    ✔ rejects a six-decimal quote token that is not canonical USDC
+    ✔ rejects an EOA mainnet treasury
+    ✔ rejects a missing or mismatched raffle implementation
+    ✔ rejects an unlocked raffle implementation
+    ✔ rejects a noncanonical implementation entry price
+    ✔ pins the finalized validation block and every recorded runtime hash
+    ✔ rejects disabled or incompatible live Chainlink configuration
+    ✔ binds the record, deployment input, and runtime to the clean local build
+    ✔ requires independent published source for both contracts
+    ✔ materializes candidate-specific runtime hashes from the pinned Hardhat build info (452ms)
+
+
+  22 passing (2174ms)
+
+

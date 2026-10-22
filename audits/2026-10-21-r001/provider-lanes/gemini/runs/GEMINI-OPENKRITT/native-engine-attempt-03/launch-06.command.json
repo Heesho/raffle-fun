@@ -1,0 +1,23 @@
+{
+  "at_utc": "2026-10-21T18:31:08.310751+00:00",
+  "argv": [
+    "docker",
+    "run",
+    "--detach",
+    "--name",
+    "raffle-r001-gemini-native-db",
+    "--network",
+    "raffle-r001-gemini-native-net",
+    "--network-alias",
+    "db",
+    "--env-file",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/openkritt-gemini-native/db.env",
+    "--mount",
+    "type=volume,src=raffle-r001-gemini-native-postgres,dst=/var/lib/postgresql/data",
+    "--mount",
+    "type=bind,src=/Users/hishamel-husseini/.local/share/glaze-audit-harnesses/openkritt/raffle-fun-r001/native-source/database/init,dst=/docker-entrypoint-initdb.d,readonly",
+    "sha256:5660c2cbfea50c7a9127d17dc4e48543eedd3d7a41a595a2dfa572471e37e64c"
+  ],
+  "exit_code": 0,
+  "DOCKER_HOST": "unix:///Users/hishamel-husseini/.lima/glaze-openkritt-daybreak/sock/docker.sock"
+}

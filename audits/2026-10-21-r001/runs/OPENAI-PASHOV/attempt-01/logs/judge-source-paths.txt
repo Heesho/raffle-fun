@@ -1,0 +1,323 @@
+### target/packages/contracts/src/RaffleFactory.sol:65-145
+65:     constructor(address quoteToken_, address vrfWrapper_, address protocolTreasury_) {
+66:         _requireContract(quoteToken_);
+67:         _requireContract(vrfWrapper_);
+68:         if (protocolTreasury_ == address(0)) revert ZeroAddress();
+69: 
+70:         uint8 quoteDecimals = 0;
+71:         try IERC20Metadata(quoteToken_).decimals() returns (uint8 decimals_) {
+72:             quoteDecimals = decimals_;
+73:         } catch {
+74:             revert UnsupportedQuoteToken(quoteToken_);
+75:         }
+76:         if (quoteDecimals != RaffleConstants.QUOTE_TOKEN_DECIMALS) {
+77:             revert InvalidQuoteTokenDecimals(quoteDecimals, RaffleConstants.QUOTE_TOKEN_DECIMALS);
+78:         }
+79: 
+80:         if (protocolTreasury_ == address(this) || protocolTreasury_ == quoteToken_ || protocolTreasury_ == vrfWrapper_)
+81:         {
+82:             revert UnsafeProtocolDestination(protocolTreasury_);
+83:         }
+84: 
+85:         quoteToken = quoteToken_;
+86:         vrfWrapper = vrfWrapper_;
+87:         protocolTreasury = protocolTreasury_;
+88: 
+89:         address implementation = address(new Raffle(quoteToken_, vrfWrapper_));
+90:         if (protocolTreasury_ == implementation) revert UnsafeProtocolDestination(protocolTreasury_);
+91:         raffleImplementation = implementation;
+92:     }
+93: 
+94:     // External state-changing functions
+95: 
+96:     /// @inheritdoc IRaffleFactory
+97:     function createRaffle(CreateRaffleParams calldata params) external override nonReentrant returns (address raffle) {
+98:         _validateCreateParams(params);
+99:         uint256 currentTime = block.timestamp;
+100:         if (params.endTime <= currentTime) revert InvalidEndTime(currentTime, params.endTime);
+101:         uint256 saleDuration = uint256(params.endTime) - currentTime;
+102:         if (saleDuration > RaffleConstants.MAX_SALE_DURATION) {
+103:             revert SaleDurationTooLong(saleDuration, RaffleConstants.MAX_SALE_DURATION);
+104:         }
+105:         uint256 raffleId = ++raffleCount;
+106:         raffle = Clones.clone(raffleImplementation);
+107:         // The fresh fixed-target clone can initialize only once; this function is nonReentrant and atomic.
+108:         // slither-disable-next-line reentrancy-no-eth
+109:         IRaffle(raffle)
+110:             .initialize(
+111:                 IRaffle.RaffleInitParams({
+112:                 sponsor: msg.sender,
+113:                 sponsorRecipient: params.sponsorRecipient,
+114:                 protocolTreasury: protocolTreasury,
+115:                 prizeToken: params.prizeToken,
+116:                 prizeTokenId: params.prizeTokenId,
+117:                 raffleId: raffleId,
+118:                 reserveEntries: params.reserveEntries,
+119:                 endTime: params.endTime
+120:             })
+121:             );
+122: 
+123:         raffleById[raffleId] = raffle;
+124:         idByRaffle[raffle] = raffleId;
+125:         isRaffle[raffle] = true;
+126: 
+127:         IERC721 prize = IERC721(params.prizeToken);
+128:         prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId);
+129:         if (prize.ownerOf(params.prizeTokenId) != raffle) {
+130:             revert PrizeEscrowVerificationFailed(raffle, params.prizeToken, params.prizeTokenId);
+131:         }
+132:         if (IRaffle(raffle).status() != IRaffle.Status.Active) {
+133:             revert PrizeEscrowVerificationFailed(raffle, params.prizeToken, params.prizeTokenId);
+134:         }
+135: 
+136:         emit RaffleCreated(
+137:             raffleId,
+138:             raffle,
+139:             msg.sender,
+140:             params.sponsorRecipient,
+141:             params.prizeToken,
+142:             params.prizeTokenId,
+143:             quoteToken,
+144:             protocolTreasury,
+145:             params.reserveEntries,
+
+### target/packages/contracts/src/RaffleFactory.sol:150-180
+150:     // Private view helpers
+151: 
+152:     /// @dev Validates the sponsor-selected token, recipient, reserve, and supported ERC-721 interface before cloning.
+153:     /// @param params Prospective raffle configuration supplied by the sponsor.
+154:     function _validateCreateParams(CreateRaffleParams calldata params) private view {
+155:         _requireContract(params.prizeToken);
+156:         if (params.sponsorRecipient == address(0)) revert ZeroAddress();
+157:         if (
+158:             params.prizeToken == address(this) || params.prizeToken == quoteToken || params.prizeToken == vrfWrapper
+159:                 || params.prizeToken == raffleImplementation || isRaffle[params.prizeToken]
+160:         ) {
+161:             revert UnsafeProtocolDestination(params.prizeToken);
+162:         }
+163:         if (
+164:             params.sponsorRecipient == address(this) || params.sponsorRecipient == quoteToken
+165:                 || params.sponsorRecipient == vrfWrapper || params.sponsorRecipient == params.prizeToken
+166:                 || params.sponsorRecipient == raffleImplementation || isRaffle[params.sponsorRecipient]
+167:         ) {
+168:             revert UnsafeProtocolDestination(params.sponsorRecipient);
+169:         }
+170: 
+171:         bool supports721 = false;
+172:         try IERC165(params.prizeToken).supportsInterface(type(IERC721).interfaceId) returns (bool supported) {
+173:             supports721 = supported;
+174:         } catch {
+175:             revert UnsupportedPrizeToken(params.prizeToken);
+176:         }
+177:         if (!supports721) revert UnsupportedPrizeToken(params.prizeToken);
+178:         if (params.reserveEntries == 0) revert ZeroReserveEntries();
+179:     }
+180: 
+
+### target/packages/contracts/src/Raffle.sol:176-241
+176:     function initialize(RaffleInitParams calldata params) external override {
+177:         if (initialized) revert AlreadyInitialized();
+178:         if (msg.sender != factory) revert OnlyFactory();
+179:         initialized = true;
+180: 
+181:         if (
+182:             params.sponsor == address(0) || params.sponsorRecipient == address(0)
+183:                 || params.protocolTreasury == address(0) || params.prizeToken == address(0)
+184:         ) {
+185:             revert ZeroAddress();
+186:         }
+187:         if (_isProtocolDestination(params.sponsor, params.prizeToken)) {
+188:             revert UnsafeProtocolDestination(params.sponsor);
+189:         }
+190:         if (_isProtocolDestination(params.protocolTreasury, params.prizeToken)) {
+191:             revert UnsafeProtocolDestination(params.protocolTreasury);
+192:         }
+193:         if (_isProtocolDestination(params.sponsorRecipient, params.prizeToken)) {
+194:             revert UnsafeProtocolDestination(params.sponsorRecipient);
+195:         }
+196: 
+197:         sponsor = params.sponsor;
+198:         sponsorRecipient = params.sponsorRecipient;
+199:         protocolTreasury = params.protocolTreasury;
+200:         prizeToken = IERC721(params.prizeToken);
+201:         prizeTokenId = params.prizeTokenId;
+202:         raffleId = params.raffleId;
+203:         reserveEntries = params.reserveEntries;
+204:         endTime = params.endTime;
+205:         status = Status.AwaitingPrize;
+206:     }
+207: 
+208:     /// @inheritdoc IRaffle
+209:     function buyEntries(address recipient, uint128 entryCount)
+210:         external
+211:         override
+212:         nonReentrant
+213:         returns (uint256 ticketId)
+214:     {
+215:         _requireStatus(Status.Active);
+216:         if (block.timestamp >= endTime) revert SaleEnded(endTime, block.timestamp);
+217:         if (recipient == address(0)) revert InvalidRecipient();
+218:         if (entryCount == 0) revert ZeroEntryCount();
+219:         if (entryCount > type(uint128).max - totalEntries) {
+220:             revert TotalEntriesOverflow(totalEntries, entryCount);
+221:         }
+222: 
+223:         uint256 grossAmount = uint256(entryCount) * ENTRY_PRICE;
+224:         quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount);
+225: 
+226:         uint128 firstEntry = totalEntries + 1;
+227:         uint128 lastEntry = totalEntries + entryCount;
+228:         ticketId = uint256(ticketCount) + 1;
+229: 
+230:         totalEntries = lastEntry;
+231:         ++ticketCount;
+232:         _ticketRanges[ticketId] = TicketRange({ firstEntry: firstEntry, lastEntry: lastEntry });
+233:         unsettledPot += grossAmount;
+234: 
+235:         _safeMint(recipient, ticketId);
+236:         emit TicketPurchased(msg.sender, recipient, ticketId, firstEntry, lastEntry, entryCount, grossAmount);
+237:     }
+238: 
+239:     /// @inheritdoc IRaffle
+240:     function requestDraw() external payable override nonReentrant returns (uint256 requestId) {
+241:         _requireStatus(Status.Active);
+
+### target/packages/contracts/src/Raffle.sol:276-343
+276:     function enableRefunds() external override nonReentrant {
+277:         uint256 deadline;
+278: 
+279:         if (status == Status.Active) {
+280:             if (totalEntries == 0) {
+281:                 deadline = endTime;
+282:                 if (msg.sender != sponsor && block.timestamp < deadline) {
+283:                     revert RefundsNotAvailable(deadline, block.timestamp);
+284:                 }
+285:             } else {
+286:                 deadline = drawRequestDeadline();
+287:                 if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+288:             }
+289:         } else if (status == Status.Drawing) {
+290:             deadline = callbackDeadline();
+291:             if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+292:         } else {
+293:             revert InvalidStatus(status);
+294:         }
+295: 
+296:         uint256 liability = unsettledPot;
+297:         unsettledPot = 0;
+298:         remainingRefundLiability = liability;
+299:         status = Status.Refunding;
+300:         emit RefundsEnabled(msg.sender, liability);
+301:     }
+302: 
+303:     /// @inheritdoc IRaffle
+304:     function settleWinningTicket(uint256 ticketId) external override nonReentrant returns (uint256 cashAmount) {
+305:         cashAmount = _settleWinningTicket(ticketId);
+306:     }
+307: 
+308:     /// @inheritdoc IRaffle
+309:     function redeemWinningTicket(uint256 ticketId) external override nonReentrant returns (uint256 cashAmount) {
+310:         if (winnerRedeemed) revert WinningTicketAlreadyRedeemed();
+311:         Status result = status;
+312:         if (result != Status.NftWon && result != Status.CashWon) revert InvalidStatus(result);
+313: 
+314:         if (!settlementComplete) {
+315:             _settleWinningTicket(ticketId);
+316:         } else if (ticketId != winningTicketId) {
+317:             revert WinningTicketMismatch(ticketId, winningTicketId);
+318:         }
+319: 
+320:         address winner = ownerOf(ticketId);
+321:         if (msg.sender != winner) revert NotTicketOwner(ticketId, msg.sender, winner);
+322: 
+323:         winnerRecipient = winner;
+324:         winnerRedeemed = true;
+325:         _burn(ticketId);
+326: 
+327:         address deliveredPrizeToken = address(0);
+328:         uint256 deliveredPrizeTokenId = 0;
+329:         if (result == Status.NftWon) {
+330:             if (prizeClaimed) revert PrizeAlreadyClaimed();
+331:             prizeClaimed = true;
+332:             deliveredPrizeToken = address(prizeToken);
+333:             deliveredPrizeTokenId = prizeTokenId;
+334:             prizeToken.transferFrom(address(this), winner, deliveredPrizeTokenId);
+335:             if (prizeToken.ownerOf(deliveredPrizeTokenId) != winner) {
+336:                 revert PrizeDeliveryVerificationFailed(winner);
+337:             }
+338:         } else {
+339:             cashAmount = winnerProceeds;
+340:             if (cashAmount == 0) revert NoWinnerProceeds();
+341:             winnerProceeds = 0;
+342:             _transferQuote(winner, cashAmount);
+343:         }
+
+### target/packages/contracts/src/Raffle.sol:374-385
+374:     /// @inheritdoc IRaffle
+375:     function releaseSponsorProceeds() external override nonReentrant returns (uint256 amount) {
+376:         amount = sponsorProceeds;
+377:         if (amount == 0) revert NoSponsorProceeds();
+378:         sponsorProceeds = 0;
+379:         address recipient = sponsorRecipient;
+380:         _transferQuote(recipient, amount);
+381:         emit SponsorProceedsReleased(msg.sender, recipient, amount);
+382:     }
+383: 
+384:     /// @inheritdoc IRaffle
+385:     function releaseProtocolFees() external override nonReentrant returns (uint256 amount) {
+
+### target/packages/contracts/src/Raffle.sol:500-552
+500:         }
+501:         previousOwner = super._update(to, ticketId, auth);
+502:     }
+503: 
+504:     /// @dev Authenticated randomness selects only an entry. No ticket search, loop, user call, or token transfer
+505:     ///      occurs. In-flight, late, wrong-request, duplicate, and ABI-decodable wrong-length callbacks are ignored for
+506:     ///      liveness; malformed ABI calldata reverts during Solidity decoding before this handler runs.
+507:     /// @param requestId Wrapper-authenticated request identifier supplied by the callback.
+508:     /// @param randomWords Callback words; exactly one word is required for resolution.
+509:     function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+510:         if (
+511:             _requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1
+512:                 || block.timestamp >= callbackDeadline()
+513:         ) {
+514:             emit VrfCallbackIgnored(requestId, vrfRequestId, status);
+515:             return;
+516:         }
+517: 
+518:         uint128 resolvedEntry = uint128((randomWords[0] % uint256(totalEntries)) + 1);
+519:         winningEntry = resolvedEntry;
+520:         resolvedAt = uint64(block.timestamp);
+521:         status = totalEntries >= reserveEntries ? Status.NftWon : Status.CashWon;
+522: 
+523:         emit RaffleResolved(requestId, resolvedEntry, status);
+524:     }
+525: 
+526:     // Private state-changing helpers
+527: 
+528:     /// @dev Validates the winning range once and allocates all terminal quote-token liabilities without transferring
+529:     ///      an asset or reading ticket ownership. Both percentage allocations round down; sponsor proceeds are the
+530:     ///      remainder.
+531:     /// @param ticketId Ticket whose inclusive range must contain the selected winning entry.
+532:     /// @return cashAmount Raw six-decimal quote-token units allocated to the cash winner, or zero for `NftWon`.
+533:     function _settleWinningTicket(uint256 ticketId) private returns (uint256 cashAmount) {
+534:         if (settlementComplete) revert SettlementAlreadyComplete();
+535:         Status result = status;
+536:         if (result != Status.NftWon && result != Status.CashWon) revert InvalidStatus(result);
+537: 
+538:         _requireWinningTicket(ticketId);
+539:         uint256 grossPot = unsettledPot;
+540:         uint256 protocolFee = Math.mulDiv(grossPot, RaffleConstants.PROTOCOL_FEE_BPS, RaffleConstants.BPS);
+541:         uint256 sponsorAmount;
+542: 
+543:         if (result == Status.NftWon) {
+544:             sponsorAmount = grossPot - protocolFee;
+545:         } else {
+546:             cashAmount = Math.mulDiv(grossPot, RaffleConstants.CASH_WINNER_BPS, RaffleConstants.BPS);
+547:             sponsorAmount = grossPot - protocolFee - cashAmount;
+548:             winnerProceeds = cashAmount;
+549:         }
+550: 
+551:         settlementComplete = true;
+552:         winningTicketId = ticketId;
+

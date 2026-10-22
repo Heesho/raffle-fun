@@ -1,0 +1,112 @@
+{
+  "id": "009",
+  "prompt": "Determine whether the code at target implements this one requirement.\n\nRequirement REQ-20 (invariant, mandatory), from target/DESIGN.md target/DESIGN.md:L2:\n\"remainder must be allocated without loss.\"\nHolds if: All residual amounts from rounding remain allocated and are not lost.\n\nContext: {\"language\":\"Solidity 0.8.36\",\"codePaths\":[\"target/packages/contracts/src/Raffle.sol\",\"target/packages/contracts/src/RaffleFactory.sol\",\"target/packages/contracts/src/libraries/RaffleConstants.sol\",\"target/packages/contracts/src/interfaces/IRaffle.sol\",\"target/packages/contracts/src/interfaces/IRaffleFactory.sol\"],\"documents\":[{\"path\":\"target/DESIGN.md\",\"describes\":\"Authoritative clean protocol design: immutable factory and isolated clones, NFT escrow, entry tickets, outcome economics and rounding, draw and refund deadlines, settlement/redemption, independent claims, trust boundaries, and advisory frontend discovery.\"},{\"path\":\"target/packages/contracts/src/interfaces/IRaffle.sol\",\"describes\":\"Raffle lifecycle and API semantics, entry ranges and bearer tickets, draw timing and callback handling, settlement and redemption, refund batches, payouts, destination restrictions, state queries and events.\"},{\"path\":\"target/packages/contracts/src/interfaces/IRaffleFactory.sol\",\"describes\":\"Immutable factory configuration, atomic raffle creation and prize escrow, sponsor parameters and validation, and canonical raffle registry queries.\"},{\"path\":\"target/packages/contracts/src/libraries/RaffleConstants.sol\",\"describes\":\"Fixed v1 price, six-decimal token precision, fee and cash-winner percentages, sponsor remainder, refund batch bound, maximum sale duration, draw timeouts, and VRF parameters.\"},{\"path\":\"target/packages/contracts/src/Raffle.sol\",\"describes\":\"Raffle implementation NatSpec adds constant-time entry operations, locked implementation and isolated clone storage, native-transfer rejection, exact prize acceptance, ticket destination checks, callback behavior, storage-only settlement, and quote-token assumptions.\"},{\"path\":\"target/packages/contracts/src/RaffleFactory.sol\",\"describes\":\"Factory implementation NatSpec specifies immutable ownerless operation, deployment dependency checks and canonical token assumptions, atomic creation, and supported prize validation.\"}]}\n\nFind the code responsible for this requirement and read it. Read the functions it calls — a bound looks enforced\nwhen the value came back from a function whose name implies a check, and the check turns out to sit on a branch\nthis path does not take. Where a requirement is enforced across several functions, follow it across them.\n\nWrite the analysis to audit/S5/spec-compliance/requirements/01-REQ-20.md\nusing the Write tool, then return the record. The record is a compact index into that file, not a summary of it.\n\nIf you have an analysis format and per-domain notes in your instructions, follow them: what counts as\nenforcement, and where it hides, differs between contracts, C, services, and firmware, and the places worth\nsearching before concluding an absence are listed there per domain.\n\nChoosing a verdict:\n- 'implemented' means you found the enforcement and read it. Not that you found a function with a promising name.\n- 'partial' means it holds on some paths and not others. Say which paths, in 'reasoning'.\n- 'contradicted' means the code does something incompatible with the requirement.\n- 'stronger-than-spec' means the code enforces more than the document asks for.\n- 'absent' means you looked and it is not there. This verdict rests entirely on 'searched': record the patterns\n  and symbols you tried and what each returned, so a reader can tell a real absence from a search that stopped\n  early. An absence claimed without that record is worthless.\n- 'undecidable' means the requirement is too vague to check. That is a finding about the document; put the reason\n  in 'documentProblem'.\n\nJudge the code against this requirement only. If you notice something else wrong, that is not this record's\nbusiness. Use only the documentation and code in front of you — what a protocol of this kind usually does is not\nevidence about what this one does.\n\nCite a file and line for every claim about the code, and quote the document verbatim for every\nclaim about intent. Where you cannot cite, do not assert — say what you could not establish. A short answer with\ncited claims is worth more than a long one with padded ones.",
+  "options": {
+    "schema": {
+      "type": "object",
+      "required": [
+        "requirementId",
+        "verdict",
+        "confidence",
+        "searched",
+        "reasoning",
+        "analysisFile"
+      ],
+      "properties": {
+        "requirementId": {
+          "type": "string"
+        },
+        "analysisFile": {
+          "type": "string",
+          "description": "path the analysis was actually written to"
+        },
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "implemented",
+            "partial",
+            "contradicted",
+            "absent",
+            "stronger-than-spec",
+            "undecidable"
+          ],
+          "description": "undecidable when the requirement is too vague to check against code — that is a finding about the document"
+        },
+        "confidence": {
+          "type": "string",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "description": "how sure you are of the verdict, not how severe it is"
+        },
+        "evidence": {
+          "type": "array",
+          "description": "The code that implements, contradicts, or partially covers the requirement.",
+          "items": {
+            "type": "object",
+            "required": [
+              "file",
+              "lines",
+              "quote"
+            ],
+            "properties": {
+              "file": {
+                "type": "string"
+              },
+              "lines": {
+                "type": "string",
+                "description": "e.g. L108 or L89-L135"
+              },
+              "quote": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string",
+                "description": "what this line does for the requirement"
+              }
+            }
+          }
+        },
+        "searched": {
+          "type": "array",
+          "description": "Where you looked, and what you found. An absent verdict rests entirely on this: a reader must be able to tell a real absence from a search that stopped early.",
+          "items": {
+            "type": "object",
+            "required": [
+              "where",
+              "result"
+            ],
+            "properties": {
+              "where": {
+                "type": "string",
+                "description": "pattern, symbol, or file searched"
+              },
+              "result": {
+                "type": "string",
+                "description": "e.g. \"3 hits, all in tests\" or \"0 hits\""
+              }
+            }
+          }
+        },
+        "reasoning": {
+          "type": "string",
+          "description": "why this verdict and not the adjacent one"
+        },
+        "documentProblem": {
+          "type": "string",
+          "description": "Set if the requirement itself is ambiguous, self-contradictory, or contradicts another document."
+        }
+      }
+    },
+    "label": "REQ-20",
+    "phase": "Align",
+    "agentType": "spec-to-code-compliance:spec-compliance-checker"
+  },
+  "accepted_model": "gpt-6-astra",
+  "accepted_effort": "ultra",
+  "provider_returned_model": "unknown",
+  "provider_returned_effort": "unknown",
+  "fallback_enabled": false
+}

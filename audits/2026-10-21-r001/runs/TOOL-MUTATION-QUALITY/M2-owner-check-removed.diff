@@ -1,0 +1,11 @@
+--- baseline/src/Raffle.sol
++++ M2-owner-check-removed/src/Raffle.sol
+@@ -318,7 +318,7 @@
+         }
+ 
+         address winner = ownerOf(ticketId);
+-        if (msg.sender != winner) revert NotTicketOwner(ticketId, msg.sender, winner);
++        // MUTANT: winner caller authorization removed
+ 
+         winnerRecipient = winner;
+         winnerRedeemed = true;

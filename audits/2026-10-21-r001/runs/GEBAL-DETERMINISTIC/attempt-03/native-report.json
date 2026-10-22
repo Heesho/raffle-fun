@@ -1,0 +1,3059 @@
+{
+  "schemaVersion": 1,
+  "brand": "Gebal",
+  "domain": "gebal.ai",
+  "run": {
+    "schemaVersion": 1,
+    "id": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+    "createdAt": "2026-10-21T08:31:57.302Z",
+    "planId": "20cd66d3-140e-4650-972e-e0cfa68cc525",
+    "snapshotId": "1cd06bfb-8fe3-470d-9dc6-9dba16753b66",
+    "state": "succeeded",
+    "finishedAt": "2026-10-21T08:33:50.325Z",
+    "cancelRequested": false,
+    "costUsd": null,
+    "reservedTokens": 0,
+    "usedTokens": 0
+  },
+  "plan": {
+    "schemaVersion": 1,
+    "id": "20cd66d3-140e-4650-972e-e0cfa68cc525",
+    "createdAt": "2026-10-21T08:31:56.119Z",
+    "snapshotId": "1cd06bfb-8fe3-470d-9dc6-9dba16753b66",
+    "snapshotHash": "4ccea2a55fbb3cf6320126f9ffb175c3029d2b94e09b3d1ff4592e1cbc8bd4de",
+    "scopeId": "f54fcffe-c77f-4b11-9a04-bf755cb518b9",
+    "diagnosis": {
+      "kind": "foundry",
+      "supported": true,
+      "compiler": "0.8.36",
+      "evm": "cancun",
+      "settings": {
+        "src": "packages/contracts/src",
+        "test": "packages/contracts/test/foundry",
+        "script": "script",
+        "out": "out",
+        "libs": [
+          "packages/contracts/lib",
+          "packages/contracts/node_modules"
+        ],
+        "solc_version": "0.8.36",
+        "evm_version": "cancun",
+        "optimizer": true,
+        "optimizer_runs": 200,
+        "via_ir": false,
+        "fuzz": {
+          "runs": 1000,
+          "seed": "0x524146464c45"
+        },
+        "invariant": {
+          "runs": 256,
+          "depth": 64,
+          "fail_on_revert": false
+        },
+        "gas_reports": [
+          "Raffle",
+          "RaffleFactory"
+        ],
+        "projectPath": "packages/contracts",
+        "remappings": [
+          "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+          "@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+          "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+          "@openzeppelin/contracts/=packages/contracts/node_modules/@openzeppelin/contracts/",
+          "forge-std/=packages/contracts/lib/forge-std/src/"
+        ]
+      },
+      "issues": [],
+      "notes": [
+        "Exact file remappings were resolved from uniquely matching authorized library paths and are included in the approved plan.",
+        "Only profile.default is selected; other profiles, RPC endpoints and formatting configuration are not loaded.",
+        "Controller overrides output/cache/script paths, denies FFI/filesystem/RPC and dependency downloads, and disables automatic remappings.",
+        "Configured fuzz/invariant campaigns are replaced by the disclosed fixed seed and bounded campaign. Tests requiring denied capabilities cannot be validated.",
+        "Source-only intake does not establish compiler, test, property or security coverage."
+      ]
+    },
+    "tasks": [
+      "intake",
+      "foundry-build",
+      "foundry-test",
+      "slither"
+    ],
+    "limits": {
+      "seconds": 900,
+      "memoryMb": 2048,
+      "cpus": 2,
+      "pids": 128,
+      "diskMb": 512,
+      "maxOutputBytes": 8388608,
+      "tokens": 0,
+      "maxTasks": 4
+    },
+    "image": "sha256:470f595a2226b79d436bd27ab38e789667f847234c8034beee470b086839bfd1",
+    "provider": null,
+    "egress": [],
+    "methodology": "native-review-v1",
+    "adapterVersion": "0.2.0",
+    "hash": "17ba9ff6087c56fda80175f8f5df89ec19c5a8a8a2b45fc2cd51ce2ad67985fd"
+  },
+  "snapshot": {
+    "schemaVersion": 1,
+    "id": "1cd06bfb-8fe3-470d-9dc6-9dba16753b66",
+    "createdAt": "2026-10-21T08:31:55.965Z",
+    "scopeId": "f54fcffe-c77f-4b11-9a04-bf755cb518b9",
+    "hash": "4ccea2a55fbb3cf6320126f9ffb175c3029d2b94e09b3d1ff4592e1cbc8bd4de",
+    "files": [
+      {
+        "path": "package.json",
+        "hash": "ac442d3bb7e97501df2adc4f087560113e864c85b321de61ff6d5800ac373aa8",
+        "bytes": 1875,
+        "lines": 45
+      },
+      {
+        "path": "packages/contracts/foundry.toml",
+        "hash": "0fdce809ea1675dac422cff420a3402b2f28aabed0631595e43823033fa8ef50",
+        "bytes": 1228,
+        "lines": 49
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/package.json",
+        "hash": "d76d7594be85fdbffe91ed3918eaf1fb67ec9b00f453482f97c011408b024b70",
+        "bytes": 517,
+        "lines": 17
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/src/Base.sol",
+        "hash": "76b05dda37981797d3d403f29fc6cad79b46e2fc11da47d649ff13acb69158b2",
+        "bytes": 2248,
+        "lines": 49
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/src/console.sol",
+        "hash": "894dc6e40fe62d887df6243112d8c775df2db60babc3024ee04a5564b90af64d",
+        "bytes": 71039,
+        "lines": 1600
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/src/console2.sol",
+        "hash": "62d8ccbd118fec4f99c5e847322d6ca0d7fbe6a0a16e5a26b0590869fcd69357",
+        "bytes": 131,
+        "lines": 5
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/src/interfaces/IMulticall3.sol",
+        "hash": "890a5b361034daa6006b3ba2275e743cd6197c4d81e3df5732cdce731d3c0868",
+        "bytes": 2141,
+        "lines": 69
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/src/safeconsole.sol",
+        "hash": "fd74d8ed377e1470217cd6dce7699dcbc4e79b3893f17ae2a298c0e7e4418181",
+        "bytes": 408927,
+        "lines": 13249
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/src/StdAssertions.sol",
+        "hash": "203de35565c3d68b6599f84e88068f79c23b53a80d18c46056e85d4c5f48613c",
+        "bytes": 58829,
+        "lines": 1301
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/src/StdChains.sol",
+        "hash": "981b7ce12f4bc3193c7914c68f51be74d1d03c33732db894f5d36ad8025ab4f5",
+        "bytes": 16053,
+        "lines": 317
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/src/StdCheats.sol",
+        "hash": "988843996b3e8ebab594c659fba9502bab437220f84e7ded9a9e3f6e730d358e",
+        "bytes": 39150,
+        "lines": 923
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/src/StdConstants.sol",
+        "hash": "17dfd996881264de1e6af6697a3dc7a56ae8ff0717e4cb4f1685bd7fb3a45147",
+        "bytes": 1882,
+        "lines": 31
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/src/StdError.sol",
+        "hash": "c1f7271f11a44628810ef6beb2da0c43add131ff9cfcac4d7acd633c269ccf7d",
+        "bytes": 1915,
+        "lines": 34
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/src/StdInvariant.sol",
+        "hash": "7d3a62087c7d06766e99f8e4f4e50997b0ff8730fb304986f2c4cd895a67fbbd",
+        "bytes": 7264,
+        "lines": 162
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/src/StdJson.sol",
+        "hash": "556494110d1e791ce0992bf22c2ac6df5e614122659a97cd1269a8d9dce139c0",
+        "bytes": 14443,
+        "lines": 328
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/src/StdMath.sol",
+        "hash": "7224cea66fc06c7a9d303084cccb14eaedffe4b21b3f9695d06dc590d2894d7d",
+        "bytes": 2938,
+        "lines": 69
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/src/StdStorage.sol",
+        "hash": "2a05304c9cfc32d9edda561c4523cb39e62ad3f2b8145ab1103f70e950805a59",
+        "bytes": 24574,
+        "lines": 583
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/src/StdStyle.sol",
+        "hash": "903ea6f4e4aa31e416b5043abecc09ced41dc78c9ce9dabb5c745337ee13139d",
+        "bytes": 17505,
+        "lines": 411
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/src/StdToml.sol",
+        "hash": "682e9c74bd02de5df7be595d27fa44eeaf0a5d96ad5c2db507065386d35eb433",
+        "bytes": 14097,
+        "lines": 324
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/src/StdUtils.sol",
+        "hash": "52d713d886305184e7ed3b3a2e5941ea1440f071d9c9a4d6fea618135e1d3f67",
+        "bytes": 11980,
+        "lines": 248
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/src/Test.sol",
+        "hash": "2e69383110d088b4c413edf79bb71f9d05e4791625fb7fa53429d34440ea50dd",
+        "bytes": 1075,
+        "lines": 33
+      },
+      {
+        "path": "packages/contracts/lib/forge-std/src/Vm.sol",
+        "hash": "83ad40329215a3bb1644e0ce64fd7276bff3c1f3ebfa1f0919adaa221f2abbdc",
+        "bytes": 141886,
+        "lines": 2658
+      },
+      {
+        "path": "packages/contracts/node_modules/@chainlink/contracts/package.json",
+        "hash": "09e7e20043a74ab3753c28e02a3215e8f578312645946a6f6d390e4f7cd43980",
+        "bytes": 2435,
+        "lines": 70
+      },
+      {
+        "path": "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+        "hash": "f81ec96e909daa2cd27536274a30d916b26d5fc91261bed8d7a6a3e157f3825c",
+        "bytes": 1164,
+        "lines": 32
+      },
+      {
+        "path": "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+        "hash": "a48aaaeaed60e65f04f6c8772e5673dda663dcfa7913fdadd14b412300b9d5f1",
+        "bytes": 3363,
+        "lines": 84
+      },
+      {
+        "path": "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+        "hash": "f3b89bb466c2a79b10c1816d342fbfbec49fe82695cba92bd46e7d31af698011",
+        "bytes": 650,
+        "lines": 28
+      },
+      {
+        "path": "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+        "hash": "8cf045f295b8c6035d14012a9bc2e8ab2b5ce24749a199ca0190519c4bf2dcc0",
+        "bytes": 5055,
+        "lines": 119
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+        "hash": "fa7068f56bc180571a6095be6eaef06d51dbe81e30cb128397d993c9599ecc30",
+        "bytes": 6540,
+        "lines": 163
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+        "hash": "9c3a75a925a6dac9e88b03cddc58d42fe3131b0aaaad84408521f3f7af2f991b",
+        "bytes": 4454,
+        "lines": 87
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+        "hash": "dfb3f56fa928a7c6cae41a7ce2c86b9210fa18d33fa26389099d66a0fa790368",
+        "bytes": 193,
+        "lines": 7
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+        "hash": "0158e2d3e0e28bedd99eec13dcf1a8aa3a70a5b7e4bb2ad709609c95fcc740d1",
+        "bytes": 182,
+        "lines": 7
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/package.json",
+        "hash": "3c1a597cb911ffc2988c038d83ee93e1f8bf0ad17769d6bb0368d08bc350d773",
+        "bytes": 786,
+        "lines": 33
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+        "hash": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+        "bytes": 14522,
+        "lines": 295
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        "hash": "50f34ae16a067a41c2c1091445d11d63788e54c717677cb6d6b0e4cdea2ad21d",
+        "bytes": 10800,
+        "lines": 306
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+        "hash": "0b7132f17d14d1d84b41b0bb429be62dafdff00fd3470f68724d8018eb07f57a",
+        "bytes": 684,
+        "lines": 27
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "hash": "01b6f5c4fa45fd38822b286ecef6daf983d27306dd6362496fa71b3e4600b72c",
+        "bytes": 2781,
+        "lines": 80
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+        "hash": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+        "bytes": 13314,
+        "lines": 281
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        "hash": "ef8e2398c78851bd2ec12bc48d923058c557889d5a3d5ee4919c17ff0fb3517e",
+        "bytes": 16201,
+        "lines": 434
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+        "hash": "33223782ea652dca413702ce92f9f59d91d758a035065b24bbedb7dc60c63a78",
+        "bytes": 792,
+        "lines": 28
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+        "hash": "ff0eb9902bf0ac099205615fac90eacf34fae637571b05aab3ea35dea53d5f17",
+        "bytes": 4929,
+        "lines": 136
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+        "hash": "eafee3ffdc7cb2fba4bf6bd16fb28f8e5b4679742e81c2ad42a1b1df5c179feb",
+        "bytes": 997,
+        "lines": 29
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+        "hash": "b48e95db8c85866c1d88af8e82f346e0d22d24b5aac5b936079d958c72e13b9f",
+        "bytes": 1923,
+        "lines": 51
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+        "hash": "3ce9120a27934c75a074cb785d3a88868069ef6529dbe4dc6b845af0836f3c70",
+        "bytes": 14737,
+        "lines": 333
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+        "hash": "847fda5460fee70f56f4200f59b82ae622bb03c79c77e67af010e31b7e2cc5b6",
+        "bytes": 963,
+        "lines": 29
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+        "hash": "9623aa59745a23a72f313adc5adbf583968bf366a7cbf3fc43c1148d7d2c3c86",
+        "bytes": 4372,
+        "lines": 92
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+        "hash": "0704b9d6c032cca8512a3bc3f30f49f86f1f03102d2896a3d23e794b82efea66",
+        "bytes": 896,
+        "lines": 35
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+        "hash": "61a2b12c96857aaa35f48aeda67a4281637a42494c0b3795be0ae976aa7b3793",
+        "bytes": 879,
+        "lines": 26
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+        "hash": "9055c2994b37dea1a41b7b7926dcb510f05dbe2540b0aafc5fbee9558fffd0ca",
+        "bytes": 871,
+        "lines": 26
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol",
+        "hash": "e128cbe9c6c406d5a42c26e4079c0a95b369ce552f2d0c3dfd2fcb836c5708f2",
+        "bytes": 5547,
+        "lines": 128
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+        "hash": "bdfdbe133991c0c78042957ff5cd97167926fcaf6d15664f3835a076cb066457",
+        "bytes": 32664,
+        "lines": 764
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+        "hash": "5779bc848bde39f1ad7bc02b4f708a0040888e0083b1a33f119cd94639350134",
+        "bytes": 34940,
+        "lines": 1163
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+        "hash": "1ed50b1056af886752f0fb48a0165d381e69bb4a4b18b893b066dc144a7e08d7",
+        "bytes": 2613,
+        "lines": 69
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+        "hash": "270fc8401c1a13fae6a7a4a2dd6e381b95d658896701e51f0d3e2688acab3dec",
+        "bytes": 1973,
+        "lines": 58
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+        "hash": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8",
+        "bytes": 4766,
+        "lines": 120
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+        "hash": "75704538dcb223239280c6726d9a31cf769a7816718517c997fc7d63bdb70778",
+        "bytes": 4182,
+        "lines": 144
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+        "hash": "e318709bbe73a7831d64c1351e8bdc43780b245f25191234e361e6ab9b98c67b",
+        "bytes": 21538,
+        "lines": 533
+      },
+      {
+        "path": "packages/contracts/package.json",
+        "hash": "2f46b8f46ed3de275a3a6d097c86a888fece719151bdf4e171495dc12e6802ad",
+        "bytes": 1583,
+        "lines": 45
+      },
+      {
+        "path": "packages/contracts/remappings.txt",
+        "hash": "cbf6730be9c6b6daa1855953ba581d96f14e2dbc3bc95ca3bc2d92cfd231acaa",
+        "bytes": 93,
+        "lines": 3
+      },
+      {
+        "path": "packages/contracts/src/interfaces/IRaffle.sol",
+        "hash": "a43ede9e8802d636a566fb225ed65bdf70f06d17f4734a1632a0a9f84aa5b2dd",
+        "bytes": 29703,
+        "lines": 522
+      },
+      {
+        "path": "packages/contracts/src/interfaces/IRaffleFactory.sol",
+        "hash": "747d238e4c7dc5b517f91c796dec87d9ddbfec9c626d1ff21467c60d780d03cf",
+        "bytes": 7875,
+        "lines": 151
+      },
+      {
+        "path": "packages/contracts/src/libraries/RaffleConstants.sol",
+        "hash": "0893f1a70ac03ad557e0b4c8bdf6a2f73d317f8417d1b4a3c1a571b893ed54b6",
+        "bytes": 2172,
+        "lines": 44
+      },
+      {
+        "path": "packages/contracts/src/mocks/AdversarialVRFV2PlusWrapper.sol",
+        "hash": "c0391b877a383f271e00c16a0c4fe831e380b1634b2099002d46e593a8cabab7",
+        "bytes": 5194,
+        "lines": 133
+      },
+      {
+        "path": "packages/contracts/src/mocks/FalseERC20.sol",
+        "hash": "1093511cdb9050e719a26fc5d776da4302da8acebb88a45f6dcf635de0953f16",
+        "bytes": 1439,
+        "lines": 46
+      },
+      {
+        "path": "packages/contracts/src/mocks/MockERC20.sol",
+        "hash": "5578f1f090f4260641cd6b3a16cdc9c199e43746769100ec970567a814276952",
+        "bytes": 824,
+        "lines": 25
+      },
+      {
+        "path": "packages/contracts/src/mocks/MockERC721.sol",
+        "hash": "1d4881761833e5b8e674602d6afd3a1ccf1c2c0e71d99884d02b61a35218accd",
+        "bytes": 582,
+        "lines": 19
+      },
+      {
+        "path": "packages/contracts/src/mocks/MockVRFV2PlusWrapper.sol",
+        "hash": "b4ac2b9a5edcb7151d59769202e74514d59944523c155602abf8b1f97544fbc6",
+        "bytes": 3617,
+        "lines": 87
+      },
+      {
+        "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+        "hash": "b09b65daa43acd089830d7ba011ec21ed1f0c6786f24b51738706b40235ca768",
+        "bytes": 2948,
+        "lines": 81
+      },
+      {
+        "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+        "hash": "b5b24860fa92bdd99b24003468a82dbb67d13351f9d87dae33338efc63854146",
+        "bytes": 6190,
+        "lines": 150
+      },
+      {
+        "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+        "hash": "98aabad43fa281c85f9936fc4e61bc5dc5c510acfca2c829c9ff2a50cde3cab2",
+        "bytes": 2075,
+        "lines": 53
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "hash": "6e4c977922c3e39fafaa8c4c4fb74a971f1817eca9b6552eb8a540969f968617",
+        "bytes": 26421,
+        "lines": 615
+      },
+      {
+        "path": "packages/contracts/src/RaffleFactory.sol",
+        "hash": "d0e62b34faa42513fd968f915262728fe66a15c4b9af13a3c66f496704142ace",
+        "bytes": 8286,
+        "lines": 187
+      },
+      {
+        "path": "packages/contracts/test/foundry/fuzz/RaffleFuzz.t.sol",
+        "hash": "e79b8a11f43c35c5e89ccca9c8f78a83c4c9bbfdf8fdcc6316b828233c7e5983",
+        "bytes": 11779,
+        "lines": 275
+      },
+      {
+        "path": "packages/contracts/test/foundry/invariant/RaffleHandler.sol",
+        "hash": "4722dc34b4eeac5d6a440a245e62cdb0361b47d78ea6c89fcac7b20f4d61954e",
+        "bytes": 9707,
+        "lines": 258
+      },
+      {
+        "path": "packages/contracts/test/foundry/invariant/RaffleInvariant.t.sol",
+        "hash": "e09183f7d372c825db399178da3baf24c1e0e96ae964a47fea7fb83500eaf674",
+        "bytes": 9219,
+        "lines": 200
+      },
+      {
+        "path": "packages/contracts/test/foundry/security/RaffleSecurity.t.sol",
+        "hash": "7a693db63db922569f496ede82dba155224366e558eb5f5ec7cad00b5fecd194",
+        "bytes": 14230,
+        "lines": 347
+      },
+      {
+        "path": "packages/contracts/test/foundry/security/VrfAdversarial.t.sol",
+        "hash": "7311294790e13f5b52904878eb5dffbb7641fab9a61196da1325cc815d628dc3",
+        "bytes": 9985,
+        "lines": 238
+      },
+      {
+        "path": "packages/contracts/test/foundry/unit/Raffle.t.sol",
+        "hash": "839ce4036194cad8430e8d28a13ce952d8094386941b2437aa32892a72d46fd0",
+        "bytes": 57208,
+        "lines": 1375
+      },
+      {
+        "path": "pnpm-lock.yaml",
+        "hash": "3c277879a07bda9a4bd9788b810a000b3cb58873fc84d515e4661e0a4ed422c4",
+        "bytes": 423390,
+        "lines": 15674
+      }
+    ],
+    "excluded": [],
+    "dependencyLocks": {
+      "pnpm-lock.yaml": "3c277879a07bda9a4bd9788b810a000b3cb58873fc84d515e4661e0a4ed422c4"
+    }
+  },
+  "scope": {
+    "schemaVersion": 1,
+    "id": "f54fcffe-c77f-4b11-9a04-bf755cb518b9",
+    "createdAt": "2026-10-21T08:31:55.894Z",
+    "projectId": "125dfafc-321f-4b54-8430-f61b10d419c4",
+    "authorized": true,
+    "paths": [
+      "packages/contracts/src",
+      "packages/contracts/test/foundry",
+      "packages/contracts/foundry.toml",
+      "packages/contracts/remappings.txt",
+      "packages/contracts/package.json",
+      "package.json",
+      "pnpm-lock.yaml"
+    ],
+    "projectPath": "packages/contracts",
+    "dependencyPaths": [
+      "packages/contracts/lib/forge-std",
+      "packages/contracts/node_modules"
+    ],
+    "exclusions": [],
+    "requirements": "Authorized frozen raffle.fun deterministic checks. Verify compiler/build and execute selected existing local unit, fuzz, invariant, security tests plus native Slither. Intended behavior is escrowed prize/ticket raffle lifecycle with factory creation and Chainlink wrapper randomness. No model review or provider egress in this independently bound test-inclusive context. All tests and scanner outputs are untrusted observations requiring later triage.",
+    "permission": "authorized"
+  },
+  "project": {
+    "schemaVersion": 1,
+    "id": "125dfafc-321f-4b54-8430-f61b10d419c4",
+    "createdAt": "2026-10-21T08:31:55.892Z",
+    "name": "gebal-deterministic-target",
+    "root": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/gebal-deterministic-target",
+    "origin": "local-project"
+  },
+  "tasks": [
+    {
+      "schemaVersion": 1,
+      "id": "c4e4ff45-2d69-4442-8e30-75d96c4fcc71",
+      "createdAt": "2026-10-21T08:31:57.303Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "kind": "intake",
+      "state": "succeeded",
+      "dependencies": [],
+      "attempts": 1,
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "detail": "Recorded 78 authorized files. Supported Foundry configuration.",
+      "evidence": [
+        "4ea173aa96cc67244c142211b3e734badcab727e74ccf9b32a4f193cebfbd649"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "186e8fc4-cea7-4d8f-87f1-d533e715ce43",
+      "createdAt": "2026-10-21T08:31:57.303Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "kind": "foundry-build",
+      "state": "succeeded",
+      "dependencies": [
+        "c4e4ff45-2d69-4442-8e30-75d96c4fcc71"
+      ],
+      "attempts": 1,
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "detail": "Compiler completed for the pinned source and settings.",
+      "evidence": [
+        "4e3bb0b8334775ed12376d6a8f77d53ee2e319a9603ab879131df80f2538d1c4"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "d2443ac0-0c7d-4855-b8ce-e1de3ef57dce",
+      "createdAt": "2026-10-21T08:31:57.303Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "kind": "foundry-test",
+      "state": "succeeded",
+      "dependencies": [
+        "186e8fc4-cea7-4d8f-87f1-d533e715ce43"
+      ],
+      "attempts": 1,
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "detail": "Existing tests: 79 passed, 0 failed, 0 skipped.",
+      "evidence": [
+        "661bfdbd255cbed699efc4d449a9174de26785bdcb93b36d45a9408425490a2c"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "bc52e010-93cb-4045-b39e-75bea5e8fc50",
+      "createdAt": "2026-10-21T08:31:57.303Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "kind": "slither",
+      "state": "succeeded",
+      "dependencies": [
+        "c4e4ff45-2d69-4442-8e30-75d96c4fcc71"
+      ],
+      "attempts": 1,
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "detail": "Slither completed; 34 analyzer observations require human review.",
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "schemaVersion": 1,
+      "id": "5f9be644-c258-4089-b557-805610819ed6",
+      "createdAt": "2026-10-21T08:33:50.316Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "locked-ether",
+      "description": "Contract locking ether found:\n\tContract MockVRFV2PlusWrapper (src/mocks/MockVRFV2PlusWrapper.sol#11-86) has payable functions:\n\t - MockVRFV2PlusWrapper.requestRandomWordsInNative(uint32,uint16,uint32,bytes) (src/mocks/MockVRFV2PlusWrapper.sol#49-64)\n\tBut does not have a function to withdraw the ether\n",
+      "severity": "medium",
+      "confidence": "high",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/MockVRFV2PlusWrapper.sol",
+          "start": 11,
+          "end": 86
+        },
+        {
+          "path": "packages/contracts/src/mocks/MockVRFV2PlusWrapper.sol",
+          "start": 49,
+          "end": 64
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "678b406e-3322-4bfc-891a-cc5c91a24f3a"
+      ],
+      "fingerprint": "4a904fb707de2aac7782f4ba591cea512a77a96938f89264a4f5ce18dde056fe"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "746a6421-7684-4067-9154-31b5ab2581a0",
+      "createdAt": "2026-10-21T08:33:50.317Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "locked-ether",
+      "description": "Contract locking ether found:\n\tContract AdversarialVRFV2PlusWrapper (src/mocks/AdversarialVRFV2PlusWrapper.sol#7-132) has payable functions:\n\t - AdversarialVRFV2PlusWrapper.requestRandomWordsInNative(uint32,uint16,uint32,bytes) (src/mocks/AdversarialVRFV2PlusWrapper.sol#84-107)\n\tBut does not have a function to withdraw the ether\n",
+      "severity": "medium",
+      "confidence": "high",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/AdversarialVRFV2PlusWrapper.sol",
+          "start": 7,
+          "end": 132
+        },
+        {
+          "path": "packages/contracts/src/mocks/AdversarialVRFV2PlusWrapper.sol",
+          "start": 84,
+          "end": 107
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "43eb5418-1950-408e-b45a-80eba81648cd"
+      ],
+      "fingerprint": "96b5bf26c2ff3d02358efe82d9b51361767e468895e17afa53faf85dc68e45a7"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "a7b09173-8542-4ec3-997c-b048b380ebc4",
+      "createdAt": "2026-10-21T08:33:50.318Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "reentrancy-no-eth",
+      "description": "Reentrancy in ReentrantERC20.transferFrom(address,address,uint256) (src/mocks/ReentrantERC20.sol#58-67):\n\tExternal calls:\n\t- (nestedSuccess,None) = target.call(abi.encodeCall(IRaffle.buyEntries,(address(this),uint128(1)))) (src/mocks/ReentrantERC20.sol#61)\n\tState variables written after the call(s):\n\t- attackEnabled = false (src/mocks/ReentrantERC20.sol#64)\n\tReentrantERC20.attackEnabled (src/mocks/ReentrantERC20.sol#14) can be used in cross function reentrancies:\n\t- ReentrantERC20.arm(address) (src/mocks/ReentrantERC20.sol#38-42)\n\t- ReentrantERC20.attackEnabled (src/mocks/ReentrantERC20.sol#14)\n\t- ReentrantERC20.transferFrom(address,address,uint256) (src/mocks/ReentrantERC20.sol#58-67)\n\t- attacking = false (src/mocks/ReentrantERC20.sol#63)\n\tReentrantERC20.attacking (src/mocks/ReentrantERC20.sol#17) can be used in cross function reentrancies:\n\t- ReentrantERC20.transfer(address,uint256) (src/mocks/ReentrantERC20.sol#69-79)\n\t- ReentrantERC20.transferFrom(address,address,uint256) (src/mocks/ReentrantERC20.sol#58-67)\n",
+      "severity": "medium",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 58,
+          "end": 67
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 61,
+          "end": 61
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 64,
+          "end": 64
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 63,
+          "end": 63
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "80aa3ce1-23c2-4cb4-9792-bcfcfe47bd6f"
+      ],
+      "fingerprint": "2cd7035de43629ab95b9ba32ac051fba6947c831abf379474ed1b37aade7848e"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "c4f2857f-3279-40d9-a6e0-d8568c35a99d",
+      "createdAt": "2026-10-21T08:33:50.318Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "reentrancy-no-eth",
+      "description": "Reentrancy in ReentrantERC20.transfer(address,uint256) (src/mocks/ReentrantERC20.sol#69-79):\n\tExternal calls:\n\t- (nestedSuccess,None) = target.call(abi.encodeCall(IRaffle.releaseProtocolFees,())) (src/mocks/ReentrantERC20.sol#73)\n\tState variables written after the call(s):\n\t- attackOutbound = false (src/mocks/ReentrantERC20.sol#76)\n\tReentrantERC20.attackOutbound (src/mocks/ReentrantERC20.sol#18) can be used in cross function reentrancies:\n\t- ReentrantERC20.armOutbound(address) (src/mocks/ReentrantERC20.sol#45-49)\n\t- ReentrantERC20.attackOutbound (src/mocks/ReentrantERC20.sol#18)\n\t- ReentrantERC20.transfer(address,uint256) (src/mocks/ReentrantERC20.sol#69-79)\n\t- attacking = false (src/mocks/ReentrantERC20.sol#75)\n\tReentrantERC20.attacking (src/mocks/ReentrantERC20.sol#17) can be used in cross function reentrancies:\n\t- ReentrantERC20.transfer(address,uint256) (src/mocks/ReentrantERC20.sol#69-79)\n\t- ReentrantERC20.transferFrom(address,address,uint256) (src/mocks/ReentrantERC20.sol#58-67)\n",
+      "severity": "medium",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 69,
+          "end": 79
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 73,
+          "end": 73
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 76,
+          "end": 76
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 75,
+          "end": 75
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "09c017a6-2f7b-4d88-9735-673719ee5df7"
+      ],
+      "fingerprint": "11dafd77331ea5eee53dbd202d0b1e95ae10a7a7e0ae8fb80074ba77658884d4"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "a68635bd-99ed-42e8-81dc-ca4b38487887",
+      "createdAt": "2026-10-21T08:33:50.319Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "unused-return",
+      "description": "ReentrantPrizeERC721.safeTransferFrom(address,address,uint256,bytes) (src/mocks/ReentrantPrizeERC721.sol#89-111) ignores return value by factory.createRaffle(IRaffleFactory.CreateRaffleParams({sponsorRecipient:address(0xBEEF),prizeToken:address(this),prizeTokenId:nestedPrizeTokenId,reserveEntries:1,endTime:uint64(block.timestamp + 86400)})) (src/mocks/ReentrantPrizeERC721.sol#92-104)\n",
+      "severity": "medium",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 89,
+          "end": 111
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 92,
+          "end": 104
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "3676a7d1-a4fd-4198-ae0d-91ea3abd13aa"
+      ],
+      "fingerprint": "206a01d7ea3598eeb0109ef77551147cdfd960950cf6b4f5ba03979464ee990f"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "f946a5fc-ed4b-43dc-8db2-e7429165f4ae",
+      "createdAt": "2026-10-21T08:33:50.319Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "unused-return",
+      "description": "ReentrantTicketReceiver.onERC721Received(address,address,uint256,bytes) (src/mocks/ReentrantTicketReceiver.sol#41-51) ignores return value by raffle.buyEntries(address(this),1) (src/mocks/ReentrantTicketReceiver.sol#44-48)\n",
+      "severity": "medium",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 41,
+          "end": 51
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 44,
+          "end": 48
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "630093db-73fa-430c-a039-144d219f584b"
+      ],
+      "fingerprint": "cc43ea3382d49db0d24f662dcd267aa550df7a2567ebd6c087eb5fa093bee5b1"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "c42849c7-4f4d-4e98-9c10-3203171c7811",
+      "createdAt": "2026-10-21T08:33:50.319Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "unused-return",
+      "description": "ReentrantTicketReceiver.approveQuote(IERC20) (src/mocks/ReentrantTicketReceiver.sol#30-32) ignores return value by quote.approve(address(raffle),type()(uint256).max) (src/mocks/ReentrantTicketReceiver.sol#31)\n",
+      "severity": "medium",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 30,
+          "end": 32
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 31,
+          "end": 31
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "15976364-7ec3-4745-920e-9a44786fd438"
+      ],
+      "fingerprint": "0569c3877b8853d83cf5610660143622c10e50977cd43c98ca9b6953401dce98"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "f418e611-ccfc-47e2-88af-b99f446b627c",
+      "createdAt": "2026-10-21T08:33:50.319Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "unused-return",
+      "description": "ReentrantPrizeERC721._attemptRedemptionReentry() (src/mocks/ReentrantPrizeERC721.sol#133-148) ignores return value by targetRaffle.redeemWinningTicket(targetTicketId) (src/mocks/ReentrantPrizeERC721.sol#135-147)\n",
+      "severity": "medium",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 133,
+          "end": 148
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 135,
+          "end": 147
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "4be7453b-69c1-4cec-9c58-2aecc23e17da"
+      ],
+      "fingerprint": "ab32ff01cc44df40a0524e7d2c7a13def3cab5a590bc6af4a5c2691bf1511527"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "0de3393c-01aa-4ff8-a93d-f6ee154ba7c2",
+      "createdAt": "2026-10-21T08:33:50.319Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "unused-return",
+      "description": "ReentrantTicketReceiver.buyTicket() (src/mocks/ReentrantTicketReceiver.sol#35-37) ignores return value by raffle.buyEntries(address(this),1) (src/mocks/ReentrantTicketReceiver.sol#36)\n",
+      "severity": "medium",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 35,
+          "end": 37
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 36,
+          "end": 36
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "d03dd621-ba14-4c6d-8120-adf72b8269d8"
+      ],
+      "fingerprint": "2cdb73c047d42d02480087d0642847efccf884711504fcc8a7402d0d7fa5905b"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "63d82794-c914-4916-bd03-835a1ba73a25",
+      "createdAt": "2026-10-21T08:33:50.320Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "events-maths",
+      "description": "Raffle.initialize(IRaffle.RaffleInitParams) (src/Raffle.sol#176-206) should emit an event for: \n\t- prizeTokenId = params.prizeTokenId (src/Raffle.sol#201) \n\t- reserveEntries = params.reserveEntries (src/Raffle.sol#203) \n\t- endTime = params.endTime (src/Raffle.sol#204) \n",
+      "severity": "low",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 176,
+          "end": 206
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 201,
+          "end": 201
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 203,
+          "end": 203
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 204,
+          "end": 204
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "d28d8b2b-2967-48bf-bed1-c549dcf4aea2"
+      ],
+      "fingerprint": "c01fa2cd71730eee88dcab4c0230c99b7b8a8034e01ff0ac5907bbff7dc069ac"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "b4c32cd6-7053-4eed-b890-9a1e2d4f54f3",
+      "createdAt": "2026-10-21T08:33:50.320Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "missing-zero-check",
+      "description": "ReentrantERC20.armOutbound(address).target_ (src/mocks/ReentrantERC20.sol#45) lacks a zero-check on :\n\t\t- target = target_ (src/mocks/ReentrantERC20.sol#46)\n",
+      "severity": "low",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 45,
+          "end": 45
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 46,
+          "end": 46
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "64e41f66-11d0-49f0-a4d3-286686e174cc"
+      ],
+      "fingerprint": "864ddd3ab37c8350cbfe26350fde5190894030d9ab344c74032b6f63b00235f6"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "aaf77e0a-2ce0-4c2f-abe4-fa36db6a42d9",
+      "createdAt": "2026-10-21T08:33:50.320Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "missing-zero-check",
+      "description": "ReentrantERC20.arm(address).target_ (src/mocks/ReentrantERC20.sol#38) lacks a zero-check on :\n\t\t- target = target_ (src/mocks/ReentrantERC20.sol#39)\n",
+      "severity": "low",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 38,
+          "end": 38
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 39,
+          "end": 39
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "4c4674b1-aaa0-4de6-8adb-b247b29b00c9"
+      ],
+      "fingerprint": "f152d31f9167b9d782d7ca9142c12e3605899bc644357e4bb2e0f1b4561cd446"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "91874acb-fd33-4b0a-817e-d9094605683e",
+      "createdAt": "2026-10-21T08:33:50.320Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "calls-loop",
+      "description": "AdversarialVRFV2PlusWrapper._callback(address,uint256,uint256,bool) (src/mocks/AdversarialVRFV2PlusWrapper.sol#127-131) has external calls inside a loop: IVRFV2PlusConsumer(consumer).rawFulfillRandomWords(requestId,randomWords) (src/mocks/AdversarialVRFV2PlusWrapper.sol#130)\n\tCalls stack containing the loop:\n\t\tAdversarialVRFV2PlusWrapper.requestRandomWordsInNative(uint32,uint16,uint32,bytes)\n",
+      "severity": "low",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/AdversarialVRFV2PlusWrapper.sol",
+          "start": 127,
+          "end": 131
+        },
+        {
+          "path": "packages/contracts/src/mocks/AdversarialVRFV2PlusWrapper.sol",
+          "start": 130,
+          "end": 130
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "887b8d1f-8abc-40a2-8570-671bc31e54e3"
+      ],
+      "fingerprint": "6b8cea20141e9798584f7ae54513f43ba15e64c484c519fa75a43500376886e6"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "29022b67-610c-48ad-b6eb-6d358e30a555",
+      "createdAt": "2026-10-21T08:33:50.320Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "calls-loop",
+      "description": "Raffle._isProtocolDestination(address,address) (src/Raffle.sol#593-605) has external calls inside a loop: unsafeDestination = destination == address(this) || destination == factory || destination == address(quoteToken) || destination == address(i_vrfV2PlusWrapper) || destination == prizeToken_ || destination == canonicalFactory.raffleImplementation() (src/Raffle.sol#599-601)\n\tCalls stack containing the loop:\n\t\tRaffle.refundTickets(uint256[])\n\t\tERC721._burn(uint256)\n\t\tRaffle._update(address,uint256,address)\n",
+      "severity": "low",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 593,
+          "end": 605
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 599,
+          "end": 601
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "4495ce6e-be8e-4491-ad1e-30d1fe325540"
+      ],
+      "fingerprint": "d3d361f77eaab2823cbe8ba0fbe644e182ac68c10fa13b481c92c8b02ebcf771"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "9947b0e5-3952-43c5-9444-de313decc783",
+      "createdAt": "2026-10-21T08:33:50.321Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "calls-loop",
+      "description": "Raffle._isProtocolDestination(address,address) (src/Raffle.sol#593-605) has external calls inside a loop: unsafeDestination = canonicalFactory.isRaffle(destination) (src/Raffle.sol#603)\n\tCalls stack containing the loop:\n\t\tRaffle.refundTickets(uint256[])\n\t\tERC721._burn(uint256)\n\t\tRaffle._update(address,uint256,address)\n",
+      "severity": "low",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 593,
+          "end": 605
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 603,
+          "end": 603
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "daaedbcd-1c8b-4163-ba91-5344af00bc4c"
+      ],
+      "fingerprint": "e86e25e3b4e2cd739d4ead0445e4196446dd75b38e3d633db92effd8c8dd33f1"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "2f4552a3-5b8c-4d77-b07f-feacedb6393e",
+      "createdAt": "2026-10-21T08:33:50.321Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "reentrancy-benign",
+      "description": "Reentrancy in ReentrantTicketReceiver.onERC721Received(address,address,uint256,bytes) (src/mocks/ReentrantTicketReceiver.sol#41-51):\n\tExternal calls:\n\t- raffle.buyEntries(address(this),1) (src/mocks/ReentrantTicketReceiver.sol#44-48)\n\tState variables written after the call(s):\n\t- reentryBlocked = false (src/mocks/ReentrantTicketReceiver.sol#45)\n\t- reentryBlocked = true (src/mocks/ReentrantTicketReceiver.sol#47)\n",
+      "severity": "low",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 41,
+          "end": 51
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 44,
+          "end": 48
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 44,
+          "end": 48
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 45,
+          "end": 45
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 47,
+          "end": 47
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "74b3d6e3-3867-47f0-ba55-8876f80ec029"
+      ],
+      "fingerprint": "c5b751d7b9c56c00b58041cd2ac1d369a03bf8f0e4415503a39941beee68bee5"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "58f988e2-d3d5-430b-a390-89d8f1e6e575",
+      "createdAt": "2026-10-21T08:33:50.321Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "reentrancy-benign",
+      "description": "Reentrancy in RaffleFactory.createRaffle(IRaffleFactory.CreateRaffleParams) (src/RaffleFactory.sol#97-148):\n\tExternal calls:\n\t- IRaffle(raffle).initialize(IRaffle.RaffleInitParams({sponsor:msg.sender,sponsorRecipient:params.sponsorRecipient,protocolTreasury:protocolTreasury,prizeToken:params.prizeToken,prizeTokenId:params.prizeTokenId,raffleId:raffleId,reserveEntries:params.reserveEntries,endTime:params.endTime})) (src/RaffleFactory.sol#109-121)\n\tState variables written after the call(s):\n\t- idByRaffle[raffle] = raffleId (src/RaffleFactory.sol#124)\n\t- raffleById[raffleId] = raffle (src/RaffleFactory.sol#123)\n",
+      "severity": "low",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 97,
+          "end": 148
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 109,
+          "end": 121
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 109,
+          "end": 121
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 124,
+          "end": 124
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 123,
+          "end": 123
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "e327d0c8-c24c-4b26-ba68-8026fcf1a359"
+      ],
+      "fingerprint": "c102ac33d8d3e97c321930e7c8fe719a273221f047bd17dce44501208fe6fa65"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "b9759a52-3a2e-43a9-93bb-8c80e7b50cac",
+      "createdAt": "2026-10-21T08:33:50.321Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "reentrancy-benign",
+      "description": "Reentrancy in MockVRFV2PlusWrapper.fulfillAs(uint256,uint256,uint256) (src/mocks/MockVRFV2PlusWrapper.sol#70-81):\n\tExternal calls:\n\t- IVRFV2PlusConsumer(consumer).rawFulfillRandomWords{gas: gasLimitByRequest[storedRequestId]}(callbackRequestId,randomWords) (src/mocks/MockVRFV2PlusWrapper.sol#76-78)\n\tState variables written after the call(s):\n\t- lastCallbackGasUsed = gasBefore - gasleft()() (src/mocks/MockVRFV2PlusWrapper.sol#79)\n",
+      "severity": "low",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/MockVRFV2PlusWrapper.sol",
+          "start": 70,
+          "end": 81
+        },
+        {
+          "path": "packages/contracts/src/mocks/MockVRFV2PlusWrapper.sol",
+          "start": 76,
+          "end": 78
+        },
+        {
+          "path": "packages/contracts/src/mocks/MockVRFV2PlusWrapper.sol",
+          "start": 76,
+          "end": 78
+        },
+        {
+          "path": "packages/contracts/src/mocks/MockVRFV2PlusWrapper.sol",
+          "start": 79,
+          "end": 79
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "448eed7f-f2d0-4b9b-b207-9ba2ee2fb3e4"
+      ],
+      "fingerprint": "426c588d489fa86f8a47db28d305ce565af0e5f4244786e00ca36dd411199da5"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "3e1423d1-03ab-4867-b251-fbac352d765c",
+      "createdAt": "2026-10-21T08:33:50.321Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "reentrancy-benign",
+      "description": "Reentrancy in ReentrantPrizeERC721.safeTransferFrom(address,address,uint256,bytes) (src/mocks/ReentrantPrizeERC721.sol#89-111):\n\tExternal calls:\n\t- factory.createRaffle(IRaffleFactory.CreateRaffleParams({sponsorRecipient:address(0xBEEF),prizeToken:address(this),prizeTokenId:nestedPrizeTokenId,reserveEntries:1,endTime:uint64(block.timestamp + 86400)})) (src/mocks/ReentrantPrizeERC721.sol#92-104)\n\tState variables written after the call(s):\n\t- reentryBlocked = false (src/mocks/ReentrantPrizeERC721.sol#101)\n\t- reentryBlocked = true (src/mocks/ReentrantPrizeERC721.sol#103)\n",
+      "severity": "low",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 89,
+          "end": 111
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 92,
+          "end": 104
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 92,
+          "end": 104
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 101,
+          "end": 101
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 103,
+          "end": 103
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "a118a7d9-79b1-4e79-a319-f5871fd6a036"
+      ],
+      "fingerprint": "c22f5743cebe4201475fa0dae173ab09acfd30df0876b9936ce9f8b505b60373"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "a97b66e5-10fd-4d28-85b8-74aff92aba15",
+      "createdAt": "2026-10-21T08:33:50.321Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "reentrancy-benign",
+      "description": "Reentrancy in ReentrantPrizeERC721._attemptRedemptionReentry() (src/mocks/ReentrantPrizeERC721.sol#133-148):\n\tExternal calls:\n\t- targetRaffle.redeemWinningTicket(targetTicketId) (src/mocks/ReentrantPrizeERC721.sol#135-147)\n\tState variables written after the call(s):\n\t- reentryBlocked = false (src/mocks/ReentrantPrizeERC721.sol#136)\n\t- reentryBlocked = true (src/mocks/ReentrantPrizeERC721.sol#138)\n\t- ++ reentryBlocks (src/mocks/ReentrantPrizeERC721.sol#139)\n\t- reentrySelector = selector (src/mocks/ReentrantPrizeERC721.sol#145)\n",
+      "severity": "low",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 133,
+          "end": 148
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 135,
+          "end": 147
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 135,
+          "end": 147
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 136,
+          "end": 136
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 138,
+          "end": 138
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 139,
+          "end": 139
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 145,
+          "end": 145
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "2d3b9df6-cacc-4fe9-a4f5-557f9271d8f1"
+      ],
+      "fingerprint": "6e8a3bcb405bb000b939c8ac9afcfcd52577c984b8ed1ee8418967c3d71f0fb2"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "26644d53-218e-4025-8ea0-ab2461e3a898",
+      "createdAt": "2026-10-21T08:33:50.321Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "reentrancy-events",
+      "description": "Reentrancy in MockVRFV2PlusWrapper.fulfillAs(uint256,uint256,uint256) (src/mocks/MockVRFV2PlusWrapper.sol#70-81):\n\tExternal calls:\n\t- IVRFV2PlusConsumer(consumer).rawFulfillRandomWords{gas: gasLimitByRequest[storedRequestId]}(callbackRequestId,randomWords) (src/mocks/MockVRFV2PlusWrapper.sol#76-78)\n\tEvent emitted after the call(s):\n\t- RequestFulfilled(storedRequestId,callbackRequestId,randomWord) (src/mocks/MockVRFV2PlusWrapper.sol#80)\n",
+      "severity": "low",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/MockVRFV2PlusWrapper.sol",
+          "start": 70,
+          "end": 81
+        },
+        {
+          "path": "packages/contracts/src/mocks/MockVRFV2PlusWrapper.sol",
+          "start": 76,
+          "end": 78
+        },
+        {
+          "path": "packages/contracts/src/mocks/MockVRFV2PlusWrapper.sol",
+          "start": 80,
+          "end": 80
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "705d39a2-9e98-40ee-8b1e-486000eeaf9d"
+      ],
+      "fingerprint": "49c644f8fa0c0c2a56a21f6f17f3f65ba7b8127fdd9c4ab3dea209f8b07d600d"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "05252d10-6aed-4e9f-840d-8da2f3db7b6b",
+      "createdAt": "2026-10-21T08:33:50.322Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "timestamp",
+      "description": "Raffle.enableRefunds() (src/Raffle.sol#276-301) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- msg.sender != sponsor && block.timestamp < deadline (src/Raffle.sol#282)\n\t- block.timestamp < deadline (src/Raffle.sol#287)\n\t- block.timestamp < deadline (src/Raffle.sol#291)\n",
+      "severity": "low",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 276,
+          "end": 301
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 282,
+          "end": 282
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 287,
+          "end": 287
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 291,
+          "end": 291
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "9b969721-99a3-4558-9109-b7c6cb2bba5e"
+      ],
+      "fingerprint": "91665796581a913deb030e3a86edf3e44d76ea607e290b7341ad17583dce6336"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "cdfea494-2044-4095-91c5-39995db4d67d",
+      "createdAt": "2026-10-21T08:33:50.322Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "timestamp",
+      "description": "RaffleFactory.createRaffle(IRaffleFactory.CreateRaffleParams) (src/RaffleFactory.sol#97-148) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- params.endTime <= currentTime (src/RaffleFactory.sol#100)\n\t- saleDuration > RaffleConstants.MAX_SALE_DURATION (src/RaffleFactory.sol#102)\n",
+      "severity": "low",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 97,
+          "end": 148
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 100,
+          "end": 100
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 102,
+          "end": 102
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "d2bdec56-da39-4ab9-b46e-e544dbde551c"
+      ],
+      "fingerprint": "10e0cb13928e4b1cb9aba111c7d95147dbc54f9e7a04fd82cc2ba3846f2762b0"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "32901f27-e288-4532-887e-88ac9dc34849",
+      "createdAt": "2026-10-21T08:33:50.322Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "timestamp",
+      "description": "Raffle.fulfillRandomWords(uint256,uint256[]) (src/Raffle.sol#509-524) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- _requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1 || block.timestamp >= callbackDeadline() (src/Raffle.sol#511-512)\n",
+      "severity": "low",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 509,
+          "end": 524
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 511,
+          "end": 512
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "104ede6b-fc99-431b-8a6d-ab81cfc0a1c0"
+      ],
+      "fingerprint": "b4c57e30a72433d69472ba220d8d660b6f3f370c2673c18606f69844eefca55b"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "05051af2-3061-4769-96c4-2f709af6d30d",
+      "createdAt": "2026-10-21T08:33:50.323Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "timestamp",
+      "description": "Raffle.buyEntries(address,uint128) (src/Raffle.sol#209-237) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- block.timestamp >= endTime (src/Raffle.sol#216)\n",
+      "severity": "low",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 209,
+          "end": 237
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 216,
+          "end": 216
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "39339e05-5ae8-4f78-9d1c-73e8a0fd785b"
+      ],
+      "fingerprint": "0cd43d7866ba426b77f9069bbb78d5038e7f7390e988e0703e3516d9fa27958c"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "fe79d8f5-bdfa-46bb-bede-d9bc53b4f89e",
+      "createdAt": "2026-10-21T08:33:50.323Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "timestamp",
+      "description": "Raffle.callbackDeadline() (src/Raffle.sol#463-465) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- drawRequestedAt != 0 (src/Raffle.sol#464)\n",
+      "severity": "low",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 463,
+          "end": 465
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 464,
+          "end": 464
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "453fff6c-3e87-4757-9be8-0cee0a3723c7"
+      ],
+      "fingerprint": "19911f0072a0e926c4ec9138b9357e30f2f671c19b89f2591273ffc5fab5fe8b"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "6823bac1-99a1-4db2-81d8-59d9cf73cae2",
+      "createdAt": "2026-10-21T08:33:50.323Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "timestamp",
+      "description": "Raffle.requestDraw() (src/Raffle.sol#240-273) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- block.timestamp < endTime (src/Raffle.sol#242)\n\t- block.timestamp >= requestDeadline (src/Raffle.sol#245)\n",
+      "severity": "low",
+      "confidence": "medium",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 240,
+          "end": 273
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 242,
+          "end": 242
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 245,
+          "end": 245
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "534c28da-87de-493f-80ee-be5995e9c8cb"
+      ],
+      "fingerprint": "d7fe28df93c0bfe28b9723c856a8c8c2a9436203218e9708b581c2fa0209d04f"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "2c6eabca-5ff8-4393-98ac-904dc1342500",
+      "createdAt": "2026-10-21T08:33:50.323Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "assembly",
+      "description": "Raffle.requestDraw() (src/Raffle.sol#240-273) uses assembly\n\t- INLINE ASM (src/Raffle.sol#266-268)\n",
+      "severity": "informational",
+      "confidence": "high",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 240,
+          "end": 273
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 266,
+          "end": 268
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "bd6c1b6e-148d-4c86-9b4b-bbc330d0b3ee"
+      ],
+      "fingerprint": "fd2e4e01bfa8f67aa8ab42b24ce817958077b27fb13398ed0327bd48f97923c2"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "bdf1f8d5-328d-4a19-974a-a05164264b52",
+      "createdAt": "2026-10-21T08:33:50.324Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "assembly",
+      "description": "ReentrantPrizeERC721._attemptRedemptionReentry() (src/mocks/ReentrantPrizeERC721.sol#133-148) uses assembly\n\t- INLINE ASM (src/mocks/ReentrantPrizeERC721.sol#142-144)\n",
+      "severity": "informational",
+      "confidence": "high",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 133,
+          "end": 148
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 142,
+          "end": 144
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "0f2ce57c-6c45-4d25-919e-49334e229ed9"
+      ],
+      "fingerprint": "05e7b55d2657702a6676602ddd418939885d17363a1209c610446cfad5df7ca9"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "b4ee71ee-954f-49c6-9d8e-61edb2387204",
+      "createdAt": "2026-10-21T08:33:50.324Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "low-level-calls",
+      "description": "Low level call in ReentrantERC20.transferFrom(address,address,uint256) (src/mocks/ReentrantERC20.sol#58-67):\n\t- (nestedSuccess,None) = target.call(abi.encodeCall(IRaffle.buyEntries,(address(this),uint128(1)))) (src/mocks/ReentrantERC20.sol#61)\n",
+      "severity": "informational",
+      "confidence": "high",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 58,
+          "end": 67
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 61,
+          "end": 61
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "e9726cd1-a832-498d-a7b5-61b7112311e3"
+      ],
+      "fingerprint": "796d504ff511210b4c745956427a668ab9ce7fb0d2182cb97412bbc0c7902c26"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "ef8e664a-c67e-42fd-bbfc-f48677ee0cc5",
+      "createdAt": "2026-10-21T08:33:50.324Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "low-level-calls",
+      "description": "Low level call in AdversarialVRFV2PlusWrapper.requestRandomWordsInNative(uint32,uint16,uint32,bytes) (src/mocks/AdversarialVRFV2PlusWrapper.sol#84-107):\n\t- (lastReentrySucceeded,None) = msg.sender.call(abi.encodeWithSignature(requestDraw())) (src/mocks/AdversarialVRFV2PlusWrapper.sol#101)\n",
+      "severity": "informational",
+      "confidence": "high",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/AdversarialVRFV2PlusWrapper.sol",
+          "start": 84,
+          "end": 107
+        },
+        {
+          "path": "packages/contracts/src/mocks/AdversarialVRFV2PlusWrapper.sol",
+          "start": 101,
+          "end": 101
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "633b8368-852c-4cf3-9357-66a0897cde7c"
+      ],
+      "fingerprint": "b14706d5dc58ba6719178faf5184e0806380bc942496aec69bae4a15dad71db0"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "f347c62c-ac6e-42d3-aeae-827bbe1b8a9e",
+      "createdAt": "2026-10-21T08:33:50.324Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "low-level-calls",
+      "description": "Low level call in ReentrantERC20.transfer(address,uint256) (src/mocks/ReentrantERC20.sol#69-79):\n\t- (nestedSuccess,None) = target.call(abi.encodeCall(IRaffle.releaseProtocolFees,())) (src/mocks/ReentrantERC20.sol#73)\n",
+      "severity": "informational",
+      "confidence": "high",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 69,
+          "end": 79
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 73,
+          "end": 73
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "8154f6b1-f894-400c-b632-a37d2e01850d"
+      ],
+      "fingerprint": "3a8e6f8e0ae04ac57c3a5da647cac137ec417286a9e8060c596d2fbfd42f609d"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "6dbc8b47-ec26-4653-8b64-23b420369401",
+      "createdAt": "2026-10-21T08:33:50.324Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "low-level-calls",
+      "description": "Low level call in AdversarialVRFV2PlusWrapper.calculateRequestPriceNative(uint32,uint32) (src/mocks/AdversarialVRFV2PlusWrapper.sol#70-77):\n\t- (success,result) = msg.sender.staticcall(abi.encodeWithSignature(status())) (src/mocks/AdversarialVRFV2PlusWrapper.sol#74)\n",
+      "severity": "informational",
+      "confidence": "high",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/AdversarialVRFV2PlusWrapper.sol",
+          "start": 70,
+          "end": 77
+        },
+        {
+          "path": "packages/contracts/src/mocks/AdversarialVRFV2PlusWrapper.sol",
+          "start": 74,
+          "end": 74
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "a98fb961-15af-4a03-aa17-978a0b45e560"
+      ],
+      "fingerprint": "90cf4f4384a9e2cbbfc0af6f27fba2434a779e7ca26431c71291404ea2f98b0e"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "2b4c191c-0ea8-4084-878d-fbfed212a43b",
+      "createdAt": "2026-10-21T08:33:50.324Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "title": "naming-convention",
+      "description": "Function IRaffle.ENTRY_PRICE() (src/interfaces/IRaffle.sol#396) is not in mixedCase\n",
+      "severity": "informational",
+      "confidence": "high",
+      "evidenceType": "static",
+      "source": [
+        {
+          "path": "packages/contracts/src/interfaces/IRaffle.sol",
+          "start": 396,
+          "end": 396
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "observationIds": [
+        "b7d1223a-f326-44b8-81a7-608e7857eae1"
+      ],
+      "fingerprint": "8f7c226313ba4935e164ffc58b374e81a9f561ea592a60b796b040c6ec5962df"
+    }
+  ],
+  "observations": [
+    {
+      "schemaVersion": 1,
+      "id": "678b406e-3322-4bfc-891a-cc5c91a24f3a",
+      "createdAt": "2026-10-21T08:33:50.315Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Contract locking ether found:\n\tContract MockVRFV2PlusWrapper (src/mocks/MockVRFV2PlusWrapper.sol#11-86) has payable functions:\n\t - MockVRFV2PlusWrapper.requestRandomWordsInNative(uint32,uint16,uint32,bytes) (src/mocks/MockVRFV2PlusWrapper.sol#49-64)\n\tBut does not have a function to withdraw the ether\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/MockVRFV2PlusWrapper.sol",
+          "start": 11,
+          "end": 86
+        },
+        {
+          "path": "packages/contracts/src/mocks/MockVRFV2PlusWrapper.sol",
+          "start": 49,
+          "end": 64
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "43eb5418-1950-408e-b45a-80eba81648cd",
+      "createdAt": "2026-10-21T08:33:50.317Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Contract locking ether found:\n\tContract AdversarialVRFV2PlusWrapper (src/mocks/AdversarialVRFV2PlusWrapper.sol#7-132) has payable functions:\n\t - AdversarialVRFV2PlusWrapper.requestRandomWordsInNative(uint32,uint16,uint32,bytes) (src/mocks/AdversarialVRFV2PlusWrapper.sol#84-107)\n\tBut does not have a function to withdraw the ether\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/AdversarialVRFV2PlusWrapper.sol",
+          "start": 7,
+          "end": 132
+        },
+        {
+          "path": "packages/contracts/src/mocks/AdversarialVRFV2PlusWrapper.sol",
+          "start": 84,
+          "end": 107
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "80aa3ce1-23c2-4cb4-9792-bcfcfe47bd6f",
+      "createdAt": "2026-10-21T08:33:50.317Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Reentrancy in ReentrantERC20.transferFrom(address,address,uint256) (src/mocks/ReentrantERC20.sol#58-67):\n\tExternal calls:\n\t- (nestedSuccess,None) = target.call(abi.encodeCall(IRaffle.buyEntries,(address(this),uint128(1)))) (src/mocks/ReentrantERC20.sol#61)\n\tState variables written after the call(s):\n\t- attackEnabled = false (src/mocks/ReentrantERC20.sol#64)\n\tReentrantERC20.attackEnabled (src/mocks/ReentrantERC20.sol#14) can be used in cross function reentrancies:\n\t- ReentrantERC20.arm(address) (src/mocks/ReentrantERC20.sol#38-42)\n\t- ReentrantERC20.attackEnabled (src/mocks/ReentrantERC20.sol#14)\n\t- ReentrantERC20.transferFrom(address,address,uint256) (src/mocks/ReentrantERC20.sol#58-67)\n\t- attacking = false (src/mocks/ReentrantERC20.sol#63)\n\tReentrantERC20.attacking (src/mocks/ReentrantERC20.sol#17) can be used in cross function reentrancies:\n\t- ReentrantERC20.transfer(address,uint256) (src/mocks/ReentrantERC20.sol#69-79)\n\t- ReentrantERC20.transferFrom(address,address,uint256) (src/mocks/ReentrantERC20.sol#58-67)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 58,
+          "end": 67
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 61,
+          "end": 61
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 64,
+          "end": 64
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 63,
+          "end": 63
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "09c017a6-2f7b-4d88-9735-673719ee5df7",
+      "createdAt": "2026-10-21T08:33:50.318Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Reentrancy in ReentrantERC20.transfer(address,uint256) (src/mocks/ReentrantERC20.sol#69-79):\n\tExternal calls:\n\t- (nestedSuccess,None) = target.call(abi.encodeCall(IRaffle.releaseProtocolFees,())) (src/mocks/ReentrantERC20.sol#73)\n\tState variables written after the call(s):\n\t- attackOutbound = false (src/mocks/ReentrantERC20.sol#76)\n\tReentrantERC20.attackOutbound (src/mocks/ReentrantERC20.sol#18) can be used in cross function reentrancies:\n\t- ReentrantERC20.armOutbound(address) (src/mocks/ReentrantERC20.sol#45-49)\n\t- ReentrantERC20.attackOutbound (src/mocks/ReentrantERC20.sol#18)\n\t- ReentrantERC20.transfer(address,uint256) (src/mocks/ReentrantERC20.sol#69-79)\n\t- attacking = false (src/mocks/ReentrantERC20.sol#75)\n\tReentrantERC20.attacking (src/mocks/ReentrantERC20.sol#17) can be used in cross function reentrancies:\n\t- ReentrantERC20.transfer(address,uint256) (src/mocks/ReentrantERC20.sol#69-79)\n\t- ReentrantERC20.transferFrom(address,address,uint256) (src/mocks/ReentrantERC20.sol#58-67)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 69,
+          "end": 79
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 73,
+          "end": 73
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 76,
+          "end": 76
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 75,
+          "end": 75
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "3676a7d1-a4fd-4198-ae0d-91ea3abd13aa",
+      "createdAt": "2026-10-21T08:33:50.318Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "ReentrantPrizeERC721.safeTransferFrom(address,address,uint256,bytes) (src/mocks/ReentrantPrizeERC721.sol#89-111) ignores return value by factory.createRaffle(IRaffleFactory.CreateRaffleParams({sponsorRecipient:address(0xBEEF),prizeToken:address(this),prizeTokenId:nestedPrizeTokenId,reserveEntries:1,endTime:uint64(block.timestamp + 86400)})) (src/mocks/ReentrantPrizeERC721.sol#92-104)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 89,
+          "end": 111
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 92,
+          "end": 104
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "630093db-73fa-430c-a039-144d219f584b",
+      "createdAt": "2026-10-21T08:33:50.319Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "ReentrantTicketReceiver.onERC721Received(address,address,uint256,bytes) (src/mocks/ReentrantTicketReceiver.sol#41-51) ignores return value by raffle.buyEntries(address(this),1) (src/mocks/ReentrantTicketReceiver.sol#44-48)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 41,
+          "end": 51
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 44,
+          "end": 48
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "15976364-7ec3-4745-920e-9a44786fd438",
+      "createdAt": "2026-10-21T08:33:50.319Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "ReentrantTicketReceiver.approveQuote(IERC20) (src/mocks/ReentrantTicketReceiver.sol#30-32) ignores return value by quote.approve(address(raffle),type()(uint256).max) (src/mocks/ReentrantTicketReceiver.sol#31)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 30,
+          "end": 32
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 31,
+          "end": 31
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "4be7453b-69c1-4cec-9c58-2aecc23e17da",
+      "createdAt": "2026-10-21T08:33:50.319Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "ReentrantPrizeERC721._attemptRedemptionReentry() (src/mocks/ReentrantPrizeERC721.sol#133-148) ignores return value by targetRaffle.redeemWinningTicket(targetTicketId) (src/mocks/ReentrantPrizeERC721.sol#135-147)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 133,
+          "end": 148
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 135,
+          "end": 147
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "d03dd621-ba14-4c6d-8120-adf72b8269d8",
+      "createdAt": "2026-10-21T08:33:50.319Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "ReentrantTicketReceiver.buyTicket() (src/mocks/ReentrantTicketReceiver.sol#35-37) ignores return value by raffle.buyEntries(address(this),1) (src/mocks/ReentrantTicketReceiver.sol#36)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 35,
+          "end": 37
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 36,
+          "end": 36
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "d28d8b2b-2967-48bf-bed1-c549dcf4aea2",
+      "createdAt": "2026-10-21T08:33:50.320Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Raffle.initialize(IRaffle.RaffleInitParams) (src/Raffle.sol#176-206) should emit an event for: \n\t- prizeTokenId = params.prizeTokenId (src/Raffle.sol#201) \n\t- reserveEntries = params.reserveEntries (src/Raffle.sol#203) \n\t- endTime = params.endTime (src/Raffle.sol#204) \n",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 176,
+          "end": 206
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 201,
+          "end": 201
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 203,
+          "end": 203
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 204,
+          "end": 204
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "64e41f66-11d0-49f0-a4d3-286686e174cc",
+      "createdAt": "2026-10-21T08:33:50.320Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "ReentrantERC20.armOutbound(address).target_ (src/mocks/ReentrantERC20.sol#45) lacks a zero-check on :\n\t\t- target = target_ (src/mocks/ReentrantERC20.sol#46)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 45,
+          "end": 45
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 46,
+          "end": 46
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "4c4674b1-aaa0-4de6-8adb-b247b29b00c9",
+      "createdAt": "2026-10-21T08:33:50.320Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "ReentrantERC20.arm(address).target_ (src/mocks/ReentrantERC20.sol#38) lacks a zero-check on :\n\t\t- target = target_ (src/mocks/ReentrantERC20.sol#39)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 38,
+          "end": 38
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 39,
+          "end": 39
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "887b8d1f-8abc-40a2-8570-671bc31e54e3",
+      "createdAt": "2026-10-21T08:33:50.320Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "AdversarialVRFV2PlusWrapper._callback(address,uint256,uint256,bool) (src/mocks/AdversarialVRFV2PlusWrapper.sol#127-131) has external calls inside a loop: IVRFV2PlusConsumer(consumer).rawFulfillRandomWords(requestId,randomWords) (src/mocks/AdversarialVRFV2PlusWrapper.sol#130)\n\tCalls stack containing the loop:\n\t\tAdversarialVRFV2PlusWrapper.requestRandomWordsInNative(uint32,uint16,uint32,bytes)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/AdversarialVRFV2PlusWrapper.sol",
+          "start": 127,
+          "end": 131
+        },
+        {
+          "path": "packages/contracts/src/mocks/AdversarialVRFV2PlusWrapper.sol",
+          "start": 130,
+          "end": 130
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "4495ce6e-be8e-4491-ad1e-30d1fe325540",
+      "createdAt": "2026-10-21T08:33:50.320Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Raffle._isProtocolDestination(address,address) (src/Raffle.sol#593-605) has external calls inside a loop: unsafeDestination = destination == address(this) || destination == factory || destination == address(quoteToken) || destination == address(i_vrfV2PlusWrapper) || destination == prizeToken_ || destination == canonicalFactory.raffleImplementation() (src/Raffle.sol#599-601)\n\tCalls stack containing the loop:\n\t\tRaffle.refundTickets(uint256[])\n\t\tERC721._burn(uint256)\n\t\tRaffle._update(address,uint256,address)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 593,
+          "end": 605
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 599,
+          "end": 601
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "daaedbcd-1c8b-4163-ba91-5344af00bc4c",
+      "createdAt": "2026-10-21T08:33:50.321Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Raffle._isProtocolDestination(address,address) (src/Raffle.sol#593-605) has external calls inside a loop: unsafeDestination = canonicalFactory.isRaffle(destination) (src/Raffle.sol#603)\n\tCalls stack containing the loop:\n\t\tRaffle.refundTickets(uint256[])\n\t\tERC721._burn(uint256)\n\t\tRaffle._update(address,uint256,address)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 593,
+          "end": 605
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 603,
+          "end": 603
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "74b3d6e3-3867-47f0-ba55-8876f80ec029",
+      "createdAt": "2026-10-21T08:33:50.321Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Reentrancy in ReentrantTicketReceiver.onERC721Received(address,address,uint256,bytes) (src/mocks/ReentrantTicketReceiver.sol#41-51):\n\tExternal calls:\n\t- raffle.buyEntries(address(this),1) (src/mocks/ReentrantTicketReceiver.sol#44-48)\n\tState variables written after the call(s):\n\t- reentryBlocked = false (src/mocks/ReentrantTicketReceiver.sol#45)\n\t- reentryBlocked = true (src/mocks/ReentrantTicketReceiver.sol#47)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 41,
+          "end": 51
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 44,
+          "end": 48
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 44,
+          "end": 48
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 45,
+          "end": 45
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantTicketReceiver.sol",
+          "start": 47,
+          "end": 47
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "e327d0c8-c24c-4b26-ba68-8026fcf1a359",
+      "createdAt": "2026-10-21T08:33:50.321Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Reentrancy in RaffleFactory.createRaffle(IRaffleFactory.CreateRaffleParams) (src/RaffleFactory.sol#97-148):\n\tExternal calls:\n\t- IRaffle(raffle).initialize(IRaffle.RaffleInitParams({sponsor:msg.sender,sponsorRecipient:params.sponsorRecipient,protocolTreasury:protocolTreasury,prizeToken:params.prizeToken,prizeTokenId:params.prizeTokenId,raffleId:raffleId,reserveEntries:params.reserveEntries,endTime:params.endTime})) (src/RaffleFactory.sol#109-121)\n\tState variables written after the call(s):\n\t- idByRaffle[raffle] = raffleId (src/RaffleFactory.sol#124)\n\t- raffleById[raffleId] = raffle (src/RaffleFactory.sol#123)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 97,
+          "end": 148
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 109,
+          "end": 121
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 109,
+          "end": 121
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 124,
+          "end": 124
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 123,
+          "end": 123
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "448eed7f-f2d0-4b9b-b207-9ba2ee2fb3e4",
+      "createdAt": "2026-10-21T08:33:50.321Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Reentrancy in MockVRFV2PlusWrapper.fulfillAs(uint256,uint256,uint256) (src/mocks/MockVRFV2PlusWrapper.sol#70-81):\n\tExternal calls:\n\t- IVRFV2PlusConsumer(consumer).rawFulfillRandomWords{gas: gasLimitByRequest[storedRequestId]}(callbackRequestId,randomWords) (src/mocks/MockVRFV2PlusWrapper.sol#76-78)\n\tState variables written after the call(s):\n\t- lastCallbackGasUsed = gasBefore - gasleft()() (src/mocks/MockVRFV2PlusWrapper.sol#79)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/MockVRFV2PlusWrapper.sol",
+          "start": 70,
+          "end": 81
+        },
+        {
+          "path": "packages/contracts/src/mocks/MockVRFV2PlusWrapper.sol",
+          "start": 76,
+          "end": 78
+        },
+        {
+          "path": "packages/contracts/src/mocks/MockVRFV2PlusWrapper.sol",
+          "start": 76,
+          "end": 78
+        },
+        {
+          "path": "packages/contracts/src/mocks/MockVRFV2PlusWrapper.sol",
+          "start": 79,
+          "end": 79
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "a118a7d9-79b1-4e79-a319-f5871fd6a036",
+      "createdAt": "2026-10-21T08:33:50.321Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Reentrancy in ReentrantPrizeERC721.safeTransferFrom(address,address,uint256,bytes) (src/mocks/ReentrantPrizeERC721.sol#89-111):\n\tExternal calls:\n\t- factory.createRaffle(IRaffleFactory.CreateRaffleParams({sponsorRecipient:address(0xBEEF),prizeToken:address(this),prizeTokenId:nestedPrizeTokenId,reserveEntries:1,endTime:uint64(block.timestamp + 86400)})) (src/mocks/ReentrantPrizeERC721.sol#92-104)\n\tState variables written after the call(s):\n\t- reentryBlocked = false (src/mocks/ReentrantPrizeERC721.sol#101)\n\t- reentryBlocked = true (src/mocks/ReentrantPrizeERC721.sol#103)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 89,
+          "end": 111
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 92,
+          "end": 104
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 92,
+          "end": 104
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 101,
+          "end": 101
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 103,
+          "end": 103
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "2d3b9df6-cacc-4fe9-a4f5-557f9271d8f1",
+      "createdAt": "2026-10-21T08:33:50.321Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Reentrancy in ReentrantPrizeERC721._attemptRedemptionReentry() (src/mocks/ReentrantPrizeERC721.sol#133-148):\n\tExternal calls:\n\t- targetRaffle.redeemWinningTicket(targetTicketId) (src/mocks/ReentrantPrizeERC721.sol#135-147)\n\tState variables written after the call(s):\n\t- reentryBlocked = false (src/mocks/ReentrantPrizeERC721.sol#136)\n\t- reentryBlocked = true (src/mocks/ReentrantPrizeERC721.sol#138)\n\t- ++ reentryBlocks (src/mocks/ReentrantPrizeERC721.sol#139)\n\t- reentrySelector = selector (src/mocks/ReentrantPrizeERC721.sol#145)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 133,
+          "end": 148
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 135,
+          "end": 147
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 135,
+          "end": 147
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 136,
+          "end": 136
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 138,
+          "end": 138
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 139,
+          "end": 139
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 145,
+          "end": 145
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "705d39a2-9e98-40ee-8b1e-486000eeaf9d",
+      "createdAt": "2026-10-21T08:33:50.321Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Reentrancy in MockVRFV2PlusWrapper.fulfillAs(uint256,uint256,uint256) (src/mocks/MockVRFV2PlusWrapper.sol#70-81):\n\tExternal calls:\n\t- IVRFV2PlusConsumer(consumer).rawFulfillRandomWords{gas: gasLimitByRequest[storedRequestId]}(callbackRequestId,randomWords) (src/mocks/MockVRFV2PlusWrapper.sol#76-78)\n\tEvent emitted after the call(s):\n\t- RequestFulfilled(storedRequestId,callbackRequestId,randomWord) (src/mocks/MockVRFV2PlusWrapper.sol#80)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/MockVRFV2PlusWrapper.sol",
+          "start": 70,
+          "end": 81
+        },
+        {
+          "path": "packages/contracts/src/mocks/MockVRFV2PlusWrapper.sol",
+          "start": 76,
+          "end": 78
+        },
+        {
+          "path": "packages/contracts/src/mocks/MockVRFV2PlusWrapper.sol",
+          "start": 80,
+          "end": 80
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "9b969721-99a3-4558-9109-b7c6cb2bba5e",
+      "createdAt": "2026-10-21T08:33:50.322Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Raffle.enableRefunds() (src/Raffle.sol#276-301) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- msg.sender != sponsor && block.timestamp < deadline (src/Raffle.sol#282)\n\t- block.timestamp < deadline (src/Raffle.sol#287)\n\t- block.timestamp < deadline (src/Raffle.sol#291)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 276,
+          "end": 301
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 282,
+          "end": 282
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 287,
+          "end": 287
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 291,
+          "end": 291
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "d2bdec56-da39-4ab9-b46e-e544dbde551c",
+      "createdAt": "2026-10-21T08:33:50.322Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "RaffleFactory.createRaffle(IRaffleFactory.CreateRaffleParams) (src/RaffleFactory.sol#97-148) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- params.endTime <= currentTime (src/RaffleFactory.sol#100)\n\t- saleDuration > RaffleConstants.MAX_SALE_DURATION (src/RaffleFactory.sol#102)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 97,
+          "end": 148
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 100,
+          "end": 100
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 102,
+          "end": 102
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "104ede6b-fc99-431b-8a6d-ab81cfc0a1c0",
+      "createdAt": "2026-10-21T08:33:50.322Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Raffle.fulfillRandomWords(uint256,uint256[]) (src/Raffle.sol#509-524) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- _requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1 || block.timestamp >= callbackDeadline() (src/Raffle.sol#511-512)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 509,
+          "end": 524
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 511,
+          "end": 512
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "39339e05-5ae8-4f78-9d1c-73e8a0fd785b",
+      "createdAt": "2026-10-21T08:33:50.322Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Raffle.buyEntries(address,uint128) (src/Raffle.sol#209-237) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- block.timestamp >= endTime (src/Raffle.sol#216)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 209,
+          "end": 237
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 216,
+          "end": 216
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "453fff6c-3e87-4757-9be8-0cee0a3723c7",
+      "createdAt": "2026-10-21T08:33:50.323Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Raffle.callbackDeadline() (src/Raffle.sol#463-465) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- drawRequestedAt != 0 (src/Raffle.sol#464)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 463,
+          "end": 465
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 464,
+          "end": 464
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "534c28da-87de-493f-80ee-be5995e9c8cb",
+      "createdAt": "2026-10-21T08:33:50.323Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Raffle.requestDraw() (src/Raffle.sol#240-273) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- block.timestamp < endTime (src/Raffle.sol#242)\n\t- block.timestamp >= requestDeadline (src/Raffle.sol#245)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 240,
+          "end": 273
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 242,
+          "end": 242
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 245,
+          "end": 245
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "bd6c1b6e-148d-4c86-9b4b-bbc330d0b3ee",
+      "createdAt": "2026-10-21T08:33:50.323Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Raffle.requestDraw() (src/Raffle.sol#240-273) uses assembly\n\t- INLINE ASM (src/Raffle.sol#266-268)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 240,
+          "end": 273
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 266,
+          "end": 268
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "0f2ce57c-6c45-4d25-919e-49334e229ed9",
+      "createdAt": "2026-10-21T08:33:50.324Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "ReentrantPrizeERC721._attemptRedemptionReentry() (src/mocks/ReentrantPrizeERC721.sol#133-148) uses assembly\n\t- INLINE ASM (src/mocks/ReentrantPrizeERC721.sol#142-144)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 133,
+          "end": 148
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantPrizeERC721.sol",
+          "start": 142,
+          "end": 144
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "e9726cd1-a832-498d-a7b5-61b7112311e3",
+      "createdAt": "2026-10-21T08:33:50.324Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Low level call in ReentrantERC20.transferFrom(address,address,uint256) (src/mocks/ReentrantERC20.sol#58-67):\n\t- (nestedSuccess,None) = target.call(abi.encodeCall(IRaffle.buyEntries,(address(this),uint128(1)))) (src/mocks/ReentrantERC20.sol#61)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 58,
+          "end": 67
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 61,
+          "end": 61
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "633b8368-852c-4cf3-9357-66a0897cde7c",
+      "createdAt": "2026-10-21T08:33:50.324Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Low level call in AdversarialVRFV2PlusWrapper.requestRandomWordsInNative(uint32,uint16,uint32,bytes) (src/mocks/AdversarialVRFV2PlusWrapper.sol#84-107):\n\t- (lastReentrySucceeded,None) = msg.sender.call(abi.encodeWithSignature(requestDraw())) (src/mocks/AdversarialVRFV2PlusWrapper.sol#101)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/AdversarialVRFV2PlusWrapper.sol",
+          "start": 84,
+          "end": 107
+        },
+        {
+          "path": "packages/contracts/src/mocks/AdversarialVRFV2PlusWrapper.sol",
+          "start": 101,
+          "end": 101
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "8154f6b1-f894-400c-b632-a37d2e01850d",
+      "createdAt": "2026-10-21T08:33:50.324Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Low level call in ReentrantERC20.transfer(address,uint256) (src/mocks/ReentrantERC20.sol#69-79):\n\t- (nestedSuccess,None) = target.call(abi.encodeCall(IRaffle.releaseProtocolFees,())) (src/mocks/ReentrantERC20.sol#73)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 69,
+          "end": 79
+        },
+        {
+          "path": "packages/contracts/src/mocks/ReentrantERC20.sol",
+          "start": 73,
+          "end": 73
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "a98fb961-15af-4a03-aa17-978a0b45e560",
+      "createdAt": "2026-10-21T08:33:50.324Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Low level call in AdversarialVRFV2PlusWrapper.calculateRequestPriceNative(uint32,uint32) (src/mocks/AdversarialVRFV2PlusWrapper.sol#70-77):\n\t- (success,result) = msg.sender.staticcall(abi.encodeWithSignature(status())) (src/mocks/AdversarialVRFV2PlusWrapper.sol#74)\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/mocks/AdversarialVRFV2PlusWrapper.sol",
+          "start": 70,
+          "end": 77
+        },
+        {
+          "path": "packages/contracts/src/mocks/AdversarialVRFV2PlusWrapper.sol",
+          "start": 74,
+          "end": 74
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "b7d1223a-f326-44b8-81a7-608e7857eae1",
+      "createdAt": "2026-10-21T08:33:50.324Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "producer": "slither",
+      "text": "Function IRaffle.ENTRY_PRICE() (src/interfaces/IRaffle.sol#396) is not in mixedCase\n",
+      "source": [
+        {
+          "path": "packages/contracts/src/interfaces/IRaffle.sol",
+          "start": 396,
+          "end": 396
+        }
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    }
+  ],
+  "properties": [],
+  "coverage": [
+    {
+      "schemaVersion": 1,
+      "id": "4063710e-1fb1-4f4c-bd3c-b100a7b9acd0",
+      "createdAt": "2026-10-21T08:31:57.351Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "taskId": "c4e4ff45-2d69-4442-8e30-75d96c4fcc71",
+      "state": "succeeded",
+      "claim": "Recorded 78 authorized files. Supported Foundry configuration.",
+      "gaps": [
+        "No semantic, test, or property coverage established by intake."
+      ],
+      "evidence": [
+        "4ea173aa96cc67244c142211b3e734badcab727e74ccf9b32a4f193cebfbd649"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "197b125f-1a66-44b5-878b-3ace16a93cfd",
+      "createdAt": "2026-10-21T08:32:07.834Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "taskId": "186e8fc4-cea7-4d8f-87f1-d533e715ce43",
+      "state": "succeeded",
+      "claim": "Compiler completed for the pinned source and settings.",
+      "gaps": [
+        "Compilation is not a security assessment."
+      ],
+      "evidence": [
+        "4e3bb0b8334775ed12376d6a8f77d53ee2e319a9603ab879131df80f2538d1c4"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "434acb7a-fd51-4a11-bef6-7b282eb25698",
+      "createdAt": "2026-10-21T08:32:21.556Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "taskId": "d2443ac0-0c7d-4855-b8ce-e1de3ef57dce",
+      "state": "succeeded",
+      "claim": "Existing tests: 79 passed, 0 failed, 0 skipped.",
+      "gaps": [
+        "Test assertions are not automatically security findings.",
+        "Reachability, rejection/revert rates, property sensitivity and liveness coverage are not established."
+      ],
+      "evidence": [
+        "661bfdbd255cbed699efc4d449a9174de26785bdcb93b36d45a9408425490a2c"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "b572926b-6647-4423-8d17-461afb08fd6b",
+      "createdAt": "2026-10-21T08:33:50.324Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "taskId": "bc52e010-93cb-4045-b39e-75bea5e8fc50",
+      "state": "succeeded",
+      "claim": "Slither completed; 34 analyzer observations require human review.",
+      "gaps": [
+        "Static detectors do not establish property completeness or correctness."
+      ],
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ]
+    }
+  ],
+  "executions": [
+    {
+      "schemaVersion": 1,
+      "id": "1dcd5a1d-67df-4c5b-b0e3-6e4ff17946c7",
+      "createdAt": "2026-10-21T08:32:07.834Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "taskId": "186e8fc4-cea7-4d8f-87f1-d533e715ce43",
+      "tool": "foundry-build",
+      "version": "forge Version: 1.3.1-v1.3.1\nCommit SHA: 08d3a4ad4d78b62bcb897350803bf96fc2cf6cc9\nBuild Timestamp: 2025-08-12T07:39:41.778340577Z (1754984381)\nBuild Profile: maxperf",
+      "image": "sha256:470f595a2226b79d436bd27ab38e789667f847234c8034beee470b086839bfd1",
+      "argv": [
+        "--host",
+        "unix:///Users/hishamel-husseini/.lima/gebal/sock/docker.sock",
+        "run",
+        "--rm",
+        "--pull=never",
+        "--name",
+        "gebal-186e8fc4-cea7-4d8f-87f1-d533e715ce43",
+        "--network=none",
+        "--read-only",
+        "--user=65534:65534",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "--pids-limit",
+        "128",
+        "--memory",
+        "2048m",
+        "--memory-swap",
+        "2048m",
+        "--cpus",
+        "2",
+        "--ulimit",
+        "nofile=128:128",
+        "--log-driver=none",
+        "--tmpfs",
+        "/work:rw,nosuid,nodev,noexec,size=512m,mode=1777",
+        "--tmpfs",
+        "/tmp:rw,nosuid,nodev,noexec,size=16m,mode=1777",
+        "--mount",
+        "type=bind,src=<disposable-workspace>/source,dst=/source,readonly",
+        "--mount",
+        "type=bind,src=<disposable-workspace>/controller,dst=/controller,readonly",
+        "--workdir",
+        "/source",
+        "--entrypoint",
+        "/usr/bin/python3",
+        "sha256:470f595a2226b79d436bd27ab38e789667f847234c8034beee470b086839bfd1",
+        "/controller/runner.py",
+        "foundry-build"
+      ],
+      "state": "succeeded",
+      "exitCode": 0,
+      "evidence": [
+        "4e3bb0b8334775ed12376d6a8f77d53ee2e319a9603ab879131df80f2538d1c4"
+      ],
+      "seconds": 10.482
+    },
+    {
+      "schemaVersion": 1,
+      "id": "64d7e2ed-6bb6-4783-9a59-6c1e12868c56",
+      "createdAt": "2026-10-21T08:32:21.557Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "taskId": "d2443ac0-0c7d-4855-b8ce-e1de3ef57dce",
+      "tool": "foundry-test",
+      "version": "forge Version: 1.3.1-v1.3.1\nCommit SHA: 08d3a4ad4d78b62bcb897350803bf96fc2cf6cc9\nBuild Timestamp: 2025-08-12T07:39:41.778340577Z (1754984381)\nBuild Profile: maxperf",
+      "image": "sha256:470f595a2226b79d436bd27ab38e789667f847234c8034beee470b086839bfd1",
+      "argv": [
+        "--host",
+        "unix:///Users/hishamel-husseini/.lima/gebal/sock/docker.sock",
+        "run",
+        "--rm",
+        "--pull=never",
+        "--name",
+        "gebal-d2443ac0-0c7d-4855-b8ce-e1de3ef57dce",
+        "--network=none",
+        "--read-only",
+        "--user=65534:65534",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "--pids-limit",
+        "128",
+        "--memory",
+        "2048m",
+        "--memory-swap",
+        "2048m",
+        "--cpus",
+        "2",
+        "--ulimit",
+        "nofile=128:128",
+        "--log-driver=none",
+        "--tmpfs",
+        "/work:rw,nosuid,nodev,noexec,size=512m,mode=1777",
+        "--tmpfs",
+        "/tmp:rw,nosuid,nodev,noexec,size=16m,mode=1777",
+        "--mount",
+        "type=bind,src=<disposable-workspace>/source,dst=/source,readonly",
+        "--mount",
+        "type=bind,src=<disposable-workspace>/controller,dst=/controller,readonly",
+        "--workdir",
+        "/source",
+        "--entrypoint",
+        "/usr/bin/python3",
+        "sha256:470f595a2226b79d436bd27ab38e789667f847234c8034beee470b086839bfd1",
+        "/controller/runner.py",
+        "foundry-test"
+      ],
+      "state": "succeeded",
+      "exitCode": 0,
+      "evidence": [
+        "661bfdbd255cbed699efc4d449a9174de26785bdcb93b36d45a9408425490a2c"
+      ],
+      "seconds": 13.721
+    },
+    {
+      "schemaVersion": 1,
+      "id": "46d4a4dd-b2b3-487f-ae99-b4f8d5efe3d8",
+      "createdAt": "2026-10-21T08:33:50.325Z",
+      "runId": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "taskId": "bc52e010-93cb-4045-b39e-75bea5e8fc50",
+      "tool": "slither",
+      "version": "0.11.3",
+      "image": "sha256:470f595a2226b79d436bd27ab38e789667f847234c8034beee470b086839bfd1",
+      "argv": [
+        "--host",
+        "unix:///Users/hishamel-husseini/.lima/gebal/sock/docker.sock",
+        "run",
+        "--rm",
+        "--pull=never",
+        "--name",
+        "gebal-bc52e010-93cb-4045-b39e-75bea5e8fc50",
+        "--network=none",
+        "--read-only",
+        "--user=65534:65534",
+        "--cap-drop=ALL",
+        "--security-opt=no-new-privileges",
+        "--pids-limit",
+        "128",
+        "--memory",
+        "2048m",
+        "--memory-swap",
+        "2048m",
+        "--cpus",
+        "2",
+        "--ulimit",
+        "nofile=128:128",
+        "--log-driver=none",
+        "--tmpfs",
+        "/work:rw,nosuid,nodev,noexec,size=512m,mode=1777",
+        "--tmpfs",
+        "/tmp:rw,nosuid,nodev,noexec,size=16m,mode=1777",
+        "--mount",
+        "type=bind,src=<disposable-workspace>/source,dst=/source,readonly",
+        "--mount",
+        "type=bind,src=<disposable-workspace>/controller,dst=/controller,readonly",
+        "--workdir",
+        "/source",
+        "--entrypoint",
+        "/usr/bin/python3",
+        "sha256:470f595a2226b79d436bd27ab38e789667f847234c8034beee470b086839bfd1",
+        "/controller/runner.py",
+        "slither"
+      ],
+      "state": "succeeded",
+      "exitCode": 0,
+      "evidence": [
+        "1b316402205cc64c850cb4c1421b39d7f434e5716e9cee3285565bc0cbac91ca"
+      ],
+      "seconds": 88.768
+    }
+  ],
+  "invocations": [],
+  "decisions": [
+    {
+      "schemaVersion": 1,
+      "id": "c66a9951-1ac8-4233-a6ff-9e8f13e0cdbd",
+      "createdAt": "2026-10-21T08:31:56.707Z",
+      "subjectId": "20cd66d3-140e-4650-972e-e0cfa68cc525",
+      "action": "approve-plan",
+      "rationale": "User-authorized local bounded deterministic sandbox checks; assistant inspected exact scope and limits. This records delegated execution authorization and does not assert owner reviewed this hash. No remote egress.",
+      "actor": "delegated-audit-assistant",
+      "boundHash": "17ba9ff6087c56fda80175f8f5df89ec19c5a8a8a2b45fc2cd51ce2ad67985fd"
+    }
+  ],
+  "events": [
+    {
+      "seq": 1,
+      "run_id": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "at": "2026-10-21T08:31:57.303Z",
+      "message": "Approved plan enqueued."
+    },
+    {
+      "seq": 2,
+      "run_id": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "at": "2026-10-21T08:31:57.306Z",
+      "message": "intake: running (attempt 1)"
+    },
+    {
+      "seq": 3,
+      "run_id": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "at": "2026-10-21T08:31:57.352Z",
+      "message": "intake: succeeded — Recorded 78 authorized files. Supported Foundry configuration."
+    },
+    {
+      "seq": 4,
+      "run_id": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "at": "2026-10-21T08:31:57.352Z",
+      "message": "foundry-build: running (attempt 1)"
+    },
+    {
+      "seq": 5,
+      "run_id": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "at": "2026-10-21T08:32:07.835Z",
+      "message": "foundry-build: succeeded — Compiler completed for the pinned source and settings."
+    },
+    {
+      "seq": 6,
+      "run_id": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "at": "2026-10-21T08:32:07.836Z",
+      "message": "foundry-test: running (attempt 1)"
+    },
+    {
+      "seq": 7,
+      "run_id": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "at": "2026-10-21T08:32:21.557Z",
+      "message": "foundry-test: succeeded — Existing tests: 79 passed, 0 failed, 0 skipped."
+    },
+    {
+      "seq": 8,
+      "run_id": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "at": "2026-10-21T08:32:21.557Z",
+      "message": "slither: running (attempt 1)"
+    },
+    {
+      "seq": 9,
+      "run_id": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "at": "2026-10-21T08:33:50.325Z",
+      "message": "slither: succeeded — Slither completed; 34 analyzer observations require human review."
+    },
+    {
+      "seq": 10,
+      "run_id": "7534f596-70e1-4ce7-ba04-d00d57e72291",
+      "at": "2026-10-21T08:33:50.325Z",
+      "message": "Run succeeded. Review coverage gaps before relying on results."
+    }
+  ],
+  "disclaimer": "An empty findings list is not a security certificate. Completed checks establish only their stated coverage."
+}

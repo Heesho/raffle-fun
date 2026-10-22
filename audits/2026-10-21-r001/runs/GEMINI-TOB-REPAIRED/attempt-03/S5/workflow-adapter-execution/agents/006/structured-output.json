@@ -1,0 +1,140 @@
+{
+  "requirements": [
+    {
+      "checkable": "createRaffle deploys an ERC-1167 clone of raffleImplementation, initializes it, registers it in raffleById, idByRaffle, and isRaffle, transfers the prize NFT into it, and verifies prize ownership and Active status within one atomic transaction.",
+      "force": "descriptive",
+      "id": "REQ-01",
+      "kind": "ordering",
+      "location": "RaffleFactory.sol:L17, contract RaffleFactory (@notice)",
+      "quote": "Atomically creates, funds, and registers autonomous fixed-implementation raffle clones."
+    },
+    {
+      "checkable": "raffleImplementation, quoteToken, protocolTreasury, and vrfWrapper are declared immutable, and callbackGasLimit, requestConfirmations, and fee constants in RaffleConstants are declared constant with no mutating functions.",
+      "force": "descriptive",
+      "id": "REQ-02",
+      "kind": "invariant",
+      "location": "RaffleFactory.sol:L18, contract RaffleFactory (@dev)",
+      "quote": "The implementation, canonical six-decimal USDC, treasury, fee, and Chainlink configuration are immutable."
+    },
+    {
+      "checkable": "RaffleFactory defines no owner or admin role, no pause state or modifier, no upgrade or implementation-replacement path, no asset rescue function, and no setter for protocol configuration.",
+      "force": "descriptive",
+      "id": "REQ-03",
+      "kind": "access-control",
+      "location": "RaffleFactory.sol:L18-L19, contract RaffleFactory (@dev)",
+      "quote": "The factory has no owner, pause, upgrade, rescue, or mutable protocol configuration."
+    },
+    {
+      "checkable": "RaffleFactory's constructor sets quoteToken, vrfWrapper, and protocolTreasury once, deploys a new Raffle(quoteToken_, vrfWrapper_) implementation whose constructor locks initialization (initialized = true, status = Status.Refunding), and stores it in the immutable raffleImplementation.",
+      "force": "descriptive",
+      "id": "REQ-04",
+      "kind": "state-machine",
+      "location": "RaffleFactory.sol:L58, constructor (@notice)",
+      "quote": "Deploys the ownerless factory and its locked raffle implementation with one immutable configuration."
+    },
+    {
+      "checkable": "The RaffleFactory constructor calls IERC20Metadata(quoteToken_).decimals() and reverts with UnsupportedQuoteToken(quoteToken_) if the call fails or InvalidQuoteTokenDecimals(quoteDecimals, 6) if the returned value is not 6.",
+      "force": "mandatory",
+      "id": "REQ-05",
+      "kind": "error-handling",
+      "location": "RaffleFactory.sol:L59, constructor (@dev)",
+      "quote": "The quote token must report exactly six decimals"
+    },
+    {
+      "checkable": "The RaffleFactory constructor calls _requireContract(quoteToken_) and _requireContract(vrfWrapper_), reverting with NotContract if either address has code.length == 0.",
+      "force": "mandatory",
+      "id": "REQ-06",
+      "kind": "error-handling",
+      "location": "RaffleFactory.sol:L59, constructor (@dev)",
+      "quote": "the wrapper and quote token must contain deployed code."
+    },
+    {
+      "checkable": "Off-chain deployment constraint that cannot be verified from Solidity contract code alone: the constructor only checks code.length > 0 and decimals() == 6 on quoteToken_.",
+      "force": "mandatory",
+      "id": "REQ-07",
+      "kind": "trust-boundary",
+      "location": "RaffleFactory.sol:L60-L61, constructor (@dev)",
+      "quote": "Deployment tooling must supply and verify the target chain's official USDC address because the constructor cannot prove token identity from metadata."
+    },
+    {
+      "checkable": "The constructor stores quoteToken_ in the immutable quoteToken and passes it to new Raffle(quoteToken_, vrfWrapper_) so every raffle clone shares the same immutable quoteToken.",
+      "force": "descriptive",
+      "id": "REQ-08",
+      "kind": "invariant",
+      "location": "RaffleFactory.sol:L62, constructor (@param quoteToken_)",
+      "quote": "Target chain's official six-decimal USDC contract trusted by every raffle."
+    },
+    {
+      "checkable": "The constructor stores vrfWrapper_ in the immutable vrfWrapper and passes it to new Raffle(quoteToken_, vrfWrapper_) so every raffle clone uses the same immutable VRF v2.5 wrapper.",
+      "force": "descriptive",
+      "id": "REQ-09",
+      "kind": "invariant",
+      "location": "RaffleFactory.sol:L63, constructor (@param vrfWrapper_)",
+      "quote": "Official Chainlink VRF v2.5 native direct-funding wrapper for the target chain."
+    },
+    {
+      "checkable": "The constructor rejects zero or unsafe protocol destinations (address(this), quoteToken_, vrfWrapper_, implementation) for protocolTreasury_, stores it in the immutable protocolTreasury, and createRaffle passes it to every clone's initialize call.",
+      "force": "descriptive",
+      "id": "REQ-10",
+      "kind": "invariant",
+      "location": "RaffleFactory.sol:L64, constructor (@param protocolTreasury_)",
+      "quote": "Immutable protocol-fee recipient used by every raffle."
+    },
+    {
+      "checkable": "createRaffle deploys a fresh ERC-1167 clone of raffleImplementation and calls IRaffle(raffle).initialize(...), which sets initialized = true and reverts with AlreadyInitialized on any subsequent call.",
+      "force": "descriptive",
+      "id": "REQ-11",
+      "kind": "state-machine",
+      "location": "RaffleFactory.sol:L107, createRaffle",
+      "quote": "The fresh fixed-target clone can initialize only once"
+    },
+    {
+      "checkable": "createRaffle carries the nonReentrant modifier and validates endTime > block.timestamp and saleDuration <= MAX_SALE_DURATION, clones and initializes the raffle, registers it, transfers the prize via safeTransferFrom, and reverts with PrizeEscrowVerificationFailed unless prize.ownerOf(prizeTokenId) == raffle and status() == Active.",
+      "force": "descriptive",
+      "id": "REQ-12",
+      "kind": "error-handling",
+      "location": "RaffleFactory.sol:L107, createRaffle",
+      "quote": "this function is nonReentrant and atomic."
+    },
+    {
+      "checkable": "Before Clones.clone is called in createRaffle, _validateCreateParams verifies params.prizeToken has deployed code and is not an unsafe protocol destination (address(this), quoteToken, vrfWrapper, raffleImplementation, or isRaffle[params.prizeToken]), reverting with NotContract or UnsafeProtocolDestination.",
+      "force": "descriptive",
+      "id": "REQ-13",
+      "kind": "error-handling",
+      "location": "RaffleFactory.sol:L152, _validateCreateParams (@dev)",
+      "quote": "Validates the sponsor-selected token, recipient, reserve, and supported ERC-721 interface before cloning."
+    },
+    {
+      "checkable": "Before Clones.clone is called in createRaffle, _validateCreateParams verifies params.sponsorRecipient is not address(0) and is not an unsafe protocol destination (address(this), quoteToken, vrfWrapper, params.prizeToken, raffleImplementation, or isRaffle[params.sponsorRecipient]), reverting with ZeroAddress or UnsafeProtocolDestination.",
+      "force": "descriptive",
+      "id": "REQ-14",
+      "kind": "error-handling",
+      "location": "RaffleFactory.sol:L152, _validateCreateParams (@dev)",
+      "quote": "Validates the sponsor-selected token, recipient, reserve, and supported ERC-721 interface before cloning."
+    },
+    {
+      "checkable": "Before Clones.clone is called in createRaffle, _validateCreateParams verifies params.reserveEntries != 0 and reverts with ZeroReserveEntries() when params.reserveEntries == 0.",
+      "force": "descriptive",
+      "id": "REQ-15",
+      "kind": "error-handling",
+      "location": "RaffleFactory.sol:L152, _validateCreateParams (@dev)",
+      "quote": "Validates the sponsor-selected token, recipient, reserve, and supported ERC-721 interface before cloning."
+    },
+    {
+      "checkable": "Before Clones.clone is called in createRaffle, _validateCreateParams calls IERC165(params.prizeToken).supportsInterface(type(IERC721).interfaceId) in a try/catch and reverts with UnsupportedPrizeToken(params.prizeToken) if the call reverts or returns false.",
+      "force": "descriptive",
+      "id": "REQ-16",
+      "kind": "error-handling",
+      "location": "RaffleFactory.sol:L152, _validateCreateParams (@dev)",
+      "quote": "Validates the sponsor-selected token, recipient, reserve, and supported ERC-721 interface before cloning."
+    },
+    {
+      "checkable": "_requireContract(address account) checks account.code.length == 0 and reverts with NotContract(account) when the address has no deployed code.",
+      "force": "descriptive",
+      "id": "REQ-17",
+      "kind": "error-handling",
+      "location": "RaffleFactory.sol:L181, _requireContract (@dev)",
+      "quote": "Reverts unless an address contains deployed code."
+    }
+  ]
+}

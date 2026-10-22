@@ -1,0 +1,19 @@
+--- before
++++ after
+@@ -1,6 +1,7 @@
+ from pathlib import Path
+ import collections,datetime,hashlib,json
+ M=Path(__file__).resolve().parents[1];O=Path('/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/gemini/runs/GEMINI-OPENKRITT/native-engine-attempt-03');expected=json.loads((M/'source-manifest.json').read_text());rows=[];issues=[];failed_lookups={}
++REVIEWED_LISTING_COMMANDS=set(["find packages/contracts -maxdepth 3 -not -path '*/node_modules*'", "find packages/contracts/src packages/contracts/contracts -maxdepth 4 2>/dev/null || find packages/contracts -maxdepth 3 -not -path '*/.*'", 'find packages/contracts/contracts -type f', "find packages/contracts -maxdepth 3 -not -path '*/.*'", "find packages/contracts -maxdepth 3 -not -path '*/node_modules*' -not -path '*/.*'", "find . -maxdepth 3 -not -path '*/node_modules*' -not -path '*/.*'", 'find packages/contracts -maxdepth 3', "find . -maxdepth 3 -not -path '*/.*'", "find packages/contracts -maxdepth 4 -not -path '*/node_modules/*'", 'find packages/contracts/src -type f', "find . -maxdepth 3 -not -path '*/.*' -not -path '*/node_modules*'", 'find . -name "ReentrancyGuard.sol" -o -name "ERC721.sol" -o -name "VRFV2PlusWrapperConsumerBase.sol"', "find packages/contracts/src packages/contracts/contracts -maxdepth 3 2>/dev/null || find packages/contracts -maxdepth 3 -not -path '*/node_modules*'", 'find packages/contracts -maxdepth 4 -type f', 'find packages/contracts/src packages/contracts/contracts -maxdepth 3 2>/dev/null || find packages/contracts -maxdepth 2'])
+ def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+ for call in sorted((M/'host-calls').iterdir()):
+  if not call.is_dir():continue
+@@ -26,7 +27,7 @@
+   elif name=='run_command':
+    command=params.get('CommandLine') or params.get('command') or str(params);commands.add(command)
+    # Explicit observed listing commands; no general shell safety inference.
+-   if not command.startswith('find ') or any(t in command for t in [';','&&','|','`','$(',' -exec',' -delete','>','../']):issues.append({'call':call.name,'issue':'command requires manual scope review','command':command})
++   if command not in REVIEWED_LISTING_COMMANDS:issues.append({'call':call.name,'issue':'command requires manual scope review','command':command})
+   elif name!='finish':issues.append({'call':call.name,'issue':'additional tool requires review','tool_name':name})
+   if not launch['allow_tools_requested_by_engine'] and name!='finish':issues.append({'call':call.name,'issue':'native no-tool request used tool','tool_name':name})
+  rows.append({'call':call.name,'terminal_event':terminal,'init_model':model,'tool_event_counts_started_and_completed':dict(counts),'read_paths':sorted(paths),'commands':sorted(commands),'log_sha256':sha(log),'launch_sha256':sha(call/'launch.json'),'native_allow_tools':launch['allow_tools_requested_by_engine']})

@@ -1,0 +1,74 @@
+{
+  "type": "object",
+  "required": [
+    "requirements"
+  ],
+  "properties": {
+    "requirements": {
+      "type": "array",
+      "description": "One entry per independently checkable claim. Split compound sentences into separate entries.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "quote",
+          "location",
+          "kind",
+          "force",
+          "checkable"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "stable short id, e.g. REQ-04"
+          },
+          "quote": {
+            "type": "string",
+            "description": "the requirement verbatim from the document, not paraphrased"
+          },
+          "location": {
+            "type": "string",
+            "description": "e.g. \"\u00a74.1\" or \"README.md, Fees\""
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "invariant",
+              "formula",
+              "access-control",
+              "state-machine",
+              "error-handling",
+              "ordering",
+              "economic",
+              "trust-boundary",
+              "other"
+            ]
+          },
+          "force": {
+            "type": "string",
+            "enum": [
+              "mandatory",
+              "recommended",
+              "optional",
+              "descriptive"
+            ],
+            "description": "mandatory for MUST/NEVER/ALWAYS; descriptive for prose that states what the system does"
+          },
+          "checkable": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "what would have to be true of the code for this to hold, in one line"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

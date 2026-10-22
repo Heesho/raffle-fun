@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "purpose": "Stable final audit artifact manifest",
+  "included": [
+    "FIRST-PASS.md",
+    "FIRST-PASS.timestamp",
+    "FIRST-PASS.sha256",
+    "SEAL.json",
+    "REPORT.md",
+    "REPORT.timestamp",
+    "REPORT.sha256",
+    "stage-ledger.json",
+    "runner-selection.json",
+    "integrity-before.json",
+    "command.json",
+    "prompt.txt",
+    "artifacts/**",
+    "prompts/**",
+    "harness/**"
+  ],
+  "excluded": [
+    "artifacts/final-aggregate/FINAL-MANIFEST.sha256 (self-referential)",
+    "FINAL-SEAL.json (created from the manifest hash)",
+    "events.jsonl (live outer-controller transport log)",
+    "stderr.txt (live outer-controller transport log)",
+    "controller-final.md (outer-controller completion output)",
+    "pid.txt (outer-controller runtime state)",
+    "campaign attempt-02 and every other cell"
+  ]
+}

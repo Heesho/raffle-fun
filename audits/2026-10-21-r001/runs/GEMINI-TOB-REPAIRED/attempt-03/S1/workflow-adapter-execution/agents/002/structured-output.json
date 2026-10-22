@@ -1,0 +1,105 @@
+{
+  "analysisFile": "audit-context/functions/01-createRaffle.md",
+  "assumptions": [
+    {
+      "claim": "raffleImplementation contains deployed Raffle runtime code with immutable factory == address(this) (Clones.clone does not check implementation.code.length)",
+      "establishedBy": "RaffleFactory.constructor at packages/contracts/src/RaffleFactory.sol:L89-L91 and Raffle.constructor at packages/contracts/src/Raffle.sol:L161"
+    },
+    {
+      "claim": "protocolTreasury is non-zero and not equal to address(this), quoteToken, vrfWrapper, or raffleImplementation",
+      "establishedBy": "RaffleFactory.constructor at packages/contracts/src/RaffleFactory.sol:L68, L80-L83, L90 (and re-verified by Raffle.initialize at packages/contracts/src/Raffle.sol:L183, L190-L192)"
+    },
+    {
+      "claim": "msg.sender (sponsor) is non-zero and is not equal to raffle, address(this), quoteToken, vrfWrapper, params.prizeToken, raffleImplementation, or any registered raffle in isRaffle (not checked in RaffleFactory)",
+      "establishedBy": "Raffle.initialize -> Raffle._isProtocolDestination at packages/contracts/src/Raffle.sol:L182, L187-L189, L593-L605"
+    },
+    {
+      "claim": "params.sponsorRecipient and protocolTreasury are not equal to the newly deployed raffle clone address (not checked by _validateCreateParams since raffle is deployed and registered later)",
+      "establishedBy": "Raffle.initialize -> Raffle._isProtocolDestination (destination == address(this)) at packages/contracts/src/Raffle.sol:L190-L195, L599"
+    },
+    {
+      "claim": "params.prizeToken is an honest, standards-compliant ERC-721 contract that maintains exclusive custody of params.prizeTokenId in raffle after ownerOf(params.prizeTokenId) == raffle succeeds at creation and permits later transferFrom in redeemWinningTicket or releaseSponsorPrize",
+      "establishedBy": "nothing found (RaffleFactory.sol:L155, L171-L177, L128-L134 and Raffle.sol:L416-L431 enforce only code presence, ERC-165 IERC721 response, onERC721Received callback, and immediate post-transfer ownerOf == raffle)"
+    },
+    {
+      "claim": "params.sponsorRecipient can receive quoteToken via SafeERC20.safeTransfer and params.prizeToken via IERC721.transferFrom without token-level blacklisting or revert",
+      "establishedBy": "nothing found (RaffleFactory.sol:L156, L163-L169 and Raffle.sol:L182, L193-L195 enforce only non-zero and non-protocol-sink addresses)"
+    },
+    {
+      "claim": "params.prizeToken does not invoke raffle.buyEntries during safeTransferFrom after calling raffle.onERC721Received before RaffleCreated is emitted",
+      "establishedBy": "nothing found (RaffleFactory.sol:L132-L134 enforces IRaffle(raffle).status() == Status.Active, which reverts if enableRefunds was called, but buyEntries keeps status == Status.Active)"
+    }
+  ],
+  "callers": [
+    "External entrypoint (any prospective sponsor address via createRaffle at packages/contracts/src/RaffleFactory.sol:L97); no internal callers"
+  ],
+  "calls": [
+    {
+      "callee": "ReentrancyGuard.nonReentrant (_nonReentrantBefore / _nonReentrantAfter)",
+      "kind": "external-source-available",
+      "propagates": "Reverts with ReentrancyGuardReentrantCall if REENTRANCY_GUARD_STORAGE == ENTERED, locks factory against reentrant createRaffle calls across external calls (ReentrancyGuard.sol:L69-L73, L88-L106)"
+    },
+    {
+      "callee": "RaffleFactory._validateCreateParams / RaffleFactory._requireContract",
+      "kind": "internal",
+      "propagates": "Establishes params.prizeToken.code.length > 0, params.sponsorRecipient != address(0), neither prizeToken nor sponsorRecipient is factory/quoteToken/vrfWrapper/raffleImplementation/existing isRaffle, sponsorRecipient != prizeToken, IERC165(prizeToken).supportsInterface(IERC721) == true, and params.reserveEntries > 0; does not check msg.sender, endTime, or sponsorRecipient == new raffle clone (RaffleFactory.sol:L154-L185)"
+    },
+    {
+      "callee": "Clones.clone",
+      "kind": "external-source-available",
+      "propagates": "Deploys a 45-byte ERC-1167 minimal proxy delegating to raffleImplementation via CREATE and reverts with Errors.FailedDeployment if address(0); does not check raffleImplementation.code.length > 0 (Clones.sol:L32-L62)"
+    },
+    {
+      "callee": "IRaffle(raffle).initialize / Raffle._isProtocolDestination",
+      "kind": "internal",
+      "propagates": "Enforces one-time initialization by factory, screens sponsor (msg.sender), protocolTreasury, and sponsorRecipient against address(0), the new clone itself (address(this)), factory, quoteToken, i_vrfV2PlusWrapper, prizeToken, raffleImplementation, and existing isRaffle entries, writes clone config, and sets status = Status.AwaitingPrize; relies on caller for reserveEntries > 0 and endTime bounds (Raffle.sol:L176-L206, L593-L605)"
+    },
+    {
+      "callee": "IERC721(params.prizeToken).safeTransferFrom",
+      "kind": "external-black-box",
+      "propagates": "Untrusted external call expected to transfer params.prizeTokenId from msg.sender to raffle and invoke raffle.onERC721Received(address(this), msg.sender, params.prizeTokenId, \"\"); may execute arbitrary external calls including calling into the newly active raffle clone before returning (RaffleFactory.sol:L128)"
+    },
+    {
+      "callee": "Raffle.onERC721Received",
+      "kind": "internal",
+      "propagates": "Invoked by params.prizeToken during safeTransferFrom; enforces status == Status.AwaitingPrize, msg.sender == address(prizeToken), tokenId == prizeTokenId, from == sponsor, and operator == factory, transitions status to Status.Active, and emits PrizeDeposited (Raffle.sol:L416-L431)"
+    },
+    {
+      "callee": "IERC721(params.prizeToken).ownerOf",
+      "kind": "external-black-box",
+      "propagates": "Untrusted STATICCALL checked at L129-L131 to equal raffle; does not guarantee persistent custody on an arbitrary contract (RaffleFactory.sol:L129)"
+    },
+    {
+      "callee": "IRaffle(raffle).status",
+      "kind": "internal",
+      "propagates": "STATICCALL to the clone checked at L132-L134 to equal IRaffle.Status.Active, proving onERC721Received ran and status was not transitioned away from Active during safeTransferFrom (RaffleFactory.sol:L132, Raffle.sol:L124)"
+    }
+  ],
+  "file": "packages/contracts/src/RaffleFactory.sol",
+  "function": "createRaffle",
+  "invariants": [
+    {
+      "claim": "Every created raffle has 1 <= reserveEntries <= type(uint128).max and creation block.timestamp < endTime <= block.timestamp + 30 days",
+      "evidence": "packages/contracts/src/RaffleFactory.sol:L99-L104, L178; packages/contracts/src/libraries/RaffleConstants.sol:L30"
+    },
+    {
+      "claim": "raffleCount increments sequentially from 1 and raffleById, idByRaffle, and isRaffle form a 1-to-1 registry of deployed ERC-1167 clones written before prize.safeTransferFrom executes",
+      "evidence": "packages/contracts/src/RaffleFactory.sol:L105-L106, L123-L125, L128"
+    },
+    {
+      "claim": "Neither prizeToken, sponsor, sponsorRecipient, nor protocolTreasury equals the new raffle clone, RaffleFactory, quoteToken, vrfWrapper, raffleImplementation, or any registered raffle in isRaffle, and sponsor, sponsorRecipient, and protocolTreasury do not equal prizeToken",
+      "evidence": "packages/contracts/src/RaffleFactory.sol:L155-L169; packages/contracts/src/Raffle.sol:L181-L195, L593-L605"
+    },
+    {
+      "claim": "createRaffle returns only if prize.ownerOf(params.prizeTokenId) == raffle and IRaffle(raffle).status() == IRaffle.Status.Active after prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId)",
+      "evidence": "packages/contracts/src/RaffleFactory.sol:L128-L134; packages/contracts/src/Raffle.sol:L416-L431"
+    }
+  ],
+  "lines": "L97-L148",
+  "openQuestions": [],
+  "sharedState": [
+    "RaffleFactory.raffleCount, RaffleFactory.raffleById, RaffleFactory.idByRaffle (written at RaffleFactory.sol:L105, L123-L124)",
+    "RaffleFactory.isRaffle (written at RaffleFactory.sol:L125; read by RaffleFactory._validateCreateParams at L159, L166 and Raffle._isProtocolDestination at Raffle.sol:L603)",
+    "Raffle clone storage: initialized, sponsor, sponsorRecipient, protocolTreasury, prizeToken, prizeTokenId, raffleId, reserveEntries, endTime, status (written via Raffle.initialize at Raffle.sol:L179, L197-L205 and Raffle.onERC721Received at Raffle.sol:L428; read across Raffle.sol)"
+  ]
+}

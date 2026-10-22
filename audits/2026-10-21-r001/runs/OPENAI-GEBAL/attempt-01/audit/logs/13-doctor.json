@@ -1,0 +1,33 @@
+{
+  "stageId": "13-doctor",
+  "command": [
+    "npx",
+    "--offline",
+    "--yes",
+    "--package=node@22.23.3",
+    "--package=pnpm@10.34.6",
+    "pnpm",
+    "--dir",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal",
+    "exec",
+    "node",
+    "--import",
+    "tsx",
+    "packages/cli/src/main.ts",
+    "doctor"
+  ],
+  "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/toolchain",
+  "environmentOverrides": {
+    "GEBAL_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/gebal-state",
+    "TMPDIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/tmp",
+    "npm_config_logs_dir": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/logs/npm",
+    "npm_config_update_notifier": "false",
+    "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/npm-cache",
+    "npm_config_prefix": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/toolchain"
+  },
+  "startedAt": "2026-10-21T08:06:29.510837+00:00",
+  "finishedAt": "2026-10-21T08:06:30.279787+00:00",
+  "exitCode": 0,
+  "stdout": "{\n  \"node\": \"v22.23.3\",\n  \"sqlite\": \"built-in node:sqlite\",\n  \"docker\": {\n    \"available\": false,\n    \"detail\": \"failed to connect to the docker API at unix:///var/run/docker.sock; check if the path is correct and if the daemon is running: dial unix /var/run/docker.sock: connect: no such file or directory\"\n  },\n  \"toolImage\": \"not configured\",\n  \"providers\": {\n    \"openai\": false,\n    \"anthropic\": false\n  },\n  \"note\": \"Host forge/slither installations are never used for assessed code. Tool versions are detected inside the approved immutable image.\"\n}\n",
+  "stderr": "(node:38101) ExperimentalWarning: SQLite is an experimental feature and might change at any time\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+}

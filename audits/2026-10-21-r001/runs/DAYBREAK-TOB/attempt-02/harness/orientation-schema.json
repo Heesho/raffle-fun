@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["modules", "entrypoints", "actors", "state", "candidates", "language", "filesReviewed"],
+  "properties": {
+    "modules": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["name", "path", "role"], "properties": {"name": {"type": "string"}, "path": {"type": "string"}, "role": {"type": "string"}}}},
+    "entrypoints": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["name", "file", "reachableBy"], "properties": {"name": {"type": "string"}, "file": {"type": "string"}, "reachableBy": {"type": "string"}}}},
+    "actors": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["name", "trust"], "properties": {"name": {"type": "string"}, "trust": {"type": "string", "enum": ["untrusted", "semi-trusted", "trusted", "unclear"]}}}},
+    "state": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["name", "file", "writtenBy"], "properties": {"name": {"type": "string"}, "file": {"type": "string"}, "writtenBy": {"type": "array", "items": {"type": "string"}}}}},
+    "candidates": {"type": "array", "maxItems": 40, "items": {"type": "object", "additionalProperties": false, "required": ["name", "file", "why"], "properties": {"name": {"type": "string"}, "file": {"type": "string"}, "why": {"type": "string"}}}},
+    "language": {"type": "string"},
+    "filesReviewed": {"type": "array", "items": {"type": "string"}}
+  }
+}

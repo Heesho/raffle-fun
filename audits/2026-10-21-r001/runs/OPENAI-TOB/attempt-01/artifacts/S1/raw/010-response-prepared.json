@@ -1,0 +1,86 @@
+{
+  "function": "initialize",
+  "file": "target/packages/contracts/src/Raffle.sol",
+  "lines": "L176-L206",
+  "analysisFile": "audit/S1/audit-context/functions/09-initialize.md",
+  "invariants": [
+    {
+      "claim": "Successful initialization requires previously false initialized and msg.sender equal to immutable factory; implementation constructor pre-locks its own storage.",
+      "evidence": "Raffle.sol:L155-L165,L177-L179"
+    },
+    {
+      "claim": "All four configured addresses are nonzero on success.",
+      "evidence": "Raffle.sol:L181-L186,L197-L200"
+    },
+    {
+      "claim": "Sponsor, treasury and sponsorRecipient exclude this clone, factory, quote token, wrapper, prospective prize and canonical implementation; remaining code-bearing destinations must return false from isRaffle.",
+      "evidence": "Raffle.sol:L187-L195,L593-L604"
+    },
+    {
+      "claim": "Success writes all eight supplied configuration values and AwaitingPrize; it neither transfers the prize nor activates sales.",
+      "evidence": "Raffle.sol:L197-L205,L215-L216,L421-L428"
+    },
+    {
+      "claim": "Protocol screening supplies prospective prizeToken before prizeToken storage is assigned.",
+      "evidence": "Raffle.sol:L187-L200,L587-L604"
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "The immutable factory is the canonical factory that deployed this implementation.",
+      "establishedBy": "Raffle.sol:L161 and RaffleFactory.sol:L89-L91; caller enforced at Raffle.sol:L178."
+    },
+    {
+      "claim": "Initialization starts with fresh clone storage; unrelated counters and liabilities do not require resetting.",
+      "establishedBy": "RaffleFactory.createRaffle:L105-L121; @openzeppelin/contracts/proxy/Clones.sol:L32-L34,L47-L61; initializer's bounded writes at Raffle.sol:L179,L197-L205."
+    },
+    {
+      "claim": "Reserve is positive, sale end is strictly future and no more than 30 days away, and prize has code and reports ERC721 support.",
+      "establishedBy": "RaffleFactory._validateCreateParams:L154-L178,L183-L184; createRaffle:L98-L104; RaffleConstants.sol:L29-L30. Not checked by initialize:L181-L205."
+    },
+    {
+      "claim": "Sponsor identifies the factory caller, treasury equals the factory's fixed treasury, and raffleId is its incremented canonical identifier.",
+      "establishedBy": "RaffleFactory.createRaffle:L105-L120; values are copied without these relationship checks by Raffle.initialize:L197-L204."
+    },
+    {
+      "claim": "Factory getter results identify the implementation and current registered code-bearing clones; no stronger future-state classification follows.",
+      "establishedBy": "RaffleFactory.sol:L42,L54,L89-L91,L123-L125; helper's conditional getter calls at Raffle.sol:L599-L604."
+    },
+    {
+      "claim": "The prize behaves as an honest standards-compliant ERC721, beyond its interface report (interfaces/IRaffle.sol:L13-L15; RaffleFactory.sol:L171-L178).",
+      "establishedBy": "nothing found"
+    },
+    {
+      "claim": "A destination passing current address/code/registry screening can control future payouts and remains suitable after initialization (Raffle.sol:L593-L604,L379-L405).",
+      "establishedBy": "nothing found"
+    }
+  ],
+  "calls": [
+    {
+      "callee": "Raffle._isProtocolDestination(address,address)",
+      "kind": "internal",
+      "propagates": "Called three times at Raffle.sol:L187-L195. At L599-L604, early address matches yield true; otherwise implementation comparison is queried, and only false results with destination.code.length != 0 query isRaffle. Code-less residual destinations return false without registry query."
+    },
+    {
+      "callee": "RaffleFactory.raffleImplementation() [transitive generated getter]",
+      "kind": "external-source-available",
+      "propagates": "Raffle.sol:L601 depends on immutable RaffleFactory.sol:L42 set by L89-L91 to reject the implementation. OR short-circuit skips this getter after an earlier match; uncaught failure aborts initialization (Raffle.sol:L598-L604)."
+    },
+    {
+      "callee": "RaffleFactory.isRaffle(address) [transitive generated getter]",
+      "kind": "external-source-available",
+      "propagates": "Raffle.sol:L602-L603 reads mapping RaffleFactory.sol:L54, set true at L123-L125, only for code-bearing addresses not already excluded. Caller relies on current registration result, not future registry/code behavior."
+    }
+  ],
+  "callers": [
+    "RaffleFactory.createRaffle at target/packages/contracts/src/RaffleFactory.sol:L97-L121; external ABI callers are restricted by Raffle.sol:L177-L178."
+  ],
+  "sharedState": [
+    "initialized: implementation constructor and initializer (Raffle.sol:L164,L177-L179).",
+    "sponsor/prizeToken/prizeTokenId/status: initialization and prize receiver checks/activation (Raffle.sol:L197-L205,L421-L428).",
+    "sponsorRecipient/protocolTreasury: fixed release destinations (Raffle.sol:L198-L199,L379-L390,L402-L405).",
+    "endTime/reserveEntries: sales timing and outcome threshold (Raffle.sol:L203-L204,L215-L216,L521).",
+    "factory/quoteToken/wrapper and registry: initialization and ticket destination screening (Raffle.sol:L497-L501,L593-L604)."
+  ],
+  "openQuestions": []
+}

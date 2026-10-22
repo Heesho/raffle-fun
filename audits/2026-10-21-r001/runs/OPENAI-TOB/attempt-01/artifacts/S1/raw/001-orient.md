@@ -1,0 +1,846 @@
+# Orient response 001 — original context record
+
+Scope: target/DESIGN.md, all five production source/interface files, the declared build inputs, and the directly reachable library paths listed in 001-resources.json. This is broad/shallow orientation, not a claim that every dependency function was analyzed in depth. No target files were modified. The ranked structured response below is the complete original response; the first twelve candidates are the next-depth selection.
+
+## System shape and invariants
+
+RaffleFactory fixes the quote token, wrapper, treasury and implementation in its constructor (RaffleFactory.sol L65-L92). Creation validates sponsor input and duration, deploys and initializes one clone, registers its address and ID, transfers the prize and checks its reported owner and Active status in one transaction (L97-L148). Each clone delegates to the same implementation but owns separate storage; the implementation constructor locks its own initialized flag (Raffle.sol L155-L166; Clones.sol L49-L66). There is no owner or mutable administrative configuration in either production contract.
+
+The lifecycle is AwaitingPrize -> Active -> Drawing -> NftWon/CashWon, with Active/Drawing -> Refunding on the relevant empty-sale or deadline conditions (IRaffle.sol L20-L33; Raffle.sol L205, L428, L252, L521, L276-L300). A purchase assigns one contiguous inclusive range, collects entryCount * 1,000,000 quote units, and safely mints one ERC721 ticket (Raffle.sol L209-L237). The sold-entry and ticket counters are lifetime counters; ranges remain stored after burns (L85-L88, L138-L139, L349-L365). Ownership remains transferable in every lifecycle state, subject to the destination policy and inherited ERC721 authorization (L497-L502; ERC721.sol L115-L136, L216-L250).
+
+Draw requests require a nonempty sale, timestamp >= endTime and timestamp < endTime+2 days (Raffle.sol L240-L247, L458-L460). The wrapper callback reaches the result handler only after inherited caller authentication (VRFV2PlusWrapperConsumerBase.sol L101-L107), and is ignored if in-flight, wrong-state, wrong-ID, wrong-length or at/after the callback deadline (Raffle.sol L509-L516). Accepted randomness records an entry, timestamp and result without asset transfer (L518-L523). Refund activation covers the complementary request/callback deadlines and the empty-sale rule (L276-L300).
+
+Settlement establishes the winning range and reallocates the pot into liabilities without reading ticket ownership or transferring assets (Raffle.sol L533-L558). NFT outcome allocates floor(5% gross) to protocol and the remainder to sponsor; cash outcome additionally allocates floor(80% gross) to winner, with the remainder to sponsor (L539-L555). The sum of outstanding tracked liabilities is explicitly exposed by accountedQuoteBalance (L468-L470). Refund activation instead moves the unallocated pot into remainingRefundLiability, and ticket refunds subtract the full entry value (L296-L299, L367-L369).
+
+Redemption and refunds require current ticket ownership rather than transfer approval, then burn before external delivery; a reverted delivery rolls back the transaction (Raffle.sol L309-L345, L349-L371; ERC721.sol L303-L308). Sponsor and treasury claims have independent liability slots and fixed recipients (Raffle.sol L375-L407). Prize release is separate from quote settlement and uses one shared prizeClaimed flag (L329-L336, L395-L405).
+
+## Trust and assumptions to carry forward
+
+- Canonical USDC identity and standard fee-free/non-rebasing transfer behavior are supplied by the deployment trust model. The constructor checks deployed code and six-decimal metadata, and payouts use SafeERC20 call/return validation; onchain proof of canonical identity or exact balance deltas: **nothing found** (RaffleFactory.sol L59-L77; Raffle.sol L223-L224, L560-L566; SafeERC20.sol L176-L249).
+- Canonical wrapper identity, fee behavior and randomness service are trusted external inputs. The code binds the provided address and authenticates callbacks against it; independent proof that the address is the official service: **nothing found** (RaffleFactory.sol L66-L67, L85-L89; VRFV2PlusWrapperConsumerBase.sol L40-L47, L76-L107). Timely callback delivery is not guaranteed locally; refund deadlines explicitly accommodate nonresolution (Raffle.sol L289-L291, L509-L515).
+- DESIGN.md treats arbitrary prize contracts as untrusted, while IRaffle.sol L13-L15 describes supported prizes as honest standards-compliant ERC721s. Preserve both statements. The actual checks are code presence, supportsInterface, callback tuple, ownerOf and lifecycle checks (RaffleFactory.sol L127-L134, L154-L179; Raffle.sol L416-L430). Full ERC721 honesty or truthful ownerOf behavior is an external semantic assumption; enforcement beyond those observations: **nothing found**.
+- Recipient policy recognizes the current raffle, its factory, quote token, wrapper, prize token, implementation and currently registered same-factory clones; it consults the registry for code-bearing destinations (Raffle.sol L593-L605). Universal recipient operability or future ability to initiate an owner-only claim is not proved; **nothing found** beyond destination screening and the safe-mint receiver acceptance call (L235, L497-L502; ERC721Utils.sol L25-L50).
+- Permissionless means callers may execute transitions and claims; the code does not schedule or fund those calls itself (Raffle.sol L240-L273, L276-L301, L304-L407). Event discovery is advisory in DESIGN.md; transaction truth remains the current contract state.
+- ReentrancyGuard protects functions carrying its modifier within one instance; inherited ticket transfers and approvals, the prize-receiver callback and raw randomness callback have their own checks and do not all enter that guard (Raffle.sol L176-L431; ERC721.sol L93-L136; VRFV2PlusWrapperConsumerBase.sol L101-L107). The clone guard begins from default storage; the guard checks equality to ENTERED, then writes ENTERED and resets to NOT_ENTERED (ReentrancyGuard.sol L88-L113).
+
+## Depth and open questions
+
+The first twelve ranked functions cover creation, purchasing, draw requests, winner delivery, refunds, callback resolution, allocation, timeout arbitration, initialization, ticket ownership updates, input validation and escrow activation. Each depth pass must follow its listed helpers and external-call paths. Rankings 13-40 retain the remaining meaningful guards, transfer paths and reachable dependency operations. Simple generated getters, wrappers, metadata functions and pure encoding pass-throughs are not selected for standalone depth.
+
+The deployed quote token, prize contracts and wrapper implementations are not supplied as deployment-specific source in this target; no assertion is made about their runtime behavior beyond the stated trust model and visible call/check boundaries. A later contextual decision must reconcile the prize trust wording above. Precise interactions among receiver callbacks, unguarded inherited ticket transfers, current ownership and terminal claims warrant per-function tracing; this orientation makes no verdict about them.
+
+## Complete structured response
+
+```json
+{
+  "modules": [
+    {
+      "name": "RaffleFactory",
+      "path": "target/packages/contracts/src/RaffleFactory.sol",
+      "role": "Ownerless immutable deployment root: validates sponsor configuration, creates an ERC-1167 clone, initializes and registers it, and verifies prize escrow atomically (L65-L148)."
+    },
+    {
+      "name": "Raffle",
+      "path": "target/packages/contracts/src/Raffle.sol",
+      "role": "Per-clone prize escrow, transferable ERC721 entry-range tickets, lifecycle and deadlines, native-funded draw requests, callback result recording, storage-only settlement and individual asset claims (L176-L605)."
+    },
+    {
+      "name": "IRaffle",
+      "path": "target/packages/contracts/src/interfaces/IRaffle.sol",
+      "role": "Lifecycle enum, clone configuration struct, events/errors and public raffle API; documents bearer ownership and quote-token assumptions."
+    },
+    {
+      "name": "IRaffleFactory",
+      "path": "target/packages/contracts/src/interfaces/IRaffleFactory.sol",
+      "role": "Factory configuration, creation event, validation errors, creation and canonical registry API."
+    },
+    {
+      "name": "RaffleConstants",
+      "path": "target/packages/contracts/src/libraries/RaffleConstants.sol",
+      "role": "Fixed price, six decimals, 5% protocol and 80% cash-winner rates, 100-ticket refund limit, 30-day sale limit, two-day request/callback intervals, and fixed VRF gas/confirmation settings."
+    },
+    {
+      "name": "OpenZeppelin ERC721",
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "role": "Inherited ticket ownership, balances, token/operator approval and authorized transfers; invokes the raffle _update override and ERC721 receiver callbacks."
+    },
+    {
+      "name": "OpenZeppelin ERC721Utils",
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+      "role": "Runs untrusted recipient acceptance callbacks after ticket mint or safe transfer and requires the expected receiver selector."
+    },
+    {
+      "name": "OpenZeppelin ReentrancyGuard",
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+      "role": "Storage-slot guard shared by guarded functions within one contract instance; clone storage and factory storage are separate."
+    },
+    {
+      "name": "OpenZeppelin SafeERC20",
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+      "role": "Low-level quote-token transfers with optional return-value validation and revert propagation; actual token transfer semantics remain an external assumption."
+    },
+    {
+      "name": "OpenZeppelin Clones",
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+      "role": "CREATE-based fixed-target ERC-1167 deployment used by the factory; constructor-deployed implementation supplies immutable dependencies."
+    },
+    {
+      "name": "OpenZeppelin Math",
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+      "role": "Full-precision floor multiplication/division used to allocate aggregate protocol and cash-winner liabilities."
+    },
+    {
+      "name": "Chainlink consumer base",
+      "path": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+      "role": "Embeds wrapper/LINK addresses, quotes and pays native request fees, and authenticates external rawFulfillRandomWords before invoking the raffle callback."
+    },
+    {
+      "name": "Chainlink wrapper interface and client encoding",
+      "path": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+      "role": "Black-box canonical wrapper API for pricing, native payment and request identity; VRFV2PlusClient encodes nativePayment=true extra arguments."
+    },
+    {
+      "name": "Design and build context",
+      "path": "target/DESIGN.md",
+      "role": "Independent intended behavior and trust boundaries; production language is Solidity 0.8.36, with pinned dependency versions declared in target/packages/contracts/package.json. Actual behavior is determined by source."
+    }
+  ],
+  "entrypoints": [
+    {
+      "name": "constructor",
+      "file": "target/packages/contracts/src/RaffleFactory.sol",
+      "reachableBy": "Deployment initiator supplies permanent quote token, wrapper and treasury; deployment validates code/decimals and deploys the locked implementation (L65-L92)."
+    },
+    {
+      "name": "constructor",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "reachableBy": "Canonical factory deployment invokes it for its implementation; independent deployments are possible but are not canonical registered clones (L155-L166)."
+    },
+    {
+      "name": "createRaffle",
+      "file": "target/packages/contracts/src/RaffleFactory.sol",
+      "reachableBy": "Any sponsor calls with configuration and prize-transfer approval; nonReentrant and atomically escrows through an arbitrary prize contract (L97-L148)."
+    },
+    {
+      "name": "initialize",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "reachableBy": "External ABI is callable by anyone, but only the immutable factory may succeed and only before initialization (L176-L206)."
+    },
+    {
+      "name": "buyEntries",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "reachableBy": "Any payer with quote-token allowance; chooses recipient and positive entry count while Active and before sale end (L209-L237)."
+    },
+    {
+      "name": "requestDraw",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "reachableBy": "Anyone funding the native wrapper fee after sale end and strictly before end+2 days, with at least one sold entry (L240-L273)."
+    },
+    {
+      "name": "enableRefunds",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "reachableBy": "Anyone after the applicable timeout; for zero-entry Active raffles the sponsor may call before sale end, and anyone may call at/after sale end (L276-L301)."
+    },
+    {
+      "name": "settleWinningTicket",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "reachableBy": "Anyone supplies a range ticket containing the winning entry after NftWon/CashWon; no ownership requirement and no asset transfer (L304-L306, L533-L558)."
+    },
+    {
+      "name": "redeemWinningTicket",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "reachableBy": "Only the current winning-ticket owner may successfully redeem; may first settle and burns atomically with delivery (L309-L346)."
+    },
+    {
+      "name": "refundTickets",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "reachableBy": "Current ticket owners submit 1-100 owned tickets in Refunding; approvals alone do not authorize claiming (L349-L372)."
+    },
+    {
+      "name": "releaseSponsorProceeds",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "reachableBy": "Anyone triggers payment of a nonzero allocated sponsor balance to the fixed sponsorRecipient (L375-L382)."
+    },
+    {
+      "name": "releaseProtocolFees",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "reachableBy": "Anyone triggers payment of a nonzero allocated protocol balance to the fixed protocolTreasury (L385-L392)."
+    },
+    {
+      "name": "releaseSponsorPrize",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "reachableBy": "Anyone triggers the one-time prize return to sponsorRecipient in CashWon or Refunding (L395-L407)."
+    },
+    {
+      "name": "onERC721Received",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "reachableBy": "External caller must be configured prizeToken with exact token ID, sponsor/from and factory/operator while AwaitingPrize; this callback activates sales (L416-L431)."
+    },
+    {
+      "name": "rawFulfillRandomWords",
+      "file": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+      "reachableBy": "Callable on every raffle via inherited ABI; only immutable wrapper may pass authentication and reach fulfillRandomWords (L101-L107)."
+    },
+    {
+      "name": "receive",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "reachableBy": "Any direct native transfer with empty calldata reaches an unconditional revert (L170-L173); requestDraw is the payable normal path."
+    },
+    {
+      "name": "approve",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "reachableBy": "Ticket owner or approved-for-all operator delegates transfer permission for one ticket (L93-L95, L383-L401)."
+    },
+    {
+      "name": "setApprovalForAll",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "reachableBy": "Any ticket holder establishes/revokes an operator for its own holdings (L105-L107, L409-L418)."
+    },
+    {
+      "name": "transferFrom",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "reachableBy": "Owner, per-ticket approved address or approved-for-all operator may transfer a ticket; destination screening is applied by Raffle._update in every lifecycle state (L115-L125; Raffle L497-L502)."
+    },
+    {
+      "name": "safeTransferFrom(address,address,uint256)",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "reachableBy": "Same transfer authorization as transferFrom, followed by contract receiver acceptance through the four-argument overload (L128-L136)."
+    },
+    {
+      "name": "safeTransferFrom(address,address,uint256,bytes)",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "reachableBy": "Same transfer authorization, with caller-supplied receiver data passed to untrusted contract recipient (L133-L136)."
+    },
+    {
+      "name": "Raffle view/pure and generated getters",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "reachableBy": "Any caller reads configuration, accounting, historical ranges, result, deadlines, name/symbol, wrapper and VRF fee estimates; functions L436-L486 and public declarations L44-L136."
+    },
+    {
+      "name": "RaffleFactory generated getters",
+      "file": "target/packages/contracts/src/RaffleFactory.sol",
+      "reachableBy": "Any caller reads immutable dependencies/configuration and canonical registry/count (L25-L54)."
+    },
+    {
+      "name": "ERC721 view functions",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "reachableBy": "Anyone reads supportsInterface, balanceOf, ownerOf, getApproved, isApprovedForAll and tokenURI, subject to address/token-existence checks (L45-L111)."
+    },
+    {
+      "name": "Chainlink consumer view functions",
+      "file": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+      "reachableBy": "Anyone reads i_vrfV2PlusWrapper, native getBalance and getLinkToken (L35, L109-L117)."
+    }
+  ],
+  "actors": [
+    {
+      "name": "Public callers, buyers and permissionless lifecycle/claim executors",
+      "trust": "untrusted"
+    },
+    {
+      "name": "Sponsors and sponsor-selected recipients",
+      "trust": "untrusted"
+    },
+    {
+      "name": "Ticket owners, approved operators and ticket receiver contracts",
+      "trust": "untrusted"
+    },
+    {
+      "name": "Arbitrary sponsor-selected prize ERC721 contracts",
+      "trust": "untrusted"
+    },
+    {
+      "name": "Deployment initiator choosing canonical dependencies and treasury",
+      "trust": "trusted"
+    },
+    {
+      "name": "Canonical immutable factory and registered fixed-implementation clones",
+      "trust": "trusted"
+    },
+    {
+      "name": "Canonical six-decimal USDC contract under the stated transfer-semantic assumption",
+      "trust": "trusted"
+    },
+    {
+      "name": "Canonical Chainlink VRF wrapper and authenticated randomness service",
+      "trust": "trusted"
+    },
+    {
+      "name": "Protocol treasury as a payout recipient without administrative powers",
+      "trust": "untrusted"
+    },
+    {
+      "name": "Chain execution environment supplying timestamp, transaction ordering and atomic rollback",
+      "trust": "trusted"
+    },
+    {
+      "name": "Off-chain discovery/indexers and callers deciding which raffle/prize to use",
+      "trust": "untrusted"
+    }
+  ],
+  "state": [
+    {
+      "name": "quoteToken",
+      "file": "target/packages/contracts/src/RaffleFactory.sol",
+      "writtenBy": [
+        "RaffleFactory.constructor"
+      ]
+    },
+    {
+      "name": "vrfWrapper",
+      "file": "target/packages/contracts/src/RaffleFactory.sol",
+      "writtenBy": [
+        "RaffleFactory.constructor"
+      ]
+    },
+    {
+      "name": "protocolTreasury",
+      "file": "target/packages/contracts/src/RaffleFactory.sol",
+      "writtenBy": [
+        "RaffleFactory.constructor"
+      ]
+    },
+    {
+      "name": "raffleImplementation",
+      "file": "target/packages/contracts/src/RaffleFactory.sol",
+      "writtenBy": [
+        "RaffleFactory.constructor"
+      ]
+    },
+    {
+      "name": "raffleCount",
+      "file": "target/packages/contracts/src/RaffleFactory.sol",
+      "writtenBy": [
+        "RaffleFactory.createRaffle"
+      ]
+    },
+    {
+      "name": "raffleById",
+      "file": "target/packages/contracts/src/RaffleFactory.sol",
+      "writtenBy": [
+        "RaffleFactory.createRaffle"
+      ]
+    },
+    {
+      "name": "idByRaffle",
+      "file": "target/packages/contracts/src/RaffleFactory.sol",
+      "writtenBy": [
+        "RaffleFactory.createRaffle"
+      ]
+    },
+    {
+      "name": "isRaffle",
+      "file": "target/packages/contracts/src/RaffleFactory.sol",
+      "writtenBy": [
+        "RaffleFactory.createRaffle"
+      ]
+    },
+    {
+      "name": "factory",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.constructor (implementation bytecode immutables shared by clones)"
+      ]
+    },
+    {
+      "name": "quoteToken",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.constructor (implementation bytecode immutables shared by clones)"
+      ]
+    },
+    {
+      "name": "sponsor",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.initialize"
+      ]
+    },
+    {
+      "name": "sponsorRecipient",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.initialize"
+      ]
+    },
+    {
+      "name": "protocolTreasury",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.initialize"
+      ]
+    },
+    {
+      "name": "prizeToken",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.initialize"
+      ]
+    },
+    {
+      "name": "prizeTokenId",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.initialize"
+      ]
+    },
+    {
+      "name": "raffleId",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.initialize"
+      ]
+    },
+    {
+      "name": "reserveEntries",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.initialize"
+      ]
+    },
+    {
+      "name": "endTime",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.initialize"
+      ]
+    },
+    {
+      "name": "initialized",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.constructor (implementation storage)",
+        "Raffle.initialize (clone storage)"
+      ]
+    },
+    {
+      "name": "totalEntries",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.buyEntries"
+      ]
+    },
+    {
+      "name": "ticketCount",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.buyEntries"
+      ]
+    },
+    {
+      "name": "_ticketRanges",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.buyEntries"
+      ]
+    },
+    {
+      "name": "unsettledPot",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.buyEntries",
+        "Raffle.enableRefunds",
+        "Raffle._settleWinningTicket"
+      ]
+    },
+    {
+      "name": "remainingRefundLiability",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.enableRefunds",
+        "Raffle.refundTickets"
+      ]
+    },
+    {
+      "name": "winnerRecipient",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.redeemWinningTicket"
+      ]
+    },
+    {
+      "name": "winnerRedeemed",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.redeemWinningTicket"
+      ]
+    },
+    {
+      "name": "winnerProceeds",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle._settleWinningTicket",
+        "Raffle.redeemWinningTicket"
+      ]
+    },
+    {
+      "name": "sponsorProceeds",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle._settleWinningTicket",
+        "Raffle.releaseSponsorProceeds"
+      ]
+    },
+    {
+      "name": "protocolFees",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle._settleWinningTicket",
+        "Raffle.releaseProtocolFees"
+      ]
+    },
+    {
+      "name": "vrfRequestId",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.requestDraw"
+      ]
+    },
+    {
+      "name": "drawRequestedAt",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.requestDraw"
+      ]
+    },
+    {
+      "name": "_requestInFlight",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.requestDraw"
+      ]
+    },
+    {
+      "name": "resolvedAt",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.fulfillRandomWords"
+      ]
+    },
+    {
+      "name": "winningEntry",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.fulfillRandomWords"
+      ]
+    },
+    {
+      "name": "winningTicketId",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle._settleWinningTicket"
+      ]
+    },
+    {
+      "name": "settlementComplete",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle._settleWinningTicket"
+      ]
+    },
+    {
+      "name": "status",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.constructor",
+        "Raffle.initialize",
+        "Raffle.onERC721Received",
+        "Raffle.requestDraw",
+        "Raffle.fulfillRandomWords",
+        "Raffle.enableRefunds"
+      ]
+    },
+    {
+      "name": "prizeClaimed",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Raffle.redeemWinningTicket",
+        "Raffle.releaseSponsorPrize"
+      ]
+    },
+    {
+      "name": "ERC721._owners",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "writtenBy": [
+        "ERC721._update reached through Raffle._update from buyEntries, inherited transfers, refundTickets and redeemWinningTicket"
+      ]
+    },
+    {
+      "name": "ERC721._balances",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "writtenBy": [
+        "ERC721._update reached through Raffle._update from buyEntries, inherited transfers, refundTickets and redeemWinningTicket"
+      ]
+    },
+    {
+      "name": "ERC721._tokenApprovals",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "writtenBy": [
+        "ERC721._approve reached by approve and ownership updates"
+      ]
+    },
+    {
+      "name": "ERC721._operatorApprovals",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "writtenBy": [
+        "ERC721._setApprovalForAll reached by setApprovalForAll"
+      ]
+    },
+    {
+      "name": "ERC721._name",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "writtenBy": [
+        "ERC721.constructor on implementation; public raffle metadata overrides use fixed strings"
+      ]
+    },
+    {
+      "name": "ERC721._symbol",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "writtenBy": [
+        "ERC721.constructor on implementation; public raffle metadata overrides use fixed strings"
+      ]
+    },
+    {
+      "name": "i_linkToken",
+      "file": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+      "writtenBy": [
+        "VRFV2PlusWrapperConsumerBase.constructor (implementation bytecode immutables shared by clones)"
+      ]
+    },
+    {
+      "name": "i_vrfV2PlusWrapper",
+      "file": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+      "writtenBy": [
+        "VRFV2PlusWrapperConsumerBase.constructor (implementation bytecode immutables shared by clones)"
+      ]
+    },
+    {
+      "name": "REENTRANCY_GUARD_STORAGE slot value per factory/raffle instance",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+      "writtenBy": [
+        "ReentrancyGuard.constructor on deployed factory/implementation",
+        "_nonReentrantBefore",
+        "_nonReentrantAfter"
+      ]
+    },
+    {
+      "name": "Escrowed prize ownership and quote/native balances (external ledger state)",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "writtenBy": [
+        "Factory.createRaffle prize transfer",
+        "buyEntries quote transfer",
+        "requestDraw native payment and refund",
+        "redeemWinningTicket",
+        "refundTickets",
+        "releaseSponsorProceeds",
+        "releaseProtocolFees",
+        "releaseSponsorPrize",
+        "unsolicited external token/native transfers outside internal accounting"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "name": "createRaffle",
+      "file": "target/packages/contracts/src/RaffleFactory.sol",
+      "why": "L97-L148: accepts sponsor input, establishes clone identity and registry state, crosses the untrusted prize boundary, and verifies activation and escrow atomically."
+    },
+    {
+      "name": "buyEntries",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "why": "L209-L237: couples paid quote amounts, uint128 entry bounds, contiguous ranges, pot growth and untrusted ticket-receiver execution."
+    },
+    {
+      "name": "requestDraw",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "why": "L240-L273: controls the request window, lifecycle freeze, native fee funding/refund, request identity and synchronous-callback exclusion."
+    },
+    {
+      "name": "redeemWinningTicket",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "why": "L309-L346: binds a winning range to current ownership, consumes the bearer claim and atomically delivers an external NFT or quote payment."
+    },
+    {
+      "name": "refundTickets",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "why": "L349-L372: validates an untrusted bounded batch, current ownership and range accounting before burns and reduction of shared refund liability."
+    },
+    {
+      "name": "fulfillRandomWords",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "why": "L509-L524: validates request/lifecycle/word count/deadline and determines the winning entry and reserve-dependent terminal result."
+    },
+    {
+      "name": "_settleWinningTicket",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "why": "L533-L558: proves the winning range once and conserves the unsettled pot across rounded winner, sponsor and protocol allocations."
+    },
+    {
+      "name": "enableRefunds",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "why": "L276-L301: arbitrates empty-sale sponsor authority and request/callback timeouts while moving the whole pot into refund liability."
+    },
+    {
+      "name": "initialize",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "why": "L176-L206: enforces factory-only one-time configuration and establishes every clone-specific recipient, prize and lifecycle assumption."
+    },
+    {
+      "name": "_update",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "why": "L497-L502: universal ticket mint/transfer/burn hook screens ownership destinations before inherited authorization and shared ERC721 writes."
+    },
+    {
+      "name": "_validateCreateParams",
+      "file": "target/packages/contracts/src/RaffleFactory.sol",
+      "why": "L154-L179: screens untrusted prize and sponsor-recipient addresses, ERC721 interface responses and the nonzero reserve bound."
+    },
+    {
+      "name": "onERC721Received",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "why": "L416-L431: authenticates the configured escrow callback and is the sole normal transition from AwaitingPrize to Active."
+    },
+    {
+      "name": "_isProtocolDestination",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "why": "L593-L605: central address policy links initialization, ticket ownership and payout recipients to the canonical factory registry."
+    },
+    {
+      "name": "releaseSponsorPrize",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "why": "L395-L407: validates the return branch and one-time prize claim before external transfer and ownership verification."
+    },
+    {
+      "name": "_transferQuote",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "why": "L564-L567: common payout boundary screens destinations and invokes the trusted token through SafeERC20 for all quote claims."
+    },
+    {
+      "name": "releaseSponsorProceeds",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "why": "L375-L382: clears the allocated sponsor liability before paying its fixed recipient, independently of other claims."
+    },
+    {
+      "name": "releaseProtocolFees",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "why": "L385-L392: clears the allocated treasury liability before paying its fixed recipient, independently of other claims."
+    },
+    {
+      "name": "constructor",
+      "file": "target/packages/contracts/src/RaffleFactory.sol",
+      "why": "L65-L92: permanently binds dependency identities, token precision, treasury and implementation for every future clone."
+    },
+    {
+      "name": "constructor",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "why": "L155-L166: binds factory and quote immutables, initializes the wrapper base and locks implementation storage against initialization."
+    },
+    {
+      "name": "_requireWinningTicket",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "why": "L579-L585: validates the supplied historical entry range used to assign the single winning ticket and its liabilities."
+    },
+    {
+      "name": "rawFulfillRandomWords",
+      "file": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+      "why": "L101-L107: inherited external authentication boundary restricts randomness delivery to the immutable wrapper."
+    },
+    {
+      "name": "_update",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "why": "L216-L250: performs optional owner/operator authorization, clears approvals, and changes ticket owners and balances for every transfer/mint/burn."
+    },
+    {
+      "name": "transferFrom",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "why": "L115-L125: binds caller authorization, claimed from-address and nonzero destination to ticket ownership changes."
+    },
+    {
+      "name": "_approve",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "why": "L383-L401 four-argument overload: validates approval authority and mutates per-ticket delegation, including clearing it during transfers."
+    },
+    {
+      "name": "_checkAuthorized",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "why": "L179-L187: enforces owner, token approval or global operator authority and distinguishes absent tickets from unauthorized callers."
+    },
+    {
+      "name": "_setApprovalForAll",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "why": "L409-L418: validates identities and persists holder-wide transfer delegation used by all subsequent transfer authorization."
+    },
+    {
+      "name": "checkOnERC721Received",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+      "why": "L25-L50: crosses the untrusted receiver boundary after mint/safe-transfer state changes and rejects incompatible callbacks."
+    },
+    {
+      "name": "requestRandomnessPayInNative",
+      "file": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+      "why": "L76-L89: requotes the wrapper, forwards exact native request payment and returns the authoritative request ID and fee."
+    },
+    {
+      "name": "_safeTransferFrom",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+      "why": "L212-L249: low-level incoming quote transfer validates external call success and optional return data before purchase accounting proceeds."
+    },
+    {
+      "name": "_safeTransfer",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+      "why": "L176-L199: low-level outgoing quote transfer validates external call success and optional return data for consumed liabilities."
+    },
+    {
+      "name": "clone",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+      "why": "L49-L66 two-argument overload: constructs fixed-target proxy bytecode with CREATE and verifies deployment success."
+    },
+    {
+      "name": "mulDiv",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+      "why": "L206-L277 three-argument overload: supplies exact floor rounding and bounded full-precision arithmetic for terminal monetary allocation."
+    },
+    {
+      "name": "_nonReentrantBefore",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+      "why": "L94-L100: checks and enters the shared instance guard before guarded lifecycle and asset-transfer operations."
+    },
+    {
+      "name": "_safeMint",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "why": "L287-L290 three-argument overload: combines unique-ticket minting with receiver acceptance after ownership becomes visible."
+    },
+    {
+      "name": "_mint",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "why": "L259-L267: validates a nonzero recipient and previously absent ticket while invoking the raffle ownership hook."
+    },
+    {
+      "name": "_burn",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "why": "L303-L308: consumes an existing ticket without performing caller authorization itself, relying on redemption/refund callers."
+    },
+    {
+      "name": "_requireOwned",
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "why": "L426-L432: establishes that a ticket currently exists before owner-only claims and token approval paths proceed."
+    },
+    {
+      "name": "_requireStatus",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "why": "L573-L575: shared lifecycle precondition for sale, draw and refund entrypoints."
+    },
+    {
+      "name": "_requireContract",
+      "file": "target/packages/contracts/src/RaffleFactory.sol",
+      "why": "L183-L185: common deployed-code precondition for immutable dependencies and untrusted prize configuration."
+    },
+    {
+      "name": "_validatedVrfWrapper",
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "why": "L610-L613: establishes the nonzero wrapper input before the inherited constructor makes an external link() query."
+    }
+  ],
+  "language": "Solidity 0.8.36"
+}
+```

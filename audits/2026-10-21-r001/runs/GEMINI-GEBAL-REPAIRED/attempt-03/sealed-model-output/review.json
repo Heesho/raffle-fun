@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "snapshotHash": "520205ade6130391972086d8fe8a24a6d6e60c1ecfdaf795110d78d8d0375fdb",
+  "contextHash": "6e679ad388dc6cca777f066e0cce87ccf1962c9fb310f3f263c6e5fa3db4352a",
+  "review": {
+    "observations": [
+      {
+        "title": "Independent post-settlement sponsor payout in NftWon allows a malicious or transfer-restricted prizeToken to strand winner redemption after sponsor collects 95% of USDC proceeds",
+        "description": "The clean design specification states both that 'arbitrary prize contracts and ticket recipients are untrusted' and that 'Settlement is permissionless, storage-only; redemption requires current ticket owner, burns claim atomically, and must revert all effects on delivery failure. Sponsor and treasury can claim independently after settlement.' In the implementation, RaffleFactory._validateCreateParams and RaffleFactory.createRaffle only verify that prizeToken has deployed code, is not a known protocol address, supports IERC721 via ERC-165, and transfers ownership of prizeTokenId to the clone at creation. Once a raffle resolves to Status.NftWon, _settleWinningTicket allocates 95% of unsettledPot to sponsorProceeds and 5% to protocolFees without transferring or testing delivery of the prize NFT. Because releaseSponsorProceeds does not require prizeClaimed or winnerRedeemed to be true, a sponsor who supplies an untrusted prizeToken (or a prizeToken that becomes paused, blacklisted, or reverts on outbound transferFrom/ownerOf after initial escrow) can settle and withdraw 95% of the canonical USDC proceeds while redeemWinningTicket permanently reverts for the winning ticket owner, with no fallback transition to Status.Refunding. (Note: IRaffle.sol lines 14-15 narrow the code's trust assumption in NatSpec to 'honest, standards-compliant ERC-721s', which diverges from the specification's untrusted prize contract assumption.) Defensive property for owner review: for any raffle resolved to Status.NftWon under an untrusted prizeToken model, either sponsor proceeds release should be conditioned on successful prize delivery (prizeClaimed == true) or a bounded recovery/refund path should exist if prizeToken delivery fails.",
+        "severity": "medium",
+        "confidence": "high",
+        "source": [
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 329,
+            "end": 337
+          },
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 375,
+            "end": 382
+          },
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 533,
+            "end": 558
+          },
+          {
+            "path": "packages/contracts/src/RaffleFactory.sol",
+            "start": 127,
+            "end": 134
+          },
+          {
+            "path": "packages/contracts/src/RaffleFactory.sol",
+            "start": 154,
+            "end": 179
+          },
+          {
+            "path": "packages/contracts/src/interfaces/IRaffle.sol",
+            "start": 12,
+            "end": 15
+          }
+        ],
+        "assumptions": [
+          "The stated design requirement that arbitrary prize contracts are untrusted applies, rather than the narrower IRaffle NatSpec assumption that supported prizes are honest, standards-compliant ERC-721s.",
+          "The configured prizeToken succeeds during initial safeTransferFrom escrow in createRaffle but subsequently reverts or fails to update ownerOf during outbound transferFrom in redeemWinningTicket (due to malicious logic, pause, freeze, or transfer restrictions)."
+        ]
+      },
+      {
+        "title": "Pre-deployment CREATE addresses of future Raffle clones bypass _isProtocolDestination screening until those clones are created",
+        "description": "RaffleFactory.createRaffle deploys clones via Clones.clone(raffleImplementation), which uses the CREATE opcode whose target address is deterministically derived from the factory address and nonce. Raffle._isProtocolDestination screens out known protocol plumbing and queries canonicalFactory.isRaffle(destination) only when destination.code.length != 0. Before a future raffle clone is deployed, its predicted CREATE address has code.length == 0 and isRaffle == false, so it is accepted as protocolTreasury (in RaffleFactory.constructor), as sponsorRecipient (in RaffleFactory._validateCreateParams and Raffle.initialize), or as a ticket recipient (in Raffle._update via buyEntries or transferFrom). Once RaffleFactory later deploys a clone at that nonce-derived address and sets isRaffle[raffle] = true, _isProtocolDestination returns true for that address, causing _transferQuote to revert with InvalidQuoteDestination and stranding any quote-token claims or tickets assigned to that address. Defensive property for owner review: no address that can ever become isRaffle[addr] == true should hold tickets or be configured as a payout recipient, or recipient screening should be invariant across the lifetime of the factory.",
+        "severity": "low",
+        "confidence": "high",
+        "source": [
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 497,
+            "end": 502
+          },
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 564,
+            "end": 567
+          },
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 593,
+            "end": 605
+          },
+          {
+            "path": "packages/contracts/src/RaffleFactory.sol",
+            "start": 105,
+            "end": 126
+          },
+          {
+            "path": "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "start": 47,
+            "end": 62
+          }
+        ],
+        "assumptions": [
+          "A caller or deployer intentionally or accidentally supplies a precomputed future CREATE address of RaffleFactory as protocolTreasury, sponsorRecipient, or a ticket recipient before that clone is created, and the factory subsequently reaches that nonce."
+        ]
+      },
+      {
+        "title": "Prize NFT release in redeemWinningTicket and releaseSponsorPrize uses raw transferFrom without ERC-721 receiver checks",
+        "description": "During raffle creation, RaffleFactory.createRaffle escrows the prize using prize.safeTransferFrom, and Raffle.buyEntries mints tickets using _safeMint. However, when the prize NFT is released to the winner in Raffle.redeemWinningTicket or returned to sponsorRecipient in Raffle.releaseSponsorPrize, the contract calls prizeToken.transferFrom(address(this), recipient, prizeTokenId) followed by an ownerOf check rather than safeTransferFrom. While using transferFrom avoids onERC721Received callback reentrancy or revert griefing (particularly during permissionless releaseSponsorPrize), RaffleFactory._validateCreateParams does not verify that a contract sponsorRecipient supports IERC721Receiver, and a winning ticket may have been transferred via ERC721.transferFrom to a contract that does not implement IERC721Receiver or relies on onERC721Received hooks to record incoming NFTs. Defensive property for owner review: any contract configured as sponsorRecipient or redeeming a winning ticket must be able to custody and transfer the prizeToken NFT without relying on an onERC721Received callback.",
+        "severity": "informational",
+        "confidence": "high",
+        "source": [
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 329,
+            "end": 337
+          },
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 395,
+            "end": 407
+          },
+          {
+            "path": "packages/contracts/src/RaffleFactory.sol",
+            "start": 154,
+            "end": 170
+          }
+        ],
+        "assumptions": [
+          "sponsorRecipient (or a contract winner that acquired the winning ticket via transferFrom) is a smart contract that can call redeemWinningTicket or receive the prize via releaseSponsorPrize but cannot manage ERC-721 tokens delivered without an onERC721Received callback."
+        ]
+      }
+    ],
+    "gaps": [
+      "Source-only cold review of the 39 exported files in gebal-context/cold-context.json; no compiler, test suite, fuzz/invariant campaign, static analyzer, or symbolic prover was executed.",
+      "On-chain deployment parameters (that quoteToken is the target chain's canonical six-decimal USDC and vrfWrapper is the official Chainlink VRF v2.5 native direct-funding wrapper with active keyHash/feed configuration) cannot be verified from source alone; RaffleFactory.constructor verifies only deployed code presence, quoteToken.decimals() == 6, and vrfWrapper.link() non-reversion.",
+      "The external implementation of the Chainlink VRF v2.5 wrapper contract is outside the exported source tree (only IVRFV2PlusWrapper, VRFV2PlusClient, VRFV2PlusWrapperConsumerBase, and LinkTokenInterface are in scope); wrapper fee calculation, request ID uniqueness, and callback gas forwarding are assumed to conform to Chainlink VRF v2.5 specifications.",
+      "Canonical USDC blacklist semantics are external to the repository: if an immutable sponsorRecipient or protocolTreasury address is blacklisted by USDC after raffle creation, releaseSponsorProceeds or releaseProtocolFees for that raffle will revert until unblacklisted, although other parties' claims remain unaffected due to pull-payment isolation."
+    ]
+  }
+}

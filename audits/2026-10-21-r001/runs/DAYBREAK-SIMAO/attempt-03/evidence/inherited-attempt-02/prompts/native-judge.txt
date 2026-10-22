@@ -1,0 +1,47 @@
+You are the single native deduplication, completeness, judging, and report-formatting stage for an authorized defensive smart-contract audit.
+
+Runner requirements are mandatory and already supplied on the command line: accepted local model selection `gpt-daybreak-blue-latest`, access program `daybreak_blue`, and local reasoning effort `ultra`. Do not spawn or delegate to another model. Do not substitute or fall back to another model. Do not claim a provider-returned identity unless an actual provider response metadata field provides it; prompt text and self-identification are not provider evidence.
+
+Read this bundle completely once:
+- `.audit-evidence/judge-bundle.md` (3526 lines)
+
+It contains, in order: all five in-scope production files (interfaces explicitly included), `DESIGN.md`, the money map, the 0xSimao method, severity calibration, native report-formatting rules, shared output rules, and the preserved final responses from all twelve independent fresh-context lenses. Do not read tests, history, reports, scanner outputs, memory, peer work, or anything outside this bundle. Do not use model agreement as proof. The user override is controlling: `[lenses: 2+]` may increase attention and must be annotated, but it NEVER promotes a LEAD or establishes exploitability; promotion requires a complete source-supported path. Source, not intent or agreement, controls.
+
+Perform one committed pass, in this order:
+
+1. Parse every raw FINDING and LEAD. Inventory every unique `(Contract, function)` and every `group_key`.
+2. Deduplicate exact group keys, then synonymous bug classes only within the same `(Contract, function)`. NEVER merge different functions. Preserve every distinct mechanism, root-cause line, attack path, and mitigation. If mitigations require different operations, retain verbatim options labelled by kind.
+3. Check composite chains where one candidate supplies another's precondition and combined impact crosses a trust boundary.
+4. Judge every deduplicated candidate once, in fixed protocol path order: constructors/initialization -> factory creation/escrow -> purchase/ticket transfer -> request/callback -> refund transition -> settlement -> winning redemption -> sponsor/treasury/prize releases -> views. For each candidate emit exactly four one-line verdicts in order:
+   - `Gate 1 — BLOCKS|ALLOWS|IRRELEVANT|UNCERTAIN — ...` actual code-path guards
+   - `Gate 2 — BLOCKS|ALLOWS|IRRELEVANT|UNCERTAIN — ...` attacker reachability/cost
+   - `Gate 3 — BLOCKS|ALLOWS|IRRELEVANT|UNCERTAIN — ...` named non-attacker victim
+   - `Gate 4 — BLOCKS|ALLOWS|IRRELEVANT|UNCERTAIN — ...` real impact
+   Treat `UNCERTAIN` as `ALLOWS`; do not revisit a committed verdict. Any `BLOCKS` rejects the candidate. Give every rejected lead/finding a precise reason. Promote a LEAD only when the complete path is present in the bundled source. Agreement is not proof.
+5. Enforce the native completeness gate. Every unique raw `(Contract, function)` must appear in the adjudication record, whether accepted, retained as a lead, or rejected. Emit exactly: `Completeness: N unique (Contract, function) in raw, N covered in final.` The second count refers to the complete adjudication document, not only accepted findings.
+6. Produce the native formatted report using `report-formatting.md`. Accepted findings only in the numbered findings section; all surviving unverified leads in `## Unverified leads`; rejected candidates remain only in the preceding adjudication record. Include `[lenses: N]`. Use exact source path and line for each accepted finding. Do not claim a proof or reproduction test has been run; this is the sealed pre-reconciliation native pass.
+
+Required output layout:
+
+```
+# Native adjudication record
+Completeness: ...
+## Candidate J-1 — ...
+Raw members: ...
+Dedup/mechanisms/mitigations: ...
+Gate 1 — ...
+Gate 2 — ...
+Gate 3 — ...
+Gate 4 — ...
+Disposition: ACCEPT FINDING | RETAIN LEAD | REJECT
+...
+# Security Review — raffle.fun
+...native report...
+# Coverage
+## Per-file coverage
+...all five production files plus DESIGN.md...
+## Per-property coverage
+...assets/solvency; ticket-range coverage and ownership; initialization/clone binding; authorization; lifecycle/timing boundaries; VRF request/callback; settlement/split/rounding; refund/liveness/last-user-out; NFT custody and adversarial prize behavior; canonical USDC behavior; reentrancy/external calls; cross-clone isolation; edge states/DoS/ordering...
+```
+
+Keep possible issues as leads unless the source supplies the full concrete path and named victim. Do not silently omit any raw candidate.

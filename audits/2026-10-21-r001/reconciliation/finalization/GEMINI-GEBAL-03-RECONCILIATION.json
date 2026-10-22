@@ -1,0 +1,342 @@
+{
+  "verified_utc": "2026-10-21T18:39:11.060949+00:00",
+  "source_report": {
+    "report_key": "GEMINI-GEBAL-REPAIRED/attempt-03",
+    "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-GEBAL-REPAIRED/attempt-03/sealed-model-output/FIRST-PASS.md",
+    "sha256": "0c0769bacd62b6c216dd287db32f90d5ded591513b06e549ddd3020e52d6fa16",
+    "seal": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-GEBAL-REPAIRED/attempt-03/EVIDENCE-SEAL.json",
+    "seal_sha256": "145d5aac6ceb384f11cded625d18ca997fd67ff92db030f3359659c1dc3da187",
+    "seal_verified": true,
+    "all_bound_artifacts_verified": 42,
+    "frozen_target": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+    "target_binding": "All 39 exported source/build/dependency hashes independently match frozen clean context",
+    "source_only": true,
+    "native_completion_receipt": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-GEBAL-REPAIRED/attempt-03/COMPLETION-RECEIPT.json",
+    "qualification": "Native pinned Gebal context/schema import/report; explicit official CLI Argon High; no delegated model reviews; internal checkpoint identity unknown. No executable security proofs.",
+    "upstream_pin": "9ad24645f92a3821ae4539db5f1be52b48ed379e",
+    "native_run_id": "6e0f00f1-7ef1-4377-bc04-0050d5e49b6b"
+  },
+  "append_attributions": [
+    {
+      "target": "RF-001",
+      "report_key": "GEMINI-GEBAL-REPAIRED/attempt-03",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-GEBAL-REPAIRED/attempt-03/sealed-model-output/FIRST-PASS.md",
+      "report_line": 98,
+      "original_id": "1",
+      "native_finding_id": "94840ebe-0e03-4fda-bce5-be8c297f0cf0",
+      "native_observation_ids": [
+        "1d222410-0190-48cc-912e-9dee21b8cc25"
+      ],
+      "native_fingerprint": "4c9bf437af5331f85770b33932c98434f4031768236fb77e770ad5fb15635b21",
+      "original_severity": "medium",
+      "original_confidence": "high",
+      "original_status": "needs-review model observation; no owner acceptance",
+      "original_source_spans": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 329,
+          "end": 337
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 375,
+          "end": 382
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 533,
+          "end": 558
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 127,
+          "end": 134
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 154,
+          "end": 179
+        },
+        {
+          "path": "packages/contracts/src/interfaces/IRaffle.sol",
+          "start": 12,
+          "end": 15
+        }
+      ],
+      "original_title": "Independent post-settlement sponsor payout in NftWon allows a malicious or transfer-restricted prizeToken to strand winner redemption after sponsor collects 95% of USDC proceeds",
+      "proof_status": "sealed source-only model argument; no test executed by this reviewer or reconciliation continuation",
+      "reconciled_reason": "Same conditional prize admission/delivery/payment root chain. Preserve Medium rating alongside conditional High and Low integration-risk disagreements; trust-scope contradiction remains unresolved. No additional independent proof inferred from agreement."
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-GEBAL-REPAIRED/attempt-03",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-GEBAL-REPAIRED/attempt-03/sealed-model-output/FIRST-PASS.md",
+      "report_line": 100,
+      "original_id": "2",
+      "native_finding_id": "2f793530-7f5d-4e9d-88c8-da8cd89d2e85",
+      "native_observation_ids": [
+        "08659a94-865e-42be-8194-ae1527d08212"
+      ],
+      "native_fingerprint": "305786e3afd79d4000a8ec721293f6d58859e1ccc5035ecbb8c9dc66ccf5e6c5",
+      "original_severity": "low",
+      "original_confidence": "high",
+      "original_status": "needs-review model observation; no owner acceptance",
+      "original_source_spans": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 497,
+          "end": 502
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 564,
+          "end": 567
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 593,
+          "end": 605
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 105,
+          "end": 126
+        },
+        {
+          "path": "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+          "start": 47,
+          "end": 62
+        }
+      ],
+      "original_title": "Pre-deployment CREATE addresses of future Raffle clones bypass _isProtocolDestination screening until those clones are created",
+      "proof_status": "sealed source-only model argument; no test executed by this reviewer or reconciliation continuation",
+      "reconciled_reason": "Sponsor-selected future clone and ticket-recipient portions overlap existing destination/custody family; own-recipient loss only. Runtime quote guard blocks quote release after clone activation; unsafe prize-return path separately has root-executed honest-ERC721 reproduction. Not general EOA theft."
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-GEBAL-REPAIRED/attempt-03",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-GEBAL-REPAIRED/attempt-03/sealed-model-output/FIRST-PASS.md",
+      "report_line": 100,
+      "original_id": "2",
+      "native_finding_id": "2f793530-7f5d-4e9d-88c8-da8cd89d2e85",
+      "native_observation_ids": [
+        "08659a94-865e-42be-8194-ae1527d08212"
+      ],
+      "native_fingerprint": "305786e3afd79d4000a8ec721293f6d58859e1ccc5035ecbb8c9dc66ccf5e6c5",
+      "original_severity": "low",
+      "original_confidence": "high",
+      "original_status": "needs-review model observation; no owner acceptance",
+      "original_source_spans": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 497,
+          "end": 502
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 564,
+          "end": 567
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 593,
+          "end": 605
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 105,
+          "end": 126
+        },
+        {
+          "path": "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+          "start": 47,
+          "end": 62
+        }
+      ],
+      "original_title": "Pre-deployment CREATE addresses of future Raffle clones bypass _isProtocolDestination screening until those clones are created",
+      "proof_status": "sealed source-only model argument; no test executed by this reviewer or reconciliation continuation",
+      "reconciled_reason": "Ticket sent to a future clone is a bearer-custody capability failure: clone cannot initiate owner-only refund or winner redemption. Incoming report does not prove successful winner NFT delivery into that clone."
+    },
+    {
+      "target": "CONFIG-001",
+      "report_key": "GEMINI-GEBAL-REPAIRED/attempt-03",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-GEBAL-REPAIRED/attempt-03/sealed-model-output/FIRST-PASS.md",
+      "report_line": 100,
+      "original_id": "2",
+      "native_finding_id": "2f793530-7f5d-4e9d-88c8-da8cd89d2e85",
+      "native_observation_ids": [
+        "08659a94-865e-42be-8194-ae1527d08212"
+      ],
+      "native_fingerprint": "305786e3afd79d4000a8ec721293f6d58859e1ccc5035ecbb8c9dc66ccf5e6c5",
+      "original_severity": "low",
+      "original_confidence": "high",
+      "original_status": "needs-review model observation; no owner acceptance",
+      "original_source_spans": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 497,
+          "end": 502
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 564,
+          "end": 567
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 593,
+          "end": 605
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 105,
+          "end": 126
+        },
+        {
+          "path": "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+          "start": 47,
+          "end": 62
+        }
+      ],
+      "original_title": "Pre-deployment CREATE addresses of future Raffle clones bypass _isProtocolDestination screening until those clones are created",
+      "proof_status": "sealed source-only model argument; no test executed by this reviewer or reconciliation continuation",
+      "reconciled_reason": "Partly corrected: protocolTreasury equal to a future clone cannot later become a successful raffle clone, because its initialize detects treasury == address(this) at Raffle.sol:190-191/593-605 and atomically reverts. Actual configuration risk is creation-nonce liveness, not post-creation treasury isRaffle quote blocking."
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-GEBAL-REPAIRED/attempt-03",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-GEBAL-REPAIRED/attempt-03/sealed-model-output/FIRST-PASS.md",
+      "report_line": 102,
+      "original_id": "3",
+      "native_finding_id": "2fdaf2eb-48c1-4fa4-9cf7-530256f0a450",
+      "native_observation_ids": [
+        "2615aac9-e5d4-43b2-b742-153e8df16a37"
+      ],
+      "native_fingerprint": "744a98a91014b6464125c105b4f2df16a231892144bffbb8834517da92c5ae24",
+      "original_severity": "informational",
+      "original_confidence": "high",
+      "original_status": "needs-review model observation; no owner acceptance",
+      "original_source_spans": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 329,
+          "end": 337
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 395,
+          "end": 407
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 154,
+          "end": 170
+        }
+      ],
+      "original_title": "Prize NFT release in redeemWinningTicket and releaseSponsorPrize uses raw transferFrom without ERC-721 receiver checks",
+      "proof_status": "sealed source-only model argument; no test executed by this reviewer or reconciliation continuation",
+      "reconciled_reason": "Raw transferFrom skips receipt hooks; configured or redeeming contract must manage unannounced custody. Contract winner must first be able to call owner-only redemption. Preserve Informational integration rating, not unrestricted fund theft."
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-GEBAL-REPAIRED/attempt-03",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-GEBAL-REPAIRED/attempt-03/sealed-model-output/FIRST-PASS.md",
+      "report_line": 102,
+      "original_id": "3",
+      "native_finding_id": "2fdaf2eb-48c1-4fa4-9cf7-530256f0a450",
+      "native_observation_ids": [
+        "2615aac9-e5d4-43b2-b742-153e8df16a37"
+      ],
+      "native_fingerprint": "744a98a91014b6464125c105b4f2df16a231892144bffbb8834517da92c5ae24",
+      "original_severity": "informational",
+      "original_confidence": "high",
+      "original_status": "needs-review model observation; no owner acceptance",
+      "original_source_spans": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 329,
+          "end": 337
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 395,
+          "end": 407
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 154,
+          "end": 170
+        }
+      ],
+      "original_title": "Prize NFT release in redeemWinningTicket and releaseSponsorPrize uses raw transferFrom without ERC-721 receiver checks",
+      "proof_status": "sealed source-only model argument; no test executed by this reviewer or reconciliation continuation",
+      "reconciled_reason": "Unsafe sponsor prize-return is the same mechanism that causes the reproduced future-clone prize stranding; context-dependent recipient integration statement is not a second independently validated root cause."
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-GEBAL-REPAIRED/attempt-03",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-GEBAL-REPAIRED/attempt-03/sealed-model-output/review.json",
+      "original_id": null,
+      "original_label": "gap[1]",
+      "original_text": "Source-only cold review of the 39 exported files in gebal-context/cold-context.json; no compiler, test suite, fuzz/invariant campaign, static analyzer, or symbolic prover was executed.",
+      "original_status": "source-review limitation",
+      "reconciled_reason": "Retained as a limitation; subsequent fork evidence partially closes request-path compatibility only."
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-GEBAL-REPAIRED/attempt-03",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-GEBAL-REPAIRED/attempt-03/sealed-model-output/review.json",
+      "original_id": null,
+      "original_label": "gap[2]",
+      "original_text": "On-chain deployment parameters (that quoteToken is the target chain's canonical six-decimal USDC and vrfWrapper is the official Chainlink VRF v2.5 native direct-funding wrapper with active keyHash/feed configuration) cannot be verified from source alone; RaffleFactory.constructor verifies only deployed code presence, quoteToken.decimals() == 6, and vrfWrapper.link() non-reversion.",
+      "original_status": "source-review limitation",
+      "reconciled_reason": "Retained as a limitation; subsequent fork evidence partially closes request-path compatibility only."
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-GEBAL-REPAIRED/attempt-03",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-GEBAL-REPAIRED/attempt-03/sealed-model-output/review.json",
+      "original_id": null,
+      "original_label": "gap[3]",
+      "original_text": "The external implementation of the Chainlink VRF v2.5 wrapper contract is outside the exported source tree (only IVRFV2PlusWrapper, VRFV2PlusClient, VRFV2PlusWrapperConsumerBase, and LinkTokenInterface are in scope); wrapper fee calculation, request ID uniqueness, and callback gas forwarding are assumed to conform to Chainlink VRF v2.5 specifications.",
+      "original_status": "source-review limitation",
+      "reconciled_reason": "Retained as a limitation; subsequent fork evidence partially closes request-path compatibility only."
+    },
+    {
+      "target": "OBS-002",
+      "report_key": "GEMINI-GEBAL-REPAIRED/attempt-03",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-GEBAL-REPAIRED/attempt-03/sealed-model-output/review.json",
+      "original_id": null,
+      "original_label": "gap[4]",
+      "original_text": "Canonical USDC blacklist semantics are external to the repository: if an immutable sponsorRecipient or protocolTreasury address is blacklisted by USDC after raffle creation, releaseSponsorProceeds or releaseProtocolFees for that raffle will revert until unblacklisted, although other parties' claims remain unaffected due to pull-payment isolation.",
+      "original_status": "source-review limitation",
+      "reconciled_reason": "Retained as a limitation; subsequent fork evidence partially closes request-path compatibility only."
+    }
+  ],
+  "new_root_causes": 0,
+  "public_fork_partial_closure": {
+    "kind": "executed maintained pinned public-fork tests",
+    "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/TOOL-PUBLIC-FORK/attempt-01/ASSESSMENT.json",
+    "sha256": "8c02ec0967da18c32e8b7bce4bf3c6548eef19f352fa6dbe2634e9c715bdf335",
+    "stdout_sha256": "df0cb8dbed4ba2033e59268bd7714c157bd30cc6f1722bd7c8e5639d8a45fb9f",
+    "result_sha256": "b2792ab8fef5e9b607e57af62479643eacaf982e15383006c7588af6f9a0f09a",
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "mainnet_block": 26242794,
+    "mainnet_block_hash": "0x8fdbd950a706924ce62a5904c1b6b575b51f27f72ec968cb83ccd24c6a2dd7ac",
+    "sepolia_block": 11964220,
+    "sepolia_block_hash": "0xc9cd9fb1482946d20622e8ea7749f3d06b6f83f2484f079d4a93de82f906585e",
+    "limits": [
+      "Mock ERC721 prize and cheatcode funded quote balances",
+      "No genuine offchain VRF proof/fulfillment",
+      "No supplied live Raffle/Factory instance or deployment-bytecode identity",
+      "Current/future issuer and wrapper administration, failures and pricing not universally verified"
+    ],
+    "preserves_prior_skips": true,
+    "performed_by": "root separate test campaign; reconciliation verified artifact hashes, not rerun"
+  },
+  "no_owner_acceptance": true,
+  "not_a_vote_count": true,
+  "earlier_seals_unchanged": true
+}

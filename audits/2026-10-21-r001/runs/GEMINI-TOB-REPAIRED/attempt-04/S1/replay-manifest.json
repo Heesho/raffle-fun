@@ -1,0 +1,765 @@
+{
+  "kind": "disclosed-same-cell-exact-body-transport-replay",
+  "createdUtc": "2026-10-21T21:26:56.204Z",
+  "originalOutput": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution",
+  "originalConfigFile": "audits/2026-10-21-r001/provider-route-repair/tob-s1-adapter-config-attempt03.json",
+  "context": {
+    "workflowSha256": "71cd025216e2589fee1e1a0ffe215fb7bbeaf22751dc7417ca6ce74497e6d0b3",
+    "sourceManifestSha256": "89dce6b6f078f296bd4758eec75029db61d2a94e047f79448ddef027aafa069a",
+    "resourceManifestSha256": "5c79706979e80060bcd650c8d4fee916d62a6c39d70ee766a9c19d66b354bd35",
+    "argsSha256": "7a503c96262df34bc36e7f3d10df8e65c7c2f04ae6fb59bffa64a5de75e526b7",
+    "preambleSha256": "5a9e8a0a0ee35cc0a91658736aaec9d063694cb7a466dc26adc0c80defaee7ab"
+  },
+  "sources": {
+    "DESIGN.md": "25b4248a342c3be6a48380cb692bbd8087801baee8ed85c4e5d584d1bb9cbba1",
+    "dependency-hashes.json": "1447879cda291c3f34ffde9ab85a3fc094e49688fc90ecda0a858df6048d1141",
+    "packages/contracts/foundry.toml": "0fdce809ea1675dac422cff420a3402b2f28aabed0631595e43823033fa8ef50",
+    "packages/contracts/hardhat.config.ts": "f49e407ce503095fda43bc32cca2a26fef8341094dc324131f7a427ae52ca28f",
+    "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol": "f81ec96e909daa2cd27536274a30d916b26d5fc91261bed8d7a6a3e157f3825c",
+    "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol": "8cf045f295b8c6035d14012a9bc2e8ab2b5ce24749a199ca0190519c4bf2dcc0",
+    "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "a48aaaeaed60e65f04f6c8772e5673dda663dcfa7913fdadd14b412300b9d5f1",
+    "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol": "f3b89bb466c2a79b10c1816d342fbfbec49fe82695cba92bd46e7d31af698011",
+    "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol": "9c3a75a925a6dac9e88b03cddc58d42fe3131b0aaaad84408521f3f7af2f991b",
+    "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": "dfb3f56fa928a7c6cae41a7ce2c86b9210fa18d33fa26389099d66a0fa790368",
+    "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol": "0158e2d3e0e28bedd99eec13dcf1a8aa3a70a5b7e4bb2ad709609c95fcc740d1",
+    "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol": "fa7068f56bc180571a6095be6eaef06d51dbe81e30cb128397d993c9599ecc30",
+    "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+    "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "01b6f5c4fa45fd38822b286ecef6daf983d27306dd6362496fa71b3e4600b72c",
+    "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": "0b7132f17d14d1d84b41b0bb429be62dafdff00fd3470f68724d8018eb07f57a",
+    "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+    "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": "ef8e2398c78851bd2ec12bc48d923058c557889d5a3d5ee4919c17ff0fb3517e",
+    "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "ff0eb9902bf0ac099205615fac90eacf34fae637571b05aab3ea35dea53d5f17",
+    "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": "eafee3ffdc7cb2fba4bf6bd16fb28f8e5b4679742e81c2ad42a1b1df5c179feb",
+    "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": "33223782ea652dca413702ce92f9f59d91d758a035065b24bbedb7dc60c63a78",
+    "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol": "b48e95db8c85866c1d88af8e82f346e0d22d24b5aac5b936079d958c72e13b9f",
+    "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol": "3ce9120a27934c75a074cb785d3a88868069ef6529dbe4dc6b845af0836f3c70",
+    "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol": "847fda5460fee70f56f4200f59b82ae622bb03c79c77e67af010e31b7e2cc5b6",
+    "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol": "9623aa59745a23a72f313adc5adbf583968bf366a7cbf3fc43c1148d7d2c3c86",
+    "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol": "0704b9d6c032cca8512a3bc3f30f49f86f1f03102d2896a3d23e794b82efea66",
+    "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol": "e128cbe9c6c406d5a42c26e4079c0a95b369ce552f2d0c3dfd2fcb836c5708f2",
+    "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol": "270fc8401c1a13fae6a7a4a2dd6e381b95d658896701e51f0d3e2688acab3dec",
+    "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8",
+    "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": "75704538dcb223239280c6726d9a31cf769a7816718517c997fc7d63bdb70778",
+    "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol": "e318709bbe73a7831d64c1351e8bdc43780b245f25191234e361e6ab9b98c67b",
+    "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": "61a2b12c96857aaa35f48aeda67a4281637a42494c0b3795be0ae976aa7b3793",
+    "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "9055c2994b37dea1a41b7b7926dcb510f05dbe2540b0aafc5fbee9558fffd0ca",
+    "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol": "bdfdbe133991c0c78042957ff5cd97167926fcaf6d15664f3835a076cb066457",
+    "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol": "5779bc848bde39f1ad7bc02b4f708a0040888e0083b1a33f119cd94639350134",
+    "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol": "1ed50b1056af886752f0fb48a0165d381e69bb4a4b18b893b066dc144a7e08d7",
+    "packages/contracts/package.json": "2f46b8f46ed3de275a3a6d097c86a888fece719151bdf4e171495dc12e6802ad",
+    "packages/contracts/remappings.txt": "cbf6730be9c6b6daa1855953ba581d96f14e2dbc3bc95ca3bc2d92cfd231acaa",
+    "packages/contracts/src/Raffle.sol": "6e4c977922c3e39fafaa8c4c4fb74a971f1817eca9b6552eb8a540969f968617",
+    "packages/contracts/src/RaffleFactory.sol": "d0e62b34faa42513fd968f915262728fe66a15c4b9af13a3c66f496704142ace",
+    "packages/contracts/src/interfaces/IRaffle.sol": "a43ede9e8802d636a566fb225ed65bdf70f06d17f4734a1632a0a9f84aa5b2dd",
+    "packages/contracts/src/interfaces/IRaffleFactory.sol": "747d238e4c7dc5b517f91c796dec87d9ddbfec9c626d1ff21467c60d780d03cf",
+    "packages/contracts/src/libraries/RaffleConstants.sol": "0893f1a70ac03ad557e0b4c8bdf6a2f73d317f8417d1b4a3c1a571b893ed54b6",
+    "pnpm-lock.yaml": "3c277879a07bda9a4bd9788b810a000b3cb58873fc84d515e4661e0a4ed422c4"
+  },
+  "resources": {
+    "audit-context-building/agents/function-analyzer.md": "d450f462b63dac6858015340a2e047293851d7e3c671725792d9770dca107d29",
+    "audit-context-building/workflows/audit-context.js": "71cd025216e2589fee1e1a0ffe215fb7bbeaf22751dc7417ca6ce74497e6d0b3"
+  },
+  "skillResources": {
+    "audit-context-building/SKILL.md": "33fa693dc6e166cfa4919e4373cb6578c009d296234c2ae7cb3cd4e79b443765",
+    "audit-context-building/agents/openai.yaml": "1d66ff830ff41ce751286d588a0ffeb95ed56d1b42e279fa2c8eebff10f4e59e",
+    "audit-context-building/assets/trail-of-bits-mark.svg": "4bf74c789b38dcf6ad762c136b6832363d27ae19fbaa9a18ec18d66ecce6ca05",
+    "audit-context-building/resources/ANALYSIS_FORMAT.md": "029532945776fb0fcbc866f19cd6114fe4152cd3dea1c0f44b266ec13a2cc6e8",
+    "audit-context-building/resources/DOMAIN_NOTES.md": "ca3090f7f8d18f7145b253b283f5d33c36b314cea231aae8466bf23f122e2ed1",
+    "audit-context-building/resources/FUNCTION_MICRO_ANALYSIS_EXAMPLE.md": "3351010d83b61bfb34a0359498f153817fdfa6528cead54536b06e035ff2399c"
+  },
+  "bindings": {
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/DESIGN.md": "25b4248a342c3be6a48380cb692bbd8087801baee8ed85c4e5d584d1bb9cbba1",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/dependency-hashes.json": "1447879cda291c3f34ffde9ab85a3fc094e49688fc90ecda0a858df6048d1141",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/foundry.toml": "0fdce809ea1675dac422cff420a3402b2f28aabed0631595e43823033fa8ef50",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/hardhat.config.ts": "f49e407ce503095fda43bc32cca2a26fef8341094dc324131f7a427ae52ca28f",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol": "f81ec96e909daa2cd27536274a30d916b26d5fc91261bed8d7a6a3e157f3825c",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol": "8cf045f295b8c6035d14012a9bc2e8ab2b5ce24749a199ca0190519c4bf2dcc0",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "a48aaaeaed60e65f04f6c8772e5673dda663dcfa7913fdadd14b412300b9d5f1",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol": "f3b89bb466c2a79b10c1816d342fbfbec49fe82695cba92bd46e7d31af698011",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol": "9c3a75a925a6dac9e88b03cddc58d42fe3131b0aaaad84408521f3f7af2f991b",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": "dfb3f56fa928a7c6cae41a7ce2c86b9210fa18d33fa26389099d66a0fa790368",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol": "0158e2d3e0e28bedd99eec13dcf1a8aa3a70a5b7e4bb2ad709609c95fcc740d1",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol": "fa7068f56bc180571a6095be6eaef06d51dbe81e30cb128397d993c9599ecc30",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "01b6f5c4fa45fd38822b286ecef6daf983d27306dd6362496fa71b3e4600b72c",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": "0b7132f17d14d1d84b41b0bb429be62dafdff00fd3470f68724d8018eb07f57a",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": "ef8e2398c78851bd2ec12bc48d923058c557889d5a3d5ee4919c17ff0fb3517e",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "ff0eb9902bf0ac099205615fac90eacf34fae637571b05aab3ea35dea53d5f17",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": "eafee3ffdc7cb2fba4bf6bd16fb28f8e5b4679742e81c2ad42a1b1df5c179feb",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": "33223782ea652dca413702ce92f9f59d91d758a035065b24bbedb7dc60c63a78",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol": "b48e95db8c85866c1d88af8e82f346e0d22d24b5aac5b936079d958c72e13b9f",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol": "3ce9120a27934c75a074cb785d3a88868069ef6529dbe4dc6b845af0836f3c70",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol": "847fda5460fee70f56f4200f59b82ae622bb03c79c77e67af010e31b7e2cc5b6",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol": "9623aa59745a23a72f313adc5adbf583968bf366a7cbf3fc43c1148d7d2c3c86",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol": "0704b9d6c032cca8512a3bc3f30f49f86f1f03102d2896a3d23e794b82efea66",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol": "e128cbe9c6c406d5a42c26e4079c0a95b369ce552f2d0c3dfd2fcb836c5708f2",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol": "270fc8401c1a13fae6a7a4a2dd6e381b95d658896701e51f0d3e2688acab3dec",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": "75704538dcb223239280c6726d9a31cf769a7816718517c997fc7d63bdb70778",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol": "e318709bbe73a7831d64c1351e8bdc43780b245f25191234e361e6ab9b98c67b",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": "61a2b12c96857aaa35f48aeda67a4281637a42494c0b3795be0ae976aa7b3793",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "9055c2994b37dea1a41b7b7926dcb510f05dbe2540b0aafc5fbee9558fffd0ca",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol": "bdfdbe133991c0c78042957ff5cd97167926fcaf6d15664f3835a076cb066457",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol": "5779bc848bde39f1ad7bc02b4f708a0040888e0083b1a33f119cd94639350134",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol": "1ed50b1056af886752f0fb48a0165d381e69bb4a4b18b893b066dc144a7e08d7",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/package.json": "2f46b8f46ed3de275a3a6d097c86a888fece719151bdf4e171495dc12e6802ad",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/remappings.txt": "cbf6730be9c6b6daa1855953ba581d96f14e2dbc3bc95ca3bc2d92cfd231acaa",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/src/Raffle.sol": "6e4c977922c3e39fafaa8c4c4fb74a971f1817eca9b6552eb8a540969f968617",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/src/RaffleFactory.sol": "d0e62b34faa42513fd968f915262728fe66a15c4b9af13a3c66f496704142ace",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/src/interfaces/IRaffle.sol": "a43ede9e8802d636a566fb225ed65bdf70f06d17f4734a1632a0a9f84aa5b2dd",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/src/interfaces/IRaffleFactory.sol": "747d238e4c7dc5b517f91c796dec87d9ddbfec9c626d1ff21467c60d780d03cf",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/packages/contracts/src/libraries/RaffleConstants.sol": "0893f1a70ac03ad557e0b4c8bdf6a2f73d317f8417d1b4a3c1a571b893ed54b6",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/pnpm-lock.yaml": "3c277879a07bda9a4bd9788b810a000b3cb58873fc84d515e4661e0a4ed422c4",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/upstream-plugins/audit-context-building/agents/function-analyzer.md": "d450f462b63dac6858015340a2e047293851d7e3c671725792d9770dca107d29",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/upstream-plugins/audit-context-building/workflows/audit-context.js": "71cd025216e2589fee1e1a0ffe215fb7bbeaf22751dc7417ca6ce74497e6d0b3",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/.agents/skills/audit-context-building/SKILL.md": "33fa693dc6e166cfa4919e4373cb6578c009d296234c2ae7cb3cd4e79b443765",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/.agents/skills/audit-context-building/agents/openai.yaml": "1d66ff830ff41ce751286d588a0ffeb95ed56d1b42e279fa2c8eebff10f4e59e",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/.agents/skills/audit-context-building/assets/trail-of-bits-mark.svg": "4bf74c789b38dcf6ad762c136b6832363d27ae19fbaa9a18ec18d66ecce6ca05",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/.agents/skills/audit-context-building/resources/ANALYSIS_FORMAT.md": "029532945776fb0fcbc866f19cd6114fe4152cd3dea1c0f44b266ec13a2cc6e8",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/.agents/skills/audit-context-building/resources/DOMAIN_NOTES.md": "ca3090f7f8d18f7145b253b283f5d33c36b314cea231aae8466bf23f122e2ed1",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/.agents/skills/audit-context-building/resources/FUNCTION_MICRO_ANALYSIS_EXAMPLE.md": "3351010d83b61bfb34a0359498f153817fdfa6528cead54536b06e035ff2399c",
+    "audits/2026-10-21-r001/provider-route-repair/tob-s1-adapter-config-attempt03.json": "79b56954a7cfce11906a2d9923e383bae82e91027634af815279d96e943f37e1",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/workflow-result.json": "0656793ecea9d540a6e189d3fc6548769e452a45d47d12be0a03ba37599f9623",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/launch.json": "40bdde88805bd4949f7ed28b32e24a825b85ee1d9aafcf4793e56e5ca68ce6aa",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-route-repair/tob-agent-preamble.txt": "5a9e8a0a0ee35cc0a91658736aaec9d063694cb7a466dc26adc0c80defaee7ab",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/001/invocation.json": "457dde4a7e0a6942ed9d8c619a1efbdf29b9641fcc4c91a45a9d552632bad650",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/001/schema.json": "9b15177312c930ffdf9cc31311220e455e29aeb49d75e3841efd6b656091ed22",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/001/prompt.txt": "ffeaa60b9684c0d1d0e2fbdf0d8b24b636ef4a2d03f382625b6908904b56e0c8",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/001/stdout.ndjson": "246913f3b8467aa081c0647ef83cc564d7b5f51b5445411088f1620c22ab4376",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/001/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/001/structured-output.json": "27525eeea070e7c39f09344dfe04d26f3d94c1d497fb34e5a73dde5a06bdfbb4",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/001/native.log": "9ffdb3b31e152213da9d8586424374be68d3f6ed57416cbb68c65d1947bd4601",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/002/invocation.json": "840a6a112d64523776a248544095310c379f19b8117497bf62ad82d83260f8b5",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/002/schema.json": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/002/prompt.txt": "99441151b02b20bc37d2e917ffea5debcb8453d5ccf09bdb2cd5d9ef8b68be25",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/002/stdout.ndjson": "fd3141f590a487365cad49397f674fd596b8d56d1bac007a541846920dfaecb1",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/002/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/002/structured-output.json": "834fb5996cf19ac0adc69ad26a89dbf7e48f883f75c7b17e598eb18394ffa854",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/002/native.log": "f2b24fade1da92817d4b86ecbeb3b74349ffcba15ad1e9473e3783ff873ddcd1",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/01-createRaffle.md": "21521ac9c8bd62b7b46cd5cc8d05d3fd1592e75e97e0fddc02812f24640c7c79",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/003/invocation.json": "fbe5b0453c4f7a2636df5237a4239788e6cb32eac79bae9bd457175d9db0ad2e",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/003/schema.json": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/003/prompt.txt": "29f27d74b808635e1107a3beabef2bd77e5661d135ac528fca6b3d28bc48fbf0",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/003/stdout.ndjson": "67af89008d83e654a34ee6b33c59c1fbb77d9c14a0c6d342ab158d92c65c37d1",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/003/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/003/structured-output.json": "2427bab30246752ffa8b35b2d2ad2cedad670206c23501e8e2681a65d76f6f99",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/003/native.log": "5dbe087c5ccee9c02ee02e8da30896a02e34807647072b6cb84f92769c1fb250",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/02-buyEntries.md": "32a9bf2810cdf1a64f7f804a2c259a2984f6bfb94f9c7099323c976cfdb3a19e",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/004/invocation.json": "934d4b30cb4eee645d2f9282ea180a59d0494ad12b2d2a78ff10731bc6289565",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/004/schema.json": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/004/prompt.txt": "fd9395b95a3d4ef081c94bc102f624df9017df6397224ca703ca5f440675f6ed",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/004/stdout.ndjson": "0eea9733fb623bdc002ce268a44a1085356d7dc932c453fabc2ef867b454839d",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/004/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/004/structured-output.json": "5209691c166e2a8716b501b5d6b16b6e6fc7cf5cb1638ee1a72df9f2361f0b51",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/004/native.log": "83249090309a4ea7c0319aed733bf21c48a6089492192b730bfd5d78dd18c49f",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/03-_settleWinningTicket.md": "45c9661e86b1a37d89476b63080f4b22bf5828a944ca77949e7372c5b87ed1b2",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/005/invocation.json": "47bcec498d830d2cc8bb61bbbdfa1fecc7a6fd8ed0df15d06a28d963c59b7d03",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/005/schema.json": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/005/prompt.txt": "bc2d12e63ccac53910ad1ef187266b4f388835aa55574445efaf8d836ab9ec1e",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/005/stdout.ndjson": "3280b54a6dc08894c65957b5484ddc944f76f9cc343762433f518cdb9962bf86",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/005/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/005/structured-output.json": "3d1731657fd39e9d15bae513e57fb9af826ad320023e96310e5317f9f57c54eb",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/005/native.log": "4a2a99f51735b2cb2d68874da4576f2e9275dcc8ba049059b80eea4ed1e26726",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/04-redeemWinningTicket.md": "fe8220aeb660ba2dd93d2eaa25ef1fe4bd03c8e44e8f90b90fe1577454ab2498",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/006/invocation.json": "12f1a0e6b5e2acf6ffedcdf34040442d2fede6bddbef53fe49b3af1a8ee845ea",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/006/schema.json": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/006/prompt.txt": "766285ca210be4e7e20dde377a4dc2fab52f44a401d24bcdef62193d013727ae",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/006/stdout.ndjson": "3208a6d1474fe3b64e22e6e4d093a6dc1e7be9c6dd0de2750428d5356a7ff95d",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/006/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/006/structured-output.json": "b00eb9556b82b91f2f5b70c3e0697fdd304ba4e4f8027a2454546293cd628dfb",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/006/native.log": "1140c96fdcbb63d9f5d0f262138eae0f197768ae0488d41d73f41fc770e8210b",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/05-requestDraw.md": "7ee0db930a526635fd65f0b4b7fe3138dc7e74e63fb9eb3579746bdb1e6e4c2f",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/007/invocation.json": "ff6b64c85a64af1798b2b479229d8374fa7dbf8f1e495894c60722ee86dc6f6a",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/007/schema.json": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/007/prompt.txt": "dc8fa349c3ff47f1be78f1eef9ed7da55f072d80954e5d7242739603789b6027",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/007/stdout.ndjson": "f4386b30b7bba37706f77bef100ca77d84409bf50f46c383deb30e7050b41d1e",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/007/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/007/structured-output.json": "c7a96064bff250e685991575f198e115c572bdc64a318119e20e9b95d114aca1",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/007/native.log": "816f487002bf473091ca725867cbd2e416ebd1b101fc3cc182939394986972b5",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/06-fulfillRandomWords.md": "cc309a1fb4c077dd6e365c4367b7845a82feebbaf7d410ac692a2c95e66e6009",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/008/invocation.json": "7076449eb8ed85ebff2761f07c2f241eb1a1ef92b15dbdc99ed8ff39caff62ca",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/008/schema.json": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/008/prompt.txt": "00253bbc630a6743e2206643e60ae99070a5f53ec82609daa3a49a42e24c92e2",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/008/stdout.ndjson": "d9581c20a8c12798d9fd568ad3a771ac31ac4c8905fb5a451175d7df8c498779",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/008/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/008/structured-output.json": "072e03bc905b8d4726e30226da358454b407f6a4e79f33da08b2c0740e4613d2",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/008/native.log": "20d39711eba6455b48fda399c507f49400e94ca83707ec1496d4c05f7e7e7056",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/07-enableRefunds.md": "0637501ca665cdc7a192c7862591b4526120913542089bb8902b9324c095c2f3",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/009/invocation.json": "4dc0005141d869c28844e7e8e9dbb63e6f85a1be9f34f37183cf02c6f91638c2",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/009/schema.json": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/009/prompt.txt": "3e32c0a5e990ccedc5d2bdd20f21ffdbead7733f7c6a9f81dc0f2084cebd5a82",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/009/stdout.ndjson": "9a68400e6d9a2ca575f4772bca3d9bd0eaa126cbe95a05d0b4dc2023f69bd32d",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/009/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/009/structured-output.json": "dfd6f5af10a633addf8f633986513c0856a16ac25cd7c1eb1ae948f210eca188",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/009/native.log": "8231eaefe7c7d6d1b0fb097fc7227fcacfbce23990d30f778545f82464e11ad1",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/08-refundTickets.md": "e599e1725452e99b0ba05ba7adec2a628693748caedb4b0ed61aa73e10232da7",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/010/invocation.json": "ee6190d64f393528173bda57a58b1dc005e1c5e3b5de1d7a4c5c46564f1e6041",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/011/invocation.json": "0f783c2cc429b1afddab9c9eeb066708c68fdcdadf427f4e27777e68038d3ab9",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/012/invocation.json": "022dd0e87d4f05ca80397006fc751278cf0290b3980bd9021d70d995920a030f",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/012/schema.json": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/012/prompt.txt": "97c252841b8889778193297e1a04a0cced9f6caa17395c8f005cc039df7599c9",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/012/stdout.ndjson": "348c3b51574f98aad86af186d3f2b6a27c8efa208ea874437767b3833d8e4c80",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/012/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/012/structured-output.json": "f21876fc1f4d0ff32542e936c3e5d56432cfcfa5b5fbf35c62ee09a510776b10",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/012/native.log": "9624c063c4ce67f6e79b5ed2000c0e550dc48e72fb01238adb01b1e15ea21564",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/11-onERC721Received.md": "b63b763a246a49bccc74ef9837a3c02c48e96e88710a6ea61bca66ad164c2974",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/013/invocation.json": "1fa6fb262d20a651527f401ad9b0b297912800356116dabb8a0422735bf42df9",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/013/schema.json": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/013/prompt.txt": "9b4863bce255023c335f847dbef777ff346f840ee640dd7d127067d7d2b3101d",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/013/stdout.ndjson": "8e818705625fbd65462e3ca47c58c1130ac2d16c34d76477646d5cad092f52ba",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/013/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/013/structured-output.json": "ea654536e104916231b4d27faf17a1cec9a61190b7e45a112dd2e1e648abbb1a",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/013/native.log": "3fdb1c6ce05d3b3a4d03749eb6864d934d899567aea782f253a38da38cbf6ed1",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/12-_isProtocolDestination.md": "7c0fd2c9406b6aedf249af7f6e6d654f8ab284b93bf9587b6a4b07413f63b96b",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/014/invocation.json": "98b4f276ff5ea53cd87b5d54fea7d3699a07e6d64b3ac432f1872ab459fa77de",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/014/schema.json": "f9ece7477ddaee487434bafa7138ccedefaa9550bc7063990d5889bd98058ede",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/014/prompt.txt": "45e12ce6de30d6fcdb3f1436023ec603f69972611a6d7928a329b5dca075b1bb",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/014/stdout.ndjson": "a07e82375b675ef8e5724516b1750e30b12bb15c8977462528bc93a1534b496b",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/014/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/014/structured-output.json": "211091a72dfb869810ebec091b6c9e0f46542dcb2b33b64ecabf714c6841b4dc",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/014/native.log": "98ae7fccd67451a915ff01bfdb65a094b73e2afcfaad9a8cddc32da75109a2d7",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/DOSSIER.md": "afe3e284ae0cb1ac8c978f885532d1ab7107e369f00fa6935f2b5daa6c56b617",
+    "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-route-repair/tob-s1-original-resource-read-receipts.json": "5bccf73bbc4957f186cb227723717efa50b1f80aa8df3e34dea611fb7c777577"
+  },
+  "entries": [
+    {
+      "key": "2236a0c5d195ff645084f65a3067f1808eed2696c1fb3a40955c5533fa710772",
+      "originalCallId": "001",
+      "conversationId": "1fa9bbe7-8dbb-4420-860a-8c8deffbbbb5",
+      "immutableCallIdentity": "1eecc36b0d67121cb2488bbbdc711a2fc3bc24ba50afc45a562ffafaa29f0e2e",
+      "files": {
+        "invocation.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/001/invocation.json",
+          "sha256": "457dde4a7e0a6942ed9d8c619a1efbdf29b9641fcc4c91a45a9d552632bad650"
+        },
+        "schema.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/001/schema.json",
+          "sha256": "9b15177312c930ffdf9cc31311220e455e29aeb49d75e3841efd6b656091ed22"
+        },
+        "prompt.txt": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/001/prompt.txt",
+          "sha256": "ffeaa60b9684c0d1d0e2fbdf0d8b24b636ef4a2d03f382625b6908904b56e0c8"
+        },
+        "stdout.ndjson": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/001/stdout.ndjson",
+          "sha256": "246913f3b8467aa081c0647ef83cc564d7b5f51b5445411088f1620c22ab4376"
+        },
+        "stderr.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/001/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "structured-output.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/001/structured-output.json",
+          "sha256": "27525eeea070e7c39f09344dfe04d26f3d94c1d497fb34e5a73dde5a06bdfbb4"
+        },
+        "native.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/001/native.log",
+          "sha256": "9ffdb3b31e152213da9d8586424374be68d3f6ed57416cbb68c65d1947bd4601"
+        }
+      },
+      "deliverables": []
+    },
+    {
+      "key": "184d709aa324c025417e0d465afd751e93df1c382f6f08e3e1cd19626bb9646a",
+      "originalCallId": "002",
+      "conversationId": "959f00c9-d083-4500-bc00-4abbabba1901",
+      "immutableCallIdentity": "cdab953a17ca6f7823c5bbe80f8c874e4236a31bb2cef6df44df5aab1c025f6c",
+      "files": {
+        "invocation.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/002/invocation.json",
+          "sha256": "840a6a112d64523776a248544095310c379f19b8117497bf62ad82d83260f8b5"
+        },
+        "schema.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/002/schema.json",
+          "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2"
+        },
+        "prompt.txt": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/002/prompt.txt",
+          "sha256": "99441151b02b20bc37d2e917ffea5debcb8453d5ccf09bdb2cd5d9ef8b68be25"
+        },
+        "stdout.ndjson": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/002/stdout.ndjson",
+          "sha256": "fd3141f590a487365cad49397f674fd596b8d56d1bac007a541846920dfaecb1"
+        },
+        "stderr.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/002/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "structured-output.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/002/structured-output.json",
+          "sha256": "834fb5996cf19ac0adc69ad26a89dbf7e48f883f75c7b17e598eb18394ffa854"
+        },
+        "native.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/002/native.log",
+          "sha256": "f2b24fade1da92817d4b86ecbeb3b74349ffcba15ad1e9473e3783ff873ddcd1"
+        }
+      },
+      "deliverables": [
+        {
+          "relative": "audit-context/functions/01-createRaffle.md",
+          "file": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/01-createRaffle.md",
+          "sha256": "21521ac9c8bd62b7b46cd5cc8d05d3fd1592e75e97e0fddc02812f24640c7c79"
+        }
+      ]
+    },
+    {
+      "key": "7445eae8c91ce910920a9d368a8fca895fe494e5dde14fc2e2864e3ab380062d",
+      "originalCallId": "003",
+      "conversationId": "48779a6e-a406-458f-b033-d8b286800eaf",
+      "immutableCallIdentity": "fe473a7b3ca1aa9acf748b7a4434a1df9d328db2e62c0c9b1c0baef3329dedff",
+      "files": {
+        "invocation.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/003/invocation.json",
+          "sha256": "fbe5b0453c4f7a2636df5237a4239788e6cb32eac79bae9bd457175d9db0ad2e"
+        },
+        "schema.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/003/schema.json",
+          "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2"
+        },
+        "prompt.txt": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/003/prompt.txt",
+          "sha256": "29f27d74b808635e1107a3beabef2bd77e5661d135ac528fca6b3d28bc48fbf0"
+        },
+        "stdout.ndjson": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/003/stdout.ndjson",
+          "sha256": "67af89008d83e654a34ee6b33c59c1fbb77d9c14a0c6d342ab158d92c65c37d1"
+        },
+        "stderr.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/003/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "structured-output.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/003/structured-output.json",
+          "sha256": "2427bab30246752ffa8b35b2d2ad2cedad670206c23501e8e2681a65d76f6f99"
+        },
+        "native.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/003/native.log",
+          "sha256": "5dbe087c5ccee9c02ee02e8da30896a02e34807647072b6cb84f92769c1fb250"
+        }
+      },
+      "deliverables": [
+        {
+          "relative": "audit-context/functions/02-buyEntries.md",
+          "file": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/02-buyEntries.md",
+          "sha256": "32a9bf2810cdf1a64f7f804a2c259a2984f6bfb94f9c7099323c976cfdb3a19e"
+        }
+      ]
+    },
+    {
+      "key": "ad4e19774f9206f81fb56d584ddff1a9f5592bfef763013ef00c24185ca0385a",
+      "originalCallId": "004",
+      "conversationId": "75af7de5-c860-4ece-a5ea-d1c85638be93",
+      "immutableCallIdentity": "04d2ab0bf48a520347308f1467363d10fec3b57a447fedffccc257d4a062c728",
+      "files": {
+        "invocation.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/004/invocation.json",
+          "sha256": "934d4b30cb4eee645d2f9282ea180a59d0494ad12b2d2a78ff10731bc6289565"
+        },
+        "schema.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/004/schema.json",
+          "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2"
+        },
+        "prompt.txt": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/004/prompt.txt",
+          "sha256": "fd9395b95a3d4ef081c94bc102f624df9017df6397224ca703ca5f440675f6ed"
+        },
+        "stdout.ndjson": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/004/stdout.ndjson",
+          "sha256": "0eea9733fb623bdc002ce268a44a1085356d7dc932c453fabc2ef867b454839d"
+        },
+        "stderr.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/004/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "structured-output.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/004/structured-output.json",
+          "sha256": "5209691c166e2a8716b501b5d6b16b6e6fc7cf5cb1638ee1a72df9f2361f0b51"
+        },
+        "native.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/004/native.log",
+          "sha256": "83249090309a4ea7c0319aed733bf21c48a6089492192b730bfd5d78dd18c49f"
+        }
+      },
+      "deliverables": [
+        {
+          "relative": "audit-context/functions/03-_settleWinningTicket.md",
+          "file": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/03-_settleWinningTicket.md",
+          "sha256": "45c9661e86b1a37d89476b63080f4b22bf5828a944ca77949e7372c5b87ed1b2"
+        }
+      ]
+    },
+    {
+      "key": "9d9f6d718b7d977bcd1740d34244141f4da7ee7d3f2563d07e1be2b076a2a6ba",
+      "originalCallId": "005",
+      "conversationId": "c4fe5d1f-be50-45b3-aca2-c482d3a073e9",
+      "immutableCallIdentity": "c51fea130c628e3b53f9bd8c3625135e06dd0fb0d30e3cc2c82a9c78a9beba5d",
+      "files": {
+        "invocation.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/005/invocation.json",
+          "sha256": "47bcec498d830d2cc8bb61bbbdfa1fecc7a6fd8ed0df15d06a28d963c59b7d03"
+        },
+        "schema.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/005/schema.json",
+          "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2"
+        },
+        "prompt.txt": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/005/prompt.txt",
+          "sha256": "bc2d12e63ccac53910ad1ef187266b4f388835aa55574445efaf8d836ab9ec1e"
+        },
+        "stdout.ndjson": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/005/stdout.ndjson",
+          "sha256": "3280b54a6dc08894c65957b5484ddc944f76f9cc343762433f518cdb9962bf86"
+        },
+        "stderr.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/005/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "structured-output.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/005/structured-output.json",
+          "sha256": "3d1731657fd39e9d15bae513e57fb9af826ad320023e96310e5317f9f57c54eb"
+        },
+        "native.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/005/native.log",
+          "sha256": "4a2a99f51735b2cb2d68874da4576f2e9275dcc8ba049059b80eea4ed1e26726"
+        }
+      },
+      "deliverables": [
+        {
+          "relative": "audit-context/functions/04-redeemWinningTicket.md",
+          "file": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/04-redeemWinningTicket.md",
+          "sha256": "fe8220aeb660ba2dd93d2eaa25ef1fe4bd03c8e44e8f90b90fe1577454ab2498"
+        }
+      ]
+    },
+    {
+      "key": "d8562f7cd2d62c12cc4432b1a344a17a775e63309bb1617d3941bcb8bda073b6",
+      "originalCallId": "006",
+      "conversationId": "bd4c5a5a-8feb-4ae4-af30-6898a6f45923",
+      "immutableCallIdentity": "e5af01ec5d1fc436b8b69cf687c838437ceb0aa8efa684ccc756d5b6683e7f8b",
+      "files": {
+        "invocation.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/006/invocation.json",
+          "sha256": "12f1a0e6b5e2acf6ffedcdf34040442d2fede6bddbef53fe49b3af1a8ee845ea"
+        },
+        "schema.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/006/schema.json",
+          "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2"
+        },
+        "prompt.txt": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/006/prompt.txt",
+          "sha256": "766285ca210be4e7e20dde377a4dc2fab52f44a401d24bcdef62193d013727ae"
+        },
+        "stdout.ndjson": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/006/stdout.ndjson",
+          "sha256": "3208a6d1474fe3b64e22e6e4d093a6dc1e7be9c6dd0de2750428d5356a7ff95d"
+        },
+        "stderr.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/006/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "structured-output.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/006/structured-output.json",
+          "sha256": "b00eb9556b82b91f2f5b70c3e0697fdd304ba4e4f8027a2454546293cd628dfb"
+        },
+        "native.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/006/native.log",
+          "sha256": "1140c96fdcbb63d9f5d0f262138eae0f197768ae0488d41d73f41fc770e8210b"
+        }
+      },
+      "deliverables": [
+        {
+          "relative": "audit-context/functions/05-requestDraw.md",
+          "file": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/05-requestDraw.md",
+          "sha256": "7ee0db930a526635fd65f0b4b7fe3138dc7e74e63fb9eb3579746bdb1e6e4c2f"
+        }
+      ]
+    },
+    {
+      "key": "7d873b494a3f7c565fdd8e16c7efdaec0960a89392f2b97030f4e2f4ec1960e5",
+      "originalCallId": "007",
+      "conversationId": "c856345a-f1c8-47e2-a322-c11706a4cffe",
+      "immutableCallIdentity": "3b430b9e101b729f482a946b9abc9afd6dde1abcd54c87068f6b54ccfbefee31",
+      "files": {
+        "invocation.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/007/invocation.json",
+          "sha256": "ff6b64c85a64af1798b2b479229d8374fa7dbf8f1e495894c60722ee86dc6f6a"
+        },
+        "schema.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/007/schema.json",
+          "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2"
+        },
+        "prompt.txt": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/007/prompt.txt",
+          "sha256": "dc8fa349c3ff47f1be78f1eef9ed7da55f072d80954e5d7242739603789b6027"
+        },
+        "stdout.ndjson": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/007/stdout.ndjson",
+          "sha256": "f4386b30b7bba37706f77bef100ca77d84409bf50f46c383deb30e7050b41d1e"
+        },
+        "stderr.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/007/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "structured-output.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/007/structured-output.json",
+          "sha256": "c7a96064bff250e685991575f198e115c572bdc64a318119e20e9b95d114aca1"
+        },
+        "native.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/007/native.log",
+          "sha256": "816f487002bf473091ca725867cbd2e416ebd1b101fc3cc182939394986972b5"
+        }
+      },
+      "deliverables": [
+        {
+          "relative": "audit-context/functions/06-fulfillRandomWords.md",
+          "file": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/06-fulfillRandomWords.md",
+          "sha256": "cc309a1fb4c077dd6e365c4367b7845a82feebbaf7d410ac692a2c95e66e6009"
+        }
+      ]
+    },
+    {
+      "key": "60b4a16e4d1498ad9efb033f9325ed7f12bbe6b80671cd5edb29e1a8f01606ab",
+      "originalCallId": "008",
+      "conversationId": "5032dcd3-e5de-4dc8-aa1e-52b6b63ae4f0",
+      "immutableCallIdentity": "1024a42dbe038d98e327ce6a934eb6f171d25dcd6c406494f85cc6e824f8894c",
+      "files": {
+        "invocation.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/008/invocation.json",
+          "sha256": "7076449eb8ed85ebff2761f07c2f241eb1a1ef92b15dbdc99ed8ff39caff62ca"
+        },
+        "schema.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/008/schema.json",
+          "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2"
+        },
+        "prompt.txt": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/008/prompt.txt",
+          "sha256": "00253bbc630a6743e2206643e60ae99070a5f53ec82609daa3a49a42e24c92e2"
+        },
+        "stdout.ndjson": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/008/stdout.ndjson",
+          "sha256": "d9581c20a8c12798d9fd568ad3a771ac31ac4c8905fb5a451175d7df8c498779"
+        },
+        "stderr.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/008/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "structured-output.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/008/structured-output.json",
+          "sha256": "072e03bc905b8d4726e30226da358454b407f6a4e79f33da08b2c0740e4613d2"
+        },
+        "native.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/008/native.log",
+          "sha256": "20d39711eba6455b48fda399c507f49400e94ca83707ec1496d4c05f7e7e7056"
+        }
+      },
+      "deliverables": [
+        {
+          "relative": "audit-context/functions/07-enableRefunds.md",
+          "file": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/07-enableRefunds.md",
+          "sha256": "0637501ca665cdc7a192c7862591b4526120913542089bb8902b9324c095c2f3"
+        }
+      ]
+    },
+    {
+      "key": "89331959ffc49104403560dff115a7daba786de42002bed6f08c38bc41b91969",
+      "originalCallId": "009",
+      "conversationId": "e68cdfee-0105-4473-9e1e-0055666ad674",
+      "immutableCallIdentity": "573a492ef20084623fbae9cb9dcd1c2b8060840ad91bbdb7306601ed7a2e1d2a",
+      "files": {
+        "invocation.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/009/invocation.json",
+          "sha256": "4dc0005141d869c28844e7e8e9dbb63e6f85a1be9f34f37183cf02c6f91638c2"
+        },
+        "schema.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/009/schema.json",
+          "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2"
+        },
+        "prompt.txt": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/009/prompt.txt",
+          "sha256": "3e32c0a5e990ccedc5d2bdd20f21ffdbead7733f7c6a9f81dc0f2084cebd5a82"
+        },
+        "stdout.ndjson": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/009/stdout.ndjson",
+          "sha256": "9a68400e6d9a2ca575f4772bca3d9bd0eaa126cbe95a05d0b4dc2023f69bd32d"
+        },
+        "stderr.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/009/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "structured-output.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/009/structured-output.json",
+          "sha256": "dfd6f5af10a633addf8f633986513c0856a16ac25cd7c1eb1ae948f210eca188"
+        },
+        "native.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/009/native.log",
+          "sha256": "8231eaefe7c7d6d1b0fb097fc7227fcacfbce23990d30f778545f82464e11ad1"
+        }
+      },
+      "deliverables": [
+        {
+          "relative": "audit-context/functions/08-refundTickets.md",
+          "file": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/08-refundTickets.md",
+          "sha256": "e599e1725452e99b0ba05ba7adec2a628693748caedb4b0ed61aa73e10232da7"
+        }
+      ]
+    },
+    {
+      "key": "38717d69e09d022fa29d4007e004919345cc35b606667a777b206b0c73517cf3",
+      "originalCallId": "012",
+      "conversationId": "b34bf3a3-59fc-4f1a-bb52-93c7575e7874",
+      "immutableCallIdentity": "f9a1710266bdf37b535534ab19068a6f11a26d5cd34ce03c0c151856bb8ea730",
+      "files": {
+        "invocation.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/012/invocation.json",
+          "sha256": "022dd0e87d4f05ca80397006fc751278cf0290b3980bd9021d70d995920a030f"
+        },
+        "schema.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/012/schema.json",
+          "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2"
+        },
+        "prompt.txt": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/012/prompt.txt",
+          "sha256": "97c252841b8889778193297e1a04a0cced9f6caa17395c8f005cc039df7599c9"
+        },
+        "stdout.ndjson": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/012/stdout.ndjson",
+          "sha256": "348c3b51574f98aad86af186d3f2b6a27c8efa208ea874437767b3833d8e4c80"
+        },
+        "stderr.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/012/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "structured-output.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/012/structured-output.json",
+          "sha256": "f21876fc1f4d0ff32542e936c3e5d56432cfcfa5b5fbf35c62ee09a510776b10"
+        },
+        "native.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/012/native.log",
+          "sha256": "9624c063c4ce67f6e79b5ed2000c0e550dc48e72fb01238adb01b1e15ea21564"
+        }
+      },
+      "deliverables": [
+        {
+          "relative": "audit-context/functions/11-onERC721Received.md",
+          "file": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/11-onERC721Received.md",
+          "sha256": "b63b763a246a49bccc74ef9837a3c02c48e96e88710a6ea61bca66ad164c2974"
+        }
+      ]
+    },
+    {
+      "key": "8df45003ee35ec259aa93f3d03390c4328df54328182cdf5edf4c88140b686d0",
+      "originalCallId": "013",
+      "conversationId": "cc70acb6-730c-4c51-8715-199ca67cb6f6",
+      "immutableCallIdentity": "5e9d67342333834e76663dc4ab5e47b914be1c6603b7a74ec84926de5944bf14",
+      "files": {
+        "invocation.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/013/invocation.json",
+          "sha256": "1fa6fb262d20a651527f401ad9b0b297912800356116dabb8a0422735bf42df9"
+        },
+        "schema.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/013/schema.json",
+          "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2"
+        },
+        "prompt.txt": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/013/prompt.txt",
+          "sha256": "9b4863bce255023c335f847dbef777ff346f840ee640dd7d127067d7d2b3101d"
+        },
+        "stdout.ndjson": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/013/stdout.ndjson",
+          "sha256": "8e818705625fbd65462e3ca47c58c1130ac2d16c34d76477646d5cad092f52ba"
+        },
+        "stderr.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/013/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "structured-output.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/013/structured-output.json",
+          "sha256": "ea654536e104916231b4d27faf17a1cec9a61190b7e45a112dd2e1e648abbb1a"
+        },
+        "native.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/013/native.log",
+          "sha256": "3fdb1c6ce05d3b3a4d03749eb6864d934d899567aea782f253a38da38cbf6ed1"
+        }
+      },
+      "deliverables": [
+        {
+          "relative": "audit-context/functions/12-_isProtocolDestination.md",
+          "file": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/functions/12-_isProtocolDestination.md",
+          "sha256": "7c0fd2c9406b6aedf249af7f6e6d654f8ab284b93bf9587b6a4b07413f63b96b"
+        }
+      ]
+    },
+    {
+      "key": "5047eea7fdab7a76aff8eb70a3085819dfcf09e4de0c462427318a7e9af52d96",
+      "originalCallId": "014",
+      "conversationId": "814a6183-6ab4-4e4d-a576-a73cab9a315a",
+      "immutableCallIdentity": "c89b8e6a496a08e606079efea349425d82ed4d8ebb70899401343a7a5f7eb485",
+      "files": {
+        "invocation.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/014/invocation.json",
+          "sha256": "98b4f276ff5ea53cd87b5d54fea7d3699a07e6d64b3ac432f1872ab459fa77de"
+        },
+        "schema.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/014/schema.json",
+          "sha256": "f9ece7477ddaee487434bafa7138ccedefaa9550bc7063990d5889bd98058ede"
+        },
+        "prompt.txt": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/014/prompt.txt",
+          "sha256": "45e12ce6de30d6fcdb3f1436023ec603f69972611a6d7928a329b5dca075b1bb"
+        },
+        "stdout.ndjson": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/014/stdout.ndjson",
+          "sha256": "a07e82375b675ef8e5724516b1750e30b12bb15c8977462528bc93a1534b496b"
+        },
+        "stderr.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/014/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "structured-output.json": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/014/structured-output.json",
+          "sha256": "211091a72dfb869810ebec091b6c9e0f46542dcb2b33b64ecabf714c6841b4dc"
+        },
+        "native.log": {
+          "file": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/014/native.log",
+          "sha256": "98ae7fccd67451a915ff01bfdb65a094b73e2afcfaad9a8cddc32da75109a2d7"
+        }
+      },
+      "deliverables": [
+        {
+          "relative": "audit-context/DOSSIER.md",
+          "file": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/audit-context/DOSSIER.md",
+          "sha256": "afe3e284ae0cb1ac8c978f885532d1ab7107e369f00fa6935f2b5daa6c56b617"
+        }
+      ]
+    }
+  ],
+  "failedLedger": [
+    {
+      "id": "010",
+      "status": "failed",
+      "error": "Error: Native terminal error: The stream was interrupted. Please continue the task you were working on.",
+      "invocation": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/010/invocation.json",
+      "sha256": "ee6190d64f393528173bda57a58b1dc005e1c5e3b5de1d7a4c5c46564f1e6041"
+    },
+    {
+      "id": "011",
+      "status": "failed",
+      "error": "Error: Native terminal error: The stream was interrupted. Please continue the task you were working on.",
+      "invocation": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/011/invocation.json",
+      "sha256": "0f783c2cc429b1afddab9c9eeb066708c68fdcdadf427f4e27777e68038d3ab9"
+    }
+  ],
+  "nonReusable": [],
+  "originalFinalStatus": "completed-with-agent-failures",
+  "originalWorkflowResultSha256": "0656793ecea9d540a6e189d3fc6548769e452a45d47d12be0a03ba37599f9623",
+  "originalResourcePathRetainedReadOnly": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-03/S1/work/upstream-plugins",
+  "rawTimestampsNormalized": false,
+  "newConcurrency": 4,
+  "automaticRetry": false,
+  "cachedTypedResourceReadQualification": {
+    "receipt": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-route-repair/tob-s1-original-resource-read-receipts.json",
+    "sha256": "5bccf73bbc4957f186cb227723717efa50b1f80aa8df3e34dea611fb7c777577",
+    "allTenSuccessfulTypedCallsReadThreeFullPinnedResources": true
+  }
+}

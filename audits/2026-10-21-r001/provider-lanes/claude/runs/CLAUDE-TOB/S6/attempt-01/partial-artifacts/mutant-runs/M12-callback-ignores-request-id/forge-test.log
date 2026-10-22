@@ -1,0 +1,151 @@
+No files changed, compilation skipped
+
+Ran 2 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:F_ReentrancyTest
+[PASS] test_F1_ticketRecipientCannotReenterAnyGuardedEntryPoint() (gas: 1333490)
+[PASS] test_F2_maliciousPrizeCannotReenterDuringDelivery() (gas: 2229287)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 1.13ms (431.08µs CPU time)
+
+Ran 4 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:E_AccessTest
+[PASS] test_E1_implementationIsLockedAndInert() (gas: 49877)
+[PASS] test_E2_cloneCannotBeReinitialized() (gas: 455158)
+[PASS] test_E3_factoryRejectsInvalidOrProtocolParameters() (gas: 192699)
+[PASS] test_E4_ticketsCannotBeSentToProtocolPlumbing() (gas: 1088195)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 2.15ms (587.38µs CPU time)
+
+Ran 4 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:D_RedemptionTest
+[PASS] test_D1_onlyCurrentOwnerRedeems() (gas: 1097335)
+[PASS] test_D2_deliveryFailureRevertsBurnAndInlineSettlement() (gas: 979497)
+[PASS] test_D3_sponsorAndTreasuryClaimIndependently_blocklistedSponsorRecipient() (gas: 969817)
+[PASS] test_D4_settlementWithNonWinningOrNonexistentTicketReverts() (gas: 1033296)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 2.63ms (1.31ms CPU time)
+
+Ran 6 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:C_VrfTest
+[PASS] test_C1_synchronousCallbackDuringRequestIsIgnored() (gas: 878662)
+[FAIL: still drawing] test_C2_wrongIdWrongLengthReplayAreIgnoredWithoutReverting() (gas: 964441)
+[PASS] test_C3_onlyWrapperCanDeliverRandomness() (gas: 460008)
+[PASS] test_C4_callbackGasIsFarBelowLimit() (gas: 851574)
+[PASS] test_C5_excessFeeRefundedAndRefundFailureRevertsWholeRequest() (gas: 1169705)
+[PASS] test_C6_insufficientFeeReverts() (gas: 708627)
+Suite result: FAILED. 5 passed; 1 failed; 0 skipped; finished in 3.50ms (2.79ms CPU time)
+
+Ran 4 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:A_TimingTest
+[PASS] test_A1_saleEndsExclusivelyAtEndTime() (gas: 717784)
+[PASS] test_A2_requestWindowIsHalfOpen_endTime_to_endPlus2Days() (gas: 2155294)
+[PASS] test_A3_refundsOpenExactlyAtRequestDeadline() (gas: 700739)
+[PASS] test_A4_callbackAcceptedStrictlyBeforeCallbackDeadline() (gas: 1544156)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 3.98ms (3.69ms CPU time)
+Warning: Replayed invariant failure from "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/mutant-runs/M12-callback-ignores-request-id/cache/invariant/failures/RaffleInvariantTest/invariant_noSpecViolation" file. 
+Run `forge clean` or remove file to ignore failure and to continue invariant test campaign.
+
+Ran 4 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/HandlerSanity.t.sol:HandlerSanityTest
+[FAIL: fulfillWrong: invalid callback changed state] test_sanity_cashWonLifecycle() (gas: 1937839)
+[PASS] test_sanity_drawingTimeoutAndEmptyRaffle() (gas: 1485757)
+[PASS] test_sanity_failureModes() (gas: 1122954)
+[PASS] test_sanity_nftWonAndRefundLifecycles() (gas: 2731168)
+Suite result: FAILED. 3 passed; 1 failed; 0 skipped; finished in 9.01ms (8.97ms CPU time)
+
+Ran 4 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:B_EconomicsTest
+[PASS] testFuzz_B1_settlementSplitsAreExactAndLossless(uint256,bool,uint256) (runs: 300, μ: 958289, ~: 978381)
+[PASS] testFuzz_B2_refundPaysExactlyPerEntryAndReturnsPrize(uint256,uint256,uint256) (runs: 300, μ: 920588, ~: 920577)
+[PASS] test_B3_entryCountOverflowGuardAndMaxRaffleStillSettles() (gas: 962320)
+[PASS] test_B4_refundBatchBoundsDuplicatesAndForeignTickets() (gas: 849295)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 104.35ms (180.98ms CPU time)
+
+Ran 6 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleValidation.t.sol:H_ValidationTest
+[PASS] test_H1_factoryConstructorValidation() (gas: 492070)
+[PASS] test_H2_prizeContractAsSponsorIsRejectedAtInitialize() (gas: 198382)
+[PASS] test_H3_unsolicitedSafeTransferToActiveRaffleRejected() (gas: 494008)
+[PASS] test_H4_nonCompliantPrizeWithoutHookCannotEscrow() (gas: 1234312)
+[PASS] test_H5_PoC_lyingPrizeFakesEscrowAndDelivery() (gas: 1062173)
+[PASS] test_H6_doubleClaimsAndWrongStateClaimsRevert() (gas: 1635122)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 7.54s (1.48ms CPU time)
+
+Ran 2 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleInvariant.t.sol:RaffleInvariantTest
+[PASS] invariant_globalProperties() (runs: 120, calls: 12000, reverts: 0)
+
+╭---------------+--------------------------+-------+---------+----------╮
+| Contract      | Selector                 | Calls | Reverts | Discards |
++=======================================================================+
+| RaffleHandler | buy                      | 467   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | createRaffle             | 577   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | donate                   | 528   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | enableRefunds            | 589   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | fulfill                  | 540   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | fulfillWrong             | 555   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | redeem                   | 542   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | refund                   | 540   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | refundDuplicate          | 552   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | reinitialize             | 535   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | releaseProtocolFees      | 538   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | releaseSponsorPrize      | 592   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | releaseSponsorProceeds   | 539   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | requestDraw              | 511   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | setVrfPrice              | 541   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | settle                   | 566   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | toggleNftFrozen          | 542   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | toggleUsdcPaused         | 561   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | transferTicket           | 533   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | transferTicketToProtocol | 540   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | underpaidRequestDraw     | 546   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | warp                     | 566   | 0       | 0        |
+╰---------------+--------------------------+-------+---------+----------╯
+
+[FAIL: fulfillWrong: invalid callback changed state]
+	[Sequence] (original: 7, shrunk: 7)
+		sender=0xe6397b6dAe73A3859f0e7DbdD19d4807982F83a6 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=createRaffle(uint256,uint256,uint256) args=[20924 [2.092e4], 9, 19]
+		sender=0xf20474D5667fB30d40E01cd9ACB7aDAa02ef545A addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=createRaffle(uint256,uint256,uint256) args=[4, 101, 172800 [1.728e5]]
+		sender=0x0000000000000000000000000000000000001f25 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=warp(uint256) args=[95000000 [9.5e7]]
+		sender=0xA2BBd407625c60370413832eF69709CF92CB25ad addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=buy(uint256,uint256,uint256,uint256) args=[24257 [2.425e4], 11073 [1.107e4], 10000 [1e4], 128]
+		sender=0x0000000000000000000000000000000032505749 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=warp(uint256) args=[4520360573 [4.52e9]]
+		sender=0x00000000000000000000000000000000000003Ad addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=requestDraw(uint256,uint256,uint256) args=[106684437420973649377784678661878120436742248873335991261146636982398 [1.066e68], 1519290528774777574374511623322147298535 [1.519e39], 115792089237316195423570985008687907853269984665640564039457584007913129639933 [1.157e77]]
+		sender=0x0000000000000000000000000000000000005B89 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=fulfillWrong(uint256,uint256,uint256) args=[8000, 50000000000000000 [5e16], 8556]
+ invariant_noSpecViolation() (runs: 1, calls: 1, reverts: 1)
+Suite result: FAILED. 1 passed; 1 failed; 0 skipped; finished in 29.57s (37.11s CPU time)
+
+Ran 9 test suites in 29.57s (37.24s CPU time): 33 tests passed, 3 failed, 0 skipped (36 total tests)
+
+Failing tests:
+Encountered 1 failing test in /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/HandlerSanity.t.sol:HandlerSanityTest
+[FAIL: fulfillWrong: invalid callback changed state] test_sanity_cashWonLifecycle() (gas: 1937839)
+
+Encountered 1 failing test in /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleInvariant.t.sol:RaffleInvariantTest
+[FAIL: fulfillWrong: invalid callback changed state]
+	[Sequence] (original: 7, shrunk: 7)
+		sender=0xe6397b6dAe73A3859f0e7DbdD19d4807982F83a6 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=createRaffle(uint256,uint256,uint256) args=[20924 [2.092e4], 9, 19]
+		sender=0xf20474D5667fB30d40E01cd9ACB7aDAa02ef545A addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=createRaffle(uint256,uint256,uint256) args=[4, 101, 172800 [1.728e5]]
+		sender=0x0000000000000000000000000000000000001f25 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=warp(uint256) args=[95000000 [9.5e7]]
+		sender=0xA2BBd407625c60370413832eF69709CF92CB25ad addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=buy(uint256,uint256,uint256,uint256) args=[24257 [2.425e4], 11073 [1.107e4], 10000 [1e4], 128]
+		sender=0x0000000000000000000000000000000032505749 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=warp(uint256) args=[4520360573 [4.52e9]]
+		sender=0x00000000000000000000000000000000000003Ad addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=requestDraw(uint256,uint256,uint256) args=[106684437420973649377784678661878120436742248873335991261146636982398 [1.066e68], 1519290528774777574374511623322147298535 [1.519e39], 115792089237316195423570985008687907853269984665640564039457584007913129639933 [1.157e77]]
+		sender=0x0000000000000000000000000000000000005B89 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=fulfillWrong(uint256,uint256,uint256) args=[8000, 50000000000000000 [5e16], 8556]
+ invariant_noSpecViolation() (runs: 1, calls: 1, reverts: 1)
+
+Encountered 1 failing test in /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:C_VrfTest
+[FAIL: still drawing] test_C2_wrongIdWrongLengthReplayAreIgnoredWithoutReverting() (gas: 964441)
+
+Encountered a total of 3 failing tests, 33 tests succeeded
+
+Tip: Run `forge test --rerun` to retry only the 3 failed tests
+
+Fuzz seed: 0x4d555441 (use `--fuzz-seed` to reproduce)

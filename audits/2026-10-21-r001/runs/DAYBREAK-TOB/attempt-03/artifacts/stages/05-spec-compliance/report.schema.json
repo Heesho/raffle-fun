@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["reportFile", "divergences", "documentProblems"],
+  "additionalProperties": false,
+  "properties": {
+    "reportFile": {"type": "string"},
+    "divergences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["requirementId", "severity", "title"],
+        "additionalProperties": false,
+        "properties": {
+          "requirementId": {"type": "string"},
+          "severity": {"type": "string", "enum": ["critical", "high", "medium", "low"]},
+          "title": {"type": "string"}
+        }
+      }
+    },
+    "documentProblems": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  }
+}

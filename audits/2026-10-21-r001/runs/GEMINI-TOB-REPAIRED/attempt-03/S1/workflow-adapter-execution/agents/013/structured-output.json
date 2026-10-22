@@ -1,0 +1,64 @@
+{
+  "analysisFile": "audit-context/functions/12-_isProtocolDestination.md",
+  "assumptions": [
+    {
+      "claim": "factory is a deployed contract implementing IRaffleFactory.raffleImplementation() and IRaffleFactory.isRaffle(address) without reverting.",
+      "establishedBy": "RaffleFactory.constructor (packages/contracts/src/RaffleFactory.sol:L89-L91) deploys Raffle with factory = msg.sender (packages/contracts/src/Raffle.sol:L161), and Raffle.constructor (L155-L166) does not invoke _isProtocolDestination while RaffleFactory is still under construction."
+    },
+    {
+      "claim": "prizeToken_ is the non-zero configured prize token for the raffle so that destination == prizeToken_ rejects the prize token rather than address(0).",
+      "establishedBy": "Raffle.initialize checks params.prizeToken != address(0) (packages/contracts/src/Raffle.sol:L183-L185) before calling _isProtocolDestination (L187-L195) and stores prizeToken (L200), which Raffle._update (L498) and Raffle._transferQuote (L565) subsequently pass."
+    },
+    {
+      "claim": "Every registered Raffle clone in canonicalFactory.isRaffle has destination.code.length != 0 when _isProtocolDestination is called, so gating the registry lookup on destination.code.length != 0 (L602) never skips a registered clone.",
+      "establishedBy": "RaffleFactory.createRaffle deploys the 45-byte ERC-1167 clone via Clones.clone(raffleImplementation) (packages/contracts/src/RaffleFactory.sol:L106, Clones.sol:L54-L57) before setting isRaffle[raffle] = true (packages/contracts/src/RaffleFactory.sol:L125), and neither Clones.sol nor Raffle.sol contains selfdestruct."
+    },
+    {
+      "claim": "An address for which _isProtocolDestination(destination, prizeToken_) returns false during Raffle.initialize (L187-L195) or Raffle._update (L498) will continue to have _isProtocolDestination return false at later claim/payout times (Raffle._transferQuote at L565, Raffle.redeemWinningTicket at L334, or Raffle.releaseSponsorPrize at L404) and across later Raffle.initialize calls (L190).",
+      "establishedBy": "nothing found (a precomputed future CREATE address of RaffleFactory at Clones.sol:L57 has code.length == 0 and isRaffle[destination] == false before RaffleFactory.createRaffle reaches that nonce, and has code.length == 45 and isRaffle[destination] == true after RaffleFactory.sol:L106, L125)."
+    }
+  ],
+  "callers": [
+    "Raffle.initialize (packages/contracts/src/Raffle.sol:L187, L190, L193)",
+    "Raffle._update (packages/contracts/src/Raffle.sol:L498)",
+    "Raffle._transferQuote (packages/contracts/src/Raffle.sol:L565)"
+  ],
+  "calls": [
+    {
+      "callee": "IRaffleFactory.raffleImplementation (packages/contracts/src/RaffleFactory.sol:L43)",
+      "kind": "external-source-available",
+      "propagates": "Returns the immutable raffleImplementation address set in RaffleFactory.constructor (packages/contracts/src/RaffleFactory.sol:L89-L91); called at Raffle.sol:L601 whenever destination does not equal address(this), factory, address(quoteToken), address(i_vrfV2PlusWrapper), or prizeToken_."
+    },
+    {
+      "callee": "IRaffleFactory.isRaffle (packages/contracts/src/RaffleFactory.sol:L54)",
+      "kind": "external-source-available",
+      "propagates": "Returns the current boolean value of RaffleFactory.isRaffle[destination], which is set to true in RaffleFactory.createRaffle (packages/contracts/src/RaffleFactory.sol:L125) after clone deployment (L106) and initialization (L109-L121); called at Raffle.sol:L603 only when unsafeDestination is false after L601 and destination.code.length != 0 (L602)."
+    }
+  ],
+  "file": "packages/contracts/src/Raffle.sol",
+  "function": "_isProtocolDestination",
+  "invariants": [
+    {
+      "claim": "Returns true if and only if destination equals address(this), factory, address(quoteToken), address(i_vrfV2PlusWrapper), prizeToken_, canonicalFactory.raffleImplementation(), or has destination.code.length != 0 and canonicalFactory.isRaffle(destination) == true at the moment of evaluation.",
+      "evidence": "packages/contracts/src/Raffle.sol:L598-L604"
+    },
+    {
+      "claim": "During Raffle.initialize (L187-L195), _isProtocolDestination rejects the newly deployed clone's own address via destination == address(this) even though canonicalFactory.isRaffle(address(this)) is not set to true until RaffleFactory.sol:L125.",
+      "evidence": "packages/contracts/src/Raffle.sol:L599, packages/contracts/src/RaffleFactory.sol:L109-L125"
+    },
+    {
+      "claim": "Does not invoke canonicalFactory.isRaffle(destination) when destination.code.length == 0 or when destination already matched one of the six singleton protocol addresses.",
+      "evidence": "packages/contracts/src/Raffle.sol:L602-L604"
+    }
+  ],
+  "lines": "L593-L605",
+  "openQuestions": [],
+  "sharedState": [
+    "Raffle.factory (packages/contracts/src/Raffle.sol:L55)",
+    "Raffle.quoteToken (packages/contracts/src/Raffle.sol:L58)",
+    "VRFV2PlusWrapperConsumerBase.i_vrfV2PlusWrapper (packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:L35)",
+    "Raffle.prizeToken (packages/contracts/src/Raffle.sol:L70, passed by callers _update at L498 and _transferQuote at L565)",
+    "RaffleFactory.raffleImplementation (packages/contracts/src/RaffleFactory.sol:L43)",
+    "RaffleFactory.isRaffle (packages/contracts/src/RaffleFactory.sol:L54)"
+  ]
+}

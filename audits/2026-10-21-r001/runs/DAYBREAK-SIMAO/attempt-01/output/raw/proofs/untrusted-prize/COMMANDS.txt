@@ -1,0 +1,20 @@
+Working directory:
+/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-SIMAO/proof-work/untrusted-prize
+
+Suite command (exit 0):
+set -o pipefail
+forge test --match-contract UntrustedPrizeProofTest -vvv 2>&1 | tee /Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-SIMAO/attempt-01/output/raw/proofs/untrusted-prize/forge-test.log
+
+Primary detailed trace command (exit 0):
+set -o pipefail
+forge test --match-test test_postEscrowFreezeLetsSponsorTake95PercentWhileWinnerGetsNeitherPrizeNorRefund -vvvv 2>&1 | tee /Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-SIMAO/attempt-01/output/raw/proofs/untrusted-prize/primary-trace.log
+
+Self-attestation detailed trace command (exit 0):
+set -o pipefail
+forge test --match-test test_createRaffleTrustsPrizeTokensOwnCallbackAndOwnerOfSelfAttestation -vvvv 2>&1 | tee /Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-SIMAO/attempt-01/output/raw/proofs/untrusted-prize/self-attestation-trace.log
+
+Toolchain reported by the first suite run:
+forge 1.7.1 (4072e48705af9d93e3c0f6e29e93b5e9a40caed8)
+solc 0.8.36
+
+No RPC URL, fork URL, or network-backed test option was used.

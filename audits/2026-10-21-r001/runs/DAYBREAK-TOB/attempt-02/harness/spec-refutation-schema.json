@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["refuted", "reasoning", "correction", "revisedVerdict", "evidenceReviewed"],
+  "properties": {
+    "refuted": {"type": "boolean"},
+    "reasoning": {"type": "string"},
+    "correction": {"type": "string"},
+    "revisedVerdict": {"type": "string", "enum": ["implemented", "partial", "contradicted", "absent", "stronger-than-spec", "undecidable", "unchanged"]},
+    "evidenceReviewed": {"type": "array", "items": {"type": "string"}}
+  }
+}

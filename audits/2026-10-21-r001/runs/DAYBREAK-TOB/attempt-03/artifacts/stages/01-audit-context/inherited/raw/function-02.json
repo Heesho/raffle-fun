@@ -1,0 +1,131 @@
+{
+  "stage_id": "S1-FUNCTION-02",
+  "accepted_local_selection": {
+    "model": "gpt-daybreak-blue-latest",
+    "reasoning_effort": "ultra",
+    "access_program": "daybreak_blue",
+    "fallback": false
+  },
+  "provider_returned_model": "unknown",
+  "target_sha": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "function": "Raffle.requestDraw",
+  "file": "target/packages/contracts/src/Raffle.sol",
+  "lines": "L240-L273",
+  "analysisFile": ".audit-work/stages/01-audit-context/functions/02-Raffle.requestDraw.md",
+  "invariants": [
+    {
+      "claim": "The continuing path starts in Active with totalEntries > 0 and block.timestamp in the half-open interval [endTime, endTime + 2 days).",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L241-L247, L458-L460; target/packages/contracts/src/libraries/RaffleConstants.sol:L32-L33"
+    },
+    {
+      "claim": "Before the state-changing wrapper request, status is Drawing, drawRequestedAt is recorded, and _requestInFlight is true.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L252-L257"
+    },
+    {
+      "claim": "The request uses fixed callbackGasLimit and requestConfirmations, asks for exactly one word, and encodes nativePayment=true.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L46-L50, L255-L257; target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol:L5-L11, L22-L26"
+    },
+    {
+      "claim": "On normal return, paidPrice <= msg.value, vrfRequestId equals the returned requestId, _requestInFlight is false, and all excess over paidPrice has either been zero or sent successfully to msg.sender.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L257-L270"
+    },
+    {
+      "claim": "Changing status to Drawing freezes the positive totalEntries value because buyEntries requires Active; fulfillRandomWords later uses that frozen value as its modulo divisor and reserve comparator.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L215-L216, L230, L243, L252, L518-L521"
+    },
+    {
+      "claim": "The nonReentrant guard is entered before any requestDraw body logic and remains entered through both wrapper interactions and the requester refund, then is restored after the body.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L240-L272; target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:L69-L72, L88-L105"
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "The configured wrapper address is the intended canonical Chainlink wrapper, not merely an address containing code.",
+      "establishedBy": "Off-chain deployment trust stated at target/DESIGN.md:L2 and documented at target/packages/contracts/src/RaffleFactory.sol:L58-L67; on-chain source only checks code at RaffleFactory.sol:L65-L67."
+    },
+    {
+      "claim": "calculateRequestPriceNative returns a meaningful price and requestRandomWordsInNative accepts the attached second price according to the declared interface.",
+      "establishedBy": "nothing found; only the declarations at target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:L23-L33, L67-L81 are present"
+    },
+    {
+      "claim": "A successful requestRandomWordsInNative return value is the identifier of an accepted request and is the identifier a later authenticated callback will carry; local code does not require it to be nonzero or independently prove uniqueness.",
+      "establishedBy": "nothing found; requestId is returned and stored directly at target/packages/contracts/src/Raffle.sol:L257-L260, while the wrapper implementation is absent"
+    },
+    {
+      "claim": "block.timestamp is representable in uint64 so drawRequestedAt preserves the request timestamp and callbackDeadline does not encounter its zero sentinel through narrowing.",
+      "establishedBy": "nothing found; target/packages/contracts/src/Raffle.sol:L253 narrows without a bound check and L463-L465 treats zero specially"
+    },
+    {
+      "claim": "When excess is nonzero, the requester accepts the empty-calldata native refund for requestDraw to complete.",
+      "establishedBy": "dynamically established by the call success check at target/packages/contracts/src/Raffle.sol:L263-L269; failure reverts"
+    }
+  ],
+  "calls": [
+    {
+      "callee": "ReentrancyGuard.nonReentrant path",
+      "kind": "internal",
+      "propagates": "Rejects an already-ENTERED fixed guard slot, marks it ENTERED for the full body, and restores NOT_ENTERED afterward (target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:L69-L72, L88-L105)."
+    },
+    {
+      "callee": "Raffle._requireStatus",
+      "kind": "internal",
+      "propagates": "Establishes status == Active on the continuing path and reverts otherwise (target/packages/contracts/src/Raffle.sol:L241, L571-L575)."
+    },
+    {
+      "callee": "Raffle.drawRequestDeadline",
+      "kind": "internal",
+      "propagates": "Returns uint256(endTime) + DRAW_REQUEST_TIMEOUT for the exclusive request-window upper bound (target/packages/contracts/src/Raffle.sol:L244-L247, L458-L460)."
+    },
+    {
+      "callee": "Raffle.getVrfRequestPrice",
+      "kind": "internal",
+      "propagates": "Forwards the first one-word native price query to the configured wrapper; its returned value or revert propagates (target/packages/contracts/src/Raffle.sol:L249-L250, L435-L438)."
+    },
+    {
+      "callee": "IVRFV2PlusWrapper.calculateRequestPriceNative",
+      "kind": "external-black-box",
+      "propagates": "Supplies both the preliminary quote and the second price attached to the request; implementation paths are unavailable, so revert and ABI-decodable return behavior remain externally defined (IVRFV2PlusWrapper.sol:L23-L33; VRFV2PlusWrapperConsumerBase.sol:L82-L88)."
+    },
+    {
+      "callee": "VRFV2PlusClient._argsToBytes",
+      "kind": "internal",
+      "propagates": "ABI-encodes the V1 extra-arguments selector and nativePayment=true without branches (target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol:L5-L11, L22-L26)."
+    },
+    {
+      "callee": "VRFV2PlusWrapperConsumerBase.requestRandomnessPayInNative",
+      "kind": "internal",
+      "propagates": "Performs the second price read, sends exactly that value with the configured confirmations/gas/one-word request, and returns the wrapper ID plus its locally read price (VRFV2PlusWrapperConsumerBase.sol:L76-L88)."
+    },
+    {
+      "callee": "IVRFV2PlusWrapper.requestRandomWordsInNative",
+      "kind": "external-black-box",
+      "propagates": "The caller relies on successful return to represent an accepted request and on the returned uint256 to identify its later callback; the implementation is not present (IVRFV2PlusWrapper.sol:L67-L81)."
+    },
+    {
+      "callee": "msg.sender native refund call",
+      "kind": "external-black-box",
+      "propagates": "Receives excess with empty calldata and all remaining gas; arbitrary execution or revert is possible, and only the success bit is checked (target/packages/contracts/src/Raffle.sol:L262-L269)."
+    },
+    {
+      "callee": "Raffle.callbackDeadline",
+      "kind": "internal",
+      "propagates": "Returns zero for a zero drawRequestedAt, otherwise drawRequestedAt + DRAW_CALLBACK_TIMEOUT; requestDraw uses it in the final event (target/packages/contracts/src/Raffle.sol:L272, L463-L465)."
+    }
+  ],
+  "callers": [
+    "Any external account or contract can call the external payable entrypoint; source imposes lifecycle/time/value gates rather than a caller role (target/packages/contracts/src/Raffle.sol:L240-L250; target/packages/contracts/src/interfaces/IRaffle.sol:L316-L320).",
+    "No first-party Solidity call site appears in target; the source-visible protocol surface is the implementation and IRaffle declaration (target/packages/contracts/src/Raffle.sol:L240; target/packages/contracts/src/interfaces/IRaffle.sol:L320)."
+  ],
+  "sharedState": [
+    "status: activated by onERC721Received, read/written by requestDraw, consumed/written by enableRefunds and fulfillRandomWords, and read by later settlement/redemption paths (target/packages/contracts/src/Raffle.sol:L241-L252, L276-L300, L416-L429, L509-L523, L533-L557).",
+    "endTime: initialized from factory-validated configuration, read directly and through drawRequestDeadline by requestDraw and enableRefunds (target/packages/contracts/src/Raffle.sol:L204, L242-L247, L286-L287, L458-L460; target/packages/contracts/src/RaffleFactory.sol:L99-L104).",
+    "totalEntries: advanced only by Active purchases, required nonzero by requestDraw, then frozen for callback selection/reserve comparison (target/packages/contracts/src/Raffle.sol:L215-L233, L243, L252, L518-L521).",
+    "vrfRequestId, drawRequestedAt, and _requestInFlight: written only by requestDraw and consumed by callbackDeadline, enableRefunds, and fulfillRandomWords (target/packages/contracts/src/Raffle.sol:L108-L112, L141-L142, L252-L260, L289-L291, L463-L465, L509-L515).",
+    "ReentrancyGuard fixed slot: shared with every nonReentrant Raffle entrypoint and held ENTERED for the full requestDraw execution (target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:L35-L37, L69-L72, L94-L105; target/packages/contracts/src/Raffle.sol:L209-L212, L240, L276, L304, L309, L349, L375, L385, L395).",
+    "Native balance: msg.value funds requestDraw, the second wrapper price leaves through the wrapper call, excess leaves through the requester call, and inherited getBalance exposes the remainder (target/packages/contracts/src/Raffle.sol:L240-L270; VRFV2PlusWrapperConsumerBase.sol:L82-L88, L109-L112)."
+  ],
+  "openQuestions": [
+    "unclear; need to inspect the deployed Chainlink wrapper implementation to establish all paths of calculateRequestPriceNative and requestRandomWordsInNative, including quote stability, request-ID guarantees, and callback/re-entry behavior; target contains only IVRFV2PlusWrapper.sol:L23-L33, L67-L81",
+    "unclear; need to inspect deployment configuration or records to establish that vrfWrapper_ is the intended canonical wrapper; target on-chain validation only requires deployed code at target/packages/contracts/src/RaffleFactory.sol:L65-L67"
+  ]
+}

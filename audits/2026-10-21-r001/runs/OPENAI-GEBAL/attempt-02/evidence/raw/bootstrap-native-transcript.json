@@ -1,0 +1,38 @@
+{
+  "recordedAt": "2026-10-21T08:12:35.079Z",
+  "provenance": "Original terminal outputs retained from current-turn tool responses before audit-runner logger creation; no reconstruction of assessed source",
+  "entries": [
+    {
+      "stage": "initial-cli-help",
+      "command": [
+        "/Users/hishamel-husseini/.npm/_npx/2643742ee1db1418/node_modules/node/bin/node",
+        "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/node_modules/tsx/dist/cli.mjs",
+        "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/packages/cli/src/main.ts",
+        "--help"
+      ],
+      "exitCode": 0,
+      "outputReference": "native-cli-help.stdout",
+      "note": "Same help output re-captured verbatim by logger as native-cli-help; initial shell also read docs/monorepos.md and package.json, whose exact copies/hashes are retained."
+    },
+    {
+      "stage": "scope-init",
+      "command": [
+        "/Users/hishamel-husseini/.npm/_npx/2643742ee1db1418/node_modules/node/bin/node",
+        "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/node_modules/tsx/dist/cli.mjs",
+        "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/packages/cli/src/main.ts",
+        "init",
+        "--output",
+        "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL-attempt-02/scope-template.json"
+      ],
+      "exitCode": 0,
+      "stdout": "Created /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL-attempt-02/scope-template.json\n",
+      "stderr": "(node:40279) ExperimentalWarning: SQLite is an experimental feature and might change at any time\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+    },
+    {
+      "stage": "initial-search-path",
+      "exitCode": 127,
+      "stderr": "zsh:2: command not found: rg\n",
+      "resolution": "Restrictive explicit PATH lacked rg; subsequent commands used Node bin prepended to existing PATH. Selected exact Node22 direct execution worked. This is a resolved search-path issue, not a model failure."
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "analysisFile": "spec-compliance/requirements/06-REQ-68.md",
+  "confidence": "high",
+  "evidence": [
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L304-L306",
+      "quote": "function settleWinningTicket(uint256 ticketId) external override nonReentrant returns (uint256 cashAmount) {\n        cashAmount = _settleWinningTicket(ticketId);\n    }",
+      "role": "Permissionless entrypoint delegating directly to _settleWinningTicket without caller or ownership checks."
+    },
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L533-L558",
+      "quote": "function _settleWinningTicket(uint256 ticketId) private returns (uint256 cashAmount) {\n        if (settlementComplete) revert SettlementAlreadyComplete();\n        Status result = status;\n        if (result != Status.NftWon && result != Status.CashWon) revert InvalidStatus(result);\n\n        _requireWinningTicket(ticketId);\n        uint256 grossPot = unsettledPot;\n        uint256 protocolFee = Math.mulDiv(grossPot, RaffleConstants.PROTOCOL_FEE_BPS, RaffleConstants.BPS);\n        uint256 sponsorAmount;\n\n        if (result == Status.NftWon) {\n            sponsorAmount = grossPot - protocolFee;\n        } else {\n            cashAmount = Math.mulDiv(grossPot, RaffleConstants.CASH_WINNER_BPS, RaffleConstants.BPS);\n            sponsorAmount = grossPot - protocolFee - cashAmount;\n            winnerProceeds = cashAmount;\n        }\n\n        settlementComplete = true;\n        winningTicketId = ticketId;\n        unsettledPot = 0;\n        sponsorProceeds = sponsorAmount;\n        protocolFees = protocolFee;\n\n        emit WinningTicketSettled(ticketId, msg.sender, result, cashAmount, protocolFee, sponsorAmount);\n    }",
+      "role": "Verifies resolved status, enforces winning range check via _requireWinningTicket, and allocates protocolFees, winnerProceeds (floor-rounded via Math.mulDiv), and sponsorProceeds (remainder) without reading ownership or transferring assets."
+    },
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L579-L585",
+      "quote": "function _requireWinningTicket(uint256 ticketId) private view {\n        (uint128 firstEntry, uint128 lastEntry) = ticketRange(ticketId);\n        uint128 selectedEntry = winningEntry;\n        if (selectedEntry < firstEntry || selectedEntry > lastEntry) {\n            revert TicketDoesNotContainWinningEntry(ticketId, selectedEntry);\n        }\n    }",
+      "role": "Verifies that ticketId's stored inclusive range [firstEntry, lastEntry] contains winningEntry, reverting with TicketDoesNotContainWinningEntry otherwise."
+    },
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L450-L455",
+      "quote": "function ticketRange(uint256 ticketId) public view override returns (uint128 firstEntry, uint128 lastEntry) {\n        TicketRange storage range = _ticketRanges[ticketId];\n        firstEntry = range.firstEntry;\n        lastEntry = range.lastEntry;\n    }",
+      "role": "Reads the stored inclusive [firstEntry, lastEntry] range for ticketId from _ticketRanges."
+    }
+  ],
+  "reasoning": "implemented rather than partial or stronger-than-spec because settleWinningTicket unconditionally delegates to _settleWinningTicket, which checks [firstEntry, lastEntry] inclusion via _requireWinningTicket and allocates protocolFees, winnerProceeds (rounded down via Math.mulDiv), and sponsorProceeds (as the exact remainder of unsettledPot) in storage only, without reading ticket ownership or performing external transfers.",
+  "requirementId": "REQ-68",
+  "searched": [
+    {
+      "result": "2 hits: IRaffle.sol:L331 and Raffle.sol:L304-L306",
+      "where": "settleWinningTicket in packages/contracts/src/"
+    },
+    {
+      "result": "3 hits in Raffle.sol: L305, L315, and definition at L533-L558",
+      "where": "_settleWinningTicket in packages/contracts/src/"
+    },
+    {
+      "result": "2 hits in Raffle.sol: call at L538 and definition at L579-L585",
+      "where": "_requireWinningTicket in packages/contracts/src/"
+    },
+    {
+      "result": "3 hits in Raffle.sol: L139 declaration, L232 write in buyEntries, L451 read in ticketRange",
+      "where": "_ticketRanges in packages/contracts/src/"
+    }
+  ],
+  "verdict": "implemented"
+}

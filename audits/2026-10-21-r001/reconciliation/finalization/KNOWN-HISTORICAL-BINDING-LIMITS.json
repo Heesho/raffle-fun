@@ -1,0 +1,53 @@
+{
+  "recorded_utc": "2026-10-22T00:04:56.437807+00:00",
+  "purpose": "Fail-closed reconciliation-publication bounds for exact known historical mismatches, not a statement that those original bindings pass. Any additional or changed mismatch must stop finalization.",
+  "all_historical_bindings_intact": false,
+  "known_unresolved_bindings": [
+    {
+      "code": "hash_mismatch",
+      "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/OPENAI-TOB/attempt-01/events.jsonl",
+      "detail": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/OPENAI-TOB/attempt-01/SEAL.json#files/381; expected=9776eddcd0608a348b15b8c3375aaf4a261f3db1b88bb08e0cc5807756d18041; actual=fdbb08e902a6713b35498cb49ad8f3f0e4cde87cf827edbf147c2ed7272472e8",
+      "verified_exact_byte_copies": [
+        "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/reconciliation/finalization/OPENAI-TOB-01-SEALED-LOG-PREFIXES/events.jsonl.sealed-prefix"
+      ],
+      "original_path_error_retained": true
+    },
+    {
+      "code": "hash_mismatch",
+      "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/OPENAI-TOB/attempt-01/stderr.txt",
+      "detail": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/OPENAI-TOB/attempt-01/SEAL.json#files/385; expected=b0a79b598a2a9c312185c658bc57b555806388a79d0690bb0e2c010b98d91397; actual=26c6dca4e3d5c625ec86f667f360facc18615d1b8ebfaa34fea23f078f0c2c74",
+      "verified_exact_byte_copies": [
+        "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/reconciliation/finalization/OPENAI-TOB-01-SEALED-LOG-PREFIXES/stderr.txt.sealed-prefix"
+      ],
+      "original_path_error_retained": true
+    },
+    {
+      "code": "hash_mismatch",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/S4/STATUS.json",
+      "detail": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/OPENAI-TOB/attempt-01/artifacts/source-only/stage-seals.json#S4/1; expected=200038490e786f19e0d1325e11c1dffcd958a8f14b564a06100f23f07592fa84; actual=9cfaeb948930b704c6f6b3b82d2ae81ac8ae38ed658577c1d453a443f08bbcf9",
+      "verified_exact_byte_copies": [],
+      "original_path_error_retained": true
+    },
+    {
+      "code": "hash_mismatch",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/S4/raw/001-resources.json",
+      "detail": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/OPENAI-TOB/attempt-01/artifacts/source-only/stage-seals.json#S4/6; expected=65355322591cfc9d8d27d3eeb37cb9a8007eec2daec5e7cf2fcc2137868f34ba; actual=5873a2a5f4831c9c83f17b240eafd0fd86538ef7cee271a64b17645657555d97",
+      "verified_exact_byte_copies": [],
+      "original_path_error_retained": true
+    }
+  ],
+  "diagnostics": [
+    {
+      "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/reconciliation/finalization/OPENAI-TOB-01-RAW-LOG-BINDING-DIAGNOSTIC-SEAL.json",
+      "sha256": "0749a6c4996e7738c0dc65660dd3a92b3035d69311bd5bc466ff8f30170b6302"
+    },
+    {
+      "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/reconciliation/finalization/OPENAI-TOB-01-S4-RUNTIME-BINDING-DIAGNOSTIC-SEAL.json",
+      "sha256": "f2d9fafaa6034003619a32765554705b10c14ae01a8107bd857c33607ba08ade"
+    }
+  ],
+  "limits": [
+    "Two raw-log full-file mismatches have exact recovered old prefix bytes; original suffixes and files preserved.",
+    "Two old S4 runtime references still lack exact recovered copies in verified inventories. Source reports/seals themselves verify. No workflow completion inferred."
+  ]
+}

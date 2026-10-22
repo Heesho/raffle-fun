@@ -1,0 +1,97 @@
+{
+  "dossierFile": "audit-context/DOSSIER.md",
+  "fragilityClusters": [
+    {
+      "area": "Time-evolving protocol destination screening (_isProtocolDestination) vs. monotonic RaffleFactory.isRaffle registry (Raffle.sol:L187-L195, L334, L404, L498, L565, L593-L605; RaffleFactory.sol:L80-L90, L106, L125, L157-L169)",
+      "why": "_isProtocolDestination is evaluated at multiple lifecycle stages (initialize, _update on ticket mint/transfer, and _transferQuote on USDC payouts, but not on ERC-721 prize transfers in redeemWinningTicket or releaseSponsorPrize) and queries canonicalFactory.isRaffle(destination) only when destination.code.length != 0. Because RaffleFactory deploys clones via sequential CREATE nonces and appends them to isRaffle over time, a precomputed future CREATE address of RaffleFactory has code.length == 0 and isRaffle == false before deployment and code.length == 45 and isRaffle == true after deployment. Additionally, VRFV2PlusWrapperConsumerBase.i_linkToken is not included in _isProtocolDestination."
+    },
+    {
+      "area": "Untrusted prizeToken and ticket recipient callback surfaces during creation, minting, and prize delivery (RaffleFactory.sol:L127-L134, L171-L177; Raffle.sol:L235, L329-L337, L395-L407, L416-L431)",
+      "why": "RaffleFactory.createRaffle hands control to untrusted params.prizeToken.safeTransferFrom after initializing and registering the clone; once prizeToken calls raffle.onERC721Received, the clone is in Status.Active before createRaffle completes or emits RaffleCreated. In buyEntries, _safeMint invokes untrusted recipient.onERC721Received while nonReentrant is active, though inherited ERC721 transferFrom/approve functions do not carry nonReentrant. Furthermore, Raffle implements IERC721Receiver without overriding ERC721.supportsInterface to advertise type(IERC721Receiver).interfaceId, and relies on prizeToken maintaining honest custody and non-reverting transferFrom/ownerOf behavior at terminal claim time."
+    },
+    {
+      "area": "Chainlink VRF v2.5 request synchronization, dual price quoting, native ETH refunding, and strict window boundaries (Raffle.sol:L240-L273, L276-L301, L458-L465, L509-L524; VRFV2PlusWrapperConsumerBase.sol:L76-L89, L101-L107)",
+      "why": "requestDraw coordinates two external wrapper price quotes (getVrfRequestPrice and requestRandomnessPayInNative), a payable external call to i_vrfV2PlusWrapper, the _requestInFlight guard bridging the window before vrfRequestId is stored, an assembly native ETH refund to msg.sender, and uint64 timestamp casting in drawRequestedAt. Downstream resolution (fulfillRandomWords) and fallback refunds (enableRefunds) rely on strict < vs. >= comparisons against drawRequestDeadline() and callbackDeadline(), where callbackDeadline() returns 0 if drawRequestedAt == 0."
+    },
+    {
+      "area": "Split parameter validation between RaffleFactory and Raffle.initialize (RaffleFactory.sol:L65-L92, L97-L125, L154-L185; Raffle.sol:L176-L206)",
+      "why": "Invariants on clone configuration are divided across two contracts: RaffleFactory validates prizeToken code presence, ERC-165 IERC721 support, reserveEntries > 0, and endTime bounds without checking msg.sender (sponsor) or the not-yet-created clone address, whereas Raffle.initialize screens sponsor, protocolTreasury, and sponsorRecipient against address(this), prizeToken, and existing isRaffle entries without re-checking reserveEntries, endTime, or prizeToken ERC-165 support."
+    },
+    {
+      "area": "Terminal liability partitioning, lazy vs. standalone settlement, and batch refund deduplication (Raffle.sol:L296-L300, L304-L392, L468-L470, L533-L558)",
+      "why": "unsettledPot is conserved into either remainingRefundLiability (enableRefunds) or protocolFees + sponsorProceeds + winnerProceeds (_settleWinningTicket). redeemWinningTicket lazily invokes _settleWinningTicket when !settlementComplete, meaning a revert in external prize or USDC delivery rolls back lazy settlement unless settleWinningTicket is called separately. In Status.Refunding, refundTickets relies on in-loop _burn(ticketId) setting _owners[ticketId] = address(0) to reject duplicate ticketIds within a 1..100 batch before deducting remainingRefundLiability."
+    }
+  ],
+  "trustBoundaries": [
+    {
+      "actor": "Factory Deployer (trusted)",
+      "entrypoint": "RaffleFactory.constructor (packages/contracts/src/RaffleFactory.sol:L65-L92)",
+      "reaches": "Validates quoteToken_ (code.length > 0, decimals() == 6), vrfWrapper_ (code.length > 0), and protocolTreasury_ (non-zero, non-sink), writes RaffleFactory immutables, and deploys the locked Raffle implementation via Raffle.constructor (Raffle.sol:L155-L166) and VRFV2PlusWrapperConsumerBase.constructor (VRFV2PlusWrapperConsumerBase.sol:L40-L47)."
+    },
+    {
+      "actor": "RaffleFactory Contract (trusted)",
+      "entrypoint": "Raffle.initialize (packages/contracts/src/Raffle.sol:L176-L206) and operator role in Raffle.onERC721Received (packages/contracts/src/Raffle.sol:L416-L431)",
+      "reaches": "Initializes fresh ERC-1167 Raffle clone storage once (sponsor, sponsorRecipient, protocolTreasury, prizeToken, prizeTokenId, raffleId, reserveEntries, endTime, status = Status.AwaitingPrize) and acts as the required ERC-721 operator during prize safeTransferFrom to transition status to Status.Active."
+    },
+    {
+      "actor": "Quote Token / Canonical 6-decimal USDC (trusted)",
+      "entrypoint": "Called by RaffleFactory.constructor (RaffleFactory.sol:L71), Raffle.buyEntries (Raffle.sol:L224), and Raffle._transferQuote (Raffle.sol:L566)",
+      "reaches": "Executes ERC-20 safeTransferFrom during entry purchases and safeTransfer during winner cash redemptions, ticket refunds, sponsor proceeds releases, and protocol fee releases."
+    },
+    {
+      "actor": "Chainlink VRF v2.5 Wrapper (trusted)",
+      "entrypoint": "VRFV2PlusWrapperConsumerBase.rawFulfillRandomWords (packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:L101-L107) and external calls from Raffle.requestDraw / getVrfRequestPrice / estimateVrfRequestPrice (Raffle.sol:L249, L257, L437, L442)",
+      "reaches": "Sole caller authorized to invoke Raffle.fulfillRandomWords (Raffle.sol:L509-L524), writing winningEntry, resolvedAt, and terminal status (Status.NftWon or Status.CashWon) when status == Status.Drawing and block.timestamp < callbackDeadline(); quotes and accepts native VRF fees in requestDraw."
+    },
+    {
+      "actor": "Protocol Treasury (semi-trusted)",
+      "entrypoint": "Passive payout recipient in Raffle.releaseProtocolFees (packages/contracts/src/Raffle.sol:L385-L392); can also invoke any permissionless entrypoint",
+      "reaches": "Receives protocolFees via Raffle._transferQuote (Raffle.sol:L390, L564-L567) after _isProtocolDestination screening."
+    },
+    {
+      "actor": "Sponsor (untrusted)",
+      "entrypoint": "RaffleFactory.createRaffle (packages/contracts/src/RaffleFactory.sol:L97-L148) and Raffle.enableRefunds before endTime when totalEntries == 0 (packages/contracts/src/Raffle.sol:L276-L301)",
+      "reaches": "Supplies CreateRaffleParams (sponsorRecipient, prizeToken, prizeTokenId, reserveEntries, endTime), triggers clone deployment via Clones.clone, initializes and registers the clone in raffleById/idByRaffle/isRaffle, triggers prizeToken.safeTransferFrom and Raffle.onERC721Received, and can cancel an empty active raffle into Status.Refunding before endTime."
+    },
+    {
+      "actor": "Sponsor Recipient (untrusted)",
+      "entrypoint": "Passive recipient in Raffle.releaseSponsorProceeds (packages/contracts/src/Raffle.sol:L375-L382) and Raffle.releaseSponsorPrize (packages/contracts/src/Raffle.sol:L395-L407)",
+      "reaches": "Receives sponsorProceeds in quoteToken via _transferQuote (Raffle.sol:L380) and returned prizeTokenId on prizeToken via prizeToken.transferFrom (Raffle.sol:L404) in Status.CashWon or Status.Refunding."
+    },
+    {
+      "actor": "Prize ERC-721 Contract (untrusted)",
+      "entrypoint": "Raffle.onERC721Received (packages/contracts/src/Raffle.sol:L416-L431) and external calls from RaffleFactory._validateCreateParams (L172), RaffleFactory.createRaffle (L128-L129), Raffle.redeemWinningTicket (L334-L335), and Raffle.releaseSponsorPrize (L404-L405)",
+      "reaches": "Transitions Raffle clone from Status.AwaitingPrize to Status.Active during createRaffle, and receives external CALLs (safeTransferFrom, transferFrom) and STATICCALLs (supportsInterface, ownerOf) during creation, winner NFT redemption, and sponsor prize recovery."
+    },
+    {
+      "actor": "Entry Buyer / Ticket Owner / Ticket Recipient (untrusted)",
+      "entrypoint": "Raffle.buyEntries (Raffle.sol:L209-L237), Raffle.redeemWinningTicket (Raffle.sol:L309-L346), Raffle.refundTickets (Raffle.sol:L349-L372), and ERC721.transferFrom / safeTransferFrom / approve / setApprovalForAll (ERC721.sol:L93-L136)",
+      "reaches": "Increments totalEntries, ticketCount, and unsettledPot, writes _ticketRanges, and mints ERC-721 tickets (with IERC721Receiver.onERC721Received callback to contract recipients); transfers or approves tickets through Raffle._update; lazily settles and burns winning ticket to claim NFT or cash prize; burns 1..100 tickets in Status.Refunding to claim USDC refunds."
+    },
+    {
+      "actor": "Permissionless Caller (untrusted)",
+      "entrypoint": "Raffle.requestDraw (L240-L273), Raffle.enableRefunds (L276-L301), Raffle.settleWinningTicket (L304-L306), Raffle.releaseSponsorProceeds (L375-L382), Raffle.releaseProtocolFees (L385-L392), Raffle.releaseSponsorPrize (L395-L407), and Raffle.receive (L171-L173)",
+      "reaches": "Transitions sold active raffle to Status.Drawing, pays VRF wrapper in native ETH, and receives excess ETH refund via call; transitions expired active/drawing raffle to Status.Refunding and moves unsettledPot to remainingRefundLiability; proves winningTicketId and partitions unsettledPot in _settleWinningTicket; releases sponsorProceeds, protocolFees, and returned prize NFT to their configured recipients."
+    }
+  ],
+  "unresolved": [
+    "requestDraw: unclear; need to inspect the deployed target-chain i_vrfV2PlusWrapper contract and VRF coordinator configuration to verify that VRF_CALLBACK_GAS_LIMIT = 300_000 (RaffleConstants.sol:L39) and VRF_REQUEST_CONFIRMATIONS = 30 (RaffleConstants.sol:L42) are within the wrapper's permitted gas and confirmation bounds.",
+    "createRaffle: params.prizeToken is an honest, standards-compliant ERC-721 contract that maintains exclusive custody of params.prizeTokenId in raffle after ownerOf(params.prizeTokenId) == raffle succeeds at creation and permits later transferFrom in redeemWinningTicket or releaseSponsorPrize",
+    "createRaffle: params.sponsorRecipient can receive quoteToken via SafeERC20.safeTransfer and params.prizeToken via IERC721.transferFrom without token-level blacklisting or revert",
+    "createRaffle: params.prizeToken does not invoke raffle.buyEntries during safeTransferFrom after calling raffle.onERC721Received before RaffleCreated is emitted",
+    "buyEntries: quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount) increases quoteToken.balanceOf(address(this)) by the exact grossAmount without fee-on-transfer deduction, rebasing, or untrusted callback hooks.",
+    "buyEntries: A future Raffle clone address that has not yet been deployed via Clones.clone (and thus currently has code.length == 0 and isRaffle == false) is not supplied as recipient before its creation.",
+    "redeemWinningTicket: In Status.NftWon, address(this) still holds prizeTokenId on prizeToken at redemption time and prizeToken.transferFrom(address(this), winner, prizeTokenId) transfers ownership to winner without reverting or pausing.",
+    "redeemWinningTicket: In Status.NftWon, prizeToken.ownerOf(deliveredPrizeTokenId) == winner truthfully reflects durable ownership of prizeTokenId by winner after prizeToken.transferFrom returns.",
+    "redeemWinningTicket: In Status.CashWon, quoteToken holds at least cashAmount for address(this) and executes transfer(winner, cashAmount) without fee-on-transfer, rebasing, or blacklisting reverts.",
+    "requestDraw: block.timestamp fits within uint64 without high-bit truncation when cast via drawRequestedAt = uint64(block.timestamp) at Raffle.sol:L253.",
+    "requestDraw: i_vrfV2PlusWrapper implements calculateRequestPriceNative and requestRandomWordsInNative without reverting for callbackGasLimit = 300_000, requestConfirmations = 30, and numWords = 1, accepts requestPrice wei matching calculateRequestPriceNative, and returns the requestId it will later pass to rawFulfillRandomWords.",
+    "fulfillRandomWords: The external i_vrfV2PlusWrapper supplies unbiased, unpredictable randomness in randomWords[0] and delivers valid ABI-encoded (uint256, uint256[]) calldata with sufficient gas to complete rawFulfillRandomWords.",
+    "enableRefunds: When requestDraw sets drawRequestedAt = uint64(block.timestamp), block.timestamp fits in uint64 so the cast does not wrap to 0 or a truncated timestamp used by callbackDeadline() at L290.",
+    "enableRefunds: quoteToken.balanceOf(address(this)) is at least unsettledPot when enableRefunds moves unsettledPot into remainingRefundLiability (no fee-on-transfer or negative rebasing on quoteToken).",
+    "refundTickets: quoteToken is canonical 6-decimal USDC that holds at least remainingRefundLiability for address(this) and executes transfer(msg.sender, amount) without fees, rebasing, or reentrant callbacks into Raffle.",
+    "onERC721Received: Calling contract msg.sender (prizeToken) only invokes onERC721Received(factory, sponsor, prizeTokenId, ...) during a genuine transfer that vests ownership of prizeTokenId in the Raffle clone.",
+    "onERC721Received: prizeToken.safeTransferFrom invokes IERC721Receiver.onERC721Received directly without requiring IERC165.supportsInterface(type(IERC721Receiver).interfaceId) to return true on the Raffle clone (ERC721.supportsInterface at packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L45-L50 does not include IERC721Receiver).",
+    "_isProtocolDestination: An address for which _isProtocolDestination(destination, prizeToken_) returns false during Raffle.initialize (L187-L195) or Raffle._update (L498) will continue to have _isProtocolDestination return false at later claim/payout times (Raffle._transferQuote at L565, Raffle.redeemWinningTicket at L334, or Raffle.releaseSponsorPrize at L404) and across later Raffle.initialize calls (L190)."
+  ]
+}

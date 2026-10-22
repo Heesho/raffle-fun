@@ -1,0 +1,64 @@
+{
+  "function": "fulfillRandomWords",
+  "file": "target/packages/contracts/src/Raffle.sol",
+  "lines": "L509-L524",
+  "analysisFile": "audit/S1/audit-context/functions/06-fulfillRandomWords.md",
+  "invariants": [
+    {
+      "claim": "Callbacks with an in-flight request, non-Drawing status, mismatched request ID, word count other than one, or timestamp at/after deadline emit the ignored event and perform no state writes.",
+      "evidence": "Raffle.sol:L510-L516"
+    },
+    {
+      "claim": "Accepted callbacks select a one-based entry within the positive uint128 sold-entry interval and store entry, resolution timestamp and terminal status.",
+      "evidence": "Raffle.sol:L85, L243, L252, L518-L521"
+    },
+    {
+      "claim": "The result is NftWon iff totalEntries >= reserveEntries; later callbacks cannot overwrite it because only Drawing passes.",
+      "evidence": "Raffle.sol:L511, L521"
+    },
+    {
+      "claim": "The only callee is callbackDeadline; result selection makes no external calls, loops or transfers and does not allocate payouts.",
+      "evidence": "Raffle.sol:L463-L465, L509-L524"
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "Incoming calls have authenticated wrapper origin before this internal handler executes.",
+      "establishedBy": "VRFV2PlusWrapperConsumerBase.rawFulfillRandomWords at target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:L101-L107"
+    },
+    {
+      "claim": "totalEntries is positive and remains fixed while Drawing, supplying the modulo divisor precondition at Raffle.sol:L518.",
+      "establishedBy": "Raffle.requestDraw rejects zero at L243 before setting Drawing at L252; Raffle.buyEntries requires Active at L215 and writes totalEntries at L230; _requireStatus enforces equality at L573-L575."
+    },
+    {
+      "claim": "The callback deadline is request time plus two days only when stored drawRequestedAt is nonzero; otherwise the helper returns zero and no timestamp passes.",
+      "establishedBy": "Raffle.callbackDeadline at L463-L465 and RaffleConstants.DRAW_CALLBACK_TIMEOUT at L35-L36; Raffle.fulfillRandomWords comparison at L512."
+    },
+    {
+      "claim": "The canonical service supplies randomness with the intended unpredictability/distribution; the inspected origin gate and modulo calculation do not establish those properties (base L101-L107; Raffle.sol:L518).",
+      "establishedBy": "nothing found"
+    },
+    {
+      "claim": "The explicit uint64 timestamp conversions preserve the full request/resolution time only when block.timestamp fits uint64; there is no local bound check (Raffle.sol:L253, L520).",
+      "establishedBy": "nothing found"
+    }
+  ],
+  "calls": [
+    {
+      "callee": "Raffle.callbackDeadline (target/packages/contracts/src/Raffle.sol:L463-L465)",
+      "kind": "internal",
+      "propagates": "Returns uint256(drawRequestedAt) + DRAW_CALLBACK_TIMEOUT when drawRequestedAt != 0, otherwise zero; caller depends on this for the exclusive callback deadline at L512. Constant is two days (RaffleConstants.sol:L35-L36). No nested calls or state writes."
+    }
+  ],
+  "callers": [
+    "VRFV2PlusWrapperConsumerBase.rawFulfillRandomWords authenticates immutable wrapper then dispatches unchanged inputs (target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:L101-L107)."
+  ],
+  "sharedState": [
+    "totalEntries: buyEntries L215-L232; requestDraw nonzero guard L243; handler L518-L521.",
+    "reserveEntries: initialize L203; handler comparison L521.",
+    "_requestInFlight, vrfRequestId, drawRequestedAt: requestDraw L252-L260; handler L511-L512 through callbackDeadline L463-L465.",
+    "winningEntry, resolvedAt, status: handler L519-L521; range proof L579-L585; settlement L535-L548; refund transition L289-L300."
+  ],
+  "openQuestions": []
+}
+

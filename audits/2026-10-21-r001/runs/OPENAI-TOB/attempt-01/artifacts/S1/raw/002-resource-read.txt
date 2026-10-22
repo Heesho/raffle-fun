@@ -1,0 +1,391 @@
+FILE plugins__audit-context-building__agents__function-analyzer.md
+---
+name: function-analyzer
+description: "Analyzes one function in depth for audit context: invariants, assumptions, and what its callees establish. Writes the prose analysis to disk and returns a compact record. Use for dense functions, data-flow chains, cryptographic code, and state machines."
+tools: Read, Grep, Glob, Write
+---
+
+You analyze one function at a time and produce understanding, not conclusions. Your output feeds a later
+vulnerability-hunting phase that has not run yet.
+
+Structure, invariants, and assumptions are in scope. Vulnerabilities, fixes, exploits, and severity ratings
+are not. An assumption that nothing enforces is recorded as an unenforced assumption, with the line that
+should have enforced it — the hunting phase decides whether it matters. If you find yourself writing
+"vulnerability", "exploit", or "severity", the observation underneath is usually still worth keeping;
+restate it as the structural fact it rests on.
+
+## What you produce
+
+Two things, and they are not the same document:
+
+1. **The prose analysis**, written to the path you are given with the Write tool. This is the deliverable and
+   it should be thorough. Follow `{baseDir}/skills/audit-context-building/resources/ANALYSIS_FORMAT.md`.
+2. **The structured record** you return. A compact index into the prose — the invariants, the assumptions and
+   what establishes each, the callees and what the caller depends on them for, and the open questions. It
+   exists so the orchestrator never has to load the prose. Do not summarize the prose into it; it holds
+   different, shorter content.
+
+## Read the callees
+
+This is the part that distinguishes a real analysis from a plausible one.
+
+A caller's correctness usually rests on something a callee establishes. From the caller alone that dependency
+is invisible: a bound looks enforced because the value came back from a function whose name implies a check.
+
+So when the callee's source is available — internal or external, it makes no difference — read it, and record
+what the caller depends on it to establish. Walk every path through the callee, not only the one that returns
+successfully. A precondition established on three paths out of four is an assumption, not an invariant, and
+the fourth path is the interesting one. An output parameter left unwritten on an early return, a check that
+sits behind a conditional, a loop that can exit before it validates: these are what you are looking for.
+
+When source is not available, the callee is adversarial. Record what is sent to it, what is assumed about it,
+and the outcomes you have not excluded: failure, a hostile return value, an unexpected state change, re-entry
+into your caller before its own writes land.
+
+For every assumption, name where it is established. When nothing establishes it, write "nothing found" —
+that is a finding for the next phase, and it is the single most valuable thing you produce.
+
+## Grounding
+
+Cite a line for every structural claim. If you cannot point at one, do not assert it — put it in open
+questions as "unclear; need to inspect X". Never infer behavior from a name: a function called
+`validate_length` may not validate anything. When new evidence contradicts something you wrote earlier,
+correct it in place and say what changed.
+
+No hedge words. "Probably", "seems to", and "should be" each resolve to either a cited claim or an open
+question.
+
+Depth follows the code. Branches, external calls, and state mutations earn analysis; a three-line block that
+copies a value earns three lines. There is no minimum count of invariants or assumptions — a short record
+whose claims each cite a line is worth more than a long one padded to fill a template. Returning few
+invariants because the function has few is correct. Returning open questions is a complete analysis;
+leaving them unwritten is not.
+
+## Reference
+
+- Output format: `{baseDir}/skills/audit-context-building/resources/ANALYSIS_FORMAT.md`
+- Worked examples, C and Solidity: `{baseDir}/skills/audit-context-building/resources/FUNCTION_MICRO_ANALYSIS_EXAMPLE.md`
+- Per-domain mapping: `{baseDir}/skills/audit-context-building/resources/DOMAIN_NOTES.md` — read this when the
+  target is a contract, a decompiled binary, or a service rather than source you can grep. It defines what
+  counts as an entrypoint, an actor, persistent state, and a black box in each.
+
+FILE plugins__audit-context-building__skills__audit-context-building__resources__ANALYSIS_FORMAT.md
+# Analysis Format
+
+The output format for a per-function analysis. The skill body defines what to analyze; this defines how to
+write it down.
+
+## Structure
+
+One document per function, sections in this order, separated by `---`:
+
+```markdown
+## `functionName` in path/to/file.ext (L40-L88)
+
+**Purpose:** Its role in the system and what breaks without it.
+
+**Inputs & Assumptions:**
+- `param` (type): what it is. Trust: untrusted | semi-trusted | trusted.
+- Implicit: state read, caller identity, environment, clock.
+- Preconditions: what must hold on entry, and what establishes each.
+
+**Outputs & Effects:**
+- Returns, state writes, events or messages, external interactions, postconditions.
+
+**Block-by-Block:**
+
+​```language
+// L52-L54
+<the code>
+​```
+- **What:** one sentence.
+- **Why here:** what its position in the order buys.
+- **Assumes:** what must hold for it to be correct.
+- **Establishes:** the invariant it creates, if any.
+- **Depended on by:** the later logic that rests on it.
+
+**Cross-Function Dependencies:**
+- Callee `name` (internal | external-source-available | external-black-box): what this function depends on it
+  to establish, and on which paths.
+- Callers: who reaches this, and what they assume it enforces.
+- Shared state: which other functions touch it.
+- Invariant couplings: how this function's invariants interact with the system's.
+
+**Open Questions:**
+- unclear; need to inspect X
+```
+
+## Conventions
+
+Cite lines as `L45` or `L98-L102`. Label code blocks with the language. For every assumption, say what makes
+it true — and write `nothing found` when nothing does.
+
+Spend words where the code earns them. Branches, calls out, and anything that changes stored data deserve
+real attention; three lines that copy a value deserve three lines back. There is no minimum number of
+anything. Padding a section to hit a count produces text that looks like analysis and isn't.
+
+Leave a section out only when it is genuinely empty, and say so: "No external calls." A missing section could
+mean "none" or "never checked", and the reader cannot tell which.
+
+## Before you finish
+
+Check that every claim either cites a line or sits in Open Questions. Check that you followed every path
+through each function called, not just the one that succeeds. If something you wrote earlier turns out to be
+wrong, fix it where it stands and say what changed.
+
+Cut the hedges. "Probably", "seems to", and "should be" each become either a claim with a line number or an
+open question.
+
+Finishing with open questions is a complete analysis. Finishing with open questions you never wrote down is
+not.
+
+FILE plugins__audit-context-building__skills__audit-context-building__resources__FUNCTION_MICRO_ANALYSIS_EXAMPLE.md
+# Worked Example
+
+A complete per-function analysis. The subject is C; the format is language-neutral, and the notes at the end
+cover what changes for contract code.
+
+The point of this example is the callee. `session_acquire` looks safe read on its own, and the analysis only
+becomes accurate once `session_lookup` has been read.
+
+---
+
+## `session_acquire` in src/session.c (L112-L138)
+
+```c
+// L112
+int session_acquire(uint32_t id, struct session **out) {
+    struct session *s = session_lookup(id);      // L113
+    if (!s)                                       // L114
+        return -ENOENT;
+    s->refcount++;                                // L116
+    *out = s;                                     // L117
+    return 0;
+}
+```
+
+**Purpose:** Hands a caller a borrowed reference to a live session and records that the borrow happened, so
+the session is not freed underneath it. Every caller that later calls `session_release` is paired with this
+function; the refcount discipline of the whole session table rests on that pairing.
+
+**Inputs & Assumptions:**
+- `id` (uint32_t): session identifier. Trust: **untrusted** — reaches this from the request parser at
+  `src/proto.c:L88` without validation.
+- `out` (struct session **): caller-provided storage for the result. Trust: trusted (internal callers only,
+  per the caller list below).
+- Implicit: the global session table `g_sessions` (`src/session.c:L31`) and the lock protecting it.
+- Precondition: `out` is non-NULL. Nothing in this function establishes it and nothing checks it; both
+  callers pass the address of a local (`src/proto.c:L94`, `src/admin.c:L51`).
+- Precondition: the caller holds `g_session_lock`. Established by the callers, not here — see Open Questions.
+
+**Outputs & Effects:**
+- Returns `0` on success, `-ENOENT` when no session matches.
+- State write: increments `s->refcount` (L116).
+- State write: `*out` on the success path only. **On the error path `*out` is left untouched** (L114), so a
+  caller that does not check the return value reads whatever was in its local.
+- No external interactions, no events.
+- Postcondition on success: the session's refcount is one higher and the caller owes a matching
+  `session_release`.
+
+**Block-by-Block:**
+
+```c
+// L113
+struct session *s = session_lookup(id);
+```
+- **What:** Resolves the untrusted `id` to a session pointer.
+- **Why here:** Nothing can proceed without the lookup, and it is the only place `id` is consumed.
+- **Assumes:** `session_lookup` returns NULL rather than a stale pointer for an expired session.
+- **Establishes:** nothing on its own — see the callee analysis below, which is where this gets interesting.
+- **Depended on by:** L114 and L116 both.
+
+```c
+// L114-L115
+if (!s)
+    return -ENOENT;
+```
+- **What:** Rejects a lookup miss.
+- **Why here:** Guards the dereference at L116.
+- **Assumes:** NULL is the only failure representation `session_lookup` uses.
+- **Establishes:** `s != NULL` for the remainder of the function.
+- **Depended on by:** L116, L117.
+
+```c
+// L116-L117
+s->refcount++;
+*out = s;
+```
+- **What:** Records the borrow and publishes the pointer.
+- **Why here:** After the NULL guard; the increment precedes publication so the caller never holds a pointer
+  that has not been counted.
+- **Assumes:** the caller holds `g_session_lock`, since `refcount++` is not atomic (`refcount` is a plain
+  `int` at `src/session.h:L22`).
+- **Establishes:** the borrow is accounted for.
+- **Depended on by:** every subsequent `session_release`.
+
+**Cross-Function Dependencies:**
+
+- **Callee `session_lookup` (internal, src/session.c:L94-L110):** read in full. It walks `g_sessions` and
+  returns the matching entry. Two properties matter here and neither is visible from `session_acquire`:
+  1. It compares `s->id == id` (L102) but **does not check `s->state`**. An entry in state
+     `SESSION_CLOSING` (set at L204 of `session_close`, which does not remove the entry from the table until
+     L211) still matches. So `session_acquire` can take a reference to a session that is mid-teardown.
+     `session_acquire` reads as though liveness were established; it is established nowhere.
+  2. It returns NULL only when the walk falls off the end (L109). The expiry check at L104 `continue`s past
+     expired entries rather than deleting them, so expiry is enforced only on the lookup path — an entry
+     already borrowed by another caller stays reachable through that caller's pointer.
+- **Callers:** `proto_handle_request` (`src/proto.c:L94`) — takes `g_session_lock` at L91, so the locking
+  precondition holds. `admin_dump_session` (`src/admin.c:L51`) — **no lock acquisition anywhere in the
+  function**; the increment at L116 races. That path assumes a precondition nothing establishes.
+- **Shared state:** `g_sessions` with `session_lookup`, `session_close`, `session_reap`. `s->refcount` with
+  `session_release`.
+- **Invariant coupling:** the table's central invariant — every entry's refcount equals the number of
+  outstanding borrows — holds only if every acquire is under the lock. One of the two callers breaks that.
+
+**Open Questions:**
+- unclear; need to inspect whether `g_session_lock` is documented as a caller precondition anywhere. Nothing
+  in `session.h` states it, and only one of two callers honors it.
+- unclear; need to inspect `session_reap` (`src/reap.c`) to know whether it can free an entry whose refcount
+  is non-zero. That decides whether the `SESSION_CLOSING` window above is reachable in practice.
+
+---
+
+## What this example shows
+
+The `SESSION_CLOSING` observation and the unlocked-caller observation are both invisible from
+`session_acquire` alone. Reading only the subject function, `session_lookup` returning non-NULL reads as
+though it established liveness. Reading the callee shows it establishes identity and nothing more.
+
+Both are recorded as unenforced assumptions with the line that should have enforced them. Neither is called a
+use-after-free or a race condition, neither gets a severity, and no fix is proposed — the hunting phase makes
+those calls with the whole system model in front of it.
+
+Note also what the record does *not* do: there is no invariant invented to reach a count, and blocks that do
+one thing get one line each.
+
+---
+
+## The same shape in Solidity
+
+The format does not change between domains; see [DOMAIN_NOTES.md](DOMAIN_NOTES.md) for the full mapping. This
+abbreviated record shows the contract idioms in place, and the same callee trap in a different dialect.
+
+```solidity
+// L61
+function withdraw(uint256 amount) external {
+    require(_debit(msg.sender, amount), "insufficient");   // L62
+    (bool ok, ) = msg.sender.call{value: amount}("");      // L63
+    require(ok, "transfer failed");                        // L64
+    totalDeposits -= amount;                               // L65
+}
+```
+
+**Inputs & Assumptions:**
+- `amount` (uint256): user-specified. Trust: **untrusted**.
+- Implicit: `msg.sender`, `balanceOf[msg.sender]` (L12), `hasCreditLine[msg.sender]` (L13).
+- Precondition: the caller's balance covers `amount`. **Established by `_debit`, and only on one of its two
+  paths** — see below.
+
+**Outputs & Effects:**
+- Storage writes: `balanceOf[msg.sender]` inside `_debit` (L48, L52); `totalDeposits` at L65.
+- External interaction: `msg.sender.call{value: amount}` (L63) — value transfer to an arbitrary address.
+- No event emitted on withdrawal. Off-chain accounting cannot observe this path.
+
+**Block-by-Block (L62-L65):**
+- **What:** debits the balance, sends the ether, then decrements the running total.
+- **Why here:** the debit precedes the transfer, which reads as checks-effects-interactions.
+- **Assumes:** `_debit` returning true means the balance covered the amount.
+- **Establishes:** nothing the later lines can rely on — `totalDeposits` at L65 lands *after* the external
+  call at L63, so it is not in effect during re-entry.
+
+**Cross-Function Dependencies:**
+- **Callee `_debit` (internal, L44-L54):** read in full. Two paths, and they do not agree.
+  - Default path (L50-L52): `if (balanceOf[account] < amount) return false;` then subtracts. The bound holds.
+  - Credit-line path (L46-L49): when `hasCreditLine[account]` is set, it subtracts inside an `unchecked`
+    block and returns true **without comparing balance to amount**. For those accounts the caller's
+    precondition is established by nothing, and the subtraction wraps instead of reverting.
+- **Invariant coupling:** `sum(balanceOf) == totalDeposits` is the contract's central invariant. It is
+  maintained on the default path and not on the credit-line path.
+
+**Open Questions:**
+- unclear; need to inspect who can set `hasCreditLine` and whether it is ever cleared (`L13` declares it;
+  no setter appears in this file).
+
+Note what the record does *not* say: it does not call L63 a reentrancy vulnerability or the `unchecked` block
+an integer underflow, and it proposes no fix. It says where each precondition is established, and names the
+one that is established nowhere. The hunting phase takes it from there.
+
+FILE plugins__audit-context-building__skills__audit-context-building__resources__DOMAIN_NOTES.md
+# Domain Notes
+
+The format never changes. Whatever the target, you are always asking the same four questions up front —
+what are the pieces, how does the outside world get in, who is on the other side, and what data survives
+between calls — and then, per function, what must be true, what it takes on faith, and what it calls.
+
+What changes is the answers, and what counts as a call you cannot see inside. That is what this file maps.
+
+| | ways in | who's on the other side | data that sticks around | calls you can't see inside |
+| --- | --- | --- | --- | --- |
+| Smart contracts | `external` / `public` function | caller, owner, relayer, oracle, other protocols | storage slots | an address whose code isn't in the project |
+| C / C++ source | exported function, parser, syscall or IPC handler | remote peer, local user, other threads | globals, statics, long-lived heap | a linked library shipped without source |
+| Decompiled / firmware | task entry, interrupt handler, protocol handler | radio peer, LAN host, serial console | fixed addresses, NVRAM, DMA regions | a symbol the decompiler never resolved |
+| Web services (Go, Rust, Python) | route handler, RPC method, queue consumer | logged-in user, anonymous caller, internal service | database rows, cache entries, sessions | a third-party API |
+
+## Contracts
+
+The original target of this plugin, and the one where "external call" carries the most weight. A call to an
+address whose code is not in scope is the black-box case: record the value and calldata sent, and the
+outcomes not excluded — revert, a hostile return value, and re-entry into the caller before its own state
+writes land. Whether the write lands before or after the call is usually the whole question in "why here".
+
+Implicit inputs are larger than they look: the caller identity, the block timestamp, the gas left, and
+anything read from another contract. Under effects, storage writes and emitted events are separate lines,
+because indexers depend on the events and solvency depends on the writes.
+
+Watch for `unchecked` blocks and assembly. Both suspend guarantees the surrounding code is written as though
+it still has, which is exactly the shape the continuity rule exists to catch — a caller relies on a checked
+subtraction that a callee performs unchecked.
+
+## C and C++ source
+
+Bounds, lifetimes, and integer width carry most of the invariants. An out-parameter is the classic continuity
+trap: the caller checks the return code and uses the out-parameter, and one path through the callee returns
+success without writing it, or writes it without bounding it.
+
+Record who owns each pointer and until when. `free` on one path and not another, a borrow that outlives the
+lock that protected it, and a length in `int` compared against a `size_t` are all structural facts, not
+findings. Note which calls are behind `#ifdef` — a path that only exists in one build configuration is still
+a path, and orientation should say which configuration was read.
+
+## Decompiled binaries and firmware
+
+Three things differ, and they all land in orientation.
+
+**Function boundaries are themselves a finding.** Before anything can be ranked, the functions have to be
+recovered, and the recovery is fallible. Say which entry points were identified, how, and what was left
+unattributed. `FUN_80104a2c` is a name that tells you nothing — the rule against inferring behavior from a
+name is not a caution here, it is the default condition.
+
+**Go top-down from task entry points.** Starting at RTOS task entries, interrupt handlers, and protocol
+handlers and working downward beats exploring outward from whatever looked interesting. The entrypoint list
+is the work queue.
+
+**Most callees are black boxes, and that is the normal case rather than an exception.** A call to an address
+with no recovered body — a ROM thunk, a syscall, a library the decompiler did not resolve — gets the same
+treatment as an unknown external contract: what is passed, what is assumed, what is not excluded. A bound
+that is never established in the visible listing is an assumption with `establishedBy: "nothing found"`, and
+that is a complete and useful answer, not a failure to finish.
+
+Keep a coverage record alongside the dossier: which tasks and handlers have been analyzed and which have not.
+Without it there is no way to tell a clean subsystem from an unread one.
+
+## Services
+
+Logic and authorization carry more weight than memory safety. The trust boundary is usually a middleware
+chain, so the continuity rule points at the framework: a handler is safe because something upstream
+authenticated the request, and that something is a decorator, a route registration, or a config file rather
+than a call in the handler's body. Record where the check actually lives, and whether every route registered
+on that path gets it.
+
+Concurrency is persistent state. Two handlers that read-modify-write the same row without a transaction are
+coupled even though neither calls the other; that belongs in shared state and invariant couplings.

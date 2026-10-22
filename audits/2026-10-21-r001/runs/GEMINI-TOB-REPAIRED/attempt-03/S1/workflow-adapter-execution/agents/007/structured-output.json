@@ -1,0 +1,63 @@
+{
+  "analysisFile": "audit-context/functions/06-fulfillRandomWords.md",
+  "assumptions": [
+    {
+      "claim": "Only the immutable i_vrfV2PlusWrapper contract can invoke fulfillRandomWords.",
+      "establishedBy": "VRFV2PlusWrapperConsumerBase.rawFulfillRandomWords at packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:L102-L106 and internal visibility at packages/contracts/src/Raffle.sol:L509"
+    },
+    {
+      "claim": "On the resolution path (past L516), totalEntries > 0 so modulo by uint256(totalEntries) at L518 cannot revert with division-by-zero and (randomWords[0] % uint256(totalEntries)) + 1 fits in uint128 without truncation.",
+      "establishedBy": "Raffle.requestDraw at packages/contracts/src/Raffle.sol:L243,L252 (the only transition to Status.Drawing checks totalEntries != 0) and Raffle.buyEntries at packages/contracts/src/Raffle.sol:L218-L230 (totalEntries only increases within uint128)"
+    },
+    {
+      "claim": "On the resolution path (past L516), drawRequestedAt != 0 so callbackDeadline() returns uint256(drawRequestedAt) + 2 days rather than 0.",
+      "establishedBy": "Raffle.requestDraw at packages/contracts/src/Raffle.sol:L242,L252-L253 alongside RaffleFactory.createRaffle at packages/contracts/src/RaffleFactory.sol:L100, and Raffle.fulfillRandomWords at packages/contracts/src/Raffle.sol:L512 with Raffle.callbackDeadline at L464 (where drawRequestedAt == 0 yields deadline == 0 and triggers early return via block.timestamp >= 0)"
+    },
+    {
+      "claim": "block.timestamp fits in uint64 when cast at L520 (resolvedAt = uint64(block.timestamp)).",
+      "establishedBy": "RaffleFactory.createRaffle at packages/contracts/src/RaffleFactory.sol:L100-L104 (params.endTime is uint64 > block.timestamp) and Raffle.requestDraw / Raffle.fulfillRandomWords at packages/contracts/src/Raffle.sol:L245,L459,L464,L512 (bounding resolution before uint256(endTime) + 4 days; no explicit check that uint256(endTime) + 4 days <= type(uint64).max)"
+    },
+    {
+      "claim": "The external i_vrfV2PlusWrapper supplies unbiased, unpredictable randomness in randomWords[0] and delivers valid ABI-encoded (uint256, uint256[]) calldata with sufficient gas to complete rawFulfillRandomWords.",
+      "establishedBy": "nothing found"
+    }
+  ],
+  "callers": [
+    "VRFV2PlusWrapperConsumerBase.rawFulfillRandomWords (packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:L101-L107)"
+  ],
+  "calls": [
+    {
+      "callee": "Raffle.callbackDeadline",
+      "kind": "internal",
+      "propagates": "Returns uint256(drawRequestedAt) + RaffleConstants.DRAW_CALLBACK_TIMEOUT (2 days) when drawRequestedAt != 0, or 0 when drawRequestedAt == 0 (packages/contracts/src/Raffle.sol:L462-L465)."
+    }
+  ],
+  "file": "packages/contracts/src/Raffle.sol",
+  "function": "fulfillRandomWords",
+  "invariants": [
+    {
+      "claim": "Any callback executing while _requestInFlight is true, status != Status.Drawing, requestId != vrfRequestId, randomWords.length != 1, or block.timestamp >= callbackDeadline() emits VrfCallbackIgnored and returns without modifying storage.",
+      "evidence": "packages/contracts/src/Raffle.sol:L510-L516"
+    },
+    {
+      "claim": "When a callback resolves the raffle, winningEntry is set in the inclusive 1-based range [1, totalEntries] and resolvedAt is set to uint64(block.timestamp).",
+      "evidence": "packages/contracts/src/Raffle.sol:L518-L520"
+    },
+    {
+      "claim": "When a callback resolves the raffle, status transitions from Status.Drawing to Status.NftWon if totalEntries >= reserveEntries and to Status.CashWon if totalEntries < reserveEntries, which prevents any subsequent callback or enableRefunds call from mutating status.",
+      "evidence": "packages/contracts/src/Raffle.sol:L511,L521,L279-L294"
+    }
+  ],
+  "lines": "L509-L524",
+  "openQuestions": [],
+  "sharedState": [
+    "_requestInFlight (packages/contracts/src/Raffle.sol:L142)",
+    "status (packages/contracts/src/Raffle.sol:L124)",
+    "vrfRequestId (packages/contracts/src/Raffle.sol:L109)",
+    "drawRequestedAt (packages/contracts/src/Raffle.sol:L111)",
+    "totalEntries (packages/contracts/src/Raffle.sol:L85)",
+    "reserveEntries (packages/contracts/src/Raffle.sol:L79)",
+    "winningEntry (packages/contracts/src/Raffle.sol:L118)",
+    "resolvedAt (packages/contracts/src/Raffle.sol:L115)"
+  ]
+}

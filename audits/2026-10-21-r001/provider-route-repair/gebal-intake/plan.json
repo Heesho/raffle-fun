@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "id": "21734cfe-3d17-4169-b6e4-c834a702b055",
+  "createdAt": "2026-10-21T18:08:51.071Z",
+  "snapshotId": "d3ab8fda-7e16-4abd-9867-065c1b5bfa4c",
+  "snapshotHash": "175696ceecb7876e428657410b74bb597d6b06503d4427d4133b66608ce46aca",
+  "scopeId": "1cd7b731-1f41-40b7-a85c-0074d6637dea",
+  "diagnosis": {
+    "kind": "foundry",
+    "supported": false,
+    "compiler": "0.8.36",
+    "evm": "cancun",
+    "settings": {
+      "src": "packages/contracts/src",
+      "test": "packages/contracts/test/foundry",
+      "script": "script",
+      "out": "out",
+      "libs": [
+        "packages/contracts/lib",
+        "packages/contracts/node_modules"
+      ],
+      "solc_version": "0.8.36",
+      "evm_version": "cancun",
+      "optimizer": true,
+      "optimizer_runs": 200,
+      "via_ir": false,
+      "fuzz": {
+        "runs": 1000,
+        "seed": "0x524146464c45"
+      },
+      "invariant": {
+        "runs": 256,
+        "depth": 64,
+        "fail_on_revert": false
+      },
+      "gas_reports": [
+        "Raffle",
+        "RaffleFactory"
+      ],
+      "projectPath": "packages/contracts",
+      "remappings": [
+        "@openzeppelin/contracts/=packages/contracts/node_modules/@openzeppelin/contracts/",
+        "forge-std/=packages/contracts/lib/forge-std/src/"
+      ]
+    },
+    "issues": [
+      "Unsupported configuration key: gas_reports",
+      "Dependencies missing from authorized snapshot: packages/contracts/src/interfaces/IRaffle.sol: @chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol, packages/contracts/src/interfaces/IRaffle.sol: @openzeppelin/contracts/token/ERC20/IERC20.sol, packages/contracts/src/interfaces/IRaffle.sol: @openzeppelin/contracts/token/ERC721/IERC721.sol, packages/contracts/src/Raffle.sol: @chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol, packages/contracts/src/Raffle.sol: @chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol, packages/contracts/src/Raffle.sol: @chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol, packages/contracts/src/Raffle.sol: @openzeppelin/contracts/token/ERC20/IERC20.sol, packages/contracts/src/Raffle.sol: @openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol, packages/contracts/src/Raffle.sol: @openzeppelin/contracts/token/ERC721/ERC721.sol, packages/contracts/src/Raffle.sol: @openzeppelin/contracts/token/ERC721/IERC721.sol"
+    ],
+    "notes": [
+      "Only profile.default is selected; other profiles, RPC endpoints and formatting configuration are not loaded.",
+      "Controller overrides output/cache/script paths, denies FFI/filesystem/RPC and dependency downloads, and disables automatic remappings.",
+      "Configured fuzz/invariant campaigns are replaced by the disclosed fixed seed and bounded campaign. Tests requiring denied capabilities cannot be validated.",
+      "Source-only intake does not establish compiler, test, property or security coverage."
+    ]
+  },
+  "tasks": [
+    "intake"
+  ],
+  "limits": {
+    "seconds": 300,
+    "memoryMb": 2048,
+    "cpus": 2,
+    "pids": 128,
+    "diskMb": 512,
+    "maxOutputBytes": 8388608,
+    "tokens": 0,
+    "maxTasks": 1
+  },
+  "image": null,
+  "provider": null,
+  "egress": [],
+  "methodology": "native-review-v1",
+  "adapterVersion": "0.2.0",
+  "hash": "54354f9446c0a48d18ac6bf87cbbfcd1b4e47e736248b35fc66800a5b5159339"
+}

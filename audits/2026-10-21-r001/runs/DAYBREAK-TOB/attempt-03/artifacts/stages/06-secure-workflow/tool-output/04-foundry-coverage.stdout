@@ -1,0 +1,74 @@
+Compiling 41 files with Solc 0.8.36
+Solc 0.8.36 finished in 495.54ms
+Compiler run successful!
+Analysing contracts...
+Running tests...
+
+Ran 3 tests for test/foundry/s6/S6Invariant.t.sol:S6InvariantTest
+[PASS] invariant_ActiveSalesAccountingMatchesCustodyAndGross() (runs: 32, calls: 1024, reverts: 0)
+
+╭-------------------+----------+-------+---------+----------╮
+| Contract          | Selector | Calls | Reverts | Discards |
++===========================================================+
+| S6PurchaseHandler | buy      | 1024  | 0       | 0        |
+╰-------------------+----------+-------+---------+----------╯
+
+[PASS] invariant_NoTerminalLiabilitiesDuringActiveSales() (runs: 32, calls: 1024, reverts: 0)
+
+╭-------------------+----------+-------+---------+----------╮
+| Contract          | Selector | Calls | Reverts | Discards |
++===========================================================+
+| S6PurchaseHandler | buy      | 1024  | 0       | 0        |
+╰-------------------+----------+-------+---------+----------╯
+
+[PASS] invariant_RangesRemainAContiguousPartition() (runs: 32, calls: 1024, reverts: 0)
+
+╭-------------------+----------+-------+---------+----------╮
+| Contract          | Selector | Calls | Reverts | Discards |
++===========================================================+
+| S6PurchaseHandler | buy      | 1024  | 0       | 0        |
+╰-------------------+----------+-------+---------+----------╯
+
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 1.04s (1.77s CPU time)
+
+Ran 21 tests for test/foundry/s6/S6SecureWorkflow.t.sol:S6SecureWorkflowTest
+[PASS] testFuzz_FeeArithmeticAndRoundingConserveEveryReachablePot(uint128,bool) (runs: 256, μ: 3031, ~: 2690)
+[PASS] testFuzz_TicketRangesPartitionSalesAndAccounting(uint128,uint128) (runs: 256, μ: 11845769, ~: 11845769)
+[PASS] test_CallbackDeadlineIsExclusiveAndRefundOpensAtBoundary() (gas: 11841230)
+[PASS] test_CashSettlementRedemptionAndPrizeReturnConserveLiabilities() (gas: 11948872)
+[PASS] test_CurrentOwnerAuthorizationAndPermissionlessFixedDestinationClaims() (gas: 11899053)
+[PASS] test_ERC721RuntimeConformanceOnClone() (gas: 11824697)
+[PASS] test_Evidence_CrossFactoryRaffleDestinationIsAcceptedAndStrandsTicket() (gas: 23165533)
+[PASS] test_Evidence_FeeOnTransferQuoteCreatesCustodyDeficit() (gas: 11738166)
+[PASS] test_Evidence_MaliciousPrizeCanFakeEscrowAndDelivery() (gas: 11057729)
+[PASS] test_Evidence_PrizeCanBuyEntriesBeforeCreateRaffleReturns() (gas: 11953291)
+[PASS] test_Evidence_PrizeTransferSkipsIncompatibleContractReceiverCheck() (gas: 12321277)
+[PASS] test_IncompatibleTicketRecipientRevertsPurchaseAtomically() (gas: 11777692)
+[PASS] test_InitializationIsFactoryOnlyAndOneTime() (gas: 11520752)
+[PASS] test_NftSettlementClaimsAndRedemptionConserveLiabilities() (gas: 11917261)
+[PASS] test_NonstandardFalseReturnQuoteRevertsAtomically() (gas: 11596571)
+[PASS] test_PrizeWithoutReceiverCallbackIsRejectedAtomically() (gas: 11321712)
+[PASS] test_RefundsBurnTicketsAndConserveFullPot() (gas: 11739889)
+[PASS] test_SaleAndDrawRequestTimeBoundaries() (gas: 35081306)
+[PASS] test_SameFactoryRaffleDestinationIsRejected() (gas: 12094301)
+[PASS] test_SynchronousWrongShapeWrongIdAndDuplicateCallbacksAreContained() (gas: 11892875)
+[PASS] test_TicketReceiverAndQuoteCallbacksCannotReenterProtectedPurchase() (gas: 23958421)
+Suite result: ok. 21 passed; 0 failed; 0 skipped; finished in 1.04s (132.47ms CPU time)
+
+Ran 2 test suites in 1.04s (2.08s CPU time): 24 tests passed, 0 failed, 0 skipped (24 total tests)
+
+╭-----------------------------------+------------------+------------------+-----------------+----------------╮
+| File                              | % Lines          | % Statements     | % Branches      | % Funcs        |
++============================================================================================================+
+| src/Raffle.sol                    | 87.04% (215/247) | 83.22% (243/292) | 34.48% (20/58)  | 87.10% (27/31) |
+|-----------------------------------+------------------+------------------+-----------------+----------------|
+| src/RaffleFactory.sol             | 78.69% (48/61)   | 81.48% (66/81)   | 16.67% (3/18)   | 100.00% (4/4)  |
+|-----------------------------------+------------------+------------------+-----------------+----------------|
+| test/foundry/s6/S6Invariant.t.sol | 100.00% (10/10)  | 100.00% (7/7)    | 100.00% (0/0)   | 100.00% (3/3)  |
+|-----------------------------------+------------------+------------------+-----------------+----------------|
+| test/foundry/s6/S6Mocks.sol       | 80.50% (128/159) | 86.51% (109/126) | 53.66% (22/41)  | 66.67% (30/45) |
+|-----------------------------------+------------------+------------------+-----------------+----------------|
+| test/foundry/s6/S6TestBase.sol    | 90.00% (9/10)    | 44.44% (4/9)     | 0.00% (0/5)     | 100.00% (5/5)  |
+|-----------------------------------+------------------+------------------+-----------------+----------------|
+| Total                             | 84.19% (410/487) | 83.30% (429/515) | 36.89% (45/122) | 78.41% (69/88) |
+╰-----------------------------------+------------------+------------------+-----------------+----------------╯

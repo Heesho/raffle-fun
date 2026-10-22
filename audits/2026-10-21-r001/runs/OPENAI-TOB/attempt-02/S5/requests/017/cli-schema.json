@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "required": [
+    "reportFile",
+    "divergences",
+    "documentProblems"
+  ],
+  "properties": {
+    "reportFile": {
+      "type": "string"
+    },
+    "divergences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "requirementId",
+          "severity",
+          "title"
+        ],
+        "properties": {
+          "requirementId": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "documentProblems": {
+      "type": "array",
+      "description": "Ambiguities and contradictions in the documentation itself, including between documents.",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

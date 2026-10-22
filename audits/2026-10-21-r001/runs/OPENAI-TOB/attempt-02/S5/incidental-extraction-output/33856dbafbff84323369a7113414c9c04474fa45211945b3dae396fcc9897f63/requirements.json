@@ -1,0 +1,821 @@
+{
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "quote": "The factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L7, factory @dev",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "The factory has no owner role or owner authority."
+    },
+    {
+      "id": "REQ-002",
+      "quote": "The factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L7, factory @dev",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "The factory exposes no pause mechanism."
+    },
+    {
+      "id": "REQ-003",
+      "quote": "The factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L7, factory @dev",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The factory has no upgrade mechanism."
+    },
+    {
+      "id": "REQ-004",
+      "quote": "The factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L7, factory @dev",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "The factory exposes no asset-rescue mechanism."
+    },
+    {
+      "id": "REQ-005",
+      "quote": "The factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L7, factory @dev",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Protocol configuration cannot be changed after factory deployment."
+    },
+    {
+      "id": "REQ-006",
+      "quote": "Deployment tooling must\n///      verify that the immutable quote-token address is the target chain's official USDC;",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L7-L8, factory @dev",
+      "kind": "trust-boundary",
+      "force": "mandatory",
+      "checkable": "Deployment tooling verifies the configured quote-token address against official USDC on the target chain; this interface supplies no chain-specific address."
+    },
+    {
+      "id": "REQ-007",
+      "quote": "onchain construction checks\n///      only code presence and six-decimal metadata.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L8-L9, factory @dev",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Factory construction checks that the quote-token address contains deployed code."
+    },
+    {
+      "id": "REQ-008",
+      "quote": "onchain construction checks\n///      only code presence and six-decimal metadata.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L8-L9, factory @dev",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Factory construction checks that quote-token metadata reports six decimals."
+    },
+    {
+      "id": "REQ-009",
+      "quote": "onchain construction checks\n///      only code presence and six-decimal metadata.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L8-L9, factory @dev",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "Onchain construction verifies quote-token identity only through code presence and six-decimal metadata; official-USDC identity is left to deployment tooling."
+    },
+    {
+      "id": "REQ-010",
+      "quote": "Sponsor-selected configuration for one new raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L14, CreateRaffleParams @notice",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "The sponsor can select the new raffle's recipient, prize, reserve, and timing parameters, subject to validation."
+    },
+    {
+      "id": "REQ-011",
+      "quote": "Immutable recipient of sponsor quote proceeds and any returned prize.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L15, CreateRaffleParams.sponsorRecipient",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "A raffle's configured sponsorRecipient cannot change after creation."
+    },
+    {
+      "id": "REQ-012",
+      "quote": "Immutable recipient of sponsor quote proceeds and any returned prize.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L15, CreateRaffleParams.sponsorRecipient",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "Sponsor quote proceeds are paid to sponsorRecipient."
+    },
+    {
+      "id": "REQ-013",
+      "quote": "Immutable recipient of sponsor quote proceeds and any returned prize.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L15, CreateRaffleParams.sponsorRecipient",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "Any returned prize is sent to sponsorRecipient."
+    },
+    {
+      "id": "REQ-014",
+      "quote": "Standards-compliant ERC-721 prize contract.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L16, CreateRaffleParams.prizeToken",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "The configured prizeToken is a standards-compliant ERC-721 contract; this interface does not enumerate conformance criteria."
+    },
+    {
+      "id": "REQ-015",
+      "quote": "Token ID to escrow atomically during creation.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L17, CreateRaffleParams.prizeTokenId",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "Creation atomically escrows the configured prizeTokenId from the configured prizeToken contract."
+    },
+    {
+      "id": "REQ-016",
+      "quote": "Global raw entry-count threshold selecting the NFT outcome when met or exceeded.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L18, CreateRaffleParams.reserveEntries",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "The NFT outcome is selected when the raffle's global raw entry count is greater than or equal to reserveEntries."
+    },
+    {
+      "id": "REQ-017",
+      "quote": "Exclusive sale-end",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L19, CreateRaffleParams.endTime",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "Sales are no longer permitted at or after endTime."
+    },
+    {
+      "id": "REQ-018",
+      "quote": "Unix timestamp, in seconds.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L19, CreateRaffleParams.endTime",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "endTime is interpreted as Unix time in seconds."
+    },
+    {
+      "id": "REQ-019",
+      "quote": "Emitted after a raffle clone is initialized, registered, funded, and active.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L30, RaffleCreated @notice",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "Successful raffle creation emits RaffleCreated."
+    },
+    {
+      "id": "REQ-020",
+      "quote": "Emitted after a raffle clone is initialized, registered, funded, and active.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L30, RaffleCreated @notice",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "RaffleCreated is emitted only after the clone has been initialized."
+    },
+    {
+      "id": "REQ-021",
+      "quote": "Emitted after a raffle clone is initialized, registered, funded, and active.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L30, RaffleCreated @notice",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "RaffleCreated is emitted only after the clone has been registered."
+    },
+    {
+      "id": "REQ-022",
+      "quote": "Emitted after a raffle clone is initialized, registered, funded, and active.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L30, RaffleCreated @notice",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "RaffleCreated is emitted only after the clone has been funded."
+    },
+    {
+      "id": "REQ-023",
+      "quote": "Emitted after a raffle clone is initialized, registered, funded, and active.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L30, RaffleCreated @notice",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "The clone is active when RaffleCreated is emitted."
+    },
+    {
+      "id": "REQ-024",
+      "quote": "One-based canonical raffle identifier.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L31, RaffleCreated.raffleId",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Canonical raffle identifiers start at one."
+    },
+    {
+      "id": "REQ-025",
+      "quote": "One-based canonical raffle identifier.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L31, RaffleCreated.raffleId",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "RaffleCreated.raffleId equals the canonical identifier assigned to the emitted raffle address."
+    },
+    {
+      "id": "REQ-026",
+      "quote": "Newly created fixed-target ERC-1167 clone.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L32, RaffleCreated.raffle",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "RaffleCreated.raffle is the address of the clone newly created by that creation operation."
+    },
+    {
+      "id": "REQ-027",
+      "quote": "Newly created fixed-target ERC-1167 clone.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L32, RaffleCreated.raffle",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "A created clone's implementation target cannot change."
+    },
+    {
+      "id": "REQ-028",
+      "quote": "Newly created fixed-target ERC-1167 clone.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L32, RaffleCreated.raffle",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Created raffle clones conform to ERC-1167."
+    },
+    {
+      "id": "REQ-029",
+      "quote": "Prize depositor",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L33, RaffleCreated.sponsor",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "RaffleCreated.sponsor identifies the prize depositor."
+    },
+    {
+      "id": "REQ-030",
+      "quote": "pre-end empty-raffle refund authority.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L33, RaffleCreated.sponsor",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "The sponsor is authorized to trigger a refund before endTime when the raffle is empty."
+    },
+    {
+      "id": "REQ-031",
+      "quote": "Immutable recipient of sponsor quote proceeds and any returned prize.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L34, RaffleCreated.sponsorRecipient",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "RaffleCreated.sponsorRecipient equals the new raffle's configured sponsorRecipient."
+    },
+    {
+      "id": "REQ-032",
+      "quote": "ERC-721 contract of the escrowed prize.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L35, RaffleCreated.prizeToken",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "RaffleCreated.prizeToken identifies the contract of the prize actually escrowed."
+    },
+    {
+      "id": "REQ-033",
+      "quote": "Token ID of the escrowed prize.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L36, RaffleCreated.prizeTokenId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "RaffleCreated.prizeTokenId identifies the token actually escrowed."
+    },
+    {
+      "id": "REQ-034",
+      "quote": "Immutable canonical six-decimal USDC contract used by the raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L37, RaffleCreated.quoteToken",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "RaffleCreated.quoteToken equals the quote-token address used by the new raffle."
+    },
+    {
+      "id": "REQ-035",
+      "quote": "Immutable recipient of protocol fees.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L38, RaffleCreated.protocolTreasury",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "RaffleCreated.protocolTreasury equals the new raffle's protocol-fee recipient."
+    },
+    {
+      "id": "REQ-036",
+      "quote": "Global raw entry-count threshold selecting the NFT outcome when met or exceeded.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L39, RaffleCreated.reserveEntries",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "RaffleCreated.reserveEntries equals the new raffle's configured reserve-entry threshold."
+    },
+    {
+      "id": "REQ-037",
+      "quote": "Exclusive sale-end Unix timestamp, in seconds.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L40, RaffleCreated.endTime",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "RaffleCreated.endTime equals the new raffle's configured sale-end timestamp."
+    },
+    {
+      "id": "REQ-038",
+      "quote": "Raised when a required address is the zero address.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L56, ZeroAddress @notice",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "ZeroAddress is raised for a zero value in a required address; this interface does not enumerate all addresses covered."
+    },
+    {
+      "id": "REQ-039",
+      "quote": "Raised when an address required to contain deployed code is not a contract.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L59, NotContract @notice",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "NotContract is raised when an address requiring deployed code has none; this interface does not enumerate all such addresses."
+    },
+    {
+      "id": "REQ-040",
+      "quote": "Address whose code length was zero.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L60, NotContract.account",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "NotContract.account is the offending address whose code length was zero."
+    },
+    {
+      "id": "REQ-041",
+      "quote": "Raised when the quote token cannot report its decimal precision.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L63, UnsupportedQuoteToken @notice",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "UnsupportedQuoteToken is raised when the quote token cannot report its decimal precision."
+    },
+    {
+      "id": "REQ-042",
+      "quote": "Rejected quote-token contract.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L64, UnsupportedQuoteToken.quoteToken",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "UnsupportedQuoteToken.quoteToken identifies the rejected quote-token contract."
+    },
+    {
+      "id": "REQ-043",
+      "quote": "Raised when the quote token does not use the required six-decimal precision.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L67, InvalidQuoteTokenDecimals @notice",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "InvalidQuoteTokenDecimals is raised when the quote token reports a decimal precision other than six."
+    },
+    {
+      "id": "REQ-044",
+      "quote": "Decimal precision reported by the quote token.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L68, InvalidQuoteTokenDecimals.actualDecimals",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "InvalidQuoteTokenDecimals.actualDecimals equals the precision reported by the rejected quote token."
+    },
+    {
+      "id": "REQ-045",
+      "quote": "Required decimal precision, exactly six.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L69, InvalidQuoteTokenDecimals.requiredDecimals",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "InvalidQuoteTokenDecimals.requiredDecimals equals six."
+    },
+    {
+      "id": "REQ-046",
+      "quote": "Raised when the prize contract does not report ERC-721 interface support.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L72, UnsupportedPrizeToken @notice",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "UnsupportedPrizeToken is raised when the prize contract does not report ERC-721 interface support."
+    },
+    {
+      "id": "REQ-047",
+      "quote": "Rejected prize-token contract.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L73, UnsupportedPrizeToken.prizeToken",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "UnsupportedPrizeToken.prizeToken identifies the rejected prize-token contract."
+    },
+    {
+      "id": "REQ-048",
+      "quote": "Raised when a raffle is configured with a zero reserve entry threshold.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L76, ZeroReserveEntries @notice",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "ZeroReserveEntries is raised when reserveEntries is zero."
+    },
+    {
+      "id": "REQ-049",
+      "quote": "Raised when the sale end is not strictly after the creation block timestamp.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L79, InvalidEndTime @notice",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "InvalidEndTime is raised when endTime is less than or equal to the creation block timestamp."
+    },
+    {
+      "id": "REQ-050",
+      "quote": "Current block Unix timestamp, in seconds.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L80, InvalidEndTime.currentTime",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "InvalidEndTime.currentTime equals the current block timestamp in Unix seconds."
+    },
+    {
+      "id": "REQ-051",
+      "quote": "Supplied exclusive sale-end Unix timestamp, in seconds.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L81, InvalidEndTime.endTime",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "InvalidEndTime.endTime equals the supplied sale-end timestamp in Unix seconds."
+    },
+    {
+      "id": "REQ-052",
+      "quote": "Raised when the prospective sale duration exceeds the fixed 30-day limit.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L84, SaleDurationTooLong @notice",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "SaleDurationTooLong is raised when the prospective duration, endTime minus the creation block timestamp, exceeds 30 days."
+    },
+    {
+      "id": "REQ-053",
+      "quote": "Prospective sale duration in seconds.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L85, SaleDurationTooLong.duration",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "SaleDurationTooLong.duration reports the prospective sale duration in seconds."
+    },
+    {
+      "id": "REQ-054",
+      "quote": "Maximum permitted sale duration in seconds.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L84-L86, SaleDurationTooLong.maximumDuration",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "SaleDurationTooLong.maximumDuration reports the fixed maximum of 30 days expressed in seconds."
+    },
+    {
+      "id": "REQ-055",
+      "quote": "Raised when a configured token or recipient is known protocol plumbing.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L89, UnsafeProtocolDestination @notice",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "UnsafeProtocolDestination is raised for a configured token that is known protocol plumbing; the interface does not define the covered token fields or the plumbing-address set."
+    },
+    {
+      "id": "REQ-056",
+      "quote": "Raised when a configured token or recipient is known protocol plumbing.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L89, UnsafeProtocolDestination @notice",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "UnsafeProtocolDestination is raised for a configured recipient that is known protocol plumbing; the interface does not define the covered recipient fields or the plumbing-address set."
+    },
+    {
+      "id": "REQ-057",
+      "quote": "Rejected address.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L90, UnsafeProtocolDestination.destination",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "UnsafeProtocolDestination.destination equals the address rejected as an unsafe protocol destination."
+    },
+    {
+      "id": "REQ-058",
+      "quote": "Raised when the exact configured prize is not owned by an active clone after escrow.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L93, PrizeEscrowVerificationFailed @notice",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "PrizeEscrowVerificationFailed is raised if the newly created clone does not own the exact configured prize after escrow."
+    },
+    {
+      "id": "REQ-059",
+      "quote": "Raised when the exact configured prize is not owned by an active clone after escrow.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L93, PrizeEscrowVerificationFailed @notice",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "PrizeEscrowVerificationFailed is raised if the newly created clone is not Active after escrow."
+    },
+    {
+      "id": "REQ-060",
+      "quote": "Newly created clone expected to hold the prize and report `Active`.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L94, PrizeEscrowVerificationFailed.raffle",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "PrizeEscrowVerificationFailed.raffle identifies the newly created clone whose escrow or Active state verification failed."
+    },
+    {
+      "id": "REQ-061",
+      "quote": "ERC-721 prize contract.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L95, PrizeEscrowVerificationFailed.prizeToken",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "PrizeEscrowVerificationFailed.prizeToken equals the configured ERC-721 prize contract."
+    },
+    {
+      "id": "REQ-062",
+      "quote": "Configured prize token ID.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L96, PrizeEscrowVerificationFailed.prizeTokenId",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "PrizeEscrowVerificationFailed.prizeTokenId equals the configured prize token ID."
+    },
+    {
+      "id": "REQ-063",
+      "quote": "Creates, initializes, registers, and funds one autonomous fixed-target raffle clone atomically.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L101, createRaffle @notice",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "A successful createRaffle call creates one new raffle clone."
+    },
+    {
+      "id": "REQ-064",
+      "quote": "Creates, initializes, registers, and funds one autonomous fixed-target raffle clone atomically.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L101, createRaffle @notice",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "A successful createRaffle call initializes the new clone."
+    },
+    {
+      "id": "REQ-065",
+      "quote": "Creates, initializes, registers, and funds one autonomous fixed-target raffle clone atomically.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L101, createRaffle @notice",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "A successful createRaffle call registers the new clone."
+    },
+    {
+      "id": "REQ-066",
+      "quote": "Creates, initializes, registers, and funds one autonomous fixed-target raffle clone atomically.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L101, createRaffle @notice",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "A successful createRaffle call funds the new clone with the configured prize."
+    },
+    {
+      "id": "REQ-067",
+      "quote": "Creates, initializes, registers, and funds one autonomous fixed-target raffle clone atomically.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L101, createRaffle @notice",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "Too vague to fully check: the interface does not define what additional properties make a raffle clone autonomous."
+    },
+    {
+      "id": "REQ-068",
+      "quote": "Creates, initializes, registers, and funds one autonomous fixed-target raffle clone atomically.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L101, createRaffle @notice",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "Clone creation, initialization, registration, and prize funding succeed or revert together as one atomic operation."
+    },
+    {
+      "id": "REQ-069",
+      "quote": "Address of the newly created and activated clone.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L103, createRaffle @return raffle",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "createRaffle returns the address of the clone created by that call."
+    },
+    {
+      "id": "REQ-070",
+      "quote": "Address of the newly created and activated clone.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L103, createRaffle @return raffle",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "The clone returned by a successful createRaffle call is activated."
+    },
+    {
+      "id": "REQ-071",
+      "quote": "Returns the immutable canonical six-decimal USDC contract used by every raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L108, quoteToken @notice",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "quoteToken() returns the quote-token contract address configured for this deployment."
+    },
+    {
+      "id": "REQ-072",
+      "quote": "Returns the immutable canonical six-decimal USDC contract used by every raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L108, quoteToken @notice",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The configured quote-token address is immutable."
+    },
+    {
+      "id": "REQ-073",
+      "quote": "Returns the immutable canonical six-decimal USDC contract used by every raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L108, quoteToken @notice",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "The configured quote token is the target chain's canonical USDC contract; the interface does not supply its chain-specific address."
+    },
+    {
+      "id": "REQ-074",
+      "quote": "Returns the immutable canonical six-decimal USDC contract used by every raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L108, quoteToken @notice",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The configured quote token uses six decimal places."
+    },
+    {
+      "id": "REQ-075",
+      "quote": "Returns the immutable canonical six-decimal USDC contract used by every raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L108, quoteToken @notice",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Every raffle created by the factory uses the factory's configured quote-token contract."
+    },
+    {
+      "id": "REQ-076",
+      "quote": "Returns the immutable Chainlink VRF v2.5 native direct-funding wrapper used by every raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L112, vrfWrapper @notice",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "vrfWrapper() returns the wrapper contract address configured for this deployment."
+    },
+    {
+      "id": "REQ-077",
+      "quote": "Returns the immutable Chainlink VRF v2.5 native direct-funding wrapper used by every raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L112, vrfWrapper @notice",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The configured VRF-wrapper address is immutable."
+    },
+    {
+      "id": "REQ-078",
+      "quote": "Returns the immutable Chainlink VRF v2.5 native direct-funding wrapper used by every raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L112, vrfWrapper @notice",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "The configured wrapper is a Chainlink VRF v2.5 native direct-funding wrapper."
+    },
+    {
+      "id": "REQ-079",
+      "quote": "Returns the immutable Chainlink VRF v2.5 native direct-funding wrapper used by every raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L112, vrfWrapper @notice",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Every raffle created by the factory uses the factory's configured VRF wrapper."
+    },
+    {
+      "id": "REQ-080",
+      "quote": "Returns the immutable recipient of protocol fees from every raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L116, protocolTreasury @notice",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "protocolTreasury() returns the configured protocol-fee recipient address."
+    },
+    {
+      "id": "REQ-081",
+      "quote": "Returns the immutable recipient of protocol fees from every raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L116, protocolTreasury @notice",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The configured protocol treasury address is immutable."
+    },
+    {
+      "id": "REQ-082",
+      "quote": "Returns the immutable recipient of protocol fees from every raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L116, protocolTreasury @notice",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "Protocol fees are paid to the configured protocol treasury."
+    },
+    {
+      "id": "REQ-083",
+      "quote": "Returns the immutable recipient of protocol fees from every raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L116, protocolTreasury @notice",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Every raffle created by the factory uses the same configured protocol-fee recipient."
+    },
+    {
+      "id": "REQ-084",
+      "quote": "Returns the fixed Chainlink callback execution limit used by every raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L120, callbackGasLimit @notice",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The configured Chainlink callback execution limit is fixed."
+    },
+    {
+      "id": "REQ-085",
+      "quote": "Callback gas units requested from the wrapper.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L121, callbackGasLimit @return gasLimit",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "callbackGasLimit() returns the number of callback gas units requested from the wrapper."
+    },
+    {
+      "id": "REQ-086",
+      "quote": "Returns the fixed Chainlink callback execution limit used by every raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L120, callbackGasLimit @notice",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Every raffle created by the factory uses the configured callback execution limit."
+    },
+    {
+      "id": "REQ-087",
+      "quote": "Returns the fixed Chainlink confirmation count used by every raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L124, requestConfirmations @notice",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The configured Chainlink confirmation count is fixed."
+    },
+    {
+      "id": "REQ-088",
+      "quote": "Blocks requested before callback fulfillment.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L125, requestConfirmations @return confirmations",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "requestConfirmations() returns the number of blocks requested before callback fulfillment."
+    },
+    {
+      "id": "REQ-089",
+      "quote": "Returns the fixed Chainlink confirmation count used by every raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L124, requestConfirmations @notice",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Every raffle created by the factory uses the configured Chainlink confirmation count."
+    },
+    {
+      "id": "REQ-090",
+      "quote": "Returns the immutable implementation targeted by every registered ERC-1167 clone.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L128, raffleImplementation @notice",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "raffleImplementation() returns the configured raffle implementation address."
+    },
+    {
+      "id": "REQ-091",
+      "quote": "Returns the immutable implementation targeted by every registered ERC-1167 clone.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L128, raffleImplementation @notice",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The configured raffle implementation address is immutable."
+    },
+    {
+      "id": "REQ-092",
+      "quote": "Returns the immutable implementation targeted by every registered ERC-1167 clone.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L128, raffleImplementation @notice",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Every registered clone targets the factory's configured raffle implementation."
+    },
+    {
+      "id": "REQ-093",
+      "quote": "Locked raffle implementation address.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L129, raffleImplementation @return implementation",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "Too vague to fully check: the interface calls the implementation locked but does not define what locking must prevent."
+    },
+    {
+      "id": "REQ-094",
+      "quote": "Returns the lifetime number of successfully created raffles.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L132, raffleCount @notice",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "raffleCount() equals the lifetime number of successful raffle creations."
+    },
+    {
+      "id": "REQ-095",
+      "quote": "Latest one-based raffle identifier and total registered raffle count.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L133, raffleCount @return count",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "raffleCount() equals the latest assigned one-based raffle identifier when any raffle has been created."
+    },
+    {
+      "id": "REQ-096",
+      "quote": "Latest one-based raffle identifier and total registered raffle count.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L133, raffleCount @return count",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "raffleCount() equals the total number of registered raffles."
+    },
+    {
+      "id": "REQ-097",
+      "quote": "Returns whether an address is a raffle registered by this factory.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L136, isRaffle @notice",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "isRaffle(address) reports whether that address belongs to this factory's raffle registry."
+    },
+    {
+      "id": "REQ-098",
+      "quote": "True only for a successfully created canonical clone.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L138, isRaffle @return registered",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "isRaffle(address) can return true only for a successfully created canonical clone."
+    },
+    {
+      "id": "REQ-099",
+      "quote": "Returns the canonical raffle address for an identifier.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L141, raffleById @notice",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "raffleById(raffleId) returns the registered raffle address assigned to that canonical identifier."
+    },
+    {
+      "id": "REQ-100",
+      "quote": "Registered clone address, or the zero address for an unknown identifier.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L143, raffleById @return raffle",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "raffleById returns the zero address for an unknown identifier."
+    },
+    {
+      "id": "REQ-101",
+      "quote": "Returns the canonical identifier assigned to a raffle address.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L146, idByRaffle @notice",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "idByRaffle(raffle) returns the canonical identifier assigned to the registered raffle address."
+    },
+    {
+      "id": "REQ-102",
+      "quote": "One-based identifier, or zero for an unregistered address.",
+      "location": "target/packages/contracts/src/interfaces/IRaffleFactory.sol:L148, idByRaffle @return raffleId",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "idByRaffle returns zero for an unregistered address."
+    }
+  ]
+}
+

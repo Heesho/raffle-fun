@@ -1,0 +1,81 @@
+{
+  "analysisFile": "audit-context/functions/07-enableRefunds.md",
+  "assumptions": [
+    {
+      "claim": "Whenever status == Status.Drawing, drawRequestedAt != 0 so that callbackDeadline() returns uint256(drawRequestedAt) + 2 days rather than 0 (which would cause block.timestamp < deadline at L291 to evaluate to false at any timestamp).",
+      "establishedBy": "Raffle.requestDraw in packages/contracts/src/Raffle.sol:L242, L252-L253 (with endTime > currentTime validated in RaffleFactory.createRaffle at packages/contracts/src/RaffleFactory.sol:L99-L100 and stored in Raffle.initialize at packages/contracts/src/Raffle.sol:L204)"
+    },
+    {
+      "claim": "When requestDraw sets drawRequestedAt = uint64(block.timestamp), block.timestamp fits in uint64 so the cast does not wrap to 0 or a truncated timestamp used by callbackDeadline() at L290.",
+      "establishedBy": "nothing found (relies on EVM block.timestamp remaining <= type(uint64).max; unchecked cast at packages/contracts/src/Raffle.sol:L253)"
+    },
+    {
+      "claim": "remainingRefundLiability == 0 upon entry to enableRefunds, so assigning remainingRefundLiability = liability at L298 does not overwrite any existing refund liability.",
+      "establishedBy": "Zero-initialized clone storage and single-entry transition to Status.Refunding enforced by packages/contracts/src/Raffle.sol:L279-L294, L298-L299, L350, L368"
+    },
+    {
+      "claim": "unsettledPot equals uint256(totalEntries) * ENTRY_PRICE upon entry to enableRefunds, matching the sum of ticket entry values later burned in refundTickets.",
+      "establishedBy": "Raffle.buyEntries in packages/contracts/src/Raffle.sol:L223-L234 and absence of unsettledPot decrements prior to Status.NftWon, Status.CashWon, or Status.Refunding (packages/contracts/src/Raffle.sol:L297, L535-L536, L553)"
+    },
+    {
+      "claim": "quoteToken.balanceOf(address(this)) is at least unsettledPot when enableRefunds moves unsettledPot into remainingRefundLiability (no fee-on-transfer or negative rebasing on quoteToken).",
+      "establishedBy": "nothing found (RaffleFactory.constructor in packages/contracts/src/RaffleFactory.sol:L66-L78 checks only contract code presence and decimals() == 6)"
+    }
+  ],
+  "callers": [
+    "External caller (sponsor before endTime when status == Status.Active && totalEntries == 0, or any external caller at/after the applicable deadline in Status.Active or Status.Drawing)"
+  ],
+  "calls": [
+    {
+      "callee": "ReentrancyGuard.nonReentrant (_nonReentrantBefore / _nonReentrantAfter)",
+      "kind": "external-source-available",
+      "propagates": "Reverts with ReentrancyGuardReentrantCall if REENTRANCY_GUARD_STORAGE == ENTERED (2), sets slot to ENTERED (2) before execution, and restores NOT_ENTERED (1) after execution (packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:L69-L73, L88-L118)."
+    },
+    {
+      "callee": "Raffle.drawRequestDeadline",
+      "kind": "internal",
+      "propagates": "Always returns uint256(endTime) + RaffleConstants.DRAW_REQUEST_TIMEOUT (2 days) on its single path without uint256 overflow because endTime is uint64 (packages/contracts/src/Raffle.sol:L458-L460; packages/contracts/src/libraries/RaffleConstants.sol:L33)."
+    },
+    {
+      "callee": "Raffle.callbackDeadline",
+      "kind": "internal",
+      "propagates": "Returns uint256(drawRequestedAt) + RaffleConstants.DRAW_CALLBACK_TIMEOUT (2 days) when drawRequestedAt != 0, but returns 0 when drawRequestedAt == 0 (packages/contracts/src/Raffle.sol:L462-L465; packages/contracts/src/libraries/RaffleConstants.sol:L36); enableRefunds at L290-L291 depends on drawRequestedAt != 0 holding whenever status == Status.Drawing."
+    }
+  ],
+  "file": "packages/contracts/src/Raffle.sol",
+  "function": "enableRefunds",
+  "invariants": [
+    {
+      "claim": "enableRefunds succeeds only when status is Status.Active or Status.Drawing and transitions status to Status.Refunding, so it can succeed at most once per clone.",
+      "evidence": "packages/contracts/src/Raffle.sol:L279-L294, L299"
+    },
+    {
+      "claim": "When status == Status.Active and totalEntries == 0, enableRefunds reverts unless msg.sender == sponsor or block.timestamp >= endTime.",
+      "evidence": "packages/contracts/src/Raffle.sol:L279-L284"
+    },
+    {
+      "claim": "When status == Status.Active and totalEntries != 0, enableRefunds reverts unless block.timestamp >= drawRequestDeadline() (uint256(endTime) + 2 days), partitioning the post-sale timeline strictly with requestDraw (which requires block.timestamp < drawRequestDeadline()).",
+      "evidence": "packages/contracts/src/Raffle.sol:L244-L247, L285-L288, L458-L460"
+    },
+    {
+      "claim": "When status == Status.Drawing, enableRefunds reverts unless block.timestamp >= callbackDeadline(), partitioning the VRF callback window strictly with fulfillRandomWords (which ignores callbacks at/after callbackDeadline()).",
+      "evidence": "packages/contracts/src/Raffle.sol:L289-L291, L462-L465, L510-L516"
+    },
+    {
+      "claim": "enableRefunds conserves accountedQuoteBalance() by setting remainingRefundLiability to the pre-call unsettledPot and zeroing unsettledPot without modifying winnerProceeds, sponsorProceeds, or protocolFees.",
+      "evidence": "packages/contracts/src/Raffle.sol:L296-L298, L468-L470"
+    }
+  ],
+  "lines": "L276-L301",
+  "openQuestions": [],
+  "sharedState": [
+    "status",
+    "totalEntries",
+    "endTime",
+    "sponsor",
+    "drawRequestedAt",
+    "unsettledPot",
+    "remainingRefundLiability",
+    "REENTRANCY_GUARD_STORAGE"
+  ]
+}

@@ -1,0 +1,1422 @@
+{
+  "agent": "agent-10",
+  "specialty": "numerical-gap",
+  "pass": "single independent pass",
+  "completed_at_utc": "2026-10-21T08:01:33.624005+00:00",
+  "local_selection": {
+    "model": "gpt-6-astra",
+    "reasoning_effort": "ultra",
+    "basis": "Required local selection supplied in the assignment; no fallback requested or used"
+  },
+  "provider_model": "unknown",
+  "provider_model_metadata_observed": false,
+  "source_snapshot_commit_supplied": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "source_snapshot_commit_independently_verified": false,
+  "memory": {
+    "persistent": "off",
+    "session": "off",
+    "memory_resources_read": []
+  },
+  "additional_agents_spawned": 0,
+  "peer_reports_read": false,
+  "tests_history_scanner_outputs_read": false,
+  "target_modified": false,
+  "completion": {
+    "full_bundle_read": true,
+    "bundle_lines": 7442,
+    "production_files_reviewed": 5,
+    "design_reviewed": true,
+    "all_bundled_dependency_context_read": true,
+    "specialty_review": "complete",
+    "findings": 0,
+    "leads": 0,
+    "gaps": []
+  },
+  "read_notes": [
+    "The first 1-950 display truncated; complete untruncated reads of 1-475 and 476-1000 replaced it.",
+    "Subsequent complete ranges were 1001-1525, 1526-2050, 2051-2575, 2576-3100, 3101-3625, 3626-4150, 4151-4675, 4676-5200, 5201-5725, 5726-6250, 6251-6775, 6776-7300, and 7301-7442.",
+    "One intermediate hash-list command had an overbroad regex and excessive output; the corrected hash extraction used newline-bounded path labels."
+  ],
+  "resources_read": [
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/audit-artifacts/raw/agent-10.prompt.txt",
+      "sha256": "a3f23432f1917b30bca3f01535dd0cd93899fb9359c27e0ab7d0a1fae1dab2d7",
+      "read": "complete",
+      "lines": 41
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-10-bundle.md",
+      "sha256": "d52b723b53ef7311c985be3dc24d8aaafdda8047b50ee22cdd4332931202e30f",
+      "read": "complete",
+      "lines": 7442
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-10-bundle.md#Senior Auditor's Mindset",
+      "sha256": "44a265f9af0068a2eb14d285320285f7907fde7eed27b30d61aee5b56052b063",
+      "read": "complete",
+      "bundle_lines": [
+        7122,
+        7184
+      ]
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-10-bundle.md#Numerical Gap Agent",
+      "sha256": "257ef47089f020fe8f63b8c8229fef163bd82eb51bdf2d41bcb060db47591cec",
+      "read": "complete",
+      "bundle_lines": [
+        7185,
+        7230
+      ]
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-10-bundle.md#Shared Scan Rules",
+      "sha256": "4aacf567ceee1d2ee9a29f30574221e3b636bf829697a9440bfc0a685031f66a",
+      "read": "complete",
+      "bundle_lines": [
+        7231,
+        7291
+      ]
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-10-bundle.md#Report language — Simplified Technical English",
+      "sha256": "20e162ff6dd57e1b267594f4f543183f6043dbd913556fe34b4bea47296f3a2d",
+      "read": "complete",
+      "bundle_lines": [
+        7292,
+        7442
+      ]
+    }
+  ],
+  "files_reviewed": [
+    {
+      "path": "target/packages/contracts/src/RaffleFactory.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "4c72e0f68233321e64b96d046f0f33405207ad0e4e292cbe8ca5442861336251",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        8,
+        194
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "constructor(address quoteToken_, address vrfWrapper_, address protocolTreasury_)",
+        "function createRaffle(CreateRaffleParams calldata params) external override nonReentrant returns (address raffle)",
+        "function _validateCreateParams(CreateRaffleParams calldata params) private view",
+        "function _requireContract(address account) private view"
+      ],
+      "review_depth": "production numerical seams",
+      "generated_getters_reviewed": [
+        "function quoteToken() external view returns (address quoteTokenAddress)",
+        "function vrfWrapper() external view returns (address wrapperAddress)",
+        "function protocolTreasury() external view returns (address treasuryAddress)",
+        "function callbackGasLimit() external view returns (uint32 gasLimit)",
+        "function requestConfirmations() external view returns (uint16 confirmations)",
+        "function raffleImplementation() external view returns (address implementation)",
+        "function raffleCount() external view returns (uint256 count)",
+        "function isRaffle(address raffle) external view returns (bool registered)",
+        "function raffleById(uint256 raffleId) external view returns (address raffle)",
+        "function idByRaffle(address raffle) external view returns (uint256 raffleId)"
+      ]
+    },
+    {
+      "path": "target/packages/contracts/src/Raffle.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "a757bb0744aedc822358c21ca60bda0fac481b4d12513a453ab972bf15ccc417",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        200,
+        814
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "constructor(address quoteToken_, address vrfWrapper_) ERC721(\"\", \"\") VRFV2PlusWrapperConsumerBase(_validatedVrfWrapper(vrfWrapper_))",
+        "receive() external payable",
+        "function initialize(RaffleInitParams calldata params) external override",
+        "function buyEntries(address recipient, uint128 entryCount) external override nonReentrant returns (uint256 ticketId)",
+        "function requestDraw() external payable override nonReentrant returns (uint256 requestId)",
+        "function enableRefunds() external override nonReentrant",
+        "function settleWinningTicket(uint256 ticketId) external override nonReentrant returns (uint256 cashAmount)",
+        "function redeemWinningTicket(uint256 ticketId) external override nonReentrant returns (uint256 cashAmount)",
+        "function refundTickets(uint256[] calldata ticketIds) external override nonReentrant returns (uint256 amount)",
+        "function releaseSponsorProceeds() external override nonReentrant returns (uint256 amount)",
+        "function releaseProtocolFees() external override nonReentrant returns (uint256 amount)",
+        "function releaseSponsorPrize() external override nonReentrant",
+        "function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata) external override returns (bytes4 selector)",
+        "function getVrfRequestPrice() public view override returns (uint256 fee)",
+        "function estimateVrfRequestPrice(uint256 requestGasPriceWei) public view override returns (uint256 fee)",
+        "function vrfWrapper() public view override returns (IVRFV2PlusWrapper wrapper)",
+        "function ticketRange(uint256 ticketId) public view override returns (uint128 firstEntry, uint128 lastEntry)",
+        "function drawRequestDeadline() public view override returns (uint256 deadline)",
+        "function callbackDeadline() public view override returns (uint256 deadline)",
+        "function accountedQuoteBalance() public view override returns (uint256 amount)",
+        "function grossSales() public view override returns (uint256 amount)",
+        "function name() public pure override returns (string memory)",
+        "function symbol() public pure override returns (string memory)",
+        "function _update(address to, uint256 ticketId, address auth) internal override returns (address previousOwner)",
+        "function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override",
+        "function _settleWinningTicket(uint256 ticketId) private returns (uint256 cashAmount)",
+        "function _transferQuote(address to, uint256 amount) private",
+        "function _requireStatus(Status expected) private view",
+        "function _requireWinningTicket(uint256 ticketId) private view",
+        "function _isProtocolDestination(address destination, address prizeToken_) private view returns (bool unsafeDestination)",
+        "function _validatedVrfWrapper(address wrapper) private pure returns (address validatedWrapper)"
+      ],
+      "review_depth": "production numerical seams",
+      "generated_getters_reviewed": [
+        "function ENTRY_PRICE() external view returns (uint256 price)",
+        "function callbackGasLimit() external view returns (uint32 gasLimit)",
+        "function requestConfirmations() external view returns (uint16 confirmations)",
+        "function factory() external view returns (address factoryAddress)",
+        "function sponsor() external view returns (address sponsorAddress)",
+        "function sponsorRecipient() external view returns (address recipient)",
+        "function protocolTreasury() external view returns (address treasury)",
+        "function quoteToken() external view returns (IERC20 token)",
+        "function prizeToken() external view returns (IERC721 token)",
+        "function prizeTokenId() external view returns (uint256 tokenId)",
+        "function raffleId() external view returns (uint256 id)",
+        "function reserveEntries() external view returns (uint128 entries)",
+        "function endTime() external view returns (uint64 timestamp)",
+        "function totalEntries() external view returns (uint128 entries)",
+        "function ticketCount() external view returns (uint128 tickets)",
+        "function unsettledPot() external view returns (uint256 amount)",
+        "function remainingRefundLiability() external view returns (uint256 amount)",
+        "function winnerRecipient() external view returns (address recipient)",
+        "function winnerProceeds() external view returns (uint256 amount)",
+        "function sponsorProceeds() external view returns (uint256 amount)",
+        "function protocolFees() external view returns (uint256 amount)",
+        "function vrfRequestId() external view returns (uint256 requestId)",
+        "function drawRequestedAt() external view returns (uint64 timestamp)",
+        "function resolvedAt() external view returns (uint64 timestamp)",
+        "function winningEntry() external view returns (uint128 entry)",
+        "function winningTicketId() external view returns (uint256 ticketId)",
+        "function status() external view returns (Status currentStatus)",
+        "function settlementComplete() external view returns (bool complete)",
+        "function winnerRedeemed() external view returns (bool redeemed)",
+        "function prizeClaimed() external view returns (bool claimed)",
+        "function initialized() external view returns (bool complete)"
+      ]
+    },
+    {
+      "path": "target/packages/contracts/src/libraries/RaffleConstants.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "4aee8b0b259f33fdbe345c6595b1b2ee22b184a9e15904eb04b96e4781f9ff6d",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        820,
+        863
+      ],
+      "read": "complete",
+      "functions_reviewed": [],
+      "review_depth": "production numerical seams"
+    },
+    {
+      "path": "target/packages/contracts/src/interfaces/IRaffle.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "9cd8a193b84f4d492f70f78d7a0269f85091f53926d11882aa0bbf2847b8d1ac",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        869,
+        1390
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function initialize(RaffleInitParams calldata params) external",
+        "function buyEntries(address recipient, uint128 entryCount) external returns (uint256 ticketId)",
+        "function requestDraw() external payable returns (uint256 requestId)",
+        "function enableRefunds() external",
+        "function settleWinningTicket(uint256 ticketId) external returns (uint256 cashAmount)",
+        "function redeemWinningTicket(uint256 ticketId) external returns (uint256 cashAmount)",
+        "function refundTickets(uint256[] calldata ticketIds) external returns (uint256 amount)",
+        "function releaseSponsorProceeds() external returns (uint256 amount)",
+        "function releaseProtocolFees() external returns (uint256 amount)",
+        "function releaseSponsorPrize() external",
+        "function getVrfRequestPrice() external view returns (uint256 fee)",
+        "function estimateVrfRequestPrice(uint256 requestGasPriceWei) external view returns (uint256 fee)",
+        "function ticketRange(uint256 ticketId) external view returns (uint128 firstEntry, uint128 lastEntry)",
+        "function drawRequestDeadline() external view returns (uint256 deadline)",
+        "function callbackDeadline() external view returns (uint256 deadline)",
+        "function accountedQuoteBalance() external view returns (uint256 amount)",
+        "function grossSales() external view returns (uint256 amount)",
+        "function ENTRY_PRICE() external view returns (uint256 price)",
+        "function callbackGasLimit() external view returns (uint32 gasLimit)",
+        "function requestConfirmations() external view returns (uint16 confirmations)",
+        "function factory() external view returns (address factoryAddress)",
+        "function sponsor() external view returns (address sponsorAddress)",
+        "function sponsorRecipient() external view returns (address recipient)",
+        "function protocolTreasury() external view returns (address treasury)",
+        "function quoteToken() external view returns (IERC20 token)",
+        "function vrfWrapper() external view returns (IVRFV2PlusWrapper wrapper)",
+        "function prizeToken() external view returns (IERC721 token)",
+        "function prizeTokenId() external view returns (uint256 tokenId)",
+        "function raffleId() external view returns (uint256 id)",
+        "function reserveEntries() external view returns (uint128 entries)",
+        "function endTime() external view returns (uint64 timestamp)",
+        "function totalEntries() external view returns (uint128 entries)",
+        "function ticketCount() external view returns (uint128 tickets)",
+        "function unsettledPot() external view returns (uint256 amount)",
+        "function remainingRefundLiability() external view returns (uint256 amount)",
+        "function winnerRecipient() external view returns (address recipient)",
+        "function winnerProceeds() external view returns (uint256 amount)",
+        "function sponsorProceeds() external view returns (uint256 amount)",
+        "function protocolFees() external view returns (uint256 amount)",
+        "function vrfRequestId() external view returns (uint256 requestId)",
+        "function drawRequestedAt() external view returns (uint64 timestamp)",
+        "function resolvedAt() external view returns (uint64 timestamp)",
+        "function winningEntry() external view returns (uint128 entry)",
+        "function winningTicketId() external view returns (uint256 ticketId)",
+        "function status() external view returns (Status currentStatus)",
+        "function settlementComplete() external view returns (bool complete)",
+        "function winnerRedeemed() external view returns (bool redeemed)",
+        "function prizeClaimed() external view returns (bool claimed)",
+        "function initialized() external view returns (bool complete)"
+      ],
+      "review_depth": "production numerical seams"
+    },
+    {
+      "path": "target/packages/contracts/src/interfaces/IRaffleFactory.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "94e4c8296b0b85bbdcaeb75fd3f33b44af85814fa1fcb648688cdcb4787f7d64",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        1396,
+        1546
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function createRaffle(CreateRaffleParams calldata params) external returns (address raffle)",
+        "function quoteToken() external view returns (address quoteTokenAddress)",
+        "function vrfWrapper() external view returns (address wrapperAddress)",
+        "function protocolTreasury() external view returns (address treasuryAddress)",
+        "function callbackGasLimit() external view returns (uint32 gasLimit)",
+        "function requestConfirmations() external view returns (uint16 confirmations)",
+        "function raffleImplementation() external view returns (address implementation)",
+        "function raffleCount() external view returns (uint256 count)",
+        "function isRaffle(address raffle) external view returns (bool registered)",
+        "function raffleById(uint256 raffleId) external view returns (address raffle)",
+        "function idByRaffle(address raffle) external view returns (uint256 raffleId)"
+      ],
+      "review_depth": "production numerical seams"
+    },
+    {
+      "path": "target/DESIGN.md",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "d9bc9ded7b29553680fa8b45bc074dac7d47f05c0d76468fed62834f7887cb32",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        1552,
+        1556
+      ],
+      "read": "complete",
+      "functions_reviewed": [],
+      "review_depth": "full design and trust-boundary review"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "e5c53f685e8a1ea3269942b1b1771e13481e452e235023629edbed72c4ed79ca",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        1562,
+        1593
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function allowance(address owner, address spender) external view returns (uint256 remaining)",
+        "function approve(address spender, uint256 value) external returns (bool success)",
+        "function balanceOf( address owner ) external view returns (uint256 balance)",
+        "function decimals() external view returns (uint8 decimalPlaces)",
+        "function decreaseApproval(address spender, uint256 addedValue) external returns (bool success)",
+        "function increaseApproval(address spender, uint256 subtractedValue) external",
+        "function name() external view returns (string memory tokenName)",
+        "function symbol() external view returns (string memory tokenSymbol)",
+        "function totalSupply() external view returns (uint256 totalTokensIssued)",
+        "function transfer(address to, uint256 value) external returns (bool success)",
+        "function transferAndCall(address to, uint256 value, bytes calldata data) external returns (bool success)",
+        "function transferFrom(address from, address to, uint256 value) external returns (bool success)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "72094991d0df1967f288dde277f3eb062521497580c192d43ca5a98d2ccc595f",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        1599,
+        1717
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "constructor( address _vrfV2PlusWrapper )",
+        "function requestRandomness( uint32 _callbackGasLimit, uint16 _requestConfirmations, uint32 _numWords, bytes memory extraArgs ) internal returns (uint256 requestId, uint256 reqPrice)",
+        "function requestRandomnessPayInNative( uint32 _callbackGasLimit, uint16 _requestConfirmations, uint32 _numWords, bytes memory extraArgs ) internal returns (uint256 requestId, uint256 requestPrice)",
+        "function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) internal virtual",
+        "function rawFulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) external",
+        "function getBalance() public view returns (uint256)",
+        "function getLinkToken() public view returns (LinkTokenInterface)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "c6272f25240fb95735f98a54627ce216eeb98f5e485d88daac71fc8b87d5f7f9",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        1723,
+        1806
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function lastRequestId() external view returns (uint256)",
+        "function calculateRequestPrice(uint32 _callbackGasLimit, uint32 _numWords) external view returns (uint256)",
+        "function calculateRequestPriceNative(uint32 _callbackGasLimit, uint32 _numWords) external view returns (uint256)",
+        "function estimateRequestPrice( uint32 _callbackGasLimit, uint32 _numWords, uint256 _requestGasPriceWei ) external view returns (uint256)",
+        "function estimateRequestPriceNative( uint32 _callbackGasLimit, uint32 _numWords, uint256 _requestGasPriceWei ) external view returns (uint256)",
+        "function requestRandomWordsInNative( uint32 _callbackGasLimit, uint16 _requestConfirmations, uint32 _numWords, bytes calldata extraArgs ) external payable returns (uint256 requestId)",
+        "function link() external view returns (address)",
+        "function linkNativeFeed() external view returns (address)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "58fd9a07d04827af54e9045305079e9d893049db6a4b0030e18a1ce9c012f32e",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        1812,
+        1839
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function _argsToBytes( ExtraArgsV1 memory extraArgs ) internal pure returns (bytes memory bts)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "648eb44d354b49dfdf36661b390a8735b157c191afd2cd0194c53f89ccaa6be9",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        1845,
+        1931
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function transferAndCall(address to, uint256 value) external returns (bool)",
+        "function transferAndCall(address to, uint256 value, bytes calldata data) external returns (bool)",
+        "function transferFromAndCall(address from, address to, uint256 value) external returns (bool)",
+        "function transferFromAndCall(address from, address to, uint256 value, bytes calldata data) external returns (bool)",
+        "function approveAndCall(address spender, uint256 value) external returns (bool)",
+        "function approveAndCall(address spender, uint256 value, bytes calldata data) external returns (bool)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "d7f7f30886e93b25b61ccaf0e84e65c65b11b1c2ac9300777be8ea432247b51b",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        1937,
+        1943
+      ],
+      "read": "complete",
+      "functions_reviewed": [],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "d3054d94776f646a28054f65a43997cf582bd5f7c689af31f0d3af22bc0ba632",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        1949,
+        1955
+      ],
+      "read": "complete",
+      "functions_reviewed": [],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "f52e7dd184aaec5e12d45eb637a695dead1112561a71525ec9af0da331c6aac8",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        1961,
+        2123
+      ],
+      "read": "complete",
+      "functions_reviewed": [],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "364504d4949fa721f0b478ac19a4f68faed19d5cc8d886730e38dbb2a9ed43ce",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        2129,
+        2423
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function clone(address implementation) internal returns (address instance)",
+        "function clone(address implementation, uint256 value) internal returns (address instance)",
+        "function cloneDeterministic(address implementation, bytes32 salt) internal returns (address instance)",
+        "function cloneDeterministic( address implementation, bytes32 salt, uint256 value ) internal returns (address instance)",
+        "function predictDeterministicAddress( address implementation, bytes32 salt, address deployer ) internal pure returns (address predicted)",
+        "function predictDeterministicAddress( address implementation, bytes32 salt ) internal view returns (address predicted)",
+        "function cloneWithImmutableArgs(address implementation, bytes memory args) internal returns (address instance)",
+        "function cloneWithImmutableArgs( address implementation, bytes memory args, uint256 value ) internal returns (address instance)",
+        "function cloneDeterministicWithImmutableArgs( address implementation, bytes memory args, bytes32 salt ) internal returns (address instance)",
+        "function cloneDeterministicWithImmutableArgs( address implementation, bytes memory args, bytes32 salt, uint256 value ) internal returns (address instance)",
+        "function predictDeterministicAddressWithImmutableArgs( address implementation, bytes memory args, bytes32 salt, address deployer ) internal pure returns (address predicted)",
+        "function predictDeterministicAddressWithImmutableArgs( address implementation, bytes memory args, bytes32 salt ) internal view returns (address predicted)",
+        "function fetchCloneArgs(address instance) internal view returns (bytes memory)",
+        "function _cloneCodeWithImmutableArgs( address implementation, bytes memory args ) private pure returns (bytes memory)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "c6ea6d0a597539887acccdf11345f48efec371772a5432db45ef2dc22ba10c3c",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        2429,
+        2508
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function totalSupply() external view returns (uint256)",
+        "function balanceOf(address account) external view returns (uint256)",
+        "function transfer(address to, uint256 value) external returns (bool)",
+        "function allowance(address owner, address spender) external view returns (uint256)",
+        "function approve(address spender, uint256 value) external returns (bool)",
+        "function transferFrom(address from, address to, uint256 value) external returns (bool)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "a9a42c5cc9b1b1f5bacc7ec3615523648ad7545c93cd1db720b7ab2448068c26",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        2514,
+        2540
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function name() external view returns (string memory)",
+        "function symbol() external view returns (string memory)",
+        "function decimals() external view returns (uint8)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "8018c3910ea4cf5055e351f9c56c92cd02953793c99aaae930727db290e055f6",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        2546,
+        2826
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function safeTransfer(IERC20 token, address to, uint256 value) internal",
+        "function safeTransferFrom(IERC20 token, address from, address to, uint256 value) internal",
+        "function trySafeTransfer(IERC20 token, address to, uint256 value) internal returns (bool)",
+        "function trySafeTransferFrom(IERC20 token, address from, address to, uint256 value) internal returns (bool)",
+        "function safeIncreaseAllowance(IERC20 token, address spender, uint256 value) internal",
+        "function safeDecreaseAllowance(IERC20 token, address spender, uint256 requestedDecrease) internal",
+        "function forceApprove(IERC20 token, address spender, uint256 value) internal",
+        "function transferAndCallRelaxed(IERC1363 token, address to, uint256 value, bytes memory data) internal",
+        "function transferFromAndCallRelaxed( IERC1363 token, address from, address to, uint256 value, bytes memory data ) internal",
+        "function approveAndCallRelaxed(IERC1363 token, address to, uint256 value, bytes memory data) internal",
+        "function _safeTransfer(IERC20 token, address to, uint256 value, bool bubble) private returns (bool success)",
+        "function _safeTransferFrom( IERC20 token, address from, address to, uint256 value, bool bubble ) private returns (bool success)",
+        "function _safeApprove(IERC20 token, address spender, uint256 value, bool bubble) private returns (bool success)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "e841455e0c6a26470a0a9c7580ddfcb8dde0a0bc5a111374a829090df796fb91",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        2832,
+        3265
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "constructor(string memory name_, string memory symbol_)",
+        "function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool)",
+        "function balanceOf(address owner) public view virtual returns (uint256)",
+        "function ownerOf(uint256 tokenId) public view virtual returns (address)",
+        "function name() public view virtual returns (string memory)",
+        "function symbol() public view virtual returns (string memory)",
+        "function tokenURI(uint256 tokenId) public view virtual returns (string memory)",
+        "function _baseURI() internal view virtual returns (string memory)",
+        "function approve(address to, uint256 tokenId) public virtual",
+        "function getApproved(uint256 tokenId) public view virtual returns (address)",
+        "function setApprovalForAll(address operator, bool approved) public virtual",
+        "function isApprovedForAll(address owner, address operator) public view virtual returns (bool)",
+        "function transferFrom(address from, address to, uint256 tokenId) public virtual",
+        "function safeTransferFrom(address from, address to, uint256 tokenId) public",
+        "function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public virtual",
+        "function _ownerOf(uint256 tokenId) internal view virtual returns (address)",
+        "function _getApproved(uint256 tokenId) internal view virtual returns (address)",
+        "function _isAuthorized(address owner, address spender, uint256 tokenId) internal view virtual returns (bool)",
+        "function _checkAuthorized(address owner, address spender, uint256 tokenId) internal view virtual",
+        "function _increaseBalance(address account, uint128 value) internal virtual",
+        "function _update(address to, uint256 tokenId, address auth) internal virtual returns (address)",
+        "function _mint(address to, uint256 tokenId) internal",
+        "function _safeMint(address to, uint256 tokenId) internal",
+        "function _safeMint(address to, uint256 tokenId, bytes memory data) internal virtual",
+        "function _burn(uint256 tokenId) internal",
+        "function _transfer(address from, address to, uint256 tokenId) internal",
+        "function _safeTransfer(address from, address to, uint256 tokenId) internal",
+        "function _safeTransfer(address from, address to, uint256 tokenId, bytes memory data) internal virtual",
+        "function _approve(address to, uint256 tokenId, address auth) internal",
+        "function _approve(address to, uint256 tokenId, address auth, bool emitEvent) internal virtual",
+        "function _setApprovalForAll(address owner, address operator, bool approved) internal virtual",
+        "function _requireOwned(uint256 tokenId) internal view returns (address)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "f7a6a57e122bc65e0c9d4a20d7c8b2a354763eb98736bad0aa2ad13fdc58a758",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        3271,
+        3406
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function balanceOf(address owner) external view returns (uint256 balance)",
+        "function ownerOf(uint256 tokenId) external view returns (address owner)",
+        "function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external",
+        "function safeTransferFrom(address from, address to, uint256 tokenId) external",
+        "function transferFrom(address from, address to, uint256 tokenId) external",
+        "function approve(address to, uint256 tokenId) external",
+        "function setApprovalForAll(address operator, bool approved) external",
+        "function getApproved(uint256 tokenId) external view returns (address operator)",
+        "function isApprovedForAll(address owner, address operator) external view returns (bool)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "09ff1f5e8e4e85975b231c3a46da2f52bf59c1d5a800eac4179e78f52809eee0",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        3412,
+        3440
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function onERC721Received( address operator, address from, uint256 tokenId, bytes calldata data ) external returns (bytes4)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "0f7c64d2c817d8db1e03ba16358258f26037887719ea0d40aab61cee64a8ccf4",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        3446,
+        3473
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function name() external view returns (string memory)",
+        "function symbol() external view returns (string memory)",
+        "function tokenURI(uint256 tokenId) external view returns (string memory)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "66ac4176ea1303c620fab3af76aa21dd52badec9185091a8097fb6f7e4f6a368",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        3479,
+        3529
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function checkOnERC721Received( address operator, address from, address to, uint256 tokenId, bytes memory data ) internal"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "10a06d97c3c2b14153265fe79140b9d5eec439b5c9dded6801fba8278645594d",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        3535,
+        3867
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function indexOf(bytes memory buffer, bytes1 s) internal pure returns (uint256)",
+        "function indexOf(bytes memory buffer, bytes1 s, uint256 pos) internal pure returns (uint256)",
+        "function lastIndexOf(bytes memory buffer, bytes1 s) internal pure returns (uint256)",
+        "function lastIndexOf(bytes memory buffer, bytes1 s, uint256 pos) internal pure returns (uint256)",
+        "function slice(bytes memory buffer, uint256 start) internal pure returns (bytes memory)",
+        "function slice(bytes memory buffer, uint256 start, uint256 end) internal pure returns (bytes memory)",
+        "function splice(bytes memory buffer, uint256 start) internal pure returns (bytes memory)",
+        "function splice(bytes memory buffer, uint256 start, uint256 end) internal pure returns (bytes memory)",
+        "function replace(bytes memory buffer, uint256 pos, bytes memory replacement) internal pure returns (bytes memory)",
+        "function replace( bytes memory buffer, uint256 pos, bytes memory replacement, uint256 offset, uint256 length ) internal pure returns (bytes memory)",
+        "function concat(bytes[] memory buffers) internal pure returns (bytes memory)",
+        "function toNibbles(bytes memory input) internal pure returns (bytes memory output)",
+        "function equal(bytes memory a, bytes memory b) internal pure returns (bool)",
+        "function reverseBytes32(bytes32 value) internal pure returns (bytes32)",
+        "function reverseBytes16(bytes16 value) internal pure returns (bytes16)",
+        "function reverseBytes8(bytes8 value) internal pure returns (bytes8)",
+        "function reverseBytes4(bytes4 value) internal pure returns (bytes4)",
+        "function reverseBytes2(bytes2 value) internal pure returns (bytes2)",
+        "function clz(bytes memory buffer) internal pure returns (uint256)",
+        "function _unsafeReadBytesOffset(bytes memory buffer, uint256 offset) private pure returns (bytes32 value)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "ca7dc9a9ced192cbea28355511a8349bb82997edbb0927ecd0ef48ed599ceb03",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        3873,
+        3901
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function _msgSender() internal view virtual returns (address)",
+        "function _msgData() internal view virtual returns (bytes calldata)",
+        "function _contextSuffixLength() internal view virtual returns (uint256)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "8646137b7d807dbfcdeb4b0b970e17c1f76c7c0b6827d738fe7f731a54e523b7",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        3907,
+        3998
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function deploy(uint256 amount, bytes32 salt, bytes memory bytecode) internal returns (address addr)",
+        "function computeAddress(bytes32 salt, bytes32 bytecodeHash) internal view returns (address)",
+        "function computeAddress(bytes32 salt, bytes32 bytecodeHash, address deployer) internal pure returns (address addr)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "b447ae9c7fba8fe50a39898a69976057593a9b48faab281739ff3c4812b1f4b9",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        4004,
+        4038
+      ],
+      "read": "complete",
+      "functions_reviewed": [],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "3c690e52a093f4bb7a5d1f2f4c89340ac77b593de1ce0cd5f70f2f3ccea0ed13",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        4044,
+        4171
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function callNoReturn(address target, bytes memory data) internal returns (bool success)",
+        "function callNoReturn(address target, uint256 value, bytes memory data) internal returns (bool success)",
+        "function callReturn64Bytes( address target, bytes memory data ) internal returns (bool success, bytes32 result1, bytes32 result2)",
+        "function callReturn64Bytes( address target, uint256 value, bytes memory data ) internal returns (bool success, bytes32 result1, bytes32 result2)",
+        "function staticcallNoReturn(address target, bytes memory data) internal view returns (bool success)",
+        "function staticcallReturn64Bytes( address target, bytes memory data ) internal view returns (bool success, bytes32 result1, bytes32 result2)",
+        "function delegatecallNoReturn(address target, bytes memory data) internal returns (bool success)",
+        "function delegatecallReturn64Bytes( address target, bytes memory data ) internal returns (bool success, bytes32 result1, bytes32 result2)",
+        "function returnDataSize() internal pure returns (uint256 size)",
+        "function returnData() internal pure returns (bytes memory result)",
+        "function bubbleRevert() internal pure",
+        "function bubbleRevert(bytes memory returndata) internal pure"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "4647555a9e1d1f40c593df5dfc6623ff3897e35aaa1b91674fd168508132d2a4",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        4177,
+        4234
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function panic(uint256 code) internal pure"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "a75eb3dfec1dbffe73f7716f31f7a4a547e73354cffbc40aec16980f62cf5b3d",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        4240,
+        4359
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "constructor()",
+        "function _nonReentrantBeforeView() private view",
+        "function _nonReentrantBefore() private",
+        "function _nonReentrantAfter() private",
+        "function _reentrancyGuardEntered() internal view returns (bool)",
+        "function _reentrancyGuardStorageSlot() internal pure virtual returns (bytes32)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "bc7c982db52c3d9d3ba3a941c814f385a3a6973802650b769abcab5179974597",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        4365,
+        4508
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function getAddressSlot(bytes32 slot) internal pure returns (AddressSlot storage r)",
+        "function getBooleanSlot(bytes32 slot) internal pure returns (BooleanSlot storage r)",
+        "function getBytes32Slot(bytes32 slot) internal pure returns (Bytes32Slot storage r)",
+        "function getUint256Slot(bytes32 slot) internal pure returns (Uint256Slot storage r)",
+        "function getInt256Slot(bytes32 slot) internal pure returns (Int256Slot storage r)",
+        "function getStringSlot(bytes32 slot) internal pure returns (StringSlot storage r)",
+        "function getStringSlot(string storage store) internal pure returns (StringSlot storage r)",
+        "function getBytesSlot(bytes32 slot) internal pure returns (BytesSlot storage r)",
+        "function getBytesSlot(bytes storage store) internal pure returns (BytesSlot storage r)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "f72dd29b7b50fa1e1166e47877ff2d6976baa745628785fbf5c01e18a0ecdf1c",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        4514,
+        5046
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function toString(uint256 value) internal pure returns (string memory)",
+        "function toStringSigned(int256 value) internal pure returns (string memory)",
+        "function toHexString(uint256 value) internal pure returns (string memory)",
+        "function toHexString(uint256 value, uint256 length) internal pure returns (string memory)",
+        "function toHexString(address addr) internal pure returns (string memory)",
+        "function toChecksumHexString(address addr) internal pure returns (string memory)",
+        "function toHexString(bytes memory input) internal pure returns (string memory)",
+        "function equal(string memory a, string memory b) internal pure returns (bool)",
+        "function parseUint(string memory input) internal pure returns (uint256)",
+        "function parseUint(string memory input, uint256 begin, uint256 end) internal pure returns (uint256)",
+        "function tryParseUint(string memory input) internal pure returns (bool success, uint256 value)",
+        "function tryParseUint( string memory input, uint256 begin, uint256 end ) internal pure returns (bool success, uint256 value)",
+        "function _tryParseUintUncheckedBounds( string memory input, uint256 begin, uint256 end ) private pure returns (bool success, uint256 value)",
+        "function parseInt(string memory input) internal pure returns (int256)",
+        "function parseInt(string memory input, uint256 begin, uint256 end) internal pure returns (int256)",
+        "function tryParseInt(string memory input) internal pure returns (bool success, int256 value)",
+        "function tryParseInt( string memory input, uint256 begin, uint256 end ) internal pure returns (bool success, int256 value)",
+        "function _tryParseIntUncheckedBounds( string memory input, uint256 begin, uint256 end ) private pure returns (bool success, int256 value)",
+        "function parseHexUint(string memory input) internal pure returns (uint256)",
+        "function parseHexUint(string memory input, uint256 begin, uint256 end) internal pure returns (uint256)",
+        "function tryParseHexUint(string memory input) internal pure returns (bool success, uint256 value)",
+        "function tryParseHexUint( string memory input, uint256 begin, uint256 end ) internal pure returns (bool success, uint256 value)",
+        "function _tryParseHexUintUncheckedBounds( string memory input, uint256 begin, uint256 end ) private pure returns (bool success, uint256 value)",
+        "function parseAddress(string memory input) internal pure returns (address)",
+        "function parseAddress(string memory input, uint256 begin, uint256 end) internal pure returns (address)",
+        "function tryParseAddress(string memory input) internal pure returns (bool success, address value)",
+        "function tryParseAddress( string memory input, uint256 begin, uint256 end ) internal pure returns (bool success, address value)",
+        "function _tryParseChr(bytes1 chr) private pure returns (uint8)",
+        "function escapeJSON(string memory input) internal pure returns (string memory)",
+        "function _unsafeReadBytesOffset(bytes memory buffer, uint256 offset) private pure returns (bytes32 value)",
+        "function _unsafeWriteBytesOffset(bytes memory buffer, uint256 offset, bytes1 value) private pure"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "bfa3cf490d31e4f9d4393b9694b0a7401022fad6e3a1a3c45d7d5fecc22e0e97",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        5052,
+        5077
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function supportsInterface(bytes4 interfaceId) public view virtual returns (bool)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "3fa0cc2728a234826efe891107622246a0e7c7ec548450b2d176c5cd501791b0",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        5083,
+        5108
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function supportsInterface(bytes4 interfaceId) external view returns (bool)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "a8bf712f26678451ab2dca0eaf85d798d56cdfd298bfc1b75267bedb46b49711",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        5114,
+        5877
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function add512(uint256 a, uint256 b) internal pure returns (uint256 high, uint256 low)",
+        "function mul512(uint256 a, uint256 b) internal pure returns (uint256 high, uint256 low)",
+        "function tryAdd(uint256 a, uint256 b) internal pure returns (bool success, uint256 result)",
+        "function trySub(uint256 a, uint256 b) internal pure returns (bool success, uint256 result)",
+        "function tryMul(uint256 a, uint256 b) internal pure returns (bool success, uint256 result)",
+        "function tryDiv(uint256 a, uint256 b) internal pure returns (bool success, uint256 result)",
+        "function tryMod(uint256 a, uint256 b) internal pure returns (bool success, uint256 result)",
+        "function saturatingAdd(uint256 a, uint256 b) internal pure returns (uint256)",
+        "function saturatingSub(uint256 a, uint256 b) internal pure returns (uint256)",
+        "function saturatingMul(uint256 a, uint256 b) internal pure returns (uint256)",
+        "function ternary(bool condition, uint256 a, uint256 b) internal pure returns (uint256)",
+        "function max(uint256 a, uint256 b) internal pure returns (uint256)",
+        "function min(uint256 a, uint256 b) internal pure returns (uint256)",
+        "function average(uint256 a, uint256 b) internal pure returns (uint256)",
+        "function ceilDiv(uint256 a, uint256 b) internal pure returns (uint256)",
+        "function mulDiv(uint256 x, uint256 y, uint256 denominator) internal pure returns (uint256 result)",
+        "function mulDiv(uint256 x, uint256 y, uint256 denominator, Rounding rounding) internal pure returns (uint256)",
+        "function mulShr(uint256 x, uint256 y, uint8 n) internal pure returns (uint256 result)",
+        "function mulShr(uint256 x, uint256 y, uint8 n, Rounding rounding) internal pure returns (uint256)",
+        "function invMod(uint256 a, uint256 n) internal pure returns (uint256)",
+        "function invModPrime(uint256 a, uint256 p) internal view returns (uint256)",
+        "function modExp(uint256 b, uint256 e, uint256 m) internal view returns (uint256)",
+        "function tryModExp(uint256 b, uint256 e, uint256 m) internal view returns (bool success, uint256 result)",
+        "function modExp(bytes memory b, bytes memory e, bytes memory m) internal view returns (bytes memory)",
+        "function tryModExp( bytes memory b, bytes memory e, bytes memory m ) internal view returns (bool success, bytes memory result)",
+        "function _zeroBytes(bytes memory buffer) private pure returns (bool)",
+        "function sqrt(uint256 a) internal pure returns (uint256)",
+        "function sqrt(uint256 a, Rounding rounding) internal pure returns (uint256)",
+        "function log2(uint256 x) internal pure returns (uint256 r)",
+        "function log2(uint256 value, Rounding rounding) internal pure returns (uint256)",
+        "function log10(uint256 value) internal pure returns (uint256)",
+        "function log10(uint256 value, Rounding rounding) internal pure returns (uint256)",
+        "function log256(uint256 x) internal pure returns (uint256 r)",
+        "function log256(uint256 value, Rounding rounding) internal pure returns (uint256)",
+        "function unsignedRoundsUp(Rounding rounding) internal pure returns (bool)",
+        "function clz(uint256 x) internal pure returns (uint256)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "4de3e66b96de3cf035276e8d3004073ece508623a6e866bd3221683556aa8fd7",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        5883,
+        7045
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function toUint248(uint256 value) internal pure returns (uint248)",
+        "function toUint240(uint256 value) internal pure returns (uint240)",
+        "function toUint232(uint256 value) internal pure returns (uint232)",
+        "function toUint224(uint256 value) internal pure returns (uint224)",
+        "function toUint216(uint256 value) internal pure returns (uint216)",
+        "function toUint208(uint256 value) internal pure returns (uint208)",
+        "function toUint200(uint256 value) internal pure returns (uint200)",
+        "function toUint192(uint256 value) internal pure returns (uint192)",
+        "function toUint184(uint256 value) internal pure returns (uint184)",
+        "function toUint176(uint256 value) internal pure returns (uint176)",
+        "function toUint168(uint256 value) internal pure returns (uint168)",
+        "function toUint160(uint256 value) internal pure returns (uint160)",
+        "function toUint152(uint256 value) internal pure returns (uint152)",
+        "function toUint144(uint256 value) internal pure returns (uint144)",
+        "function toUint136(uint256 value) internal pure returns (uint136)",
+        "function toUint128(uint256 value) internal pure returns (uint128)",
+        "function toUint120(uint256 value) internal pure returns (uint120)",
+        "function toUint112(uint256 value) internal pure returns (uint112)",
+        "function toUint104(uint256 value) internal pure returns (uint104)",
+        "function toUint96(uint256 value) internal pure returns (uint96)",
+        "function toUint88(uint256 value) internal pure returns (uint88)",
+        "function toUint80(uint256 value) internal pure returns (uint80)",
+        "function toUint72(uint256 value) internal pure returns (uint72)",
+        "function toUint64(uint256 value) internal pure returns (uint64)",
+        "function toUint56(uint256 value) internal pure returns (uint56)",
+        "function toUint48(uint256 value) internal pure returns (uint48)",
+        "function toUint40(uint256 value) internal pure returns (uint40)",
+        "function toUint32(uint256 value) internal pure returns (uint32)",
+        "function toUint24(uint256 value) internal pure returns (uint24)",
+        "function toUint16(uint256 value) internal pure returns (uint16)",
+        "function toUint8(uint256 value) internal pure returns (uint8)",
+        "function toUint256(int256 value) internal pure returns (uint256)",
+        "function toInt248(int256 value) internal pure returns (int248 downcasted)",
+        "function toInt240(int256 value) internal pure returns (int240 downcasted)",
+        "function toInt232(int256 value) internal pure returns (int232 downcasted)",
+        "function toInt224(int256 value) internal pure returns (int224 downcasted)",
+        "function toInt216(int256 value) internal pure returns (int216 downcasted)",
+        "function toInt208(int256 value) internal pure returns (int208 downcasted)",
+        "function toInt200(int256 value) internal pure returns (int200 downcasted)",
+        "function toInt192(int256 value) internal pure returns (int192 downcasted)",
+        "function toInt184(int256 value) internal pure returns (int184 downcasted)",
+        "function toInt176(int256 value) internal pure returns (int176 downcasted)",
+        "function toInt168(int256 value) internal pure returns (int168 downcasted)",
+        "function toInt160(int256 value) internal pure returns (int160 downcasted)",
+        "function toInt152(int256 value) internal pure returns (int152 downcasted)",
+        "function toInt144(int256 value) internal pure returns (int144 downcasted)",
+        "function toInt136(int256 value) internal pure returns (int136 downcasted)",
+        "function toInt128(int256 value) internal pure returns (int128 downcasted)",
+        "function toInt120(int256 value) internal pure returns (int120 downcasted)",
+        "function toInt112(int256 value) internal pure returns (int112 downcasted)",
+        "function toInt104(int256 value) internal pure returns (int104 downcasted)",
+        "function toInt96(int256 value) internal pure returns (int96 downcasted)",
+        "function toInt88(int256 value) internal pure returns (int88 downcasted)",
+        "function toInt80(int256 value) internal pure returns (int80 downcasted)",
+        "function toInt72(int256 value) internal pure returns (int72 downcasted)",
+        "function toInt64(int256 value) internal pure returns (int64 downcasted)",
+        "function toInt56(int256 value) internal pure returns (int56 downcasted)",
+        "function toInt48(int256 value) internal pure returns (int48 downcasted)",
+        "function toInt40(int256 value) internal pure returns (int40 downcasted)",
+        "function toInt32(int256 value) internal pure returns (int32 downcasted)",
+        "function toInt24(int256 value) internal pure returns (int24 downcasted)",
+        "function toInt16(int256 value) internal pure returns (int16 downcasted)",
+        "function toInt8(int256 value) internal pure returns (int8 downcasted)",
+        "function toInt256(uint256 value) internal pure returns (int256)",
+        "function toUint(bool b) internal pure returns (uint256 u)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+      "access": "embedded in supplied bundle only",
+      "embedded_payload_sha256": "8864aaf2878fcb5484e607e91a8cf236047461733db8f00efdda6e8eea15539b",
+      "hash_basis": "Exact UTF-8 payload between the opening fence newline and closing fence, including trailing newlines",
+      "bundle_lines": [
+        7051,
+        7119
+      ],
+      "read": "complete",
+      "functions_reviewed": [
+        "function ternary(bool condition, int256 a, int256 b) internal pure returns (int256)",
+        "function max(int256 a, int256 b) internal pure returns (int256)",
+        "function min(int256 a, int256 b) internal pure returns (int256)",
+        "function average(int256 a, int256 b) internal pure returns (int256)",
+        "function abs(int256 n) internal pure returns (uint256)"
+      ],
+      "review_depth": "full contextual read; reachable inherited behavior reviewed"
+    }
+  ],
+  "properties_reviewed": [
+    {
+      "id": "purchase-range-cap",
+      "functions": [
+        "Raffle.buyEntries"
+      ],
+      "seam": "boundary×invariant",
+      "result": "holds",
+      "proof": "A successful count c satisfies 1 <= c <= 2^128-1-totalEntries, so firstEntry=totalEntries+1 and lastEntry=totalEntries+c are positive uint128 values."
+    },
+    {
+      "id": "ticket-counter-cap",
+      "functions": [
+        "Raffle.buyEntries",
+        "Raffle.refundTickets",
+        "Raffle.redeemWinningTicket"
+      ],
+      "seam": "boundary×invariant",
+      "result": "holds",
+      "proof": "Every purchase increments ticketCount by one and totalEntries by at least one; neither lifetime counter decreases after burns, so ticketCount <= totalEntries."
+    },
+    {
+      "id": "entry-to-pot-scale",
+      "functions": [
+        "Raffle.buyEntries",
+        "Raffle.grossSales",
+        "RaffleConstants.ENTRY_PRICE"
+      ],
+      "seam": "boundary×precision",
+      "result": "holds",
+      "proof": "The maximum pot is (2^128-1)*1,000,000 = 340282366920938463463374607431768211455000000, which uses 148 bits."
+    },
+    {
+      "id": "aggregate-fee-rounding",
+      "functions": [
+        "Raffle._settleWinningTicket",
+        "Math.mulDiv",
+        "RaffleConstants.PROTOCOL_FEE_BPS"
+      ],
+      "seam": "precision×invariant",
+      "result": "holds",
+      "proof": "For integer n, floor((n*1,000,000)*500/10,000)=n*50,000; no residue accumulates across purchases."
+    },
+    {
+      "id": "cash-rounding-and-positive-claim",
+      "functions": [
+        "Raffle._settleWinningTicket",
+        "Raffle.redeemWinningTicket",
+        "RaffleConstants.CASH_WINNER_BPS"
+      ],
+      "seam": "three-way",
+      "result": "holds",
+      "proof": "For every positive n, the cash payout is n*800,000 >= 800,000, so NoWinnerProceeds does not reject an unredeemed cash allocation."
+    },
+    {
+      "id": "settlement-conservation",
+      "functions": [
+        "Raffle._settleWinningTicket",
+        "Raffle.accountedQuoteBalance"
+      ],
+      "seam": "precision×invariant",
+      "result": "holds",
+      "proof": "Cash allocation is 800,000n + 150,000n + 50,000n = 1,000,000n; NFT allocation is 950,000n + 50,000n = 1,000,000n."
+    },
+    {
+      "id": "fee-product-width",
+      "functions": [
+        "Raffle._settleWinningTicket",
+        "Math.mulDiv",
+        "Math.mul512"
+      ],
+      "seam": "boundary×precision",
+      "result": "holds",
+      "proof": "Maximum protocol and cash numerators use 157 and 161 bits respectively; the uint256 fast path in mulDiv returns the exact integer split."
+    },
+    {
+      "id": "refund-range-sum",
+      "functions": [
+        "Raffle.refundTickets",
+        "Raffle.ticketRange"
+      ],
+      "seam": "boundary×invariant",
+      "result": "holds",
+      "proof": "Stored minted ranges are positive and disjoint; the sum of lengths of any distinct live-ticket subset is at most totalEntries."
+    },
+    {
+      "id": "refund-duplicate-and-zero",
+      "functions": [
+        "Raffle.refundTickets",
+        "ERC721.ownerOf",
+        "ERC721._burn"
+      ],
+      "seam": "boundary×invariant",
+      "result": "holds",
+      "proof": "Empty and >100 batches revert; ownerOf rejects unknown IDs; a duplicate ID fails ownerOf after the first burn and reverts the full transaction."
+    },
+    {
+      "id": "zero-winning-range",
+      "functions": [
+        "Raffle._requireWinningTicket",
+        "Raffle.fulfillRandomWords",
+        "Raffle.requestDraw"
+      ],
+      "seam": "boundary×invariant",
+      "result": "holds",
+      "proof": "requestDraw requires totalEntries>0 and the callback computes randomWords[0]%totalEntries+1; therefore default range [0,0] cannot pass in a resolved state."
+    },
+    {
+      "id": "winning-entry-cast",
+      "functions": [
+        "Raffle.fulfillRandomWords"
+      ],
+      "seam": "boundary×precision",
+      "result": "holds",
+      "proof": "1 <= word%totalEntries+1 <= totalEntries <= 2^128-1; the uint128 cast cannot lose bits."
+    },
+    {
+      "id": "historical-ranges-and-burns",
+      "functions": [
+        "Raffle.settleWinningTicket",
+        "Raffle.redeemWinningTicket",
+        "Raffle.refundTickets"
+      ],
+      "seam": "boundary×invariant",
+      "result": "holds",
+      "proof": "Refunds require Refunding; winner burns follow settlement in NftWon or CashWon; resolved branches never return to sales or refunds."
+    },
+    {
+      "id": "native-fee-conservation",
+      "functions": [
+        "Raffle.requestDraw",
+        "Raffle.getVrfRequestPrice",
+        "VRFV2PlusWrapperConsumerBase.requestRandomnessPayInNative"
+      ],
+      "seam": "boundary×invariant",
+      "result": "holds under the trusted wrapper assumption",
+      "proof": "The base forwards requestPrice; paidPrice>msg.value reverts, otherwise excess=msg.value-paidPrice; a failed excess return reverts the request."
+    },
+    {
+      "id": "sale-duration-subtraction",
+      "functions": [
+        "RaffleFactory.createRaffle"
+      ],
+      "seam": "boundary×invariant",
+      "result": "holds",
+      "proof": "endTime<=currentTime reverts before uint256(endTime)-currentTime; a duration greater than 2,592,000 seconds reverts."
+    },
+    {
+      "id": "exclusive-and-inclusive-time-gates",
+      "functions": [
+        "Raffle.buyEntries",
+        "Raffle.requestDraw",
+        "Raffle.enableRefunds",
+        "Raffle.fulfillRandomWords",
+        "Raffle.drawRequestDeadline",
+        "Raffle.callbackDeadline"
+      ],
+      "seam": "boundary×invariant",
+      "result": "holds for present Ethereum timestamps",
+      "proof": "Purchases require t<endTime; requests require endTime<=t<endTime+172800; callbacks require t<drawRequestedAt+172800; refunds use t>=the matching deadline."
+    },
+    {
+      "id": "callback-early-return-state",
+      "functions": [
+        "Raffle.fulfillRandomWords",
+        "VRFV2PlusWrapperConsumerBase.rawFulfillRandomWords"
+      ],
+      "seam": "boundary×invariant",
+      "result": "holds",
+      "proof": "Only the immutable wrapper can call the handler; in-flight, wrong-ID, wrong-length, wrong-status, and late calls return before any result field changes."
+    },
+    {
+      "id": "allocation-and-release-once",
+      "functions": [
+        "Raffle._settleWinningTicket",
+        "Raffle.releaseSponsorProceeds",
+        "Raffle.releaseProtocolFees",
+        "Raffle.redeemWinningTicket",
+        "Raffle.releaseSponsorPrize"
+      ],
+      "seam": "boundary×invariant",
+      "result": "holds",
+      "proof": "Settlement sets settlementComplete once; claims zero the corresponding amount before transfer; prizeClaimed and winnerRedeemed prevent duplicate delivery."
+    },
+    {
+      "id": "clone-state-initialization",
+      "functions": [
+        "RaffleFactory.constructor",
+        "RaffleFactory.createRaffle",
+        "Raffle.initialize",
+        "Raffle.constructor",
+        "Clones.clone",
+        "ReentrancyGuard._nonReentrantBefore"
+      ],
+      "seam": "boundary×invariant",
+      "result": "holds",
+      "proof": "Implementation initialization is locked; only the immutable factory initializes clones, and the inherited guard rejects ENTERED while accepting the fresh zero slot."
+    },
+    {
+      "id": "quote-token-decimals",
+      "functions": [
+        "RaffleFactory.constructor",
+        "RaffleConstants.QUOTE_TOKEN_DECIMALS",
+        "SafeERC20.safeTransfer",
+        "SafeERC20.safeTransferFrom"
+      ],
+      "seam": "precision×invariant",
+      "result": "holds under canonical USDC assumptions",
+      "proof": "Factory requires decimals=6; every recorded purchase and refund uses the same fixed raw price with standard, fee-free transfers."
+    },
+    {
+      "id": "zero-reserve-and-result-threshold",
+      "functions": [
+        "RaffleFactory._validateCreateParams",
+        "Raffle.fulfillRandomWords"
+      ],
+      "seam": "boundary×invariant",
+      "result": "holds",
+      "proof": "Factory rejects reserveEntries=0; the callback selects NftWon exactly when totalEntries>=reserveEntries."
+    },
+    {
+      "id": "specification-and-interface-agreement",
+      "functions": [
+        "IRaffle.*",
+        "IRaffleFactory.*"
+      ],
+      "seam": "precision×invariant",
+      "result": "reviewed",
+      "proof": "Interface ranges, raw-unit amounts, percentage results, lifecycle states, and deadline rules agree with production formulas."
+    }
+  ],
+  "reachable_dependency_functions_reviewed": {
+    "Clones.sol": [
+      "clone(address)",
+      "clone(address,uint256)"
+    ],
+    "ERC721.sol": [
+      "constructor",
+      "supportsInterface",
+      "balanceOf",
+      "ownerOf",
+      "name",
+      "symbol",
+      "tokenURI",
+      "_baseURI",
+      "approve",
+      "getApproved",
+      "setApprovalForAll",
+      "isApprovedForAll",
+      "transferFrom",
+      "safeTransferFrom(address,address,uint256)",
+      "safeTransferFrom(address,address,uint256,bytes)",
+      "_ownerOf",
+      "_getApproved",
+      "_isAuthorized",
+      "_checkAuthorized",
+      "_update",
+      "_mint",
+      "_safeMint(address,uint256)",
+      "_safeMint(address,uint256,bytes)",
+      "_burn",
+      "_approve(address,uint256,address)",
+      "_approve(address,uint256,address,bool)",
+      "_setApprovalForAll",
+      "_requireOwned"
+    ],
+    "ERC721Utils.sol": [
+      "checkOnERC721Received"
+    ],
+    "SafeERC20.sol": [
+      "safeTransfer",
+      "safeTransferFrom",
+      "_safeTransfer",
+      "_safeTransferFrom"
+    ],
+    "ReentrancyGuard.sol": [
+      "constructor",
+      "nonReentrant",
+      "_nonReentrantBeforeView",
+      "_nonReentrantBefore",
+      "_nonReentrantAfter",
+      "_reentrancyGuardEntered",
+      "_reentrancyGuardStorageSlot"
+    ],
+    "StorageSlot.sol": [
+      "getUint256Slot"
+    ],
+    "VRFV2PlusWrapperConsumerBase.sol": [
+      "constructor",
+      "requestRandomnessPayInNative",
+      "rawFulfillRandomWords",
+      "getBalance",
+      "getLinkToken"
+    ],
+    "VRFV2PlusClient.sol": [
+      "_argsToBytes"
+    ],
+    "Math.sol": [
+      "mulDiv(uint256,uint256,uint256)",
+      "mul512",
+      "ternary",
+      "log10"
+    ],
+    "SafeCast.sol": [
+      "toUint"
+    ],
+    "Panic.sol": [
+      "panic"
+    ],
+    "Context.sol": [
+      "_msgSender"
+    ],
+    "ERC165.sol": [
+      "supportsInterface"
+    ],
+    "Strings.sol": [
+      "toString"
+    ]
+  },
+  "validation": {
+    "kind": "exact-integer Python model plus manual source-path reasoning",
+    "entry_count_cases": 100012,
+    "refund_partitions": 5000,
+    "result": "pass",
+    "evm_tests_run": false
+  },
+  "dismissed_candidates": [
+    {
+      "candidate": "Modulo selection bias",
+      "reason": "The uint128 entry bound limits bias to negligible magnitude; no exploitable advantage follows from the supplied source."
+    },
+    {
+      "candidate": "Timestamp downcast after 2^64 seconds",
+      "reason": "The cast can lose bits only after an unreachable present Ethereum timestamp; no contemporary attacker path exists."
+    },
+    {
+      "candidate": "Unknown-ticket zero range settlement",
+      "reason": "Authenticated resolution always chooses a positive entry before either resolved status is reachable."
+    },
+    {
+      "candidate": "Independent uint128 ticketCount overflow",
+      "reason": "Positive entry counts establish ticketCount<=totalEntries, so the entry cap excludes the overflowing purchase."
+    },
+    {
+      "candidate": "Zero cash winner from floor rounding",
+      "reason": "Every valid pot is a positive multiple of 1,000,000; the smallest cash allocation is 800,000."
+    }
+  ],
+  "validation_limits": [
+    "No EVM execution or deployment-specific integration test was performed.",
+    "The supplied bundle contains the trusted wrapper interface and consumer base, not the deployed wrapper implementation.",
+    "The supplied bundle contains ERC20 interfaces and SafeERC20, not the canonical USDC implementation.",
+    "Python checks validate formulas, not compiled bytecode or external dependency behavior."
+  ],
+  "artifacts": [
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/audit-artifacts/proofs/agent-10/numerical-checks.py",
+      "sha256": "648a76491b2e59ddaee7144434fa93bf543436ca5dc7e486d7fd58471774527b"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/audit-artifacts/proofs/agent-10/numerical-checks.json",
+      "sha256": "30c73e199b8b8fe9cb32552d8e04fc8b1a32ba2703e66349ce912a90b9c06413"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/audit-artifacts/raw/agent-10.md",
+      "sha256": "26cb9e6aef48df50cc87a711061127fd50eee5bbd94dac65bc3c05f526bcfa57"
+    }
+  ],
+  "native_response": "No findings or leads within the numerical-gap specialty."
+}

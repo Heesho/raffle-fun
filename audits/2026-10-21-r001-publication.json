@@ -1,0 +1,56 @@
+{
+  "schema": "raffle-audit-git-publication/v1",
+  "sealed_package": "audits/2026-10-21-r001",
+  "delivery_manifest_sha256": "bd2fc4a26f07e8bc54c25f45c6ab73562bb46df37639885b36a800a10a8dfa19",
+  "delivery_seal_sha256": "196e726d581d4198983f18fbc3bffae3e939c0cde9ae0fb85242d24e7842d5f5",
+  "policy": "Commit the sealed reports and evidence byte-for-byte, including explicitly selected ignored outputs. Keep two downloaded CLI payloads and one credential-bearing runtime log local; publish a separate redacted log copy. The original sealed local package is unchanged.",
+  "included_sealed_objects": 13647,
+  "included_additional_seal_files": [
+    "DELIVERY-MANIFEST.json",
+    "DELIVERY-SEAL.json"
+  ],
+  "omitted_downloaded_artifacts": [
+    {
+      "path": "provider-route-repair/bin/agy",
+      "kind": "file",
+      "bytes": 188274624,
+      "sha256": "9abb478686dc08d48699ba1604c14d15819ef6a2542d5d32173acbd5f02d712d",
+      "reason": "Downloaded third-party CLI artifact; retained locally and hash-bound in the original delivery manifest."
+    },
+    {
+      "path": "provider-route-repair/agy-release-payload",
+      "kind": "file",
+      "bytes": 56766448,
+      "sha256": "85482aa8969300183f71c9653d9f581248fba7f506342a8eb087f3d2503203bd",
+      "reason": "Downloaded third-party CLI artifact; retained locally and hash-bound in the original delivery manifest."
+    }
+  ],
+  "restore": {
+    "release_manifest": "audits/2026-10-21-r001/provider-route-repair/antigravity-release-manifest.json",
+    "archive_url": "https://storage.googleapis.com/antigravity-public/antigravity-cli/1.4.4-4783783166214144/darwin-arm/cli_mac_arm64.tar.gz",
+    "steps": [
+      "Download the pinned archive to provider-route-repair/agy-release-payload.",
+      "Verify its SHA-512 against antigravity-release-manifest.json and SHA-256 against DELIVERY-MANIFEST.json.",
+      "Extract the agy executable to provider-route-repair/bin/agy and verify its SHA-256 against DELIVERY-MANIFEST.json.",
+      "The complete original package verifier additionally requires the original private runtime log from its custodian; a public checkout intentionally omits it. Do not insert the redacted copy into the sealed package path."
+    ]
+  },
+  "omitted_sensitive_artifacts": [
+    {
+      "path": "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/final-capture/raw/open-kritt-executor-view.log",
+      "kind": "file",
+      "bytes": 12706,
+      "sha256": "403ba1241a4e597624bbe60ce5ddab65923f568c47cdaa072dba8045292aee6b",
+      "reason": "Contains a local executor-viewer access token. Original retained locally; never published.",
+      "redacted_copy": "audits/2026-10-21-r001-publication/open-kritt-executor-view.redacted.txt",
+      "redacted_copy_sha256": "5382905a975dee4220e314aeed2c8f6f0aa0c3c42eea547b26e00cd82aed51f2"
+    }
+  ],
+  "credential_review": {
+    "scanner": "gitleaks",
+    "scanned_bytes": 926116668,
+    "candidate_matches": 1265,
+    "disposition": "Reviewed hash manifests, public contract/test identifiers, fixture addresses and public GPG fingerprints as non-credentials. One local viewer-token log is omitted; a separate redacted copy is published.",
+    "original_sealed_package_modified": false
+  }
+}

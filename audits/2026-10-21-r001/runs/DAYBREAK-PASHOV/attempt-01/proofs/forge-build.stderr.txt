@@ -1,0 +1,57 @@
+2026-10-21T07:54:48.244932Z  WARN evm::traces: failed to flush signature cache err=failed to create file "/Users/hishamel-husseini/.foundry/cache/signatures": Operation not permitted (os error 1)
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:216:13
+    │
+216 │         if (block.timestamp >= endTime) revert SaleEnded(endTime, block.timestamp);
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:242:13
+    │
+242 │         if (block.timestamp < endTime) revert RaffleNotEnded(endTime, block.timestamp);
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:245:13
+    │
+245 │         if (block.timestamp >= requestDeadline) {
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:282:46
+    │
+282 │                 if (msg.sender != sponsor && block.timestamp < deadline) {
+    │                                              ━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:287:21
+    │
+287 │                 if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+    │                     ━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:291:17
+    │
+291 │             if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+    │                 ━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:512:20
+    │
+512 │                 || block.timestamp >= callbackDeadline()
+    │                    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+

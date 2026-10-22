@@ -1,0 +1,140 @@
+src/Raffle.sol:4:import { VRFV2PlusWrapperConsumerBase } from "@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol";
+src/Raffle.sol:5:import { IVRFV2PlusWrapper } from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol";
+src/Raffle.sol:6:import { VRFV2PlusClient } from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
+src/Raffle.sol:28:contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusWrapperConsumerBase {
+src/Raffle.sol:47:    uint32 public constant override callbackGasLimit = RaffleConstants.VRF_CALLBACK_GAS_LIMIT;
+src/Raffle.sol:50:    uint16 public constant override requestConfirmations = RaffleConstants.VRF_REQUEST_CONFIRMATIONS;
+src/Raffle.sol:109:    uint256 public override vrfRequestId;
+src/Raffle.sol:154:    /// @param vrfWrapper_ Chainlink VRF v2.5 native direct-funding wrapper fixed for the implementation and all clones.
+src/Raffle.sol:155:    constructor(address quoteToken_, address vrfWrapper_)
+src/Raffle.sol:157:        VRFV2PlusWrapperConsumerBase(_validatedVrfWrapper(vrfWrapper_))
+src/Raffle.sol:216:        if (block.timestamp >= endTime) revert SaleEnded(endTime, block.timestamp);
+src/Raffle.sol:242:        if (block.timestamp < endTime) revert RaffleNotEnded(endTime, block.timestamp);
+src/Raffle.sol:245:        if (block.timestamp >= requestDeadline) {
+src/Raffle.sol:246:            revert DrawRequestWindowExpired(requestDeadline, block.timestamp);
+src/Raffle.sol:249:        uint256 quotedFee = getVrfRequestPrice();
+src/Raffle.sol:250:        if (msg.value < quotedFee) revert InsufficientVrfFee(quotedFee, msg.value);
+src/Raffle.sol:253:        drawRequestedAt = uint64(block.timestamp);
+src/Raffle.sol:255:        bytes memory extraArgs = VRFV2PlusClient._argsToBytes(VRFV2PlusClient.ExtraArgsV1({ nativePayment: true }));
+src/Raffle.sol:257:        (requestId, paidPrice) = requestRandomnessPayInNative(callbackGasLimit, requestConfirmations, 1, extraArgs);
+src/Raffle.sol:258:        if (paidPrice > msg.value) revert InsufficientVrfFee(paidPrice, msg.value);
+src/Raffle.sol:259:        vrfRequestId = requestId;
+src/Raffle.sol:282:                if (msg.sender != sponsor && block.timestamp < deadline) {
+src/Raffle.sol:283:                    revert RefundsNotAvailable(deadline, block.timestamp);
+src/Raffle.sol:287:                if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+src/Raffle.sol:291:            if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+src/Raffle.sol:436:    function getVrfRequestPrice() public view override returns (uint256 fee) {
+src/Raffle.sol:437:        fee = i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit, 1);
+src/Raffle.sol:441:    function estimateVrfRequestPrice(uint256 requestGasPriceWei) public view override returns (uint256 fee) {
+src/Raffle.sol:442:        fee = i_vrfV2PlusWrapper.estimateRequestPriceNative(callbackGasLimit, 1, requestGasPriceWei);
+src/Raffle.sol:446:    function vrfWrapper() public view override returns (IVRFV2PlusWrapper wrapper) {
+src/Raffle.sol:447:        wrapper = i_vrfV2PlusWrapper;
+src/Raffle.sol:492:    ///      before their ownership could make a claim unreachable. Burns pass the zero address and remain permitted.
+src/Raffle.sol:504:    /// @dev Authenticated randomness selects only an entry. No ticket search, loop, user call, or token transfer
+src/Raffle.sol:508:    /// @param randomWords Callback words; exactly one word is required for resolution.
+src/Raffle.sol:509:    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+src/Raffle.sol:511:            _requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1
+src/Raffle.sol:512:                || block.timestamp >= callbackDeadline()
+src/Raffle.sol:514:            emit VrfCallbackIgnored(requestId, vrfRequestId, status);
+src/Raffle.sol:518:        uint128 resolvedEntry = uint128((randomWords[0] % uint256(totalEntries)) + 1);
+src/Raffle.sol:520:        resolvedAt = uint64(block.timestamp);
+src/Raffle.sol:600:            || destination == address(i_vrfV2PlusWrapper) || destination == prizeToken_
+src/Raffle.sol:610:    function _validatedVrfWrapper(address wrapper) private pure returns (address validatedWrapper) {
+src/interfaces/IRaffleFactory.sol:86:    /// @param maximumDuration Maximum permitted sale duration in seconds.
+src/interfaces/IRaffleFactory.sol:112:    /// @notice Returns the immutable Chainlink VRF v2.5 native direct-funding wrapper used by every raffle.
+src/interfaces/IRaffleFactory.sol:114:    function vrfWrapper() external view returns (address wrapperAddress);
+src/interfaces/IRaffle.sol:4:import { IVRFV2PlusWrapper } from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol";
+src/interfaces/IRaffle.sol:26:        /// @notice A Chainlink VRF request was accepted and its callback window is open.
+src/interfaces/IRaffle.sol:82:    /// @notice Emitted when the raffle pays for and records its one Chainlink VRF request.
+src/interfaces/IRaffle.sol:102:    event VrfCallbackIgnored(uint256 indexed receivedRequestId, uint256 indexed expectedRequestId, Status status);
+src/interfaces/IRaffle.sol:105:    /// @param requestId Request ID that produced the accepted randomness.
+src/interfaces/IRaffle.sol:250:    error InsufficientVrfFee(uint256 requiredFee, uint256 suppliedValue);
+src/interfaces/IRaffle.sol:316:    /// @notice Pays the current native Chainlink fee and requests the raffle's one random word.
+src/interfaces/IRaffle.sol:361:    function getVrfRequestPrice() external view returns (uint256 fee);
+src/interfaces/IRaffle.sol:365:    /// @return fee Estimated native-token wei for the configured callback and one random word.
+src/interfaces/IRaffle.sol:366:    function estimateVrfRequestPrice(uint256 requestGasPriceWei) external view returns (uint256 fee);
+src/interfaces/IRaffle.sol:426:    /// @notice Returns the immutable Chainlink VRF v2.5 native direct-funding wrapper.
+src/interfaces/IRaffle.sol:428:    function vrfWrapper() external view returns (IVRFV2PlusWrapper wrapper);
+src/interfaces/IRaffle.sol:484:    function vrfRequestId() external view returns (uint256 requestId);
+src/RaffleFactory.sol:25:    uint32 public constant override callbackGasLimit = RaffleConstants.VRF_CALLBACK_GAS_LIMIT;
+src/RaffleFactory.sol:28:    uint16 public constant override requestConfirmations = RaffleConstants.VRF_REQUEST_CONFIRMATIONS;
+src/RaffleFactory.sol:36:    address public immutable override vrfWrapper;
+src/RaffleFactory.sol:63:    /// @param vrfWrapper_ Official Chainlink VRF v2.5 native direct-funding wrapper for the target chain.
+src/RaffleFactory.sol:65:    constructor(address quoteToken_, address vrfWrapper_, address protocolTreasury_) {
+src/RaffleFactory.sol:67:        _requireContract(vrfWrapper_);
+src/RaffleFactory.sol:80:        if (protocolTreasury_ == address(this) || protocolTreasury_ == quoteToken_ || protocolTreasury_ == vrfWrapper_)
+src/RaffleFactory.sol:86:        vrfWrapper = vrfWrapper_;
+src/RaffleFactory.sol:89:        address implementation = address(new Raffle(quoteToken_, vrfWrapper_));
+src/RaffleFactory.sol:99:        uint256 currentTime = block.timestamp;
+src/RaffleFactory.sol:158:            params.prizeToken == address(this) || params.prizeToken == quoteToken || params.prizeToken == vrfWrapper
+src/RaffleFactory.sol:165:                || params.sponsorRecipient == vrfWrapper || params.sponsorRecipient == params.prizeToken
+src/libraries/RaffleConstants.sol:39:    uint32 internal constant VRF_CALLBACK_GAS_LIMIT = 300_000;
+src/libraries/RaffleConstants.sol:42:    uint16 internal constant VRF_REQUEST_CONFIRMATIONS = 30;
+node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:20:     *   bytes4(keccak256('transferAndCall(address,uint256)')) ^
+node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:21:     *   bytes4(keccak256('transferAndCall(address,uint256,bytes)')) ^
+node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:22:     *   bytes4(keccak256('transferFromAndCall(address,address,uint256)')) ^
+node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:23:     *   bytes4(keccak256('transferFromAndCall(address,address,uint256,bytes)')) ^
+node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:24:     *   bytes4(keccak256('approveAndCall(address,uint256)')) ^
+node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:25:     *   bytes4(keccak256('approveAndCall(address,uint256,bytes)'))
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:126:            mstore(add(ptr, 0x78), keccak256(add(ptr, 0x0c), 0x37))
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:127:            predicted := and(keccak256(add(ptr, 0x43), 0x55), 0xffffffffffffffffffffffffffffffffffffffff)
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:236:        return Create2.computeAddress(salt, keccak256(bytecode), deployer);
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:274:     * abi.encodePacked is more expensive but also more portable and easier to review.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:285:            abi.encodePacked(
+node_modules/@openzeppelin/contracts/utils/Strings.sol:114:            hashValue := shr(96, keccak256(add(buffer, 0x22), 40))
+node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:35:    // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.ReentrancyGuard")) - 1)) & ~bytes32(uint256(0xff))
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:4:interface IVRFV2PlusWrapper {
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:6:   * @return the request ID of the most recent VRF V2 request made by this wrapper. This should only
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:12:   * @notice Calculates the price of a VRF request with the given callbackGasLimit at the current
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:24:   * @notice Calculates the price of a VRF request in native with the given callbackGasLimit at the current
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:36:   * @notice Estimates the price of a VRF request with a specific gas limit and gas price.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:52:   * @notice Estimates the price of a VRF request in native with a specific gas limit and gas price.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:68:   * @notice Requests randomness from the VRF V2 wrapper, paying in native token.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:74:  function requestRandomWordsInNative(
+node_modules/@openzeppelin/contracts/utils/Create2.sol:88:            addr := and(keccak256(start, 0x55), 0xffffffffffffffffffffffffffffffffffffffff)
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol:5:library VRFV2PlusClient {
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol:7:  bytes4 public constant EXTRA_ARGS_V1_TAG = bytes4(keccak256("VRF ExtraArgsV1"));
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol:13:  struct RandomWordsRequest {
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:341:     * implement alternative mechanisms to perform token transfer, such as signature-based.
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:178:     * `abi.encodePacked`.
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:251:        return a.length == b.length && keccak256(a) == keccak256(b);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:5:import {IVRFV2PlusWrapper} from "./interfaces/IVRFV2PlusWrapper.sol";
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:9: * @notice Interface for contracts using VRF randomness through the VRF V2 wrapper
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:13: * @dev Create VRF V2+ requests without the need for subscription management. Rather than creating
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:14: * @dev and funding a VRF V2+ subscription, a user can use this wrapper to create one off requests,
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:19: * @dev usage, in addition to some extra overhead costs associated with the VRFV2Wrapper contract.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:23: * @dev Calling contracts must inherit from VRFV2PlusWrapperConsumerBase. The consumer must be funded
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:24: * @dev with enough LINK or ether to make the request, otherwise requests will revert. To request randomness,
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:25: * @dev call the 'requestRandomWords' function with the desired VRF parameters. This function handles
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:28: * @dev Consumers must implement the fullfillRandomWords function, which will be called during
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:29: * @dev fulfillment with the randomness result.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:31:abstract contract VRFV2PlusWrapperConsumerBase {
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:32:  error OnlyVRFWrapperCanFulfill(address have, address want);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:35:  IVRFV2PlusWrapper public immutable i_vrfV2PlusWrapper;
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:38:   * @param _vrfV2PlusWrapper is the address of the VRFV2Wrapper contract
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:41:    address _vrfV2PlusWrapper
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:43:    IVRFV2PlusWrapper vrfV2PlusWrapper = IVRFV2PlusWrapper(_vrfV2PlusWrapper);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:45:    i_linkToken = LinkTokenInterface(vrfV2PlusWrapper.link());
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:46:    i_vrfV2PlusWrapper = vrfV2PlusWrapper;
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:50:   * @dev Requests randomness from the VRF V2+ wrapper.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:53:   *        fulfillRandomWords function.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:56:   *        that a chain re-org changes a published randomness outcome.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:57:   * @param _numWords is the number of random words to request.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:59:   * @return requestId is the VRF V2+ request ID of the newly created randomness request.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:62:  function requestRandomness(
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:68:    reqPrice = i_vrfV2PlusWrapper.calculateRequestPrice(_callbackGasLimit, _numWords);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:70:      address(i_vrfV2PlusWrapper), reqPrice, abi.encode(_callbackGasLimit, _requestConfirmations, _numWords, extraArgs)
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:72:    return (i_vrfV2PlusWrapper.lastRequestId(), reqPrice);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:76:  function requestRandomnessPayInNative(
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:82:    requestPrice = i_vrfV2PlusWrapper.calculateRequestPriceNative(_callbackGasLimit, _numWords);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:84:      i_vrfV2PlusWrapper.requestRandomWordsInNative{value: requestPrice}(
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:92:   * @notice fulfillRandomWords handles the VRF V2 wrapper response. The consuming contract must
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:95:   * @param _requestId is the VRF V2 request ID.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:96:   * @param _randomWords is the randomness result.
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:99:  function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) internal virtual;
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:101:  function rawFulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) external {
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:102:    address vrfWrapperAddr = address(i_vrfV2PlusWrapper);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:103:    if (msg.sender != vrfWrapperAddr) {
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:104:      revert OnlyVRFWrapperCanFulfill(msg.sender, vrfWrapperAddr);
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:106:    fulfillRandomWords(_requestId, _randomWords);
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:461:        result = abi.encodePacked(b.length, e.length, mLen, b, e, m);

@@ -1,0 +1,649 @@
+{
+  "reconciled_utc": "2026-10-22T00:08:16.229590+00:00",
+  "source_report": {
+    "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+    "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/REPORT.md",
+    "sha256": "32ad9d271ef4d3ecb7f4b093b22d0beed2162305e29a5d746e5f907038e90360",
+    "seal": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/FINAL-SEAL.json",
+    "seal_sha256": "f0adec605906be11bab443e05711eae6278de90b076f100ade0ead817c2a1b4f",
+    "seal_verified": true,
+    "frozen_target": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+    "completion_receipt": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/COORDINATOR-DAYBREAK/attempt-01/daybreak-tob-adjudication/completion-receipt.json",
+    "completion_receipt_sha256": "db0cc0de07f46980d1883cbe5a5d59cd90a4c9eac9f456960eb77ece9fedbed1",
+    "qualification": "Qualified six declared native stages with append-only semantic adjudication; Critical dissent, source-seal-version gap and bounded proof limits retained.",
+    "source_only": false,
+    "post_seal_tool_exposure": true,
+    "native_manifest_entries": 807,
+    "source_first_hash_unchanged": "981bea8dd6fe0e96328c38cf8375f93bc8bdf272476b4defcbeca71fdfdd9bc6",
+    "native_property_ledger": [
+      {
+        "original_id": "LIF-01",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 9,
+        "native_row": "| LIF-01 | A clone can be initialized exactly once and only by its immutable factory. | `test_InitializationIsFactoryOnlyAndOneTime`; manual review of `Raffle.sol:176-205`. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "LIF-02",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 10,
+        "native_row": "| LIF-02 | The shared implementation is locked and inert in `Refunding`; a successful clone initialization ends in `AwaitingPrize`. | Same unit test; constructor and initializer review at `Raffle.sol:155-166,176-205`. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "LIF-03",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 11,
+        "native_row": "| LIF-03 | Only the exact configured prize transfer tuple can activate `AwaitingPrize -> Active`. | `test_PrizeWithoutReceiverCallbackIsRejectedAtomically`; callback review at `Raffle.sol:416-430`. | Pass for callback tuple and atomic rollback. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "LIF-04",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 12,
+        "native_row": "| LIF-04 | Activation implies genuine persistent custody of the prize rather than only sponsor-selected contract assertions. | `test_Evidence_MaliciousPrizeCanFakeEscrowAndDelivery`; negative property `test_Property_PrizeEscrowRequiresRealRatherThanSelfReportedCustody`. | **Fail:** an adversarial ERC-721 can invoke the expected callback and lie through `ownerOf`. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "LIF-05",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 13,
+        "native_row": "| LIF-05 | Purchases are possible only while `Active` and strictly before `endTime`. | `test_SaleAndDrawRequestTimeBoundaries`; `Raffle.sol:215-216`. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "LIF-06",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 14,
+        "native_row": "| LIF-06 | A sold raffle can request a draw only in `[endTime,endTime+2 days)` and an empty raffle cannot request. | Boundary unit test plus manual review of `Raffle.sol:240-260,458-460`. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "LIF-07",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 15,
+        "native_row": "| LIF-07 | A callback is accepted only from the immutable wrapper, for the stored request, with exactly one word, while `Drawing`, not in-flight, and strictly before the callback deadline. | `test_SynchronousWrongShapeWrongIdAndDuplicateCallbacksAreContained`, `test_CallbackDeadlineIsExclusiveAndRefundOpensAtBoundary`; inherited gateway at `VRFV2PlusWrapperConsumerBase.sol:101-107`. | Pass under the configured-wrapper identity assumption. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "LIF-08",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 16,
+        "native_row": "| LIF-08 | Refunds become available at, not before, the applicable exclusive deadline; a late callback cannot resolve after that point. | Both timing tests; `Raffle.sol:276-300,509-523`. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "LIF-09",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 17,
+        "native_row": "| LIF-09 | Once a callback chooses `NftWon` or `CashWon`, wrong/duplicate callbacks cannot rewrite the result. | Callback containment test and source state gate. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "AUTH-01",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 23,
+        "native_row": "| AUTH-01 | Only the current winning-ticket owner can redeem; settlement cannot redirect the claim. | `test_CurrentOwnerAuthorizationAndPermissionlessFixedDestinationClaims`; `Raffle.sol:304-345`. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "AUTH-02",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 24,
+        "native_row": "| AUTH-02 | ERC-721 owners and approved operators, and no others, control ticket transfer/approval. | `test_ERC721RuntimeConformanceOnClone`; OpenZeppelin authorization review. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "AUTH-03",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 25,
+        "native_row": "| AUTH-03 | Any keeper may settle or release allocated proceeds, but sponsor and protocol funds always go to immutable destinations. | Current-owner/fixed-destination test; `Raffle.sol:375-406`. | Pass, subject to destination safety findings DST-02 and PRIZE-03. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "AUTH-04",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 26,
+        "native_row": "| AUTH-04 | Only the immutable VRF wrapper reaches the internal callback. | Wrong-caller portion of the callback containment test; base source at lines 101-107. | Pass for address authentication; wrapper correctness remains external. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "AUTH-05",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 27,
+        "native_row": "| AUTH-05 | Only the sponsor may cancel an empty active raffle before sale end; after deadlines transitions are permissionless. | Manual control-flow review of `Raffle.sol:276-300` and timing tests for permissionless deadline paths. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "ACC-01",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 33,
+        "native_row": "| ACC-01 | Every successful purchase creates one positive, sequential, disjoint range; all ranges partition `1..totalEntries`. | 10,000-run Foundry fuzz test; 256\u00d7128-call Foundry invariant; 20,007-call Echidna campaign. | Pass for generated sequences. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "ACC-02",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 34,
+        "native_row": "| ACC-02 | During active sales, `unsettledPot == grossSales == totalEntries * ENTRY_PRICE == accountedQuoteBalance`. | Fuzz, Foundry invariant, and Echidna property. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "ACC-03",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 35,
+        "native_row": "| ACC-03 | With the canonical fee-free quote-token model, actual raffle custody equals recorded liability. | Fuzz, Foundry invariant, and Echidna property using the standard mock. | Pass under the canonical-token assumption. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "ACC-04",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 36,
+        "native_row": "| ACC-04 | Refund activation moves the entire unsettled pot into refund liability, and each burned ticket consumes exactly its range length times entry price. | `test_RefundsBurnTicketsAndConserveFullPot`. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "ACC-05",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 37,
+        "native_row": "| ACC-05 | Terminal settlement replaces the full pot with winner/sponsor/protocol buckets whose sum equals gross, without transferring assets. | NFT and cash settlement tests; `Raffle.sol:533-557`. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "ACC-06",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 38,
+        "native_row": "| ACC-06 | Reachable fee arithmetic is exact: protocol receives 50,000 raw units per entry; cash winner receives 800,000; sponsor receives the remainder. | 10,000-run pure fuzz test across `uint128` entries and both result branches. | Pass. Because every gross pot is a multiple of 1,000,000, no reachable rounding dust exists. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "ACC-07",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 39,
+        "native_row": "| ACC-07 | Claim paths clear the corresponding bucket/flag before an external transfer, and a failed transfer reverts the entire change. | Source CEI review and atomic-revert recipient/token tests. | Pass for honest/standard tokens; malicious prize truthfulness remains failed under PRIZE-02. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "ACC-08",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 40,
+        "native_row": "| ACC-08 | Merely returning success from a six-decimal quote token must imply the exact requested balance delta. | `test_Evidence_FeeOnTransferQuoteCreatesCustodyDeficit`. | **Conditional failure:** a 1% fee token records 10,000,000 liability while receiving 9,900,000. Deployment must enforce official fee-free USDC identity. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "ACC-09",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 41,
+        "native_row": "| ACC-09 | Active sales have no terminal/refund liabilities or completion flags. | 256\u00d7128-call Foundry invariant and Echidna property. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "TKT-01",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 47,
+        "native_row": "| TKT-01 | Safe mint to an incompatible contract recipient reverts payment, range, count, liability, and ownership atomically. | `test_IncompatibleTicketRecipientRevertsPurchaseAtomically`. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "TKT-02",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 48,
+        "native_row": "| TKT-02 | Redemption/refund burns the bearer ticket exactly when its associated claim is consumed. | NFT/cash redemption and refund tests. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "TKT-03",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 49,
+        "native_row": "| TKT-03 | Historical range data remains available after burns but cannot independently authorize another claim. | Manual review of `_ticketRanges`, current-owner checks, one-time flags, and mutually exclusive states. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "ERC-01",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 50,
+        "native_row": "| ERC-01 | `Raffle` exposes the required ERC-721 functions, return types, mutability, events, and indexed fields. | Actual `slither-check-erc . Raffle --erc ERC721`. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "ERC-02",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 51,
+        "native_row": "| ERC-02 | A deployed clone reports ERC-165/ERC-721/metadata support and performs approval, transfer, balance, ownership, and safe-receiver rollback correctly. | `test_ERC721RuntimeConformanceOnClone`. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "RE-01",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 57,
+        "native_row": "| RE-01 | Quote-token and ticket-receiver callbacks cannot reenter the protected purchase path. | `test_TicketReceiverAndQuoteCallbacksCannotReenterProtectedPurchase`. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "RE-02",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 58,
+        "native_row": "| RE-02 | A synchronous VRF callback cannot resolve before the returned request ID is persisted. | Synchronous callback portion of callback containment test. | Pass; callback is ignored while `_requestInFlight` is true. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "RE-03",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 59,
+        "native_row": "| RE-03 | A sponsor-selected prize cannot mutate the newly active clone before `createRaffle` returns and publishes `RaffleCreated`. | `test_Evidence_PrizeCanBuyEntriesBeforeCreateRaffleReturns`. | **Fail:** the prize callback can buy a ticket after activation but before the factory\u2019s post-transfer checks/event. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "RE-04",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 60,
+        "native_row": "| RE-04 | All bounded ticket-refund iterations avoid external calls until the single aggregate quote payout after the loop. | Slither `calls-loop` findings and source review. | Pass. Both reported call paths are infeasible during `_burn`: `to == address(0)` short-circuits the entire `_isProtocolDestination` invocation at `Raffle.sol:498`. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "PRIZE-01",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 66,
+        "native_row": "| PRIZE-01 | A prize implementation that does not execute the required receiver callback cannot create a raffle, and all creation state rolls back. | `test_PrizeWithoutReceiverCallbackIsRejectedAtomically`. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "PRIZE-02",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 67,
+        "native_row": "| PRIZE-02 | Arbitrary sponsor-selected prize code cannot fake escrow or delivery using self-reported ERC-165/callback/`ownerOf` behavior. | Malicious-prize reproduction and negative property campaign. | **Fail.** This violates the DESIGN.md untrusted-prize boundary and is the highest-priority result. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "PRIZE-03",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 68,
+        "native_row": "| PRIZE-03 | Delivery to a contract winner/sponsor recipient checks ERC-721 receiver acceptance and reverts on incompatibility. | `test_Evidence_PrizeTransferSkipsIncompatibleContractReceiverCheck`; `Raffle.sol:329-337,395-406`. | **Fail:** both paths use `transferFrom`, so a contract can receive and strand the prize without a callback. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "DST-01",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 69,
+        "native_row": "| DST-01 | The raffle rejects itself, its factory, implementation, local registered raffles, quote token, wrapper, and prize token as ticket/payout destinations. | `test_SameFactoryRaffleDestinationIsRejected`; source review of `Raffle.sol:587-604`. | Pass for same-factory/local plumbing. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "DST-02",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 70,
+        "native_row": "| DST-02 | Assets never move into a raffle clone created by another factory. | Cross-factory reproduction and negative property `test_Property_AllRaffleClonesAreRejectedDestinations`. | **Fail:** the destination classifier queries only its own factory registry. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "DST-03",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 71,
+        "native_row": "| DST-03 | A permissionless caller cannot redirect sponsor/protocol claims. | Fixed-destination claims test. | Pass. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "VRF-01",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 77,
+        "native_row": "| VRF-01 | The local consumer binds resolution to wrapper caller, stored request ID, one word, state, and time. | Callback tests and source review. | Pass locally. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "VRF-02",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 78,
+        "native_row": "| VRF-02 | The deployed wrapper returns a unique accepted request ID and unpredictable unbiased word bound to that request. | Interface/source review; wrapper implementation absent. | **Unresolved external assumption.** Local source cannot establish deployed identity or implementation behavior. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      },
+      {
+        "original_id": "VRF-03",
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md",
+        "line": 79,
+        "native_row": "| VRF-03 | Mapping a 256-bit uniform word with `% totalEntries + 1` yields a valid one-based entry. | Manual arithmetic review and callback tests. | Pass for range; modulo bias is nonzero in theory but bounded by less than `totalEntries / 2^256` (at most about `2^-128`) and is informational. |",
+        "qualification": "Native result over its named source/mock/test domain, not all EVM states. Intentional failures remain failures."
+      }
+    ],
+    "campaigns": {
+      "unit_fuzz": {
+        "tests": 21,
+        "pass": 21,
+        "fail": 0,
+        "skip": 0,
+        "fuzz_properties": 2,
+        "cases_each": 10000,
+        "evidence": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tool-output/04-foundry-unit-fuzz-final-json.stdout"
+      },
+      "invariants": {
+        "properties": 3,
+        "runs_each": 256,
+        "depth": 128,
+        "calls_each": 32768,
+        "reported_total_calls": 98304,
+        "evidence": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tool-output/04-foundry-invariant-final-json.stdout",
+        "scope": "single-actor purchase-only active sales"
+      },
+      "intentional_negative_properties": {
+        "failures": 2,
+        "exit": 1,
+        "names": [
+          "test_Property_AllRaffleClonesAreRejectedDestinations",
+          "test_Property_PrizeEscrowRequiresRealRatherThanSelfReportedCustody"
+        ],
+        "expected_counterexamples": true
+      },
+      "echidna": {
+        "properties": 4,
+        "calls": 20007,
+        "seed": 1396142931,
+        "sequence_length": 64,
+        "evidence": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tool-output/04-echidna-final-result.json",
+        "scope": "single-actor purchase-only; at most64 successful buys per state"
+      },
+      "slither": {
+        "results": 14,
+        "high_medium": 0,
+        "exit": 255,
+        "triage": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SLITHER_TRIAGE.md"
+      },
+      "no_formal_proof": true
+    },
+    "proof_limits": [
+      "Critical remains native dissent, conditional RF-001 High controlling classification; uncapped sales alone do not prove unconditional Critical.",
+      "RF-002 now explicitly includes existing cross-factory clone ticket loss, separate from future same-factory sponsor-prize return. CONFIG-001 applies to future treasury collision, not automatically the cross-factory case.",
+      "OBS-004 retains actual-call receiver capability observation. Do not attach DAYBREAK-F-03 to OBS-004 merely because it also involves a recipient; correction receipt removes that edge.",
+      "OOS-01 and UL-05 are EVIDENCE-001 external boundaries, not in-scope frontend vulnerabilities.",
+      "Foundry invariants target only S6PurchaseHandler.buy: one actor, one raffle, entries1..1000, active sales. Echidna has the same purchase-only domain and64-success cap/no-op afterward. Zero reverts does not mean terminal exits or multi-actor authorization were explored.",
+      "21 unit/fuzz tests include separate lifecycle/adversarial examples; two10000-case fuzz properties do not turn the active-only invariant campaign into terminal proof. No formal verification.",
+      "Native source-first SEAL changed between watcher observations; old seal bytes unavailable. Native final wording immutable seal is qualified by that retained gap; first-pass report bytes stayed identical.",
+      "Safe-transfer acceptance does not guarantee future bearer capability; suggested recovery/rotation changes require ownership and liability policy. No patch or owner risk acceptance."
+    ],
+    "new_roots": 0
+  },
+  "qualification": {
+    "lane": "DAYBREAK-TOB/attempt-03/S6 secure-workflow-guide",
+    "target_commit": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+    "receipt_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/COORDINATOR-DAYBREAK/attempt-01/daybreak-tob-adjudication/completion-receipt.json",
+    "receipt_sha256": "db0cc0de07f46980d1883cbe5a5d59cd90a4c9eac9f456960eb77ece9fedbed1",
+    "seal_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/COORDINATOR-DAYBREAK/attempt-01/daybreak-tob-adjudication/SEAL.json",
+    "seal_sha256": "88d6fe572781c0272d2b7e7dc7edc7bd220058fadbaec2fe68a75941ba3be6bf",
+    "disposition": "Qualified six declared native stages with append-only semantic adjudication; Critical dissent, source-seal-version gap and bounded proof limits retained.",
+    "mapping_correction_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/COORDINATOR-DAYBREAK/attempt-01/daybreak-tob-adjudication/SEMANTIC-MAPPING-CORRECTION.json",
+    "mapping_correction_sha256": "c4c0c6949d6bbfdbd3bb557c753878e51ab542f3a8594827cd3d41ee3c3e5c6d",
+    "no_global_completion_claim": true
+  },
+  "append_attributions": [
+    {
+      "target": "RF-001",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/REPORT.md",
+      "report_line": 97,
+      "original_id": "DAYBREAK-F-01",
+      "original_label": "### DAYBREAK-F-01 \u2014 Critical \u2014 An untrusted prize can fake escrow and delivery while buyer-funded proceeds are released",
+      "original_severity": "Critical",
+      "original_status": "native final synthesis; severity disagreement preserved",
+      "external_boundary_only": false,
+      "related_entries": []
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/REPORT.md",
+      "report_line": 129,
+      "original_id": "DAYBREAK-F-02",
+      "original_label": "### DAYBREAK-F-02 \u2014 Medium \u2014 Prize delivery skips contract-recipient acceptance",
+      "original_severity": "Medium",
+      "original_status": "native final synthesis; severity disagreement preserved",
+      "external_boundary_only": false,
+      "related_entries": []
+    },
+    {
+      "target": "RF-002",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/REPORT.md",
+      "report_line": 149,
+      "original_id": "DAYBREAK-F-03",
+      "original_label": "### DAYBREAK-F-03 \u2014 Low \u2014 Clone-destination isolation is incomplete",
+      "original_severity": "Low",
+      "original_status": "native final synthesis; severity disagreement preserved",
+      "external_boundary_only": false,
+      "related_entries": [
+        "CONFIG-001"
+      ]
+    },
+    {
+      "target": "OBS-006",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/REPORT.md",
+      "report_line": 180,
+      "original_id": "DAYBREAK-F-04",
+      "original_label": "### DAYBREAK-F-04 \u2014 Low \u2014 Prize callback can create ticket state before canonical publication",
+      "original_severity": "Low",
+      "original_status": "native final synthesis; severity disagreement preserved",
+      "external_boundary_only": false,
+      "related_entries": []
+    },
+    {
+      "target": "OBS-003",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/REPORT.md",
+      "report_line": 200,
+      "original_id": "DAYBREAK-F-05",
+      "original_label": "### DAYBREAK-F-05 \u2014 Informational/conditional \u2014 Nominal quote accounting depends on official fee-free token behavior",
+      "original_severity": "Informational/conditional",
+      "original_status": "native final synthesis; severity disagreement preserved",
+      "external_boundary_only": false,
+      "related_entries": []
+    },
+    {
+      "target": "DOC-001",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/REPORT.md",
+      "report_line": 222,
+      "original_id": "DAYBREAK-DIV-01",
+      "original_label": "### DAYBREAK-DIV-01 \u2014 Low \u2014 Sponsor-only early closure of an empty raffle is absent from `DESIGN.md`",
+      "original_severity": "Low",
+      "original_status": "native final synthesis; severity disagreement preserved",
+      "external_boundary_only": false,
+      "related_entries": []
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/REPORT.md",
+      "report_line": 232,
+      "original_id": "DAYBREAK-OOS-01",
+      "original_label": "### DAYBREAK-OOS-01 \u2014 Informational \u2014 Frontend current-state rereads are unverifiable",
+      "original_severity": "Informational",
+      "original_status": "native final synthesis; severity disagreement preserved",
+      "external_boundary_only": true,
+      "related_entries": []
+    },
+    {
+      "target": "RF-001",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/FINDINGS.md",
+      "report_line": 3,
+      "original_id": "S6-01",
+      "original_label": "## S6-01 \u2014 High \u2014 An adversarial prize contract can fake escrow and delivery",
+      "original_severity": "High",
+      "original_status": "post-source-seal native finding with executed bounded mock"
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/FINDINGS.md",
+      "report_line": 13,
+      "original_id": "S6-02",
+      "original_label": "## S6-02 \u2014 Medium \u2014 Prize delivery skips contract-recipient acceptance",
+      "original_severity": "Medium",
+      "original_status": "post-source-seal native finding with executed bounded mock"
+    },
+    {
+      "target": "RF-002",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/FINDINGS.md",
+      "report_line": 23,
+      "original_id": "S6-03",
+      "original_label": "## S6-03 \u2014 Low \u2014 Destination isolation is scoped to one factory",
+      "original_severity": "Low",
+      "original_status": "post-source-seal native finding with executed bounded mock"
+    },
+    {
+      "target": "OBS-006",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/FINDINGS.md",
+      "report_line": 33,
+      "original_id": "S6-04",
+      "original_label": "## S6-04 \u2014 Low \u2014 Prize callback can create pre-publication ticket state",
+      "original_severity": "Low",
+      "original_status": "post-source-seal native finding with executed bounded mock"
+    },
+    {
+      "target": "OBS-003",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/FINDINGS.md",
+      "report_line": 43,
+      "original_id": "S6-05",
+      "original_label": "## S6-05 \u2014 Informational/conditional \u2014 Quote accounting requires canonical fee-free token identity",
+      "original_severity": "Informational/conditional",
+      "original_status": "post-source-seal native finding with executed bounded mock"
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/REPORT.md",
+      "report_line": 532,
+      "original_id": "UL-01",
+      "original_label": "1. The actual Chainlink wrapper address, implementation, proxy/admin state, request-ID binding, pricing behavior, retry policy, liveness, and word provenance were not supplied.",
+      "original_severity": null,
+      "original_status": "unresolved external lead",
+      "id_origin": "Coordinator receipt assigns UL-01..08 to the native numbered list; original ordinal retained.",
+      "native_ordinal": 1,
+      "external_boundary_only": false
+    },
+    {
+      "target": "OBS-003",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/REPORT.md",
+      "report_line": 533,
+      "original_id": "UL-02",
+      "original_label": "2. The actual chain ID and quote-token address, implementation, proxy/admin state, and official-USDC provenance were not supplied.",
+      "original_severity": null,
+      "original_status": "unresolved external lead",
+      "id_origin": "Coordinator receipt assigns UL-01..08 to the native numbered list; original ordinal retained.",
+      "native_ordinal": 2,
+      "external_boundary_only": false
+    },
+    {
+      "target": "RF-001",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/REPORT.md",
+      "report_line": 534,
+      "original_id": "UL-03",
+      "original_label": "3. No claim is made that any deployed prize contract is malicious; DAYBREAK-F-01 establishes a permitted source path and an isolated reproduction.",
+      "original_severity": null,
+      "original_status": "unresolved external lead",
+      "id_origin": "Coordinator receipt assigns UL-01..08 to the native numbered list; original ordinal retained.",
+      "native_ordinal": 3,
+      "external_boundary_only": false
+    },
+    {
+      "target": "RF-002",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/REPORT.md",
+      "report_line": 535,
+      "original_id": "UL-04",
+      "original_label": "4. No deployed factory nonce, transaction order, recipient, or affected future-clone address was checked.",
+      "original_severity": null,
+      "original_status": "unresolved external lead",
+      "id_origin": "Coordinator receipt assigns UL-01..08 to the native numbered list; original ordinal retained.",
+      "native_ordinal": 4,
+      "external_boundary_only": false
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/REPORT.md",
+      "report_line": 536,
+      "original_id": "UL-05",
+      "original_label": "5. The precise frontend/indexer/keeper revision remains absent.",
+      "original_severity": null,
+      "original_status": "unresolved external lead",
+      "id_origin": "Coordinator receipt assigns UL-01..08 to the native numbered list; original ordinal retained.",
+      "native_ordinal": 5,
+      "external_boundary_only": true
+    },
+    {
+      "target": "CLOSED-003",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/REPORT.md",
+      "report_line": 537,
+      "original_id": "UL-06",
+      "original_label": "6. `uint64(block.timestamp)` narrowing at draw request and resolution lacks an explicit range guard; this is a far-future representation lead.",
+      "original_severity": null,
+      "original_status": "unresolved external lead",
+      "id_origin": "Coordinator receipt assigns UL-01..08 to the native numbered list; original ordinal retained.",
+      "native_ordinal": 6,
+      "external_boundary_only": false
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/REPORT.md",
+      "report_line": 538,
+      "original_id": "UL-07",
+      "original_label": "7. Concrete contract-recipient capabilities beyond `IERC721Receiver` remain deployment-specific.",
+      "original_severity": null,
+      "original_status": "unresolved external lead",
+      "id_origin": "Coordinator receipt assigns UL-01..08 to the native numbered list; original ordinal retained.",
+      "native_ordinal": 7,
+      "external_boundary_only": false
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "DAYBREAK-TOB/attempt-03/final-six-stage",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/REPORT.md",
+      "report_line": 539,
+      "original_id": "UL-08",
+      "original_label": "8. Chain-specific timestamp/sequencer behavior and live wrapper transactions were not exercised.",
+      "original_severity": null,
+      "original_status": "unresolved external lead",
+      "id_origin": "Coordinator receipt assigns UL-01..08 to the native numbered list; original ordinal retained.",
+      "native_ordinal": 8,
+      "external_boundary_only": false
+    }
+  ],
+  "proof_evidence": {
+    "malicious_prize": {
+      "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tests/sources/S6SecureWorkflow.t.sol",
+      "line": 393,
+      "result": "Executed fake custody and fake delivery with sponsor/protocol payout; actualOwner remains sponsor. Conditional adversarial mock, not a deployed-collection claim."
+    },
+    "contract_receiver": {
+      "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tests/sources/S6SecureWorkflow.t.sol",
+      "line": 528,
+      "receiver_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tests/sources/S6Mocks.sol",
+      "receiver_line": 314,
+      "result": "TicketOnlyReceiver actually calls redeem() at line328; no impossible contract impersonation. It accepts only ticket callbacks, has no NFT transfer-out function, and receives the prize via unsafe transfer. Sponsor or buyer must select the incapable owner."
+    },
+    "cross_factory": {
+      "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tests/sources/S6SecureWorkflow.t.sol",
+      "line": 518,
+      "result": "Owner selects an existing other-factory clone as unsafe ticket destination. Local registry omits it. Ticket reaches clone with no general execution method. Distinct executed RF-002 variant requiring no future nonce; self-selected asset loss, not theft."
+    }
+  },
+  "scope_qualifications": [
+    "Critical remains native dissent, conditional RF-001 High controlling classification; uncapped sales alone do not prove unconditional Critical.",
+    "RF-002 now explicitly includes existing cross-factory clone ticket loss, separate from future same-factory sponsor-prize return. CONFIG-001 applies to future treasury collision, not automatically the cross-factory case.",
+    "OBS-004 retains actual-call receiver capability observation. Do not attach DAYBREAK-F-03 to OBS-004 merely because it also involves a recipient; correction receipt removes that edge.",
+    "OOS-01 and UL-05 are EVIDENCE-001 external boundaries, not in-scope frontend vulnerabilities.",
+    "Foundry invariants target only S6PurchaseHandler.buy: one actor, one raffle, entries1..1000, active sales. Echidna has the same purchase-only domain and64-success cap/no-op afterward. Zero reverts does not mean terminal exits or multi-actor authorization were explored.",
+    "21 unit/fuzz tests include separate lifecycle/adversarial examples; two10000-case fuzz properties do not turn the active-only invariant campaign into terminal proof. No formal verification.",
+    "Native source-first SEAL changed between watcher observations; old seal bytes unavailable. Native final wording immutable seal is qualified by that retained gap; first-pass report bytes stayed identical.",
+    "Safe-transfer acceptance does not guarantee future bearer capability; suggested recovery/rotation changes require ownership and liability policy. No patch or owner risk acceptance."
+  ],
+  "initial_verifier_path_diagnostic": "Two ADJUDICATION path failures used receipt-local base; explicit audit-root path in request/manifest resolves and exact hash verifies. Original diagnostic retained.",
+  "new_roots": 0,
+  "owner_acceptance": false
+}

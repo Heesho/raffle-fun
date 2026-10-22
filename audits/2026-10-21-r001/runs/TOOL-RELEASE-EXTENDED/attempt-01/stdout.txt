@@ -1,0 +1,458 @@
+Compiling 3 files with Solc 0.8.36
+Solc 0.8.36 finished in 6.19s
+Compiler run successful!
+
+Ran 1 test for test/foundry/fork/EthereumFork.t.sol:EthereumForkTest
+[SKIP: skipped] setUp() (gas: 0)
+Suite result: ok. 0 passed; 0 failed; 1 skipped; finished in 8.07ms (0.00ns CPU time)
+
+Ran 11 tests for test/foundry/security/RaffleSecurity.t.sol:RaffleSecurityTest
+[PASS] testCallbackMakesNoQuoteOrPrizeExternalTransfers() (gas: 1793481)
+[PASS] testFactoryReentrancyDuringPrizeEscrowIsBlockedAtomically() (gas: 1878172)
+[PASS] testFalseReturningOutboundTransferRestoresClaimAndAccounting() (gas: 5850085)
+[PASS] testFalseReturningQuoteCannotCreateReceipt() (gas: 4895430)
+[PASS] testFalseReturningWinnerTransferRestoresTicketAndLazySettlement() (gas: 5958088)
+[PASS] testPrizeCannotReenterDuringSponsorSafeTransfer() (gas: 2528322)
+[PASS] testPrizeCannotReenterDuringWinnerTransfer() (gas: 2498224)
+[PASS] testProtocolDestinationsCannotReceiveReceiptsOrPayouts() (gas: 1142152)
+[PASS] testReentrantQuoteTokenCannotNestInboundPurchase() (gas: 5463005)
+[PASS] testReentrantQuoteTokenCannotNestWinnerWithdrawal() (gas: 5850208)
+[PASS] testReentrantReceiptReceiverCannotNestPurchase() (gas: 966361)
+Suite result: ok. 11 passed; 0 failed; 0 skipped; finished in 10.94ms (7.83ms CPU time)
+
+Ran 11 tests for test/foundry/security/VrfAdversarial.t.sol:VrfAdversarialTest
+[PASS] testAuthenticatedValidCallbackAtDeadlineIsIgnoredBeforeRefunds() (gas: 792791)
+[PASS] testFeeReadAndRequestFailuresRollBackToActiveThenRefundAtDeadline() (gas: 729308)
+[PASS] testMalformedAndWrongCallbacksAreIgnoredUntilOneValidWordArrives() (gas: 794252)
+[PASS] testNonPersistedRequestStillHasBoundedFullRefundRecovery() (gas: 738711)
+[PASS] testOfficialHelperCannotUseForcedNativeToSubsidizeQuoteDrift() (gas: 802495)
+[PASS] testOfficialHelperRefundsAgainstActualLowerPrice() (gas: 811616)
+[PASS] testQuotedFeeCanChangeWithoutConsumingRequest() (gas: 839058)
+[PASS] testRepeatedRequestIdsRemainRaffleScoped() (gas: 1430642)
+[PASS] testSynchronousWrongDuplicateAndValidCallbacksCannotResolveInFlightRequest() (gas: 850215)
+[PASS] testWrapperRequestReentryIsRejected() (gas: 776830)
+[PASS] testZeroRequestIdDoesNotMatchUntilRequestReturns() (gas: 775422)
+Suite result: ok. 11 passed; 0 failed; 0 skipped; finished in 3847.25s (15.00ms CPU time)
+
+Ran 39 tests for test/foundry/unit/Raffle.t.sol:RaffleTest
+[PASS] testAcceptedDrawCannotRefundBeforeCallbackDeadlineAndValidNftOutcomeNeverRefunds() (gas: 1779383)
+[PASS] testBothCallbackBranchesStayBelowGasBudget() (gas: 1787656)
+Logs:
+  NFT callback gas: 5959
+  cash callback gas: 5969
+
+[PASS] testCallbackDeadlineIsHardAtEqualityRegardlessOfOrdering() (gas: 2643532)
+[PASS] testCallbackGasDoesNotScaleWithReceiptCount() (gas: 7828655)
+[PASS] testCallbackStoresInclusiveWinningEntryAndSelectsReserveBoundary() (gas: 1800458)
+[PASS] testCashSettlementLeavesBearerClaimAndOwnerRedeemsOnce() (gas: 1940230)
+[PASS] testCashSponsorPrizeRecoveryIsPermissionlessToFixedRecipient() (gas: 1365759)
+[PASS] testCloneInitializationRejectsRegisteredRaffleSponsorAndTreasury() (gas: 564638)
+[PASS] testCloneInitializationRejectsZeroAndProtocolDestinations() (gas: 216024)
+[PASS] testDonationsAndForcedNativeDoNotAlterQuoteAccounting() (gas: 666555)
+[PASS] testDrawForwardsExactDynamicFeeAndRefundsExcess() (gas: 1884583)
+[PASS] testDrawUsesFixedThirtyConfirmationsAndOneWord() (gas: 938284)
+[PASS] testEmptyRaffleUsesRefundingWithoutClosedState() (gas: 897956)
+[PASS] testFactoryAcceptsExactMaximumSaleDuration() (gas: 431037)
+[PASS] testFactoryAtomicallyEscrowsAndCapturesFixedConfiguration() (gas: 448324)
+[PASS] testFactoryConstructorAndCreationValidation() (gas: 1502699)
+[PASS] testFactoryCreatesCanonicalClonesWithIsolatedRangeState() (gas: 1016132)
+[PASS] testFactoryRejectsPrizesThatDoNotEscrowAndActivateExactly() (gas: 3653278)
+[PASS] testFutureCanonicalCloneCanBrickOnlyItsOwnWinnerRedemption() (gas: 1490093)
+[PASS] testImplementationAndCloneInitializationAreLocked() (gas: 263530)
+[PASS] testMetadataPriceEstimateAndDrawFailureBoundaries() (gas: 1684256)
+[PASS] testNftDeliveryFailureRollsBackLazySettlementAndBurn() (gas: 2021307)
+[PASS] testNftSettlementIsPermissionlessAccountingOnlyAndProofIsExact() (gas: 1159542)
+[PASS] testNftWinningTicketRemainsTransferableUntilOwnerRedeems() (gas: 1037328)
+[PASS] testNonCompliantPrizeCannotPassPostDeliveryVerification() (gas: 3794368)
+[PASS] testOwnerCanSettleAndRedeemAtomicallyButApprovedOperatorCannot() (gas: 1118642)
+[PASS] testPrizeDeliveryFailureBlocksOnlyWinnerPrizeAndNotSettlementOrCashClaims() (gas: 1993919)
+[PASS] testPurchaseAndRefundGasDoNotScaleWithEntriesInsideReceipt() (gas: 1638075)
+[PASS] testPurchaseMaximumRangeAndOverflowAreAtomic() (gas: 652996)
+[PASS] testPurchaseMintsOneSequentialTicketForAnyEntryCount() (gas: 743168)
+[PASS] testPurchaseValidationAndReceiverRollbackAreAtomic() (gas: 743176)
+[PASS] testRefundBatchValidationAndMixedOwnershipAreAtomic() (gas: 1077194)
+[PASS] testRegisteredRaffleCannotReceiveTicketsAndSettlementCannotBeRedirected() (gas: 2302890)
+[PASS] testSaleEndsButTicketsStayTransferableUntilBurned() (gas: 1173458)
+[PASS] testSoldRaffleHasHardRequestAndCallbackRefundDeadlines() (gas: 2291067)
+[PASS] testSponsorRecipientIsFixedForProceedsAndReturnedPrize() (gas: 1045261)
+[PASS] testWeightedRefundBatchPaysExactRangesAndConsumesOnce() (gas: 927041)
+[PASS] testWinnerRedeemsAndFixedProceedsReleaseIndependently() (gas: 1035151)
+[PASS] testWrongDuplicateMalformedAndUnauthorizedCallbacksAreHarmless() (gas: 974131)
+Suite result: ok. 39 passed; 0 failed; 0 skipped; finished in 3847.25s (41.60ms CPU time)
+
+Ran 9 tests for test/foundry/invariant/RaffleInvariant.t.sol:RaffleInvariantTest
+[PASS] invariantBranchEconomicsRemainEightyFifteenFiveNinetyFiveFiveOrFullRefund() (runs: 37235, calls: 19064320, reverts: 0)
+
+╭---------------+-----------------------------+---------+---------+----------╮
+| Contract      | Selector                    | Calls   | Reverts | Discards |
++============================================================================+
+| RaffleHandler | buy                         | 1120828 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | donate                      | 1120339 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | enableRefunds               | 1120697 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | fulfill                     | 1120438 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | redeemRefund                | 1120677 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseProceeds             | 1122927 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseSponsorPrize         | 1121191 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseWinnerClaim          | 1123470 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | requestDraw                 | 1120764 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | settleCandidateWinner       | 1123491 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | transferBeforeOrAfterEnd    | 1119794 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpFarPastEnd              | 1123286 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToCallbackDeadline      | 1122662 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToDrawRequestDeadline   | 1121543 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToEnd                   | 1120025 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToLastDrawRequestSecond | 1123211 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | wrongCallback               | 1118992 | 0       | 0        |
+╰---------------+-----------------------------+---------+---------+----------╯
+
+[PASS] invariantDrawAndCallbackDeadlinesAreHardAndOrdered() (runs: 45375, calls: 23232000, reverts: 0)
+
+╭---------------+-----------------------------+---------+---------+----------╮
+| Contract      | Selector                    | Calls   | Reverts | Discards |
++============================================================================+
+| RaffleHandler | buy                         | 1366506 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | donate                      | 1364941 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | enableRefunds               | 1366054 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | fulfill                     | 1365177 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | redeemRefund                | 1365355 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseProceeds             | 1368162 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseSponsorPrize         | 1366228 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseWinnerClaim          | 1368638 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | requestDraw                 | 1365957 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | settleCandidateWinner       | 1369327 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | transferBeforeOrAfterEnd    | 1365025 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpFarPastEnd              | 1368253 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToCallbackDeadline      | 1367684 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToDrawRequestDeadline   | 1366247 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToEnd                   | 1365473 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToLastDrawRequestSecond | 1369358 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | wrongCallback               | 1363731 | 0       | 0        |
+╰---------------+-----------------------------+---------+---------+----------╯
+
+[PASS] invariantPrizeCustodyMatchesClaimMarker() (runs: 56424, calls: 28889088, reverts: 0)
+
+╭---------------+-----------------------------+---------+---------+----------╮
+| Contract      | Selector                    | Calls   | Reverts | Discards |
++============================================================================+
+| RaffleHandler | buy                         | 1699319 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | donate                      | 1696793 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | enableRefunds               | 1699341 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | fulfill                     | 1697922 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | redeemRefund                | 1698750 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseProceeds             | 1701180 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseSponsorPrize         | 1698969 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseWinnerClaim          | 1701262 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | requestDraw                 | 1697534 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | settleCandidateWinner       | 1702191 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | transferBeforeOrAfterEnd    | 1698135 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpFarPastEnd              | 1700372 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToCallbackDeadline      | 1700917 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToDrawRequestDeadline   | 1699235 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToEnd                   | 1698154 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToLastDrawRequestSecond | 1702551 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | wrongCallback               | 1696922 | 0       | 0        |
+╰---------------+-----------------------------+---------+---------+----------╯
+
+[PASS] invariantQuoteAccountingIsExactAndSolvent() (runs: 24918, calls: 12758016, reverts: 0)
+
+╭---------------+-----------------------------+--------+---------+----------╮
+| Contract      | Selector                    | Calls  | Reverts | Discards |
++===========================================================================+
+| RaffleHandler | buy                         | 750436 | 0       | 0        |
+|---------------+-----------------------------+--------+---------+----------|
+| RaffleHandler | donate                      | 750171 | 0       | 0        |
+|---------------+-----------------------------+--------+---------+----------|
+| RaffleHandler | enableRefunds               | 749773 | 0       | 0        |
+|---------------+-----------------------------+--------+---------+----------|
+| RaffleHandler | fulfill                     | 749352 | 0       | 0        |
+|---------------+-----------------------------+--------+---------+----------|
+| RaffleHandler | redeemRefund                | 749541 | 0       | 0        |
+|---------------+-----------------------------+--------+---------+----------|
+| RaffleHandler | releaseProceeds             | 751591 | 0       | 0        |
+|---------------+-----------------------------+--------+---------+----------|
+| RaffleHandler | releaseSponsorPrize         | 750606 | 0       | 0        |
+|---------------+-----------------------------+--------+---------+----------|
+| RaffleHandler | releaseWinnerClaim          | 752667 | 0       | 0        |
+|---------------+-----------------------------+--------+---------+----------|
+| RaffleHandler | requestDraw                 | 749303 | 0       | 0        |
+|---------------+-----------------------------+--------+---------+----------|
+| RaffleHandler | settleCandidateWinner       | 751524 | 0       | 0        |
+|---------------+-----------------------------+--------+---------+----------|
+| RaffleHandler | transferBeforeOrAfterEnd    | 749570 | 0       | 0        |
+|---------------+-----------------------------+--------+---------+----------|
+| RaffleHandler | warpFarPastEnd              | 751918 | 0       | 0        |
+|---------------+-----------------------------+--------+---------+----------|
+| RaffleHandler | warpToCallbackDeadline      | 751600 | 0       | 0        |
+|---------------+-----------------------------+--------+---------+----------|
+| RaffleHandler | warpToDrawRequestDeadline   | 750494 | 0       | 0        |
+|---------------+-----------------------------+--------+---------+----------|
+| RaffleHandler | warpToEnd                   | 749797 | 0       | 0        |
+|---------------+-----------------------------+--------+---------+----------|
+| RaffleHandler | warpToLastDrawRequestSecond | 751156 | 0       | 0        |
+|---------------+-----------------------------+--------+---------+----------|
+| RaffleHandler | wrongCallback               | 748858 | 0       | 0        |
+╰---------------+-----------------------------+--------+---------+----------╯
+
+[PASS] invariantRangesPartitionEverySoldEntryExactlyOnce() (runs: 39247, calls: 20094464, reverts: 0)
+
+╭---------------+-----------------------------+---------+---------+----------╮
+| Contract      | Selector                    | Calls   | Reverts | Discards |
++============================================================================+
+| RaffleHandler | buy                         | 1181628 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | donate                      | 1181100 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | enableRefunds               | 1181418 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | fulfill                     | 1181014 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | redeemRefund                | 1181074 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseProceeds             | 1183299 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseSponsorPrize         | 1181907 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseWinnerClaim          | 1183976 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | requestDraw                 | 1181387 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | settleCandidateWinner       | 1184391 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | transferBeforeOrAfterEnd    | 1180150 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpFarPastEnd              | 1184255 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToCallbackDeadline      | 1183418 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToDrawRequestDeadline   | 1181795 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToEnd                   | 1180530 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToLastDrawRequestSecond | 1183853 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | wrongCallback               | 1179490 | 0       | 0        |
+╰---------------+-----------------------------+---------+---------+----------╯
+
+[PASS] invariantSettlementAndRedemptionMarkersMatchTicketState() (runs: 58886, calls: 30149632, reverts: 0)
+
+╭---------------+-----------------------------+---------+---------+----------╮
+| Contract      | Selector                    | Calls   | Reverts | Discards |
++============================================================================+
+| RaffleHandler | buy                         | 1773466 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | donate                      | 1771106 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | enableRefunds               | 1773189 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | fulfill                     | 1772386 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | redeemRefund                | 1773193 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseProceeds             | 1775538 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseSponsorPrize         | 1773141 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseWinnerClaim          | 1775103 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | requestDraw                 | 1771488 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | settleCandidateWinner       | 1776424 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | transferBeforeOrAfterEnd    | 1772029 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpFarPastEnd              | 1775010 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToCallbackDeadline      | 1774540 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToDrawRequestDeadline   | 1773375 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToEnd                   | 1772339 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToLastDrawRequestSecond | 1776239 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | wrongCallback               | 1771184 | 0       | 0        |
+╰---------------+-----------------------------+---------+---------+----------╯
+
+[PASS] invariantStatusAndTerminalTransitionsAreMonotonic() (runs: 47554, calls: 24347648, reverts: 0)
+
+╭---------------+-----------------------------+---------+---------+----------╮
+| Contract      | Selector                    | Calls   | Reverts | Discards |
++============================================================================+
+| RaffleHandler | buy                         | 1432261 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | donate                      | 1430325 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | enableRefunds               | 1431486 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | fulfill                     | 1430758 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | redeemRefund                | 1431125 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseProceeds             | 1433968 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseSponsorPrize         | 1431753 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseWinnerClaim          | 1434293 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | requestDraw                 | 1431719 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | settleCandidateWinner       | 1434947 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | transferBeforeOrAfterEnd    | 1430859 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpFarPastEnd              | 1433331 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToCallbackDeadline      | 1433708 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToDrawRequestDeadline   | 1432037 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToEnd                   | 1430899 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToLastDrawRequestSecond | 1435320 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | wrongCallback               | 1429113 | 0       | 0        |
+╰---------------+-----------------------------+---------+---------+----------╯
+
+[PASS] invariantTicketIdsAreSequential() (runs: 73898, calls: 37835776, reverts: 0)
+
+╭---------------+-----------------------------+---------+---------+----------╮
+| Contract      | Selector                    | Calls   | Reverts | Discards |
++============================================================================+
+| RaffleHandler | buy                         | 2225816 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | donate                      | 2222664 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | enableRefunds               | 2226349 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | fulfill                     | 2225341 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | redeemRefund                | 2225328 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseProceeds             | 2226546 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseSponsorPrize         | 2226650 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseWinnerClaim          | 2227381 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | requestDraw                 | 2224080 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | settleCandidateWinner       | 2228380 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | transferBeforeOrAfterEnd    | 2224107 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpFarPastEnd              | 2226333 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToCallbackDeadline      | 2227193 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToDrawRequestDeadline   | 2224585 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToEnd                   | 2224312 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToLastDrawRequestSecond | 2226728 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | wrongCallback               | 2224070 | 0       | 0        |
+╰---------------+-----------------------------+---------+---------+----------╯
+
+[PASS] invariantWinningEntryHasExactlyOneReceiptProof() (runs: 72905, calls: 37327360, reverts: 0)
+
+╭---------------+-----------------------------+---------+---------+----------╮
+| Contract      | Selector                    | Calls   | Reverts | Discards |
++============================================================================+
+| RaffleHandler | buy                         | 2195725 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | donate                      | 2192526 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | enableRefunds               | 2196133 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | fulfill                     | 2194954 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | redeemRefund                | 2195545 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseProceeds             | 2196857 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseSponsorPrize         | 2196964 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | releaseWinnerClaim          | 2197374 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | requestDraw                 | 2194079 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | settleCandidateWinner       | 2198791 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | transferBeforeOrAfterEnd    | 2194339 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpFarPastEnd              | 2196997 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToCallbackDeadline      | 2197114 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToDrawRequestDeadline   | 2194559 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToEnd                   | 2194538 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | warpToLastDrawRequestSecond | 2196932 | 0       | 0        |
+|---------------+-----------------------------+---------+---------+----------|
+| RaffleHandler | wrongCallback               | 2194199 | 0       | 0        |
+╰---------------+-----------------------------+---------+---------+----------╯
+
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 3847.25s (32400.70s CPU time)
+
+Ran 9 tests for test/foundry/fuzz/RaffleFuzz.t.sol:RaffleFuzzTest
+[PASS] testFuzzCashSplitAlwaysConservesEightyFifteenFive(uint64) (runs: 100000, μ: 1066805, ~: 1066594)
+[PASS] testFuzzNoRequestTimeoutPaysFullWeightedRange(uint64) (runs: 100000, μ: 636158, ~: 635947)
+[PASS] testFuzzOnlyContainingReceiptCanSettle(uint32,uint32,uint256) (runs: 100000, μ: 1131251, ~: 1130925)
+[PASS] testFuzzPostSettlementBearerCanRedeemNft(uint64) (runs: 100000, μ: 1049500, ~: 1049289)
+[PASS] testFuzzPurchaseCreatesOneSequentialTicketWithExactRange(uint128) (runs: 100000, μ: 680047, ~: 679929)
+[PASS] testFuzzRefundPaysWeightedRangeExactlyOnce(uint64) (runs: 100000, μ: 914573, ~: 914362)
+[PASS] testFuzzReserveEqualityIsNftAndOneBelowIsCash(uint32) (runs: 100000, μ: 1810795, ~: 1810603)
+[PASS] testFuzzSeparatePurchasesPartitionEntriesWithoutGaps(uint128,uint128) (runs: 100000, μ: 723423, ~: 722996)
+[PASS] testFuzzWinningEntryAlwaysUsesInclusiveSoldRange(uint96,uint256) (runs: 100000, μ: 978717, ~: 978565)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 3847.26s (4655.65s CPU time)
+
+Ran 6 test suites in 3847.26s (15389.04s CPU time): 79 tests passed, 0 failed, 1 skipped (80 total tests)

@@ -1,0 +1,152 @@
+packages/contracts/src/interfaces/IRaffleFactory.sol
+   1 // SPDX-License-Identifier: MIT
+   2 pragma solidity 0.8.36;
+   3 
+   4 /// @title raffle.fun Raffle Factory Interface
+   5 /// @author heesho
+   6 /// @notice Defines atomic ERC-1167 raffle creation for one immutable USDC, treasury, and Chainlink configuration.
+   7 /// @dev The factory has no owner, pause, upgrade, rescue, or mutable protocol configuration. Deployment tooling must
+   8 ///      verify that the immutable quote-token address is the target chain's official USDC; onchain construction checks
+   9 ///      only code presence and six-decimal metadata.
+  10 /// @custom:version 1.0.0
+  11 interface IRaffleFactory {
+  12     // Types
+  13 
+  14     /// @notice Sponsor-selected configuration for one new raffle.
+  15     /// @param sponsorRecipient Immutable recipient of sponsor quote proceeds and any returned prize.
+  16     /// @param prizeToken Standards-compliant ERC-721 prize contract.
+  17     /// @param prizeTokenId Token ID to escrow atomically during creation.
+  18     /// @param reserveEntries Global raw entry-count threshold selecting the NFT outcome when met or exceeded.
+  19     /// @param endTime Exclusive sale-end Unix timestamp, in seconds.
+  20     struct CreateRaffleParams {
+  21         address sponsorRecipient;
+  22         address prizeToken;
+  23         uint256 prizeTokenId;
+  24         uint128 reserveEntries;
+  25         uint64 endTime;
+  26     }
+  27 
+  28     // Events
+  29 
+  30     /// @notice Emitted after a raffle clone is initialized, registered, funded, and active.
+  31     /// @param raffleId One-based canonical raffle identifier.
+  32     /// @param raffle Newly created fixed-target ERC-1167 clone.
+  33     /// @param sponsor Prize depositor and pre-end empty-raffle refund authority.
+  34     /// @param sponsorRecipient Immutable recipient of sponsor quote proceeds and any returned prize.
+  35     /// @param prizeToken ERC-721 contract of the escrowed prize.
+  36     /// @param prizeTokenId Token ID of the escrowed prize.
+  37     /// @param quoteToken Immutable canonical six-decimal USDC contract used by the raffle.
+  38     /// @param protocolTreasury Immutable recipient of protocol fees.
+  39     /// @param reserveEntries Global raw entry-count threshold selecting the NFT outcome when met or exceeded.
+  40     /// @param endTime Exclusive sale-end Unix timestamp, in seconds.
+  41     event RaffleCreated(
+  42         uint256 indexed raffleId,
+  43         address indexed raffle,
+  44         address indexed sponsor,
+  45         address sponsorRecipient,
+  46         address prizeToken,
+  47         uint256 prizeTokenId,
+  48         address quoteToken,
+  49         address protocolTreasury,
+  50         uint128 reserveEntries,
+  51         uint64 endTime
+  52     );
+  53 
+  54     // Errors
+  55 
+  56     /// @notice Raised when a required address is the zero address.
+  57     error ZeroAddress();
+  58 
+  59     /// @notice Raised when an address required to contain deployed code is not a contract.
+  60     /// @param account Address whose code length was zero.
+  61     error NotContract(address account);
+  62 
+  63     /// @notice Raised when the quote token cannot report its decimal precision.
+  64     /// @param quoteToken Rejected quote-token contract.
+  65     error UnsupportedQuoteToken(address quoteToken);
+  66 
+  67     /// @notice Raised when the quote token does not use the required six-decimal precision.
+  68     /// @param actualDecimals Decimal precision reported by the quote token.
+  69     /// @param requiredDecimals Required decimal precision, exactly six.
+  70     error InvalidQuoteTokenDecimals(uint8 actualDecimals, uint8 requiredDecimals);
+  71 
+  72     /// @notice Raised when the prize contract does not report ERC-721 interface support.
+  73     /// @param prizeToken Rejected prize-token contract.
+  74     error UnsupportedPrizeToken(address prizeToken);
+  75 
+  76     /// @notice Raised when a raffle is configured with a zero reserve entry threshold.
+  77     error ZeroReserveEntries();
+  78 
+  79     /// @notice Raised when the sale end is not strictly after the creation block timestamp.
+  80     /// @param currentTime Current block Unix timestamp, in seconds.
+  81     /// @param endTime Supplied exclusive sale-end Unix timestamp, in seconds.
+  82     error InvalidEndTime(uint256 currentTime, uint256 endTime);
+  83 
+  84     /// @notice Raised when the prospective sale duration exceeds the fixed 30-day limit.
+  85     /// @param duration Prospective sale duration in seconds.
+  86     /// @param maximumDuration Maximum permitted sale duration in seconds.
+  87     error SaleDurationTooLong(uint256 duration, uint256 maximumDuration);
+  88 
+  89     /// @notice Raised when a configured token or recipient is known protocol plumbing.
+  90     /// @param destination Rejected address.
+  91     error UnsafeProtocolDestination(address destination);
+  92 
+  93     /// @notice Raised when the exact configured prize is not owned by an active clone after escrow.
+  94     /// @param raffle Newly created clone expected to hold the prize and report `Active`.
+  95     /// @param prizeToken ERC-721 prize contract.
+  96     /// @param prizeTokenId Configured prize token ID.
+  97     error PrizeEscrowVerificationFailed(address raffle, address prizeToken, uint256 prizeTokenId);
+  98 
+  99     // External state-changing functions
+ 100 
+ 101     /// @notice Creates, initializes, registers, and funds one autonomous fixed-target raffle clone atomically.
+ 102     /// @param params Sponsor-selected recipient, prize, reserve, and timing configuration.
+ 103     /// @return raffle Address of the newly created and activated clone.
+ 104     function createRaffle(CreateRaffleParams calldata params) external returns (address raffle);
+ 105 
+ 106     // Public generated getters
+ 107 
+ 108     /// @notice Returns the immutable canonical six-decimal USDC contract used by every raffle.
+ 109     /// @return quoteTokenAddress Canonical USDC contract address trusted by this deployment.
+ 110     function quoteToken() external view returns (address quoteTokenAddress);
+ 111 
+ 112     /// @notice Returns the immutable Chainlink VRF v2.5 native direct-funding wrapper used by every raffle.
+ 113     /// @return wrapperAddress Wrapper contract address.
+ 114     function vrfWrapper() external view returns (address wrapperAddress);
+ 115 
+ 116     /// @notice Returns the immutable recipient of protocol fees from every raffle.
+ 117     /// @return treasuryAddress Protocol treasury address.
+ 118     function protocolTreasury() external view returns (address treasuryAddress);
+ 119 
+ 120     /// @notice Returns the fixed Chainlink callback execution limit used by every raffle.
+ 121     /// @return gasLimit Callback gas units requested from the wrapper.
+ 122     function callbackGasLimit() external view returns (uint32 gasLimit);
+ 123 
+ 124     /// @notice Returns the fixed Chainlink confirmation count used by every raffle.
+ 125     /// @return confirmations Blocks requested before callback fulfillment.
+ 126     function requestConfirmations() external view returns (uint16 confirmations);
+ 127 
+ 128     /// @notice Returns the immutable implementation targeted by every registered ERC-1167 clone.
+ 129     /// @return implementation Locked raffle implementation address.
+ 130     function raffleImplementation() external view returns (address implementation);
+ 131 
+ 132     /// @notice Returns the lifetime number of successfully created raffles.
+ 133     /// @return count Latest one-based raffle identifier and total registered raffle count.
+ 134     function raffleCount() external view returns (uint256 count);
+ 135 
+ 136     /// @notice Returns whether an address is a raffle registered by this factory.
+ 137     /// @param raffle Address to check.
+ 138     /// @return registered True only for a successfully created canonical clone.
+ 139     function isRaffle(address raffle) external view returns (bool registered);
+ 140 
+ 141     /// @notice Returns the canonical raffle address for an identifier.
+ 142     /// @param raffleId One-based raffle identifier.
+ 143     /// @return raffle Registered clone address, or the zero address for an unknown identifier.
+ 144     function raffleById(uint256 raffleId) external view returns (address raffle);
+ 145 
+ 146     /// @notice Returns the canonical identifier assigned to a raffle address.
+ 147     /// @param raffle Address to query.
+ 148     /// @return raffleId One-based identifier, or zero for an unregistered address.
+ 149     function idByRaffle(address raffle) external view returns (uint256 raffleId);
+ 150 }
+ 151 

@@ -1,0 +1,9 @@
+{
+  "utc": "2026-10-21T21:12:44.631657+00:00",
+  "sql": "BEGIN; SELECT id,status FROM public.scans WHERE id=1 FOR UPDATE; UPDATE public.scans SET status='pending', reasoning=NULL, last_resumed_at=now(), updated_at=now() WHERE id=1 AND status='failed'; COMMIT;",
+  "database_container": "raffle-r001-gemini-native-db",
+  "scan_id": 1,
+  "method": "Direct SQL equivalent of upstream backend/src/routes/scans.js patchScanIfPresent pending transition, lines 608-635. No workflow/job/output row mutation. Native engine requeues only unfinished logical jobs.",
+  "upstream_pin": "43e1d19a00ce50bd93253d1c6c3a48cfffbcc4c3",
+  "reason": "This isolated engine has no backend HTTP service. Local administrative pending transition matches native endpoint semantics."
+}

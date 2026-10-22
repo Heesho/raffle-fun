@@ -1,0 +1,636 @@
+{
+  "schema": "raffle-external-provider-handoff-validation/v2-final",
+  "final": true,
+  "finalization_gates": {
+    "parameter_substitution_complete": true,
+    "zero_pending_reconciliation_gates": true,
+    "claude_openkritt_terminal_gate_passed": true
+  },
+  "target": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "scope": "Ten Claude/Gemini provider harness cells; provenance and effective workflow qualification only; no finding adjudication, model voting, release approval, or universal coverage claim.",
+  "validated_at": "2026-10-22T01:01:46.326459+00:00",
+  "counts": {
+    "COMPLETE": 10,
+    "INCOMPLETE": 0,
+    "RUNNING": 0,
+    "cells": 10,
+    "effective_complete": 10,
+    "direct_complete": 3,
+    "qualified_complete": 7,
+    "incomplete": 0,
+    "running": 0,
+    "counts_are_not_model_votes": true,
+    "claude_openkritt_terminal_gate_passed": true
+  },
+  "genuine_completed_required_cells": [
+    "CLAUDE-SIMAO",
+    "CLAUDE-PASHOV",
+    "CLAUDE-OPENKRITT",
+    "CLAUDE-TOB",
+    "CLAUDE-GEBAL",
+    "GEMINI-SIMAO",
+    "GEMINI-PASHOV",
+    "GEMINI-OPENKRITT",
+    "GEMINI-TOB",
+    "GEMINI-GEBAL"
+  ],
+  "direct_complete_cells": [
+    "CLAUDE-PASHOV",
+    "CLAUDE-GEBAL",
+    "GEMINI-GEBAL"
+  ],
+  "qualified_complete_cells": [
+    "CLAUDE-SIMAO",
+    "CLAUDE-OPENKRITT",
+    "CLAUDE-TOB",
+    "GEMINI-SIMAO",
+    "GEMINI-PASHOV",
+    "GEMINI-OPENKRITT",
+    "GEMINI-TOB"
+  ],
+  "cells": [
+    {
+      "id": "CLAUDE-SIMAO",
+      "validated_status": "COMPLETE",
+      "workflow_status": "COMPLETE",
+      "execution_state": "SEALED",
+      "effective_status": "QUALIFIED_COMPLETE",
+      "status_basis": "QUALIFIED_MODIFIED_METHOD",
+      "selected_attempt": "provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "method_variant": "PUBLIC_EVIDENCE_SIMAO",
+      "method_modified": true,
+      "source_coverage": {
+        "production_files": 5,
+        "reachable_dependencies": 31,
+        "foreground_lenses": 12,
+        "native_judge_proof_turn": "Turn 6"
+      },
+      "route": {
+        "requested_model": "claude-opus-5-5",
+        "requested_effort": "max",
+        "provider_returned_identity": "claude-opus-5-5 in raw assistant/result fields",
+        "provider_returned_effort": "unknown",
+        "fallback_observed": false
+      },
+      "evidence": {
+        "receipt": {
+          "kind": "completion_receipt",
+          "path": "provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/completion-receipt.json",
+          "sha256": "6cf09e630dc2b9ba63049cc787060d3e9d56ff42285eab77e8e13ae2c1aa84be"
+        },
+        "seal": {
+          "path": "provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/SEAL.json",
+          "sha256": "641f20a3ad7b9e286b1f7bdc4737ebc387de68fe76b3d834edcb07ea8272baed"
+        }
+      },
+      "historical_outcomes": [
+        "Original unmodified attempt-01: PROVIDER_REJECTED by Anthropic reasoning_extraction safeguard; 0/12 lenses completed and adjudication/proof was not reached.",
+        "Public-evidence attempt-01: INCOMPLETE; parent exited while waiting and 12 children were system-killed.",
+        "Cleanup denial remains preserved; no hidden reasoning was requested or inferred."
+      ],
+      "qualification": "Only the private working-reasoning trace request was replaced with concise public evidence summaries; all 12 lenses, native judge, proof, and Turn 6 remained required. The original refusal is not relabeled complete."
+    },
+    {
+      "id": "CLAUDE-PASHOV",
+      "validated_status": "COMPLETE",
+      "workflow_status": "COMPLETE",
+      "execution_state": "SEALED",
+      "effective_status": "COMPLETE",
+      "status_basis": "CONSOLIDATED_PROVIDER_FIRST_PASS_SEAL",
+      "selected_attempt": "provider-lanes/claude/runs/CLAUDE-PASHOV/attempt-01",
+      "method_variant": "ORIGINAL_PASHOV",
+      "method_modified": false,
+      "source_coverage": {
+        "production_files": 5,
+        "reachable_dependencies": 31,
+        "specialists_completed": 12,
+        "specialists_required": 12,
+        "assistant_messages": 480
+      },
+      "route": {
+        "requested_model": "claude-opus-5-5",
+        "requested_effort": "max",
+        "provider_returned_identity": "claude-opus-5-5 in raw assistant/result fields",
+        "provider_returned_effort": "unknown",
+        "fallback_observed": false
+      },
+      "evidence": {
+        "receipt": {
+          "kind": "consolidated_provider_first_pass_used_as_receipt",
+          "path": "provider-lanes/claude/FIRST-PASS.md",
+          "sha256": "16cb0e68e79fba00c1ba91878e682184db08a175fbcf9164dd7b51cc469aefb2"
+        },
+        "seal": {
+          "path": "provider-lanes/claude/FIRST-PASS.md.sha256",
+          "sha256": "92f356b9a814bda5d2394c9f5b79123b76dc4e1003816d14d25c38f5986f6379"
+        }
+      },
+      "historical_outcomes": [],
+      "qualification": "Native judge/dedup/assembler completed. Tool-assisted proof sketches are disclosed, so this is not strictly source-only. The provider seal is consolidated rather than unique to this cell."
+    },
+    {
+      "id": "CLAUDE-OPENKRITT",
+      "validated_status": "COMPLETE",
+      "workflow_status": "COMPLETE",
+      "execution_state": "SEALED",
+      "effective_status": "QUALIFIED_COMPLETE",
+      "status_basis": "CONDITIONAL_QUALIFIED_MODIFIED_METHOD",
+      "selected_attempt": "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/final-capture",
+      "method_variant": "MODIFIED_NATIVE_OPENKRITT",
+      "method_modified": true,
+      "apply_when": "Only after the final capture exists, hash-verifies, reports nativeStatus=completed, qualificationIssues=[], zero open metadata rows, zero unresolved failed logical jobs, preserved historical failures, and either zero findings or a completed sealed semantic gate.",
+      "source_coverage": {
+        "frozen_inputs": 43,
+        "completed_logical_lineages": 193,
+        "metadata_attempts": 195,
+        "historical_failed_metadata_ids": [21, 22],
+        "native_finding_records": 0,
+        "canonical_findings": 0
+      },
+      "route": {
+        "requested_model": "claude-opus-5-5",
+        "requested_effort": "max",
+        "provider_returned_identity": null,
+        "provider_returned_effort": "unknown",
+        "fallback_observed": false
+      },
+      "evidence": {
+        "receipt": {
+          "kind": "completion_receipt",
+          "path": "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/final-capture/COMPLETION-RECEIPT.json",
+          "sha256": "52b75bba1bb78ce25514b950a102364409e69ca19204e420dadfa773b23cfebe"
+        },
+        "raw_first_pass_seal": {
+          "path": "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/final-capture/RAW-FIRST-PASS-SEAL.json",
+          "sha256": "d13dd715c36102d61818d67598d92510665237ee1acf8f838026c131b6d31417"
+        },
+        "seal": {
+          "path": "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/final-capture/SEAL.json",
+          "sha256": "bbab1ac2c461fca324aa50c7c142a402293000fa47ecf79607cd831f569ab8a1"
+        },
+        "method_patch": {
+          "path": "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/openkritt-mod.patch",
+          "sha256": "489af1123620057d4839ca2cd8532d1a239b110f710e77d73e8f079eac099fc8"
+        }
+      },
+      "historical_outcomes": [
+        "Original CLAUDE-OPENKRITT attempt-01 blocked at the bundled runner/version gate and remains incomplete.",
+        "Historical native metadata rows 21 and 22 remain failed; completed logical counterparts do not rewrite them.",
+        "Auto-removed native stdout was unavailable and remains disclosed.",
+        "Before sealing, recentEmptyResults explanation prose was exposed to coordination readers; it was not adopted or fed back to the reviewer."
+      ],
+      "qualification": "Pinned engine in an isolated VM with a recorded four-file catalog/runner patch, disclosed package-lock metadata drift, external-flow-analysis depths 0/1/2, no configured agent skills, and only post-script 4. A zero-result terminal state is not proof of absence or independent validation."
+    },
+    {
+      "id": "CLAUDE-TOB",
+      "validated_status": "COMPLETE",
+      "workflow_status": "COMPLETE",
+      "execution_state": "SEALED",
+      "effective_status": "QUALIFIED_COMPLETE",
+      "status_basis": "QUALIFIED_APPEND_ONLY_CONTINUATION",
+      "selected_attempt": "provider-lanes/claude/runs/CLAUDE-TOB/S6/attempt-02",
+      "method_variant": "SIX_DECLARED_TOB_SKILLS_WITH_S6_CONTINUATION",
+      "method_modified": true,
+      "source_coverage": {
+        "production_files": 5,
+        "reachable_dependencies": 31,
+        "declared_skills": 6,
+        "s1_selected_functions": 12,
+        "s1_not_equally_deep_functions": 9,
+        "s5_requirements_checked": 10,
+        "s5_requirements_total": 248,
+        "s5_requirements_deferred": 238
+      },
+      "route": {
+        "requested_model": "claude-opus-5-5",
+        "requested_effort": "max",
+        "provider_returned_identity": "claude-opus-5-5 in raw assistant/result fields",
+        "provider_returned_effort": "unknown",
+        "fallback_observed": false
+      },
+      "evidence": {
+        "receipt": {
+          "kind": "completion_receipt",
+          "path": "provider-lanes/claude/runs/CLAUDE-TOB/completion-receipt.json",
+          "sha256": "9332959f51dbee07d74468fa989cdd76555f1a8c22f1ae9b3716763c5e2f0b91"
+        },
+        "seal": {
+          "path": "provider-lanes/claude/runs/CLAUDE-TOB/CONTINUATION-SEAL.json",
+          "sha256": "4244729480f43f3825695d55319153536f076f1d778ee4ac65054899da239516"
+        }
+      },
+      "historical_outcomes": [
+        "Original S6 attempt-01 timed out before final assembly.",
+        "Halmos exited 1 and two obligations remain TIMEOUT/unknown after recorded follow-ups.",
+        "Manticore was unavailable and no formal-proof claim is made."
+      ],
+      "late_campaign_bounds": {
+        "foundry": "20/20 tests; two 2000-case fuzz tests",
+        "echidna": "400073 calls; 9 properties; seed 6206211",
+        "echidna_assertions": "400047 calls; 38 checks; seed 9917731",
+        "medusa": "3116102 calls; 46 passes; four workers",
+        "slither_structural_predicates": 12,
+        "halmos": "7 passes; 2 timeout/unknown"
+      },
+      "qualification": "Completion covers six declared skills rather than the full Trail of Bits catalog. Campaign counters retain bounded actors, state, sequences, caught-revert, and timeout limits."
+    },
+    {
+      "id": "CLAUDE-GEBAL",
+      "validated_status": "COMPLETE",
+      "workflow_status": "COMPLETE",
+      "execution_state": "SEALED",
+      "effective_status": "COMPLETE",
+      "status_basis": "CONSOLIDATED_PROVIDER_FIRST_PASS_SEAL",
+      "selected_attempt": "provider-lanes/claude/runs/CLAUDE-GEBAL/native-attempt-01",
+      "method_variant": "ORIGINAL_NATIVE_GEBAL_COLD_REVIEW",
+      "method_modified": false,
+      "source_coverage": {
+        "context_files": 39,
+        "production_files": 5,
+        "reachable_dependencies": 31,
+        "native_tasks": ["intake"],
+        "deterministic_executions": 0
+      },
+      "route": {
+        "requested_model": "claude-opus-5-5",
+        "requested_effort": "max",
+        "provider_returned_identity": "unknown for Gebal import label",
+        "provider_returned_effort": "unknown",
+        "fallback_observed": false
+      },
+      "evidence": {
+        "receipt": {
+          "kind": "consolidated_provider_first_pass_used_as_receipt",
+          "path": "provider-lanes/claude/FIRST-PASS.md",
+          "sha256": "16cb0e68e79fba00c1ba91878e682184db08a175fbcf9164dd7b51cc469aefb2"
+        },
+        "seal": {
+          "path": "provider-lanes/claude/FIRST-PASS.md.sha256",
+          "sha256": "92f356b9a814bda5d2394c9f5b79123b76dc4e1003816d14d25c38f5986f6379"
+        }
+      },
+      "historical_outcomes": [],
+      "qualification": "Complete cold native review with context/import binding. Intake-only task execution is appropriate to the cold method but is not build, test, scanner, or deterministic security-proof coverage."
+    },
+    {
+      "id": "GEMINI-SIMAO",
+      "validated_status": "COMPLETE",
+      "workflow_status": "COMPLETE",
+      "execution_state": "SEALED",
+      "effective_status": "QUALIFIED_COMPLETE",
+      "status_basis": "PASS_WITH_APPEND_ONLY_ADJUDICATION",
+      "selected_attempt": "runs/GEMINI-SIMAO-REPAIRED/attempt-04",
+      "method_variant": "NATIVE_SUCCESS_PLUS_DAYBREAK_SEMANTIC_ADJUDICATION",
+      "method_modified": true,
+      "source_coverage": {
+        "frozen_inputs": 43,
+        "production_files": 5,
+        "reachable_dependencies": 31,
+        "leaf_reports": 12,
+        "effective_bindings_verified": 88
+      },
+      "route": {
+        "requested_model": "gemini-4-argon-high",
+        "requested_effort": "high",
+        "client_initialization_corroborated": true,
+        "provider_returned_identity": "unknown internal revision",
+        "provider_returned_effort": "unknown",
+        "fallback_disable_attestation": "not provider-returned"
+      },
+      "evidence": {
+        "receipt": {
+          "kind": "adjudication_receipt",
+          "path": "runs/COORDINATOR-DAYBREAK/attempt-01/gemini-simao-adjudication/semantic-adjudication-receipt.json",
+          "sha256": "af182427a77c15869ed529239a25d0da067b182587e81f73c718d51adb743307"
+        },
+        "seal": {
+          "path": "runs/COORDINATOR-DAYBREAK/attempt-01/gemini-simao-adjudication/integrity-manifest.json",
+          "sha256": "bb980a314b3c65c9cc445af9e961c64416440cb2ce0298e384f655399fd86aae"
+        },
+        "input_copy_recovery": {
+          "path": "reconciliation/finalization/GEMINI-SIMAO-LEAF-INPUT-COPY-RECOVERY.json",
+          "sha256": "9b92135c1e7ce33d8a265c84e820eabba93e157d659857733a747c6adeb4bb14"
+        }
+      },
+      "historical_outcomes": [
+        "Historical leaf 03 and 04 native ERROR/failed receipts remain unchanged.",
+        "Fourteen historical literal bundle/source/money-map paths remain absent.",
+        "Original contradictory provider handoff metadata and pins remain preserved."
+      ],
+      "qualification": "Native terminal SUCCESS is retained, but native prose, severities, anchors, and proposed patches are not accepted verbatim. Exact preserved per-leaf copies verify all 14 effective input bindings without restoring or reconstructing original paths."
+    },
+    {
+      "id": "GEMINI-PASHOV",
+      "validated_status": "COMPLETE",
+      "workflow_status": "COMPLETE",
+      "execution_state": "SEALED",
+      "effective_status": "QUALIFIED_COMPLETE",
+      "status_basis": "QUALIFIED_METHOD_OUTPUT_WITH_NATIVE_ERRORS_PRESERVED",
+      "selected_attempt": "runs/GEMINI-PASHOV-REPAIRED/attempt-04",
+      "method_variant": "METHOD_OUTPUT_ADJUDICATION_AFTER_STICKY_NATIVE_ERROR",
+      "method_modified": true,
+      "source_coverage": {
+        "frozen_inputs": 43,
+        "production_files": 5,
+        "reachable_dependencies": 31,
+        "leaf_reports": 12,
+        "direct_manifest_objects_verified": 65
+      },
+      "route": {
+        "requested_model": "gemini-4-argon-high",
+        "requested_effort": "high",
+        "client_initialization_corroborated": true,
+        "provider_returned_identity": "unknown internal revision",
+        "provider_returned_effort": "unknown"
+      },
+      "evidence": {
+        "receipt": {
+          "kind": "adjudication_receipt",
+          "path": "runs/COORDINATOR-DAYBREAK/attempt-01/gemini-pashov-adjudication/completion-receipt.json",
+          "sha256": "71f7217e769720ad230d8eac6c3f8fedc906abc7c56029729f250a8942d95bf7"
+        },
+        "seal": {
+          "path": "runs/COORDINATOR-DAYBREAK/attempt-01/gemini-pashov-adjudication/SEAL.json",
+          "sha256": "0462347eae39b0cba0ffc41545fe85938e71bee4223a54df50e872bdfb6cbb48"
+        },
+        "input_copy_recovery": {
+          "path": "reconciliation/finalization/GEMINI-PASHOV-LEAF-INPUT-COPY-RECOVERY.json",
+          "sha256": "bc274c79c7bec7fb22d2520447e3cf4d318c44d11f2a05c84af7b096ea9061b8"
+        },
+        "request_5_preimage_recovery": {
+          "path": "runs/COORDINATOR-DAYBREAK/attempt-01/gemini-pashov-adjudication/GEMINI-PASHOV-REQUEST-05-PREIMAGE-RECOVERY.json",
+          "sha256": "61b14bffacbf500756536ec7f8f4896a9fdb46e876c3a42bc8850a3c5ccd5d20"
+        }
+      },
+      "historical_outcomes": [
+        "Native original run remains ERROR; nativeRunSucceeded remains false.",
+        "Both same-conversation continuations remain ERROR/failed.",
+        "Leaf 03 and 04 ERROR/failed states and stale aggregate/progress files remain immutable.",
+        "Thirteen historical literal source/bundle paths remain absent; request-5 reconstructed-preimage chronology remains disclosed."
+      ],
+      "qualification": "Authorized Daybreak adjudication qualifies method-output completion only. Exact preserved per-leaf copies verify the 13 effective inputs. No native error becomes success, and no native severity, patch, or broken Option C is approved."
+    },
+    {
+      "id": "GEMINI-OPENKRITT",
+      "validated_status": "COMPLETE",
+      "workflow_status": "COMPLETE",
+      "execution_state": "SEALED",
+      "effective_status": "QUALIFIED_COMPLETE",
+      "status_basis": "SEALED_NATIVE_ENGINE_WITH_DISCLOSED_TRANSPORT_ADAPTER",
+      "selected_attempt": "provider-lanes/gemini/runs/GEMINI-OPENKRITT/native-engine-attempt-03",
+      "method_variant": "PINNED_NATIVE_OPENKRITT_WITH_FILE_SPOOL_ADAPTER",
+      "method_modified": true,
+      "source_coverage": {
+        "production_files": 5,
+        "reachable_dependencies": 31,
+        "mapping_jobs": 1,
+        "flow_jobs": 23,
+        "investigation_jobs": 88,
+        "candidate_records": 0,
+        "ranker_or_postprocessor_jobs": 0
+      },
+      "route": {
+        "requested_model": "gemini-4-argon-high",
+        "requested_effort": "high",
+        "client_initialization_corroborated": true,
+        "provider_returned_identity": "unknown internal revision",
+        "provider_returned_effort": "unknown"
+      },
+      "evidence": {
+        "receipt": {
+          "kind": "completion_receipt",
+          "path": "provider-lanes/gemini/runs/GEMINI-OPENKRITT/native-engine-attempt-03/COMPLETION-RECEIPT.json",
+          "sha256": "5063ea02a411a62e18a5d5c4bc3a348a6c841df368a0a9775ddf48042d3e4048"
+        },
+        "seal": {
+          "path": "provider-lanes/gemini/runs/GEMINI-OPENKRITT/native-engine-attempt-03/SEAL.json",
+          "sha256": "ce98e240eb079d845a7148353085774835e8f6b765ec3d8a4daac91068e74a7b"
+        }
+      },
+      "historical_outcomes": [
+        "Earlier setup/blocker attempts remain incomplete.",
+        "Three network-failed CLI calls and six failed native metadata rows remain failed.",
+        "The native resume transition remains visible."
+      ],
+      "qualification": "Actual pinned Python/PostgreSQL engine with disclosed official-CLI file-spool and inherited resource-isolation compatibility adaptation. Zero candidate rows left no eligible ranker/postprocessor work and is not proof of absence or independent finding validation."
+    },
+    {
+      "id": "GEMINI-TOB",
+      "validated_status": "COMPLETE",
+      "workflow_status": "COMPLETE",
+      "execution_state": "SEALED",
+      "effective_status": "QUALIFIED_COMPLETE",
+      "status_basis": "QUALIFIED_ADAPTER_AND_SAME_UUID_TRANSPORT_RECOVERY",
+      "selected_attempt": "runs/GEMINI-TOB-REPAIRED/attempt-04",
+      "method_variant": "SIX_DECLARED_TOB_SKILLS_WITH_DISCLOSED_ADAPTER_AND_RECOVERY",
+      "method_modified": true,
+      "source_coverage": {
+        "frozen_inputs": 43,
+        "production_files": 5,
+        "reachable_dependencies": 31,
+        "declared_stages": 6,
+        "s1_selected_functions": 12,
+        "s1_unanalyzed_functions": 9,
+        "s5_requirements_checked": 10,
+        "s5_requirements_total": 219,
+        "s5_requirements_unchecked": 209
+      },
+      "route": {
+        "requested_model": "gemini-4-argon-high",
+        "requested_effort": "high",
+        "client_initialization_corroborated": true,
+        "provider_returned_identity": "unknown internal revision",
+        "provider_returned_effort": "unknown"
+      },
+      "evidence": {
+        "receipt": {
+          "kind": "completion_receipt",
+          "path": "runs/GEMINI-TOB-REPAIRED/attempt-04/COMPLETION-RECEIPT.json",
+          "sha256": "62ffb8b6d3a19bf676e043b4145c9dbb4afb8757aafb6fd789efcfe3b9154865"
+        },
+        "seal": {
+          "path": "runs/GEMINI-TOB-REPAIRED/attempt-04/SEAL.json",
+          "sha256": "a4ba3346bf6a438bb7f4d58850848dffba4578ffa64b929c64503bdb9daab643"
+        },
+        "post_seal_reconciliation": "reconciliation/finalization/GEMINI-TOB-04-RECONCILIATION.md"
+      },
+      "historical_outcomes": [
+        "S2, S3, S4, and S6 preserve byte-identical historical transport ERROR receipts despite same-UUID terminal DONE responses.",
+        "Original contradictory handoff pins, compiler claims, and reduced-context statements remain preserved.",
+        "Optional live on-chain analysis lacked a deployment, Manticore was unavailable, and slither-prop gaps remain."
+      ],
+      "assurance_issue": {
+        "id": "AQ-009",
+        "summary": "Sealed prose contradicted present NatSpec/events, inferred repository absence from reduced context, used vm.prank for a contract lacking a claim-originating method, misstated the S5 denominator as 196 unchecked rather than 219 total/10 checked/209 unchecked, and conflicted with its own future-clone description."
+      },
+      "qualification": "Six declared stages only, not the full Trail of Bits catalog. Exact pinned bodies used a disclosed workflow-primitive adapter. Tool-assisted work and corrected claims do not become exhaustive function, specification, or proof coverage."
+    },
+    {
+      "id": "GEMINI-GEBAL",
+      "validated_status": "COMPLETE",
+      "workflow_status": "COMPLETE",
+      "execution_state": "SEALED",
+      "effective_status": "COMPLETE",
+      "status_basis": "SEALED_UNMODIFIED_NATIVE_GEBAL_COLD_REVIEW",
+      "selected_attempt": "runs/GEMINI-GEBAL-REPAIRED/attempt-03",
+      "method_variant": "UNMODIFIED_PINNED_NATIVE_GEBAL",
+      "method_modified": false,
+      "source_coverage": {
+        "context_files": 39,
+        "production_files": 5,
+        "reachable_dependencies": 31,
+        "native_tasks": ["intake"],
+        "deterministic_executions": 0
+      },
+      "route": {
+        "requested_model": "gemini-4-argon-high",
+        "requested_effort": "high",
+        "client_initialization_corroborated": true,
+        "provider_returned_identity": "unknown internal revision",
+        "provider_returned_effort": "unknown"
+      },
+      "evidence": {
+        "receipt": {
+          "kind": "completion_receipt",
+          "path": "runs/GEMINI-GEBAL-REPAIRED/attempt-03/COMPLETION-RECEIPT.json",
+          "sha256": "1da91f2495d3cdbf9f79e87c15cac002f1cb856c5fe459972df3c37c93b3e9c1"
+        },
+        "seal": {
+          "path": "runs/GEMINI-GEBAL-REPAIRED/attempt-03/EVIDENCE-SEAL.json",
+          "sha256": "145d5aac6ceb384f11cded625d18ca997fd67ff92db030f3359659c1dc3da187"
+        }
+      },
+      "historical_outcomes": [
+        "Attempt-01 had seven context files and zero of 31 required dependencies.",
+        "Attempt-02 also lacked the dependency closure; test exposure did not mean tests executed.",
+        "Earlier executed runtime modifications and contradictory compiler/pin metadata remain historical evidence rather than this cold review."
+      ],
+      "qualification": "Unmodified pinned native cold intake/context/schema-import/report. Source-only; no deterministic tool execution or executable security proof. Model observations are not validated security verdicts."
+    }
+  ],
+  "checks": {
+    "claude_consolidated_first_pass": {
+      "sha256": "16cb0e68e79fba00c1ba91878e682184db08a175fbcf9164dd7b51cc469aefb2",
+      "checksum_matches": true,
+      "bound_artifact_references_verified": 151,
+      "bound_artifact_mismatches": []
+    },
+    "gemini_consolidated_first_pass": {
+      "sha256": "43a0a0efa35ae70f82b0311b29aea14a66aedf0b1f97d50f14e780d44ab5d3a3",
+      "checksum_matches": true,
+      "qualification": "Does not hash-bind all original specialist artifacts and contains contradictory pins/toolchain claims; selected repaired lanes rely on their own receipts and seals."
+    },
+    "identity_rule": "Requested model, accepted local selection, CLI initialization, display name, inherited-child request, coordinator identity, or operator statement is not a provider-returned internal model revision or applied effort. Unknown values remain unknown.",
+    "source_rule": "Possessing all five production and 31 reachable dependency bytes does not itself establish equal-depth review, tool execution, finding truth, or universal property coverage."
+  },
+  "reconciliation_parameters": {
+    "source_report_paths": 28,
+    "distinct_first_pass_hashes": 27,
+    "original_attribution_links": 739,
+    "findings_and_observations": 21,
+    "assurance_issues": 9,
+    "production_root_families": 2,
+    "final_register_sha256": "14fd10f03ae1ae1e503d04e8ff68d382319d42cced4552d12eab92b04f0f6242",
+    "final_reconciliation_sha256": "b5b443439f827ce572d5ba57efde0f9d474211756b13aa3df798c58654e80c7b",
+    "final_reconciliation_seal_sha256": "c5e388d04b64d71c22ada44b36c6f8e7b27a0bf37052cd6039845a9d5dd33186"
+  },
+  "reconciliation_scope_disclosures": {
+    "rf002_executed_variants": [
+      "Future same-factory clone receives and strands the selecting sponsor's honest NFT prize.",
+      "Future same-factory clone registration causes its selecting sponsor's immutable quote claim to revert while unrelated protocol-fee release remains possible.",
+      "Owner-selected ticket transfer to an existing other-factory clone succeeds because the registry check is factory-local; the receiving clone has no general outbound owner call."
+    ],
+    "rf002_limits": "Low severity; narrow own-recipient or bearer loss. No arbitrary EOA theft, buyer-refund loss, or drain of another raffle's accounted funds was demonstrated.",
+    "aq009_preserved": true,
+    "no_patch_or_owner_acceptance": true
+  },
+  "preserved_original_handoff_corrections": [
+    "The original Gemini matrix, FIRST-PASS, FINAL report, and toolchain named inconsistent 0xSimao, Pashov, and Gebal repositories or revisions. Independent comparison found 18 staged Simao, 23 staged Pashov, and 30 staged ToB resources matching the correct coordinator pins; this does not rewrite the old documents.",
+    "The old Gebal staged runtime had 25 matching files, four differing migration/package files, and 13 generated JavaScript files. Earlier cold attempts lacked the 31-file dependency closure and executed intake only.",
+    "The original Gemini toolchain claimed Solidity 0.8.36+commit.f9a66b02, conflicting with frozen 0.8.36+commit.8a079791. No old compiler result is adopted without raw provenance.",
+    "Additional architecture/security documents mentioned by the old handoff do not become cold-context inputs. Test-exposed files do not mean tests executed.",
+    "Original blocked or finished summaries became stale when distinct OpenKritt attempts began; each selected attempt is separately named and old summaries remain historical evidence."
+  ],
+  "pre_seal_exposure": {
+    "lane": "CLAUDE-OPENKRITT",
+    "mechanism": "Whole status-API diagnostics exposed recentEmptyResults explanation prose to the Daybreak coordinator, parent administrative bridge, and reconciliation/accounting owner before the raw first-pass seal.",
+    "adopted_as_finding": false,
+    "fed_back_to_native_reviewer": false,
+    "native_inputs_changed": false,
+    "complete_pre_seal_narrative_non_exposure_claimed": false,
+    "evidence": [
+      "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/PRE-SEAL-STATUS-EXPOSURE.json",
+      "reconciliation/finalization/ACCIDENTAL-STATUS-ENDPOINT-EXPOSURE.json",
+      "reconciliation/finalization/PARENT-STATUS-EXPOSURE-ADDENDUM.json"
+    ]
+  },
+  "receipt_integrity": {
+    "expected_final_ok": false,
+    "expected_schema_or_path_gaps": 0,
+    "known_historical_mismatches": 4,
+    "additional_or_changed_mismatch_blocks_finalization": true,
+    "mismatches": [
+      {
+        "path": "runs/OPENAI-TOB/attempt-01/events.jsonl",
+        "expected_sha256": "9776eddcd0608a348b15b8c3375aaf4a261f3db1b88bb08e0cc5807756d18041",
+        "current_sha256": "fdbb08e902a6713b35498cb49ad8f3f0e4cde87cf827edbf147c2ed7272472e8",
+        "exact_sealed_prefix_recovered": true
+      },
+      {
+        "path": "runs/OPENAI-TOB/attempt-01/stderr.txt",
+        "expected_sha256": "b0a79b598a2a9c312185c658bc57b555806388a79d0690bb0e2c010b98d91397",
+        "current_sha256": "26c6dca4e3d5c625ec86f667f360facc18615d1b8ebfaa34fea23f078f0c2c74",
+        "exact_sealed_prefix_recovered": true
+      },
+      {
+        "path": "cells/OPENAI-TOB/audit/S4/STATUS.json",
+        "expected_sha256": "200038490e786f19e0d1325e11c1dffcd958a8f14b564a06100f23f07592fa84",
+        "current_sha256": "9cfaeb948930b704c6f6b3b82d2ae81ac8ae38ed658577c1d453a443f08bbcf9",
+        "exact_old_copy_recovered": false
+      },
+      {
+        "path": "cells/OPENAI-TOB/audit/S4/raw/001-resources.json",
+        "expected_sha256": "65355322591cfc9d8d27d3eeb37cb9a8007eec2daec5e7cf2fcc2137868f34ba",
+        "current_sha256": "5873a2a5f4831c9c83f17b240eafd0fd86538ef7cee271a64b17645657555d97",
+        "exact_old_copy_recovered": false
+      }
+    ],
+    "source_integrity_implication": "These are evidence-history mismatches, not mismatches in the five frozen production files or 31 reachable dependencies."
+  },
+  "outside_denominator": {
+    "coordinator": "runs/COORDINATOR-DAYBREAK/attempt-01",
+    "coordinator_in_original_23_rows": false,
+    "openai_independent_openkritt_validator": "PROVIDER_REJECTED / INCOMPLETE",
+    "openai_root_coordinator": "PROVIDER_REJECTED",
+    "openai_orchestration_agent": "ACTUAL_OPENAI_ORCHESTRATION_REJECTION",
+    "model_cell_count_effect": 0
+  },
+  "previousSnapshot": "provider-handoff-validation.json@pre-promotion",
+  "separate_methods": [
+    {
+      "id": "CLAUDE-SIMAO-PUBLIC-EVIDENCE",
+      "status": "QUALIFIED_COMPLETE",
+      "path": "provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_unmodified_status": "PROVIDER_REJECTED"
+    },
+    {
+      "id": "CLAUDE-OPENKRITT-MOD",
+      "status": "QUALIFIED_COMPLETE",
+      "path": "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/final-capture",
+      "original_unmodified_status": "BLOCKED",
+      "terminal_gate_passed": true
+    }
+  ],
+  "appendOnlyCorrections": [
+    {
+      "id": "final-provider-qualification",
+      "note": "Selected completed methods supersede stale execution status for current counting only; every original refusal, blocker, timeout, ERROR, failed call, missing literal path, and coverage bound remains historical truth."
+    },
+    {
+      "id": "rf002-aq009-integrity",
+      "note": "Expanded RF-002 proof variants, AQ-009 source/proof corrections, pre-seal exposure, and the exact four historical OpenAI ToB receipt mismatches remain controlling qualifications."
+    }
+  ],
+  "followup": "No eligible external provider cell remains pending after the Claude OpenKritt terminal gate and reconciliation registration. Preserve limitations; do not infer release approval, universal security, provider-internal model revision, applied server effort, or owner acceptance.",
+  "external_artifacts_modified": false
+}

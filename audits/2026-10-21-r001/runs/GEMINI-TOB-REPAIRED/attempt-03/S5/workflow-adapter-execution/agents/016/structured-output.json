@@ -1,0 +1,63 @@
+{
+  "analysisFile": "spec-compliance/requirements/08-REQ-15-4.md",
+  "confidence": "high",
+  "evidence": [
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L416-L426",
+      "quote": "    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata)\n        external\n        override\n        returns (bytes4 selector)\n    {\n        if (\n            status != Status.AwaitingPrize || msg.sender != address(prizeToken) || tokenId != prizeTokenId\n                || from != sponsor || operator != factory\n        ) {\n            revert UnexpectedPrize(msg.sender, tokenId, from, operator);\n        }",
+      "role": "Checks operator != factory in onERC721Received and reverts with UnexpectedPrize(msg.sender, tokenId, from, operator) on every path where operator != factory."
+    },
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L55",
+      "quote": "    address public immutable override factory;",
+      "role": "Declares the immutable factory address compared against operator."
+    },
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L155-L162",
+      "quote": "    constructor(address quoteToken_, address vrfWrapper_)\n        ERC721(\"\", \"\")\n        VRFV2PlusWrapperConsumerBase(_validatedVrfWrapper(vrfWrapper_))\n    {\n        if (msg.sender == address(0) || quoteToken_ == address(0)) revert ZeroAddress();\n\n        factory = msg.sender;\n        quoteToken = IERC20(quoteToken_);",
+      "role": "Fixes the immutable factory address to the canonical RaffleFactory deployer for the implementation and all ERC-1167 clones."
+    },
+    {
+      "file": "packages/contracts/src/RaffleFactory.sol",
+      "lines": "L89-L91",
+      "quote": "        address implementation = address(new Raffle(quoteToken_, vrfWrapper_));\n        if (protocolTreasury_ == implementation) revert UnsafeProtocolDestination(protocolTreasury_);\n        raffleImplementation = implementation;",
+      "role": "Deploys the shared Raffle implementation from RaffleFactory so factory is set to the canonical RaffleFactory address."
+    },
+    {
+      "file": "packages/contracts/src/RaffleFactory.sol",
+      "lines": "L127-L128",
+      "quote": "        IERC721 prize = IERC721(params.prizeToken);\n        prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId);",
+      "role": "Initiates the ERC-721 prize safeTransferFrom from the canonical factory so operator equals factory during legitimate prize escrow."
+    },
+    {
+      "file": "packages/contracts/src/interfaces/IRaffle.sol",
+      "lines": "L202",
+      "quote": "    error UnexpectedPrize(address token, uint256 tokenId, address from, address operator);",
+      "role": "Defines the UnexpectedPrize custom error signature reverted by onERC721Received."
+    }
+  ],
+  "reasoning": "Raffle.onERC721Received (packages/contracts/src/Raffle.sol:L416-L431) has no modifiers or early returns before its guard at L421-L426, which evaluates `status != Status.AwaitingPrize || msg.sender != address(prizeToken) || tokenId != prizeTokenId || from != sponsor || operator != factory` against the immutable `factory` address (L55, L161) and reverts with `UnexpectedPrize(msg.sender, tokenId, from, operator)` at L425 whenever `operator != factory` (whether via short-circuit on an earlier inequality or at `operator != factory` on L423). Therefore the requirement holds on all execution paths and is `implemented` rather than `partial`.",
+  "requirementId": "REQ-15-4",
+  "searched": [
+    {
+      "result": "2 hits in packages/contracts/src/Raffle.sol (L416 function definition, L430 selector return); 0 hits in other src/ files",
+      "where": "onERC721Received in packages/contracts/src/"
+    },
+    {
+      "result": "2 hits: error declaration at packages/contracts/src/interfaces/IRaffle.sol:L202 and revert at packages/contracts/src/Raffle.sol:L425",
+      "where": "UnexpectedPrize in packages/contracts/src/"
+    },
+    {
+      "result": "6 hits in packages/contracts/src/Raffle.sol: L55 immutable declaration, L161 constructor assignment, L178 initialize check, L412 NatSpec, L423 onERC721Received operator != factory check, L598-L599 _isProtocolDestination",
+      "where": "factory in packages/contracts/src/Raffle.sol"
+    },
+    {
+      "result": "2 hits: packages/contracts/src/Raffle.sol:L224 (quoteToken.safeTransferFrom) and packages/contracts/src/RaffleFactory.sol:L128 (prize.safeTransferFrom)",
+      "where": "safeTransferFrom in packages/contracts/src/"
+    }
+  ],
+  "verdict": "implemented"
+}

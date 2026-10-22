@@ -1,0 +1,15 @@
+{
+  "divergences": [
+    {
+      "requirementId": "REQ-03-3",
+      "severity": "medium",
+      "title": "Mandatory deployment-tooling verification of official target-chain USDC quote-token address is absent from repository scope"
+    }
+  ],
+  "documentProblems": [
+    "IRaffleFactory.sol:L8-L9 states that 'onchain construction checks only code presence and six-decimal metadata', whereas RaffleFactory.constructor (RaffleFactory.sol:L68, L80-L83, L89-L90) and Raffle.constructor (Raffle.sol:L157 -> VRFV2PlusWrapperConsumerBase.sol:L45) also validate protocolTreasury_ against zero and protocol plumbing addresses and invoke vrfWrapper_.link() during construction.",
+    "IRaffleFactory.sol:L89, IRaffle.sol:L266, RaffleFactory.sol:L152, and Raffle.sol:L587-L589 describe _isProtocolDestination and UnsafeProtocolDestination as screening tokens, ticket owners, and payout recipients against known protocol plumbing, omitting that Raffle.initialize (Raffle.sol:L187-L192) also screens params.sponsor (which receives neither tickets nor payouts) and params.protocolTreasury against params.prizeToken and registered clones.",
+    "DESIGN.md:L2 states 'Reserve missed awards 80% gross to winner, 15% sponsor, 5% treasury. ... Rounding is floor on aggregate protocol fee; remainder must be allocated without loss' without specifying the rounding direction of the 80% cash-winner allocation before computing the sponsor remainder, whereas IRaffle.sol:L328, Raffle.sol:L529-L530, and RaffleConstants.sol:L7-L8 specify that both the 5% protocol fee and 80% cash-winner allocation round down via Math.mulDiv and the sponsor receives the remainder."
+  ],
+  "reportFile": "spec-compliance/REPORT.md"
+}

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "_kritt_extractor_helper": {
+      "type": "boolean",
+      "const": true
+    },
+    "stub": {
+      "type": "boolean"
+    },
+    "stub_explanation": {
+      "type": "string"
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "flow_summary": {
+            "type": "string"
+          },
+          "flow_trace": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "flow_terminal_action": {
+            "type": "string"
+          },
+          "flow_file_path": {
+            "type": "string"
+          },
+          "flow_line": {
+            "type": "number"
+          },
+          "flow_input_to_sink": {
+            "type": "string"
+          },
+          "flow_security_relevance": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "flow_summary",
+          "flow_trace",
+          "flow_terminal_action",
+          "flow_file_path",
+          "flow_line",
+          "flow_input_to_sink",
+          "flow_security_relevance"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "_kritt_extractor_helper",
+    "stub",
+    "stub_explanation",
+    "results"
+  ],
+  "additionalProperties": false
+}

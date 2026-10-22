@@ -1,0 +1,61 @@
+{
+  "analysisFile": "spec-compliance/requirements/04-REQ-21.md",
+  "confidence": "high",
+  "evidence": [
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L593-L605",
+      "quote": "function _isProtocolDestination(address destination, address prizeToken_)\n        private\n        view\n        returns (bool unsafeDestination)\n    {\n        IRaffleFactory canonicalFactory = IRaffleFactory(factory);\n        unsafeDestination = destination == address(this) || destination == factory || destination == address(quoteToken)\n            || destination == address(i_vrfV2PlusWrapper) || destination == prizeToken_\n            || destination == canonicalFactory.raffleImplementation();\n        if (!unsafeDestination && destination.code.length != 0) {\n            unsafeDestination = canonicalFactory.isRaffle(destination);\n        }\n    }",
+      "role": "Screens destinations against address(this), protocol plumbing, and canonicalFactory.isRaffle(destination) for deployed contracts."
+    },
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L497-L502",
+      "quote": "function _update(address to, uint256 ticketId, address auth) internal override returns (address previousOwner) {\n        if (to != address(0) && _isProtocolDestination(to, address(prizeToken))) {\n            revert UnsafeProtocolDestination(to);\n        }\n        previousOwner = super._update(to, ticketId, auth);\n    }",
+      "role": "Rejects any non-burn ticket mint or transfer targeting a registered raffle clone or protocol destination."
+    },
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L564-L567",
+      "quote": "function _transferQuote(address to, uint256 amount) private {\n        if (_isProtocolDestination(to, address(prizeToken))) revert InvalidQuoteDestination(to);\n        quoteToken.safeTransfer(to, amount);\n    }",
+      "role": "Rejects any outgoing quoteToken payout (winner redemption, ticket refund, sponsor proceeds, or protocol fees) targeting a registered raffle clone."
+    },
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L187-L195",
+      "quote": "if (_isProtocolDestination(params.sponsor, params.prizeToken)) {\n            revert UnsafeProtocolDestination(params.sponsor);\n        }\n        if (_isProtocolDestination(params.protocolTreasury, params.prizeToken)) {\n            revert UnsafeProtocolDestination(params.protocolTreasury);\n        }\n        if (_isProtocolDestination(params.sponsorRecipient, params.prizeToken)) {\n            revert UnsafeProtocolDestination(params.sponsorRecipient);\n        }",
+      "role": "Rejects clone initialization if sponsor, protocolTreasury, or sponsorRecipient is address(this) or a registered raffle clone."
+    },
+    {
+      "file": "packages/contracts/src/RaffleFactory.sol",
+      "lines": "L157-L169",
+      "quote": "if (\n            params.prizeToken == address(this) || params.prizeToken == quoteToken || params.prizeToken == vrfWrapper\n                || params.prizeToken == raffleImplementation || isRaffle[params.prizeToken]\n        ) {\n            revert UnsafeProtocolDestination(params.prizeToken);\n        }\n        if (\n            params.sponsorRecipient == address(this) || params.sponsorRecipient == quoteToken\n                || params.sponsorRecipient == vrfWrapper || params.sponsorRecipient == params.prizeToken\n                || params.sponsorRecipient == raffleImplementation || isRaffle[params.sponsorRecipient]\n        ) {\n            revert UnsafeProtocolDestination(params.sponsorRecipient);\n        }",
+      "role": "Rejects prizeToken or sponsorRecipient configuration targeting a registered raffle clone (isRaffle[destination]) during createRaffle."
+    }
+  ],
+  "reasoning": "Verdict is implemented rather than partial because every ticket mint/transfer path (Raffle._update at Raffle.sol:L497-L502), every quoteToken payout path (Raffle._transferQuote at Raffle.sol:L564-L567 called by redeemWinningTicket L342, refundTickets L369, releaseSponsorProceeds L380, and releaseProtocolFees L390), prizeToken configuration (RaffleFactory._validateCreateParams at RaffleFactory.sol:L157-L161), and recipient configuration (RaffleFactory._validateCreateParams at RaffleFactory.sol:L163-L169 and Raffle.initialize at Raffle.sol:L187-L195) check isRaffle[destination] (and address(this)) and revert when targeting a registered raffle clone.",
+  "requirementId": "REQ-21",
+  "searched": [
+    {
+      "result": "6 hits in Raffle.sol: L187, L190, L193 (initialize), L498 (_update), L565 (_transferQuote), L593 (definition)",
+      "where": "_isProtocolDestination in packages/contracts/src/Raffle.sol"
+    },
+    {
+      "result": "6 hits across src: Raffle.sol:L603, RaffleFactory.sol:L54, L125, L159, L166, IRaffleFactory.sol:L139",
+      "where": "isRaffle in packages/contracts/src/"
+    },
+    {
+      "result": "10 hits across src: Raffle.sol:L188, L191, L194, L499; RaffleFactory.sol:L82, L90, L160, L168; IRaffle.sol:L268; IRaffleFactory.sol:L91",
+      "where": "UnsafeProtocolDestination in packages/contracts/src/"
+    },
+    {
+      "result": "2 hits across src: Raffle.sol:L565 (_transferQuote), IRaffle.sol:L227",
+      "where": "InvalidQuoteDestination in packages/contracts/src/"
+    },
+    {
+      "result": "5 hits in Raffle.sol: L342, L369, L380, L390, L564",
+      "where": "_transferQuote in packages/contracts/src/Raffle.sol"
+    }
+  ],
+  "verdict": "implemented"
+}

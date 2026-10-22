@@ -1,0 +1,48 @@
+--- original/workflow-host.cjs
++++ S5-workflow-host.cjs
+@@ -1,14 +1,39 @@
+ const fs=require('fs'),path=require('path'),crypto=require('crypto');
+-const [workflow,stage,argsJSON]=process.argv.slice(2);const dir=path.resolve('audit',stage,'native');fs.mkdirSync(dir,{recursive:true});
+-const raw=fs.readFileSync(workflow,'utf8');fs.writeFileSync(path.join(dir,'workflow-original.js'),raw);
+-const source=raw.replace('export const meta =','const meta =');fs.writeFileSync(path.join(dir,'workflow-hosted.js'),source);
++const [workflow,stage,argsJSON]=process.argv.slice(2);
++const dir=path.resolve('audit',stage,'native');fs.mkdirSync(dir,{recursive:true});
++const raw=fs.readFileSync(workflow,'utf8');
++const source=raw.replace('export const meta =','const meta =');
++const digest=x=>crypto.createHash('sha256').update(x).digest('hex');
++for(const [file,expected] of [['workflow-original.js',raw],['workflow-hosted.js',source]]){
++  const destination=path.join(dir,file);
++  if(fs.existsSync(destination)&&fs.readFileSync(destination,'utf8')!==expected)throw Error('Workflow replay mismatch: '+file);
++  if(!fs.existsSync(destination))fs.writeFileSync(destination,expected);
++}
+ const stamp=()=>new Date().toISOString();let seq=0;
+-function event(x){fs.appendFileSync(path.join(dir,'journal.jsonl'),JSON.stringify({timestamp:stamp(),...x})+'\n');}
++function event(x){fs.appendFileSync(path.join(dir,'continuation-journal.jsonl'),JSON.stringify({timestamp:stamp(),...x})+'\n');}
+ const phase=name=>event({type:'phase',name});const log=message=>event({type:'log',message});
+ function validate(v,s,p='$'){if(!s)return;if(s.type==='object'){if(!v||typeof v!=='object'||Array.isArray(v))throw Error(p+' object required');for(const k of s.required||[])if(!(k in v))throw Error(p+'.'+k+' required');for(const [k,t] of Object.entries(s.properties||{}))if(k in v)validate(v[k],t,p+'.'+k);}if(s.type==='array'){if(!Array.isArray(v))throw Error(p+' array required');for(let i=0;i<v.length;i++)validate(v[i],s.items,p+'['+i+']');}if(s.type==='string'&&typeof v!=='string')throw Error(p+' string required');if(s.type==='boolean'&&typeof v!=='boolean')throw Error(p+' boolean required');if(s.enum&&!s.enum.includes(v))throw Error(p+' enum mismatch');}
+-async function agent(prompt,options={}){const id=String(++seq).padStart(3,'0');const request={id,prompt,options,accepted_model:'gpt-6-astra',accepted_effort:'ultra',provider_returned_model:'unknown',provider_returned_effort:'unknown',fallback_enabled:false};fs.writeFileSync(path.join(dir,id+'-request.json'),JSON.stringify(request,null,2));event({type:'dispatch-request',id,label:options.label,requested_native_effort:options.effort||null,enforced_effort:'ultra',model:'gpt-6-astra'});const response=path.join(dir,id+'-response.json');while(!fs.existsSync(response))await new Promise(r=>setTimeout(r,300));const result=JSON.parse(fs.readFileSync(response,'utf8'));try{validate(result,options.schema);}catch(e){event({type:'schema-error',id,error:String(e),fallback:'disabled; aborting'});process.exit(2);}event({type:'agent-complete',id,responseSha256:crypto.createHash('sha256').update(fs.readFileSync(response)).digest('hex')});return result;}
++async function agent(prompt,options={}){
++  const id=String(++seq).padStart(3,'0');
++  const request={id,prompt,options,accepted_model:'gpt-6-astra',accepted_effort:'ultra',provider_returned_model:'unknown',provider_returned_effort:'unknown',fallback_enabled:false};
++  const requestFile=path.join(dir,id+'-request.json'),requestBytes=JSON.stringify(request,null,2);
++  if(fs.existsSync(requestFile)){
++    const prior=fs.readFileSync(requestFile,'utf8');
++    if(prior!==requestBytes){event({type:'replay-mismatch',id,expectedSha256:digest(prior),actualSha256:digest(requestBytes)});process.exit(3);}
++    event({type:'request-replay-equality',id,byteEqual:true,sha256:digest(prior)});
++  }else fs.writeFileSync(requestFile,requestBytes);
++  event({type:'dispatch-request',id,label:options.label,requested_native_effort:options.effort||null,enforced_effort:'ultra',model:'gpt-6-astra'});
++  const response=path.join(dir,id+'-response.json');
++  while(!fs.existsSync(response)){
++    if(fs.existsSync(path.resolve('audit',stage,'STOP.json'))){event({type:'terminal-stop',id,detail:JSON.parse(fs.readFileSync(path.resolve('audit',stage,'STOP.json'),'utf8'))});process.exit(4);}
++    await new Promise(r=>setTimeout(r,300));
++  }
++  const result=JSON.parse(fs.readFileSync(response,'utf8'));
++  try{validate(result,options.schema);}catch(e){event({type:'schema-error',id,error:String(e),fallback:'disabled; aborting'});process.exit(2);}
++  event({type:'agent-complete',id,responseSha256:digest(fs.readFileSync(response)),inherited:['001','002'].includes(id)});return result;
++}
+ async function pipeline(items,...stages){return Promise.all(items.map(async(item,index)=>{let result=item;for(const fn of stages)result=await fn(result,item,index);return result;}));}
+ async function parallel(fns){return Promise.all(fns.map(f=>f()));}
+-event({type:'host-start',workflow,workflowSha256:crypto.createHash('sha256').update(raw).digest('hex'),adapter:'Local host exposes pinned workflow host primitives; only export const meta token adapted for AsyncFunction; agent schema validated; model fixed; no model fallback. Native effort medium overridden to ultra by explicit user instruction.'});
++event({type:'host-start',workflow,workflowSha256:digest(raw),args:JSON.parse(argsJSON),adapter:'Existing primitive adapter continued with immutable byte-equal replay, separate continuation journal and terminal stop handling. Actual upstream JS changed only export const meta token; typed checker resources supplied to exact model route. Native limit unchanged.'});
+ const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
+ new AsyncFunction('args','phase','agent','pipeline','parallel','budget','log',source)(JSON.parse(argsJSON),phase,agent,pipeline,parallel,{total:null,remaining:()=>0},log).then(r=>{fs.writeFileSync(path.join(dir,'result.json'),JSON.stringify(r,null,2));event({type:'completed'});}).catch(e=>{fs.writeFileSync(path.join(dir,'ERROR.txt'),e.stack);event({type:'failed',error:e.stack});process.exitCode=1;});

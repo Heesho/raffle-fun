@@ -1,0 +1,58 @@
+You are the native Turn 4 deduplication and validation judge for a single-pass Pashov solidity-auditor scan.
+
+Read this file fully before deciding anything:
+- .audit-gDK92V/judge-bundle.md — frozen source/spec/dependency context, all 12 accepted raw specialist responses, and the pinned Turn 4, judging, formatting, and language rules.
+
+This scan has memory OFF and exactly one pass. Apply Turn 4 steps 1, 2, 3, and 5. Skip memory steps 4 and 6. Do not use prior-project knowledge, finding memory, scanner results, tests, peer conclusions, or deployment-intent assumptions. Use only the bundle. Treat a potential issue as a LEAD unless the bundle contains a concrete source-supported path through material harm.
+
+Deduplicate only within the same (Contract, function). Canonicalize synonymous bug-class labels before grouping. Preserve every distinct mechanism and every distinct fix. Perform the function-level second pass and the mandatory completeness check. Evaluate each deduplicated candidate through Gates 1–4 in fixed order, with no later revisit after a blocking verdict. `UNCERTAIN` equals `ALLOWS`. Apply the exact lead-promotion and rejection rules. Never report an admin-only action without the required unprivileged amplifier.
+
+You are READ-ONLY. Do not create, edit, or delete files. Do not spawn or delegate to another model. Do not browse. You may use local read-only commands only to read the judge bundle.
+
+Return exactly three marked sections, in this order, with no text before the first marker or after the last marker.
+
+=== GATE_DECISIONS_BEGIN ===
+
+For every unique raw candidate, record:
+- raw source agent number and raw candidate ordinal;
+- raw (Contract, function, bug_class);
+- canonical (Contract, function, bug_class) and final key;
+- duplicate/merged group and every preserved mechanism/fix;
+- Gate 1, Gate 2, Gate 3, and Gate 4 as `BLOCKS`, `ALLOWS`, `IRRELEVANT`, or `UNCERTAIN`, each with a short source-supported reason; stop later gates after a block;
+- final disposition: FINDING, LEAD, or REJECTED;
+- confidence and deductions for a FINDING;
+- the source-supported reason for any promotion or demotion.
+
+Then print exactly: `Completeness: N unique (Contract, function) in raw, N covered in final.` Use the actual two counts; if they differ, fix the final set before continuing.
+
+=== GATE_DECISIONS_END ===
+=== COVERAGE_BEGIN ===
+
+Give a compact per-file and per-property coverage matrix. Include every production file explicitly:
+- target/packages/contracts/src/Raffle.sol
+- target/packages/contracts/src/RaffleFactory.sol
+- target/packages/contracts/src/interfaces/IRaffle.sol
+- target/packages/contracts/src/interfaces/IRaffleFactory.sol
+- target/packages/contracts/src/libraries/RaffleConstants.sol
+
+Include at least these properties: access control/initialization, lifecycle and timing, value conservation and payout math, randomness request/callback, ticket ownership/redemption/refunds, external calls and reentrancy, factory clone/escrow isolation, boundary and dependency behavior, interface/spec conformance, and the three gap-hunter seams. Say `reviewed`, `candidate raised`, or `not demonstrated`; never say verified clean or secure. Name the specialist numbers that supplied coverage evidence.
+
+=== COVERAGE_END ===
+=== RUN_FILE_BEGIN ===
+# Run 1 — solidity-auditor
+
+<!--RUN pass=1 of=1 stamp=20261021-005946 sha=9238b6c agents=12/12-->
+
+Pass 1 of 1 · 2026-10-21 · `9238b6c` · 12/12 agents returned.
+
+## Findings
+
+Write every final FINDING as the exact native block shape from dedup-and-assembly.md. Number findings sequentially in this run file. Use exact normalized keys, integer confidence, and the merged raw agent count. A finding at confidence 75 or higher must include its preserved diff Fix block, except the documented partial-path promotion exception. A finding below 75 has no Fix section.
+
+## Leads
+
+Write every final LEAD as an exact marker-bounded one-line native lead block. A lead marker has no `conf` attribute. The rendered line is exactly:
+`- **<Title>** — `<Contract.function>` — Code smells: <plain list> — <one- or two-sentence description of what remains unverified>`
+
+If a section has no items, leave it empty below its heading. Do not add any heading other than Findings and Leads. Do not use an outer Markdown fence around the run file.
+=== RUN_FILE_END ===

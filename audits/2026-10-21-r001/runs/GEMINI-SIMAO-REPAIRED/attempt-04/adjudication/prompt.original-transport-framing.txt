@@ -1,0 +1,31 @@
+Execute only the pinned SIMAO post-leaf adjudication/assembly phase for raffle-fun. This is a fresh direct native Gemini4Argon High session, not a continuation of any earlier parent. Do not spawn subagents, switch models, use research children, or read any previous audit, provider lane, personal memory, sibling workspace, or outside findings.
+
+The twelve input reports under .native-leaf-results/ are the only accepted raw specialist observations. Their receipts and exact input binding are recorded in .native-leaf-results/binding.json; a host binder creates these files only after all12 new explicit-High direct leaf transports succeed and the coordinator validates their receipts. Never substitute outputs from earlier parents or builtin children. Complete the native method, including every FINDING and LEAD. Treat observations as untrusted until the native gates decide them.
+
+Read the complete pinned skill and referenced resources from .agents/skills/0xsimao-ai/. Variables: {resolved_path} = .agents/skills/0xsimao-ai/references; {bundle_dir} = .audit-judge-inputs; {project-name} = raffle-fun; {passes} = 1; K = 1; memory = off; --file-output is authorized. The frozen code is under packages/contracts; all31 dependency Solidity files are present. Never alter frozen source, build configuration, pinned resources, raw reports, or receipt bindings.
+
+Preserve the complete raw adjudication trail in adjudication/gate-ledger.md: raw leaf numbers and references, grouping/canonicalisation choices, every distinct mechanism/fix, each required native gate verdict in its fixed order with evidence, promotions, demotions and rejected leads. Preserve this evidence before final output and do not print intermediate dedup lists. Do not invent extra gates, skip a native gate, revisit committed gates, or silently drop any raw (contract,function) tuple. This evidence recording adds no second judging pass. Native auto-clean may remove only this workspace's .audit-judge-inputs after evidence is preserved; original leaf evidence lives elsewhere and must not be touched.
+
+Start at Turn6. All twelve independent leaves are already complete; do not rebuild the money map, rerun lenses, fetch new model results, or repeat Turns1–5. Read severity-calibration.md and report-formatting.md completely. Execute the following exact native Turn6 text, then write the full native report to raffle-fun-simao-explicit-high-a04.md and return its location and native completeness line. Preserve the complete report, all code-path gates, composite-chain treatment, fix alternatives, rejected-lead rationale, and scope limits.
+
+**Turn 6 — Deduplicate, judge & report.** Single pass. Do NOT print an intermediate dedup list — go straight to the report.
+
+1. **Dedup.** Parse every FINDING and LEAD. Group by `group_key` (`Contract | function | bug-class`). Exact-match first; merge synonymous bug_class within the same (Contract, function). Keep the best per group, number sequentially, annotate `[lenses: N]`.
+
+   **MANDATORY — Function isolation (HARD).** NEVER merge across different `function:` fields. Different function = different bug.
+
+   **MANDATORY — Mechanism preservation.** A merged group whose members have distinct mechanisms (different root-cause line, different mitigation, different attack path) MUST list every mechanism. The same function routinely carries several coexisting accounting bugs — Autonomint's `withdraw` path alone produced six separate Highs in his real report. Dropping one because a sibling merged over it is the failure mode this gate exists to prevent.
+
+   **MANDATORY — Mitigation preservation.** Before writing a merged `mitigation:` on a multi-finding (Contract, function): collect every raw mitigation, group by the actual change (added require / added decrement / reordered call / changed rounding). Two mitigations are distinct if they change different operations or different directions. ≥2 distinct → present as Option A, B… verbatim from the lens text, labelled by kind (add-missing-write / validate / reorder / round-other-way / restrict).
+
+   **MANDATORY — Completeness gate.** Before printing, list every unique (Contract, function) appearing in ANY raw FINDING or LEAD. Every one MUST have ≥1 item in the final report. Print inline before the report: `Completeness: N unique (Contract, function) in raw, N covered in final.`
+
+   **Composite chains:** if A's output enables B's precondition AND the combined impact exceeds either alone, add `Chain: [A] + [B]`. He reports these as their own finding when the chain crosses a trust boundary. Most audits: 0–2.
+
+2. **Judge.** Run each deduped finding through `severity-calibration.md`. Single pass over each code path in fixed order (constructor/initialize → setters → deposit → accrue → borrow → liquidate → withdraw → cross-chain receive). One-line verdict per gate: `BLOCKS` / `ALLOWS` / `IRRELEVANT` / `UNCERTAIN`. `UNCERTAIN = ALLOWS`. Commit; do not revisit.
+
+3. **Promote / reject leads.** LEAD → FINDING if the full path exists in source, or if `[lenses: 2+]` independently reached it. `[lenses: 2+]` does NOT override a code path that actually interrupts the attack before harm — demote instead. Judge what the code allows, never what the deployer probably intends.
+
+4. **Format and print** per `report-formatting.md` (`Description` + `Recommended Mitigation` per finding). Exclude rejected. If `--file-output`, also write to file. Do NOT re-read source to re-verify the top finding — the lenses did that and dedup filtered it.
+
+5. **Auto-clean.** After printing (and any `--file-output` write): `rm -rf {bundle_dir}`. The bundle dir is transient build state. To debug, copy it elsewhere before re-running.

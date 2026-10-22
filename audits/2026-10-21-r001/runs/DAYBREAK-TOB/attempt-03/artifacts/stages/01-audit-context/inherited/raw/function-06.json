@@ -1,0 +1,89 @@
+{
+  "selection": {
+    "requested_model": "gpt-daybreak-blue-latest",
+    "accepted_local_selection": "gpt-daybreak-blue-latest",
+    "reasoning_effort": "ultra",
+    "access_program": "daybreak_blue",
+    "fallback": false,
+    "provider_returned_model": "unknown",
+    "provider_identity": "unknown"
+  },
+  "function": "Raffle.enableRefunds",
+  "file": "packages/contracts/src/Raffle.sol",
+  "lines": "L276-L301",
+  "analysisFile": ".audit-work/stages/01-audit-context/functions/06-Raffle.enableRefunds.md",
+  "invariants": [
+    {
+      "claim": "A successful call enters only from Active or Drawing after its branch-specific sponsor/time predicate passes.",
+      "evidence": "packages/contracts/src/Raffle.sol:L279-L294"
+    },
+    {
+      "claim": "At the draw-request deadline requestDraw rejects while the sold-Active refund path becomes available.",
+      "evidence": "packages/contracts/src/Raffle.sol:L244-L247,L285-L288,L458-L460"
+    },
+    {
+      "claim": "At the callback deadline fulfillRandomWords ignores the callback while the Drawing refund path becomes available.",
+      "evidence": "packages/contracts/src/Raffle.sol:L289-L291,L509-L515"
+    },
+    {
+      "claim": "Every successful call sets unsettledPot to zero, assigns its prior value to remainingRefundLiability, sets Refunding, and emits that same liability.",
+      "evidence": "packages/contracts/src/Raffle.sol:L296-L300"
+    },
+    {
+      "claim": "The sponsor's early authority exists only for Active with zero totalEntries; sponsorRecipient has no authority in this function.",
+      "evidence": "packages/contracts/src/Raffle.sol:L61-L64,L279-L288"
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "Drawing implies drawRequestedAt was recorded and totalEntries is nonzero.",
+      "establishedBy": "requestDraw at packages/contracts/src/Raffle.sol:L240-L260; no other target writer enters Drawing"
+    },
+    {
+      "claim": "On entry from Active or Drawing, remainingRefundLiability is still zero, so assignment reclassifies rather than duplicates a prior refund liability.",
+      "establishedBy": "one-way status writers at packages/contracts/src/Raffle.sol:L205,L252,L299,L428,L521 and refund-only writers at L296-L299,L349-L370"
+    },
+    {
+      "claim": "unsettledPot equals the aggregate purchase value represented by outstanding tickets at the refund transition.",
+      "establishedBy": "buyEntries at packages/contracts/src/Raffle.sol:L223-L235; ticket burns require terminal/refunding states at L304-L371"
+    },
+    {
+      "claim": "The contract's actual quote-token balance covers the accounting liability under fee-free, non-rebasing canonical USDC behavior.",
+      "establishedBy": "nothing found on chain; declared trust assumption at packages/contracts/src/interfaces/IRaffle.sol:L12-L15, while the factory checks only code and decimals at packages/contracts/src/RaffleFactory.sol:L58-L78"
+    },
+    {
+      "claim": "The pre-end empty-raffle caller is the original factory createRaffle caller when it matches sponsor.",
+      "establishedBy": "packages/contracts/src/RaffleFactory.sol:L97-L120 and packages/contracts/src/Raffle.sol:L176-L205"
+    }
+  ],
+  "calls": [
+    {
+      "callee": "drawRequestDeadline",
+      "kind": "internal",
+      "propagates": "Returns endTime plus the fixed two-day request timeout on its sole path (packages/contracts/src/Raffle.sol:L458-L460; RaffleConstants.sol:L32-L33)."
+    },
+    {
+      "callee": "callbackDeadline",
+      "kind": "internal",
+      "propagates": "Returns drawRequestedAt plus the fixed two-day callback timeout when drawRequestedAt is nonzero, otherwise zero; this caller depends on requestDraw having selected the nonzero path (packages/contracts/src/Raffle.sol:L252-L254,L463-L465)."
+    },
+    {
+      "callee": "ReentrancyGuard.nonReentrant",
+      "kind": "internal",
+      "propagates": "Rejects an already-entered guard, marks the body entered, and restores the guard afterward (packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:L69-L105)."
+    }
+  ],
+  "callers": [
+    "Any external account or contract via IRaffle.enableRefunds; only the stored sponsor has the Active/zero-entry pre-end path (packages/contracts/src/interfaces/IRaffle.sol:L322-L324; packages/contracts/src/Raffle.sol:L276-L294)."
+  ],
+  "sharedState": [
+    "status: read for eligibility and set to Refunding; other writers are initialize, onERC721Received, requestDraw, and fulfillRandomWords (packages/contracts/src/Raffle.sol:L205,L252,L279-L299,L428,L521)",
+    "totalEntries/unsettledPot: buyEntries grows both; enableRefunds branches on the former and moves the latter (packages/contracts/src/Raffle.sol:L219-L233,L280,L285-L298)",
+    "sponsor/endTime: fixed by initialize from factory inputs and used for the empty Active branch (packages/contracts/src/Raffle.sol:L197-L205,L280-L284; RaffleFactory.sol:L97-L120)",
+    "drawRequestedAt: set by requestDraw and consumed through callbackDeadline on the Drawing branch (packages/contracts/src/Raffle.sol:L253,L289-L291,L463-L465)",
+    "remainingRefundLiability: initialized by enableRefunds and decremented by refundTickets (packages/contracts/src/Raffle.sol:L298,L349-L370)"
+  ],
+  "openQuestions": [
+    "unclear; need to inspect deployment configuration and deployed quote-token behavior to establish the documented canonical, fee-free, non-rebasing USDC assumption; target code checks only code presence and six decimals (packages/contracts/src/RaffleFactory.sol:L58-L78; interfaces/IRaffle.sol:L12-L15)"
+  ]
+}

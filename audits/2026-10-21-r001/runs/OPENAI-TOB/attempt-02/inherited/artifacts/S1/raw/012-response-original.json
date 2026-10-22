@@ -1,0 +1,67 @@
+{
+  "function": "_validateCreateParams",
+  "file": "target/packages/contracts/src/RaffleFactory.sol",
+  "lines": "L154-L179",
+  "analysisFile": "audit/S1/audit-context/functions/11-_validateCreateParams.md",
+  "invariants": [
+    {
+      "claim": "Normal return requires prizeToken to have positive code length at validation.",
+      "evidence": "RaffleFactory.sol:L155, L183-L184"
+    },
+    {
+      "claim": "Normal return excludes factory, quote token, wrapper, implementation and current local registered raffles from prizeToken; sponsorRecipient additionally must be nonzero and differ from prizeToken.",
+      "evidence": "RaffleFactory.sol:L156-L169"
+    },
+    {
+      "claim": "Normal return requires a decoded true ERC-721 supportsInterface response; caught call failures and decoded false reject.",
+      "evidence": "RaffleFactory.sol:L171-L177"
+    },
+    {
+      "claim": "Normal return requires reserveEntries in [1, type(uint128).max].",
+      "evidence": "RaffleFactory.sol:L178; interfaces/IRaffleFactory.sol:L24"
+    },
+    {
+      "claim": "The helper writes no persistent state and emits no events; its sole external interaction is the typed view interface query.",
+      "evidence": "RaffleFactory.sol:L154-L179; IERC165.sol:L24"
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "The prize address contains deployed code before the interface query (RaffleFactory.sol:L155, L172).",
+      "establishedBy": "RaffleFactory._requireContract, RaffleFactory.sol:L183-L185, on every normal return"
+    },
+    {
+      "claim": "A true supportsInterface response corresponds to actual standards-compliant ERC-721 behavior (RaffleFactory.sol:L172-L177; IERC165.sol:L17-L24).",
+      "establishedBy": "nothing found"
+    },
+    {
+      "claim": "The registry used for address exclusion represents this factory's registered clones (RaffleFactory.sol:L159, L166).",
+      "establishedBy": "RaffleFactory.createRaffle sets isRaffle[raffle] = true at RaffleFactory.sol:L123-L125 after clone creation at L106"
+    },
+    {
+      "claim": "Whole-creation timing and escrow preconditions are enforced outside this helper (RaffleFactory.sol:L154-L179).",
+      "establishedBy": "RaffleFactory.createRaffle timing checks at L99-L104 and post-transfer owner/status checks at L127-L134; token-reported ownership remains dependent on the arbitrary prize implementation"
+    }
+  ],
+  "calls": [
+    {
+      "callee": "_requireContract(params.prizeToken)",
+      "kind": "internal",
+      "propagates": "At RaffleFactory.sol:L155, depends on L183-L185: zero code length reverts NotContract; every successful path establishes positive code length and nothing about interface or ownership behavior."
+    },
+    {
+      "callee": "IERC165(params.prizeToken).supportsInterface(type(IERC721).interfaceId)",
+      "kind": "external-black-box",
+      "propagates": "RaffleFactory.sol:L172 sends the ERC-721 interface ID without value via the external view signature (IERC165.sol:L24). Decoded true permits progress, decoded false and caught failures reject (L173-L177). Concrete implementation unavailable; truthful standard compliance is not established by the boolean."
+    }
+  ],
+  "callers": [
+    "RaffleFactory.createRaffle, RaffleFactory.sol:L97-L98; validation precedes timing checks, count increment, cloning and escrow (L99-L134)."
+  ],
+  "sharedState": [
+    "Reads immutable quoteToken, vrfWrapper, raffleImplementation initialized at RaffleFactory.sol:L85-L91; reads isRaffle membership at L159/L166, written by createRaffle at L125."
+  ],
+  "openQuestions": [
+    "unclear; need to inspect the concrete sponsor-selected prize implementation to determine whether its supportsInterface assertion matches ERC-721 transfer and ownership behavior (RaffleFactory.sol:L172; IERC165.sol:L24)."
+  ]
+}

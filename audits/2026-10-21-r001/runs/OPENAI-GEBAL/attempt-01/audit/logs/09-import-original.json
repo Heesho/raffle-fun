@@ -1,0 +1,38 @@
+{
+  "stageId": "09-import-original",
+  "command": [
+    "npx",
+    "--offline",
+    "--yes",
+    "--package=node@22.23.3",
+    "--package=pnpm@10.34.6",
+    "pnpm",
+    "--dir",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal",
+    "exec",
+    "node",
+    "--import",
+    "tsx",
+    "packages/cli/src/main.ts",
+    "import-review",
+    "25b0b84c-7eda-45e2-9d81-440aa16fcb7b",
+    "--input",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/review-original.json",
+    "--reviewer",
+    "assistant:Codex / accepted-local gpt-6-astra; effort ultra; provider-returned model unknown; fallback disabled"
+  ],
+  "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/toolchain",
+  "environmentOverrides": {
+    "GEBAL_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/gebal-state",
+    "TMPDIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/tmp",
+    "npm_config_logs_dir": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/logs/npm",
+    "npm_config_update_notifier": "false",
+    "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/npm-cache",
+    "npm_config_prefix": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/toolchain"
+  },
+  "startedAt": "2026-10-21T08:05:29.331029+00:00",
+  "finishedAt": "2026-10-21T08:05:32.307405+00:00",
+  "exitCode": 0,
+  "stdout": "{\n  \"invocationId\": \"3b5be1b7-490e-4270-b797-ef72d4e79105\",\n  \"evidence\": \"0500524c7fc7ed20bbbf89713e5a82f1e6cbb68c7001ac582a21f8417acc5be0\",\n  \"observations\": 1,\n  \"runState\": \"succeeded\",\n  \"disposition\": \"needs-review\"\n}\n",
+  "stderr": "(node:64037) ExperimentalWarning: SQLite is an experimental feature and might change at any time\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+}

@@ -1,0 +1,75 @@
+{
+  "stage_id": "T4.2-validation",
+  "timestamp": "2026-10-21T08:06:30.718870+00:00",
+  "accepted_local_model": "gpt-6-astra",
+  "accepted_local_reasoning_effort": "ultra",
+  "provider_returned_model": "unknown",
+  "fallback_used": false,
+  "actor": "root orchestrator",
+  "evidence": "runner-declared root selection; no provider model field available",
+  "group_key": "raffle|releasesponsorproceeds|untrusted-prize-payout",
+  "ordered_gates": [
+    {
+      "id": "T4.2-gate-1-attack-execution",
+      "verdict": "ALLOWS",
+      "detail": "The supplied guards allow an ordinary NftWon raffle to settle and release sponsor proceeds before redemption. Invalid prize deposits revert at factory owner/status checks; failed NFT delivery reverts the redemption transaction. No guard reverses an already completed separate sponsor release. This clears only the source-supported ordering, not the unproven external failure.",
+      "source": [
+        "RaffleFactory.sol:97-134",
+        "Raffle.sol:176-205",
+        "Raffle.sol:209-236",
+        "Raffle.sol:240-272",
+        "Raffle.sol:509-523",
+        "Raffle.sol:533-557",
+        "Raffle.sol:375-380",
+        "Raffle.sol:309-336",
+        "Raffle.sol:564-566"
+      ]
+    },
+    {
+      "id": "T4.2-gate-2-reachability",
+      "verdict": "UNCERTAIN",
+      "native_path_interruption_treatment": "ALLOWS",
+      "detail": "The payout-before-delivery state is reachable through ordinary purchases, authenticated resolution, and permissionless settlement. The bundle contains no concrete accepted prize implementation that later refuses every valid delivery. This external step remains unproven; no claim that a deployment with it exists.",
+      "source": [
+        "RaffleFactory.sol:154-178",
+        "Raffle.sol:518-521",
+        "Raffle.sol:533-557",
+        "IRaffle.sol:11-15",
+        "DESIGN.md"
+      ]
+    },
+    {
+      "id": "T4.2-gate-3-trigger",
+      "verdict": "ALLOWS",
+      "detail": "Any unprivileged sponsor can create a raffle; anyone can settle a valid winning range and trigger payment to the fixed sponsorRecipient. No owner/admin action or configuration change is required for the supported part.",
+      "source": [
+        "RaffleFactory.sol:97",
+        "Raffle.sol:304-305",
+        "Raffle.sol:375-380"
+      ]
+    },
+    {
+      "id": "T4.2-gate-4-impact",
+      "verdict": "UNCERTAIN",
+      "disposition": "KEEP_LEAD",
+      "detail": "100 entries allocate 95,000,000 units to the sponsor and 5,000,000 to the treasury. A winner would lose prize delivery only if the external prize exhibits the unproven refusal behavior. The bundle proves the accounting and payout order, not concrete material harm. The user requires a concrete source-supported path, so no finding or confidence score is assigned.",
+      "source": [
+        "Raffle.sol:334-336",
+        "Raffle.sol:543-544",
+        "Raffle.sol:276-294"
+      ]
+    }
+  ],
+  "fixed_path_order": "construction and configuration \u2192 creation and initialization \u2192 purchase \u2192 request/callback \u2192 settlement \u2192 payout \u2192 redemption/refund; no setters, swaps, or liquidations exist",
+  "path_excerpt_artifact": "logs/judge-source-paths.txt",
+  "final_kind": "LEAD",
+  "confidence": null,
+  "verdict_revisited": false,
+  "lead_promotion": {
+    "stage_id": "T4.3-lead-promotion",
+    "cross_contract_echo": false,
+    "multi_agent_convergence": true,
+    "promoted": false,
+    "reason": "User explicitly requires concrete source-supported paths; agreement by two specialists cannot establish the missing external failure. This overrides native convergence-only promotion."
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "_kritt_extractor_helper": {
+      "type": "boolean",
+      "const": true
+    },
+    "stub": {
+      "type": "boolean"
+    },
+    "stub_explanation": {
+      "type": "string"
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "entrypoint_kind": {
+            "type": "string"
+          },
+          "entrypoint_label": {
+            "type": "string"
+          },
+          "entrypoint_handler": {
+            "type": "string"
+          },
+          "entrypoint_file_path": {
+            "type": "string"
+          },
+          "entrypoint_line": {
+            "type": "number"
+          },
+          "entrypoint_actor": {
+            "type": "string"
+          },
+          "entrypoint_input": {
+            "type": "string"
+          },
+          "entrypoint_reachability": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "entrypoint_kind",
+          "entrypoint_label",
+          "entrypoint_handler",
+          "entrypoint_file_path",
+          "entrypoint_line",
+          "entrypoint_actor",
+          "entrypoint_input",
+          "entrypoint_reachability"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "_kritt_extractor_helper",
+    "stub",
+    "stub_explanation",
+    "results"
+  ],
+  "additionalProperties": false
+}

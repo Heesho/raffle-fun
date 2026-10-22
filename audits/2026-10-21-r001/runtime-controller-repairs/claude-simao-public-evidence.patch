@@ -1,0 +1,29 @@
+--- upstream/references/attack-lenses/shared-rules.md
++++ public-evidence/references/attack-lenses/shared-rules.md
+@@ -10,18 +10,18 @@
+ 
+ When matching function names, check both `functionName` and `_functionName` (Solidity convention), and check library variants (`XLib::function`).
+ 
+-## Mandatory reasoning protocol
++## Public audit-evidence summaries
+ 
+-Four markers. Each has a trigger. When the trigger fires you MUST emit the marker before continuing. Markers live in your working text — they do NOT go inside FINDING/LEAD blocks.
++Provide concise public audit evidence and final conclusions, with source references. Do not provide private working text, hidden chain-of-thought, or a transcript of internal deliberation. The following labels organize the public report; they are not instructions to reveal private reasoning or to emit intermediate working text before continuing.
+ 
+-| Trigger | Marker | Content |
++| Evidence category | Public label | Brief report content |
+ | --- | --- | --- |
+-| You open a function that moves value or writes a tracked total | `[Model: <name>]` | Explain in plain English what a user gives, what they get, and which totals change. No Solidity jargon — no `safeTransfer`, `mload`, `shares`, `wad`. Where you have to reach for a Solidity term to stay accurate, mark that spot: that is where the bug is. |
+-| You stop on a line whose purpose is not immediately obvious | `[Why: <file:line>]` | One question that drills past "because that is how it is written." If your answer restates the code, ask again. Stop when the answer exposes the implicit belief the code rests on. |
+-| A path reads as clean, or a guard looks sufficient | `[Defeat: <function>]` | Three concrete attacker moves against it. Specific addresses, values, and states — never abstractions. |
+-| You finish a lifecycle from the money map | `[LastOut: <lifecycle>]` | Walk every user withdrawing in the worst order. State explicitly whether the last one gets paid in full, and if not, by how much the protocol is short. |
++| A function moves value or writes a tracked total | `[Model: <name>]` | Summarize what a user gives, what they receive, and the totals changed, citing the relevant function. |
++| A non-obvious operation relies on an assumption | `[Why: <file:line>]` | State the relevant assumption and the source evidence establishing it, or identify the unresolved assumption. |
++| An access guard or value-moving path is assessed | `[Defeat: <function>]` | Report concise boundary-test or adversarial-case outcomes and the effective guard or uncovered condition; no private deliberation is requested. |
++| A lifecycle is assessed | `[LastOut: <lifecycle>]` | State the conservation/liability result and whether all eligible users can receive the amounts owed, with evidence or a clearly identified gap. |
+ 
+-Heavy use of these is what produces the audit. Skipping them yields surface-level scanning, which is the failure mode of every junior auditor. The orchestrator checks marker counts.
++Use these summaries as public evidence for the audit result. The orchestrator may inventory which evidence categories were covered; it must not request or evaluate private reasoning traces. All remaining lens scope, saturation, finding format, severity, adjudication, proof and reporting rules are unchanged.
+ 
+ ## Saturation is mandatory
+ 

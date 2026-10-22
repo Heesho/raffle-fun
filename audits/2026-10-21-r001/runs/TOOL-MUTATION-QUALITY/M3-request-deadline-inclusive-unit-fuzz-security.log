@@ -1,0 +1,101 @@
+COMMAND: ["forge", "test", "--root", "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/mutation-quality/M3-request-deadline-inclusive", "--no-match-path", "**/fork/**", "--fuzz-runs", "128", "--no-match-contract", "RaffleInvariantTest"]
+ENV: FOUNDRY_INVARIANT_RUNS=64 FOUNDRY_INVARIANT_DEPTH=64 FOUNDRY_FUZZ_RUNS=128
+Compiling 4 files with Solc 0.8.36
+Solc 0.8.36 finished in 8.47s
+Compiler run successful!
+
+Ran 11 tests for test/foundry/security/VrfAdversarial.t.sol:VrfAdversarialTest
+[PASS] testAuthenticatedValidCallbackAtDeadlineIsIgnoredBeforeRefunds() (gas: 792794)
+[FAIL: Error != expected error: RequestFailed() != DrawRequestWindowExpired(359200 [3.592e5], 359200 [3.592e5])] testFeeReadAndRequestFailuresRollBackToActiveThenRefundAtDeadline() (gas: 815271)
+[PASS] testMalformedAndWrongCallbacksAreIgnoredUntilOneValidWordArrives() (gas: 794255)
+[PASS] testNonPersistedRequestStillHasBoundedFullRefundRecovery() (gas: 738714)
+[PASS] testOfficialHelperCannotUseForcedNativeToSubsidizeQuoteDrift() (gas: 802498)
+[PASS] testOfficialHelperRefundsAgainstActualLowerPrice() (gas: 811619)
+[PASS] testQuotedFeeCanChangeWithoutConsumingRequest() (gas: 839064)
+[PASS] testRepeatedRequestIdsRemainRaffleScoped() (gas: 1430648)
+[PASS] testSynchronousWrongDuplicateAndValidCallbacksCannotResolveInFlightRequest() (gas: 850218)
+[PASS] testWrapperRequestReentryIsRejected() (gas: 776833)
+[PASS] testZeroRequestIdDoesNotMatchUntilRequestReturns() (gas: 775425)
+Suite result: FAILED. 10 passed; 1 failed; 0 skipped; finished in 63.56ms (2.40ms CPU time)
+
+Ran 11 tests for test/foundry/security/RaffleSecurity.t.sol:RaffleSecurityTest
+[PASS] testCallbackMakesNoQuoteOrPrizeExternalTransfers() (gas: 1793487)
+[PASS] testFactoryReentrancyDuringPrizeEscrowIsBlockedAtomically() (gas: 1878172)
+[PASS] testFalseReturningOutboundTransferRestoresClaimAndAccounting() (gas: 5850288)
+[PASS] testFalseReturningQuoteCannotCreateReceipt() (gas: 4895630)
+[PASS] testFalseReturningWinnerTransferRestoresTicketAndLazySettlement() (gas: 5958291)
+[PASS] testPrizeCannotReenterDuringSponsorSafeTransfer() (gas: 2528325)
+[PASS] testPrizeCannotReenterDuringWinnerTransfer() (gas: 2498227)
+[PASS] testProtocolDestinationsCannotReceiveReceiptsOrPayouts() (gas: 1142155)
+[PASS] testReentrantQuoteTokenCannotNestInboundPurchase() (gas: 5463205)
+[PASS] testReentrantQuoteTokenCannotNestWinnerWithdrawal() (gas: 5850411)
+[PASS] testReentrantReceiptReceiverCannotNestPurchase() (gas: 966361)
+Suite result: ok. 11 passed; 0 failed; 0 skipped; finished in 63.92ms (11.31ms CPU time)
+
+Ran 39 tests for test/foundry/unit/Raffle.t.sol:RaffleTest
+[PASS] testAcceptedDrawCannotRefundBeforeCallbackDeadlineAndValidNftOutcomeNeverRefunds() (gas: 1779389)
+[PASS] testBothCallbackBranchesStayBelowGasBudget() (gas: 1787662)
+[PASS] testCallbackDeadlineIsHardAtEqualityRegardlessOfOrdering() (gas: 2643541)
+[PASS] testCallbackGasDoesNotScaleWithReceiptCount() (gas: 7828661)
+[PASS] testCallbackStoresInclusiveWinningEntryAndSelectsReserveBoundary() (gas: 1800464)
+[PASS] testCashSettlementLeavesBearerClaimAndOwnerRedeemsOnce() (gas: 1940236)
+[PASS] testCashSponsorPrizeRecoveryIsPermissionlessToFixedRecipient() (gas: 1365762)
+[PASS] testCloneInitializationRejectsRegisteredRaffleSponsorAndTreasury() (gas: 564638)
+[PASS] testCloneInitializationRejectsZeroAndProtocolDestinations() (gas: 216024)
+[PASS] testDonationsAndForcedNativeDoNotAlterQuoteAccounting() (gas: 666555)
+[PASS] testDrawForwardsExactDynamicFeeAndRefundsExcess() (gas: 1884589)
+[PASS] testDrawUsesFixedThirtyConfirmationsAndOneWord() (gas: 938287)
+[PASS] testEmptyRaffleUsesRefundingWithoutClosedState() (gas: 897956)
+[PASS] testFactoryAcceptsExactMaximumSaleDuration() (gas: 431037)
+[PASS] testFactoryAtomicallyEscrowsAndCapturesFixedConfiguration() (gas: 448324)
+[PASS] testFactoryConstructorAndCreationValidation() (gas: 1502699)
+[PASS] testFactoryCreatesCanonicalClonesWithIsolatedRangeState() (gas: 1016132)
+[PASS] testFactoryRejectsPrizesThatDoNotEscrowAndActivateExactly() (gas: 3653278)
+[PASS] testFutureCanonicalCloneCanBrickOnlyItsOwnWinnerRedemption() (gas: 1490096)
+[PASS] testImplementationAndCloneInitializationAreLocked() (gas: 263530)
+[FAIL: next call did not revert as expected] testMetadataPriceEstimateAndDrawFailureBoundaries() (gas: 1421452)
+[PASS] testNftDeliveryFailureRollsBackLazySettlementAndBurn() (gas: 2021310)
+[PASS] testNftSettlementIsPermissionlessAccountingOnlyAndProofIsExact() (gas: 1159545)
+[PASS] testNftWinningTicketRemainsTransferableUntilOwnerRedeems() (gas: 1037331)
+[PASS] testNonCompliantPrizeCannotPassPostDeliveryVerification() (gas: 3794374)
+[PASS] testOwnerCanSettleAndRedeemAtomicallyButApprovedOperatorCannot() (gas: 1118645)
+[PASS] testPrizeDeliveryFailureBlocksOnlyWinnerPrizeAndNotSettlementOrCashClaims() (gas: 1993922)
+[PASS] testPurchaseAndRefundGasDoNotScaleWithEntriesInsideReceipt() (gas: 1638081)
+[PASS] testPurchaseMaximumRangeAndOverflowAreAtomic() (gas: 652996)
+[PASS] testPurchaseMintsOneSequentialTicketForAnyEntryCount() (gas: 743168)
+[PASS] testPurchaseValidationAndReceiverRollbackAreAtomic() (gas: 743176)
+[PASS] testRefundBatchValidationAndMixedOwnershipAreAtomic() (gas: 1077197)
+[PASS] testRegisteredRaffleCannotReceiveTicketsAndSettlementCannotBeRedirected() (gas: 2302896)
+[PASS] testSaleEndsButTicketsStayTransferableUntilBurned() (gas: 1173461)
+[FAIL: next call did not revert as expected] testSoldRaffleHasHardRequestAndCallbackRefundDeadlines() (gas: 964625)
+[PASS] testSponsorRecipientIsFixedForProceedsAndReturnedPrize() (gas: 1045264)
+[PASS] testWeightedRefundBatchPaysExactRangesAndConsumesOnce() (gas: 927044)
+[PASS] testWinnerRedeemsAndFixedProceedsReleaseIndependently() (gas: 1035154)
+[PASS] testWrongDuplicateMalformedAndUnauthorizedCallbacksAreHarmless() (gas: 974134)
+Suite result: FAILED. 37 passed; 2 failed; 0 skipped; finished in 64.00ms (13.51ms CPU time)
+
+Ran 9 tests for test/foundry/fuzz/RaffleFuzz.t.sol:RaffleFuzzTest
+[PASS] testFuzzCashSplitAlwaysConservesEightyFifteenFive(uint64) (runs: 128, μ: 1066805, ~: 1066597)
+[PASS] testFuzzNoRequestTimeoutPaysFullWeightedRange(uint64) (runs: 128, μ: 636155, ~: 635947)
+[PASS] testFuzzOnlyContainingReceiptCanSettle(uint32,uint32,uint256) (runs: 128, μ: 1131298, ~: 1131029)
+[PASS] testFuzzPostSettlementBearerCanRedeemNft(uint64) (runs: 128, μ: 1049500, ~: 1049292)
+[PASS] testFuzzPurchaseCreatesOneSequentialTicketWithExactRange(uint128) (runs: 128, μ: 680032, ~: 679929)
+[PASS] testFuzzRefundPaysWeightedRangeExactlyOnce(uint64) (runs: 128, μ: 914573, ~: 914365)
+[PASS] testFuzzReserveEqualityIsNftAndOneBelowIsCash(uint32) (runs: 128, μ: 1810800, ~: 1810609)
+[PASS] testFuzzSeparatePurchasesPartitionEntriesWithoutGaps(uint128,uint128) (runs: 128, μ: 723470, ~: 723680)
+[PASS] testFuzzWinningEntryAlwaysUsesInclusiveSoldRange(uint96,uint256) (runs: 128, μ: 978770, ~: 978568)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 64.10ms (414.27ms CPU time)
+
+Ran 4 test suites in 65.20ms (255.59ms CPU time): 67 tests passed, 3 failed, 0 skipped (70 total tests)
+
+Failing tests:
+Encountered 1 failing test in test/foundry/security/VrfAdversarial.t.sol:VrfAdversarialTest
+[FAIL: Error != expected error: RequestFailed() != DrawRequestWindowExpired(359200 [3.592e5], 359200 [3.592e5])] testFeeReadAndRequestFailuresRollBackToActiveThenRefundAtDeadline() (gas: 815271)
+
+Encountered 2 failing tests in test/foundry/unit/Raffle.t.sol:RaffleTest
+[FAIL: next call did not revert as expected] testMetadataPriceEstimateAndDrawFailureBoundaries() (gas: 1421452)
+[FAIL: next call did not revert as expected] testSoldRaffleHasHardRequestAndCallbackRefundDeadlines() (gas: 964625)
+
+Encountered a total of 3 failing tests, 67 tests succeeded
+
+Tip: Run `forge test --rerun` to retry only the 3 failed tests

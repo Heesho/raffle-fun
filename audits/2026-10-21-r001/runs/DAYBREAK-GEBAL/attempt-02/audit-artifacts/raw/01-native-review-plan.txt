@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "e5be87b8-6477-4d7b-a78e-2909343f5cff",
+  "createdAt": "2026-10-21T07:59:47.263Z",
+  "snapshotId": "13613f49-31ad-422c-9990-7579e1a749aa",
+  "snapshotHash": "d83129631037ed19fefb66eadb36bdf7c5da94d44b08cbccd50ef569628c3727",
+  "scopeId": "d3262363-13c9-4630-8139-5cd78fde3f54",
+  "diagnosis": {
+    "kind": "foundry",
+    "supported": false,
+    "compiler": "0.8.36",
+    "evm": "cancun",
+    "settings": {
+      "src": "packages/contracts/src",
+      "test": "packages/contracts/test/foundry",
+      "script": "script",
+      "out": "out",
+      "libs": [
+        "packages/contracts/lib",
+        "packages/contracts/node_modules"
+      ],
+      "solc_version": "0.8.36",
+      "evm_version": "cancun",
+      "optimizer": true,
+      "optimizer_runs": 200,
+      "via_ir": false,
+      "fuzz": {
+        "runs": 1000,
+        "seed": "0x524146464c45"
+      },
+      "invariant": {
+        "runs": 256,
+        "depth": 64,
+        "fail_on_revert": false
+      },
+      "gas_reports": [
+        "Raffle",
+        "RaffleFactory"
+      ],
+      "projectPath": "packages/contracts",
+      "remappings": [
+        "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+        "@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+        "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+        "@openzeppelin/contracts/=packages/contracts/node_modules/@openzeppelin/contracts/",
+        "forge-std/=packages/contracts/lib/forge-std/src/"
+      ]
+    },
+    "issues": [
+      "Unsupported configuration key: gas_reports"
+    ],
+    "notes": [
+      "Exact file remappings were resolved from uniquely matching authorized library paths and are included in the approved plan.",
+      "Only profile.default is selected; other profiles, RPC endpoints and formatting configuration are not loaded.",
+      "Controller overrides output/cache/script paths, denies FFI/filesystem/RPC and dependency downloads, and disables automatic remappings.",
+      "Configured fuzz/invariant campaigns are replaced by the disclosed fixed seed and bounded campaign. Tests requiring denied capabilities cannot be validated.",
+      "Source-only intake does not establish compiler, test, property or security coverage."
+    ]
+  },
+  "tasks": [
+    "intake"
+  ],
+  "limits": {
+    "seconds": 120,
+    "memoryMb": 1024,
+    "cpus": 1,
+    "pids": 64,
+    "diskMb": 128,
+    "maxOutputBytes": 2097152,
+    "tokens": 24000,
+    "maxTasks": 4
+  },
+  "image": null,
+  "provider": null,
+  "egress": [],
+  "methodology": "native-review-v1",
+  "adapterVersion": "0.2.0",
+  "hash": "29f0c63f816a56b4d8046e769414d2a51285c6608cfe0d44207004297a9f2c7a"
+}
+Inspect this plan, then approve its exact hash: gebal approve e5be87b8-6477-4d7b-a78e-2909343f5cff --hash 29f0c63f816a56b4d8046e769414d2a51285c6608cfe0d44207004297a9f2c7a --actor YOUR_NAME --reason "Reviewed scope, execution limits and egress"
+(node:73896) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)

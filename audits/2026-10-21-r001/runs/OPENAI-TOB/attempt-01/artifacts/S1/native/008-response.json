@@ -1,0 +1,85 @@
+{
+  "function": "_settleWinningTicket",
+  "file": "target/packages/contracts/src/Raffle.sol",
+  "lines": "L533-L558",
+  "analysisFile": "audit/S1/audit-context/functions/07-_settleWinningTicket.md",
+  "invariants": [
+    {
+      "claim": "Success requires an unsettled NftWon/CashWon result and inclusive membership of winningEntry in the supplied ticket range.",
+      "evidence": "Raffle.sol L534-L538, L579-L585; ticketRange L451-L455."
+    },
+    {
+      "claim": "New allocations sum exactly to the old unsettledPot: protocol floor(5%), cash winner floor(80%) only in CashWon, and sponsor residual.",
+      "evidence": "Raffle.sol L539-L555; libraries/RaffleConstants.sol L12-L18; Math.sol L206-L275."
+    },
+    {
+      "claim": "Success stores the winning ID, clears unsettledPot and locks further settlement without transferring assets or reading ticket ownership.",
+      "evidence": "Raffle.sol L533-L558; range/math callee tree Raffle.sol L451-L455, L579-L585 and Math.sol L206-L277."
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "Winning entry is positive, excluding the default zero interval despite the getter having no existence check.",
+      "establishedBy": "Raffle.requestDraw L243, L252 and successful fulfillRandomWords L518-L521; ticketRange L451-L455 returns raw mapping fields."
+    },
+    {
+      "claim": "Purchased ticket ranges uniquely cover sold entries.",
+      "establishedBy": "Raffle.buyEntries L218-L235 constructs sequential nonempty bounded inclusive ranges."
+    },
+    {
+      "claim": "Prior winner/sponsor/protocol liabilities are zero when first allocating; NFT branch leaves winnerProceeds untouched.",
+      "establishedBy": "Raffle.sol default declarations L99-L106, one-time guard L534, sole allocations L548-L555 and consumers clearing at L341, L378, L388."
+    },
+    {
+      "claim": "Percentage denominators are nonzero and combined allocations cannot exceed grossPot.",
+      "establishedBy": "RaffleConstants.sol L12-L18 fixes BPS=10000, protocol=500, cash winner=8000; Math.mulDiv L206-L275 returns floor quotients or reverts."
+    },
+    {
+      "claim": "Recorded quote liabilities have matching spendable token backing under the canonical fee-free non-rebasing transfer assumption.",
+      "establishedBy": "nothing found locally establishing an actual balance delta; Raffle.buyEntries L223-L233 records requested transfer amount and Raffle.sol L560-L562 states token semantics."
+    }
+  ],
+  "calls": [
+    {
+      "callee": "Raffle._requireWinningTicket",
+      "kind": "internal",
+      "propagates": "Inclusive membership only; reverts outside the range and does not establish ownership or existence independently (Raffle.sol L579-L585)."
+    },
+    {
+      "callee": "Raffle.ticketRange (transitive)",
+      "kind": "internal",
+      "propagates": "Returns stored interval unchanged, including default zero fields; caller needs upstream positive winningEntry (Raffle.sol L451-L455, L518-L521)."
+    },
+    {
+      "callee": "Math.mulDiv(uint256,uint256,uint256)",
+      "kind": "internal",
+      "propagates": "Full-precision floor quotient; low-word division path, high-word validation/panic path and remainder/inverse success path read in full (Math.sol L206-L277; call sites Raffle.sol L540, L546)."
+    },
+    {
+      "callee": "Math.mul512 (transitive)",
+      "kind": "internal",
+      "propagates": "Returns complete high/low product words used by mulDiv branch selection and precision (Math.sol L37-L46, L208)."
+    },
+    {
+      "callee": "Math.ternary -> SafeCast.toUint(bool) (transitive)",
+      "kind": "internal",
+      "propagates": "Normalized 0/1 boolean selects the appropriate panic code on mulDiv failure (Math.sol L143-L150, L220; SafeCast.sol L1157-L1161)."
+    },
+    {
+      "callee": "Panic.panic (transitive)",
+      "kind": "internal",
+      "propagates": "Unconditionally reverts with encoded panic; no invalid quotient returns (Panic.sol L50-L56; Math.sol L219-L220)."
+    }
+  ],
+  "callers": [
+    "Raffle.settleWinningTicket L304-L305: unconditional delegation, nonReentrant.",
+    "Raffle.redeemWinningTicket L309-L321: only delegates while unsettled; current-owner authorization follows."
+  ],
+  "sharedState": [
+    "Ranges and unsettledPot: buyEntries L226-L233; enableRefunds L296-L299.",
+    "winningEntry and result: fulfillRandomWords L518-L521.",
+    "winnerProceeds, sponsorProceeds, protocolFees: allocation L548-L555 and consumption L339-L342, L375-L392.",
+    "settlementComplete/winningTicketId: L551-L552 read by redemption L314-L317; liability sum read by accountedQuoteBalance L468-L469."
+  ],
+  "openQuestions": []
+}

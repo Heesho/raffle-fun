@@ -1,0 +1,2 @@
+FROM sha256:c247b67cb3b26071a2238a799194826602752ea59624be4d6f14a19d81917b1e
+RUN npm install --global --no-audit --no-fund @openai/codex@0.163.0 && codex --version && codex exec --cyber-access-program daybreak_blue --help > /tmp/codex-exec-help.txt && codex exec resume --cyber-access-program daybreak_blue --help > /tmp/codex-resume-help.txt

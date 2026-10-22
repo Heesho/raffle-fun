@@ -1,0 +1,48 @@
+[profile.default]
+src = "src"
+test = "test/foundry"
+script = "script"
+out = "out"
+libs = ["lib", "node_modules"]
+solc_version = "0.8.36"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 200
+via_ir = false
+fuzz = { runs = 1_000, seed = "0x524146464c45" }
+invariant = { runs = 256, depth = 64, fail_on_revert = false }
+gas_reports = ["Raffle", "RaffleFactory"]
+
+[profile.ci]
+fuzz = { runs = 10_000 }
+invariant = { runs = 1_000, depth = 256, fail_on_revert = false }
+
+[profile.audit]
+fuzz = { runs = 100_000, seed = "0x41554449545f46555a5a" }
+invariant = { runs = 1_000, depth = 256, fail_on_revert = false }
+
+[profile.audit_strict]
+fuzz = { runs = 10_000, seed = "0x41554449545f535452494354" }
+invariant = { runs = 1_000, depth = 256, fail_on_revert = true }
+
+[profile.audit_release]
+fuzz = { runs = 100_000, seed = "0x52454c454153455f43414d504149474e" }
+invariant = { runs = 5_000, depth = 512, fail_on_revert = true, timeout = 3_600 }
+
+[profile.coverage]
+via_ir = false
+optimizer = false
+
+[profile.comparison]
+via_ir = true
+optimizer = true
+optimizer_runs = 1_000
+
+[fmt]
+line_length = 120
+tab_width = 4
+bracket_spacing = true
+int_types = "long"
+quote_style = "double"
+number_underscore = "thousands"
+sort_imports = true

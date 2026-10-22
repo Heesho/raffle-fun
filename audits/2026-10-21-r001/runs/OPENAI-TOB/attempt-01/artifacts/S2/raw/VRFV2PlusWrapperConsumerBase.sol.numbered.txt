@@ -1,0 +1,120 @@
+
+FILE target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol
+   1 // SPDX-License-Identifier: MIT
+   2 pragma solidity ^0.8.0;
+   3 
+   4 import {LinkTokenInterface} from "../../shared/interfaces/LinkTokenInterface.sol";
+   5 import {IVRFV2PlusWrapper} from "./interfaces/IVRFV2PlusWrapper.sol";
+   6 
+   7 /**
+   8  *
+   9  * @notice Interface for contracts using VRF randomness through the VRF V2 wrapper
+  10  * ********************************************************************************
+  11  * @dev PURPOSE
+  12  *
+  13  * @dev Create VRF V2+ requests without the need for subscription management. Rather than creating
+  14  * @dev and funding a VRF V2+ subscription, a user can use this wrapper to create one off requests,
+  15  * @dev paying up front rather than at fulfillment.
+  16  *
+  17  * @dev Since the price is determined using the gas price of the request transaction rather than
+  18  * @dev the fulfillment transaction, the wrapper charges an additional premium on callback gas
+  19  * @dev usage, in addition to some extra overhead costs associated with the VRFV2Wrapper contract.
+  20  * *****************************************************************************
+  21  * @dev USAGE
+  22  *
+  23  * @dev Calling contracts must inherit from VRFV2PlusWrapperConsumerBase. The consumer must be funded
+  24  * @dev with enough LINK or ether to make the request, otherwise requests will revert. To request randomness,
+  25  * @dev call the 'requestRandomWords' function with the desired VRF parameters. This function handles
+  26  * @dev paying for the request based on the current pricing.
+  27  *
+  28  * @dev Consumers must implement the fullfillRandomWords function, which will be called during
+  29  * @dev fulfillment with the randomness result.
+  30  */
+  31 abstract contract VRFV2PlusWrapperConsumerBase {
+  32   error OnlyVRFWrapperCanFulfill(address have, address want);
+  33 
+  34   LinkTokenInterface internal immutable i_linkToken;
+  35   IVRFV2PlusWrapper public immutable i_vrfV2PlusWrapper;
+  36 
+  37   /**
+  38    * @param _vrfV2PlusWrapper is the address of the VRFV2Wrapper contract
+  39    */
+  40   constructor(
+  41     address _vrfV2PlusWrapper
+  42   ) {
+  43     IVRFV2PlusWrapper vrfV2PlusWrapper = IVRFV2PlusWrapper(_vrfV2PlusWrapper);
+  44 
+  45     i_linkToken = LinkTokenInterface(vrfV2PlusWrapper.link());
+  46     i_vrfV2PlusWrapper = vrfV2PlusWrapper;
+  47   }
+  48 
+  49   /**
+  50    * @dev Requests randomness from the VRF V2+ wrapper.
+  51    *
+  52    * @param _callbackGasLimit is the gas limit that should be used when calling the consumer's
+  53    *        fulfillRandomWords function.
+  54    * @param _requestConfirmations is the number of confirmations to wait before fulfilling the
+  55    *        request. A higher number of confirmations increases security by reducing the likelihood
+  56    *        that a chain re-org changes a published randomness outcome.
+  57    * @param _numWords is the number of random words to request.
+  58    *
+  59    * @return requestId is the VRF V2+ request ID of the newly created randomness request.
+  60    */
+  61   // solhint-disable-next-line chainlink-solidity/prefix-internal-functions-with-underscore
+  62   function requestRandomness(
+  63     uint32 _callbackGasLimit,
+  64     uint16 _requestConfirmations,
+  65     uint32 _numWords,
+  66     bytes memory extraArgs
+  67   ) internal returns (uint256 requestId, uint256 reqPrice) {
+  68     reqPrice = i_vrfV2PlusWrapper.calculateRequestPrice(_callbackGasLimit, _numWords);
+  69     i_linkToken.transferAndCall(
+  70       address(i_vrfV2PlusWrapper), reqPrice, abi.encode(_callbackGasLimit, _requestConfirmations, _numWords, extraArgs)
+  71     );
+  72     return (i_vrfV2PlusWrapper.lastRequestId(), reqPrice);
+  73   }
+  74 
+  75   // solhint-disable-next-line chainlink-solidity/prefix-internal-functions-with-underscore
+  76   function requestRandomnessPayInNative(
+  77     uint32 _callbackGasLimit,
+  78     uint16 _requestConfirmations,
+  79     uint32 _numWords,
+  80     bytes memory extraArgs
+  81   ) internal returns (uint256 requestId, uint256 requestPrice) {
+  82     requestPrice = i_vrfV2PlusWrapper.calculateRequestPriceNative(_callbackGasLimit, _numWords);
+  83     return (
+  84       i_vrfV2PlusWrapper.requestRandomWordsInNative{value: requestPrice}(
+  85         _callbackGasLimit, _requestConfirmations, _numWords, extraArgs
+  86       ),
+  87       requestPrice
+  88     );
+  89   }
+  90 
+  91   /**
+  92    * @notice fulfillRandomWords handles the VRF V2 wrapper response. The consuming contract must
+  93    * @notice implement it.
+  94    *
+  95    * @param _requestId is the VRF V2 request ID.
+  96    * @param _randomWords is the randomness result.
+  97    */
+  98   // solhint-disable-next-line chainlink-solidity/prefix-internal-functions-with-underscore
+  99   function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) internal virtual;
+ 100 
+ 101   function rawFulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) external {
+ 102     address vrfWrapperAddr = address(i_vrfV2PlusWrapper);
+ 103     if (msg.sender != vrfWrapperAddr) {
+ 104       revert OnlyVRFWrapperCanFulfill(msg.sender, vrfWrapperAddr);
+ 105     }
+ 106     fulfillRandomWords(_requestId, _randomWords);
+ 107   }
+ 108 
+ 109   /// @notice getBalance returns the native balance of the consumer contract
+ 110   function getBalance() public view returns (uint256) {
+ 111     return address(this).balance;
+ 112   }
+ 113 
+ 114   /// @notice getLinkToken returns the link token contract
+ 115   function getLinkToken() public view returns (LinkTokenInterface) {
+ 116     return i_linkToken;
+ 117   }
+ 118 }

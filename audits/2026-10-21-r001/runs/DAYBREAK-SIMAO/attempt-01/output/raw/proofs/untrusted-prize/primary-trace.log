@@ -1,0 +1,206 @@
+No files changed, compilation skipped
+
+Ran 1 test for test/foundry/UntrustedPrizeProof.t.sol:UntrustedPrizeProofTest
+[PASS] test_postEscrowFreezeLetsSponsorTake95PercentWhileWinnerGetsNeitherPrizeNorRefund() (gas: 1805974)
+Traces:
+  [1987874] UntrustedPrizeProofTest::test_postEscrowFreezeLetsSponsorTake95PercentWhileWinnerGetsNeitherPrizeNorRefund()
+    ├─ [885456] → new IrreversiblyPausablePrize@0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9
+    │   └─ ← [Return] 4197 bytes of code
+    ├─ [47205] IrreversiblyPausablePrize::mint(UntrustedPrizeProofTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], 777)
+    │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: UntrustedPrizeProofTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], tokenId: 777)
+    │   └─ ← [Stop]
+    ├─ [25113] IrreversiblyPausablePrize::approve(RaffleFactory: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], 777)
+    │   ├─ emit Approval(owner: UntrustedPrizeProofTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], approved: RaffleFactory: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], tokenId: 777)
+    │   └─ ← [Stop]
+    ├─ [384881] RaffleFactory::createRaffle(CreateRaffleParams({ sponsorRecipient: 0x0000000000000000000000000000000005A0b50a, prizeToken: 0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9, prizeTokenId: 777, reserveEntries: 1, endTime: 86401 [8.64e4] }))
+    │   ├─ [455] IrreversiblyPausablePrize::supportsInterface(0x80ac58cd) [staticcall]
+    │   │   └─ ← [Return] true
+    │   ├─ [9031] → new <unknown>@0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9
+    │   │   └─ ← [Return] 45 bytes of code
+    │   ├─ [195468] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::initialize(RaffleInitParams({ sponsor: 0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496, sponsorRecipient: 0x0000000000000000000000000000000005A0b50a, protocolTreasury: 0x0000000000000000000000000000000000000FEE, prizeToken: 0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9, prizeTokenId: 777, raffleId: 1, reserveEntries: 1, endTime: 86401 [8.64e4] }))
+    │   │   ├─ [192757] Raffle::initialize(RaffleInitParams({ sponsor: 0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496, sponsorRecipient: 0x0000000000000000000000000000000005A0b50a, protocolTreasury: 0x0000000000000000000000000000000000000FEE, prizeToken: 0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9, prizeTokenId: 777, raffleId: 1, reserveEntries: 1, endTime: 86401 [8.64e4] })) [delegatecall]
+    │   │   │   ├─ [271] RaffleFactory::raffleImplementation() [staticcall]
+    │   │   │   │   └─ ← [Return] Raffle: [0x4f81992FCe2E1846dD528eC0102e6eE1f61ed3e2]
+    │   │   │   ├─ [2588] RaffleFactory::isRaffle(UntrustedPrizeProofTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496]) [staticcall]
+    │   │   │   │   └─ ← [Return] false
+    │   │   │   ├─ [271] RaffleFactory::raffleImplementation() [staticcall]
+    │   │   │   │   └─ ← [Return] Raffle: [0x4f81992FCe2E1846dD528eC0102e6eE1f61ed3e2]
+    │   │   │   ├─ [271] RaffleFactory::raffleImplementation() [staticcall]
+    │   │   │   │   └─ ← [Return] Raffle: [0x4f81992FCe2E1846dD528eC0102e6eE1f61ed3e2]
+    │   │   │   └─ ← [Stop]
+    │   │   └─ ← [Return]
+    │   ├─ [35993] IrreversiblyPausablePrize::safeTransferFrom(UntrustedPrizeProofTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9, 777)
+    │   │   ├─ emit Transfer(from: UntrustedPrizeProofTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], to: 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9, tokenId: 777)
+    │   │   ├─ [3839] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::onERC721Received(RaffleFactory: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], UntrustedPrizeProofTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], 777, 0x)
+    │   │   │   ├─ [3643] Raffle::onERC721Received(RaffleFactory: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], UntrustedPrizeProofTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], 777, 0x) [delegatecall]
+    │   │   │   │   ├─ emit PrizeDeposited(prizeToken: IrreversiblyPausablePrize: [0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9], prizeTokenId: 777, sponsor: UntrustedPrizeProofTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496])
+    │   │   │   │   └─ ← [Return] 0x150b7a02
+    │   │   │   └─ ← [Return] 0x150b7a02
+    │   │   └─ ← [Stop]
+    │   ├─ [594] IrreversiblyPausablePrize::ownerOf(777) [staticcall]
+    │   │   └─ ← [Return] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9
+    │   ├─ [628] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::status() [staticcall]
+    │   │   ├─ [462] Raffle::status() [delegatecall]
+    │   │   │   └─ ← [Return] 1
+    │   │   └─ ← [Return] 1
+    │   ├─ emit RaffleCreated(raffleId: 1, raffle: 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9, sponsor: UntrustedPrizeProofTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], sponsorRecipient: 0x0000000000000000000000000000000005A0b50a, prizeToken: IrreversiblyPausablePrize: [0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9], prizeTokenId: 777, quoteToken: MockUSDC: [0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f], protocolTreasury: 0x0000000000000000000000000000000000000FEE, reserveEntries: 1, endTime: 86401 [8.64e4])
+    │   └─ ← [Return] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9
+    ├─ [594] IrreversiblyPausablePrize::ownerOf(777) [staticcall]
+    │   └─ ← [Return] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9
+    ├─ [628] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::status() [staticcall]
+    │   ├─ [462] Raffle::status() [delegatecall]
+    │   │   └─ ← [Return] 1
+    │   └─ ← [Return] 1
+    ├─ [20396] IrreversiblyPausablePrize::freezeOutboundForever()
+    │   └─ ← [Stop]
+    ├─ [46647] MockUSDC::mint(0x0000000000000000000000000000000000000B0b, 1000000 [1e6])
+    │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: 0x0000000000000000000000000000000000000B0b, amount: 1000000 [1e6])
+    │   └─ ← [Stop]
+    ├─ [0] VM::prank(0x0000000000000000000000000000000000000B0b)
+    │   └─ ← [Return]
+    ├─ [24519] MockUSDC::approve(0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9, 1000000 [1e6])
+    │   ├─ emit Approval(owner: 0x0000000000000000000000000000000000000B0b, spender: 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9, amount: 1000000 [1e6])
+    │   └─ ← [Return] true
+    ├─ [0] VM::prank(0x0000000000000000000000000000000000000B0b)
+    │   └─ ← [Return]
+    ├─ [171741] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::buyEntries(0x0000000000000000000000000000000000000B0b, 1)
+    │   ├─ [171563] Raffle::buyEntries(0x0000000000000000000000000000000000000B0b, 1) [delegatecall]
+    │   │   ├─ [27931] MockUSDC::transferFrom(0x0000000000000000000000000000000000000B0b, 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9, 1000000 [1e6])
+    │   │   │   ├─ emit Approval(owner: 0x0000000000000000000000000000000000000B0b, spender: 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9, amount: 0)
+    │   │   │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000B0b, to: 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9, amount: 1000000 [1e6])
+    │   │   │   └─ ← [Return] true
+    │   │   ├─ [271] RaffleFactory::raffleImplementation() [staticcall]
+    │   │   │   └─ ← [Return] Raffle: [0x4f81992FCe2E1846dD528eC0102e6eE1f61ed3e2]
+    │   │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: 0x0000000000000000000000000000000000000B0b, tokenId: 1)
+    │   │   ├─ emit TicketPurchased(buyer: 0x0000000000000000000000000000000000000B0b, recipient: 0x0000000000000000000000000000000000000B0b, ticketId: 1, firstEntry: 1, lastEntry: 1, entryCount: 1, grossAmount: 1000000 [1e6])
+    │   │   └─ ← [Return] 1
+    │   └─ ← [Return] 1
+    ├─ [0] VM::warp(86401 [8.64e4])
+    │   └─ ← [Return]
+    ├─ [99943] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::requestDraw()
+    │   ├─ [99777] Raffle::requestDraw() [delegatecall]
+    │   │   ├─ [446] MockVrfWrapper::calculateRequestPriceNative(300000 [3e5], 1) [staticcall]
+    │   │   │   └─ ← [Return] 0
+    │   │   ├─ [446] MockVrfWrapper::calculateRequestPriceNative(300000 [3e5], 1) [staticcall]
+    │   │   │   └─ ← [Return] 0
+    │   │   ├─ [22864] MockVrfWrapper::requestRandomWordsInNative(300000 [3e5], 30, 1, 0x92fd13380000000000000000000000000000000000000000000000000000000000000001)
+    │   │   │   └─ ← [Return] 1
+    │   │   ├─ emit DrawRequested(requestId: 1, requester: UntrustedPrizeProofTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], fee: 0, excessReturned: 0, drawRequestedAt: 86401 [8.64e4], callbackDeadline: 259201 [2.592e5])
+    │   │   └─ ← [Return] 1
+    │   └─ ← [Return] 1
+    ├─ [6260] MockVrfWrapper::fulfill(0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9, 1, 0)
+    │   ├─ [5151] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::rawFulfillRandomWords(1, [0])
+    │   │   ├─ [4964] Raffle::rawFulfillRandomWords(1, [0]) [delegatecall]
+    │   │   │   ├─ emit RaffleResolved(requestId: 1, winningEntry: 1, result: 3)
+    │   │   │   └─ ← [Stop]
+    │   │   └─ ← [Return]
+    │   └─ ← [Stop]
+    ├─ [628] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::status() [staticcall]
+    │   ├─ [462] Raffle::status() [delegatecall]
+    │   │   └─ ← [Return] 3
+    │   └─ ← [Return] 3
+    ├─ [653] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::winningEntry() [staticcall]
+    │   ├─ [487] Raffle::winningEntry() [delegatecall]
+    │   │   └─ ← [Return] 1
+    │   └─ ← [Return] 1
+    ├─ [71906] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::settleWinningTicket(1)
+    │   ├─ [71734] Raffle::settleWinningTicket(1) [delegatecall]
+    │   │   ├─ emit WinningTicketSettled(ticketId: 1, settler: UntrustedPrizeProofTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], result: 3, cashAmount: 0, protocolFee: 50000 [5e4], sponsorAmount: 950000 [9.5e5])
+    │   │   └─ ← [Return] 0
+    │   └─ ← [Return] 0
+    ├─ [564] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::settlementComplete() [staticcall]
+    │   ├─ [398] Raffle::settlementComplete() [delegatecall]
+    │   │   └─ ← [Return] true
+    │   └─ ← [Return] true
+    ├─ [528] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::sponsorProceeds() [staticcall]
+    │   ├─ [362] Raffle::sponsorProceeds() [delegatecall]
+    │   │   └─ ← [Return] 950000 [9.5e5]
+    │   └─ ← [Return] 950000 [9.5e5]
+    ├─ [595] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::protocolFees() [staticcall]
+    │   ├─ [429] Raffle::protocolFees() [delegatecall]
+    │   │   └─ ← [Return] 50000 [5e4]
+    │   └─ ← [Return] 50000 [5e4]
+    ├─ [2571] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::remainingRefundLiability() [staticcall]
+    │   ├─ [2405] Raffle::remainingRefundLiability() [delegatecall]
+    │   │   └─ ← [Return] 0
+    │   └─ ← [Return] 0
+    ├─ [30218] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::releaseSponsorProceeds()
+    │   ├─ [30052] Raffle::releaseSponsorProceeds() [delegatecall]
+    │   │   ├─ [271] RaffleFactory::raffleImplementation() [staticcall]
+    │   │   │   └─ ← [Return] Raffle: [0x4f81992FCe2E1846dD528eC0102e6eE1f61ed3e2]
+    │   │   ├─ [25292] MockUSDC::transfer(0x0000000000000000000000000000000005A0b50a, 950000 [9.5e5])
+    │   │   │   ├─ emit Transfer(from: 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9, to: 0x0000000000000000000000000000000005A0b50a, amount: 950000 [9.5e5])
+    │   │   │   └─ ← [Return] true
+    │   │   ├─ emit SponsorProceedsReleased(caller: UntrustedPrizeProofTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], recipient: 0x0000000000000000000000000000000005A0b50a, amount: 950000 [9.5e5])
+    │   │   └─ ← [Return] 950000 [9.5e5]
+    │   └─ ← [Return] 950000 [9.5e5]
+    ├─ [30251] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::releaseProtocolFees()
+    │   ├─ [30085] Raffle::releaseProtocolFees() [delegatecall]
+    │   │   ├─ [271] RaffleFactory::raffleImplementation() [staticcall]
+    │   │   │   └─ ← [Return] Raffle: [0x4f81992FCe2E1846dD528eC0102e6eE1f61ed3e2]
+    │   │   ├─ [25292] MockUSDC::transfer(0x0000000000000000000000000000000000000FEE, 50000 [5e4])
+    │   │   │   ├─ emit Transfer(from: 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9, to: 0x0000000000000000000000000000000000000FEE, amount: 50000 [5e4])
+    │   │   │   └─ ← [Return] true
+    │   │   ├─ emit ProtocolFeesReleased(caller: UntrustedPrizeProofTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], treasury: 0x0000000000000000000000000000000000000FEE, amount: 50000 [5e4])
+    │   │   └─ ← [Return] 50000 [5e4]
+    │   └─ ← [Return] 50000 [5e4]
+    ├─ [538] MockUSDC::balanceOf(0x0000000000000000000000000000000005A0b50a) [staticcall]
+    │   └─ ← [Return] 950000 [9.5e5]
+    ├─ [538] MockUSDC::balanceOf(0x0000000000000000000000000000000000000FEE) [staticcall]
+    │   └─ ← [Return] 50000 [5e4]
+    ├─ [538] MockUSDC::balanceOf(0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [0] VM::prank(0x0000000000000000000000000000000000000B0b)
+    │   └─ ← [Return]
+    ├─ [31267] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::redeemWinningTicket(1)
+    │   ├─ [31096] Raffle::redeemWinningTicket(1) [delegatecall]
+    │   │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000B0b, to: 0x0000000000000000000000000000000000000000, tokenId: 1)
+    │   │   ├─ [614] IrreversiblyPausablePrize::transferFrom(0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9, 0x0000000000000000000000000000000000000B0b, 777)
+    │   │   │   └─ ← [Revert] OutboundTransfersFrozen()
+    │   │   └─ ← [Revert] OutboundTransfersFrozen()
+    │   └─ ← [Revert] OutboundTransfersFrozen()
+    ├─ [543] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::winnerRedeemed() [staticcall]
+    │   ├─ [377] Raffle::winnerRedeemed() [delegatecall]
+    │   │   └─ ← [Return] false
+    │   └─ ← [Return] false
+    ├─ [587] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::prizeClaimed() [staticcall]
+    │   ├─ [421] Raffle::prizeClaimed() [delegatecall]
+    │   │   └─ ← [Return] false
+    │   └─ ← [Return] false
+    ├─ [810] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::ownerOf(1) [staticcall]
+    │   ├─ [638] Raffle::ownerOf(1) [delegatecall]
+    │   │   └─ ← [Return] 0x0000000000000000000000000000000000000B0b
+    │   └─ ← [Return] 0x0000000000000000000000000000000000000B0b
+    ├─ [594] IrreversiblyPausablePrize::ownerOf(777) [staticcall]
+    │   └─ ← [Return] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9
+    ├─ [538] MockUSDC::balanceOf(0x0000000000000000000000000000000000000B0b) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [0] VM::warp(315446401 [3.154e8])
+    │   └─ ← [Return]
+    ├─ [0] VM::prank(0x0000000000000000000000000000000000000B0b)
+    │   └─ ← [Return]
+    ├─ [31267] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::redeemWinningTicket(1)
+    │   ├─ [31096] Raffle::redeemWinningTicket(1) [delegatecall]
+    │   │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000B0b, to: 0x0000000000000000000000000000000000000000, tokenId: 1)
+    │   │   ├─ [614] IrreversiblyPausablePrize::transferFrom(0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9, 0x0000000000000000000000000000000000000B0b, 777)
+    │   │   │   └─ ← [Revert] OutboundTransfersFrozen()
+    │   │   └─ ← [Revert] OutboundTransfersFrozen()
+    │   └─ ← [Revert] OutboundTransfersFrozen()
+    ├─ [1259] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::enableRefunds()
+    │   ├─ [1088] Raffle::enableRefunds() [delegatecall]
+    │   │   └─ ← [Revert] InvalidStatus(3)
+    │   └─ ← [Revert] InvalidStatus(3)
+    ├─ [628] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::status() [staticcall]
+    │   ├─ [462] Raffle::status() [delegatecall]
+    │   │   └─ ← [Return] 3
+    │   └─ ← [Return] 3
+    ├─ [3304] 0xCB6f5076b5bbae81D7643BfBf57897E8E3FB1db9::accountedQuoteBalance() [staticcall]
+    │   ├─ [3138] Raffle::accountedQuoteBalance() [delegatecall]
+    │   │   └─ ← [Return] 0
+    │   └─ ← [Return] 0
+    └─ ← [Stop]
+
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 3.15ms (2.64ms CPU time)
+
+Ran 1 test suite in 7.74ms (3.15ms CPU time): 1 tests passed, 0 failed, 0 skipped (1 total tests)
+2026-10-21T08:12:21.329840Z  WARN evm::traces: failed to flush signature cache err=failed to create file "/Users/hishamel-husseini/.foundry/cache/signatures": Operation not permitted (os error 1)

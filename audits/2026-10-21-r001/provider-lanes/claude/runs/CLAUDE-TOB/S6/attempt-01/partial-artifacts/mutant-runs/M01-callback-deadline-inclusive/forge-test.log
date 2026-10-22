@@ -1,0 +1,183 @@
+Compiling 1 files with Solc 0.8.36
+Solc 0.8.36 finished in 4.14s
+Compiler run successful with warnings:
+Warning (5159): "selfdestruct" has been deprecated. Note that, starting from the Cancun hard fork, the underlying opcode no longer deletes the code and data associated with an account and only transfers its Ether to the beneficiary, unless executed in the same transaction in which the contract was created (see EIP-6780). Any use in newly deployed contracts is strongly discouraged even if the new behavior is taken into account. Future changes to the EVM might further reduce the functionality of the opcode.
+   --> /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/Helpers.sol:116:9:
+    |
+116 |         selfdestruct(to);
+    |         ^^^^^^^^^^^^
+
+
+Ran 4 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:E_AccessTest
+[PASS] test_E1_implementationIsLockedAndInert() (gas: 49877)
+[PASS] test_E2_cloneCannotBeReinitialized() (gas: 455158)
+[PASS] test_E3_factoryRejectsInvalidOrProtocolParameters() (gas: 192699)
+[PASS] test_E4_ticketsCannotBeSentToProtocolPlumbing() (gas: 1088195)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 1.65ms (827.75µs CPU time)
+
+Ran 4 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:A_TimingTest
+[PASS] test_A1_saleEndsExclusivelyAtEndTime() (gas: 717784)
+[PASS] test_A2_requestWindowIsHalfOpen_endTime_to_endPlus2Days() (gas: 2155294)
+[PASS] test_A3_refundsOpenExactlyAtRequestDeadline() (gas: 700739)
+[FAIL: ignored at deadline] test_A4_callbackAcceptedStrictlyBeforeCallbackDeadline() (gas: 1742119)
+Suite result: FAILED. 3 passed; 1 failed; 0 skipped; finished in 4.02ms (2.42ms CPU time)
+
+Ran 6 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:C_VrfTest
+[PASS] test_C1_synchronousCallbackDuringRequestIsIgnored() (gas: 878807)
+[PASS] test_C2_wrongIdWrongLengthReplayAreIgnoredWithoutReverting() (gas: 877697)
+[PASS] test_C3_onlyWrapperCanDeliverRandomness() (gas: 460008)
+[PASS] test_C4_callbackGasIsFarBelowLimit() (gas: 851702)
+[PASS] test_C5_excessFeeRefundedAndRefundFailureRevertsWholeRequest() (gas: 1169705)
+[PASS] test_C6_insufficientFeeReverts() (gas: 708627)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 6.82ms (5.85ms CPU time)
+
+Ran 2 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:F_ReentrancyTest
+[PASS] test_F1_ticketRecipientCannotReenterAnyGuardedEntryPoint() (gas: 1333490)
+[PASS] test_F2_maliciousPrizeCannotReenterDuringDelivery() (gas: 2229415)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 6.70ms (379.50µs CPU time)
+
+Ran 4 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:D_RedemptionTest
+[PASS] test_D1_onlyCurrentOwnerRedeems() (gas: 1097463)
+[PASS] test_D2_deliveryFailureRevertsBurnAndInlineSettlement() (gas: 979625)
+[PASS] test_D3_sponsorAndTreasuryClaimIndependently_blocklistedSponsorRecipient() (gas: 969945)
+[PASS] test_D4_settlementWithNonWinningOrNonexistentTicketReverts() (gas: 1033424)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 6.01ms (1.25ms CPU time)
+
+Ran 6 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleValidation.t.sol:H_ValidationTest
+[PASS] test_H1_factoryConstructorValidation() (gas: 492076)
+[PASS] test_H2_prizeContractAsSponsorIsRejectedAtInitialize() (gas: 198382)
+[PASS] test_H3_unsolicitedSafeTransferToActiveRaffleRejected() (gas: 494008)
+[PASS] test_H4_nonCompliantPrizeWithoutHookCannotEscrow() (gas: 1234312)
+[PASS] test_H5_PoC_lyingPrizeFakesEscrowAndDelivery() (gas: 1062301)
+[PASS] test_H6_doubleClaimsAndWrongStateClaimsRevert() (gas: 1635378)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 56.52ms (1.94ms CPU time)
+
+Ran 4 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/HandlerSanity.t.sol:HandlerSanityTest
+[PASS] test_sanity_cashWonLifecycle() (gas: 1646018)
+[FAIL: fulfill: ignored callback changed state] test_sanity_drawingTimeoutAndEmptyRaffle() (gas: 1557750)
+[PASS] test_sanity_failureModes() (gas: 1123082)
+[PASS] test_sanity_nftWonAndRefundLifecycles() (gas: 2731296)
+Suite result: FAILED. 3 passed; 1 failed; 0 skipped; finished in 63.85ms (8.84ms CPU time)
+
+Ran 4 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:B_EconomicsTest
+[PASS] testFuzz_B1_settlementSplitsAreExactAndLossless(uint256,bool,uint256) (runs: 300, μ: 958391, ~: 978483)
+[PASS] testFuzz_B2_refundPaysExactlyPerEntryAndReturnsPrize(uint256,uint256,uint256) (runs: 300, μ: 920588, ~: 920577)
+[PASS] test_B3_entryCountOverflowGuardAndMaxRaffleStillSettles() (gas: 962448)
+[PASS] test_B4_refundBatchBoundsDuplicatesAndForeignTickets() (gas: 849295)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 85.97ms (142.92ms CPU time)
+
+Ran 2 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleInvariant.t.sol:RaffleInvariantTest
+[PASS] invariant_globalProperties() (runs: 120, calls: 12000, reverts: 0)
+
+╭---------------+--------------------------+-------+---------+----------╮
+| Contract      | Selector                 | Calls | Reverts | Discards |
++=======================================================================+
+| RaffleHandler | buy                      | 467   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | createRaffle             | 577   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | donate                   | 528   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | enableRefunds            | 589   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | fulfill                  | 540   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | fulfillWrong             | 555   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | redeem                   | 542   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | refund                   | 540   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | refundDuplicate          | 552   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | reinitialize             | 535   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | releaseProtocolFees      | 538   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | releaseSponsorPrize      | 592   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | releaseSponsorProceeds   | 539   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | requestDraw              | 511   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | setVrfPrice              | 541   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | settle                   | 566   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | toggleNftFrozen          | 542   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | toggleUsdcPaused         | 561   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | transferTicket           | 533   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | transferTicketToProtocol | 540   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | underpaidRequestDraw     | 546   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | warp                     | 566   | 0       | 0        |
+╰---------------+--------------------------+-------+---------+----------╯
+
+[PASS] invariant_noSpecViolation() (runs: 120, calls: 12000, reverts: 0)
+
+╭---------------+--------------------------+-------+---------+----------╮
+| Contract      | Selector                 | Calls | Reverts | Discards |
++=======================================================================+
+| RaffleHandler | buy                      | 467   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | createRaffle             | 577   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | donate                   | 528   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | enableRefunds            | 589   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | fulfill                  | 540   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | fulfillWrong             | 555   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | redeem                   | 542   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | refund                   | 540   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | refundDuplicate          | 552   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | reinitialize             | 535   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | releaseProtocolFees      | 538   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | releaseSponsorPrize      | 592   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | releaseSponsorProceeds   | 539   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | requestDraw              | 511   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | setVrfPrice              | 541   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | settle                   | 566   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | toggleNftFrozen          | 542   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | toggleUsdcPaused         | 561   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | transferTicket           | 533   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | transferTicketToProtocol | 540   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | underpaidRequestDraw     | 546   | 0       | 0        |
+|---------------+--------------------------+-------+---------+----------|
+| RaffleHandler | warp                     | 566   | 0       | 0        |
+╰---------------+--------------------------+-------+---------+----------╯
+
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 45.36s (51.24s CPU time)
+
+Ran 9 test suites in 45.37s (45.59s CPU time): 34 tests passed, 2 failed, 0 skipped (36 total tests)
+
+Failing tests:
+Encountered 1 failing test in /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/HandlerSanity.t.sol:HandlerSanityTest
+[FAIL: fulfill: ignored callback changed state] test_sanity_drawingTimeoutAndEmptyRaffle() (gas: 1557750)
+
+Encountered 1 failing test in /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:A_TimingTest
+[FAIL: ignored at deadline] test_A4_callbackAcceptedStrictlyBeforeCallbackDeadline() (gas: 1742119)
+
+Encountered a total of 2 failing tests, 34 tests succeeded
+
+Tip: Run `forge test --rerun` to retry only the 2 failed tests

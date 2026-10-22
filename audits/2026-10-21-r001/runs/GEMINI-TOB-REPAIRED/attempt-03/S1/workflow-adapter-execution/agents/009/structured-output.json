@@ -1,0 +1,95 @@
+{
+  "analysisFile": "audit-context/functions/08-refundTickets.md",
+  "assumptions": [
+    {
+      "claim": "For every existing ticketId where ownerOf(ticketId) succeeds, _ticketRanges[ticketId] has 1 <= firstEntry <= lastEntry <= totalEntries and (lastEntry - firstEntry + 1) equals the entryCount paid at mint time.",
+      "establishedBy": "Raffle.buyEntries (packages/contracts/src/Raffle.sol:L218-L233)"
+    },
+    {
+      "claim": "remainingRefundLiability >= aggregateEntries * ENTRY_PRICE for any batch of distinct unburned tickets in Status.Refunding.",
+      "establishedBy": "Raffle.buyEntries (packages/contracts/src/Raffle.sol:L223, L232-L233), Raffle.enableRefunds (packages/contracts/src/Raffle.sol:L296-L299), and single-burn enforcement in Raffle.refundTickets (packages/contracts/src/Raffle.sol:L359, L364)"
+    },
+    {
+      "claim": "Once status is Status.Refunding, no state transition can move the raffle into Status.NftWon or Status.CashWon or allocate winner/sponsor/protocol proceeds from the same pot.",
+      "establishedBy": "Raffle.enableRefunds (packages/contracts/src/Raffle.sol:L279-L299), Raffle.fulfillRandomWords (packages/contracts/src/Raffle.sol:L511), and Raffle._settleWinningTicket (packages/contracts/src/Raffle.sol:L535-L536)"
+    },
+    {
+      "claim": "quoteToken is canonical 6-decimal USDC that holds at least remainingRefundLiability for address(this) and executes transfer(msg.sender, amount) without fees, rebasing, or reentrant callbacks into Raffle.",
+      "establishedBy": "RaffleFactory.constructor (packages/contracts/src/RaffleFactory.sol:L65-L85) for code presence and 6-decimal metadata; fee-free canonical USDC behavior is an external trust assumption (nothing found onchain for token identity beyond decimals and code length)"
+    }
+  ],
+  "callers": [],
+  "calls": [
+    {
+      "callee": "ReentrancyGuard.nonReentrant (_nonReentrantBefore / _nonReentrantAfter)",
+      "kind": "external-source-available",
+      "propagates": "Reverts with ReentrancyGuardReentrantCall if REENTRANCY_GUARD_STORAGE slot is ENTERED (2), sets slot to ENTERED (2) before body execution, and resets slot to NOT_ENTERED (1) after body execution (packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:L69-L73, L88-L118)."
+    },
+    {
+      "callee": "Raffle._requireStatus",
+      "kind": "internal",
+      "propagates": "Reverts with InvalidStatus(status) unless status == Status.Refunding (packages/contracts/src/Raffle.sol:L573-L575)."
+    },
+    {
+      "callee": "ERC721.ownerOf",
+      "kind": "external-source-available",
+      "propagates": "Reads _owners[ticketId] via _requireOwned and reverts with ERC721NonexistentToken(ticketId) if the owner is address(0), establishing that ticketId was minted and has not yet been burned (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L61-L63, L146-L148, L426-L431)."
+    },
+    {
+      "callee": "Raffle.ticketRange",
+      "kind": "internal",
+      "propagates": "Returns stored (_ticketRanges[ticketId].firstEntry, _ticketRanges[ticketId].lastEntry) without checking existence (packages/contracts/src/Raffle.sol:L451-L455); caller relies on prior ownerOf(ticketId) check at L359 and buyEntries initialization at L226-L232."
+    },
+    {
+      "callee": "ERC721._burn -> Raffle._update -> ERC721._update",
+      "kind": "external-source-available",
+      "propagates": "Bypasses _isProtocolDestination because to == address(0) (packages/contracts/src/Raffle.sol:L498), clears _tokenApprovals[ticketId], decrements _balances[owner] by 1, sets _owners[ticketId] = address(0), and emits Transfer(owner, address(0), ticketId) (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L216-L245, L303-L308)."
+    },
+    {
+      "callee": "Raffle._transferQuote",
+      "kind": "internal",
+      "propagates": "Reverts with InvalidQuoteDestination(to) if _isProtocolDestination(to, address(prizeToken)) is true, then transfers amount of quoteToken to to via SafeERC20.safeTransfer (packages/contracts/src/Raffle.sol:L564-L567)."
+    },
+    {
+      "callee": "Raffle._isProtocolDestination",
+      "kind": "internal",
+      "propagates": "Returns true if destination is address(this), factory, quoteToken, i_vrfV2PlusWrapper, prizeToken_, factory.raffleImplementation(), or (when destination.code.length != 0) a registered clone via factory.isRaffle(destination) (packages/contracts/src/Raffle.sol:L593-L605)."
+    },
+    {
+      "callee": "SafeERC20.safeTransfer -> IERC20.transfer (quoteToken)",
+      "kind": "external-black-box",
+      "propagates": "Executes low-level call to quoteToken.transfer(msg.sender, amount) and reverts unless call succeeds and either returns true (1) or returns empty data with extcodesize(quoteToken) > 0 (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:L33-L37, L176-L200)."
+    }
+  ],
+  "file": "packages/contracts/src/Raffle.sol",
+  "function": "refundTickets",
+  "invariants": [
+    {
+      "claim": "refundTickets only executes in Status.Refunding and with 1 <= ticketIds.length <= 100 (MAX_REFUND_TICKET_BATCH_SIZE).",
+      "evidence": "packages/contracts/src/Raffle.sol:L350-L354; packages/contracts/src/libraries/RaffleConstants.sol:L27"
+    },
+    {
+      "claim": "Every ticketId in ticketIds existed on entry, was distinct within the batch, was owned by msg.sender, and has _owners[ticketId] == address(0) after the loop.",
+      "evidence": "packages/contracts/src/Raffle.sol:L357-L365; packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L61-L63, L240, L303-L308, L426-L431"
+    },
+    {
+      "claim": "All state mutations (_owners, _balances, _tokenApprovals, remainingRefundLiability) are committed before the external calls in _transferQuote(msg.sender, amount), and the function is guarded by nonReentrant.",
+      "evidence": "packages/contracts/src/Raffle.sol:L349, L364, L368-L369"
+    },
+    {
+      "claim": "remainingRefundLiability decreases by exactly sum(lastEntry - firstEntry + 1) * ENTRY_PRICE across the burned tickets, matching the quoteToken amount transferred to msg.sender.",
+      "evidence": "packages/contracts/src/Raffle.sol:L362-L369"
+    }
+  ],
+  "lines": "L349-L372",
+  "openQuestions": [],
+  "sharedState": [
+    "status (packages/contracts/src/Raffle.sol:L124)",
+    "remainingRefundLiability (packages/contracts/src/Raffle.sol:L94)",
+    "_ticketRanges (packages/contracts/src/Raffle.sol:L139)",
+    "prizeToken (packages/contracts/src/Raffle.sol:L70)",
+    "factory, quoteToken, i_vrfV2PlusWrapper (packages/contracts/src/Raffle.sol:L55, L58; VRFV2PlusWrapperConsumerBase.sol:L29)",
+    "ERC721._owners, _balances, _tokenApprovals (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L28-L32)",
+    "ReentrancyGuard.REENTRANCY_GUARD_STORAGE (packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:L36-L37)"
+  ]
+}

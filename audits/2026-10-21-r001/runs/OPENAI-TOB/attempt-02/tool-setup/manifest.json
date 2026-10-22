@@ -1,0 +1,431 @@
+{
+  "created_utc": "2026-10-21T17:45:09.153748+00:00",
+  "scope": "Tool setup only; no target source, frozen config/lock, prior audit/tests/results/corpus, or other-cell artifacts read or executed. Synthetic tool-owned smoke examples only after parent authorization.",
+  "host": "Darwin arm64",
+  "skill_pin": "82fe8226252622fa807643bdca1710901198553a",
+  "skill_files": {
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/building-secure-contracts/skills/secure-workflow-guide/SKILL.md": "7c0e7fb45f97c073ec9599cbe0b2acf44f31bbece38636bc5c3fcc9bc7703015",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/building-secure-contracts/skills/secure-workflow-guide/resources/WORKFLOW_STEPS.md": "8b048011407a9a123a01ba4548b62a944f8cd5f271e4e0cdfe58b09583bd9291"
+  },
+  "runtime_root": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools",
+  "output_root": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/OPENAI-TOB/attempt-02/tool-setup",
+  "environment_file": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools/env.sh",
+  "environment_sha256": "ab7fd3423e80b5a2bfe649c0dfae6a614152253f4b8b9d57f649c0515089fd83",
+  "executables": {
+    "solc": {
+      "path": "/Users/hishamel-husseini/.solc-select/artifacts/solc-0.8.36/solc-0.8.36",
+      "resolved_path": "/Users/hishamel-husseini/.solc-select/artifacts/solc-0.8.36/solc-0.8.36",
+      "sha256": "d4abcf0b3e24b7948ddfd64c374d26c3214648717777790ecb936979054a129d",
+      "version": "0.8.36+commit.8a079791.Darwin.appleclang",
+      "wrapper": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools/bin/solc",
+      "wrapper_sha256": "a4be2c897121ec51277afe858cc10776db461d389d61d7cd1e1dac42b3f5014a"
+    },
+    "forge": {
+      "path": "/Users/hishamel-husseini/.foundry/bin/forge",
+      "resolved_path": "/Users/hishamel-husseini/.foundry/bin/forge",
+      "sha256": "e729589084ca2f1479354353d1ec3d4789451b577f4cdee4e7dc57cae64a38fa",
+      "version": "1.7.1, commit 4072e48705af9d93e3c0f6e29e93b5e9a40caed8",
+      "wrapper": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools/bin/forge",
+      "wrapper_sha256": "f6e49795481e62976bb0a4cd5ae1b2670fad2c5af8fcc82da5b653fe06c11bf5"
+    },
+    "slither": {
+      "path": "/opt/homebrew/bin/slither",
+      "resolved_path": "/opt/homebrew/Cellar/slither-analyzer/0.11.6/libexec/bin/slither",
+      "sha256": "be44f3a09492241f703ed883ded84228591ea5bb5dc10e5c2fe47fd4088ada16",
+      "version": "0.11.6",
+      "wrapper": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools/bin/slither",
+      "wrapper_sha256": "624dba0d3a70640f2c66c40de96d599aa02c5cd95997d970792e69e3567024d3"
+    },
+    "echidna": {
+      "path": "/opt/homebrew/bin/echidna",
+      "resolved_path": "/opt/homebrew/Cellar/echidna/2.3.3_1/bin/echidna",
+      "sha256": "78f945af082cf6c92b8d83a39d26135b50b9882ff4db9e66d5757b24e67e09bf",
+      "version": "2.3.3",
+      "wrapper": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools/bin/echidna",
+      "wrapper_sha256": "58be237dec322b7a7ea6d93231dc6125f0d1b15c4a7148ea29d6b3d79fecd0b6"
+    },
+    "dot": {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools/graphviz/bin/dot",
+      "resolved_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools/graphviz/bin/dot",
+      "sha256": "69505a650c2371a3075d1f94256a3d6e920453a31b805e3e73ab3147fdb97ea9",
+      "version": "16.1.0 (20260904.0139), core/dot_layout/quartz plugins",
+      "wrapper": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools/bin/dot",
+      "wrapper_sha256": "0833ac33aa547f29463368183435bccd6e6242ec8ea5c9fc5fa22c19675a1a43"
+    },
+    "python3.10": {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools/manticore-venv/bin/python3.10",
+      "resolved_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools/python/cpython-3.10.22-macos-aarch64-none/bin/python3.10",
+      "sha256": "c21b8f194a501a60896bc83a39835b72a6c684302a40f7e72d8f0629ada47e5f",
+      "version": "3.10.22",
+      "wrapper": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools/bin/python3.10",
+      "wrapper_sha256": "6650f5562b7d3648ffc87f63e8ad74828f5c7e0a9e702f767e0ab0e41db8a2a5"
+    },
+    "python3.12": {
+      "path": "/opt/homebrew/bin/python3.12",
+      "resolved_path": "/opt/homebrew/Cellar/python@3.12/3.12.12/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+      "sha256": "0bfeb6eebcacdfaa6dd02ce35053df6902910e77adf64c93d04fce358a0375a7",
+      "version": "3.12.12",
+      "wrapper": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools/bin/python3.12",
+      "wrapper_sha256": "0998e580b12256ed8690adc712b452ab4eb2bb4bc87d1b58d3e3d71db1fff358"
+    },
+    "manticore": {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools/manticore-venv/bin/manticore",
+      "resolved_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools/manticore-venv/bin/manticore",
+      "sha256": "a2e3fce1ab092edb527faf7be33674af0323ef3181ba612624559b98c1d61c94",
+      "version": "0.3.7, invoke bin/manticore wrapper for wasm CLI compatibility alias",
+      "wrapper": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools/bin/manticore",
+      "wrapper_sha256": "8da319765591d49ae3f1868cf6554b106528b0c5f7ec18a355830e44f93368e7"
+    },
+    "z3": {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools/manticore-venv/bin/z3",
+      "resolved_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools/manticore-venv/bin/z3",
+      "sha256": "cce8b44cd5ecae2cc9287e1732b6cd7c613b041ee7f877f4e2a199cb56060673",
+      "version": "5.3.1, build ac9156f97cb44e56472e1c841f7a2beb1e976b24",
+      "wrapper": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools/bin/z3",
+      "wrapper_sha256": "27ef4db1cfb540197fd514442c0f4e69b16dd41f3aa54fc844e4de7b8fc15a35"
+    },
+    "slither-python": {
+      "path": "/opt/homebrew/Cellar/slither-analyzer/0.11.6/libexec/bin/python",
+      "resolved_path": "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "4f00ea2ad53d62437a6a3946b73c73614a97e8accdc5b96dc095ea1a0d9c6a56",
+      "version": "3.14.6",
+      "wrapper": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/tools/bin/slither-python",
+      "wrapper_sha256": "9d0bb64c1b3ebd5d736a10347d4907cc1e9b4e674fdda1bb2e638feb9cda6922"
+    }
+  },
+  "packages": {
+    "manticore": [
+      [
+        "PyYAML",
+        "6.0.3"
+      ],
+      [
+        "annotated-types",
+        "0.8.0"
+      ],
+      [
+        "crytic-compile",
+        "0.2.2"
+      ],
+      [
+        "cytoolz",
+        "1.2.0"
+      ],
+      [
+        "eth-hash",
+        "0.8.0"
+      ],
+      [
+        "eth-typing",
+        "6.0.0"
+      ],
+      [
+        "eth-utils",
+        "6.0.0"
+      ],
+      [
+        "future",
+        "1.0.0"
+      ],
+      [
+        "intervaltree",
+        "3.2.1"
+      ],
+      [
+        "manticore",
+        "0.3.7"
+      ],
+      [
+        "ply",
+        "3.11"
+      ],
+      [
+        "prettytable",
+        "3.18.0"
+      ],
+      [
+        "protobuf",
+        "3.20.3"
+      ],
+      [
+        "pydantic",
+        "2.14.1"
+      ],
+      [
+        "pydantic_core",
+        "2.50.1"
+      ],
+      [
+        "pyevmasm",
+        "0.2.3"
+      ],
+      [
+        "pysha3",
+        "1.0.2"
+      ],
+      [
+        "rlp",
+        "5.0.0"
+      ],
+      [
+        "setuptools",
+        "80.9.0"
+      ],
+      [
+        "sortedcontainers",
+        "2.4.0"
+      ],
+      [
+        "toolz",
+        "1.2.0"
+      ],
+      [
+        "typing-inspection",
+        "0.4.4"
+      ],
+      [
+        "typing_extensions",
+        "4.16.0"
+      ],
+      [
+        "wasm",
+        "1.2"
+      ],
+      [
+        "wcwidth",
+        "0.9.3"
+      ],
+      [
+        "z3-solver",
+        "5.3.1.0"
+      ]
+    ],
+    "slither": [
+      [
+        "aiohappyeyeballs",
+        "2.7.1"
+      ],
+      [
+        "aiohttp",
+        "3.14.3"
+      ],
+      [
+        "aiosignal",
+        "1.4.0"
+      ],
+      [
+        "annotated-types",
+        "0.7.0"
+      ],
+      [
+        "attrs",
+        "26.1.0"
+      ],
+      [
+        "bitarray",
+        "3.9.2"
+      ],
+      [
+        "cbor2",
+        "6.1.3"
+      ],
+      [
+        "certifi",
+        "2026.7.22"
+      ],
+      [
+        "charset-normalizer",
+        "3.4.9"
+      ],
+      [
+        "ckzg",
+        "2.1.8"
+      ],
+      [
+        "crytic-compile",
+        "0.4.2"
+      ],
+      [
+        "cytoolz",
+        "1.1.0"
+      ],
+      [
+        "eth-account",
+        "0.13.7"
+      ],
+      [
+        "eth-hash",
+        "0.8.0"
+      ],
+      [
+        "eth-keyfile",
+        "0.8.1"
+      ],
+      [
+        "eth-keys",
+        "0.7.0"
+      ],
+      [
+        "eth-rlp",
+        "2.2.0"
+      ],
+      [
+        "eth-typing",
+        "6.0.0"
+      ],
+      [
+        "eth-utils",
+        "6.0.0"
+      ],
+      [
+        "eth_abi",
+        "5.2.0"
+      ],
+      [
+        "frozenlist",
+        "1.8.0"
+      ],
+      [
+        "hexbytes",
+        "1.3.1"
+      ],
+      [
+        "idna",
+        "3.18"
+      ],
+      [
+        "multidict",
+        "6.7.1"
+      ],
+      [
+        "packaging",
+        "26.2"
+      ],
+      [
+        "parsimonious",
+        "0.10.0"
+      ],
+      [
+        "pip",
+        "26.1.2"
+      ],
+      [
+        "prettytable",
+        "3.18.0"
+      ],
+      [
+        "propcache",
+        "0.5.2"
+      ],
+      [
+        "pycryptodome",
+        "3.23.0"
+      ],
+      [
+        "pydantic",
+        "2.13.4"
+      ],
+      [
+        "pydantic_core",
+        "2.46.4"
+      ],
+      [
+        "pyunormalize",
+        "17.0.0"
+      ],
+      [
+        "regex",
+        "2026.7.19"
+      ],
+      [
+        "requests",
+        "2.34.2"
+      ],
+      [
+        "rlp",
+        "4.1.0"
+      ],
+      [
+        "slither-analyzer",
+        "0.11.6"
+      ],
+      [
+        "solc-select",
+        "1.2.0"
+      ],
+      [
+        "toolz",
+        "1.1.0"
+      ],
+      [
+        "types-requests",
+        "2.33.0.20260712"
+      ],
+      [
+        "typing-inspection",
+        "0.4.2"
+      ],
+      [
+        "typing_extensions",
+        "4.15.0"
+      ],
+      [
+        "urllib3",
+        "2.7.0"
+      ],
+      [
+        "wcwidth",
+        "0.8.2"
+      ],
+      [
+        "web3",
+        "7.16.0"
+      ],
+      [
+        "websockets",
+        "15.0.1"
+      ],
+      [
+        "wheel",
+        "0.47.0"
+      ],
+      [
+        "yarl",
+        "1.24.5"
+      ]
+    ]
+  },
+  "synthetic_checks": {
+    "slither": "102 detectors, 1 tool-owned contract, 0 results; exit 0",
+    "echidna": "100 calls, seed 812, invariant passing, native compiler integration successful",
+    "graphviz": "SVG/PNG/PDF rendered; PNG visually inspected",
+    "manticore_solver": "256-bit symbolic variable constrained and solved to 5",
+    "manticore_evm": "symbolic calldata executed through CALLDATALOAD/MSTORE/RETURN; 32-byte return",
+    "manticore_solc_default": "Synthetic Solidity 0.8.36 default-EVM init code failed: created=false, 0 ready states, THROW",
+    "manticore_solc_paris": "Same synthetic source compiled with --evm-version paris deployed: created=true, 1 ready state"
+  },
+  "compatibility_notes": [
+    "All listed native compiled executables run on this arm64 host; solc is universal arm64+x86_64.",
+    "Manticore upstream warns Linux-only support on Darwin; passing synthetic checks do not establish compatibility with production targets.",
+    "Manticore CLI requires only a wrapper-level collections.Callable alias for wasm 1.2 on Python 3.10; installed upstream package code is not edited.",
+    "Manticore protobuf pinned 3.20.3 and setuptools pinned 80.9.0 after observed startup incompatibilities; full package versions captured.",
+    "Manticore modern default compiler bytecode incompatibility observed; frozen target config was not changed.",
+    "Graphviz runtime deliberately contains only core, dot_layout, quartz plugins; SVG/PNG/PDF supported. Other layout engines and optional GD/Pango/Rsvg/WebP plugins are not installed.",
+    "uv Python install attempted a default executable link at ~/.local/bin/python3.10 but refused because an existing unmanaged file was present; installation succeeded under tools/python and that external file was not replaced. Final env sets UV_PYTHON_BIN_DIR under tools.",
+    "Two known Lima Docker sockets respond; only version inspection was performed, with no containers started, modified, or removed."
+  ],
+  "docker_sockets": [
+    "unix:///Users/hishamel-husseini/.lima/gebal/sock/docker.sock",
+    "unix:///Users/hishamel-husseini/.lima/glaze-openkritt-daybreak/sock/docker.sock"
+  ],
+  "downloaded_bottles": {
+    "graphviz-arm64-tahoe.tar.gz": "9fba08a285c160f3c1c5db363b06bd5ffe6b1175c74b6be8d36383d1f1b0ab13",
+    "libtool-arm64-tahoe.tar.gz": "719ae9c4597d0198ee77da6bb09dfcb6f68ae0302330f1a1e61503648e59fdd2"
+  },
+  "sources": [
+    "https://formulae.brew.sh/api/formula/graphviz.json",
+    "https://formulae.brew.sh/api/formula/libtool.json",
+    "https://pypi.org/project/manticore/0.3.7/",
+    "https://graphviz.org/download/source/"
+  ]
+}

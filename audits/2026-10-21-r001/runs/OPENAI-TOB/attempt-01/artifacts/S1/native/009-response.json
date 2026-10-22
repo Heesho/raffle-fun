@@ -1,0 +1,89 @@
+{
+  "function": "enableRefunds",
+  "file": "target/packages/contracts/src/Raffle.sol",
+  "lines": "L276-L301",
+  "analysisFile": "audit/S1/audit-context/functions/08-enableRefunds.md",
+  "invariants": [
+    {
+      "claim": "Successful entry is from Active or Drawing only; zero-entry Active allows the sponsor before sale end and everyone at/after sale end.",
+      "evidence": "Raffle.sol L279-L294"
+    },
+    {
+      "claim": "Sold Active raffles require timestamp >= endTime + 2 days; Drawing requires timestamp >= callbackDeadline(), whose zero-timestamp branch returns zero.",
+      "evidence": "Raffle.sol L285-L291, L458-L465; RaffleConstants.sol L32-L36"
+    },
+    {
+      "claim": "On success unsettledPot is zero, remainingRefundLiability equals the old unsettledPot, and status is Refunding.",
+      "evidence": "Raffle.sol L296-L300"
+    },
+    {
+      "claim": "At their exact deadlines, requests/callbacks stop being eligible while the corresponding refund transition becomes eligible.",
+      "evidence": "Raffle.sol L245-L247, L287, L291, L511-L515"
+    },
+    {
+      "claim": "The transition makes no external calls or asset transfers; guarded nested entry is rejected before the body.",
+      "evidence": "Raffle.sol L276-L301; ReentrancyGuard.sol L69-L73, L88-L105"
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "Preexisting refund liability is zero before this first Active/Drawing-to-Refunding transition; otherwise the assignment replaces it.",
+      "establishedBy": "Fresh-clone zero storage; Raffle.sol L94, L176-L205, L279-L299, L349-L368, L421-L428, L509-L523. No independent zero-liability check at L298."
+    },
+    {
+      "claim": "Recorded purchase amounts correspond to actual quote-token backing under canonical non-rebasing, fee-free transfer semantics.",
+      "establishedBy": "Raffle.sol L223-L233 credits after safeTransferFrom; trusted-token assumption explicitly documented at L560-L566 and IRaffle.sol L12-L15. Nothing in enableRefunds L276-L301 verifies external balance or semantics."
+    },
+    {
+      "claim": "The callback deadline uses the request timestamp recorded by requestDraw; a nonzero timestamp is not asserted by the deadline helper.",
+      "establishedBy": "Raffle.sol L252-L253 writes uint64(block.timestamp); L463-L465 returns zero when that field is zero. The caller only compares against the returned deadline at L290-L291."
+    },
+    {
+      "claim": "Block timestamp and transaction rollback follow the trusted chain execution model in the supplied orientation.",
+      "establishedBy": "Supplied 009-request.json orientation; source consumes block.timestamp at Raffle.sol L282-L291 and uses reverts at L283, L287, L291, L293."
+    }
+  ],
+  "calls": [
+    {
+      "callee": "drawRequestDeadline",
+      "kind": "internal",
+      "propagates": "Raffle.sol L458-L460 unconditionally returns uint256(endTime) + two-day DRAW_REQUEST_TIMEOUT (RaffleConstants.sol L33); no status or sender validation."
+    },
+    {
+      "callee": "callbackDeadline",
+      "kind": "internal",
+      "propagates": "Raffle.sol L463-L465 returns drawRequestedAt + two-day timeout only if nonzero, otherwise zero; enableRefunds L290-L291 accepts timestamp >= that result."
+    },
+    {
+      "callee": "ReentrancyGuard.nonReentrant / _nonReentrantBefore / _nonReentrantBeforeView",
+      "kind": "internal",
+      "propagates": "ReentrancyGuard.sol L69-L73, L88-L100 rejects ENTERED before body and otherwise writes ENTERED. Initial zero is accepted, not just NOT_ENTERED."
+    },
+    {
+      "callee": "ReentrancyGuard._nonReentrantAfter",
+      "kind": "internal",
+      "propagates": "ReentrancyGuard.sol L102-L106 writes NOT_ENTERED after successful body; a body revert rolls back transaction state under the supplied execution model."
+    },
+    {
+      "callee": "ReentrancyGuard._reentrancyGuardEntered / _reentrancyGuardStorageSlot",
+      "kind": "internal",
+      "propagates": "ReentrancyGuard.sol L112-L118 reads the constant slot and compares exactly with ENTERED; slot constant at L35-L37."
+    },
+    {
+      "callee": "StorageSlot.getUint256Slot",
+      "kind": "internal",
+      "propagates": "StorageSlot.sol L93-L97 directly binds returned storage reference to the supplied slot using assembly; no branch or external interaction."
+    }
+  ],
+  "callers": [
+    "External callers at Raffle.sol L276; sponsor-only early empty-sale exception at L280-L284; other eligible paths permissionless at L285-L291."
+  ],
+  "sharedState": [
+    "status: initialize L205, onERC721Received L428, requestDraw L252, fulfillRandomWords L521, enableRefunds L299; state gates L215, L241, L312, L350, L397, L536.",
+    "totalEntries/unsettledPot: buyEntries L230-L233; enableRefunds L296-L298; winner settlement L539-L555.",
+    "remainingRefundLiability: enableRefunds L298; refundTickets L368; accountedQuoteBalance L469.",
+    "sponsor/endTime: initialize L197/L204; drawRequestedAt: requestDraw L253; helpers L458-L465.",
+    "Guard storage shared across nonReentrant operations: ReentrancyGuard.sol L35-L37, L69-L73, L88-L118."
+  ],
+  "openQuestions": []
+}

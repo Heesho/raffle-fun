@@ -1,0 +1,17 @@
+{
+  "at_utc": "2026-10-21T18:31:12.672069+00:00",
+  "argv": [
+    "docker",
+    "exec",
+    "raffle-r001-gemini-native-db",
+    "psql",
+    "-U",
+    "raffle_gemini",
+    "-d",
+    "raffle_gemini",
+    "-Atc",
+    "SELECT row_to_json(x) FROM (SELECT id,status,model,model_provider,harness,thinking_effort,workflow_id,post_script_id,configuration->'post_script_ids' AS post_script_ids FROM public.scans) x;"
+  ],
+  "exit_code": 0,
+  "DOCKER_HOST": "unix:///Users/hishamel-husseini/.lima/glaze-openkritt-daybreak/sock/docker.sock"
+}

@@ -1,0 +1,5 @@
+# RF-002 proof-scope addendum
+
+The original recipient-validation campaign remains one honest-NFT future-clone reproduction. Later sealed S6 evidence adds two distinct executed cases: Claude demonstrates a future recipient becoming a registered clone and blocking its own immutable quote claim; Daybreak demonstrates owner-selected ticket delivery to an existing other-factory clone omitted from the local registry. The latter does not require prediction or later deployment. Its lack of an outbound owner call follows the reviewed clone source.
+
+The old cumulative statement that quote-lock and foreign-factory variants were source-only is retained in historical_proof_scope_snapshots and superseded in the working register. These local cases do not establish arbitrary EOA theft, loss of buyer refunds, or all recipient compositions. Low severity, capability restrictions and every original disagreement remain unchanged. No tests were rerun and no new source research or production edit was performed.

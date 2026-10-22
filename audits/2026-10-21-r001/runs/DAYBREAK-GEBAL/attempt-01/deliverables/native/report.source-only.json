@@ -1,0 +1,663 @@
+{
+  "schemaVersion": 1,
+  "brand": "Gebal",
+  "domain": "gebal.ai",
+  "run": {
+    "schemaVersion": 1,
+    "id": "a9a573ab-b66c-4d87-8ca0-1e7a5d5bcf78",
+    "createdAt": "2026-10-21T08:00:25.520Z",
+    "planId": "f7bf87b9-ac72-4a4a-b86b-8f325a819e16",
+    "snapshotId": "37dbe306-8fc3-429a-afb5-ad23f8d260ac",
+    "state": "succeeded",
+    "finishedAt": "2026-10-21T08:00:25.588Z",
+    "cancelRequested": false,
+    "costUsd": null,
+    "reservedTokens": 0,
+    "usedTokens": 0
+  },
+  "plan": {
+    "schemaVersion": 1,
+    "id": "f7bf87b9-ac72-4a4a-b86b-8f325a819e16",
+    "createdAt": "2026-10-21T07:59:58.608Z",
+    "snapshotId": "37dbe306-8fc3-429a-afb5-ad23f8d260ac",
+    "snapshotHash": "50f9efb6b671450adc50c493c35692429d5dc4b5ded6d7b123a79df21361cc0e",
+    "scopeId": "ecf00519-9fce-4f4b-981c-4e78dbb55b60",
+    "diagnosis": {
+      "kind": "foundry",
+      "supported": false,
+      "compiler": "0.8.36",
+      "evm": "cancun",
+      "settings": {
+        "src": "packages/contracts/src",
+        "test": "packages/contracts/test/foundry",
+        "script": "script",
+        "out": "out",
+        "libs": [
+          "packages/contracts/lib",
+          "packages/contracts/node_modules"
+        ],
+        "solc_version": "0.8.36",
+        "evm_version": "cancun",
+        "optimizer": true,
+        "optimizer_runs": 200,
+        "via_ir": false,
+        "fuzz": {
+          "runs": 1000,
+          "seed": "0x524146464c45"
+        },
+        "invariant": {
+          "runs": 256,
+          "depth": 64,
+          "fail_on_revert": false
+        },
+        "gas_reports": [
+          "Raffle",
+          "RaffleFactory"
+        ],
+        "projectPath": "packages/contracts",
+        "remappings": [
+          "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+          "@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+          "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+          "@openzeppelin/contracts/=packages/contracts/node_modules/@openzeppelin/contracts/",
+          "forge-std/=packages/contracts/lib/forge-std/src/"
+        ]
+      },
+      "issues": [
+        "Unsupported configuration key: gas_reports"
+      ],
+      "notes": [
+        "Exact file remappings were resolved from uniquely matching authorized library paths and are included in the approved plan.",
+        "Only profile.default is selected; other profiles, RPC endpoints and formatting configuration are not loaded.",
+        "Controller overrides output/cache/script paths, denies FFI/filesystem/RPC and dependency downloads, and disables automatic remappings.",
+        "Configured fuzz/invariant campaigns are replaced by the disclosed fixed seed and bounded campaign. Tests requiring denied capabilities cannot be validated.",
+        "Source-only intake does not establish compiler, test, property or security coverage."
+      ]
+    },
+    "tasks": [
+      "intake"
+    ],
+    "limits": {
+      "seconds": 120,
+      "memoryMb": 1024,
+      "cpus": 1,
+      "pids": 64,
+      "diskMb": 128,
+      "maxOutputBytes": 2097152,
+      "tokens": 24000,
+      "maxTasks": 4
+    },
+    "image": null,
+    "provider": null,
+    "egress": [],
+    "methodology": "native-review-v1",
+    "adapterVersion": "0.2.0",
+    "hash": "581075641e580aea08b4f1bb0167f0e4e1ec932ae43f5a9d15c95d350377c9f1"
+  },
+  "snapshot": {
+    "schemaVersion": 1,
+    "id": "37dbe306-8fc3-429a-afb5-ad23f8d260ac",
+    "createdAt": "2026-10-21T07:59:58.606Z",
+    "scopeId": "ecf00519-9fce-4f4b-981c-4e78dbb55b60",
+    "hash": "50f9efb6b671450adc50c493c35692429d5dc4b5ded6d7b123a79df21361cc0e",
+    "files": [
+      {
+        "path": "packages/contracts/foundry.toml",
+        "hash": "0fdce809ea1675dac422cff420a3402b2f28aabed0631595e43823033fa8ef50",
+        "bytes": 1228,
+        "lines": 49
+      },
+      {
+        "path": "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+        "hash": "f81ec96e909daa2cd27536274a30d916b26d5fc91261bed8d7a6a3e157f3825c",
+        "bytes": 1164,
+        "lines": 32
+      },
+      {
+        "path": "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+        "hash": "a48aaaeaed60e65f04f6c8772e5673dda663dcfa7913fdadd14b412300b9d5f1",
+        "bytes": 3363,
+        "lines": 84
+      },
+      {
+        "path": "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+        "hash": "f3b89bb466c2a79b10c1816d342fbfbec49fe82695cba92bd46e7d31af698011",
+        "bytes": 650,
+        "lines": 28
+      },
+      {
+        "path": "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+        "hash": "8cf045f295b8c6035d14012a9bc2e8ab2b5ce24749a199ca0190519c4bf2dcc0",
+        "bytes": 5055,
+        "lines": 119
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+        "hash": "fa7068f56bc180571a6095be6eaef06d51dbe81e30cb128397d993c9599ecc30",
+        "bytes": 6540,
+        "lines": 163
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+        "hash": "9c3a75a925a6dac9e88b03cddc58d42fe3131b0aaaad84408521f3f7af2f991b",
+        "bytes": 4454,
+        "lines": 87
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+        "hash": "dfb3f56fa928a7c6cae41a7ce2c86b9210fa18d33fa26389099d66a0fa790368",
+        "bytes": 193,
+        "lines": 7
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+        "hash": "0158e2d3e0e28bedd99eec13dcf1a8aa3a70a5b7e4bb2ad709609c95fcc740d1",
+        "bytes": 182,
+        "lines": 7
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+        "hash": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+        "bytes": 14522,
+        "lines": 295
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+        "hash": "0b7132f17d14d1d84b41b0bb429be62dafdff00fd3470f68724d8018eb07f57a",
+        "bytes": 684,
+        "lines": 27
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "hash": "01b6f5c4fa45fd38822b286ecef6daf983d27306dd6362496fa71b3e4600b72c",
+        "bytes": 2781,
+        "lines": 80
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+        "hash": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+        "bytes": 13314,
+        "lines": 281
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        "hash": "ef8e2398c78851bd2ec12bc48d923058c557889d5a3d5ee4919c17ff0fb3517e",
+        "bytes": 16201,
+        "lines": 434
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+        "hash": "33223782ea652dca413702ce92f9f59d91d758a035065b24bbedb7dc60c63a78",
+        "bytes": 792,
+        "lines": 28
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+        "hash": "ff0eb9902bf0ac099205615fac90eacf34fae637571b05aab3ea35dea53d5f17",
+        "bytes": 4929,
+        "lines": 136
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+        "hash": "eafee3ffdc7cb2fba4bf6bd16fb28f8e5b4679742e81c2ad42a1b1df5c179feb",
+        "bytes": 997,
+        "lines": 29
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+        "hash": "b48e95db8c85866c1d88af8e82f346e0d22d24b5aac5b936079d958c72e13b9f",
+        "bytes": 1923,
+        "lines": 51
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+        "hash": "3ce9120a27934c75a074cb785d3a88868069ef6529dbe4dc6b845af0836f3c70",
+        "bytes": 14737,
+        "lines": 333
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+        "hash": "847fda5460fee70f56f4200f59b82ae622bb03c79c77e67af010e31b7e2cc5b6",
+        "bytes": 963,
+        "lines": 29
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+        "hash": "9623aa59745a23a72f313adc5adbf583968bf366a7cbf3fc43c1148d7d2c3c86",
+        "bytes": 4372,
+        "lines": 92
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+        "hash": "0704b9d6c032cca8512a3bc3f30f49f86f1f03102d2896a3d23e794b82efea66",
+        "bytes": 896,
+        "lines": 35
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+        "hash": "61a2b12c96857aaa35f48aeda67a4281637a42494c0b3795be0ae976aa7b3793",
+        "bytes": 879,
+        "lines": 26
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+        "hash": "9055c2994b37dea1a41b7b7926dcb510f05dbe2540b0aafc5fbee9558fffd0ca",
+        "bytes": 871,
+        "lines": 26
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol",
+        "hash": "e128cbe9c6c406d5a42c26e4079c0a95b369ce552f2d0c3dfd2fcb836c5708f2",
+        "bytes": 5547,
+        "lines": 128
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+        "hash": "bdfdbe133991c0c78042957ff5cd97167926fcaf6d15664f3835a076cb066457",
+        "bytes": 32664,
+        "lines": 764
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+        "hash": "5779bc848bde39f1ad7bc02b4f708a0040888e0083b1a33f119cd94639350134",
+        "bytes": 34940,
+        "lines": 1163
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+        "hash": "1ed50b1056af886752f0fb48a0165d381e69bb4a4b18b893b066dc144a7e08d7",
+        "bytes": 2613,
+        "lines": 69
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+        "hash": "270fc8401c1a13fae6a7a4a2dd6e381b95d658896701e51f0d3e2688acab3dec",
+        "bytes": 1973,
+        "lines": 58
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+        "hash": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8",
+        "bytes": 4766,
+        "lines": 120
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+        "hash": "75704538dcb223239280c6726d9a31cf769a7816718517c997fc7d63bdb70778",
+        "bytes": 4182,
+        "lines": 144
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+        "hash": "e318709bbe73a7831d64c1351e8bdc43780b245f25191234e361e6ab9b98c67b",
+        "bytes": 21538,
+        "lines": 533
+      },
+      {
+        "path": "packages/contracts/package.json",
+        "hash": "2f46b8f46ed3de275a3a6d097c86a888fece719151bdf4e171495dc12e6802ad",
+        "bytes": 1583,
+        "lines": 45
+      },
+      {
+        "path": "packages/contracts/remappings.txt",
+        "hash": "cbf6730be9c6b6daa1855953ba581d96f14e2dbc3bc95ca3bc2d92cfd231acaa",
+        "bytes": 93,
+        "lines": 3
+      },
+      {
+        "path": "packages/contracts/src/interfaces/IRaffle.sol",
+        "hash": "a43ede9e8802d636a566fb225ed65bdf70f06d17f4734a1632a0a9f84aa5b2dd",
+        "bytes": 29703,
+        "lines": 522
+      },
+      {
+        "path": "packages/contracts/src/interfaces/IRaffleFactory.sol",
+        "hash": "747d238e4c7dc5b517f91c796dec87d9ddbfec9c626d1ff21467c60d780d03cf",
+        "bytes": 7875,
+        "lines": 151
+      },
+      {
+        "path": "packages/contracts/src/libraries/RaffleConstants.sol",
+        "hash": "0893f1a70ac03ad557e0b4c8bdf6a2f73d317f8417d1b4a3c1a571b893ed54b6",
+        "bytes": 2172,
+        "lines": 44
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "hash": "6e4c977922c3e39fafaa8c4c4fb74a971f1817eca9b6552eb8a540969f968617",
+        "bytes": 26421,
+        "lines": 615
+      },
+      {
+        "path": "packages/contracts/src/RaffleFactory.sol",
+        "hash": "d0e62b34faa42513fd968f915262728fe66a15c4b9af13a3c66f496704142ace",
+        "bytes": 8286,
+        "lines": 187
+      },
+      {
+        "path": "pnpm-lock.yaml",
+        "hash": "3c277879a07bda9a4bd9788b810a000b3cb58873fc84d515e4661e0a4ed422c4",
+        "bytes": 423390,
+        "lines": 15674
+      }
+    ],
+    "excluded": [],
+    "dependencyLocks": {
+      "pnpm-lock.yaml": "3c277879a07bda9a4bd9788b810a000b3cb58873fc84d515e4661e0a4ed422c4"
+    }
+  },
+  "scope": {
+    "schemaVersion": 1,
+    "id": "ecf00519-9fce-4f4b-981c-4e78dbb55b60",
+    "createdAt": "2026-10-21T07:59:58.540Z",
+    "projectId": "1c006e26-dcdf-4798-b1e7-58379cb90a43",
+    "authorized": true,
+    "paths": [
+      "packages/contracts/src/Raffle.sol",
+      "packages/contracts/src/RaffleFactory.sol",
+      "packages/contracts/src/interfaces/IRaffle.sol",
+      "packages/contracts/src/interfaces/IRaffleFactory.sol",
+      "packages/contracts/src/libraries/RaffleConstants.sol",
+      "packages/contracts/foundry.toml",
+      "packages/contracts/remappings.txt",
+      "packages/contracts/package.json",
+      "pnpm-lock.yaml"
+    ],
+    "projectPath": "packages/contracts",
+    "dependencyPaths": [
+      "packages/contracts/node_modules/@openzeppelin/contracts",
+      "packages/contracts/node_modules/@chainlink/contracts"
+    ],
+    "exclusions": [],
+    "requirements": "# Clean design specification\nEthereum NFT raffle; immutable factory, ERC-1167 clones with immutable implementation. One entry costs 1,000,000 units of canonical six-decimal USDC. One purchase mints a transferable ERC721 ticket representing a contiguous inclusive range. Exactly one ERC721 prize is escrowed atomically at creation. Reserve met awards NFT and 95% sponsor / 5% treasury. Reserve missed awards 80% gross to winner, 15% sponsor, 5% treasury. Refund outcome pays 100% per entry and returns prize. Rounding is floor on aggregate protocol fee; remainder must be allocated without loss. No administrator, mutable configuration or upgrade. Request window [sale end, end+2days); callback accepted strictly before request timestamp+2days. Refunds open at deadline. Callback records result only. Settlement is permissionless, storage-only; redemption requires current ticket owner, burns claim atomically, and must revert all effects on delivery failure. Sponsor and treasury can claim independently after settlement. Never move assets between raffle clones. Quote token and Chainlink wrapper are trusted canonical dependencies; arbitrary prize contracts and ticket recipients are untrusted. Frontend discovery is advisory; transaction decisions must reread current chain state.\n\nThis specification was composed before scanner results and historical findings. Source, not design prose, determines actual behavior. No tests, audit history, accepted-risk lists or scanner results are provided.\n",
+    "permission": "authorized"
+  },
+  "project": {
+    "schemaVersion": 1,
+    "id": "1c006e26-dcdf-4798-b1e7-58379cb90a43",
+    "createdAt": "2026-10-21T07:59:58.536Z",
+    "name": "target",
+    "root": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL/target",
+    "origin": "local-project"
+  },
+  "tasks": [
+    {
+      "schemaVersion": 1,
+      "id": "96cb5166-5d25-44fb-adef-03a28918cdea",
+      "createdAt": "2026-10-21T08:00:25.523Z",
+      "runId": "a9a573ab-b66c-4d87-8ca0-1e7a5d5bcf78",
+      "kind": "intake",
+      "state": "succeeded",
+      "dependencies": [],
+      "attempts": 1,
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "detail": "Recorded 40 authorized files. Build configuration unsupported; see diagnosis.",
+      "evidence": [
+        "ede9798cdc052d851f01a19508756cd3273c36b969ead6eadc75ede94c3fc9c0"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "schemaVersion": 1,
+      "id": "85d43ada-5336-48ca-9182-6a04619a6e78",
+      "createdAt": "2026-10-21T08:10:55.989Z",
+      "runId": "a9a573ab-b66c-4d87-8ca0-1e7a5d5bcf78",
+      "title": "An untrusted prize contract can fabricate both escrow and delivery",
+      "description": "The clean requirements treat arbitrary prize contracts as untrusted, but admission checks only that the contract reports ERC-721 interface support. During createRaffle, the prize contract controls safeTransferFrom: it can invoke the clone receiver with the expected caller-supplied arguments without maintaining real ownership, and the factory then asks that same untrusted contract whether the clone owns the token. This can activate a raffle with no genuine escrow. On an NFT-winning redemption, the same contract can make transferFrom a no-op and report the winner from ownerOf; the raffle then retains winnerRedeemed/prizeClaimed and the ticket burn while no genuine NFT was delivered. A sponsor controlling such a token can therefore sell entries and receive the NFT-outcome sponsor allocation without contributing an enforceable prize, contrary to the atomic-escrow and delivery requirements.\nAssumptions: The clean-design statement that arbitrary prize contracts are untrusted includes contracts that falsely advertise ERC-721 behavior; the interface prose's honest-prize assumption is not treated as an overriding trust assumption.; Entrants may buy from a raffle whose sponsor selected the adversarial prize contract.; The adversarial prize contract can return the ERC-721 interface ID and self-consistent but false ownerOf results while accepting transferFrom/safeTransferFrom calls.",
+      "severity": "high",
+      "confidence": "high",
+      "evidenceType": "model",
+      "source": [
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 127,
+          "end": 134
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 154,
+          "end": 177
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 416,
+          "end": 430
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 329,
+          "end": 337
+        }
+      ],
+      "evidence": [
+        "acb56b908f72af85a90165d3c15c87c9ea6960e10abf18af3a0ef6b66d597831"
+      ],
+      "observationIds": [
+        "643243bd-e06f-4134-b99e-75513af1ada4"
+      ],
+      "fingerprint": "dacc5702f57f39af6d12b8228973f7475ecfeefc9eba0fbff28958eb409427d0"
+    },
+    {
+      "schemaVersion": 1,
+      "id": "119b419b-d01f-40b1-91e1-97ad71f70ee3",
+      "createdAt": "2026-10-21T08:10:55.989Z",
+      "runId": "a9a573ab-b66c-4d87-8ca0-1e7a5d5bcf78",
+      "title": "Clone-isolation filtering recognizes only raffles from the current factory",
+      "description": "Destination screening asks only this raffle's immutable factory whether an address is one of its registered clones. A clone deployed by another RaffleFactory is therefore accepted as a sponsor recipient (and can likewise be configured as a factory treasury). In a cash/refund branch, releaseSponsorPrize uses unsafe transferFrom and moves the prize into that other clone, while quote-token releases also pass the factory-local screen and become unaccounted balances in the recipient clone. The recipient clone has no rescue path. This is a concrete cross-clone asset path contrary to the stated never-move-assets-between-clones requirement, although the party selecting the destination bears the direct loss.\nAssumptions: More than one deployment of RaffleFactory can exist and the clone-isolation requirement applies across those deployments.; A sponsor or factory deployer selects an existing clone from another factory as sponsorRecipient or protocolTreasury.; The prize token otherwise follows ordinary ERC-721 transferFrom ownership semantics.",
+      "severity": "low",
+      "confidence": "medium",
+      "evidenceType": "model",
+      "source": [
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 154,
+          "end": 169
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 395,
+          "end": 406
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 560,
+          "end": 566
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 587,
+          "end": 604
+        }
+      ],
+      "evidence": [
+        "acb56b908f72af85a90165d3c15c87c9ea6960e10abf18af3a0ef6b66d597831"
+      ],
+      "observationIds": [
+        "deaf2fe4-9bea-47cb-876e-53e4eba6c4c0"
+      ],
+      "fingerprint": "fbd277f22cc738aef00ea3c4a6a6dd7e732b13bf85a6b57065dd54e59d98a35f"
+    }
+  ],
+  "observations": [
+    {
+      "schemaVersion": 1,
+      "id": "643243bd-e06f-4134-b99e-75513af1ada4",
+      "createdAt": "2026-10-21T08:10:55.988Z",
+      "runId": "a9a573ab-b66c-4d87-8ca0-1e7a5d5bcf78",
+      "producer": "model",
+      "text": "The clean requirements treat arbitrary prize contracts as untrusted, but admission checks only that the contract reports ERC-721 interface support. During createRaffle, the prize contract controls safeTransferFrom: it can invoke the clone receiver with the expected caller-supplied arguments without maintaining real ownership, and the factory then asks that same untrusted contract whether the clone owns the token. This can activate a raffle with no genuine escrow. On an NFT-winning redemption, the same contract can make transferFrom a no-op and report the winner from ownerOf; the raffle then retains winnerRedeemed/prizeClaimed and the ticket burn while no genuine NFT was delivered. A sponsor controlling such a token can therefore sell entries and receive the NFT-outcome sponsor allocation without contributing an enforceable prize, contrary to the atomic-escrow and delivery requirements.\nAssumptions: The clean-design statement that arbitrary prize contracts are untrusted includes contracts that falsely advertise ERC-721 behavior; the interface prose's honest-prize assumption is not treated as an overriding trust assumption.; Entrants may buy from a raffle whose sponsor selected the adversarial prize contract.; The adversarial prize contract can return the ERC-721 interface ID and self-consistent but false ownerOf results while accepting transferFrom/safeTransferFrom calls.",
+      "source": [
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 127,
+          "end": 134
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 154,
+          "end": 177
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 416,
+          "end": 430
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 329,
+          "end": 337
+        }
+      ],
+      "evidence": [
+        "acb56b908f72af85a90165d3c15c87c9ea6960e10abf18af3a0ef6b66d597831"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "deaf2fe4-9bea-47cb-876e-53e4eba6c4c0",
+      "createdAt": "2026-10-21T08:10:55.989Z",
+      "runId": "a9a573ab-b66c-4d87-8ca0-1e7a5d5bcf78",
+      "producer": "model",
+      "text": "Destination screening asks only this raffle's immutable factory whether an address is one of its registered clones. A clone deployed by another RaffleFactory is therefore accepted as a sponsor recipient (and can likewise be configured as a factory treasury). In a cash/refund branch, releaseSponsorPrize uses unsafe transferFrom and moves the prize into that other clone, while quote-token releases also pass the factory-local screen and become unaccounted balances in the recipient clone. The recipient clone has no rescue path. This is a concrete cross-clone asset path contrary to the stated never-move-assets-between-clones requirement, although the party selecting the destination bears the direct loss.\nAssumptions: More than one deployment of RaffleFactory can exist and the clone-isolation requirement applies across those deployments.; A sponsor or factory deployer selects an existing clone from another factory as sponsorRecipient or protocolTreasury.; The prize token otherwise follows ordinary ERC-721 transferFrom ownership semantics.",
+      "source": [
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "start": 154,
+          "end": 169
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 395,
+          "end": 406
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 560,
+          "end": 566
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "start": 587,
+          "end": 604
+        }
+      ],
+      "evidence": [
+        "acb56b908f72af85a90165d3c15c87c9ea6960e10abf18af3a0ef6b66d597831"
+      ]
+    }
+  ],
+  "properties": [],
+  "coverage": [
+    {
+      "schemaVersion": 1,
+      "id": "ae2cfb33-2b0b-44d5-9703-8c61763ff44b",
+      "createdAt": "2026-10-21T08:00:25.584Z",
+      "runId": "a9a573ab-b66c-4d87-8ca0-1e7a5d5bcf78",
+      "taskId": "96cb5166-5d25-44fb-adef-03a28918cdea",
+      "state": "succeeded",
+      "claim": "Recorded 40 authorized files. Build configuration unsupported; see diagnosis.",
+      "gaps": [
+        "No semantic, test, or property coverage established by intake."
+      ],
+      "evidence": [
+        "ede9798cdc052d851f01a19508756cd3273c36b969ead6eadc75ede94c3fc9c0"
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "id": "809e1492-258a-4044-a50a-5641c17d3b9c",
+      "createdAt": "2026-10-21T08:10:55.989Z",
+      "runId": "a9a573ab-b66c-4d87-8ca0-1e7a5d5bcf78",
+      "taskId": "external-review:1c2bd7d7-3d15-4bba-8037-06f5b6fff343",
+      "state": "unknown",
+      "claim": "External agent observations imported and schema/source validated. Review quality and claimed model execution are unverified.",
+      "gaps": [
+        "External agent provenance, token usage and spend are unknown.",
+        "Imported observations do not complete blocked local checks or establish any property.",
+        "Source-only review: no compiler, test, fuzz, invariant, symbolic, gas, or runtime execution evidence was produced.",
+        "Gebal marked the Foundry configuration unsupported because gas_reports is an unsupported key; source intake still succeeded but compilation coverage is absent.",
+        "Docker was unavailable and no pinned local tool image was configured, so no deterministic test-inclusive plan was created and host tools were not used as a fallback.",
+        "Canonical USDC's fee-free/non-rebasing transfer semantics and the canonical Chainlink wrapper's asynchronous/authenticated behavior are trusted assumptions, not locally executed facts.",
+        "The lockfile and dependency versions were checked for the selected OpenZeppelin 5.6.1 and Chainlink 1.5.0 closure, but non-reachable helpers in the captured dependency directories were not independently semantically audited.",
+        "No deployment addresses, chain state, frontend behavior, or post-snapshot source changes were examined.",
+        "The failed fresh Codex CLI specialist produced no review because the sandbox could not reach the model endpoint; provider-returned identity and usage remain unknown."
+      ],
+      "evidence": [
+        "acb56b908f72af85a90165d3c15c87c9ea6960e10abf18af3a0ef6b66d597831"
+      ]
+    }
+  ],
+  "executions": [],
+  "invocations": [
+    {
+      "schemaVersion": 1,
+      "id": "1c2bd7d7-3d15-4bba-8037-06f5b6fff343",
+      "createdAt": "2026-10-21T08:10:55.987Z",
+      "runId": "a9a573ab-b66c-4d87-8ca0-1e7a5d5bcf78",
+      "provider": "external-agent",
+      "model": "Codex / gpt-daybreak-blue-latest accepted-local; access daybreak_blue; ultra; provider-returned-model unknown",
+      "contextHash": "2df5cb1e4b5b8f0f3c0663ef5fb41a1a3a2d12ed2304560034c3a691cfa80142",
+      "settings": {
+        "provenance": "operator-reported, not independently verified",
+        "methodology": "native-review-v1",
+        "execution": "outside Gebal",
+        "generationSettings": "unknown"
+      },
+      "inputTokens": null,
+      "outputTokens": null,
+      "costUsd": null,
+      "state": "succeeded",
+      "evidence": [
+        "acb56b908f72af85a90165d3c15c87c9ea6960e10abf18af3a0ef6b66d597831"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "schemaVersion": 1,
+      "id": "98df81e5-d22d-467e-8047-a427c15c53f6",
+      "createdAt": "2026-10-21T08:00:16.919Z",
+      "subjectId": "f7bf87b9-ac72-4a4a-b86b-8f325a819e16",
+      "action": "approve-plan",
+      "rationale": "User explicitly authorized local source-only review of the five production Solidity files, packages/contracts/foundry.toml, packages/contracts/remappings.txt, packages/contracts/package.json, root pnpm-lock.yaml, and the exact OpenZeppelin and Chainlink dependency closure directories; no assessed project execution, provider adapter, egress, or extra paths",
+      "actor": "assistant:Codex",
+      "boundHash": "581075641e580aea08b4f1bb0167f0e4e1ec932ae43f5a9d15c95d350377c9f1"
+    }
+  ],
+  "events": [
+    {
+      "seq": 1,
+      "run_id": "a9a573ab-b66c-4d87-8ca0-1e7a5d5bcf78",
+      "at": "2026-10-21T08:00:25.565Z",
+      "message": "Approved plan enqueued."
+    },
+    {
+      "seq": 2,
+      "run_id": "a9a573ab-b66c-4d87-8ca0-1e7a5d5bcf78",
+      "at": "2026-10-21T08:00:25.570Z",
+      "message": "intake: running (attempt 1)"
+    },
+    {
+      "seq": 3,
+      "run_id": "a9a573ab-b66c-4d87-8ca0-1e7a5d5bcf78",
+      "at": "2026-10-21T08:00:25.587Z",
+      "message": "intake: succeeded — Recorded 40 authorized files. Build configuration unsupported; see diagnosis."
+    },
+    {
+      "seq": 4,
+      "run_id": "a9a573ab-b66c-4d87-8ca0-1e7a5d5bcf78",
+      "at": "2026-10-21T08:00:25.588Z",
+      "message": "Run succeeded. Review coverage gaps before relying on results."
+    },
+    {
+      "seq": 5,
+      "run_id": "a9a573ab-b66c-4d87-8ca0-1e7a5d5bcf78",
+      "at": "2026-10-21T08:10:55.989Z",
+      "message": "Imported external review from operator-reported reviewer Codex / gpt-daybreak-blue-latest accepted-local; access daybreak_blue; ultra; provider-returned-model unknown; observations remain unreviewed."
+    }
+  ],
+  "disclaimer": "An empty findings list is not a security certificate. Completed checks establish only their stated coverage."
+}

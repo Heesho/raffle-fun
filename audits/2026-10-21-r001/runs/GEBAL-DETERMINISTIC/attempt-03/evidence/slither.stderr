@@ -1,0 +1,157 @@
+--ignore-compile used, if something goes wrong, consider removing the ignore compile flag
+
+Contract locking ether found:
+	Contract AdversarialVRFV2PlusWrapper (src/mocks/AdversarialVRFV2PlusWrapper.sol#7-132) has payable functions:
+	 - AdversarialVRFV2PlusWrapper.requestRandomWordsInNative(uint32,uint16,uint32,bytes) (src/mocks/AdversarialVRFV2PlusWrapper.sol#84-107)
+	But does not have a function to withdraw the ether
+Contract locking ether found:
+	Contract MockVRFV2PlusWrapper (src/mocks/MockVRFV2PlusWrapper.sol#11-86) has payable functions:
+	 - MockVRFV2PlusWrapper.requestRandomWordsInNative(uint32,uint16,uint32,bytes) (src/mocks/MockVRFV2PlusWrapper.sol#49-64)
+	But does not have a function to withdraw the ether
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#contracts-that-lock-ether
+
+Reentrancy in ReentrantERC20.transfer(address,uint256) (src/mocks/ReentrantERC20.sol#69-79):
+	External calls:
+	- (nestedSuccess,None) = target.call(abi.encodeCall(IRaffle.releaseProtocolFees,())) (src/mocks/ReentrantERC20.sol#73)
+	State variables written after the call(s):
+	- attackOutbound = false (src/mocks/ReentrantERC20.sol#76)
+	ReentrantERC20.attackOutbound (src/mocks/ReentrantERC20.sol#18) can be used in cross function reentrancies:
+	- ReentrantERC20.armOutbound(address) (src/mocks/ReentrantERC20.sol#45-49)
+	- ReentrantERC20.attackOutbound (src/mocks/ReentrantERC20.sol#18)
+	- ReentrantERC20.transfer(address,uint256) (src/mocks/ReentrantERC20.sol#69-79)
+	- attacking = false (src/mocks/ReentrantERC20.sol#75)
+	ReentrantERC20.attacking (src/mocks/ReentrantERC20.sol#17) can be used in cross function reentrancies:
+	- ReentrantERC20.transfer(address,uint256) (src/mocks/ReentrantERC20.sol#69-79)
+	- ReentrantERC20.transferFrom(address,address,uint256) (src/mocks/ReentrantERC20.sol#58-67)
+Reentrancy in ReentrantERC20.transferFrom(address,address,uint256) (src/mocks/ReentrantERC20.sol#58-67):
+	External calls:
+	- (nestedSuccess,None) = target.call(abi.encodeCall(IRaffle.buyEntries,(address(this),uint128(1)))) (src/mocks/ReentrantERC20.sol#61)
+	State variables written after the call(s):
+	- attackEnabled = false (src/mocks/ReentrantERC20.sol#64)
+	ReentrantERC20.attackEnabled (src/mocks/ReentrantERC20.sol#14) can be used in cross function reentrancies:
+	- ReentrantERC20.arm(address) (src/mocks/ReentrantERC20.sol#38-42)
+	- ReentrantERC20.attackEnabled (src/mocks/ReentrantERC20.sol#14)
+	- ReentrantERC20.transferFrom(address,address,uint256) (src/mocks/ReentrantERC20.sol#58-67)
+	- attacking = false (src/mocks/ReentrantERC20.sol#63)
+	ReentrantERC20.attacking (src/mocks/ReentrantERC20.sol#17) can be used in cross function reentrancies:
+	- ReentrantERC20.transfer(address,uint256) (src/mocks/ReentrantERC20.sol#69-79)
+	- ReentrantERC20.transferFrom(address,address,uint256) (src/mocks/ReentrantERC20.sol#58-67)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-1
+
+ReentrantPrizeERC721.safeTransferFrom(address,address,uint256,bytes) (src/mocks/ReentrantPrizeERC721.sol#89-111) ignores return value by factory.createRaffle(IRaffleFactory.CreateRaffleParams({sponsorRecipient:address(0xBEEF),prizeToken:address(this),prizeTokenId:nestedPrizeTokenId,reserveEntries:1,endTime:uint64(block.timestamp + 86400)})) (src/mocks/ReentrantPrizeERC721.sol#92-104)
+ReentrantPrizeERC721._attemptRedemptionReentry() (src/mocks/ReentrantPrizeERC721.sol#133-148) ignores return value by targetRaffle.redeemWinningTicket(targetTicketId) (src/mocks/ReentrantPrizeERC721.sol#135-147)
+ReentrantTicketReceiver.approveQuote(IERC20) (src/mocks/ReentrantTicketReceiver.sol#30-32) ignores return value by quote.approve(address(raffle),type()(uint256).max) (src/mocks/ReentrantTicketReceiver.sol#31)
+ReentrantTicketReceiver.buyTicket() (src/mocks/ReentrantTicketReceiver.sol#35-37) ignores return value by raffle.buyEntries(address(this),1) (src/mocks/ReentrantTicketReceiver.sol#36)
+ReentrantTicketReceiver.onERC721Received(address,address,uint256,bytes) (src/mocks/ReentrantTicketReceiver.sol#41-51) ignores return value by raffle.buyEntries(address(this),1) (src/mocks/ReentrantTicketReceiver.sol#44-48)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unused-return
+
+Raffle.initialize(IRaffle.RaffleInitParams) (src/Raffle.sol#176-206) should emit an event for: 
+	- prizeTokenId = params.prizeTokenId (src/Raffle.sol#201) 
+	- reserveEntries = params.reserveEntries (src/Raffle.sol#203) 
+	- endTime = params.endTime (src/Raffle.sol#204) 
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing-events-arithmetic
+
+ReentrantERC20.arm(address).target_ (src/mocks/ReentrantERC20.sol#38) lacks a zero-check on :
+		- target = target_ (src/mocks/ReentrantERC20.sol#39)
+ReentrantERC20.armOutbound(address).target_ (src/mocks/ReentrantERC20.sol#45) lacks a zero-check on :
+		- target = target_ (src/mocks/ReentrantERC20.sol#46)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing-zero-address-validation
+
+Raffle._isProtocolDestination(address,address) (src/Raffle.sol#593-605) has external calls inside a loop: unsafeDestination = destination == address(this) || destination == factory || destination == address(quoteToken) || destination == address(i_vrfV2PlusWrapper) || destination == prizeToken_ || destination == canonicalFactory.raffleImplementation() (src/Raffle.sol#599-601)
+	Calls stack containing the loop:
+		Raffle.refundTickets(uint256[])
+		ERC721._burn(uint256)
+		Raffle._update(address,uint256,address)
+Raffle._isProtocolDestination(address,address) (src/Raffle.sol#593-605) has external calls inside a loop: unsafeDestination = canonicalFactory.isRaffle(destination) (src/Raffle.sol#603)
+	Calls stack containing the loop:
+		Raffle.refundTickets(uint256[])
+		ERC721._burn(uint256)
+		Raffle._update(address,uint256,address)
+AdversarialVRFV2PlusWrapper._callback(address,uint256,uint256,bool) (src/mocks/AdversarialVRFV2PlusWrapper.sol#127-131) has external calls inside a loop: IVRFV2PlusConsumer(consumer).rawFulfillRandomWords(requestId,randomWords) (src/mocks/AdversarialVRFV2PlusWrapper.sol#130)
+	Calls stack containing the loop:
+		AdversarialVRFV2PlusWrapper.requestRandomWordsInNative(uint32,uint16,uint32,bytes)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation/#calls-inside-a-loop
+
+Reentrancy in ReentrantPrizeERC721._attemptRedemptionReentry() (src/mocks/ReentrantPrizeERC721.sol#133-148):
+	External calls:
+	- targetRaffle.redeemWinningTicket(targetTicketId) (src/mocks/ReentrantPrizeERC721.sol#135-147)
+	State variables written after the call(s):
+	- reentryBlocked = false (src/mocks/ReentrantPrizeERC721.sol#136)
+	- reentryBlocked = true (src/mocks/ReentrantPrizeERC721.sol#138)
+	- ++ reentryBlocks (src/mocks/ReentrantPrizeERC721.sol#139)
+	- reentrySelector = selector (src/mocks/ReentrantPrizeERC721.sol#145)
+Reentrancy in RaffleFactory.createRaffle(IRaffleFactory.CreateRaffleParams) (src/RaffleFactory.sol#97-148):
+	External calls:
+	- IRaffle(raffle).initialize(IRaffle.RaffleInitParams({sponsor:msg.sender,sponsorRecipient:params.sponsorRecipient,protocolTreasury:protocolTreasury,prizeToken:params.prizeToken,prizeTokenId:params.prizeTokenId,raffleId:raffleId,reserveEntries:params.reserveEntries,endTime:params.endTime})) (src/RaffleFactory.sol#109-121)
+	State variables written after the call(s):
+	- idByRaffle[raffle] = raffleId (src/RaffleFactory.sol#124)
+	- raffleById[raffleId] = raffle (src/RaffleFactory.sol#123)
+Reentrancy in MockVRFV2PlusWrapper.fulfillAs(uint256,uint256,uint256) (src/mocks/MockVRFV2PlusWrapper.sol#70-81):
+	External calls:
+	- IVRFV2PlusConsumer(consumer).rawFulfillRandomWords{gas: gasLimitByRequest[storedRequestId]}(callbackRequestId,randomWords) (src/mocks/MockVRFV2PlusWrapper.sol#76-78)
+	State variables written after the call(s):
+	- lastCallbackGasUsed = gasBefore - gasleft()() (src/mocks/MockVRFV2PlusWrapper.sol#79)
+Reentrancy in ReentrantTicketReceiver.onERC721Received(address,address,uint256,bytes) (src/mocks/ReentrantTicketReceiver.sol#41-51):
+	External calls:
+	- raffle.buyEntries(address(this),1) (src/mocks/ReentrantTicketReceiver.sol#44-48)
+	State variables written after the call(s):
+	- reentryBlocked = false (src/mocks/ReentrantTicketReceiver.sol#45)
+	- reentryBlocked = true (src/mocks/ReentrantTicketReceiver.sol#47)
+Reentrancy in ReentrantPrizeERC721.safeTransferFrom(address,address,uint256,bytes) (src/mocks/ReentrantPrizeERC721.sol#89-111):
+	External calls:
+	- factory.createRaffle(IRaffleFactory.CreateRaffleParams({sponsorRecipient:address(0xBEEF),prizeToken:address(this),prizeTokenId:nestedPrizeTokenId,reserveEntries:1,endTime:uint64(block.timestamp + 86400)})) (src/mocks/ReentrantPrizeERC721.sol#92-104)
+	State variables written after the call(s):
+	- reentryBlocked = false (src/mocks/ReentrantPrizeERC721.sol#101)
+	- reentryBlocked = true (src/mocks/ReentrantPrizeERC721.sol#103)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-2
+
+Reentrancy in MockVRFV2PlusWrapper.fulfillAs(uint256,uint256,uint256) (src/mocks/MockVRFV2PlusWrapper.sol#70-81):
+	External calls:
+	- IVRFV2PlusConsumer(consumer).rawFulfillRandomWords{gas: gasLimitByRequest[storedRequestId]}(callbackRequestId,randomWords) (src/mocks/MockVRFV2PlusWrapper.sol#76-78)
+	Event emitted after the call(s):
+	- RequestFulfilled(storedRequestId,callbackRequestId,randomWord) (src/mocks/MockVRFV2PlusWrapper.sol#80)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-3
+
+Raffle.buyEntries(address,uint128) (src/Raffle.sol#209-237) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp >= endTime (src/Raffle.sol#216)
+Raffle.requestDraw() (src/Raffle.sol#240-273) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp < endTime (src/Raffle.sol#242)
+	- block.timestamp >= requestDeadline (src/Raffle.sol#245)
+Raffle.enableRefunds() (src/Raffle.sol#276-301) uses timestamp for comparisons
+	Dangerous comparisons:
+	- msg.sender != sponsor && block.timestamp < deadline (src/Raffle.sol#282)
+	- block.timestamp < deadline (src/Raffle.sol#287)
+	- block.timestamp < deadline (src/Raffle.sol#291)
+Raffle.callbackDeadline() (src/Raffle.sol#463-465) uses timestamp for comparisons
+	Dangerous comparisons:
+	- drawRequestedAt != 0 (src/Raffle.sol#464)
+Raffle.fulfillRandomWords(uint256,uint256[]) (src/Raffle.sol#509-524) uses timestamp for comparisons
+	Dangerous comparisons:
+	- _requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1 || block.timestamp >= callbackDeadline() (src/Raffle.sol#511-512)
+RaffleFactory.createRaffle(IRaffleFactory.CreateRaffleParams) (src/RaffleFactory.sol#97-148) uses timestamp for comparisons
+	Dangerous comparisons:
+	- params.endTime <= currentTime (src/RaffleFactory.sol#100)
+	- saleDuration > RaffleConstants.MAX_SALE_DURATION (src/RaffleFactory.sol#102)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+
+Raffle.requestDraw() (src/Raffle.sol#240-273) uses assembly
+	- INLINE ASM (src/Raffle.sol#266-268)
+ReentrantPrizeERC721._attemptRedemptionReentry() (src/mocks/ReentrantPrizeERC721.sol#133-148) uses assembly
+	- INLINE ASM (src/mocks/ReentrantPrizeERC721.sol#142-144)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#assembly-usage
+
+Low level call in AdversarialVRFV2PlusWrapper.calculateRequestPriceNative(uint32,uint32) (src/mocks/AdversarialVRFV2PlusWrapper.sol#70-77):
+	- (success,result) = msg.sender.staticcall(abi.encodeWithSignature(status())) (src/mocks/AdversarialVRFV2PlusWrapper.sol#74)
+Low level call in AdversarialVRFV2PlusWrapper.requestRandomWordsInNative(uint32,uint16,uint32,bytes) (src/mocks/AdversarialVRFV2PlusWrapper.sol#84-107):
+	- (lastReentrySucceeded,None) = msg.sender.call(abi.encodeWithSignature(requestDraw())) (src/mocks/AdversarialVRFV2PlusWrapper.sol#101)
+Low level call in ReentrantERC20.transferFrom(address,address,uint256) (src/mocks/ReentrantERC20.sol#58-67):
+	- (nestedSuccess,None) = target.call(abi.encodeCall(IRaffle.buyEntries,(address(this),uint128(1)))) (src/mocks/ReentrantERC20.sol#61)
+Low level call in ReentrantERC20.transfer(address,uint256) (src/mocks/ReentrantERC20.sol#69-79):
+	- (nestedSuccess,None) = target.call(abi.encodeCall(IRaffle.releaseProtocolFees,())) (src/mocks/ReentrantERC20.sol#73)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#low-level-calls
+
+Function IRaffle.ENTRY_PRICE() (src/interfaces/IRaffle.sol#396) is not in mixedCase
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+/source/packages/contracts analyzed (84 contracts with 100 detectors), 34 result(s) found

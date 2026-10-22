@@ -1,0 +1,84 @@
+^D[
+  {
+    "schemaVersion": 1,
+    "id": "85d43ada-5336-48ca-9182-6a04619a6e78",
+    "createdAt": "2026-10-21T08:10:55.989Z",
+    "runId": "a9a573ab-b66c-4d87-8ca0-1e7a5d5bcf78",
+    "title": "An untrusted prize contract can fabricate both escrow and delivery",
+    "description": "The clean requirements treat arbitrary prize contracts as untrusted, but admission checks only that the contract reports ERC-721 interface support. During createRaffle, the prize contract controls safeTransferFrom: it can invoke the clone receiver with the expected caller-supplied arguments without maintaining real ownership, and the factory then asks that same untrusted contract whether the clone owns the token. This can activate a raffle with no genuine escrow. On an NFT-winning redemption, the same contract can make transferFrom a no-op and report the winner from ownerOf; the raffle then retains winnerRedeemed/prizeClaimed and the ticket burn while no genuine NFT was delivered. A sponsor controlling such a token can therefore sell entries and receive the NFT-outcome sponsor allocation without contributing an enforceable prize, contrary to the atomic-escrow and delivery requirements.\nAssumptions: The clean-design statement that arbitrary prize contracts are untrusted includes contracts that falsely advertise ERC-721 behavior; the interface prose's honest-prize assumption is not treated as an overriding trust assumption.; Entrants may buy from a raffle whose sponsor selected the adversarial prize contract.; The adversarial prize contract can return the ERC-721 interface ID and self-consistent but false ownerOf results while accepting transferFrom/safeTransferFrom calls.",
+    "severity": "high",
+    "confidence": "high",
+    "evidenceType": "model",
+    "source": [
+      {
+        "path": "packages/contracts/src/RaffleFactory.sol",
+        "start": 127,
+        "end": 134
+      },
+      {
+        "path": "packages/contracts/src/RaffleFactory.sol",
+        "start": 154,
+        "end": 177
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 416,
+        "end": 430
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 329,
+        "end": 337
+      }
+    ],
+    "evidence": [
+      "acb56b908f72af85a90165d3c15c87c9ea6960e10abf18af3a0ef6b66d597831"
+    ],
+    "observationIds": [
+      "643243bd-e06f-4134-b99e-75513af1ada4"
+    ],
+    "fingerprint": "dacc5702f57f39af6d12b8228973f7475ecfeefc9eba0fbff28958eb409427d0"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "119b419b-d01f-40b1-91e1-97ad71f70ee3",
+    "createdAt": "2026-10-21T08:10:55.989Z",
+    "runId": "a9a573ab-b66c-4d87-8ca0-1e7a5d5bcf78",
+    "title": "Clone-isolation filtering recognizes only raffles from the current factory",
+    "description": "Destination screening asks only this raffle's immutable factory whether an address is one of its registered clones. A clone deployed by another RaffleFactory is therefore accepted as a sponsor recipient (and can likewise be configured as a factory treasury). In a cash/refund branch, releaseSponsorPrize uses unsafe transferFrom and moves the prize into that other clone, while quote-token releases also pass the factory-local screen and become unaccounted balances in the recipient clone. The recipient clone has no rescue path. This is a concrete cross-clone asset path contrary to the stated never-move-assets-between-clones requirement, although the party selecting the destination bears the direct loss.\nAssumptions: More than one deployment of RaffleFactory can exist and the clone-isolation requirement applies across those deployments.; A sponsor or factory deployer selects an existing clone from another factory as sponsorRecipient or protocolTreasury.; The prize token otherwise follows ordinary ERC-721 transferFrom ownership semantics.",
+    "severity": "low",
+    "confidence": "medium",
+    "evidenceType": "model",
+    "source": [
+      {
+        "path": "packages/contracts/src/RaffleFactory.sol",
+        "start": 154,
+        "end": 169
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 395,
+        "end": 406
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 560,
+        "end": 566
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 587,
+        "end": 604
+      }
+    ],
+    "evidence": [
+      "acb56b908f72af85a90165d3c15c87c9ea6960e10abf18af3a0ef6b66d597831"
+    ],
+    "observationIds": [
+      "deaf2fe4-9bea-47cb-876e-53e4eba6c4c0"
+    ],
+    "fingerprint": "fbd277f22cc738aef00ea3c4a6a6dd7e732b13bf85a6b57065dd54e59d98a35f"
+  }
+]
+(node:10386) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)

@@ -1,0 +1,39 @@
+{
+  "inspectedUtc": "2026-10-21T21:36:46.404265+00:00",
+  "sourceOnly": true,
+  "findingsRead": false,
+  "nativeApiMutated": false,
+  "head": "43e1d19a00ce50bd93253d1c6c3a48cfffbcc4c3",
+  "sourceFiles": {
+    "backend/src/routes/scans.js": "11efd4ef269fa8209410232ef9d085f5a06570e01a9e931d3bdd2b1bed6c58d6",
+    "backend/src/lib/repo.js": "d034f9c5f42ccb050f17af6104b5d1bbfa5c7730fec0a4f6640f20b4306475b1",
+    "engine/open_kritt_engine/worker.py": "2b3874c4e2635e9a9e5494c196ba546f7685ceede89abfa4c8b12d08b6fb9853",
+    "engine/open_kritt_engine/db.py": "2dd0cc06f6dd98699c82608b6dc1a973ac7480193f30904030ee0ab8f7a600bc",
+    "engine/open_kritt_engine/queue.py": "42fcd284f6464b8f2c5b7fd2be756b406f24d8cbfe547f2978f1d4b1a3f99e34"
+  },
+  "supportedOperation": {
+    "method": "PATCH",
+    "url": "http://127.0.0.1:3002/api/scans/1",
+    "body": {
+      "status": "pending"
+    },
+    "executeNow": false,
+    "requiredState": [
+      "failed",
+      "paused",
+      "stopped"
+    ],
+    "mustWaitForExistingRunningAttemptsZero": true
+  },
+  "unsupportedWhileRunning": "running to pending rejected409 by USER_STATUS_TRANSITIONS",
+  "completedStateCaveat": "completed has no allowed resume transition; do not force DB reset or create a replacement scan while claiming lineage preservation",
+  "preservesCompletedLineages": true,
+  "metadataKey": [
+    "step_id",
+    "prev_id",
+    "prev_table",
+    "repeat_run"
+  ],
+  "exception": "skip_attempted_step_ids would deliberately suppress retries for configured steps; current operational snapshot has no such key",
+  "engineSemantics": "completed/running keys exclude failed; queue schedules missing/unclaimed logical keys; claim creates new metadata row preserving earlier failed rows; previous logical attempt avoids incrementing jobs_started. Completed step_results retained for downstream context; all-previous batch waits for prior depth complete."
+}

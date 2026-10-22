@@ -1,0 +1,6 @@
+import {readFileSync,writeFileSync} from 'node:fs';import {createHash} from 'node:crypto';
+import {AgentReview} from '/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/packages/core/src/agent.ts';
+import {validateRefs} from '/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/packages/core/src/intake.ts';
+const c=JSON.parse(readFileSync('context.json','utf8')),report=JSON.parse(readFileSync('report.native.final.json','utf8'));
+const path='evidence/source_adjudication/review.raw.json',b=readFileSync(path),r=AgentReview.parse(JSON.parse(b.toString()));if(r.contextHash!==c.contextHash||r.snapshotHash!==c.snapshotHash)throw Error('Hash mismatch');for(const o of r.review.observations)validateRefs(report.snapshot,o.source);
+const result={at:new Date().toISOString(),path,sha256:createHash('sha256').update(b).digest('hex'),nativeSchemaPassed:true,nativeSourceReferencesPassed:true,snapshotHash:r.snapshotHash,contextHash:r.contextHash,imported:false,observations:r.review.observations.length};writeFileSync('evidence/adjudication-native-validation.json',JSON.stringify(result,null,2));console.log(JSON.stringify(result));

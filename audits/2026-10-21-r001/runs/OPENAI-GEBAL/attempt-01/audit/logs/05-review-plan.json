@@ -1,0 +1,37 @@
+{
+  "stageId": "05-review-plan",
+  "command": [
+    "npx",
+    "--offline",
+    "--yes",
+    "--package=node@22.23.3",
+    "--package=pnpm@10.34.6",
+    "pnpm",
+    "--dir",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal",
+    "exec",
+    "node",
+    "--import",
+    "tsx",
+    "packages/cli/src/main.ts",
+    "review",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/target",
+    "--config",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/scope.json",
+    "--authorized"
+  ],
+  "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/toolchain",
+  "environmentOverrides": {
+    "GEBAL_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/gebal-state",
+    "TMPDIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/tmp",
+    "npm_config_logs_dir": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/logs/npm",
+    "npm_config_update_notifier": "false",
+    "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/npm-cache",
+    "npm_config_prefix": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/toolchain"
+  },
+  "startedAt": "2026-10-21T07:58:20.390799+00:00",
+  "finishedAt": "2026-10-21T07:58:22.170737+00:00",
+  "exitCode": 0,
+  "stdout": "{\n  \"schemaVersion\": 1,\n  \"id\": \"f444970c-0869-431d-82d7-1d04cbf09d4d\",\n  \"createdAt\": \"2026-10-21T07:58:22.152Z\",\n  \"snapshotId\": \"d466692e-b421-4f34-88c8-c8241d67fa61\",\n  \"snapshotHash\": \"50f9efb6b671450adc50c493c35692429d5dc4b5ded6d7b123a79df21361cc0e\",\n  \"scopeId\": \"bb63557c-64ec-4292-ab18-593b72cf2875\",\n  \"diagnosis\": {\n    \"kind\": \"foundry\",\n    \"supported\": false,\n    \"compiler\": \"0.8.36\",\n    \"evm\": \"cancun\",\n    \"settings\": {\n      \"src\": \"packages/contracts/src\",\n      \"test\": \"packages/contracts/test/foundry\",\n      \"script\": \"script\",\n      \"out\": \"out\",\n      \"libs\": [\n        \"packages/contracts/lib\",\n        \"packages/contracts/node_modules\"\n      ],\n      \"solc_version\": \"0.8.36\",\n      \"evm_version\": \"cancun\",\n      \"optimizer\": true,\n      \"optimizer_runs\": 200,\n      \"via_ir\": false,\n      \"fuzz\": {\n        \"runs\": 1000,\n        \"seed\": \"0x524146464c45\"\n      },\n      \"invariant\": {\n        \"runs\": 256,\n        \"depth\": 64,\n        \"fail_on_revert\": false\n      },\n      \"gas_reports\": [\n        \"Raffle\",\n        \"RaffleFactory\"\n      ],\n      \"projectPath\": \"packages/contracts\",\n      \"remappings\": [\n        \"@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol\",\n        \"@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol\",\n        \"@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol\",\n        \"@openzeppelin/contracts/=packages/contracts/node_modules/@openzeppelin/contracts/\",\n        \"forge-std/=packages/contracts/lib/forge-std/src/\"\n      ]\n    },\n    \"issues\": [\n      \"Unsupported configuration key: gas_reports\"\n    ],\n    \"notes\": [\n      \"Exact file remappings were resolved from uniquely matching authorized library paths and are included in the approved plan.\",\n      \"Only profile.default is selected; other profiles, RPC endpoints and formatting configuration are not loaded.\",\n      \"Controller overrides output/cache/script paths, denies FFI/filesystem/RPC and dependency downloads, and disables automatic remappings.\",\n      \"Configured fuzz/invariant campaigns are replaced by the disclosed fixed seed and bounded campaign. Tests requiring denied capabilities cannot be validated.\",\n      \"Source-only intake does not establish compiler, test, property or security coverage.\"\n    ]\n  },\n  \"tasks\": [\n    \"intake\"\n  ],\n  \"limits\": {\n    \"seconds\": 120,\n    \"memoryMb\": 1024,\n    \"cpus\": 1,\n    \"pids\": 64,\n    \"diskMb\": 128,\n    \"maxOutputBytes\": 2097152,\n    \"tokens\": 24000,\n    \"maxTasks\": 4\n  },\n  \"image\": null,\n  \"provider\": null,\n  \"egress\": [],\n  \"methodology\": \"native-review-v1\",\n  \"adapterVersion\": \"0.2.0\",\n  \"hash\": \"0b99568ececcf5722613adebd88dae3975f0ef3e564724aee21585f7108880d0\"\n}\nInspect this plan, then approve its exact hash: gebal approve f444970c-0869-431d-82d7-1d04cbf09d4d --hash 0b99568ececcf5722613adebd88dae3975f0ef3e564724aee21585f7108880d0 --actor YOUR_NAME --reason \"Reviewed scope, execution limits and egress\"\n",
+  "stderr": "(node:29116) ExperimentalWarning: SQLite is an experimental feature and might change at any time\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+}

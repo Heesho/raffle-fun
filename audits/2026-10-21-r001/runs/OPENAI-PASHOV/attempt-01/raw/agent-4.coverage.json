@@ -1,0 +1,1249 @@
+{
+  "agent": "agent-4",
+  "specialty": "Execution Trace Agent",
+  "target_sha_supplied": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "completed_at_utc": "2026-10-21T08:00:23.932683+00:00",
+  "local_selection": {
+    "model": "gpt-6-astra",
+    "reasoning_effort": "ultra",
+    "selection_basis": "Explicit native specialist assignment; provider model metadata was not returned."
+  },
+  "provider_model": "unknown",
+  "fallback_used": false,
+  "memory": {
+    "read": "OFF",
+    "write": "OFF"
+  },
+  "additional_agents_spawned": false,
+  "review_status": "complete for all supplied production source, clean design, and bundled dependency context",
+  "findings": 0,
+  "leads": 0,
+  "resources_read": [
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/audit-artifacts/raw/agent-4.prompt.txt",
+      "sha256": "107ae81ab7bf0858bba24f2877e590eb524c69732837b4b634f65ccc3295a9d3",
+      "kind": "native specialist instructions"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "sha256": "758f0416de90807de72c211ea5cf601d0a70ece99c5d73551d51f30984695e07",
+      "kind": "complete supplied source and instruction bundle"
+    }
+  ],
+  "files_reviewed": [
+    {
+      "path": "target/packages/contracts/src/RaffleFactory.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        8,
+        194
+      ],
+      "bundled_content_sha256": "d0e62b34faa42513fd968f915262728fe66a15c4b9af13a3c66f496704142ace",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "constructor(address quoteToken_, address vrfWrapper_, address protocolTreasury_)",
+        "function createRaffle(CreateRaffleParams calldata params)",
+        "function _validateCreateParams(CreateRaffleParams calldata params)",
+        "function _requireContract(address account)"
+      ],
+      "properties_reviewed": [
+        "Constructor dependency checks and immutable configuration",
+        "Canonical clone deployment and initialization order",
+        "Atomic registration, exact prize deposit, and final status checks",
+        "Sponsor, reserve, end-time, and token validation",
+        "Same-factory destination checks and registry permanence"
+      ],
+      "storage_and_configuration_reviewed": [
+        "callbackGasLimit",
+        "requestConfirmations",
+        "quoteToken",
+        "vrfWrapper",
+        "protocolTreasury",
+        "raffleImplementation",
+        "raffleCount",
+        "raffleById",
+        "idByRaffle",
+        "isRaffle"
+      ]
+    },
+    {
+      "path": "target/packages/contracts/src/Raffle.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        200,
+        814
+      ],
+      "bundled_content_sha256": "6e4c977922c3e39fafaa8c4c4fb74a971f1817eca9b6552eb8a540969f968617",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "constructor(address quoteToken_, address vrfWrapper_)",
+        "receive()",
+        "function initialize(RaffleInitParams calldata params)",
+        "function buyEntries(address recipient, uint128 entryCount)",
+        "function requestDraw()",
+        "function enableRefunds()",
+        "function settleWinningTicket(uint256 ticketId)",
+        "function redeemWinningTicket(uint256 ticketId)",
+        "function refundTickets(uint256[] calldata ticketIds)",
+        "function releaseSponsorProceeds()",
+        "function releaseProtocolFees()",
+        "function releaseSponsorPrize()",
+        "function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata)",
+        "function getVrfRequestPrice()",
+        "function estimateVrfRequestPrice(uint256 requestGasPriceWei)",
+        "function vrfWrapper()",
+        "function ticketRange(uint256 ticketId)",
+        "function drawRequestDeadline()",
+        "function callbackDeadline()",
+        "function accountedQuoteBalance()",
+        "function grossSales()",
+        "function name()",
+        "function symbol()",
+        "function _update(address to, uint256 ticketId, address auth)",
+        "function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords)",
+        "function _settleWinningTicket(uint256 ticketId)",
+        "function _transferQuote(address to, uint256 amount)",
+        "function _requireStatus(Status expected)",
+        "function _requireWinningTicket(uint256 ticketId)",
+        "function _isProtocolDestination(address destination, address prizeToken_)",
+        "function _validatedVrfWrapper(address wrapper)"
+      ],
+      "properties_reviewed": [
+        "One-time initialization and locked implementation",
+        "Positive entry purchases and disjoint inclusive ranges",
+        "USDC transfer before mint, complete transaction rollback, and reentrant receiver behavior",
+        "Exclusive sale, request, and callback deadlines",
+        "Exact native fee payment, request persistence, excess refund, and request rollback",
+        "Wrapper authentication and rejection of synchronous, late, duplicate, mismatched, or wrong-length callbacks",
+        "One winning entry within the sold range",
+        "Permissionless storage-only settlement and liability conservation",
+        "Current-owner redemption and atomic burn/delivery rollback",
+        "Refund batches, duplicate IDs, current-owner checks, and remaining liability",
+        "Independent sponsor and treasury releases",
+        "Prize return status and owner verification",
+        "ERC721 approval, transfer, mint, burn, and destination-screening behavior",
+        "Clone storage isolation and immutable dependency binding"
+      ],
+      "storage_and_configuration_reviewed": [
+        "ENTRY_PRICE",
+        "callbackGasLimit",
+        "requestConfirmations",
+        "factory",
+        "quoteToken",
+        "sponsor",
+        "sponsorRecipient",
+        "protocolTreasury",
+        "prizeToken",
+        "prizeTokenId",
+        "raffleId",
+        "reserveEntries",
+        "endTime",
+        "totalEntries",
+        "ticketCount",
+        "unsettledPot",
+        "remainingRefundLiability",
+        "winnerRecipient",
+        "winnerProceeds",
+        "sponsorProceeds",
+        "protocolFees",
+        "vrfRequestId",
+        "drawRequestedAt",
+        "resolvedAt",
+        "winningEntry",
+        "winningTicketId",
+        "status",
+        "settlementComplete",
+        "winnerRedeemed",
+        "prizeClaimed",
+        "initialized",
+        "_ticketRanges",
+        "_requestInFlight",
+        "TicketRange.firstEntry",
+        "TicketRange.lastEntry"
+      ]
+    },
+    {
+      "path": "target/packages/contracts/src/libraries/RaffleConstants.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        820,
+        863
+      ],
+      "bundled_content_sha256": "0893f1a70ac03ad557e0b4c8bdf6a2f73d317f8417d1b4a3c1a571b893ed54b6",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [],
+      "properties_reviewed": [
+        "Fixed entry price and decimals",
+        "Fee and cash allocation percentages",
+        "Maximum sale duration and strict two-day deadlines",
+        "Refund batch bound, callback gas, and confirmation count"
+      ],
+      "storage_and_configuration_reviewed": [
+        "BPS",
+        "PROTOCOL_FEE_BPS",
+        "CASH_WINNER_BPS",
+        "ENTRY_PRICE",
+        "QUOTE_TOKEN_DECIMALS",
+        "MAX_REFUND_TICKET_BATCH_SIZE",
+        "MAX_SALE_DURATION",
+        "DRAW_REQUEST_TIMEOUT",
+        "DRAW_CALLBACK_TIMEOUT",
+        "VRF_CALLBACK_GAS_LIMIT",
+        "VRF_REQUEST_CONFIRMATIONS"
+      ]
+    },
+    {
+      "path": "target/packages/contracts/src/interfaces/IRaffle.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        869,
+        1390
+      ],
+      "bundled_content_sha256": "a43ede9e8802d636a566fb225ed65bdf70f06d17f4734a1632a0a9f84aa5b2dd",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function initialize(RaffleInitParams calldata params)",
+        "function buyEntries(address recipient, uint128 entryCount)",
+        "function requestDraw()",
+        "function enableRefunds()",
+        "function settleWinningTicket(uint256 ticketId)",
+        "function redeemWinningTicket(uint256 ticketId)",
+        "function refundTickets(uint256[] calldata ticketIds)",
+        "function releaseSponsorProceeds()",
+        "function releaseProtocolFees()",
+        "function releaseSponsorPrize()",
+        "function getVrfRequestPrice()",
+        "function estimateVrfRequestPrice(uint256 requestGasPriceWei)",
+        "function ticketRange(uint256 ticketId)",
+        "function drawRequestDeadline()",
+        "function callbackDeadline()",
+        "function accountedQuoteBalance()",
+        "function grossSales()",
+        "function ENTRY_PRICE()",
+        "function callbackGasLimit()",
+        "function requestConfirmations()",
+        "function factory()",
+        "function sponsor()",
+        "function sponsorRecipient()",
+        "function protocolTreasury()",
+        "function quoteToken()",
+        "function vrfWrapper()",
+        "function prizeToken()",
+        "function prizeTokenId()",
+        "function raffleId()",
+        "function reserveEntries()",
+        "function endTime()",
+        "function totalEntries()",
+        "function ticketCount()",
+        "function unsettledPot()",
+        "function remainingRefundLiability()",
+        "function winnerRecipient()",
+        "function winnerProceeds()",
+        "function sponsorProceeds()",
+        "function protocolFees()",
+        "function vrfRequestId()",
+        "function drawRequestedAt()",
+        "function resolvedAt()",
+        "function winningEntry()",
+        "function winningTicketId()",
+        "function status()",
+        "function settlementComplete()",
+        "function winnerRedeemed()",
+        "function prizeClaimed()",
+        "function initialized()"
+      ],
+      "properties_reviewed": [
+        "Every declared function, getter, event, error, struct field, and status agrees with execution paths",
+        "Claim ownership, transferability, accounting, and deadline semantics",
+        "Canonical USDC and supported honest ERC721 assumptions"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/src/interfaces/IRaffleFactory.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        1396,
+        1546
+      ],
+      "bundled_content_sha256": "747d238e4c7dc5b517f91c796dec87d9ddbfec9c626d1ff21467c60d780d03cf",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function createRaffle(CreateRaffleParams calldata params)",
+        "function quoteToken()",
+        "function vrfWrapper()",
+        "function protocolTreasury()",
+        "function callbackGasLimit()",
+        "function requestConfirmations()",
+        "function raffleImplementation()",
+        "function raffleCount()",
+        "function isRaffle(address raffle)",
+        "function raffleById(uint256 raffleId)",
+        "function idByRaffle(address raffle)"
+      ],
+      "properties_reviewed": [
+        "Every declared function, getter, event, error, and creation parameter agrees with execution paths",
+        "Atomic creation and canonical registry semantics"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/DESIGN.md",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        1552,
+        1556
+      ],
+      "bundled_content_sha256": "25b4248a342c3be6a48380cb692bbd8087801baee8ed85c4e5d584d1bb9cbba1",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [],
+      "properties_reviewed": [
+        "All economic, lifecycle, ownership, immutability, isolation, external-call, and frontend trust requirements"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        1562,
+        1593
+      ],
+      "bundled_content_sha256": "f81ec96e909daa2cd27536274a30d916b26d5fc91261bed8d7a6a3e157f3825c",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function allowance(address owner, address spender)",
+        "function approve(address spender, uint256 value)",
+        "function balanceOf( address owner )",
+        "function decimals()",
+        "function decreaseApproval(address spender, uint256 addedValue)",
+        "function increaseApproval(address spender, uint256 subtractedValue)",
+        "function name()",
+        "function symbol()",
+        "function totalSupply()",
+        "function transfer(address to, uint256 value)",
+        "function transferAndCall(address to, uint256 value, bytes calldata data)",
+        "function transferFrom(address from, address to, uint256 value)"
+      ],
+      "properties_reviewed": [
+        "Every bundled interface signature, event, error, inheritance declaration, and transfer or approval requirement"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        1599,
+        1717
+      ],
+      "bundled_content_sha256": "8cf045f295b8c6035d14012a9bc2e8ab2b5ce24749a199ca0190519c4bf2dcc0",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "constructor( address _vrfV2PlusWrapper )",
+        "function requestRandomness( uint32 _callbackGasLimit, uint16 _requestConfirmations, uint32 _numWords, bytes memory extraArgs )",
+        "function requestRandomnessPayInNative( uint32 _callbackGasLimit, uint16 _requestConfirmations, uint32 _numWords, bytes memory extraArgs )",
+        "function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords)",
+        "function rawFulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords)",
+        "function getBalance()",
+        "function getLinkToken()"
+      ],
+      "properties_reviewed": [
+        "Immutable wrapper and LINK binding",
+        "Native request value and returned request identifier",
+        "Authenticated raw callback forwarding",
+        "Inherited external balance and token getters"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        1723,
+        1806
+      ],
+      "bundled_content_sha256": "a48aaaeaed60e65f04f6c8772e5673dda663dcfa7913fdadd14b412300b9d5f1",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function lastRequestId()",
+        "function calculateRequestPrice(uint32 _callbackGasLimit, uint32 _numWords)",
+        "function calculateRequestPriceNative(uint32 _callbackGasLimit, uint32 _numWords)",
+        "function estimateRequestPrice( uint32 _callbackGasLimit, uint32 _numWords, uint256 _requestGasPriceWei )",
+        "function estimateRequestPriceNative( uint32 _callbackGasLimit, uint32 _numWords, uint256 _requestGasPriceWei )",
+        "function requestRandomWordsInNative( uint32 _callbackGasLimit, uint16 _requestConfirmations, uint32 _numWords, bytes calldata extraArgs )",
+        "function link()",
+        "function linkNativeFeed()"
+      ],
+      "properties_reviewed": [
+        "All request, price, estimate, identifier, and token interface signatures"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        1812,
+        1839
+      ],
+      "bundled_content_sha256": "f3b89bb466c2a79b10c1816d342fbfbec49fe82695cba92bd46e7d31af698011",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function _argsToBytes( ExtraArgsV1 memory extraArgs )"
+      ],
+      "properties_reviewed": [
+        "ExtraArgsV1 native-payment encoding and selector"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        1845,
+        1931
+      ],
+      "bundled_content_sha256": "9c3a75a925a6dac9e88b03cddc58d42fe3131b0aaaad84408521f3f7af2f991b",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function transferAndCall(address to, uint256 value)",
+        "function transferAndCall(address to, uint256 value, bytes calldata data)",
+        "function transferFromAndCall(address from, address to, uint256 value)",
+        "function transferFromAndCall(address from, address to, uint256 value, bytes calldata data)",
+        "function approveAndCall(address spender, uint256 value)",
+        "function approveAndCall(address spender, uint256 value, bytes calldata data)"
+      ],
+      "properties_reviewed": [
+        "Every bundled interface signature, event, error, inheritance declaration, and transfer or approval requirement"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        1937,
+        1943
+      ],
+      "bundled_content_sha256": "dfb3f56fa928a7c6cae41a7ce2c86b9210fa18d33fa26389099d66a0fa790368",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [],
+      "properties_reviewed": [
+        "Interface-support declaration and re-export context"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        1949,
+        1955
+      ],
+      "bundled_content_sha256": "0158e2d3e0e28bedd99eec13dcf1a8aa3a70a5b7e4bb2ad709609c95fcc740d1",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [],
+      "properties_reviewed": [
+        "Every bundled interface signature, event, error, inheritance declaration, and transfer or approval requirement"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        1961,
+        2123
+      ],
+      "bundled_content_sha256": "fa7068f56bc180571a6095be6eaef06d51dbe81e30cb128397d993c9599ecc30",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [],
+      "properties_reviewed": [
+        "Every bundled interface signature, event, error, inheritance declaration, and transfer or approval requirement"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        2129,
+        2423
+      ],
+      "bundled_content_sha256": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function clone(address implementation)",
+        "function clone(address implementation, uint256 value)",
+        "function cloneDeterministic(address implementation, bytes32 salt)",
+        "function cloneDeterministic( address implementation, bytes32 salt, uint256 value )",
+        "function predictDeterministicAddress( address implementation, bytes32 salt, address deployer )",
+        "function predictDeterministicAddress( address implementation, bytes32 salt )",
+        "function cloneWithImmutableArgs(address implementation, bytes memory args)",
+        "function cloneWithImmutableArgs( address implementation, bytes memory args, uint256 value )",
+        "function cloneDeterministicWithImmutableArgs( address implementation, bytes memory args, bytes32 salt )",
+        "function cloneDeterministicWithImmutableArgs( address implementation, bytes memory args, bytes32 salt, uint256 value )",
+        "function predictDeterministicAddressWithImmutableArgs( address implementation, bytes memory args, bytes32 salt, address deployer )",
+        "function predictDeterministicAddressWithImmutableArgs( address implementation, bytes memory args, bytes32 salt )",
+        "function fetchCloneArgs(address instance)",
+        "function _cloneCodeWithImmutableArgs( address implementation, bytes memory args )"
+      ],
+      "properties_reviewed": [
+        "CREATE proxy target and delegatecall semantics",
+        "Deployment failure handling",
+        "Other bundled clone variants and address calculations as dependency context"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        2429,
+        2508
+      ],
+      "bundled_content_sha256": "01b6f5c4fa45fd38822b286ecef6daf983d27306dd6362496fa71b3e4600b72c",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function totalSupply()",
+        "function balanceOf(address account)",
+        "function transfer(address to, uint256 value)",
+        "function allowance(address owner, address spender)",
+        "function approve(address spender, uint256 value)",
+        "function transferFrom(address from, address to, uint256 value)"
+      ],
+      "properties_reviewed": [
+        "Every bundled interface signature, event, error, inheritance declaration, and transfer or approval requirement"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        2514,
+        2540
+      ],
+      "bundled_content_sha256": "0b7132f17d14d1d84b41b0bb429be62dafdff00fd3470f68724d8018eb07f57a",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function name()",
+        "function symbol()",
+        "function decimals()"
+      ],
+      "properties_reviewed": [
+        "Every bundled interface signature, event, error, inheritance declaration, and transfer or approval requirement"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        2546,
+        2826
+      ],
+      "bundled_content_sha256": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function safeTransfer(IERC20 token, address to, uint256 value)",
+        "function safeTransferFrom(IERC20 token, address from, address to, uint256 value)",
+        "function trySafeTransfer(IERC20 token, address to, uint256 value)",
+        "function trySafeTransferFrom(IERC20 token, address from, address to, uint256 value)",
+        "function safeIncreaseAllowance(IERC20 token, address spender, uint256 value)",
+        "function safeDecreaseAllowance(IERC20 token, address spender, uint256 requestedDecrease)",
+        "function forceApprove(IERC20 token, address spender, uint256 value)",
+        "function transferAndCallRelaxed(IERC1363 token, address to, uint256 value, bytes memory data)",
+        "function transferFromAndCallRelaxed( IERC1363 token, address from, address to, uint256 value, bytes memory data )",
+        "function approveAndCallRelaxed(IERC1363 token, address to, uint256 value, bytes memory data)",
+        "function _safeTransfer(IERC20 token, address to, uint256 value, bool bubble)",
+        "function _safeTransferFrom( IERC20 token, address from, address to, uint256 value, bool bubble )",
+        "function _safeApprove(IERC20 token, address spender, uint256 value, bool bubble)"
+      ],
+      "properties_reviewed": [
+        "Success, false-return, empty-return, and revert behavior",
+        "Bounded return handling and actual call encoding",
+        "All bundled allowance and relaxed callback methods as dependency context"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        2832,
+        3265
+      ],
+      "bundled_content_sha256": "ef8e2398c78851bd2ec12bc48d923058c557889d5a3d5ee4919c17ff0fb3517e",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "constructor(string memory name_, string memory symbol_)",
+        "function supportsInterface(bytes4 interfaceId)",
+        "function balanceOf(address owner)",
+        "function ownerOf(uint256 tokenId)",
+        "function name()",
+        "function symbol()",
+        "function tokenURI(uint256 tokenId)",
+        "function _baseURI()",
+        "function approve(address to, uint256 tokenId)",
+        "function getApproved(uint256 tokenId)",
+        "function setApprovalForAll(address operator, bool approved)",
+        "function isApprovedForAll(address owner, address operator)",
+        "function transferFrom(address from, address to, uint256 tokenId)",
+        "function safeTransferFrom(address from, address to, uint256 tokenId)",
+        "function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data)",
+        "function _ownerOf(uint256 tokenId)",
+        "function _getApproved(uint256 tokenId)",
+        "function _isAuthorized(address owner, address spender, uint256 tokenId)",
+        "function _checkAuthorized(address owner, address spender, uint256 tokenId)",
+        "function _increaseBalance(address account, uint128 value)",
+        "function _update(address to, uint256 tokenId, address auth)",
+        "function _mint(address to, uint256 tokenId)",
+        "function _safeMint(address to, uint256 tokenId)",
+        "function _safeMint(address to, uint256 tokenId, bytes memory data)",
+        "function _burn(uint256 tokenId)",
+        "function _transfer(address from, address to, uint256 tokenId)",
+        "function _safeTransfer(address from, address to, uint256 tokenId)",
+        "function _safeTransfer(address from, address to, uint256 tokenId, bytes memory data)",
+        "function _approve(address to, uint256 tokenId, address auth)",
+        "function _approve(address to, uint256 tokenId, address auth, bool emitEvent)",
+        "function _setApprovalForAll(address owner, address operator, bool approved)",
+        "function _requireOwned(uint256 tokenId)"
+      ],
+      "properties_reviewed": [
+        "Owner and operator authorization",
+        "Approval reset and balance changes",
+        "Mint, burn, and transfer ordering",
+        "Receiver callbacks and ownership after a callback",
+        "Metadata and interface behavior"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        3271,
+        3406
+      ],
+      "bundled_content_sha256": "ff0eb9902bf0ac099205615fac90eacf34fae637571b05aab3ea35dea53d5f17",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function balanceOf(address owner)",
+        "function ownerOf(uint256 tokenId)",
+        "function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data)",
+        "function safeTransferFrom(address from, address to, uint256 tokenId)",
+        "function transferFrom(address from, address to, uint256 tokenId)",
+        "function approve(address to, uint256 tokenId)",
+        "function setApprovalForAll(address operator, bool approved)",
+        "function getApproved(uint256 tokenId)",
+        "function isApprovedForAll(address owner, address operator)"
+      ],
+      "properties_reviewed": [
+        "Every bundled interface signature, event, error, inheritance declaration, and transfer or approval requirement"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        3412,
+        3440
+      ],
+      "bundled_content_sha256": "eafee3ffdc7cb2fba4bf6bd16fb28f8e5b4679742e81c2ad42a1b1df5c179feb",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function onERC721Received( address operator, address from, uint256 tokenId, bytes calldata data )"
+      ],
+      "properties_reviewed": [
+        "Every bundled interface signature, event, error, inheritance declaration, and transfer or approval requirement"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        3446,
+        3473
+      ],
+      "bundled_content_sha256": "33223782ea652dca413702ce92f9f59d91d758a035065b24bbedb7dc60c63a78",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function name()",
+        "function symbol()",
+        "function tokenURI(uint256 tokenId)"
+      ],
+      "properties_reviewed": [
+        "Every bundled interface signature, event, error, inheritance declaration, and transfer or approval requirement"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        3479,
+        3529
+      ],
+      "bundled_content_sha256": "b48e95db8c85866c1d88af8e82f346e0d22d24b5aac5b936079d958c72e13b9f",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function checkOnERC721Received( address operator, address from, address to, uint256 tokenId, bytes memory data )"
+      ],
+      "properties_reviewed": [
+        "Receiver code check, selector validation, and revert propagation"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        3535,
+        3867
+      ],
+      "bundled_content_sha256": "3ce9120a27934c75a074cb785d3a88868069ef6529dbe4dc6b845af0836f3c70",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function indexOf(bytes memory buffer, bytes1 s)",
+        "function indexOf(bytes memory buffer, bytes1 s, uint256 pos)",
+        "function lastIndexOf(bytes memory buffer, bytes1 s)",
+        "function lastIndexOf(bytes memory buffer, bytes1 s, uint256 pos)",
+        "function slice(bytes memory buffer, uint256 start)",
+        "function slice(bytes memory buffer, uint256 start, uint256 end)",
+        "function splice(bytes memory buffer, uint256 start)",
+        "function splice(bytes memory buffer, uint256 start, uint256 end)",
+        "function replace(bytes memory buffer, uint256 pos, bytes memory replacement)",
+        "function replace( bytes memory buffer, uint256 pos, bytes memory replacement, uint256 offset, uint256 length )",
+        "function concat(bytes[] memory buffers)",
+        "function toNibbles(bytes memory input)",
+        "function equal(bytes memory a, bytes memory b)",
+        "function reverseBytes32(bytes32 value)",
+        "function reverseBytes16(bytes16 value)",
+        "function reverseBytes8(bytes8 value)",
+        "function reverseBytes4(bytes4 value)",
+        "function reverseBytes2(bytes2 value)",
+        "function clz(bytes memory buffer)",
+        "function _unsafeReadBytesOffset(bytes memory buffer, uint256 offset)"
+      ],
+      "properties_reviewed": [
+        "All bundled byte helper bodies and bounds as dependency context"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        3873,
+        3901
+      ],
+      "bundled_content_sha256": "847fda5460fee70f56f4200f59b82ae622bb03c79c77e67af010e31b7e2cc5b6",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function _msgSender()",
+        "function _msgData()",
+        "function _contextSuffixLength()"
+      ],
+      "properties_reviewed": [
+        "Caller identity uses msg.sender without forwarding"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        3907,
+        3998
+      ],
+      "bundled_content_sha256": "9623aa59745a23a72f313adc5adbf583968bf366a7cbf3fc43c1148d7d2c3c86",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function deploy(uint256 amount, bytes32 salt, bytes memory bytecode)",
+        "function computeAddress(bytes32 salt, bytes32 bytecodeHash)",
+        "function computeAddress(bytes32 salt, bytes32 bytecodeHash, address deployer)"
+      ],
+      "properties_reviewed": [
+        "All bundled deployment and address computation helpers as dependency context"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        4004,
+        4038
+      ],
+      "bundled_content_sha256": "0704b9d6c032cca8512a3bc3f30f49f86f1f03102d2896a3d23e794b82efea66",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [],
+      "properties_reviewed": [
+        "Every declared dependency error"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        4044,
+        4171
+      ],
+      "bundled_content_sha256": "e128cbe9c6c406d5a42c26e4079c0a95b369ce552f2d0c3dfd2fcb836c5708f2",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function callNoReturn(address target, bytes memory data)",
+        "function callNoReturn(address target, uint256 value, bytes memory data)",
+        "function callReturn64Bytes( address target, bytes memory data )",
+        "function callReturn64Bytes( address target, uint256 value, bytes memory data )",
+        "function staticcallNoReturn(address target, bytes memory data)",
+        "function staticcallReturn64Bytes( address target, bytes memory data )",
+        "function delegatecallNoReturn(address target, bytes memory data)",
+        "function delegatecallReturn64Bytes( address target, bytes memory data )",
+        "function returnDataSize()",
+        "function returnData()",
+        "function bubbleRevert()",
+        "function bubbleRevert(bytes memory returndata)"
+      ],
+      "properties_reviewed": [
+        "All bundled low-level calls, return buffers, and revert helpers as dependency context"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        4177,
+        4234
+      ],
+      "bundled_content_sha256": "270fc8401c1a13fae6a7a4a2dd6e381b95d658896701e51f0d3e2688acab3dec",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function panic(uint256 code)"
+      ],
+      "properties_reviewed": [
+        "Panic constants and revert encoding"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        4240,
+        4359
+      ],
+      "bundled_content_sha256": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "constructor()",
+        "function _nonReentrantBeforeView()",
+        "function _nonReentrantBefore()",
+        "function _nonReentrantAfter()",
+        "function _reentrancyGuardEntered()",
+        "function _reentrancyGuardStorageSlot()"
+      ],
+      "properties_reviewed": [
+        "Zero-initialized clone guard validity",
+        "Namespaced lock and nested protected calls",
+        "Transaction rollback and lock reset"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        4365,
+        4508
+      ],
+      "bundled_content_sha256": "75704538dcb223239280c6726d9a31cf769a7816718517c997fc7d63bdb70778",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function getAddressSlot(bytes32 slot)",
+        "function getBooleanSlot(bytes32 slot)",
+        "function getBytes32Slot(bytes32 slot)",
+        "function getUint256Slot(bytes32 slot)",
+        "function getInt256Slot(bytes32 slot)",
+        "function getStringSlot(bytes32 slot)",
+        "function getStringSlot(string storage store)",
+        "function getBytesSlot(bytes32 slot)",
+        "function getBytesSlot(bytes storage store)"
+      ],
+      "properties_reviewed": [
+        "Namespaced storage references and each typed accessor"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        4514,
+        5046
+      ],
+      "bundled_content_sha256": "e318709bbe73a7831d64c1351e8bdc43780b245f25191234e361e6ab9b98c67b",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function toString(uint256 value)",
+        "function toStringSigned(int256 value)",
+        "function toHexString(uint256 value)",
+        "function toHexString(uint256 value, uint256 length)",
+        "function toHexString(address addr)",
+        "function toChecksumHexString(address addr)",
+        "function toHexString(bytes memory input)",
+        "function equal(string memory a, string memory b)",
+        "function parseUint(string memory input)",
+        "function parseUint(string memory input, uint256 begin, uint256 end)",
+        "function tryParseUint(string memory input)",
+        "function tryParseUint( string memory input, uint256 begin, uint256 end )",
+        "function _tryParseUintUncheckedBounds( string memory input, uint256 begin, uint256 end )",
+        "function parseInt(string memory input)",
+        "function parseInt(string memory input, uint256 begin, uint256 end)",
+        "function tryParseInt(string memory input)",
+        "function tryParseInt( string memory input, uint256 begin, uint256 end )",
+        "function _tryParseIntUncheckedBounds( string memory input, uint256 begin, uint256 end )",
+        "function parseHexUint(string memory input)",
+        "function parseHexUint(string memory input, uint256 begin, uint256 end)",
+        "function tryParseHexUint(string memory input)",
+        "function tryParseHexUint( string memory input, uint256 begin, uint256 end )",
+        "function _tryParseHexUintUncheckedBounds( string memory input, uint256 begin, uint256 end )",
+        "function parseAddress(string memory input)",
+        "function parseAddress(string memory input, uint256 begin, uint256 end)",
+        "function tryParseAddress(string memory input)",
+        "function tryParseAddress( string memory input, uint256 begin, uint256 end )",
+        "function _tryParseChr(bytes1 chr)",
+        "function escapeJSON(string memory input)",
+        "function _unsafeReadBytesOffset(bytes memory buffer, uint256 offset)",
+        "function _unsafeWriteBytesOffset(bytes memory buffer, uint256 offset, bytes1 value)"
+      ],
+      "properties_reviewed": [
+        "All bundled string helper bodies and bounds as dependency context"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        5052,
+        5077
+      ],
+      "bundled_content_sha256": "61a2b12c96857aaa35f48aeda67a4281637a42494c0b3795be0ae976aa7b3793",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function supportsInterface(bytes4 interfaceId)"
+      ],
+      "properties_reviewed": [
+        "Interface identifier matching"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        5083,
+        5108
+      ],
+      "bundled_content_sha256": "9055c2994b37dea1a41b7b7926dcb510f05dbe2540b0aafc5fbee9558fffd0ca",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function supportsInterface(bytes4 interfaceId)"
+      ],
+      "properties_reviewed": [
+        "Interface-support declaration and re-export context"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        5114,
+        5877
+      ],
+      "bundled_content_sha256": "bdfdbe133991c0c78042957ff5cd97167926fcaf6d15664f3835a076cb066457",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function add512(uint256 a, uint256 b)",
+        "function mul512(uint256 a, uint256 b)",
+        "function tryAdd(uint256 a, uint256 b)",
+        "function trySub(uint256 a, uint256 b)",
+        "function tryMul(uint256 a, uint256 b)",
+        "function tryDiv(uint256 a, uint256 b)",
+        "function tryMod(uint256 a, uint256 b)",
+        "function saturatingAdd(uint256 a, uint256 b)",
+        "function saturatingSub(uint256 a, uint256 b)",
+        "function saturatingMul(uint256 a, uint256 b)",
+        "function ternary(bool condition, uint256 a, uint256 b)",
+        "function max(uint256 a, uint256 b)",
+        "function min(uint256 a, uint256 b)",
+        "function average(uint256 a, uint256 b)",
+        "function ceilDiv(uint256 a, uint256 b)",
+        "function mulDiv(uint256 x, uint256 y, uint256 denominator)",
+        "function mulDiv(uint256 x, uint256 y, uint256 denominator, Rounding rounding)",
+        "function mulShr(uint256 x, uint256 y, uint8 n)",
+        "function mulShr(uint256 x, uint256 y, uint8 n, Rounding rounding)",
+        "function invMod(uint256 a, uint256 n)",
+        "function invModPrime(uint256 a, uint256 p)",
+        "function modExp(uint256 b, uint256 e, uint256 m)",
+        "function tryModExp(uint256 b, uint256 e, uint256 m)",
+        "function modExp(bytes memory b, bytes memory e, bytes memory m)",
+        "function tryModExp( bytes memory b, bytes memory e, bytes memory m )",
+        "function _zeroBytes(bytes memory buffer)",
+        "function sqrt(uint256 a)",
+        "function sqrt(uint256 a, Rounding rounding)",
+        "function log2(uint256 x)",
+        "function log2(uint256 value, Rounding rounding)",
+        "function log10(uint256 value)",
+        "function log10(uint256 value, Rounding rounding)",
+        "function log256(uint256 x)",
+        "function log256(uint256 value, Rounding rounding)",
+        "function unsignedRoundsUp(Rounding rounding)",
+        "function clz(uint256 x)"
+      ],
+      "properties_reviewed": [
+        "Exact fee multiplication/division and overflow bounds",
+        "All bundled arithmetic helper bodies as dependency context"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        5883,
+        7045
+      ],
+      "bundled_content_sha256": "5779bc848bde39f1ad7bc02b4f708a0040888e0083b1a33f119cd94639350134",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function toUint248(uint256 value)",
+        "function toUint240(uint256 value)",
+        "function toUint232(uint256 value)",
+        "function toUint224(uint256 value)",
+        "function toUint216(uint256 value)",
+        "function toUint208(uint256 value)",
+        "function toUint200(uint256 value)",
+        "function toUint192(uint256 value)",
+        "function toUint184(uint256 value)",
+        "function toUint176(uint256 value)",
+        "function toUint168(uint256 value)",
+        "function toUint160(uint256 value)",
+        "function toUint152(uint256 value)",
+        "function toUint144(uint256 value)",
+        "function toUint136(uint256 value)",
+        "function toUint128(uint256 value)",
+        "function toUint120(uint256 value)",
+        "function toUint112(uint256 value)",
+        "function toUint104(uint256 value)",
+        "function toUint96(uint256 value)",
+        "function toUint88(uint256 value)",
+        "function toUint80(uint256 value)",
+        "function toUint72(uint256 value)",
+        "function toUint64(uint256 value)",
+        "function toUint56(uint256 value)",
+        "function toUint48(uint256 value)",
+        "function toUint40(uint256 value)",
+        "function toUint32(uint256 value)",
+        "function toUint24(uint256 value)",
+        "function toUint16(uint256 value)",
+        "function toUint8(uint256 value)",
+        "function toUint256(int256 value)",
+        "function toInt248(int256 value)",
+        "function toInt240(int256 value)",
+        "function toInt232(int256 value)",
+        "function toInt224(int256 value)",
+        "function toInt216(int256 value)",
+        "function toInt208(int256 value)",
+        "function toInt200(int256 value)",
+        "function toInt192(int256 value)",
+        "function toInt184(int256 value)",
+        "function toInt176(int256 value)",
+        "function toInt168(int256 value)",
+        "function toInt160(int256 value)",
+        "function toInt152(int256 value)",
+        "function toInt144(int256 value)",
+        "function toInt136(int256 value)",
+        "function toInt128(int256 value)",
+        "function toInt120(int256 value)",
+        "function toInt112(int256 value)",
+        "function toInt104(int256 value)",
+        "function toInt96(int256 value)",
+        "function toInt88(int256 value)",
+        "function toInt80(int256 value)",
+        "function toInt72(int256 value)",
+        "function toInt64(int256 value)",
+        "function toInt56(int256 value)",
+        "function toInt48(int256 value)",
+        "function toInt40(int256 value)",
+        "function toInt32(int256 value)",
+        "function toInt24(int256 value)",
+        "function toInt16(int256 value)",
+        "function toInt8(int256 value)",
+        "function toInt256(uint256 value)",
+        "function toUint(bool b)"
+      ],
+      "properties_reviewed": [
+        "Every bundled checked conversion and bool conversion"
+      ],
+      "storage_and_configuration_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+      "read_via": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-4-bundle.md",
+      "bundle_lines": [
+        7051,
+        7119
+      ],
+      "bundled_content_sha256": "1ed50b1056af886752f0fb48a0165d381e69bb4a4b18b893b066dc144a7e08d7",
+      "hash_definition": "Exact UTF-8 code-fence body before the delimiter newline; no target file reread.",
+      "status": "reviewed",
+      "functions_reviewed": [
+        "function ternary(bool condition, int256 a, int256 b)",
+        "function max(int256 a, int256 b)",
+        "function min(int256 a, int256 b)",
+        "function average(int256 a, int256 b)",
+        "function abs(int256 n)"
+      ],
+      "properties_reviewed": [
+        "All bundled signed arithmetic helpers as dependency context"
+      ],
+      "storage_and_configuration_reviewed": []
+    }
+  ],
+  "instruction_sections_reviewed": [
+    "Senior Auditor's Mindset",
+    "Execution Trace Agent",
+    "Shared Scan Rules",
+    "Report language \u2014 Simplified Technical English"
+  ],
+  "read_completion": {
+    "bundle_line_count": 7429,
+    "all_lines_read": true,
+    "truncation_recovery_ranges": [
+      [
+        400,
+        650
+      ],
+      [
+        1201,
+        1600
+      ],
+      [
+        2501,
+        3000
+      ]
+    ],
+    "unread_bundle_ranges": []
+  },
+  "execution_properties_reviewed": [
+    "Initialization can only originate from the immutable canonical factory and cannot repeat.",
+    "Factory creation either leaves one registered active clone with its configured prize or reverts all effects.",
+    "Each successful purchase adds exactly entryCount paid entries and one ticket with a unique nonoverlapping range.",
+    "All caller-controlled recipient, quantity, ticket ID, timestamp branch, and value relationships were traced.",
+    "No protected claim operation can reenter another protected operation in the same clone.",
+    "Inherited unguarded ticket transfers preserve owner authorization and remain consistent with bearer claims.",
+    "An accepted draw fixes totalEntries and persists its request ID before asynchronous resolution.",
+    "Authenticated callbacks cannot select an entry during an in-flight request or after either terminal outcome.",
+    "Exact deadlines partition request, callback, and refund paths without an overlap.",
+    "Winner settlement allocates the entire unsettled pot once without any asset call or ownership dependency.",
+    "Burned or nonexistent tickets cannot produce a second refund or winner payment.",
+    "Prize or quote transfer failure restores the claim and ticket through transaction rollback.",
+    "Sponsor and protocol releases consume separate liabilities before external transfers.",
+    "Native refund failure rolls back the VRF request and its local state.",
+    "Contract-level state and liability accounting remain isolated between fixed-target clones.",
+    "Maximum entry totals bound gross pot arithmetic below uint256 and ticketCount below uint128."
+  ],
+  "considered_paths_without_reportable_exploit": [
+    {
+      "path": "Predicted future clone as ticket owner or sponsor recipient",
+      "result": "Requires the sender or sponsor to choose an inaccessible address; no source path takes an honest owner's claim without authorization."
+    },
+    {
+      "path": "Foreign-factory raffle tickets as prizes or destinations",
+      "result": "Same-factory registry checks do not recognize foreign deployments; no non-self-harm loss path was established."
+    },
+    {
+      "path": "Dishonest prize supportsInterface or ownerOf return values",
+      "result": "A dishonest token can misreport its own custody; the source declares supported prizes honest and standards-compliant, and no honest-token custody bypass was established."
+    },
+    {
+      "path": "Native excess-refund callback reentrancy",
+      "result": "Protected functions reject reentry; authorized ticket transfers do not alter entry ranges or draw identity."
+    },
+    {
+      "path": "Reentrant mint receiver or prize transfer callback",
+      "result": "Checks, lifecycle gates, ownership authorization, and complete rollback prevent a second claim or inconsistent committed allocation."
+    }
+  ],
+  "gaps_and_limitations": [
+    "No runtime proof was executed because no concrete exploit path was confirmed.",
+    "Only supplied dependency source was assessed; canonical USDC and the deployed VRF wrapper implementation and configuration were not supplied.",
+    "The clean design calls prize contracts untrusted, while the interfaces require honest standard ERC721 behavior; arbitrary false token semantics cannot establish real custody."
+  ],
+  "boundary_compliance": {
+    "target_modified": false,
+    "history_read": false,
+    "tests_read": false,
+    "scanner_outputs_read": false,
+    "memory_read": false,
+    "peer_reports_read": false,
+    "web_used": false,
+    "source_files_reread_for_initial_scan": false
+  },
+  "other_read_only_operations": [
+    "Located forge, solc, and node executables with command -v.",
+    "Listed matching package/config filenames with rg --files without reading their contents."
+  ],
+  "outputs": [
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/audit-artifacts/raw/agent-4.md",
+      "sha256": "cbda01078636d9fdbe07ea02bcdd7d2aa2c6d46e9b4b36d9bfa90e4b5293a47c",
+      "kind": "exact native final response"
+    }
+  ]
+}

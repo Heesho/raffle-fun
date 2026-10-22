@@ -1,0 +1,53 @@
+{
+  "analysisFile": "spec-compliance/requirements/03-REQ-19.md",
+  "confidence": "high",
+  "evidence": [
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L309-L346",
+      "quote": "function redeemWinningTicket(uint256 ticketId) external override nonReentrant returns (uint256 cashAmount) {\n        if (winnerRedeemed) revert WinningTicketAlreadyRedeemed();\n        Status result = status;\n        if (result != Status.NftWon && result != Status.CashWon) revert InvalidStatus(result);\n\n        if (!settlementComplete) {\n            _settleWinningTicket(ticketId);\n        } else if (ticketId != winningTicketId) {\n            revert WinningTicketMismatch(ticketId, winningTicketId);\n        }\n\n        address winner = ownerOf(ticketId);\n        if (msg.sender != winner) revert NotTicketOwner(ticketId, msg.sender, winner);\n\n        winnerRecipient = winner;\n        winnerRedeemed = true;\n        _burn(ticketId);\n\n        address deliveredPrizeToken = address(0);\n        uint256 deliveredPrizeTokenId = 0;\n        if (result == Status.NftWon) {\n            if (prizeClaimed) revert PrizeAlreadyClaimed();\n            prizeClaimed = true;\n            deliveredPrizeToken = address(prizeToken);\n            deliveredPrizeTokenId = prizeTokenId;\n            prizeToken.transferFrom(address(this), winner, deliveredPrizeTokenId);\n            if (prizeToken.ownerOf(deliveredPrizeTokenId) != winner) {\n                revert PrizeDeliveryVerificationFailed(winner);\n            }\n        } else {\n            cashAmount = winnerProceeds;\n            if (cashAmount == 0) revert NoWinnerProceeds();\n            winnerProceeds = 0;\n            _transferQuote(winner, cashAmount);\n        }\n\n        emit WinningTicketRedeemed(ticketId, winner, result, cashAmount, deliveredPrizeToken, deliveredPrizeTokenId);\n    }",
+      "role": "Executes settlement (if needed), ticket burn, state updates, and prize/quote delivery in a single non-try/catch call frame; reverts on transferFrom failure, post-transfer ownerOf != winner (PrizeDeliveryVerificationFailed), or _transferQuote failure."
+    },
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L564-L567",
+      "quote": "function _transferQuote(address to, uint256 amount) private {\n        if (_isProtocolDestination(to, address(prizeToken))) revert InvalidQuoteDestination(to);\n        quoteToken.safeTransfer(to, amount);\n    }",
+      "role": "Screens destination for protocol addresses (reverting with InvalidQuoteDestination) and transfers quoteToken via SafeERC20.safeTransfer."
+    },
+    {
+      "file": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+      "lines": "L33-L37",
+      "quote": "function safeTransfer(IERC20 token, address to, uint256 value) internal {\n        if (!_safeTransfer(token, to, value, true)) {\n            revert SafeERC20FailedOperation(address(token));\n        }\n    }",
+      "role": "Bubbles any revert from quoteToken.transfer and reverts with SafeERC20FailedOperation if transfer returns false or targets a code-less address."
+    }
+  ],
+  "reasoning": "implemented (and not partial) because redeemWinningTicket is the sole redemption entrypoint, restricts execution to Status.NftWon and Status.CashWon (Raffle.sol:L312), and executes all state writes (_settleWinningTicket, winnerRecipient, winnerRedeemed, _burn, prizeClaimed, winnerProceeds) in the same transaction frame as delivery without any try/catch. On Status.NftWon, both prizeToken.transferFrom (Raffle.sol:L334) and the post-transfer prizeToken.ownerOf(deliveredPrizeTokenId) != winner check (Raffle.sol:L335-L337) revert the transaction on failure; on Status.CashWon, _transferQuote and SafeERC20.safeTransfer (Raffle.sol:L342,L564-L567; SafeERC20.sol:L33-L37,L176-L200) revert the transaction on invalid destination, subcall revert, or false return.",
+  "requirementId": "REQ-19",
+  "searched": [
+    {
+      "result": "2 hits: IRaffle.sol:L338 (interface) and Raffle.sol:L309 (implementation); no other redemption entrypoints or callers",
+      "where": "redeemWinningTicket in packages/contracts/src/"
+    },
+    {
+      "result": "4 hits: IRaffle.sol:L512, Raffle.sol:L130, L310, L324 (only written in redeemWinningTicket)",
+      "where": "winnerRedeemed in packages/contracts/src/"
+    },
+    {
+      "result": "3 hits: IRaffle.sol:L301, Raffle.sol:L336 (in redeemWinningTicket), L405 (in releaseSponsorPrize)",
+      "where": "PrizeDeliveryVerificationFailed in packages/contracts/src/"
+    },
+    {
+      "result": "2 hits: Raffle.sol:L325 (redeemWinningTicket) and L364 (refundTickets)",
+      "where": "_burn in packages/contracts/src/"
+    },
+    {
+      "result": "5 hits: Raffle.sol:L342, L369, L380, L390 (call sites) and L564 (definition)",
+      "where": "_transferQuote in packages/contracts/src/"
+    },
+    {
+      "result": "2 hits in RaffleFactory.sol:L71,L172; 0 hits in Raffle.sol",
+      "where": "try in packages/contracts/src/"
+    }
+  ],
+  "verdict": "implemented"
+}

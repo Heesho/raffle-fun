@@ -1,0 +1,70 @@
+{
+  "schema": "audit-context-building.SYNTHESIS_SCHEMA",
+  "stage_id": "S1-SYNTHESIZE",
+  "accepted_local_selection": {
+    "model": "gpt-daybreak-blue-latest",
+    "reasoning_effort": "ultra",
+    "cyber_access_program": "daybreak_blue",
+    "fallback": false
+  },
+  "provider_returned_model": "unknown",
+  "provider_identity": "unknown",
+  "target_sha": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "dossierFile": ".audit-work/stages/01-audit-context/DOSSIER.md",
+  "trustBoundaries": [
+    {"actor":"Deployment tooling","entrypoint":"RaffleFactory.constructor","reaches":"Immutable quote-token, VRF-wrapper, treasury, and implementation configuration."},
+    {"actor":"Untrusted sponsor","entrypoint":"RaffleFactory.createRaffle","reaches":"Validation, factory registry, clone initialization, sponsor-selected prize calls, escrow activation, and publication."},
+    {"actor":"Canonical RaffleFactory","entrypoint":"Raffle.initialize","reaches":"One-time clone configuration and AwaitingPrize lifecycle state."},
+    {"actor":"Untrusted buyer","entrypoint":"Raffle.buyEntries","reaches":"Quote-token custody, pot/range state, ERC-721 ledger, and receiver callback."},
+    {"actor":"Permissionless keeper","entrypoint":"Raffle.requestDraw / enableRefunds / settleWinningTicket / release functions","reaches":"Draw funding/state, timeout transition, terminal allocation, and fixed-recipient releases."},
+    {"actor":"Configured Chainlink wrapper","entrypoint":"VRFV2PlusWrapperConsumerBase.rawFulfillRandomWords","reaches":"Raffle callback filter and accepted terminal-result storage."},
+    {"actor":"Sponsor-selected prize ERC-721","entrypoint":"Raffle.onERC721Received and ERC-721 calls","reaches":"AwaitingPrize-to-Active transition, custody reports, and prize delivery behavior."},
+    {"actor":"Ticket owner","entrypoint":"Raffle.refundTickets / redeemWinningTicket","reaches":"Ticket burn, refund or winning liability consumption, and asset delivery."},
+    {"actor":"Ticket owner or approved operator","entrypoint":"Inherited ERC721 transfer/approval surface","reaches":"Authorization state, Raffle._update destination gate, ticket ownership, and optional receiver callback."},
+    {"actor":"Configured quote token","entrypoint":"IERC20.transferFrom / transfer via SafeERC20","reaches":"Actual custody backing the protocol's recorded liabilities."},
+    {"actor":"Block timestamp environment","entrypoint":"Sale/draw/callback/refund time predicates","reaches":"Lifecycle eligibility at the three exclusive deadline boundaries."}
+  ],
+  "fragilityClusters": [
+    {"area":"Creation and prize escrow ordering","why":"Registry writes, black-box prize calls, receiver activation, post-call checks, and RaffleCreated publication span factory, clone, and token."},
+    {"area":"VRF request-to-callback continuity","why":"Two external price/request interactions, request-ID persistence, an in-flight flag, native refund interaction, and strict callback deadline jointly define acceptance."},
+    {"area":"External dependency identity and behavior","why":"Canonical quote-token and wrapper identity plus arbitrary prize semantics are deployment or black-box assumptions."},
+    {"area":"Range-ticket proof and live ERC-721 ownership","why":"Historical ranges persist through transfer and burn while settlement, refund, and redemption consult different state."},
+    {"area":"Liability and custody coupling","why":"Unsettled, refund, winner, sponsor, and protocol buckets must remain aligned with external quote-token custody across independent claims."},
+    {"area":"Lifecycle deadline boundaries","why":"Sale end, draw-request deadline, and callback deadline switch eligibility between mutually exclusive paths."},
+    {"area":"Shared destination classification","why":"Initialization, ticket updates, and payouts reuse local identities and source-available factory registry getters."}
+  ],
+  "unresolved": [
+    "unclear; need to inspect the deployed prize-token implementation and upgrade controls to establish its ERC-165, transfer, callback, and ownerOf behavior relied on at target/packages/contracts/src/RaffleFactory.sol:L127-L134 and L171-L177",
+    "unclear; need to inspect the intended creation-time state contract to determine whether RaffleCreated is meant to imply zero entries or no other clone mutations after the callback activates the clone (target/packages/contracts/src/Raffle.sol:L208-L237, L428-L430; target/packages/contracts/src/RaffleFactory.sol:L129-L147)",
+    "unclear; need to inspect external integrations to know how callers reconcile RaffleCreated with current registry, clone, and token state; no caller exists under target/packages/contracts/src (target/packages/contracts/src/interfaces/IRaffleFactory.sol:L28-L52, L99-L149)",
+    "unclear; need to inspect the deployed Chainlink wrapper implementation to establish all paths of calculateRequestPriceNative and requestRandomWordsInNative, including quote stability, request-ID guarantees, and callback/re-entry behavior; target contains only IVRFV2PlusWrapper.sol:L23-L33, L67-L81",
+    "unclear; need to inspect deployment configuration or records to establish that vrfWrapper_ is the intended canonical wrapper; target on-chain validation only requires deployed code at target/packages/contracts/src/RaffleFactory.sol:L65-L67",
+    "unclear; need to inspect the deployed quote-token implementation and deployment evidence to confirm canonical identity and exact grossAmount balance-delta semantics; the target contains only its interface, trust requirement, and factory code/decimal checks (IRaffle.sol:L12-L15; IRaffleFactory.sol:L7-L9; RaffleFactory.sol:L66-L78).",
+    "unclear; need to inspect the deployed wrapper implementation and deployment evidence to establish configured-code identity, callback-word provenance, and returned-ID/callback-ID binding (target/packages/contracts/src/RaffleFactory.sol:L58-L67; target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:L68-L81)",
+    "unclear; need to inspect deployed wrapper fulfillment/retry semantics after VrfCallbackIgnored is emitted and the handler returns successfully (target/packages/contracts/src/Raffle.sol:L509-L516)",
+    "unclear; need to inspect deployment-chain timestamp bounds to establish that block.timestamp fits uint64 at resolution (target/packages/contracts/src/Raffle.sol:L520)",
+    "unclear; deployed prize-token source is unavailable, so actual transferFrom callback behavior and ownerOf ledger semantics cannot be inspected (RaffleFactory.sol:L127-L134,L171-L177; IRaffle.sol:L12-L15).",
+    "unclear; deployed quote-token source is unavailable, so the assumed exact fee-free, non-rebasing balance movement cannot be verified (IRaffle.sol:L12-L15; SafeERC20.sol:L176-L199).",
+    "unclear; an arbitrary contract ticket owner receives the prize via transferFrom, so this path does not establish IERC721Receiver support or the winner contract's ability to operate the prize (Raffle.sol:L320-L334; IERC721.sol:L76-L91).",
+    "unclear; need to inspect deployment configuration and deployed quote-token behavior to establish the documented canonical, fee-free, non-rebasing USDC assumption; target code checks only code presence and six decimals (packages/contracts/src/RaffleFactory.sol:L58-L78; interfaces/IRaffle.sol:L12-L15)",
+    "Need deployed quote-token bytecode/configuration to establish exact official-USDC identity and fee-free, non-rebasing, no-callback transfer semantics.",
+    "Need concrete deployment provenance when applying this record outside the canonical RaffleFactory construction path, because Raffle later ABI-calls its constructor caller as IRaffleFactory.",
+    "unclear; need to inspect each concrete configured prize-token implementation to establish transfer ordering, callback-field fidelity, selector enforcement, and ownerOf custody semantics; target/ contains no sponsor-selected token implementation.",
+    "unclear; need to inspect deployment records or live chain configuration outside target source to confirm that quoteToken and vrfWrapper are the intended official deployments; source documents this tooling responsibility at target/packages/contracts/src/RaffleFactory.sol:L58-L78.",
+    "unclear; need to inspect each dynamically selected prize-token implementation to determine behavior beyond the visible code-presence/interface-response checks and post-transfer ownership/status checks at target/packages/contracts/src/RaffleFactory.sol:L127-L134, L154-L177.",
+    "Wrapper implementation behavior for request binding, word generation, scheduling, retry, and gas forwarding is not visible in target.",
+    "Actual deployed wrapper identity and runtime code are outside target.",
+    "Wrapper upgradeability and authority behind calls from the wrapper address are not represented by the supplied interface."
+  ],
+  "coverage": {
+    "native_default_candidates": 24,
+    "analyzed_count": 12,
+    "analyzed": ["RaffleFactory.createRaffle","Raffle.requestDraw","Raffle.buyEntries","Raffle.fulfillRandomWords","Raffle.redeemWinningTicket","Raffle.enableRefunds","Raffle.refundTickets","Raffle._settleWinningTicket","Raffle.onERC721Received","Raffle.initialize","Raffle._update","VRFV2PlusWrapperConsumerBase.rawFulfillRandomWords"],
+    "ranked_below_cut": ["Raffle.releaseSponsorPrize","RaffleFactory._validateCreateParams","Raffle._isProtocolDestination","Raffle._transferQuote","ERC721.transferFrom","ERC721.safeTransferFrom(address,address,uint256,bytes)","Raffle._requireWinningTicket","Raffle.releaseSponsorProceeds","Raffle.releaseProtocolFees","RaffleFactory.constructor","Raffle.constructor","ReentrancyGuard.nonReentrant path"],
+    "production_files": ["target/packages/contracts/src/Raffle.sol","target/packages/contracts/src/RaffleFactory.sol","target/packages/contracts/src/interfaces/IRaffle.sol","target/packages/contracts/src/interfaces/IRaffleFactory.sol","target/packages/contracts/src/libraries/RaffleConstants.sol"],
+    "function_records": 12,
+    "unenforced_assumptions": 19,
+    "unresolved_items": 21,
+    "record_disagreements": 0
+  }
+}

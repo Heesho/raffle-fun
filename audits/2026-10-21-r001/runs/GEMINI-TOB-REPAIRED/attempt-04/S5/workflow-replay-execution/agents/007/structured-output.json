@@ -1,0 +1,124 @@
+{
+  "requirements": [
+    {
+      "checkable": "All quote-token amounts across RaffleFactory and Raffle (ENTRY_PRICE, grossAmount, unsettledPot, remainingRefundLiability, winnerProceeds, sponsorProceeds, and protocolFees) are denominated and transferred in raw 6-decimal units without additional decimal scaling.",
+      "force": "descriptive",
+      "id": "REQ-01",
+      "kind": "economic",
+      "location": "packages/contracts/src/libraries/RaffleConstants.sol:7 (@dev)",
+      "quote": "Quote-token amounts use raw six-decimal units."
+    },
+    {
+      "checkable": "Every basis-point calculation in the protocol (protocol fee and cash-winner proceeds in Raffle._settleWinningTicket) uses OpenZeppelin Math.mulDiv with floor rounding (rounding down).",
+      "force": "descriptive",
+      "id": "REQ-02",
+      "kind": "formula",
+      "location": "packages/contracts/src/libraries/RaffleConstants.sol:7 (@dev)",
+      "quote": "Basis-point calculations round down through `Math.mulDiv`"
+    },
+    {
+      "checkable": "During winning-ticket settlement in Raffle._settleWinningTicket, sponsorProceeds is assigned the exact remainder of unsettledPot after subtracting protocolFee (for NftWon) or subtracting both protocolFee and cashAmount (for CashWon).",
+      "force": "descriptive",
+      "id": "REQ-03",
+      "kind": "formula",
+      "location": "packages/contracts/src/libraries/RaffleConstants.sol:7-8 (@dev)",
+      "quote": "the sponsor receives the remaining raw units after winner and protocol allocations."
+    },
+    {
+      "checkable": "RaffleConstants.BPS is defined as 10_000 and is passed as the denominator to every basis-point calculation in the protocol (protocolFee and cashAmount in Raffle._settleWinningTicket).",
+      "force": "descriptive",
+      "id": "REQ-04",
+      "kind": "formula",
+      "location": "packages/contracts/src/libraries/RaffleConstants.sol:11-12 (BPS)",
+      "quote": "/// @notice Denominator used for every global protocol basis-point rate.\n    uint256 internal constant BPS = 10_000;"
+    },
+    {
+      "checkable": "RaffleConstants.PROTOCOL_FEE_BPS is defined as 500 and Raffle._settleWinningTicket computes protocolFees as Math.mulDiv(grossPot, RaffleConstants.PROTOCOL_FEE_BPS, RaffleConstants.BPS), equal to 500 / 10,000 (5%) of gross sales rounded down.",
+      "force": "descriptive",
+      "id": "REQ-05",
+      "kind": "economic",
+      "location": "packages/contracts/src/libraries/RaffleConstants.sol:14-15 (PROTOCOL_FEE_BPS)",
+      "quote": "/// @notice Global protocol fee rate: 500 basis points, or 5% of gross sales.\n    uint256 internal constant PROTOCOL_FEE_BPS = 500;"
+    },
+    {
+      "checkable": "RaffleConstants.CASH_WINNER_BPS is defined as 8000 and, when status is CashWon, Raffle._settleWinningTicket computes winnerProceeds as Math.mulDiv(grossPot, RaffleConstants.CASH_WINNER_BPS, RaffleConstants.BPS), equal to 8,000 / 10,000 (80%) of gross sales rounded down.",
+      "force": "descriptive",
+      "id": "REQ-06",
+      "kind": "economic",
+      "location": "packages/contracts/src/libraries/RaffleConstants.sol:17-18 (CASH_WINNER_BPS)",
+      "quote": "/// @notice Cash-result winner rate: 8,000 basis points, or 80% of gross sales.\n    uint256 internal constant CASH_WINNER_BPS = 8000;"
+    },
+    {
+      "checkable": "RaffleConstants.ENTRY_PRICE is defined as 1_000_000, exposed via Raffle.ENTRY_PRICE, and used as the per-entry multiplier in Raffle.buyEntries, Raffle.refundTickets, and Raffle.grossSales.",
+      "force": "descriptive",
+      "id": "REQ-07",
+      "kind": "economic",
+      "location": "packages/contracts/src/libraries/RaffleConstants.sol:20-21 (ENTRY_PRICE)",
+      "quote": "/// @notice Global entry price: exactly 1,000,000 raw six-decimal quote-token units, or one USDC.\n    uint256 internal constant ENTRY_PRICE = 1_000_000;"
+    },
+    {
+      "checkable": "RaffleConstants.QUOTE_TOKEN_DECIMALS is defined as 6 and RaffleFactory.constructor queries IERC20Metadata(quoteToken_).decimals(), reverting if the call fails or returns a value not equal to RaffleConstants.QUOTE_TOKEN_DECIMALS.",
+      "force": "mandatory",
+      "id": "REQ-08",
+      "kind": "invariant",
+      "location": "packages/contracts/src/libraries/RaffleConstants.sol:23-24 (QUOTE_TOKEN_DECIMALS)",
+      "quote": "/// @notice Decimal precision required from the immutable quote token.\n    uint8 internal constant QUOTE_TOKEN_DECIMALS = 6;"
+    },
+    {
+      "checkable": "RaffleConstants.MAX_REFUND_TICKET_BATCH_SIZE is defined as 100 and Raffle.refundTickets reverts with InvalidTicketBatchSize when ticketIds.length is 0 or exceeds RaffleConstants.MAX_REFUND_TICKET_BATCH_SIZE.",
+      "force": "descriptive",
+      "id": "REQ-09",
+      "kind": "invariant",
+      "location": "packages/contracts/src/libraries/RaffleConstants.sol:26-27 (MAX_REFUND_TICKET_BATCH_SIZE)",
+      "quote": "/// @notice Refund execution is bounded by tickets, while each ticket may represent any uint128 entry count.\n    uint256 internal constant MAX_REFUND_TICKET_BATCH_SIZE = 100;"
+    },
+    {
+      "checkable": "Raffle.buyEntries accepts any positive uint128 entryCount that does not overflow uint128 totalEntries for a single ticket, and Raffle.refundTickets refunds the full represented entry range (lastEntry - firstEntry + 1) of each burned ticket regardless of its entry count.",
+      "force": "descriptive",
+      "id": "REQ-10",
+      "kind": "invariant",
+      "location": "packages/contracts/src/libraries/RaffleConstants.sol:26 (MAX_REFUND_TICKET_BATCH_SIZE)",
+      "quote": "while each ticket may represent any uint128 entry count."
+    },
+    {
+      "checkable": "RaffleConstants.MAX_SALE_DURATION is defined as 30 days, RaffleFactory.createRaffle requires params.endTime > block.timestamp and uint256(params.endTime) - block.timestamp <= RaffleConstants.MAX_SALE_DURATION, and Raffle.buyEntries treats endTime as exclusive by reverting when block.timestamp >= endTime.",
+      "force": "descriptive",
+      "id": "REQ-11",
+      "kind": "invariant",
+      "location": "packages/contracts/src/libraries/RaffleConstants.sol:29-30 (MAX_SALE_DURATION)",
+      "quote": "/// @notice Maximum prospective raffle sale duration, measured from creation to the exclusive sale end.\n    uint256 internal constant MAX_SALE_DURATION = 30 days;"
+    },
+    {
+      "checkable": "RaffleConstants.DRAW_REQUEST_TIMEOUT is defined as 2 days, Raffle.drawRequestDeadline() returns uint256(endTime) + RaffleConstants.DRAW_REQUEST_TIMEOUT, and Raffle.requestDraw() only succeeds for a sold Active raffle when endTime <= block.timestamp < drawRequestDeadline().",
+      "force": "descriptive",
+      "id": "REQ-12",
+      "kind": "state-machine",
+      "location": "packages/contracts/src/libraries/RaffleConstants.sol:32-33 (DRAW_REQUEST_TIMEOUT)",
+      "quote": "/// @notice Duration after sale end during which a sold raffle may initiate its draw, in seconds.\n    uint256 internal constant DRAW_REQUEST_TIMEOUT = 2 days;"
+    },
+    {
+      "checkable": "RaffleConstants.DRAW_CALLBACK_TIMEOUT is defined as 2 days, Raffle.callbackDeadline() returns uint256(drawRequestedAt) + RaffleConstants.DRAW_CALLBACK_TIMEOUT once a request is recorded, and Raffle.fulfillRandomWords ignores callbacks when block.timestamp >= callbackDeadline().",
+      "force": "descriptive",
+      "id": "REQ-13",
+      "kind": "state-machine",
+      "location": "packages/contracts/src/libraries/RaffleConstants.sol:35-36 (DRAW_CALLBACK_TIMEOUT)",
+      "quote": "/// @notice Duration after an accepted request during which its authenticated callback may resolve, in seconds.\n    uint256 internal constant DRAW_CALLBACK_TIMEOUT = 2 days;"
+    },
+    {
+      "checkable": "RaffleConstants.VRF_CALLBACK_GAS_LIMIT is defined as 300_000, exposed as callbackGasLimit on RaffleFactory and Raffle, and passed with numWords = 1 to VRF wrapper pricing and request functions while Raffle.fulfillRandomWords requires randomWords.length == 1.",
+      "force": "descriptive",
+      "id": "REQ-14",
+      "kind": "invariant",
+      "location": "packages/contracts/src/libraries/RaffleConstants.sol:38-39 (VRF_CALLBACK_GAS_LIMIT)",
+      "quote": "/// @notice Gas-unit limit requested for the single-word Chainlink callback.\n    uint32 internal constant VRF_CALLBACK_GAS_LIMIT = 300_000;"
+    },
+    {
+      "checkable": "RaffleConstants.VRF_REQUEST_CONFIRMATIONS is defined as 30, exposed as requestConfirmations on RaffleFactory and Raffle, and passed as the requestConfirmations argument to requestRandomnessPayInNative in Raffle.requestDraw().",
+      "force": "descriptive",
+      "id": "REQ-15",
+      "kind": "invariant",
+      "location": "packages/contracts/src/libraries/RaffleConstants.sol:41-42 (VRF_REQUEST_CONFIRMATIONS)",
+      "quote": "/// @notice Block confirmations requested from Chainlink before callback fulfillment.\n    uint16 internal constant VRF_REQUEST_CONFIRMATIONS = 30;"
+    }
+  ]
+}

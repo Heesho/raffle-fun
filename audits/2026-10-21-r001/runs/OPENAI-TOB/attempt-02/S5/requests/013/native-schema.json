@@ -1,0 +1,32 @@
+{
+  "type": "object",
+  "required": [
+    "refuted",
+    "reasoning"
+  ],
+  "properties": {
+    "refuted": {
+      "type": "boolean",
+      "description": "true if the claimed divergence does not hold up"
+    },
+    "reasoning": {
+      "type": "string"
+    },
+    "correction": {
+      "type": "string",
+      "description": "If the divergence is real but described wrongly, the accurate version."
+    },
+    "revisedVerdict": {
+      "type": "string",
+      "enum": [
+        "implemented",
+        "partial",
+        "contradicted",
+        "absent",
+        "stronger-than-spec",
+        "undecidable"
+      ],
+      "description": "Set only if the original verdict was the wrong category."
+    }
+  }
+}

@@ -1,0 +1,123 @@
+Workspace context:
+Current working directory / primary repository root: /workspace
+Workspace manifest: WORKSPACE.json
+Dependency repositories are checked out as top-level directories inside the same workspace root.
+When reporting file_path for dependency code, prefix it with the dependency alias directory.
+Primary repository: clean-context @ LOCAL_SNAPSHOT
+No dependency checkouts are listed in WORKSPACE.json.
+
+WORKSPACE.json:
+{
+  "dependencies": [],
+  "primary": {
+    "commit": "LOCAL_SNAPSHOT",
+    "kind": "local",
+    "path": "/workspace",
+    "repo": "clean-context",
+    "requested_commit": "LOCAL_SNAPSHOT"
+  }
+}
+
+You are investigating one externally reachable production flow in clean-context for concrete security vulnerabilities.
+
+Entrypoint:
+- kind: smart_contract_inherited_hook
+- label: Raffle._update(address,uint256,address)
+- handler: Raffle._update
+- location: packages/contracts/src/Raffle.sol:497
+- external actor: Ticket owner or approved ERC-721 operator transferring a raffle ticket via inherited ERC-721 transfer functions
+- controlled input: to (address), ticketId (uint256), auth (address)
+
+Flow under review:
+- summary: When a ticket owner or approved operator transfers a live ticket to a non-zero address `to` that is not flagged by `_isProtocolDestination`, `Raffle._update` delegates to `ERC721._update(to, ticketId, auth)`, verifying authorization, clearing prior token approvals, updating balances and `_owners[ticketId] = to`, emitting `Transfer`, and returning `previousOwner` (followed by `onERC721Received` if invoked via `safeTransferFrom` to a contract).
+- trace: ["packages/contracts/src/Raffle.sol:497 Raffle._update - Entered with (to, ticketId, auth) from inherited ERC-721 transferFrom or safeTransferFrom", "packages/contracts/src/Raffle.sol:498 Raffle._update - Evaluates `to != address(0) && _isProtocolDestination(to, address(prizeToken))`", "packages/contracts/src/Raffle.sol:593 Raffle._isProtocolDestination - Verifies `to` is not `address(this)`, `factory`, `quoteToken`, `i_vrfV2PlusWrapper`, `prizeToken`, `canonicalFactory.raffleImplementation()`, or a contract with `canonicalFactory.isRaffle(to) == true`", "packages/contracts/src/Raffle.sol:501 Raffle._update - Calls `super._update(to, ticketId, auth)` in inherited OpenZeppelin `ERC721`, verifying `auth` is owner or approved operator for `ticketId`, clearing token approvals, updating `_balances` and `_owners[ticketId] = to`, emitting `Transfer`, and returning `previousOwner`"]
+- terminal action: Updates ERC-721 ownership and balances via `super._update(to, ticketId, auth)` at `packages/contracts/src/Raffle.sol:501` and returns `previousOwner` (with subsequent `IERC721Receiver(to).onERC721Received` callback if invoked via `safeTransferFrom` to a contract recipient).
+- focal location: packages/contracts/src/Raffle.sol:501
+- input to sink: Caller-controlled `to`, `ticketId`, and `auth` (`_msgSender()`) pass `_isProtocolDestination` screening and reach `super._update(to, ticketId, auth)`, which verifies `auth` against `ticketId` ownership/approvals, updates `_owners[ticketId]` and `_balances`, and (when called via `safeTransferFrom` to a contract `to`) triggers `IERC721Receiver(to).onERC721Received`.
+- security relevance: Mutates ERC-721 ticket ownership in any raffle lifecycle status (`Active`, `Drawing`, `NftWon`, `CashWon`, `Refunding`), including after `settleWinningTicket` has already locked `winningTicketId`. Because `redeemWinningTicket` and `refundTickets` authorize claims solely via `ownerOf(ticketId)` at claim time, transferring `ticketId` transfers the underlying NFT prize, cash payout, or refund entitlement. Additionally, inherited `transferFrom`/`safeTransferFrom` functions are not marked `nonReentrant`, so `safeTransferFrom` invokes `to.onERC721Received` after ownership mutation without setting `ReentrancyGuard`.
+
+Review the source code for this exact flow, including the surrounding implementation and any necessary callers or callees. Report only vulnerabilities that are concrete, reachable from the stated external actor, and supported by code evidence. A valid finding must identify the vulnerable operation, the missing or flawed protection, a realistic malicious input or sequence, and the full trigger path.
+
+Do not report style issues, hypothetical concerns, test-only behavior, or vulnerabilities that require unsupported configuration or unproven assumptions. Set `exploitable` to true only when the stated external actor can realistically trigger the issue in the configured production path. When the flow contains no supported vulnerability, return a stub instead of inventing a finding.
+
+For each finding, point `file_path` and `line` to the actual vulnerable code, make `trigger_flow` an ordered list from attacker ingress to the vulnerable operation, and use `malicious_input_example` for a minimal realistic payload or sequence.
+
+Return only the structured data requested by the provided JSON schema. Always include the top-level boolean field `stub`, the top-level string field `stub_explanation`, and the top-level array `results`. Valid output combinations are strict: if you did not find anything for this step, return `stub` set to true, `results` set to an empty array, and `stub_explanation` set to a concise reason explaining why no result was found. A stub/no-finding response is a valid successful outcome for a lead that does not establish an actual bug; do not invent a result to avoid using `stub`. If you found one or more results, set `stub` to false, set `stub_explanation` to an empty string, and place at least one application record in `results`. Never return `stub: false` with an empty `results` array; that is invalid and fails the attempt. This is a multi-output step: return every application record in results.
+
+The exact JSON Schema for your final answer is:
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "_kritt_extractor_helper": {
+      "const": true,
+      "type": "boolean"
+    },
+    "results": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "explanation": {
+            "type": "string"
+          },
+          "exploitable": {
+            "type": "boolean"
+          },
+          "file_path": {
+            "type": "string"
+          },
+          "line": {
+            "type": "number"
+          },
+          "malicious_actor": {
+            "type": "string"
+          },
+          "malicious_input_example": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "trigger_flow": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "vulnerability_type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "explanation",
+          "file_path",
+          "line",
+          "malicious_input_example",
+          "summary",
+          "trigger_flow",
+          "vulnerability_type",
+          "malicious_actor",
+          "exploitable"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "stub": {
+      "type": "boolean"
+    },
+    "stub_explanation": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "_kritt_extractor_helper",
+    "stub",
+    "stub_explanation",
+    "results"
+  ],
+  "type": "object"
+}
+```
+The final top-level JSON object must include `_kritt_extractor_helper: true`; this is an extraction marker, not a finding field. Return only a JSON object that validates against this schema. Do not include markdown, commentary, or any text outside the JSON object.

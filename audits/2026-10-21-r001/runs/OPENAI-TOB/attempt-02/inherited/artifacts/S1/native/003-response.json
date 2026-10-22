@@ -1,0 +1,114 @@
+{
+  "function": "buyEntries",
+  "file": "target/packages/contracts/src/Raffle.sol",
+  "lines": "L209-L237",
+  "analysisFile": "audit/S1/audit-context/functions/02-buyEntries.md",
+  "invariants": [
+    {
+      "claim": "A successful purchase occurs in Active before endTime with a nonzero recipient and positive count that fits remaining uint128 capacity.",
+      "evidence": "Raffle.sol L215-L221; _requireStatus L573-L575."
+    },
+    {
+      "claim": "Each purchase appends one nonempty interval [oldTotal+1,oldTotal+entryCount], advances ticket count once, and adds entryCount*1_000_000 to unsettledPot before receiver execution.",
+      "evidence": "Raffle.sol L223-L235; RaffleConstants.sol L20-L21; ERC721.sol L287-L290."
+    },
+    {
+      "claim": "From fresh state, ticketCount <= totalEntries and historical ranges partition [1,totalEntries]; burns do not decrement lifetime counts or erase ranges.",
+      "evidence": "Raffle.sol L85-L88, L218-L233, L320-L325, L359-L364, L451-L455."
+    },
+    {
+      "claim": "Minting rejects known protocol destinations; receiver acceptance is checked only when recipient has code.",
+      "evidence": "Raffle.sol L497-L502, L598-L604; ERC721.sol L263, L287-L290; ERC721Utils.sol L32-L47."
+    },
+    {
+      "claim": "Guarded raffle entrypoints cannot nest during payment or receiver execution; inherited ERC721 transfers remain callable, so final owner need not equal original recipient.",
+      "evidence": "Raffle.sol L212, L224-L236; ReentrancyGuard.sol L69-L73, L88-L114; ERC721.sol L115-L136."
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "Accepted quote-token transfer denotes exact grossAmount receipt and proper payer balance/allowance enforcement; wrapper does not compare balances.",
+      "establishedBy": "nothing found for actual token ledger behavior; explicit trust model IRaffle.sol L12-L15, call acceptance only SafeERC20.sol L43-L47/L227-L239; interface IERC20.sol L69-L78; Raffle.sol L223-L224."
+    },
+    {
+      "claim": "Immutable quote address is canonical six-decimal USDC rather than merely code reporting six decimals.",
+      "establishedBy": "nothing found onchain for identity; deployment responsibility RaffleFactory.sol L58-L78 and IRaffleFactory.sol L7-L9; immutable assignment Raffle.sol L161-L162."
+    },
+    {
+      "claim": "New ticket has a nonzero eligible destination and previously unused ID.",
+      "establishedBy": "Nonzero Raffle.sol L217 and ERC721._mint L259-L265; destination Raffle._update L497-L502 via _isProtocolDestination L598-L604; sequential allocation Raffle.sol L228-L232."
+    },
+    {
+      "claim": "Code-bearing recipient accepts issuance; code-less path supplies no receiver acceptance proof.",
+      "establishedBy": "ERC721Utils.checkOnERC721Received L32-L47 verifies selector or reverts only on code-bearing path; ERC721._safeMint L287-L290 supplies arguments."
+    },
+    {
+      "claim": "Guard excludes nested protected operations even when clone slot initially equals zero.",
+      "establishedBy": "ReentrancyGuard._reentrancyGuardEntered L112-L114 compares exactly ENTERED=2 (L51), before/after helpers L88-L105; StorageSlot.getUint256Slot L93-L97."
+    }
+  ],
+  "calls": [
+    {
+      "callee": "ReentrancyGuard.nonReentrant -> _nonReentrantBefore -> _nonReentrantBeforeView -> _reentrancyGuardEntered; _nonReentrantAfter; _reentrancyGuardStorageSlot -> StorageSlot.getUint256Slot",
+      "kind": "internal",
+      "propagates": "Reject entered value 2, set it before the body, reset to 1 after; zero initial clone storage is accepted. ReentrancyGuard.sol L69-L73/L88-L118; StorageSlot.sol L93-L97."
+    },
+    {
+      "callee": "Raffle._requireStatus",
+      "kind": "internal",
+      "propagates": "Active must match stored status on every returning path; mismatch reverts. Raffle.sol L215/L573-L575."
+    },
+    {
+      "callee": "SafeERC20.safeTransferFrom -> _safeTransferFrom",
+      "kind": "internal",
+      "propagates": "Low-level call failure bubbles; success requires first output word 1 or empty returndata with code, otherwise wrapper reverts; no receipt proof. SafeERC20.sol L43-L47/L212-L244."
+    },
+    {
+      "callee": "quoteToken.transferFrom(msg.sender,address(this),grossAmount)",
+      "kind": "external-black-box",
+      "propagates": "Assumes exact authorized token transfer; sends zero native value and forwards gas before accounting writes. Token may fail or attempt re-entry; protected entries reject. Raffle.sol L212/L223-L233; SafeERC20.sol L227-L239; IERC20.sol L69-L78."
+    },
+    {
+      "callee": "ERC721._safeMint(address,uint256) -> _safeMint(address,uint256,bytes) -> _mint -> Raffle._update -> ERC721._update -> _ownerOf; conditional _approve",
+      "kind": "internal",
+      "propagates": "Zero destination and existing ID revert; mint bypasses optional authorization with auth=0; ownership/balance and Transfer precede acceptance. Old-owner branch clears approval but is followed by _mint revert. ERC721.sol L146-L148/L216-L244/L259-L290/L383-L399; Raffle.sol L497-L502."
+    },
+    {
+      "callee": "Raffle._isProtocolDestination",
+      "kind": "internal",
+      "propagates": "Reject explicit protocol addresses and implementation; consult registry only for code-bearing unmatched recipient. Raffle.sol L593-L604."
+    },
+    {
+      "callee": "RaffleFactory.raffleImplementation; RaffleFactory.isRaffle",
+      "kind": "external-source-available",
+      "propagates": "Return immutable implementation and registration mapping used by destination screen; registry written before escrow. RaffleFactory.sol L42/L54/L89-L91/L123-L128; Raffle.sol L601-L604."
+    },
+    {
+      "callee": "Context._msgSender",
+      "kind": "internal",
+      "propagates": "Receiver operator equals buyEntries payer msg.sender. Context.sol L17-L19; ERC721.sol L289."
+    },
+    {
+      "callee": "ERC721Utils.checkOnERC721Received",
+      "kind": "internal",
+      "propagates": "Code-less destination skips callback; code-bearing destination must return expected selector; wrong selector or callback revert aborts issuance. ERC721Utils.sol L25-L48."
+    },
+    {
+      "callee": "recipient.onERC721Received(payer,address(0),ticketId,emptyBytes)",
+      "kind": "external-black-box",
+      "propagates": "Executes after all range/pot/count/ownership writes. Receiver may reject, re-enter, or transfer the ticket; acceptance does not establish end-of-call ownership. Raffle.sol L230-L236; ERC721.sol L115-L136/L279-L290; ERC721Utils.sol L32-L47."
+    }
+  ],
+  "callers": [
+    "Any external payer; no allowlist or payer=recipient requirement. Raffle.sol L209-L224/L235."
+  ],
+  "sharedState": [
+    "totalEntries/ticketCount/ranges: Raffle.sol L226-L233; draw eligibility/result L243/L518-L521; refunds L362-L368; range proofs L579-L584; grossSales L473-L475.",
+    "unsettledPot: purchases L233, refund activation L296-L299, settlement L539-L555; Raffle.sol.",
+    "ERC721 ownership/balances: ERC721.sol L216-L244; current owner claims Raffle.sol L320-L325/L359-L364."
+  ],
+  "openQuestions": [
+    "unclear; need to inspect actual quote-token implementation and deployment identity evidence to verify exact balance and allowance behavior (IERC20.sol L69-L78; RaffleFactory.sol L58-L78).",
+    "unclear; need to inspect concrete recipient code to characterize callback actions and later ability to exercise claims (ERC721Utils.sol L32-L47; Raffle.sol L320-L321/L359-L360)."
+  ]
+}

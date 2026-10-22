@@ -1,0 +1,46 @@
+{
+  "id": "014",
+  "prompt": "Try to refute this claimed divergence between documentation and code at target.\n\nRequirement REQ-38, from target/DESIGN.md:L2: \"Never move assets between raffle clones.\"\nClaimed verdict: partial (confidence: high)\nReasoning given: Runtime checks protect quote payouts and ticket transfers (Raffle.sol:L497-L502,L564-L567). Sponsor prize release instead permits a recipient accepted before deployment to become a same-factory clone before receiving the NFT (Raffle.sol:L193-L198,L395-L405). The analysis records the complete reachable sequence.\nEvidence cited: [{\"file\":\"target/packages/contracts/src/Raffle.sol\",\"lines\":\"L193-L198\",\"quote\":\"if (_isProtocolDestination(params.sponsorRecipient, params.prizeToken)) {\\n            revert UnsafeProtocolDestination(params.sponsorRecipient);\\n        }\\n\\n        sponsor = params.sponsor;\\n        sponsorRecipient = params.sponsorRecipient;\",\"role\":\"Screens and stores the recipient during initialization.\"},{\"file\":\"target/packages/contracts/src/Raffle.sol\",\"lines\":\"L602-L604\",\"quote\":\"if (!unsafeDestination && destination.code.length != 0) {\\n            unsafeDestination = canonicalFactory.isRaffle(destination);\\n        }\",\"role\":\"A future clone address without code passes this registry check.\"},{\"file\":\"target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol\",\"lines\":\"L57\",\"quote\":\"instance := create(value, 0x09, 0x37)\",\"role\":\"Clone deployment uses CREATE, permitting selection of a future deployment address.\"},{\"file\":\"target/packages/contracts/src/RaffleFactory.sol\",\"lines\":\"L123-L125\",\"quote\":\"raffleById[raffleId] = raffle;\\n        idByRaffle[raffle] = raffleId;\\n        isRaffle[raffle] = true;\",\"role\":\"Later creation registers the previously accepted recipient as another clone.\"},{\"file\":\"target/packages/contracts/src/Raffle.sol\",\"lines\":\"L402-L405\",\"quote\":\"address recipient = sponsorRecipient;\\n        prizeClaimed = true;\\n        prizeToken.transferFrom(address(this), recipient, prizeTokenId);\\n        if (prizeToken.ownerOf(prizeTokenId) != recipient) revert PrizeDeliveryVerificationFailed(recipient);\",\"role\":\"Sponsor prize release transfers without rechecking the recipient's current clone identity.\"},{\"file\":\"target/packages/contracts/src/Raffle.sol\",\"lines\":\"L564-L567\",\"quote\":\"function _transferQuote(address to, uint256 amount) private {\\n        if (_isProtocolDestination(to, address(prizeToken))) revert InvalidQuoteDestination(to);\\n        quoteToken.safeTransfer(to, amount);\\n    }\",\"role\":\"Quote payouts enforce destination restrictions at transfer time.\"}]\nWhere it searched: [{\"where\":\"target/packages/contracts/src: _isProtocolDestination, _transferQuote, isRaffle, recipient assignments\",\"result\":\"Five destination-check call sites and four quote-transfer callers; sponsor prize release bypasses both helpers.\"},{\"where\":\"target/packages/contracts/src: transfer calls, native calls, _safeMint, _burn\",\"result\":\"Ten operation sites located and traced, including two direct NFT deliveries.\"},{\"where\":\"releaseSponsorPrize, enableRefunds, createRaffle, initialize and their callees\",\"result\":\"Traced a same-factory future-recipient sequence through creation, empty-raffle cancellation, and NFT release.\"},{\"where\":\"Bundled ERC721, ERC721Utils, SafeERC20, Clones, ReentrancyGuard and VRF consumer source\",\"result\":\"Read relevant inherited and library paths; plain NFT transfer omits receiver callbacks, and the reentrancy modifier adds no destination check.\"}]\nFull analysis: /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/audit/S5/spec-compliance/requirements/03-REQ-38.md\n\nCheck the reading of the document rather than the code. The most common way this verdict is wrong is that the requirement does not say what the finding claims it says: a scope limited elsewhere in the document, a definition given earlier, a sentence that recommends rather than requires, or an example that narrows it.\n\nRefute it if it does not hold up. If it holds up, say so — do not manufacture a refutation, and do not refute\nmerely because you would have worded it differently. If the divergence is real but described inaccurately, leave\n'refuted' false and put the accurate version in 'correction'. If it is real but the wrong category — an 'absent'\nthat is really a 'partial' — set 'revisedVerdict'.\n\nCite a file and line for every claim about the code, and quote the document verbatim for every\nclaim about intent. Where you cannot cite, do not assert — say what you could not establish. A short answer with\ncited claims is worth more than a long one with padded ones.",
+  "options": {
+    "schema": {
+      "type": "object",
+      "required": [
+        "refuted",
+        "reasoning"
+      ],
+      "properties": {
+        "refuted": {
+          "type": "boolean",
+          "description": "true if the claimed divergence does not hold up"
+        },
+        "reasoning": {
+          "type": "string"
+        },
+        "correction": {
+          "type": "string",
+          "description": "If the divergence is real but described wrongly, the accurate version."
+        },
+        "revisedVerdict": {
+          "type": "string",
+          "enum": [
+            "implemented",
+            "partial",
+            "contradicted",
+            "absent",
+            "stronger-than-spec",
+            "undecidable"
+          ],
+          "description": "Set only if the original verdict was the wrong category."
+        }
+      }
+    },
+    "label": "refute:REQ-38",
+    "phase": "Verify",
+    "effort": "medium"
+  },
+  "accepted_model": "gpt-6-astra",
+  "accepted_effort": "ultra",
+  "provider_returned_model": "unknown",
+  "provider_returned_effort": "unknown",
+  "fallback_enabled": false
+}

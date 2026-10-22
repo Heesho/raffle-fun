@@ -1,0 +1,89 @@
+[1m[32m⇾[0m[0m Reading the configuration file at: [1mmedusa.audit.json[0m
+⇾ Compiling targets with crytic-compile
+⇾ Running command:
+/opt/homebrew/bin/crytic-compile test/echidna/RaffleEchidna.sol --export-format solc
+⇾ Finished compiling targets in 3s
+⇾ artifacts: Medusa is running against a new set of build artifacts
+⇾ Running with a timeout of 120 seconds
+⇾ Setting up test chain
+⇾ Finished setting up test chain
+⇾ Creating corpus...
+⇾ Fuzzing with 1 workers
+⇾ fuzz: elapsed:       0s, calls:          0 (     0/sec), seq/s:      0, branches:    615, corpus:     0, failures: 0/0, gas/s:            0
+⇾ [NOT STARTED] Property Test: RaffleEchidna.echidna_sales_and_liabilities_are_exact()
+⇾ [NOT STARTED] Property Test: RaffleEchidna.echidna_status_never_regresses()
+⇾ [NOT STARTED] Property Test: RaffleEchidna.echidna_winner_is_in_sold_range()
+⇾ [NOT STARTED] Property Test: RaffleEchidna.echidna_draw_and_callback_deadlines_are_ordered()
+⇾ [NOT STARTED] Property Test: RaffleEchidna.echidna_prize_custody_matches_claim_marker()
+⇾ [NOT STARTED] Property Test: RaffleEchidna.echidna_ranges_partition_all_entries()
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.buy(uint8)
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.enableRefunds()
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.onERC721Received(address,address,uint256,bytes)
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.quote()
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.raffle()
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.receiptIds(uint256)
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.redeemCandidateRefund(uint256)
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.redeemCandidateWinner(uint256)
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.ghostPaidOut()
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.releaseProtocolFees()
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.releaseSponsorPrize()
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.statusRegressed()
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.vrfWrapper()
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.factory()
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.fulfill(uint256)
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.prize()
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.requestDraw()
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.settleCandidateWinner(uint256)
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.highestStatus()
+⇾ [NOT STARTED] Assertion Test: RaffleEchidna.releaseSponsorProceeds()
+⇾ fuzz: elapsed:       3s, calls:       8409 (  2801/sec), seq/s:     27, branches:   1213, corpus:    26, failures: 0/84, gas/s:     89486002
+⇾ fuzz: elapsed:       6s, calls:      17152 (  2912/sec), seq/s:     28, branches:   1220, corpus:    28, failures: 0/171, gas/s:     94976388
+⇾ fuzz: elapsed:       9s, calls:      26198 (  3013/sec), seq/s:     29, branches:   1222, corpus:    29, failures: 0/261, gas/s:     96720742
+⇾ fuzz: elapsed:      12s, calls:      35635 (  3143/sec), seq/s:     31, branches:   1226, corpus:    30, failures: 0/356, gas/s:    101174727
+⇾ fuzz: elapsed:      15s, calls:      43096 (  2485/sec), seq/s:     24, branches:   1229, corpus:    31, failures: 0/430, gas/s:     78960620
+⇾ fuzz: elapsed:      18s, calls:      44108 (   337/sec), seq/s:      3, branches:   1229, corpus:    31, failures: 0/441, gas/s:     10610164
+⇾ fuzz: elapsed:      21s, calls:      45787 (   559/sec), seq/s:      5, branches:   1229, corpus:    31, failures: 0/457, gas/s:     18196135
+⇾ fuzz: elapsed:      24s, calls:      48188 (   798/sec), seq/s:      7, branches:   1231, corpus:    32, failures: 0/481, gas/s:     25222575
+⇾ fuzz: elapsed:      27s, calls:      50556 (   788/sec), seq/s:      7, branches:   1231, corpus:    32, failures: 0/505, gas/s:     24710587
+⇾ fuzz: elapsed:      30s, calls:      52113 (   518/sec), seq/s:      5, branches:   1231, corpus:    32, failures: 0/521, gas/s:     16286079
+⇾ fuzz: elapsed:      33s, calls:      53958 (   611/sec), seq/s:      5, branches:   1231, corpus:    32, failures: 0/539, gas/s:     19500321
+⇾ fuzz: elapsed:      36s, calls:      56575 (   868/sec), seq/s:      8, branches:   1231, corpus:    32, failures: 0/565, gas/s:     27561067
+⇾ fuzz: elapsed:      39s, calls:      58753 (   725/sec), seq/s:      7, branches:   1411, corpus:    35, failures: 0/587, gas/s:     23623749
+⇾ fuzz: elapsed:      42s, calls:      63216 (  1485/sec), seq/s:     14, branches:   1411, corpus:    35, failures: 0/632, gas/s:     49967530
+⇾ fuzz: elapsed:      45s, calls:      65394 (   725/sec), seq/s:      6, branches:   1411, corpus:    35, failures: 0/653, gas/s:     24187393
+⇾ fuzz: elapsed:      48s, calls:      69340 (  1315/sec), seq/s:     13, branches:   1411, corpus:    35, failures: 0/693, gas/s:     43510041
+⇾ fuzz: elapsed:      51s, calls:      74732 (  1796/sec), seq/s:     17, branches:   1573, corpus:    43, failures: 0/747, gas/s:     57494283
+⇾ fuzz: elapsed:      54s, calls:      81868 (  2378/sec), seq/s:     23, branches:   1573, corpus:    43, failures: 0/818, gas/s:     76031613
+⇾ fuzz: elapsed:      57s, calls:      87701 (  1944/sec), seq/s:     19, branches:   1573, corpus:    43, failures: 0/877, gas/s:     62349803
+⇾ fuzz: elapsed:    1m00s, calls:      95169 (  2487/sec), seq/s:     24, branches:   1573, corpus:    43, failures: 0/951, gas/s:     79123996
+⇾ fuzz: elapsed:    1m03s, calls:     102033 (  2286/sec), seq/s:     22, branches:   1573, corpus:    43, failures: 0/1020, gas/s:     73281757
+⇾ Transaction test limit reached, halting now...
+⇾ Fuzzer stopped, test results follow below ...
+⇾ [PASSED] Assertion Test: RaffleEchidna.buy(uint8)
+⇾ [PASSED] Assertion Test: RaffleEchidna.enableRefunds()
+⇾ [PASSED] Assertion Test: RaffleEchidna.factory()
+⇾ [PASSED] Assertion Test: RaffleEchidna.fulfill(uint256)
+⇾ [PASSED] Assertion Test: RaffleEchidna.ghostPaidOut()
+⇾ [PASSED] Assertion Test: RaffleEchidna.highestStatus()
+⇾ [PASSED] Assertion Test: RaffleEchidna.onERC721Received(address,address,uint256,bytes)
+⇾ [PASSED] Assertion Test: RaffleEchidna.prize()
+⇾ [PASSED] Assertion Test: RaffleEchidna.quote()
+⇾ [PASSED] Assertion Test: RaffleEchidna.raffle()
+⇾ [PASSED] Assertion Test: RaffleEchidna.receiptIds(uint256)
+⇾ [PASSED] Assertion Test: RaffleEchidna.redeemCandidateRefund(uint256)
+⇾ [PASSED] Assertion Test: RaffleEchidna.redeemCandidateWinner(uint256)
+⇾ [PASSED] Assertion Test: RaffleEchidna.releaseProtocolFees()
+⇾ [PASSED] Assertion Test: RaffleEchidna.releaseSponsorPrize()
+⇾ [PASSED] Assertion Test: RaffleEchidna.releaseSponsorProceeds()
+⇾ [PASSED] Assertion Test: RaffleEchidna.requestDraw()
+⇾ [PASSED] Assertion Test: RaffleEchidna.settleCandidateWinner(uint256)
+⇾ [PASSED] Assertion Test: RaffleEchidna.statusRegressed()
+⇾ [PASSED] Assertion Test: RaffleEchidna.vrfWrapper()
+⇾ [PASSED] Property Test: RaffleEchidna.echidna_draw_and_callback_deadlines_are_ordered()
+⇾ [PASSED] Property Test: RaffleEchidna.echidna_prize_custody_matches_claim_marker()
+⇾ [PASSED] Property Test: RaffleEchidna.echidna_ranges_partition_all_entries()
+⇾ [PASSED] Property Test: RaffleEchidna.echidna_sales_and_liabilities_are_exact()
+⇾ [PASSED] Property Test: RaffleEchidna.echidna_status_never_regresses()
+⇾ [PASSED] Property Test: RaffleEchidna.echidna_winner_is_in_sold_range()
+⇾ Test summary: 26 test(s) passed, 0 test(s) failed
+⇾ html report(s) saved to: /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/medusa/fresh-medusa-corpus/coverage/coverage_report.html

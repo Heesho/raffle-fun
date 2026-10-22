@@ -1,0 +1,265 @@
+{
+  "runId": "01d7ff4d-697d-4026-9852-d454c41cbaea"
+}
+{
+  "schemaVersion": 1,
+  "brand": "Gebal",
+  "domain": "gebal.ai",
+  "run": {
+    "schemaVersion": 1,
+    "id": "01d7ff4d-697d-4026-9852-d454c41cbaea",
+    "createdAt": "2026-10-21T18:08:51.599Z",
+    "planId": "21734cfe-3d17-4169-b6e4-c834a702b055",
+    "snapshotId": "d3ab8fda-7e16-4abd-9867-065c1b5bfa4c",
+    "state": "succeeded",
+    "finishedAt": "2026-10-21T18:08:51.608Z",
+    "cancelRequested": false,
+    "costUsd": null,
+    "reservedTokens": 0,
+    "usedTokens": 0
+  },
+  "plan": {
+    "schemaVersion": 1,
+    "id": "21734cfe-3d17-4169-b6e4-c834a702b055",
+    "createdAt": "2026-10-21T18:08:51.071Z",
+    "snapshotId": "d3ab8fda-7e16-4abd-9867-065c1b5bfa4c",
+    "snapshotHash": "175696ceecb7876e428657410b74bb597d6b06503d4427d4133b66608ce46aca",
+    "scopeId": "1cd7b731-1f41-40b7-a85c-0074d6637dea",
+    "diagnosis": {
+      "kind": "foundry",
+      "supported": false,
+      "compiler": "0.8.36",
+      "evm": "cancun",
+      "settings": {
+        "src": "packages/contracts/src",
+        "test": "packages/contracts/test/foundry",
+        "script": "script",
+        "out": "out",
+        "libs": [
+          "packages/contracts/lib",
+          "packages/contracts/node_modules"
+        ],
+        "solc_version": "0.8.36",
+        "evm_version": "cancun",
+        "optimizer": true,
+        "optimizer_runs": 200,
+        "via_ir": false,
+        "fuzz": {
+          "runs": 1000,
+          "seed": "0x524146464c45"
+        },
+        "invariant": {
+          "runs": 256,
+          "depth": 64,
+          "fail_on_revert": false
+        },
+        "gas_reports": [
+          "Raffle",
+          "RaffleFactory"
+        ],
+        "projectPath": "packages/contracts",
+        "remappings": [
+          "@openzeppelin/contracts/=packages/contracts/node_modules/@openzeppelin/contracts/",
+          "forge-std/=packages/contracts/lib/forge-std/src/"
+        ]
+      },
+      "issues": [
+        "Unsupported configuration key: gas_reports",
+        "Dependencies missing from authorized snapshot: packages/contracts/src/interfaces/IRaffle.sol: @chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol, packages/contracts/src/interfaces/IRaffle.sol: @openzeppelin/contracts/token/ERC20/IERC20.sol, packages/contracts/src/interfaces/IRaffle.sol: @openzeppelin/contracts/token/ERC721/IERC721.sol, packages/contracts/src/Raffle.sol: @chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol, packages/contracts/src/Raffle.sol: @chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol, packages/contracts/src/Raffle.sol: @chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol, packages/contracts/src/Raffle.sol: @openzeppelin/contracts/token/ERC20/IERC20.sol, packages/contracts/src/Raffle.sol: @openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol, packages/contracts/src/Raffle.sol: @openzeppelin/contracts/token/ERC721/ERC721.sol, packages/contracts/src/Raffle.sol: @openzeppelin/contracts/token/ERC721/IERC721.sol"
+      ],
+      "notes": [
+        "Only profile.default is selected; other profiles, RPC endpoints and formatting configuration are not loaded.",
+        "Controller overrides output/cache/script paths, denies FFI/filesystem/RPC and dependency downloads, and disables automatic remappings.",
+        "Configured fuzz/invariant campaigns are replaced by the disclosed fixed seed and bounded campaign. Tests requiring denied capabilities cannot be validated.",
+        "Source-only intake does not establish compiler, test, property or security coverage."
+      ]
+    },
+    "tasks": [
+      "intake"
+    ],
+    "limits": {
+      "seconds": 300,
+      "memoryMb": 2048,
+      "cpus": 2,
+      "pids": 128,
+      "diskMb": 512,
+      "maxOutputBytes": 8388608,
+      "tokens": 0,
+      "maxTasks": 1
+    },
+    "image": null,
+    "provider": null,
+    "egress": [],
+    "methodology": "native-review-v1",
+    "adapterVersion": "0.2.0",
+    "hash": "54354f9446c0a48d18ac6bf87cbbfcd1b4e47e736248b35fc66800a5b5159339"
+  },
+  "snapshot": {
+    "schemaVersion": 1,
+    "id": "d3ab8fda-7e16-4abd-9867-065c1b5bfa4c",
+    "createdAt": "2026-10-21T18:08:51.069Z",
+    "scopeId": "1cd7b731-1f41-40b7-a85c-0074d6637dea",
+    "hash": "175696ceecb7876e428657410b74bb597d6b06503d4427d4133b66608ce46aca",
+    "files": [
+      {
+        "path": "packages/contracts/foundry.toml",
+        "hash": "0fdce809ea1675dac422cff420a3402b2f28aabed0631595e43823033fa8ef50",
+        "bytes": 1228,
+        "lines": 49
+      },
+      {
+        "path": "packages/contracts/package.json",
+        "hash": "2f46b8f46ed3de275a3a6d097c86a888fece719151bdf4e171495dc12e6802ad",
+        "bytes": 1583,
+        "lines": 45
+      },
+      {
+        "path": "packages/contracts/remappings.txt",
+        "hash": "cbf6730be9c6b6daa1855953ba581d96f14e2dbc3bc95ca3bc2d92cfd231acaa",
+        "bytes": 93,
+        "lines": 3
+      },
+      {
+        "path": "packages/contracts/src/interfaces/IRaffle.sol",
+        "hash": "a43ede9e8802d636a566fb225ed65bdf70f06d17f4734a1632a0a9f84aa5b2dd",
+        "bytes": 29703,
+        "lines": 522
+      },
+      {
+        "path": "packages/contracts/src/interfaces/IRaffleFactory.sol",
+        "hash": "747d238e4c7dc5b517f91c796dec87d9ddbfec9c626d1ff21467c60d780d03cf",
+        "bytes": 7875,
+        "lines": 151
+      },
+      {
+        "path": "packages/contracts/src/libraries/RaffleConstants.sol",
+        "hash": "0893f1a70ac03ad557e0b4c8bdf6a2f73d317f8417d1b4a3c1a571b893ed54b6",
+        "bytes": 2172,
+        "lines": 44
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "hash": "6e4c977922c3e39fafaa8c4c4fb74a971f1817eca9b6552eb8a540969f968617",
+        "bytes": 26421,
+        "lines": 615
+      },
+      {
+        "path": "packages/contracts/src/RaffleFactory.sol",
+        "hash": "d0e62b34faa42513fd968f915262728fe66a15c4b9af13a3c66f496704142ace",
+        "bytes": 8286,
+        "lines": 187
+      }
+    ],
+    "excluded": [
+      "packages/contracts/node_modules (absent)"
+    ],
+    "dependencyLocks": {}
+  },
+  "scope": {
+    "schemaVersion": 1,
+    "id": "1cd7b731-1f41-40b7-a85c-0074d6637dea",
+    "createdAt": "2026-10-21T18:08:51.045Z",
+    "projectId": "01f6f68f-5dfd-4f3f-a7f2-952682257ef1",
+    "authorized": true,
+    "paths": [
+      "packages/contracts/src",
+      "packages/contracts/foundry.toml",
+      "packages/contracts/remappings.txt",
+      "packages/contracts/package.json"
+    ],
+    "projectPath": "packages/contracts",
+    "dependencyPaths": [
+      "packages/contracts/node_modules"
+    ],
+    "exclusions": [],
+    "requirements": "# Clean design specification\nEthereum NFT raffle; immutable factory, ERC-1167 clones with immutable implementation. One entry costs 1,000,000 units of canonical six-decimal USDC. One purchase mints a transferable ERC721 ticket representing a contiguous inclusive range. Exactly one ERC721 prize is escrowed atomically at creation. Reserve met awards NFT and 95% sponsor / 5% treasury. Reserve missed awards 80% gross to winner, 15% sponsor, 5% treasury. Refund outcome pays 100% per entry and returns prize. Rounding is floor on aggregate protocol fee; remainder must be allocated without loss. No administrator, mutable configuration or upgrade. Request window [sale end, end+2days); callback accepted strictly before request timestamp+2days. Refunds open at deadline. Callback records result only. Settlement is permissionless, storage-only; redemption requires current ticket owner, burns claim atomically, and must revert all effects on delivery failure. Sponsor and treasury can claim independently after settlement. Never move assets between raffle clones. Quote token and Chainlink wrapper are trusted canonical dependencies; arbitrary prize contracts and ticket recipients are untrusted. Frontend discovery is advisory; transaction decisions must reread current chain state.\n\nThis specification was composed before scanner results and historical findings. Source, not design prose, determines actual behavior. No tests, audit history, accepted-risk lists or scanner results are provided.\n",
+    "permission": "authorized"
+  },
+  "project": {
+    "schemaVersion": 1,
+    "id": "01f6f68f-5dfd-4f3f-a7f2-952682257ef1",
+    "createdAt": "2026-10-21T18:08:51.039Z",
+    "name": "work",
+    "root": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/GEBAL/attempt-02/work",
+    "origin": "local-project"
+  },
+  "tasks": [
+    {
+      "schemaVersion": 1,
+      "id": "4c370a6b-8f89-403e-a181-049aa1c8f96a",
+      "createdAt": "2026-10-21T18:08:51.600Z",
+      "runId": "01d7ff4d-697d-4026-9852-d454c41cbaea",
+      "kind": "intake",
+      "state": "succeeded",
+      "dependencies": [],
+      "attempts": 1,
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "detail": "Recorded 8 authorized files. Build configuration unsupported; see diagnosis.",
+      "evidence": [
+        "ce270ded8dc65f578101f2ff233b2bdd02006cdcdd0dd366b697e404d19ab7cd"
+      ]
+    }
+  ],
+  "findings": [],
+  "observations": [],
+  "properties": [],
+  "coverage": [
+    {
+      "schemaVersion": 1,
+      "id": "0c47215b-215b-4894-9d49-a43afa76b115",
+      "createdAt": "2026-10-21T18:08:51.607Z",
+      "runId": "01d7ff4d-697d-4026-9852-d454c41cbaea",
+      "taskId": "4c370a6b-8f89-403e-a181-049aa1c8f96a",
+      "state": "succeeded",
+      "claim": "Recorded 8 authorized files. Build configuration unsupported; see diagnosis.",
+      "gaps": [
+        "No semantic, test, or property coverage established by intake."
+      ],
+      "evidence": [
+        "ce270ded8dc65f578101f2ff233b2bdd02006cdcdd0dd366b697e404d19ab7cd"
+      ]
+    }
+  ],
+  "executions": [],
+  "invocations": [],
+  "decisions": [
+    {
+      "schemaVersion": 1,
+      "id": "d58c267b-c43b-474c-b8ac-a61a80714d81",
+      "createdAt": "2026-10-21T18:08:51.341Z",
+      "subjectId": "21734cfe-3d17-4169-b6e4-c834a702b055",
+      "action": "approve-plan",
+      "rationale": "User authorized fresh Gemini Gebal local intake and pinned source context. Reviewed exact scope: 5 source contracts, 31 local dependencies, 3 build configuration files; source-only intake, no model provider egress, no existing tests or scanner execution.",
+      "actor": "Codex-delegated-controller",
+      "boundHash": "54354f9446c0a48d18ac6bf87cbbfcd1b4e47e736248b35fc66800a5b5159339"
+    }
+  ],
+  "events": [
+    {
+      "seq": 1,
+      "run_id": "01d7ff4d-697d-4026-9852-d454c41cbaea",
+      "at": "2026-10-21T18:08:51.601Z",
+      "message": "Approved plan enqueued."
+    },
+    {
+      "seq": 2,
+      "run_id": "01d7ff4d-697d-4026-9852-d454c41cbaea",
+      "at": "2026-10-21T18:08:51.604Z",
+      "message": "intake: running (attempt 1)"
+    },
+    {
+      "seq": 3,
+      "run_id": "01d7ff4d-697d-4026-9852-d454c41cbaea",
+      "at": "2026-10-21T18:08:51.608Z",
+      "message": "intake: succeeded — Recorded 8 authorized files. Build configuration unsupported; see diagnosis."
+    },
+    {
+      "seq": 4,
+      "run_id": "01d7ff4d-697d-4026-9852-d454c41cbaea",
+      "at": "2026-10-21T18:08:51.609Z",
+      "message": "Run succeeded. Review coverage gaps before relying on results."
+    }
+  ],
+  "disclaimer": "An empty findings list is not a security certificate. Completed checks establish only their stated coverage."
+}

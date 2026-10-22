@@ -1,0 +1,205 @@
+# 🔐 Security Review — target
+
+---
+
+## Scope
+
+|  |  |
+| --- | --- |
+| **Mode** | filename |
+| **Files reviewed** | `target/packages/contracts/src/Raffle.sol` · `target/packages/contracts/src/RaffleFactory.sol` · `target/packages/contracts/src/interfaces/IRaffle.sol`<br>`target/packages/contracts/src/interfaces/IRaffleFactory.sol` · `target/packages/contracts/src/libraries/RaffleConstants.sol` |
+| **Confidence threshold (1-100)** | 75 |
+
+---
+
+## Findings
+
+[90] **1. 1. A false prize contract fabricates escrow and delivery**
+
+`RaffleFactory.createRaffle` · Confidence: 90
+
+**Description**
+A sponsor can fake prize custody, reject or fake delivery, take 95% of sales, and leave the winner without a transferable NFT.
+
+**Fix**
+
+```diff
+diff --git a/target/packages/contracts/src/RaffleFactory.sol b/target/packages/contracts/src/RaffleFactory.sol
+--- a/target/packages/contracts/src/RaffleFactory.sol
++++ b/target/packages/contracts/src/RaffleFactory.sol
+@@
+     /// @inheritdoc IRaffleFactory
+     address public immutable override raffleImplementation;
+ 
++    mapping(address prizeToken => bool allowed) private _prizeAllowlist;
++
+     /// @inheritdoc IRaffleFactory
+     uint256 public override raffleCount;
+@@
+-    constructor(address quoteToken_, address vrfWrapper_, address protocolTreasury_) {
++    constructor(
++        address quoteToken_,
++        address vrfWrapper_,
++        address protocolTreasury_,
++        address[] memory prizeAllowlist_
++    ) {
+         _requireContract(quoteToken_);
+         _requireContract(vrfWrapper_);
+         if (protocolTreasury_ == address(0)) revert ZeroAddress();
+@@
+         quoteToken = quoteToken_;
+         vrfWrapper = vrfWrapper_;
+         protocolTreasury = protocolTreasury_;
+ 
++        uint256 allowedPrizeCount = prizeAllowlist_.length;
++        for (uint256 index; index < allowedPrizeCount; ++index) {
++            address allowedPrize = prizeAllowlist_[index];
++            _requireContract(allowedPrize);
++            _prizeAllowlist[allowedPrize] = true;
++        }
++
+         address implementation = address(new Raffle(quoteToken_, vrfWrapper_));
+@@
+     function _validateCreateParams(CreateRaffleParams calldata params) private view {
+         _requireContract(params.prizeToken);
++        if (!_prizeAllowlist[params.prizeToken]) revert UnsupportedPrizeToken(params.prizeToken);
+         if (params.sponsorRecipient == address(0)) revert ZeroAddress();
+```
+
+---
+
+[90] **2. 2. The raffle exposes sponsor proceeds before prize delivery**
+
+`Raffle.releaseSponsorProceeds` · Confidence: 90
+
+**Description**
+A sponsor can use a prize that accepts escrow but rejects delivery, then take 95% and leave the winner without an NFT or refund.
+
+**Fix (Option A — gate the sponsor payout)**:
+
+```diff
+diff --git a/target/packages/contracts/src/Raffle.sol b/target/packages/contracts/src/Raffle.sol
+--- a/target/packages/contracts/src/Raffle.sol
++++ b/target/packages/contracts/src/Raffle.sol
+@@
+     /// @notice Raised when native currency is sent outside the payable draw-request path.
+     error DirectNativeTransfer();
+ 
++    error PrizeNotDelivered();
++
+@@
+     function releaseSponsorProceeds() external override nonReentrant returns (uint256 amount) {
++        if (status == Status.NftWon && !winnerRedeemed) revert PrizeNotDelivered();
+         amount = sponsorProceeds;
+```
+
+**Fix (Option B — gate both payouts)**:
+
+```diff
+diff --git a/target/packages/contracts/src/Raffle.sol b/target/packages/contracts/src/Raffle.sol
+--- a/target/packages/contracts/src/Raffle.sol
++++ b/target/packages/contracts/src/Raffle.sol
+@@
+     /// @notice Raised when native currency is sent outside the payable draw-request path.
+     error DirectNativeTransfer();
+ 
++    error PrizeNotDelivered();
++
+@@
+     function releaseSponsorProceeds() external override nonReentrant returns (uint256 amount) {
++        if (status == Status.NftWon && !winnerRedeemed) revert PrizeNotDelivered();
+         amount = sponsorProceeds;
+@@
+     function releaseProtocolFees() external override nonReentrant returns (uint256 amount) {
++        if (status == Status.NftWon && !winnerRedeemed) revert PrizeNotDelivered();
+         amount = protocolFees;
+```
+
+**Fix (Option C — hold payouts and open refunds)**:
+
+```diff
+diff --git a/target/packages/contracts/src/libraries/RaffleConstants.sol b/target/packages/contracts/src/libraries/RaffleConstants.sol
+--- a/target/packages/contracts/src/libraries/RaffleConstants.sol
++++ b/target/packages/contracts/src/libraries/RaffleConstants.sol
+@@
+     /// @notice Duration after an accepted request during which its authenticated callback may resolve, in seconds.
+     uint256 internal constant DRAW_CALLBACK_TIMEOUT = 2 days;
+ 
++    /// @notice Maximum time allowed for delivery of an NFT prize after resolution.
++    uint256 internal constant PRIZE_DELIVERY_TIMEOUT = 2 days;
++
+diff --git a/target/packages/contracts/src/Raffle.sol b/target/packages/contracts/src/Raffle.sol
+--- a/target/packages/contracts/src/Raffle.sol
++++ b/target/packages/contracts/src/Raffle.sol
+@@
+     /// @notice Raised when native currency is sent outside the payable draw-request path.
+     error DirectNativeTransfer();
+ 
++    error PrizeNotDelivered();
++
+@@
+     function enableRefunds() external override nonReentrant {
++        Status currentStatus = status;
+         uint256 deadline;
+ 
+-        if (status == Status.Active) {
++        if (currentStatus == Status.Active) {
+             if (totalEntries == 0) {
+                 deadline = endTime;
+                 if (msg.sender != sponsor && block.timestamp < deadline) {
+@@
+-        } else if (status == Status.Drawing) {
++        } else if (currentStatus == Status.Drawing) {
+             deadline = callbackDeadline();
+             if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
++        } else if (currentStatus == Status.NftWon && !winnerRedeemed) {
++            deadline = uint256(resolvedAt) + RaffleConstants.PRIZE_DELIVERY_TIMEOUT;
++            if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+         } else {
+-            revert InvalidStatus(status);
++            revert InvalidStatus(currentStatus);
+         }
+ 
+-        uint256 liability = unsettledPot;
+-        unsettledPot = 0;
++        uint256 liability;
++        if (currentStatus == Status.NftWon) {
++            liability = sponsorProceeds + protocolFees;
++            sponsorProceeds = 0;
++            protocolFees = 0;
++        } else {
++            liability = unsettledPot;
++            unsettledPot = 0;
++        }
+         remainingRefundLiability = liability;
+         status = Status.Refunding;
+@@
+     function releaseSponsorProceeds() external override nonReentrant returns (uint256 amount) {
++        if (status == Status.NftWon && !winnerRedeemed) revert PrizeNotDelivered();
+         amount = sponsorProceeds;
+@@
+     function releaseProtocolFees() external override nonReentrant returns (uint256 amount) {
++        if (status == Status.NftWon && !winnerRedeemed) revert PrizeNotDelivered();
+         amount = protocolFees;
+```
+
+---
+
+Findings List
+
+| # | Confidence | Title |
+|---|---|---|
+| 1 | [90] | 1. A false prize contract fabricates escrow and delivery |
+| 2 | [90] | 2. The raffle exposes sponsor proceeds before prize delivery |
+
+---
+
+## Leads
+
+_Vulnerability trails with concrete code smells where the full exploit path could not be completed in one analysis pass. These are not false positives — they are high-signal leads for manual review. Not scored._
+
+_None._
+
+---
+
+> ⚠️ This review was performed by an AI assistant. AI analysis can never verify the complete absence of vulnerabilities and no guarantee of security is given. Team security reviews, bug bounty programs, and on-chain monitoring are strongly recommended. For a consultation regarding your projects' security, visit [https://www.pashov.com](https://www.pashov.com)

@@ -1,0 +1,62 @@
+```
+FINDING | contract: Raffle | function: _settleWinningTicket | bug_class: sponsor-rebate-entry-dilution | group_key: Raffle | _settleWinningTicket | sponsor-rebate-entry-dilution
+seam: three-way
+actor: sponsor (calling buyEntries and releaseSponsorProceeds)
+path: sponsor → buyEntries (above reserveEntries) → requestDraw → fulfillRandomWords (Status.NftWon) → settleWinningTicket → releaseSponsorProceeds → sponsor recovers 95% of own entry cost and dilutes honest buyers
+proof:
+1. Authorization step: `Raffle.buyEntries` (lines 212-240) allows any caller, including `sponsor` or `sponsorRecipient`, to purchase entries up to `type(uint128).max` without capping `totalEntries` at `reserveEntries`.
+2. Economic step: In `Raffle._settleWinningTicket` (lines 543-548), when `result == Status.NftWon` (`totalEntries >= reserveEntries`), `protocolFee = Math.mulDiv(grossPot, 500, 10_000)` (5%) and `sponsorAmount = grossPot - protocolFee` (95% of `unsettledPot`).
+3. Asymmetric outcome: Suppose `reserveEntries = 1,000` (`1,000e6` USDC) for an NFT worth `1,000 USDC`, and honest buyers buy `1,000` entries (`unsettledPot = 1,000e6`). Before `endTime`, `sponsor` calls `buyEntries(sponsor, 9,000)` for `9,000e6` USDC (`totalEntries = 10,000`, `unsettledPot = 10,000e6`). Upon `Status.NftWon` settlement, `protocolFees = 500e6` and `sponsorProceeds = 9,500e6`. The `sponsor` receives `8,550e6` of their `9,000e6` back (`0.05 USDC` net cost per entry vs `1.00 USDC` for external buyers, a 20x price asymmetry), reducing honest buyers' collective win probability from `100%` to `10%` while the `sponsor` captures a `90%` chance to win back `prizeTokenId` plus `500e6` USDC net cash from honest buyers.
+description: The sponsor can buy entries in buyEntries and receive ninety-five percent back in _settleWinningTicket, so the sponsor dilutes other buyers at a five-percent cost.
+fix: Cap totalEntries at reserveEntries in buyEntries, or cap sponsorProceeds at the reserve amount in _settleWinningTicket.
+
+FINDING | contract: Raffle | function: buyEntries | bug_class: reserve-cliff-pot-capture | group_key: Raffle | buyEntries | reserve-cliff-pot-capture
+seam: economics×asymmetry
+actor: sponsor (calling buyEntries right before endTime to cross reserveEntries)
+path: sponsor → buyEntries (top-up from totalEntries < reserveEntries to reserveEntries) → fulfillRandomWords (flips Status.CashWon to Status.NftWon) → _settleWinningTicket → sponsor captures 80% cash winner pool
+proof:
+1. Authorization step: `Raffle.buyEntries` (lines 212-240) permits entry purchases by any address up to `endTime`.
+2. Economic step: `Raffle.fulfillRandomWords` (line 524) sets `status = totalEntries >= reserveEntries ? Status.NftWon : Status.CashWon`. `Raffle._settleWinningTicket` (lines 546-552) creates a discontinuous cliff at `totalEntries == reserveEntries`: at `reserveEntries - 1` (`CashWon`), `winnerProceeds` is `80%` of `unsettledPot` and `sponsorProceeds` is `15%`; at `reserveEntries` (`NftWon`), `winnerProceeds` drops to `0` and `sponsorProceeds` jumps to `95%` of the entire `unsettledPot`.
+3. Asymmetric outcome: Suppose `reserveEntries = 1,000` (`1,000e6` USDC) for an NFT worth `100 USDC`, and external buyers purchase `600` entries (`unsettledPot = 600e6`). In `CashWon`, buyers would receive `80% * 600e6 = 480e6` USDC and `sponsor` would receive `15% * 600e6 = 90e6` USDC plus the `100 USDC` NFT (`190 USDC` total). At `endTime - 1`, `sponsor` calls `buyEntries(sponsor, 400)` paying `400e6` USDC so `totalEntries = 1,000` (`NftWon`, `unsettledPot = 1,000e6`). `sponsorProceeds` becomes `95% * 1,000e6 = 950e6` USDC. Subtracting the `400e6` top-up, `sponsor` nets `550e6` USDC in cash (`460e6` USDC more cash extracted from external buyers) plus a `40%` (`400 / 1,000`) chance of winning back the NFT.
+description: The sponsor can buy the needed reserveEntries before endTime to switch status from CashWon to NftWon and take eighty percent of the pot.
+fix: Block the sponsor and sponsorRecipient from buyEntries, or refund all buyers when totalEntries is below reserveEntries at endTime.
+
+FINDING | contract: RaffleFactory | function: createRaffle | bug_class: unbounded-reserve-cash-rake | group_key: RaffleFactory | createRaffle | unbounded-reserve-cash-rake
+seam: three-way
+actor: sponsor (setting unreachable reserveEntries in createRaffle and claiming CashWon proceeds)
+path: sponsor → RaffleFactory.createRaffle (reserveEntries = type(uint128).max) → Raffle.requestDraw → fulfillRandomWords (Status.CashWon) → _settleWinningTicket → releaseSponsorProceeds & releaseSponsorPrize
+proof:
+1. Authorization step: `RaffleFactory._validateCreateParams` (line 801) checks only `if (params.reserveEntries == 0) revert ZeroReserveEntries()`, permitting `sponsor` to set `reserveEntries` up to `type(uint128).max` (`3.4e38` entries).
+2. Economic step: When `totalEntries < reserveEntries`, `Raffle.fulfillRandomWords` (line 524) resolves to `Status.CashWon`. `Raffle._settleWinningTicket` (lines 549-551) allocates `80%` to `winnerProceeds`, `5%` to `protocolFees`, and the remaining `15%` (`1,500 bps`) to `sponsorProceeds`, while `Raffle.releaseSponsorPrize` (lines 398-410) returns `prizeTokenId` to `sponsorRecipient`.
+3. Asymmetric outcome: By setting `reserveEntries = type(uint128).max` (exceeding total USDC supply), `Status.NftWon` is unreachable (`buyEntries` reverts on `entryCount > type(uint128).max - totalEntries` at line 222). The `sponsor` bears zero risk of losing `prizeTokenId` (guaranteed return via `releaseSponsorPrize`), yet extracts a risk-free `15%` fee from `unsettledPot` via `releaseSponsorProceeds` and enjoys an effective entry cost of `0.85 USDC` (`1.00 - 0.15`) vs `1.00 USDC` for normal buyers.
+description: A sponsor can set an unreachable reserveEntries in createRaffle, so the raffle resolves to CashWon and the sponsor keeps the prize and fifteen percent.
+fix: Enforce a reasonable maximum on reserveEntries in _validateCreateParams, and set sponsorProceeds to zero when status is CashWon.
+
+FINDING | contract: Raffle | function: enableRefunds | bug_class: empty-raffle-cancel-block | group_key: Raffle | enableRefunds | empty-raffle-cancel-block
+seam: access×asymmetry
+actor: any buyer (front-running sponsor's enableRefunds call with buyEntries)
+path: buyer → buyEntries(buyer, 1) before sponsor's enableRefunds → totalEntries becomes 1 → sponsor's enableRefunds reverts with RefundsNotAvailable → prizeTokenId locked until drawRequestDeadline
+proof:
+1. Authorization step: `Raffle.enableRefunds` (lines 282-291) grants `sponsor` exclusive authority to cancel before `endTime` only when `totalEntries == 0`; if `totalEntries > 0`, `enableRefunds` reverts with `RefundsNotAvailable(drawRequestDeadline(), block.timestamp)` until `endTime + 2 days`.
+2. Economic step: `Raffle.buyEntries` (lines 212-240) allows any caller to buy `1` entry for `ENTRY_PRICE = 1_000_000` (`1 USDC`) while `status == Status.Active` and `block.timestamp < endTime`.
+3. Asymmetric outcome: When `sponsor` submits `enableRefunds()` to cancel an empty raffle created with `endTime = block.timestamp + 30 days`, an attacker front-runs with `buyEntries(attacker, 1)` for `1e6` USDC. `totalEntries` becomes `1`, causing `sponsor`'s `enableRefunds()` to revert and locking `prizeTokenId` in `Raffle` for up to `32 days` (`30 days` + `2 days` `DRAW_REQUEST_TIMEOUT`), after which the attacker calls `enableRefunds()` and `refundTickets([1])` to recover the full `1e6` USDC (or if `reserveEntries == 1`, calls `requestDraw()` at `endTime` to win `prizeTokenId` for `1 USDC`).
+description: An attacker can buy one entry before enableRefunds executes, so the cancellation by the sponsor fails and the prize stays locked until drawRequestDeadline.
+fix: Allow the sponsor to call enableRefunds before endTime when totalEntries is below reserveEntries, so buyers can claim full refunds in refundTickets.
+
+FINDING | contract: Raffle | function: requestDraw | bug_class: uncompensated-vrf-fee-asymmetry | group_key: Raffle | requestDraw | uncompensated-vrf-fee-asymmetry
+seam: access×economics
+actor: sponsor or draw requester (at [endTime, drawRequestDeadline()))
+path: caller → requestDraw{value: paidPrice}() → pays native VRF fee without reimbursement → forces Status.CashWon over 100% refund or forfeits paidPrice on callback timeout
+proof:
+1. Authorization step: `Raffle.requestDraw` (lines 243-276) is callable by anyone in `[endTime, drawRequestDeadline())` whenever `totalEntries > 0` (even when `totalEntries < reserveEntries`), and requires `msg.sender` to pay `paidPrice` in native currency with no reimbursement from `unsettledPot` or `sponsor`.
+2. Economic step: If `requestDraw` is not called before `drawRequestDeadline()`, `enableRefunds` (lines 288-291) refunds `100%` of `unsettledPot` to buyers. If `requestDraw` is called when `totalEntries < reserveEntries`, `fulfillRandomWords` resolves to `Status.CashWon`, deducting `15%` for `sponsorProceeds` and `5%` for `protocolFees`. If the callback misses `callbackDeadline()`, `enableRefunds` (lines 292-294) transitions to `Status.Refunding`.
+3. Asymmetric outcome:
+   - When `totalEntries < reserveEntries` (e.g., `100` entries sold = `100e6` USDC, `reserveEntries = 1,000`), buyers want `drawRequestDeadline()` to pass for a `100%` refund (`100e6` USDC), but `sponsor` can call `requestDraw()` (paying `paidPrice`, e.g., `$1` in ETH) to force `Status.CashWon`, keeping `prizeTokenId` AND taking `15e6` USDC from buyers.
+   - Conversely, when `totalEntries >= reserveEntries` and `prizeTokenId` appreciates above `0.95 * unsettledPot`, `sponsor` can withhold calling `requestDraw()`, shifting `paidPrice` onto fragmented ticket holders; and if a buyer pays `paidPrice` in `requestDraw()` but VRF times out after `2 days`, `sponsor` recovers `prizeTokenId` and buyers recover USDC via `enableRefunds()`, while the `requestDraw()` caller loses `100%` of `paidPrice`.
+description: The caller of requestDraw pays the VRF fee without reimbursement, so the sponsor can force CashWon or withhold the draw when the prize appreciates.
+fix: Escrow the native VRF fee from the sponsor in createRaffle, or reimburse the caller of requestDraw from unsettledPot before fee allocation.
+
+LEAD | contract: Raffle | function: releaseSponsorProceeds | bug_class: premature-sponsor-payout-before-prize-delivery | group_key: Raffle | releaseSponsorProceeds | premature-sponsor-payout-before-prize-delivery
+code_smells: The _settleWinningTicket function unlocks sponsorProceeds before redeemWinningTicket transfers prizeToken to the winner. The releaseSponsorProceeds function does not check prizeClaimed when status is NftWon.
+description: The sponsor can withdraw sponsorProceeds in NftWon before redeemWinningTicket delivers prizeToken to the winner. We did not verify a standards-compliant prizeToken that blocks transferFrom.
+```

@@ -1,0 +1,58 @@
+{
+  "requirementId": "REQ-33",
+  "analysisFile": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/audit/S5/spec-compliance/requirements/02-REQ-33.md",
+  "verdict": "implemented",
+  "confidence": "high",
+  "evidence": [
+    {
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "lines": "L323-L325",
+      "quote": "winnerRecipient = winner;\n        winnerRedeemed = true;\n        _burn(ticketId);",
+      "role": "Redemption effects precede delivery within the same reverting call."
+    },
+    {
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "lines": "L334-L337",
+      "quote": "prizeToken.transferFrom(address(this), winner, deliveredPrizeTokenId);\n            if (prizeToken.ownerOf(deliveredPrizeTokenId) != winner) {\n                revert PrizeDeliveryVerificationFailed(winner);\n            }",
+      "role": "NFT call failures propagate; ownership mismatch explicitly reverts."
+    },
+    {
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "lines": "L339-L342",
+      "quote": "cashAmount = winnerProceeds;\n            if (cashAmount == 0) revert NoWinnerProceeds();\n            winnerProceeds = 0;\n            _transferQuote(winner, cashAmount);",
+      "role": "Cash claim clearing remains subject to delivery rollback."
+    },
+    {
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+      "lines": "L33-L37",
+      "quote": "function safeTransfer(IERC20 token, address to, uint256 value) internal {\n        if (!_safeTransfer(token, to, value, true)) {\n            revert SafeERC20FailedOperation(address(token));\n        }\n    }",
+      "role": "The selected wrapper enables bubbling and reverts on a false result."
+    },
+    {
+      "file": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+      "lines": "L189-L192",
+      "quote": "if and(iszero(success), bubble) {\n                    returndatacopy(fmp, 0x00, returndatasize())\n                    revert(fmp, returndatasize())\n                }",
+      "role": "Actual low-level transfer failure is propagated."
+    }
+  ],
+  "searched": [
+    {
+      "where": "redeemWinningTicket across target/packages/contracts/src",
+      "result": "Two hits: implementation and interface declaration; read both redemption branches and inline settlement."
+    },
+    {
+      "where": "try, catch, trySafeTransfer in Raffle.sol and RaffleFactory.sol",
+      "result": "No hits in Raffle; factory exception handlers concern deployment and prize validation."
+    },
+    {
+      "where": "_transferQuote → _isProtocolDestination and SafeERC20.safeTransfer → _safeTransfer",
+      "result": "Read destination checks, factory getters, and every selected transfer-helper branch; failures revert."
+    },
+    {
+      "where": "ERC721 burn/ownership helpers, Raffle._update, ReentrancyGuard, settlement arithmetic, and Clones.clone",
+      "result": "Read inherited effects, modifiers, callees, and proxy failure propagation; no delivery failure is swallowed."
+    }
+  ],
+  "reasoning": "NFT and cash delivery failures revert the redemption call, including the burn and any inline settlement. Both previously settled and inline-settlement paths are covered (Raffle.sol:L309-L345,L533-L567; SafeERC20.sol:L33-L37,L176-L200).",
+  "documentProblem": null
+}

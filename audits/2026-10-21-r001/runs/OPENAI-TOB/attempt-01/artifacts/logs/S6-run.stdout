@@ -1,0 +1,478 @@
+{"command": ["slither", "--version"], "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts", "started_at": "2026-10-21T08:15:38.307960+00:00", "timeout_seconds": 5, "cache_overrides": {"PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip", "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg", "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm", "PYTHONDONTWRITEBYTECODE": "1"}, "exit_code": 0, "finished_at": "2026-10-21T08:15:39.791721+00:00"}
+
+{"command": ["slither", ".", "--exclude-dependencies"], "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts", "started_at": "2026-10-21T08:15:39.851662+00:00", "timeout_seconds": 12, "cache_overrides": {"PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip", "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg", "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm", "PYTHONDONTWRITEBYTECODE": "1"}, "exit_code": 255, "finished_at": "2026-10-21T08:15:44.905597+00:00"}
+e <= currentTime (src/RaffleFactory.sol#100)
+	- saleDuration > RaffleConstants.MAX_SALE_DURATION (src/RaffleFactory.sol#102)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+INFO:Detectors:
+Detector: assembly
+Raffle.requestDraw() (src/Raffle.sol#240-273) uses assembly
+	- INLINE ASM (src/Raffle.sol#266-268)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#assembly-usage
+INFO:Detectors:
+Detector: pragma
+9 different versions of Solidity are used:
+	- Version constraint ^0.8.0 is used by:
+		-^0.8.0 (node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol#2)
+		-^0.8.0 (node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol#2)
+		-^0.8.0 (node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol#2)
+	- Version constraint ^0.8.4 is used by:
+		-^0.8.4 (node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol#2)
+	- Version constraint >=0.6.2 is used by:
+		->=0.6.2 (node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol#4)
+		->=0.6.2 (node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol#4)
+		->=0.6.2 (node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol#4)
+		->=0.6.2 (node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol#4)
+	- Version constraint >=0.4.16 is used by:
+		->=0.4.16 (node_modules/@openzeppelin/contracts/interfaces/IERC165.sol#4)
+		->=0.4.16 (node_modules/@openzeppelin/contracts/interfaces/IERC20.sol#4)
+		->=0.4.16 (node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol#4)
+		->=0.4.16 (node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol#4)
+	- Version constraint >=0.8.4 is used by:
+		->=0.8.4 (node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol#4)
+	- Version constraint ^0.8.20 is used by:
+		-^0.8.20 (node_modules/@openzeppelin/contracts/proxy/Clones.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/Context.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/Create2.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/Errors.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/Panic.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/StorageSlot.sol#5)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/math/Math.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol#5)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol#4)
+	- Version constraint ^0.8.24 is used by:
+		-^0.8.24 (node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol#4)
+		-^0.8.24 (node_modules/@openzeppelin/contracts/utils/Bytes.sol#4)
+		-^0.8.24 (node_modules/@openzeppelin/contracts/utils/Strings.sol#4)
+	- Version constraint >=0.5.0 is used by:
+		->=0.5.0 (node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol#4)
+	- Version constraint 0.8.36 is used by:
+		-0.8.36 (src/Raffle.sol#2)
+		-0.8.36 (src/RaffleFactory.sol#2)
+		-0.8.36 (src/interfaces/IRaffle.sol#2)
+		-0.8.36 (src/interfaces/IRaffleFactory.sol#2)
+		-0.8.36 (src/libraries/RaffleConstants.sol#2)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#different-pragma-directives-are-used
+INFO:Detectors:
+Detector: naming-convention
+Function IRaffle.ENTRY_PRICE() (src/interfaces/IRaffle.sol#396) is not in mixedCase
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+INFO:Slither:. analyzed (36 contracts with 102 detectors), 14 result(s) found
+
+{"command": ["slither-check-erc", ".", "Raffle", "--erc", "erc721"], "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts", "started_at": "2026-10-21T08:15:45.192009+00:00", "timeout_seconds": 8, "cache_overrides": {"PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip", "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg", "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm", "PYTHONDONTWRITEBYTECODE": "1"}, "exit_code": 0, "finished_at": "2026-10-21T08:15:49.357775+00:00"}
+WARNING:CryticCompile:Multiple frameworks detected: Foundry, Hardhat. Using Foundry (highest priority). Use --compile-force-framework to override.
+# Check Raffle
+
+## Check functions
+[✓] balanceOf(address) is present
+	[✓] balanceOf(address) -> (uint256) (correct return type)
+	[✓] balanceOf(address) is view
+[✓] ownerOf(uint256) is present
+	[✓] ownerOf(uint256) -> (address) (correct return type)
+	[✓] ownerOf(uint256) is view
+[✓] safeTransferFrom(address,address,uint256,bytes) is present
+	[✓] safeTransferFrom(address,address,uint256,bytes) -> () (correct return type)
+	[✓] Transfer(address,address,uint256) is emitted
+[✓] safeTransferFrom(address,address,uint256) is present
+	[✓] safeTransferFrom(address,address,uint256) -> () (correct return type)
+	[✓] Transfer(address,address,uint256) is emitted
+[✓] transferFrom(address,address,uint256) is present
+	[✓] transferFrom(address,address,uint256) -> () (correct return type)
+	[✓] Transfer(address,address,uint256) is emitted
+[✓] approve(address,uint256) is present
+	[✓] approve(address,uint256) -> () (correct return type)
+	[✓] Approval(address,address,uint256) is emitted
+[✓] setApprovalForAll(address,bool) is present
+	[✓] setApprovalForAll(address,bool) -> () (correct return type)
+	[✓] ApprovalForAll(address,address,bool) is emitted
+[✓] getApproved(uint256) is present
+	[✓] getApproved(uint256) -> (address) (correct return type)
+	[✓] getApproved(uint256) is view
+[✓] isApprovedForAll(address,address) is present
+	[✓] isApprovedForAll(address,address) -> (bool) (correct return type)
+	[✓] isApprovedForAll(address,address) is view
+[✓] supportsInterface(bytes4) is present
+	[✓] supportsInterface(bytes4) -> (bool) (correct return type)
+	[✓] supportsInterface(bytes4) is view
+[✓] name() is present
+	[✓] name() -> (string) (correct return type)
+	[✓] name() is view
+[✓] symbol() is present
+	[✓] symbol() -> (string) (correct return type)
+[✓] tokenURI(uint256) is present
+	[✓] tokenURI(uint256) -> (string) (correct return type)
+
+## Check events
+[✓] Transfer(address,address,uint256) is present
+	[✓] parameter 0 is indexed
+	[✓] parameter 1 is indexed
+	[✓] parameter 2 is indexed
+[✓] Approval(address,address,uint256) is present
+	[✓] parameter 0 is indexed
+	[✓] parameter 1 is indexed
+	[✓] parameter 2 is indexed
+[✓] ApprovalForAll(address,address,bool) is present
+	[✓] parameter 0 is indexed
+	[✓] parameter 1 is indexed
+
+
+
+{"command": ["slither", ".", "--print", "inheritance-graph"], "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts", "started_at": "2026-10-21T08:15:49.527163+00:00", "timeout_seconds": 8, "cache_overrides": {"PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip", "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg", "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm", "PYTHONDONTWRITEBYTECODE": "1"}, "exit_code": 0, "finished_at": "2026-10-21T08:15:56.253137+00:00"}
+INFO:Printers:Inheritance Graph: inheritance-graph.dot
+
+INFO:Slither:. analyzed (36 contracts)
+
+{"command": ["slither", ".", "--print", "function-summary"], "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts", "started_at": "2026-10-21T08:15:56.352622+00:00", "timeout_seconds": 8, "cache_overrides": {"PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip", "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg", "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm", "PYTHONDONTWRITEBYTECODE": "1"}, "exit_code": 0, "finished_at": "2026-10-21T08:16:00.296095+00:00"}
+   | []        | []   | []    | []             | []             | 2                     |
+| raffleImplementation()                          | external   | []        | []   | []    | []             | []             | 2                     |
+| raffleCount()                                   | external   | []        | []   | []    | []             | []             | 2                     |
+| isRaffle(address)                               | external   | []        | []   | []    | []             | []             | 2                     |
+| raffleById(uint256)                             | external   | []        | []   | []    | []             | []             | 2                     |
+| idByRaffle(address)                             | external   | []        | []   | []    | []             | []             | 2                     |
++-------------------------------------------------+------------+-----------+------+-------+----------------+----------------+-----------------------+
+
++-----------+------------+------+-------+----------------+----------------+-----------------------+
+| Modifiers | Visibility | Read | Write | Internal Calls | External Calls | Cyclomatic Complexity |
++-----------+------------+------+-------+----------------+----------------+-----------------------+
++-----------+------------+------+-------+----------------+----------------+-----------------------+
+
+INFO:Printers:
+Contract RaffleConstants
+Contract vars: ['BPS', 'PROTOCOL_FEE_BPS', 'CASH_WINNER_BPS', 'ENTRY_PRICE', 'QUOTE_TOKEN_DECIMALS', 'MAX_REFUND_TICKET_BATCH_SIZE', 'MAX_SALE_DURATION', 'DRAW_REQUEST_TIMEOUT', 'DRAW_CALLBACK_TIMEOUT', 'VRF_CALLBACK_GAS_LIMIT', 'VRF_REQUEST_CONFIRMATIONS']
+Inheritance:: []
+ 
++---------------------------------------+------------+-----------+------+----------------------------------------------------+----------------+----------------+-----------------------+
+| Function                              | Visibility | Modifiers | Read | Write                                              | Internal Calls | External Calls | Cyclomatic Complexity |
++---------------------------------------+------------+-----------+------+----------------------------------------------------+----------------+----------------+-----------------------+
+| slitherConstructorConstantVariables() | internal   | []        | []   | ['BPS', 'CASH_WINNER_BPS']                         | []             | []             | 1                     |
+|                                       |            |           |      | ['DRAW_CALLBACK_TIMEOUT', 'DRAW_REQUEST_TIMEOUT']  |                |                |                       |
+|                                       |            |           |      | ['ENTRY_PRICE', 'MAX_REFUND_TICKET_BATCH_SIZE']    |                |                |                       |
+|                                       |            |           |      | ['MAX_SALE_DURATION', 'PROTOCOL_FEE_BPS']          |                |                |                       |
+|                                       |            |           |      | ['QUOTE_TOKEN_DECIMALS', 'VRF_CALLBACK_GAS_LIMIT'] |                |                |                       |
+|                                       |            |           |      | ['VRF_REQUEST_CONFIRMATIONS']                      |                |                |                       |
++---------------------------------------+------------+-----------+------+----------------------------------------------------+----------------+----------------+-----------------------+
+
++-----------+------------+------+-------+----------------+----------------+-----------------------+
+| Modifiers | Visibility | Read | Write | Internal Calls | External Calls | Cyclomatic Complexity |
++-----------+------------+------+-------+----------------+----------------+-----------------------+
++-----------+------------+------+-------+----------------+----------------+-----------------------+
+
+INFO:Slither:. analyzed (36 contracts)
+
+{"command": ["slither", ".", "--print", "vars-and-auth"], "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts", "started_at": "2026-10-21T08:16:00.350793+00:00", "timeout_seconds": 8, "cache_overrides": {"PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip", "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg", "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm", "PYTHONDONTWRITEBYTECODE": "1"}, "exit_code": 0, "finished_at": "2026-10-21T08:16:03.749934+00:00"}
+  | []                       |
+| winnerProceeds           | []                      | []                       |
+| sponsorProceeds          | []                      | []                       |
+| protocolFees             | []                      | []                       |
+| vrfRequestId             | []                      | []                       |
+| drawRequestedAt          | []                      | []                       |
+| resolvedAt               | []                      | []                       |
+| winningEntry             | []                      | []                       |
+| winningTicketId          | []                      | []                       |
+| status                   | []                      | []                       |
+| settlementComplete       | []                      | []                       |
+| winnerRedeemed           | []                      | []                       |
+| prizeClaimed             | []                      | []                       |
+| initialized              | []                      | []                       |
++--------------------------+-------------------------+--------------------------+
+
+Contract IRaffleFactory
++----------------------+-------------------------+--------------------------+
+| Function             | State variables written | Conditions on msg.sender |
++----------------------+-------------------------+--------------------------+
+| createRaffle         | []                      | []                       |
+| quoteToken           | []                      | []                       |
+| vrfWrapper           | []                      | []                       |
+| protocolTreasury     | []                      | []                       |
+| callbackGasLimit     | []                      | []                       |
+| requestConfirmations | []                      | []                       |
+| raffleImplementation | []                      | []                       |
+| raffleCount          | []                      | []                       |
+| isRaffle             | []                      | []                       |
+| raffleById           | []                      | []                       |
+| idByRaffle           | []                      | []                       |
++----------------------+-------------------------+--------------------------+
+
+Contract RaffleConstants
++-------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------+
+| Function                            | State variables written                                                                                                                                                                                                                            | Conditions on msg.sender |
++-------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------+
+| slitherConstructorConstantVariables | ['BPS', 'CASH_WINNER_BPS', 'DRAW_CALLBACK_TIMEOUT', 'DRAW_REQUEST_TIMEOUT', 'ENTRY_PRICE', 'MAX_REFUND_TICKET_BATCH_SIZE', 'MAX_SALE_DURATION', 'PROTOCOL_FEE_BPS', 'QUOTE_TOKEN_DECIMALS', 'VRF_CALLBACK_GAS_LIMIT', 'VRF_REQUEST_CONFIRMATIONS'] | []                       |
++-------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------+
+
+INFO:Slither:. analyzed (36 contracts)
+
+{"command": ["echidna", "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/S6/harness/AllocationProperties.sol", "--contract", "AllocationProperties", "--config", "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/S6/harness/echidna.yaml"], "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB", "started_at": "2026-10-21T08:16:03.832460+00:00", "timeout_seconds": 8, "cache_overrides": {"PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip", "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg", "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm", "PYTHONDONTWRITEBYTECODE": "1"}, "exit_code": 1, "finished_at": "2026-10-21T08:16:04.548057+00:00"}
+Couldn't compile given file
+stdout:
+stderr:
+WARNING:CryticCompile:Multiple frameworks detected: solc, Solc-json. Using solc (highest priority). Use --compile-force-framework to override.
+INFO:CryticCompile:'solc --version' running
+ERROR:CryticCompile:[Errno 2] No such file or directory: 'solc'
+
+HasCallStack backtrace:
+  collectBacktraces, called at libraries/ghc-internal/src/GHC/Internal/Exception.hs:169:13 in ghc-internal:GHC.Internal.Exception
+  toExceptionWithBacktrace, called at libraries/ghc-internal/src/GHC/Internal/IO.hs:260:11 in ghc-internal:GHC.Internal.IO
+  throwIO, called at libraries/exceptions/src/Control/Monad/Catch.hs:308:12 in exceptions-0.10.9-inplace:Control.Monad.Catch
+  throwM, called at lib/Echidna/Solidity.hs:95:26 in echidna-2.3.3-LrsuhPMHH0ULyJ5WXQrrHT:Echidna.Solidity
+
+
+
+{"command": ["manticore", "--version"], "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB", "started_at": "2026-10-21T08:16:04.691659+00:00", "timeout_seconds": 5, "cache_overrides": {"PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip", "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg", "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm", "PYTHONDONTWRITEBYTECODE": "1"}, "status": "LAUNCH_ERROR", "error": "FileNotFoundError(2, 'No such file or directory')", "finished_at": "2026-10-21T08:16:04.694822+00:00"}
+FileNotFoundError(2, 'No such file or directory')
+{"command": ["slither", ".", "--print", "entry-points"], "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts", "started_at": "2026-10-21T08:16:04.760675+00:00", "timeout_seconds": 8, "cache_overrides": {"PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip", "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg", "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm", "PYTHONDONTWRITEBYTECODE": "1"}, "exit_code": 0, "finished_at": "2026-10-21T08:16:10.242221+00:00"}
+unctions                                       | Modifiers             | Inherited From               |
++-------------------------------------------------+-----------------------+------------------------------+
+| [1m[95mconstructor[0m(address,address)                    |                       |                              |
+| [1m[95mreceive[0m()                                       | [92mpayable[0m               |                              |
+| [1m[91minitialize[0m(IRaffle.RaffleInitParams)            |                       |                              |
+| [1m[91mbuyEntries[0m(address,uint128)                     | [92mnonReentrant[0m          |                              |
+| [1m[91mrequestDraw[0m()                                   | [92mnonReentrant, payable[0m |                              |
+| [1m[91menableRefunds[0m()                                 | [92mnonReentrant[0m          |                              |
+| [1m[91msettleWinningTicket[0m(uint256)                    | [92mnonReentrant[0m          |                              |
+| [1m[91mredeemWinningTicket[0m(uint256)                    | [92mnonReentrant[0m          |                              |
+| [1m[91mrefundTickets[0m(uint256[])                        | [92mnonReentrant[0m          |                              |
+| [1m[91mreleaseSponsorProceeds[0m()                        | [92mnonReentrant[0m          |                              |
+| [1m[91mreleaseProtocolFees[0m()                           | [92mnonReentrant[0m          |                              |
+| [1m[91mreleaseSponsorPrize[0m()                           | [92mnonReentrant[0m          |                              |
+| [1m[91monERC721Received[0m(address,address,uint256,bytes) |                       |                              |
+| [1m[91mapprove[0m(address,uint256)                        |                       | [95mERC721[0m                       |
+| [1m[91msetApprovalForAll[0m(address,bool)                 |                       | [95mERC721[0m                       |
+| [1m[91mtransferFrom[0m(address,address,uint256)           |                       | [95mERC721[0m                       |
+| [1m[91msafeTransferFrom[0m(address,address,uint256)       |                       | [95mERC721[0m                       |
+| [1m[91msafeTransferFrom[0m(address,address,uint256,bytes) |                       | [95mERC721[0m                       |
+| [1m[91mrawFulfillRandomWords[0m(uint256,uint256[])        |                       | [95mVRFV2PlusWrapperConsumerBase[0m |
++-------------------------------------------------+-----------------------+------------------------------+
+
+
+Contract [1m[93mRaffleFactory[0m is ReentrancyGuard (src/RaffleFactory.sol#21-186)
++-------------+-----------------------------+----------------+
+| Variables   | Types                       | Inherited From |
++-------------+-----------------------------+----------------+
+| [1m[94mraffleCount[0m | [92muint256[0m                     |                |
+| [1m[94mraffleById[0m  | [92mmapping(uint256 => address)[0m |                |
+| [1m[94midByRaffle[0m  | [92mmapping(address => uint256)[0m |                |
+| [1m[94misRaffle[0m    | [92mmapping(address => bool)[0m    |                |
++-------------+-----------------------------+----------------+
++-------------------------------------------------+--------------+----------------+
+| Functions                                       | Modifiers    | Inherited From |
++-------------------------------------------------+--------------+----------------+
+| [1m[95mconstructor[0m(address,address,address)            |              |                |
+| [1m[91mcreateRaffle[0m(IRaffleFactory.CreateRaffleParams) | [92mnonReentrant[0m |                |
++-------------------------------------------------+--------------+----------------+
+INFO:Slither:. analyzed (36 contracts)
+
+{"command": ["slither", ".", "--print", "human-summary"], "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts", "started_at": "2026-10-21T08:16:10.312729+00:00", "timeout_seconds": 8, "cache_overrides": {"PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip", "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg", "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm", "PYTHONDONTWRITEBYTECODE": "1"}, "exit_code": 0, "finished_at": "2026-10-21T08:16:14.384405+00:00"}
+INFO:Printers:
+Compiled with Foundry
+Total number of contracts in source files: 5
+Number of contracts in dependencies: 31
+Source lines of code (SLOC) in source files: 710
+Source lines of code (SLOC) in dependencies: 2220
+Number of  assembly lines: 0
+Number of optimization issues: 0
+Number of informational issues: 80
+Number of low issues: 11
+Number of medium issues: 10
+Number of high issues: 1
+
+Use: Openzeppelin-ERC721
+ERCs: ERC20, ERC165, ERC721, ERC1363
+
++-----------------+-------------+---------------+------------+--------------+--------------------+
+| Name            | # functions | ERCS          | ERC20 info | Complex code | Features           |
++-----------------+-------------+---------------+------------+--------------+--------------------+
+| Raffle          | 144         | ERC165,ERC721 |            | Yes          | Receive ETH        |
+|                 |             |               |            |              | Send ETH           |
+|                 |             |               |            |              | Tokens interaction |
+|                 |             |               |            |              | Assembly           |
+| RaffleFactory   | 22          |               |            | Yes          | Tokens interaction |
+| RaffleConstants | 1           |               |            | No           |                    |
++-----------------+-------------+---------------+------------+--------------+--------------------+
+INFO:Slither:. analyzed (36 contracts)
+
+{"command": ["slither", ".", "--print", "contract-summary"], "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts", "started_at": "2026-10-21T08:16:14.459331+00:00", "timeout_seconds": 8, "cache_overrides": {"PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip", "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg", "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm", "PYTHONDONTWRITEBYTECODE": "1"}, "exit_code": 0, "finished_at": "2026-10-21T08:16:18.902670+00:00"}
+unds() (external)
+    - estimateVrfRequestPrice(uint256) (public)
+    - fulfillRandomWords(uint256,uint256[]) (internal)
+    - getVrfRequestPrice() (public)
+    - grossSales() (public)
+    - initialize(IRaffle.RaffleInitParams) (external)
+    - name() (public)
+    - onERC721Received(address,address,uint256,bytes) (external)
+    - receive() (external)
+    - redeemWinningTicket(uint256) (external)
+    - refundTickets(uint256[]) (external)
+    - releaseProtocolFees() (external)
+    - releaseSponsorPrize() (external)
+    - releaseSponsorProceeds() (external)
+    - requestDraw() (external)
+    - settleWinningTicket(uint256) (external)
+    - symbol() (public)
+    - ticketRange(uint256) (public)
+    - vrfWrapper() (public)
+
++ Contract RaffleFactory (Most derived contract)
+  - From ReentrancyGuard
+    - _nonReentrantAfter() (private)
+    - _nonReentrantBefore() (private)
+    - _nonReentrantBeforeView() (private)
+    - _reentrancyGuardEntered() (internal)
+    - _reentrancyGuardStorageSlot() (internal)
+    - constructor() (internal)
+  - From IRaffleFactory
+    - callbackGasLimit() (external)
+    - idByRaffle(address) (external)
+    - isRaffle(address) (external)
+    - protocolTreasury() (external)
+    - quoteToken() (external)
+    - raffleById(uint256) (external)
+    - raffleCount() (external)
+    - raffleImplementation() (external)
+    - requestConfirmations() (external)
+    - vrfWrapper() (external)
+  - From RaffleFactory
+    - _requireContract(address) (private)
+    - _validateCreateParams(IRaffleFactory.CreateRaffleParams) (private)
+    - constructor(address,address,address) (public)
+    - createRaffle(IRaffleFactory.CreateRaffleParams) (external)
+
++ Contract IRaffle
+  - From IRaffle
+    - ENTRY_PRICE() (external)
+    - accountedQuoteBalance() (external)
+    - buyEntries(address,uint128) (external)
+    - callbackDeadline() (external)
+    - callbackGasLimit() (external)
+    - drawRequestDeadline() (external)
+    - drawRequestedAt() (external)
+    - enableRefunds() (external)
+    - endTime() (external)
+    - estimateVrfRequestPrice(uint256) (external)
+    - factory() (external)
+    - getVrfRequestPrice() (external)
+    - grossSales() (external)
+    - initialize(IRaffle.RaffleInitParams) (external)
+    - initialized() (external)
+    - prizeClaimed() (external)
+    - prizeToken() (external)
+    - prizeTokenId() (external)
+    - protocolFees() (external)
+    - protocolTreasury() (external)
+    - quoteToken() (external)
+    - raffleId() (external)
+    - redeemWinningTicket(uint256) (external)
+    - refundTickets(uint256[]) (external)
+    - releaseProtocolFees() (external)
+    - releaseSponsorPrize() (external)
+    - releaseSponsorProceeds() (external)
+    - remainingRefundLiability() (external)
+    - requestConfirmations() (external)
+    - requestDraw() (external)
+    - reserveEntries() (external)
+    - resolvedAt() (external)
+    - settleWinningTicket(uint256) (external)
+    - settlementComplete() (external)
+    - sponsor() (external)
+    - sponsorProceeds() (external)
+    - sponsorRecipient() (external)
+    - status() (external)
+    - ticketCount() (external)
+    - ticketRange(uint256) (external)
+    - totalEntries() (external)
+    - unsettledPot() (external)
+    - vrfRequestId() (external)
+    - vrfWrapper() (external)
+    - winnerProceeds() (external)
+    - winnerRecipient() (external)
+    - winnerRedeemed() (external)
+    - winningEntry() (external)
+    - winningTicketId() (external)
+
++ Contract IRaffleFactory
+  - From IRaffleFactory
+    - callbackGasLimit() (external)
+    - createRaffle(IRaffleFactory.CreateRaffleParams) (external)
+    - idByRaffle(address) (external)
+    - isRaffle(address) (external)
+    - protocolTreasury() (external)
+    - quoteToken() (external)
+    - raffleById(uint256) (external)
+    - raffleCount() (external)
+    - raffleImplementation() (external)
+    - requestConfirmations() (external)
+    - vrfWrapper() (external)
+
++ Contract RaffleConstants (Most derived contract)
+
+INFO:Slither:. analyzed (36 contracts)
+
+{"command": ["slither", ".", "--compile-force-framework", "foundry", "--exclude-dependencies"], "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts", "started_at": "2026-10-21T08:16:18.971045+00:00", "timeout_seconds": 8, "cache_overrides": {"PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip", "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg", "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm", "PYTHONDONTWRITEBYTECODE": "1"}, "exit_code": 255, "finished_at": "2026-10-21T08:16:22.692075+00:00"}
+e <= currentTime (src/RaffleFactory.sol#100)
+	- saleDuration > RaffleConstants.MAX_SALE_DURATION (src/RaffleFactory.sol#102)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+INFO:Detectors:
+Detector: assembly
+Raffle.requestDraw() (src/Raffle.sol#240-273) uses assembly
+	- INLINE ASM (src/Raffle.sol#266-268)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#assembly-usage
+INFO:Detectors:
+Detector: pragma
+9 different versions of Solidity are used:
+	- Version constraint ^0.8.0 is used by:
+		-^0.8.0 (node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol#2)
+		-^0.8.0 (node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol#2)
+		-^0.8.0 (node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol#2)
+	- Version constraint ^0.8.4 is used by:
+		-^0.8.4 (node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol#2)
+	- Version constraint >=0.6.2 is used by:
+		->=0.6.2 (node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol#4)
+		->=0.6.2 (node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol#4)
+		->=0.6.2 (node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol#4)
+		->=0.6.2 (node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol#4)
+	- Version constraint >=0.4.16 is used by:
+		->=0.4.16 (node_modules/@openzeppelin/contracts/interfaces/IERC165.sol#4)
+		->=0.4.16 (node_modules/@openzeppelin/contracts/interfaces/IERC20.sol#4)
+		->=0.4.16 (node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol#4)
+		->=0.4.16 (node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol#4)
+	- Version constraint >=0.8.4 is used by:
+		->=0.8.4 (node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol#4)
+	- Version constraint ^0.8.20 is used by:
+		-^0.8.20 (node_modules/@openzeppelin/contracts/proxy/Clones.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/Context.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/Create2.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/Errors.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/Panic.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/StorageSlot.sol#5)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/math/Math.sol#4)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol#5)
+		-^0.8.20 (node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol#4)
+	- Version constraint ^0.8.24 is used by:
+		-^0.8.24 (node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol#4)
+		-^0.8.24 (node_modules/@openzeppelin/contracts/utils/Bytes.sol#4)
+		-^0.8.24 (node_modules/@openzeppelin/contracts/utils/Strings.sol#4)
+	- Version constraint >=0.5.0 is used by:
+		->=0.5.0 (node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol#4)
+	- Version constraint 0.8.36 is used by:
+		-0.8.36 (src/Raffle.sol#2)
+		-0.8.36 (src/RaffleFactory.sol#2)
+		-0.8.36 (src/interfaces/IRaffle.sol#2)
+		-0.8.36 (src/interfaces/IRaffleFactory.sol#2)
+		-0.8.36 (src/libraries/RaffleConstants.sol#2)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#different-pragma-directives-are-used
+INFO:Detectors:
+Detector: naming-convention
+Function IRaffle.ENTRY_PRICE() (src/interfaces/IRaffle.sol#396) is not in mixedCase
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+INFO:Slither:. analyzed (36 contracts with 102 detectors), 14 result(s) found
+

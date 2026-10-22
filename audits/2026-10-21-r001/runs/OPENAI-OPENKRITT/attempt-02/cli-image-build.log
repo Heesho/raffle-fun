@@ -1,0 +1,21 @@
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon   7.81MB
+Step 1/2 : FROM sha256:c247b67cb3b26071a2238a799194826602752ea59624be4d6f14a19d81917b1e
+ ---> c247b67cb3b2
+Step 2/2 : RUN npm install --global --no-audit --no-fund @openai/codex@0.159.2 && codex --version && codex exec --help > /tmp/codex-exec-help.txt
+ ---> Running in 210042d3ec84
+
+changed 2 packages in 15s
+[91mnpm notice
+npm notice New minor version of npm available! 12.0.1 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+[0mcodex-cli 0.159.2
+ ---> Removed intermediate container 210042d3ec84
+ ---> 632646330f8a
+Successfully built 632646330f8a
+Successfully tagged raffle-r001-openkritt-cli:0.159.2

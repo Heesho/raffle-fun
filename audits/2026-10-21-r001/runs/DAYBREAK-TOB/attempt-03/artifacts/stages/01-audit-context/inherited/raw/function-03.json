@@ -1,0 +1,122 @@
+{
+  "stage_id": "S1-FUNCTION-03",
+  "accepted_local_selection": {
+    "model": "gpt-daybreak-blue-latest",
+    "reasoning_effort": "ultra",
+    "cyber_access_program": "daybreak_blue",
+    "fallback": "disabled"
+  },
+  "provider_returned_model": "unknown",
+  "provider_identity": "unknown",
+  "target_sha": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "function": "Raffle.buyEntries",
+  "file": "target/packages/contracts/src/Raffle.sol",
+  "lines": "L209-L237",
+  "analysisFile": ".audit-work/stages/01-audit-context/functions/03-Raffle.buyEntries.md",
+  "invariants": [
+    {
+      "claim": "A successful purchase starts in Active before endTime, uses a nonzero recipient and positive entryCount, and leaves totalEntries within uint128 (Raffle.sol:L215-L221).",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L215-L221"
+    },
+    {
+      "claim": "Each successful call assigns the next ticket ID and a nonempty range directly following the old total, then advances totalEntries and ticketCount once (Raffle.sol:L226-L232).",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L218-L232"
+    },
+    {
+      "claim": "The recorded purchase liability increases by entryCount * ENTRY_PRICE before the ticket receiver callback (Raffle.sol:L223-L235).",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L223-L235"
+    },
+    {
+      "claim": "Minting screens known protocol destinations and records ERC721 ownership before any code-bearing receiver is called (Raffle.sol:L497-L501; ERC721.sol:L259-L290).",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L497-L501; target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L259-L290"
+    },
+    {
+      "claim": "The shared nonReentrant guard remains entered across both the quote-token call and receiver callback (Raffle.sol:L212-L235; ReentrancyGuard.sol:L69-L105).",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L212-L235; target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:L69-L105"
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "An accepted SafeERC20 transferFrom result increases raffle quote-token custody by exactly grossAmount.",
+      "establishedBy": "Canonical fee-free quote-token trust requirement at IRaffle.sol:L12-L15 and DESIGN.md:L2; SafeERC20 itself checks return behavior, not balance delta (SafeERC20.sol:L212-L244)."
+    },
+    {
+      "claim": "The configured quote-token address is the target chain's official USDC.",
+      "establishedBy": "Deployment tooling is assigned this check at IRaffleFactory.sol:L7-L9; onchain construction establishes only code presence and six decimals at RaffleFactory.sol:L66-L78."
+    },
+    {
+      "claim": "ticketId is fresh and ticketCount cannot outrun totalEntries.",
+      "establishedBy": "Both clone values start zero; only buyEntries writes them, each successful call adds at least one entry and exactly one ticket, and the uint128 entry bound is checked at Raffle.sol:L218-L232."
+    },
+    {
+      "claim": "A contract recipient's successful callback establishes ERC721 acceptance, but does not establish that recipient remains owner when buyEntries returns.",
+      "establishedBy": "Ownership is written before callback at ERC721.sol:L216-L244 and L287-L290; public inherited approval/transfer entrypoints remain callable at ERC721.sol:L92-L136; ERC721Utils checks only callback return/revert behavior at L32-L47."
+    },
+    {
+      "claim": "Canonical factory getter calls used by destination screening return the fixed implementation and current registration bit without callback behavior.",
+      "establishedBy": "Public immutable/mapping declarations at RaffleFactory.sol:L41-L54 and writes at L89-L91, L105-L125."
+    }
+  ],
+  "calls": [
+    {
+      "callee": "ReentrancyGuard._nonReentrantBefore/_nonReentrantAfter",
+      "kind": "internal",
+      "propagates": "Rejects nested protected calls, writes ENTERED before the body, and restores NOT_ENTERED after normal completion (ReentrancyGuard.sol:L69-L105)."
+    },
+    {
+      "callee": "Raffle._requireStatus",
+      "kind": "internal",
+      "propagates": "Continuation establishes current status equals Active; mismatch reverts with actual status (Raffle.sol:L215, L571-L575)."
+    },
+    {
+      "callee": "SafeERC20.safeTransferFrom/_safeTransferFrom",
+      "kind": "internal",
+      "propagates": "Bubbles a failed token call, accepts returned true or code-bearing empty return, and rejects other return outcomes; it does not verify a balance delta (SafeERC20.sol:L40-L47, L212-L244)."
+    },
+    {
+      "callee": "IERC20.transferFrom",
+      "kind": "external-black-box",
+      "propagates": "Receives msg.sender, this raffle, and grossAmount before purchase writes; exact fee-free movement is trusted, while revert, nonstandard return, and re-entry are external outcomes (Raffle.sol:L223-L224; IERC20.sol:L69-L78)."
+    },
+    {
+      "callee": "ERC721._safeMint/_mint",
+      "kind": "internal",
+      "propagates": "Dispatches through Raffle._update, requires a previously unowned token ID, then runs receiver acceptance with empty data (ERC721.sol:L259-L290)."
+    },
+    {
+      "callee": "Raffle._update/_isProtocolDestination",
+      "kind": "internal",
+      "propagates": "Rejects local protocol plumbing, implementation, prize token, wrapper, and registered raffle destinations before delegating the ledger update (Raffle.sol:L497-L502, L593-L605)."
+    },
+    {
+      "callee": "RaffleFactory.raffleImplementation/isRaffle",
+      "kind": "external-source-available",
+      "propagates": "Supplies immutable implementation identity and registry membership used by destination screening (RaffleFactory.sol:L41-L54, L89-L91, L105-L125)."
+    },
+    {
+      "callee": "ERC721._update",
+      "kind": "internal",
+      "propagates": "On mint, increments recipient balance, writes ownership, emits Transfer, and returns the previous owner for the freshness check (ERC721.sol:L216-L267)."
+    },
+    {
+      "callee": "IERC721Receiver.onERC721Received via ERC721Utils.checkOnERC721Received",
+      "kind": "external-black-box",
+      "propagates": "Skips code-less recipients; for code-bearing recipients accepts only the selector, maps empty failure to invalid receiver, and bubbles nonempty reverts after ownership/accounting writes (ERC721Utils.sol:L25-L48)."
+    }
+  ],
+  "callers": [
+    "Any external address may call directly subject to lifecycle, time, input, payment, destination, and receiver gates (Raffle.sol:L209-L237; IRaffle.sol:L310-L314).",
+    "No internal target callsite exists; the other target occurrence is the ABI declaration (IRaffle.sol:L314)."
+  ],
+  "sharedState": [
+    "status and endTime: read at Raffle.sol:L215-L216; established/transitioned at L197-L205, L240-L300, L421-L430, L509-L523.",
+    "totalEntries, ticketCount, _ticketRanges: written at Raffle.sol:L226-L232; consumed at L243, L280-L287, L362-L369, L451-L455, L518-L521, L538, L579-L584.",
+    "unsettledPot and quote-token custody: increased at Raffle.sol:L223-L233; transformed or paid through L296-L299, L339-L342, L367-L390, L539-L555.",
+    "ERC721 ownership/balances/approvals: mint reaches ERC721.sol:L216-L290; inherited transfers/approvals are at L92-L136 and refund/redemption burns occur at Raffle.sol:L320-L325, L357-L365.",
+    "fixed ReentrancyGuard slot: held across the function by Raffle.sol:L212 and ReentrancyGuard.sol:L35-L37, L69-L105.",
+    "factory implementation/registry state: read by Raffle.sol:L598-L604 and defined/written at RaffleFactory.sol:L41-L54, L89-L91, L105-L125."
+  ],
+  "openQuestions": [
+    "unclear; need to inspect the deployed quote-token implementation and deployment evidence to confirm canonical identity and exact grossAmount balance-delta semantics; the target contains only its interface, trust requirement, and factory code/decimal checks (IRaffle.sol:L12-L15; IRaffleFactory.sol:L7-L9; RaffleFactory.sol:L66-L78)."
+  ]
+}

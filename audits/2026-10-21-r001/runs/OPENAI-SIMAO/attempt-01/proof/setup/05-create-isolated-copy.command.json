@@ -1,0 +1,9 @@
+{
+  "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-SIMAO",
+  "environment_overrides": {},
+  "argv": [
+    "python3",
+    "-c",
+    "from pathlib import Path\nimport shutil, json\nsrc=Path('target/packages/contracts')\ndst=Path('work/proof-work/contracts')\nsymlinks=[str(p) for p in src.rglob('*') if p.is_symlink()]\nif symlinks: raise RuntimeError('Source symlinks require explicit confinement review: '+repr(symlinks))\nif dst.exists(): raise RuntimeError('Refusing to overwrite existing isolated copy')\nshutil.copytree(src,dst)\nfor n in ['svm','foundry','xdg-cache','xdg-config','tmp']:\n (dst.parent/n).mkdir(parents=True, exist_ok=True)\nprint(json.dumps({'isolated_copy':str(dst.resolve()),'file_count':sum(1 for p in dst.rglob('*') if p.is_file()),'source_unchanged':True}))"
+  ]
+}

@@ -1,0 +1,37 @@
+Compiling 3 files with Solc 0.8.36
+Solc 0.8.36 finished in 1.44s
+Compiler run successful!
+
+Ran 21 tests for test/foundry/s6/S6SecureWorkflow.t.sol:S6SecureWorkflowTest
+[PASS] testFuzz_FeeArithmeticAndRoundingConserveEveryReachablePot(uint128,bool) (runs: 32, μ: 1520, ~: 1619)
+[PASS] testFuzz_TicketRangesPartitionSalesAndAccounting(uint128,uint128) (runs: 32, μ: 6978815, ~: 6978815)
+[PASS] test_CallbackDeadlineIsExclusiveAndRefundOpensAtBoundary() (gas: 6976339)
+[PASS] test_CashSettlementRedemptionAndPrizeReturnConserveLiabilities() (gas: 7069254)
+[PASS] test_CurrentOwnerAuthorizationAndPermissionlessFixedDestinationClaims() (gas: 7027053)
+[PASS] test_ERC721RuntimeConformanceOnClone() (gas: 6958415)
+[PASS] test_Evidence_CrossFactoryRaffleDestinationIsAcceptedAndStrandsTicket() (gas: 13462920)
+[PASS] test_Evidence_FeeOnTransferQuoteCreatesCustodyDeficit() (gas: 6879951)
+[PASS] test_Evidence_MaliciousPrizeCanFakeEscrowAndDelivery() (gas: 6320108)
+[PASS] test_Evidence_PrizeCanBuyEntriesBeforeCreateRaffleReturns() (gas: 6965593)
+[PASS] test_Evidence_PrizeTransferSkipsIncompatibleContractReceiverCheck() (gas: 7276465)
+[PASS] test_IncompatibleTicketRecipientRevertsPurchaseAtomically() (gas: 6920255)
+[PASS] test_InitializationIsFactoryOnlyAndOneTime() (gas: 6667764)
+[PASS] test_NftSettlementClaimsAndRedemptionConserveLiabilities() (gas: 7039175)
+[PASS] test_NonstandardFalseReturnQuoteRevertsAtomically() (gas: 6743523)
+[PASS] test_PrizeWithoutReceiverCallbackIsRejectedAtomically() (gas: 6524313)
+[PASS] test_RefundsBurnTicketsAndConserveFullPot() (gas: 6869922)
+[FAIL: next call did not revert as expected] test_SaleAndDrawRequestTimeBoundaries() (gas: 20680465)
+[PASS] test_SameFactoryRaffleDestinationIsRejected() (gas: 7221992)
+[PASS] test_SynchronousWrongShapeWrongIdAndDuplicateCallbacksAreContained() (gas: 7018842)
+[PASS] test_TicketReceiverAndQuoteCallbacksCannotReenterProtectedPurchase() (gas: 14069780)
+Suite result: FAILED. 20 passed; 1 failed; 0 skipped; finished in 33.02ms (78.32ms CPU time)
+
+Ran 1 test suite in 38.69ms (33.02ms CPU time): 20 tests passed, 1 failed, 0 skipped (21 total tests)
+
+Failing tests:
+Encountered 1 failing test in test/foundry/s6/S6SecureWorkflow.t.sol:S6SecureWorkflowTest
+[FAIL: next call did not revert as expected] test_SaleAndDrawRequestTimeBoundaries() (gas: 20680465)
+
+Encountered a total of 1 failing tests, 20 tests succeeded
+
+Tip: Run `forge test --rerun` to retry only the 1 failed test

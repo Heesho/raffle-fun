@@ -1,0 +1,2749 @@
+[
+  {
+    "profile": "default",
+    "contract": "Raffle",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/default/Raffle.sol/Raffle.json",
+    "artifact_sha256": "0d67ed6b0eb2e8c49ad663794bf02d97c762845c6f02d5fd59130afe000c4cc1",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/Raffle.sol": "Raffle"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol": "0xcee9303d524c29fefc346775ec0be31d134a5f14c990fe04961a9f516eb23ad5",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol": "0x49eef0f77dd5b06a6aeead7945d9a4d0948137dc228fe045e07f62e80a4c5aa2",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol": "0xb0b1a6f3f0d59aca5c805994d8f64c24f570c280422f976dbae20f8b5b24b47c",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol": "0xd5ea07362ab630a6a3dee4285a74cf2377044ca2e4be472755ad64d7c5d4b69d",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": "0x0afcb7e740d1537b252cb2676f600465ce6938398569f09ba1b9ca240dde2dfc",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC20.sol": "0x1a6221315ce0307746c2c4827c125d821ee796c74a676787762f4778671d4f44",
+      "node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol": "0x1b88b3fb3d85ba5496d7d5f396f83ee1fddcdd6762059ff65992655b67920998",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": "0x304d732678032a9781ae85c8f204c8fba3d3a5e31c02616964e75cfdc5049098",
+      "node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": "0xf6bb0dc431a9c50e25756412ec14cfcd4dc61dd40b8dc0e1b58ec09fce6d5564",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": "0x88cd5e3bee2e8c36b8d9058fbcaa81ad5704281b25634122234b55ea853d8055",
+      "node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": "0xf46268c37522320bb2119a5a394bc5c739a95c0c574c8d08e8c643f4d06e5c76",
+      "node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol": "0xc7efbc23214ad7dced8bf2249460f4bda114d57f6a0079f84040654280f455bd",
+      "node_modules/@openzeppelin/contracts/utils/Bytes.sol": "0xf80e4b96b6849936ea0fabd76cf81b13d7276295fddb1e1c07afb3ddf650b0ac",
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+      "node_modules/@openzeppelin/contracts/utils/Panic.sol": "0xf7fe324703a64fc51702311dc51562d5cb1497734f074e4f483bfb6717572d7a",
+      "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol": "0xa516cbf1c7d15d3517c2d668601ce016c54395bf5171918a14e2686977465f53",
+      "node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+      "node_modules/@openzeppelin/contracts/utils/Strings.sol": "0x1fdc2de9585ab0f1c417f02a873a2b6343cd64bb7ffec6b00ffa11a4a158d9e8",
+      "node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": "0x2d9dc2fe26180f74c11c13663647d38e259e45f95eb88f57b61d2160b0109d3e",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "node_modules/@openzeppelin/contracts/utils/math/Math.sol": "0x59973a93b1f983f94e10529f46ca46544a9fec2b5f56fb1390bbe9e0dc79f857",
+      "node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol": "0xc8cae21c9ae4a46e5162ff9bf5b351d6fa6a6eba72d515f3bc1bdfeda7fdf083",
+      "node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol": "0xb1970fac7b64e6c09611e6691791e848d5e3fe410fa5899e7df2e0afd77a99e3",
+      "src/Raffle.sol": "0x9067879c5698319f21be1aa9b6330943b5f0ea90ec32adcb5faf1e9081dfcddc",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef",
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a",
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "9adc4a307e063480905cbd66b58860a8d5c94afc4545193cc203a1cc629f3ccf",
+    "creation_bytecode_sha256": "682bcc4c6189e82791b116456182379c6fd5251a964c850858ad78c54020702a",
+    "runtime_bytecode_sha256": "11096926496bb57ac0540d6f467efa8a119ef3bfcbfa0776356180a0ee60904f",
+    "immutable_references": {
+      "41387": [
+        {
+          "start": 3133,
+          "length": 32
+        }
+      ],
+      "41390": [
+        {
+          "start": 2307,
+          "length": 32
+        },
+        {
+          "start": 2516,
+          "length": 32
+        },
+        {
+          "start": 4461,
+          "length": 32
+        },
+        {
+          "start": 4768,
+          "length": 32
+        },
+        {
+          "start": 6790,
+          "length": 32
+        },
+        {
+          "start": 9591,
+          "length": 32
+        },
+        {
+          "start": 11637,
+          "length": 32
+        },
+        {
+          "start": 11746,
+          "length": 32
+        }
+      ],
+      "51195": [
+        {
+          "start": 2902,
+          "length": 32
+        },
+        {
+          "start": 3461,
+          "length": 32
+        },
+        {
+          "start": 3721,
+          "length": 32
+        },
+        {
+          "start": 9420,
+          "length": 32
+        },
+        {
+          "start": 9471,
+          "length": 32
+        }
+      ],
+      "51200": [
+        {
+          "start": 1617,
+          "length": 32
+        },
+        {
+          "start": 5734,
+          "length": 32
+        },
+        {
+          "start": 9531,
+          "length": 32
+        },
+        {
+          "start": 10738,
+          "length": 32
+        }
+      ]
+    }
+  },
+  {
+    "profile": "default",
+    "contract": "RaffleFactory",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/default/RaffleFactory.sol/RaffleFactory.json",
+    "artifact_sha256": "6a39b1ac5440b674898f280907c021eeade612bd009370563e181e9b267f2090",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/RaffleFactory.sol": "RaffleFactory"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol": "0xcee9303d524c29fefc346775ec0be31d134a5f14c990fe04961a9f516eb23ad5",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol": "0x49eef0f77dd5b06a6aeead7945d9a4d0948137dc228fe045e07f62e80a4c5aa2",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol": "0xb0b1a6f3f0d59aca5c805994d8f64c24f570c280422f976dbae20f8b5b24b47c",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol": "0xd5ea07362ab630a6a3dee4285a74cf2377044ca2e4be472755ad64d7c5d4b69d",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": "0x0afcb7e740d1537b252cb2676f600465ce6938398569f09ba1b9ca240dde2dfc",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC20.sol": "0x1a6221315ce0307746c2c4827c125d821ee796c74a676787762f4778671d4f44",
+      "node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol": "0x1b88b3fb3d85ba5496d7d5f396f83ee1fddcdd6762059ff65992655b67920998",
+      "node_modules/@openzeppelin/contracts/proxy/Clones.sol": "0x5a1847c0c6b92d60711f04cba9eaff572ae1f657cff1b8ca4ba065bcdbd68d8b",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": "0xd6fa4088198f04eef10c5bce8a2f4d60554b7ec4b987f684393c01bf79b94d9f",
+      "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": "0x304d732678032a9781ae85c8f204c8fba3d3a5e31c02616964e75cfdc5049098",
+      "node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": "0xf6bb0dc431a9c50e25756412ec14cfcd4dc61dd40b8dc0e1b58ec09fce6d5564",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": "0x88cd5e3bee2e8c36b8d9058fbcaa81ad5704281b25634122234b55ea853d8055",
+      "node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": "0xf46268c37522320bb2119a5a394bc5c739a95c0c574c8d08e8c643f4d06e5c76",
+      "node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol": "0xc7efbc23214ad7dced8bf2249460f4bda114d57f6a0079f84040654280f455bd",
+      "node_modules/@openzeppelin/contracts/utils/Bytes.sol": "0xf80e4b96b6849936ea0fabd76cf81b13d7276295fddb1e1c07afb3ddf650b0ac",
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+      "node_modules/@openzeppelin/contracts/utils/Create2.sol": "0xe06ddfff69f3ba154d92102d9a85db2780e045303a587360cf12195216e851ca",
+      "node_modules/@openzeppelin/contracts/utils/Errors.sol": "0x6afa713bfd42cf0f7656efa91201007ac465e42049d7de1d50753a373648c123",
+      "node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol": "0x6ba3db1346fc75a832aa6cd075e12f6f1fa172fa2122a020f324c319fe5be75e",
+      "node_modules/@openzeppelin/contracts/utils/Panic.sol": "0xf7fe324703a64fc51702311dc51562d5cb1497734f074e4f483bfb6717572d7a",
+      "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol": "0xa516cbf1c7d15d3517c2d668601ce016c54395bf5171918a14e2686977465f53",
+      "node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+      "node_modules/@openzeppelin/contracts/utils/Strings.sol": "0x1fdc2de9585ab0f1c417f02a873a2b6343cd64bb7ffec6b00ffa11a4a158d9e8",
+      "node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": "0x2d9dc2fe26180f74c11c13663647d38e259e45f95eb88f57b61d2160b0109d3e",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "node_modules/@openzeppelin/contracts/utils/math/Math.sol": "0x59973a93b1f983f94e10529f46ca46544a9fec2b5f56fb1390bbe9e0dc79f857",
+      "node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol": "0xc8cae21c9ae4a46e5162ff9bf5b351d6fa6a6eba72d515f3bc1bdfeda7fdf083",
+      "node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol": "0xb1970fac7b64e6c09611e6691791e848d5e3fe410fa5899e7df2e0afd77a99e3",
+      "src/Raffle.sol": "0x9067879c5698319f21be1aa9b6330943b5f0ea90ec32adcb5faf1e9081dfcddc",
+      "src/RaffleFactory.sol": "0x7bacf809752ede88c43dbe2817a66d5e1b15c87fbdaae4fecfcbd9b5b92337e6",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef",
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a",
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "e371f9f87048a88c2015069e1fb7666e0333892e18a2c8a12001e774e0d38bb3",
+    "creation_bytecode_sha256": "f803fc58e6e03270f8c090045b35b058cddf16ba4692e1a4329368af59f97d5c",
+    "runtime_bytecode_sha256": "08c0a9c03c492a6c9d2cf1d30b66304328526cee7eb6bb0f2a68aa14ec5fb2ab",
+    "immutable_references": {
+      "53136": [
+        {
+          "start": 223,
+          "length": 32
+        },
+        {
+          "start": 1760,
+          "length": 32
+        },
+        {
+          "start": 2169,
+          "length": 32
+        },
+        {
+          "start": 2530,
+          "length": 32
+        }
+      ],
+      "53140": [
+        {
+          "start": 416,
+          "length": 32
+        },
+        {
+          "start": 2244,
+          "length": 32
+        },
+        {
+          "start": 2602,
+          "length": 32
+        }
+      ],
+      "53144": [
+        {
+          "start": 377,
+          "length": 32
+        },
+        {
+          "start": 920,
+          "length": 32
+        },
+        {
+          "start": 1793,
+          "length": 32
+        }
+      ],
+      "53148": [
+        {
+          "start": 293,
+          "length": 32
+        },
+        {
+          "start": 806,
+          "length": 32
+        },
+        {
+          "start": 2319,
+          "length": 32
+        },
+        {
+          "start": 2729,
+          "length": 32
+        }
+      ]
+    }
+  },
+  {
+    "profile": "default",
+    "contract": "IRaffle",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/default/IRaffle.sol/IRaffle.json",
+    "artifact_sha256": "c8c349b234ce09974f0356ea3d4f962768a16fb0ef397a9ec330ddc117e77d39",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/interfaces/IRaffle.sol": "IRaffle"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef"
+    },
+    "abi_sha256": "3af2eecbb9a5f01c9b58c82ef94f04b21e8e590c53c49f08175957a159c3c5b0",
+    "creation_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "runtime_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "immutable_references": {}
+  },
+  {
+    "profile": "default",
+    "contract": "IRaffleFactory",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/default/IRaffleFactory.sol/IRaffleFactory.json",
+    "artifact_sha256": "1fd29301bfd49341ac54cf8612b4bc5ab0daef62040350e69af9b861054b8379",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/interfaces/IRaffleFactory.sol": "IRaffleFactory"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a"
+    },
+    "abi_sha256": "19bb77c722ae65f2c88ac99e611f2d59291f5033c07ff277889cbb557dfdf097",
+    "creation_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "runtime_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "immutable_references": {}
+  },
+  {
+    "profile": "default",
+    "contract": "RaffleConstants",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/default/RaffleConstants.sol/RaffleConstants.json",
+    "artifact_sha256": "36eb10551bb8a25838420edaf36622d3129b157627a3e7044be264a39e38baec",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/libraries/RaffleConstants.sol": "RaffleConstants"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "creation_bytecode_sha256": "fe16c862102d11803a245aefdc4e3ecd0dfbe6ed81384726bd12490426c8e18f",
+    "runtime_bytecode_sha256": "88257ceef23c8708b1055ac80f1bcfa0dcb2ea1f2aea9ba50f40f95011376bdb",
+    "immutable_references": {}
+  },
+  {
+    "profile": "ci",
+    "contract": "Raffle",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/ci/Raffle.sol/Raffle.json",
+    "artifact_sha256": "0d67ed6b0eb2e8c49ad663794bf02d97c762845c6f02d5fd59130afe000c4cc1",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/Raffle.sol": "Raffle"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol": "0xcee9303d524c29fefc346775ec0be31d134a5f14c990fe04961a9f516eb23ad5",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol": "0x49eef0f77dd5b06a6aeead7945d9a4d0948137dc228fe045e07f62e80a4c5aa2",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol": "0xb0b1a6f3f0d59aca5c805994d8f64c24f570c280422f976dbae20f8b5b24b47c",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol": "0xd5ea07362ab630a6a3dee4285a74cf2377044ca2e4be472755ad64d7c5d4b69d",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": "0x0afcb7e740d1537b252cb2676f600465ce6938398569f09ba1b9ca240dde2dfc",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC20.sol": "0x1a6221315ce0307746c2c4827c125d821ee796c74a676787762f4778671d4f44",
+      "node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol": "0x1b88b3fb3d85ba5496d7d5f396f83ee1fddcdd6762059ff65992655b67920998",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": "0x304d732678032a9781ae85c8f204c8fba3d3a5e31c02616964e75cfdc5049098",
+      "node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": "0xf6bb0dc431a9c50e25756412ec14cfcd4dc61dd40b8dc0e1b58ec09fce6d5564",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": "0x88cd5e3bee2e8c36b8d9058fbcaa81ad5704281b25634122234b55ea853d8055",
+      "node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": "0xf46268c37522320bb2119a5a394bc5c739a95c0c574c8d08e8c643f4d06e5c76",
+      "node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol": "0xc7efbc23214ad7dced8bf2249460f4bda114d57f6a0079f84040654280f455bd",
+      "node_modules/@openzeppelin/contracts/utils/Bytes.sol": "0xf80e4b96b6849936ea0fabd76cf81b13d7276295fddb1e1c07afb3ddf650b0ac",
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+      "node_modules/@openzeppelin/contracts/utils/Panic.sol": "0xf7fe324703a64fc51702311dc51562d5cb1497734f074e4f483bfb6717572d7a",
+      "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol": "0xa516cbf1c7d15d3517c2d668601ce016c54395bf5171918a14e2686977465f53",
+      "node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+      "node_modules/@openzeppelin/contracts/utils/Strings.sol": "0x1fdc2de9585ab0f1c417f02a873a2b6343cd64bb7ffec6b00ffa11a4a158d9e8",
+      "node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": "0x2d9dc2fe26180f74c11c13663647d38e259e45f95eb88f57b61d2160b0109d3e",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "node_modules/@openzeppelin/contracts/utils/math/Math.sol": "0x59973a93b1f983f94e10529f46ca46544a9fec2b5f56fb1390bbe9e0dc79f857",
+      "node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol": "0xc8cae21c9ae4a46e5162ff9bf5b351d6fa6a6eba72d515f3bc1bdfeda7fdf083",
+      "node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol": "0xb1970fac7b64e6c09611e6691791e848d5e3fe410fa5899e7df2e0afd77a99e3",
+      "src/Raffle.sol": "0x9067879c5698319f21be1aa9b6330943b5f0ea90ec32adcb5faf1e9081dfcddc",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef",
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a",
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "9adc4a307e063480905cbd66b58860a8d5c94afc4545193cc203a1cc629f3ccf",
+    "creation_bytecode_sha256": "682bcc4c6189e82791b116456182379c6fd5251a964c850858ad78c54020702a",
+    "runtime_bytecode_sha256": "11096926496bb57ac0540d6f467efa8a119ef3bfcbfa0776356180a0ee60904f",
+    "immutable_references": {
+      "41387": [
+        {
+          "start": 3133,
+          "length": 32
+        }
+      ],
+      "41390": [
+        {
+          "start": 2307,
+          "length": 32
+        },
+        {
+          "start": 2516,
+          "length": 32
+        },
+        {
+          "start": 4461,
+          "length": 32
+        },
+        {
+          "start": 4768,
+          "length": 32
+        },
+        {
+          "start": 6790,
+          "length": 32
+        },
+        {
+          "start": 9591,
+          "length": 32
+        },
+        {
+          "start": 11637,
+          "length": 32
+        },
+        {
+          "start": 11746,
+          "length": 32
+        }
+      ],
+      "51195": [
+        {
+          "start": 2902,
+          "length": 32
+        },
+        {
+          "start": 3461,
+          "length": 32
+        },
+        {
+          "start": 3721,
+          "length": 32
+        },
+        {
+          "start": 9420,
+          "length": 32
+        },
+        {
+          "start": 9471,
+          "length": 32
+        }
+      ],
+      "51200": [
+        {
+          "start": 1617,
+          "length": 32
+        },
+        {
+          "start": 5734,
+          "length": 32
+        },
+        {
+          "start": 9531,
+          "length": 32
+        },
+        {
+          "start": 10738,
+          "length": 32
+        }
+      ]
+    }
+  },
+  {
+    "profile": "ci",
+    "contract": "RaffleFactory",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/ci/RaffleFactory.sol/RaffleFactory.json",
+    "artifact_sha256": "6a39b1ac5440b674898f280907c021eeade612bd009370563e181e9b267f2090",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/RaffleFactory.sol": "RaffleFactory"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol": "0xcee9303d524c29fefc346775ec0be31d134a5f14c990fe04961a9f516eb23ad5",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol": "0x49eef0f77dd5b06a6aeead7945d9a4d0948137dc228fe045e07f62e80a4c5aa2",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol": "0xb0b1a6f3f0d59aca5c805994d8f64c24f570c280422f976dbae20f8b5b24b47c",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol": "0xd5ea07362ab630a6a3dee4285a74cf2377044ca2e4be472755ad64d7c5d4b69d",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": "0x0afcb7e740d1537b252cb2676f600465ce6938398569f09ba1b9ca240dde2dfc",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC20.sol": "0x1a6221315ce0307746c2c4827c125d821ee796c74a676787762f4778671d4f44",
+      "node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol": "0x1b88b3fb3d85ba5496d7d5f396f83ee1fddcdd6762059ff65992655b67920998",
+      "node_modules/@openzeppelin/contracts/proxy/Clones.sol": "0x5a1847c0c6b92d60711f04cba9eaff572ae1f657cff1b8ca4ba065bcdbd68d8b",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": "0xd6fa4088198f04eef10c5bce8a2f4d60554b7ec4b987f684393c01bf79b94d9f",
+      "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": "0x304d732678032a9781ae85c8f204c8fba3d3a5e31c02616964e75cfdc5049098",
+      "node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": "0xf6bb0dc431a9c50e25756412ec14cfcd4dc61dd40b8dc0e1b58ec09fce6d5564",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": "0x88cd5e3bee2e8c36b8d9058fbcaa81ad5704281b25634122234b55ea853d8055",
+      "node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": "0xf46268c37522320bb2119a5a394bc5c739a95c0c574c8d08e8c643f4d06e5c76",
+      "node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol": "0xc7efbc23214ad7dced8bf2249460f4bda114d57f6a0079f84040654280f455bd",
+      "node_modules/@openzeppelin/contracts/utils/Bytes.sol": "0xf80e4b96b6849936ea0fabd76cf81b13d7276295fddb1e1c07afb3ddf650b0ac",
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+      "node_modules/@openzeppelin/contracts/utils/Create2.sol": "0xe06ddfff69f3ba154d92102d9a85db2780e045303a587360cf12195216e851ca",
+      "node_modules/@openzeppelin/contracts/utils/Errors.sol": "0x6afa713bfd42cf0f7656efa91201007ac465e42049d7de1d50753a373648c123",
+      "node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol": "0x6ba3db1346fc75a832aa6cd075e12f6f1fa172fa2122a020f324c319fe5be75e",
+      "node_modules/@openzeppelin/contracts/utils/Panic.sol": "0xf7fe324703a64fc51702311dc51562d5cb1497734f074e4f483bfb6717572d7a",
+      "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol": "0xa516cbf1c7d15d3517c2d668601ce016c54395bf5171918a14e2686977465f53",
+      "node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+      "node_modules/@openzeppelin/contracts/utils/Strings.sol": "0x1fdc2de9585ab0f1c417f02a873a2b6343cd64bb7ffec6b00ffa11a4a158d9e8",
+      "node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": "0x2d9dc2fe26180f74c11c13663647d38e259e45f95eb88f57b61d2160b0109d3e",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "node_modules/@openzeppelin/contracts/utils/math/Math.sol": "0x59973a93b1f983f94e10529f46ca46544a9fec2b5f56fb1390bbe9e0dc79f857",
+      "node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol": "0xc8cae21c9ae4a46e5162ff9bf5b351d6fa6a6eba72d515f3bc1bdfeda7fdf083",
+      "node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol": "0xb1970fac7b64e6c09611e6691791e848d5e3fe410fa5899e7df2e0afd77a99e3",
+      "src/Raffle.sol": "0x9067879c5698319f21be1aa9b6330943b5f0ea90ec32adcb5faf1e9081dfcddc",
+      "src/RaffleFactory.sol": "0x7bacf809752ede88c43dbe2817a66d5e1b15c87fbdaae4fecfcbd9b5b92337e6",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef",
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a",
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "e371f9f87048a88c2015069e1fb7666e0333892e18a2c8a12001e774e0d38bb3",
+    "creation_bytecode_sha256": "f803fc58e6e03270f8c090045b35b058cddf16ba4692e1a4329368af59f97d5c",
+    "runtime_bytecode_sha256": "08c0a9c03c492a6c9d2cf1d30b66304328526cee7eb6bb0f2a68aa14ec5fb2ab",
+    "immutable_references": {
+      "53136": [
+        {
+          "start": 223,
+          "length": 32
+        },
+        {
+          "start": 1760,
+          "length": 32
+        },
+        {
+          "start": 2169,
+          "length": 32
+        },
+        {
+          "start": 2530,
+          "length": 32
+        }
+      ],
+      "53140": [
+        {
+          "start": 416,
+          "length": 32
+        },
+        {
+          "start": 2244,
+          "length": 32
+        },
+        {
+          "start": 2602,
+          "length": 32
+        }
+      ],
+      "53144": [
+        {
+          "start": 377,
+          "length": 32
+        },
+        {
+          "start": 920,
+          "length": 32
+        },
+        {
+          "start": 1793,
+          "length": 32
+        }
+      ],
+      "53148": [
+        {
+          "start": 293,
+          "length": 32
+        },
+        {
+          "start": 806,
+          "length": 32
+        },
+        {
+          "start": 2319,
+          "length": 32
+        },
+        {
+          "start": 2729,
+          "length": 32
+        }
+      ]
+    }
+  },
+  {
+    "profile": "ci",
+    "contract": "IRaffle",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/ci/IRaffle.sol/IRaffle.json",
+    "artifact_sha256": "c8c349b234ce09974f0356ea3d4f962768a16fb0ef397a9ec330ddc117e77d39",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/interfaces/IRaffle.sol": "IRaffle"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef"
+    },
+    "abi_sha256": "3af2eecbb9a5f01c9b58c82ef94f04b21e8e590c53c49f08175957a159c3c5b0",
+    "creation_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "runtime_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "immutable_references": {}
+  },
+  {
+    "profile": "ci",
+    "contract": "IRaffleFactory",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/ci/IRaffleFactory.sol/IRaffleFactory.json",
+    "artifact_sha256": "1fd29301bfd49341ac54cf8612b4bc5ab0daef62040350e69af9b861054b8379",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/interfaces/IRaffleFactory.sol": "IRaffleFactory"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a"
+    },
+    "abi_sha256": "19bb77c722ae65f2c88ac99e611f2d59291f5033c07ff277889cbb557dfdf097",
+    "creation_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "runtime_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "immutable_references": {}
+  },
+  {
+    "profile": "ci",
+    "contract": "RaffleConstants",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/ci/RaffleConstants.sol/RaffleConstants.json",
+    "artifact_sha256": "36eb10551bb8a25838420edaf36622d3129b157627a3e7044be264a39e38baec",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/libraries/RaffleConstants.sol": "RaffleConstants"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "creation_bytecode_sha256": "fe16c862102d11803a245aefdc4e3ecd0dfbe6ed81384726bd12490426c8e18f",
+    "runtime_bytecode_sha256": "88257ceef23c8708b1055ac80f1bcfa0dcb2ea1f2aea9ba50f40f95011376bdb",
+    "immutable_references": {}
+  },
+  {
+    "profile": "audit",
+    "contract": "Raffle",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/audit/Raffle.sol/Raffle.json",
+    "artifact_sha256": "0d67ed6b0eb2e8c49ad663794bf02d97c762845c6f02d5fd59130afe000c4cc1",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/Raffle.sol": "Raffle"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol": "0xcee9303d524c29fefc346775ec0be31d134a5f14c990fe04961a9f516eb23ad5",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol": "0x49eef0f77dd5b06a6aeead7945d9a4d0948137dc228fe045e07f62e80a4c5aa2",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol": "0xb0b1a6f3f0d59aca5c805994d8f64c24f570c280422f976dbae20f8b5b24b47c",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol": "0xd5ea07362ab630a6a3dee4285a74cf2377044ca2e4be472755ad64d7c5d4b69d",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": "0x0afcb7e740d1537b252cb2676f600465ce6938398569f09ba1b9ca240dde2dfc",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC20.sol": "0x1a6221315ce0307746c2c4827c125d821ee796c74a676787762f4778671d4f44",
+      "node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol": "0x1b88b3fb3d85ba5496d7d5f396f83ee1fddcdd6762059ff65992655b67920998",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": "0x304d732678032a9781ae85c8f204c8fba3d3a5e31c02616964e75cfdc5049098",
+      "node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": "0xf6bb0dc431a9c50e25756412ec14cfcd4dc61dd40b8dc0e1b58ec09fce6d5564",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": "0x88cd5e3bee2e8c36b8d9058fbcaa81ad5704281b25634122234b55ea853d8055",
+      "node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": "0xf46268c37522320bb2119a5a394bc5c739a95c0c574c8d08e8c643f4d06e5c76",
+      "node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol": "0xc7efbc23214ad7dced8bf2249460f4bda114d57f6a0079f84040654280f455bd",
+      "node_modules/@openzeppelin/contracts/utils/Bytes.sol": "0xf80e4b96b6849936ea0fabd76cf81b13d7276295fddb1e1c07afb3ddf650b0ac",
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+      "node_modules/@openzeppelin/contracts/utils/Panic.sol": "0xf7fe324703a64fc51702311dc51562d5cb1497734f074e4f483bfb6717572d7a",
+      "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol": "0xa516cbf1c7d15d3517c2d668601ce016c54395bf5171918a14e2686977465f53",
+      "node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+      "node_modules/@openzeppelin/contracts/utils/Strings.sol": "0x1fdc2de9585ab0f1c417f02a873a2b6343cd64bb7ffec6b00ffa11a4a158d9e8",
+      "node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": "0x2d9dc2fe26180f74c11c13663647d38e259e45f95eb88f57b61d2160b0109d3e",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "node_modules/@openzeppelin/contracts/utils/math/Math.sol": "0x59973a93b1f983f94e10529f46ca46544a9fec2b5f56fb1390bbe9e0dc79f857",
+      "node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol": "0xc8cae21c9ae4a46e5162ff9bf5b351d6fa6a6eba72d515f3bc1bdfeda7fdf083",
+      "node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol": "0xb1970fac7b64e6c09611e6691791e848d5e3fe410fa5899e7df2e0afd77a99e3",
+      "src/Raffle.sol": "0x9067879c5698319f21be1aa9b6330943b5f0ea90ec32adcb5faf1e9081dfcddc",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef",
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a",
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "9adc4a307e063480905cbd66b58860a8d5c94afc4545193cc203a1cc629f3ccf",
+    "creation_bytecode_sha256": "682bcc4c6189e82791b116456182379c6fd5251a964c850858ad78c54020702a",
+    "runtime_bytecode_sha256": "11096926496bb57ac0540d6f467efa8a119ef3bfcbfa0776356180a0ee60904f",
+    "immutable_references": {
+      "41387": [
+        {
+          "start": 3133,
+          "length": 32
+        }
+      ],
+      "41390": [
+        {
+          "start": 2307,
+          "length": 32
+        },
+        {
+          "start": 2516,
+          "length": 32
+        },
+        {
+          "start": 4461,
+          "length": 32
+        },
+        {
+          "start": 4768,
+          "length": 32
+        },
+        {
+          "start": 6790,
+          "length": 32
+        },
+        {
+          "start": 9591,
+          "length": 32
+        },
+        {
+          "start": 11637,
+          "length": 32
+        },
+        {
+          "start": 11746,
+          "length": 32
+        }
+      ],
+      "51195": [
+        {
+          "start": 2902,
+          "length": 32
+        },
+        {
+          "start": 3461,
+          "length": 32
+        },
+        {
+          "start": 3721,
+          "length": 32
+        },
+        {
+          "start": 9420,
+          "length": 32
+        },
+        {
+          "start": 9471,
+          "length": 32
+        }
+      ],
+      "51200": [
+        {
+          "start": 1617,
+          "length": 32
+        },
+        {
+          "start": 5734,
+          "length": 32
+        },
+        {
+          "start": 9531,
+          "length": 32
+        },
+        {
+          "start": 10738,
+          "length": 32
+        }
+      ]
+    }
+  },
+  {
+    "profile": "audit",
+    "contract": "RaffleFactory",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/audit/RaffleFactory.sol/RaffleFactory.json",
+    "artifact_sha256": "6a39b1ac5440b674898f280907c021eeade612bd009370563e181e9b267f2090",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/RaffleFactory.sol": "RaffleFactory"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol": "0xcee9303d524c29fefc346775ec0be31d134a5f14c990fe04961a9f516eb23ad5",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol": "0x49eef0f77dd5b06a6aeead7945d9a4d0948137dc228fe045e07f62e80a4c5aa2",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol": "0xb0b1a6f3f0d59aca5c805994d8f64c24f570c280422f976dbae20f8b5b24b47c",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol": "0xd5ea07362ab630a6a3dee4285a74cf2377044ca2e4be472755ad64d7c5d4b69d",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": "0x0afcb7e740d1537b252cb2676f600465ce6938398569f09ba1b9ca240dde2dfc",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC20.sol": "0x1a6221315ce0307746c2c4827c125d821ee796c74a676787762f4778671d4f44",
+      "node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol": "0x1b88b3fb3d85ba5496d7d5f396f83ee1fddcdd6762059ff65992655b67920998",
+      "node_modules/@openzeppelin/contracts/proxy/Clones.sol": "0x5a1847c0c6b92d60711f04cba9eaff572ae1f657cff1b8ca4ba065bcdbd68d8b",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": "0xd6fa4088198f04eef10c5bce8a2f4d60554b7ec4b987f684393c01bf79b94d9f",
+      "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": "0x304d732678032a9781ae85c8f204c8fba3d3a5e31c02616964e75cfdc5049098",
+      "node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": "0xf6bb0dc431a9c50e25756412ec14cfcd4dc61dd40b8dc0e1b58ec09fce6d5564",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": "0x88cd5e3bee2e8c36b8d9058fbcaa81ad5704281b25634122234b55ea853d8055",
+      "node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": "0xf46268c37522320bb2119a5a394bc5c739a95c0c574c8d08e8c643f4d06e5c76",
+      "node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol": "0xc7efbc23214ad7dced8bf2249460f4bda114d57f6a0079f84040654280f455bd",
+      "node_modules/@openzeppelin/contracts/utils/Bytes.sol": "0xf80e4b96b6849936ea0fabd76cf81b13d7276295fddb1e1c07afb3ddf650b0ac",
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+      "node_modules/@openzeppelin/contracts/utils/Create2.sol": "0xe06ddfff69f3ba154d92102d9a85db2780e045303a587360cf12195216e851ca",
+      "node_modules/@openzeppelin/contracts/utils/Errors.sol": "0x6afa713bfd42cf0f7656efa91201007ac465e42049d7de1d50753a373648c123",
+      "node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol": "0x6ba3db1346fc75a832aa6cd075e12f6f1fa172fa2122a020f324c319fe5be75e",
+      "node_modules/@openzeppelin/contracts/utils/Panic.sol": "0xf7fe324703a64fc51702311dc51562d5cb1497734f074e4f483bfb6717572d7a",
+      "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol": "0xa516cbf1c7d15d3517c2d668601ce016c54395bf5171918a14e2686977465f53",
+      "node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+      "node_modules/@openzeppelin/contracts/utils/Strings.sol": "0x1fdc2de9585ab0f1c417f02a873a2b6343cd64bb7ffec6b00ffa11a4a158d9e8",
+      "node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": "0x2d9dc2fe26180f74c11c13663647d38e259e45f95eb88f57b61d2160b0109d3e",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "node_modules/@openzeppelin/contracts/utils/math/Math.sol": "0x59973a93b1f983f94e10529f46ca46544a9fec2b5f56fb1390bbe9e0dc79f857",
+      "node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol": "0xc8cae21c9ae4a46e5162ff9bf5b351d6fa6a6eba72d515f3bc1bdfeda7fdf083",
+      "node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol": "0xb1970fac7b64e6c09611e6691791e848d5e3fe410fa5899e7df2e0afd77a99e3",
+      "src/Raffle.sol": "0x9067879c5698319f21be1aa9b6330943b5f0ea90ec32adcb5faf1e9081dfcddc",
+      "src/RaffleFactory.sol": "0x7bacf809752ede88c43dbe2817a66d5e1b15c87fbdaae4fecfcbd9b5b92337e6",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef",
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a",
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "e371f9f87048a88c2015069e1fb7666e0333892e18a2c8a12001e774e0d38bb3",
+    "creation_bytecode_sha256": "f803fc58e6e03270f8c090045b35b058cddf16ba4692e1a4329368af59f97d5c",
+    "runtime_bytecode_sha256": "08c0a9c03c492a6c9d2cf1d30b66304328526cee7eb6bb0f2a68aa14ec5fb2ab",
+    "immutable_references": {
+      "53136": [
+        {
+          "start": 223,
+          "length": 32
+        },
+        {
+          "start": 1760,
+          "length": 32
+        },
+        {
+          "start": 2169,
+          "length": 32
+        },
+        {
+          "start": 2530,
+          "length": 32
+        }
+      ],
+      "53140": [
+        {
+          "start": 416,
+          "length": 32
+        },
+        {
+          "start": 2244,
+          "length": 32
+        },
+        {
+          "start": 2602,
+          "length": 32
+        }
+      ],
+      "53144": [
+        {
+          "start": 377,
+          "length": 32
+        },
+        {
+          "start": 920,
+          "length": 32
+        },
+        {
+          "start": 1793,
+          "length": 32
+        }
+      ],
+      "53148": [
+        {
+          "start": 293,
+          "length": 32
+        },
+        {
+          "start": 806,
+          "length": 32
+        },
+        {
+          "start": 2319,
+          "length": 32
+        },
+        {
+          "start": 2729,
+          "length": 32
+        }
+      ]
+    }
+  },
+  {
+    "profile": "audit",
+    "contract": "IRaffle",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/audit/IRaffle.sol/IRaffle.json",
+    "artifact_sha256": "c8c349b234ce09974f0356ea3d4f962768a16fb0ef397a9ec330ddc117e77d39",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/interfaces/IRaffle.sol": "IRaffle"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef"
+    },
+    "abi_sha256": "3af2eecbb9a5f01c9b58c82ef94f04b21e8e590c53c49f08175957a159c3c5b0",
+    "creation_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "runtime_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "immutable_references": {}
+  },
+  {
+    "profile": "audit",
+    "contract": "IRaffleFactory",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/audit/IRaffleFactory.sol/IRaffleFactory.json",
+    "artifact_sha256": "1fd29301bfd49341ac54cf8612b4bc5ab0daef62040350e69af9b861054b8379",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/interfaces/IRaffleFactory.sol": "IRaffleFactory"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a"
+    },
+    "abi_sha256": "19bb77c722ae65f2c88ac99e611f2d59291f5033c07ff277889cbb557dfdf097",
+    "creation_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "runtime_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "immutable_references": {}
+  },
+  {
+    "profile": "audit",
+    "contract": "RaffleConstants",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/audit/RaffleConstants.sol/RaffleConstants.json",
+    "artifact_sha256": "36eb10551bb8a25838420edaf36622d3129b157627a3e7044be264a39e38baec",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/libraries/RaffleConstants.sol": "RaffleConstants"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "creation_bytecode_sha256": "fe16c862102d11803a245aefdc4e3ecd0dfbe6ed81384726bd12490426c8e18f",
+    "runtime_bytecode_sha256": "88257ceef23c8708b1055ac80f1bcfa0dcb2ea1f2aea9ba50f40f95011376bdb",
+    "immutable_references": {}
+  },
+  {
+    "profile": "audit_strict",
+    "contract": "Raffle",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/audit_strict/Raffle.sol/Raffle.json",
+    "artifact_sha256": "0d67ed6b0eb2e8c49ad663794bf02d97c762845c6f02d5fd59130afe000c4cc1",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/Raffle.sol": "Raffle"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol": "0xcee9303d524c29fefc346775ec0be31d134a5f14c990fe04961a9f516eb23ad5",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol": "0x49eef0f77dd5b06a6aeead7945d9a4d0948137dc228fe045e07f62e80a4c5aa2",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol": "0xb0b1a6f3f0d59aca5c805994d8f64c24f570c280422f976dbae20f8b5b24b47c",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol": "0xd5ea07362ab630a6a3dee4285a74cf2377044ca2e4be472755ad64d7c5d4b69d",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": "0x0afcb7e740d1537b252cb2676f600465ce6938398569f09ba1b9ca240dde2dfc",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC20.sol": "0x1a6221315ce0307746c2c4827c125d821ee796c74a676787762f4778671d4f44",
+      "node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol": "0x1b88b3fb3d85ba5496d7d5f396f83ee1fddcdd6762059ff65992655b67920998",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": "0x304d732678032a9781ae85c8f204c8fba3d3a5e31c02616964e75cfdc5049098",
+      "node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": "0xf6bb0dc431a9c50e25756412ec14cfcd4dc61dd40b8dc0e1b58ec09fce6d5564",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": "0x88cd5e3bee2e8c36b8d9058fbcaa81ad5704281b25634122234b55ea853d8055",
+      "node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": "0xf46268c37522320bb2119a5a394bc5c739a95c0c574c8d08e8c643f4d06e5c76",
+      "node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol": "0xc7efbc23214ad7dced8bf2249460f4bda114d57f6a0079f84040654280f455bd",
+      "node_modules/@openzeppelin/contracts/utils/Bytes.sol": "0xf80e4b96b6849936ea0fabd76cf81b13d7276295fddb1e1c07afb3ddf650b0ac",
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+      "node_modules/@openzeppelin/contracts/utils/Panic.sol": "0xf7fe324703a64fc51702311dc51562d5cb1497734f074e4f483bfb6717572d7a",
+      "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol": "0xa516cbf1c7d15d3517c2d668601ce016c54395bf5171918a14e2686977465f53",
+      "node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+      "node_modules/@openzeppelin/contracts/utils/Strings.sol": "0x1fdc2de9585ab0f1c417f02a873a2b6343cd64bb7ffec6b00ffa11a4a158d9e8",
+      "node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": "0x2d9dc2fe26180f74c11c13663647d38e259e45f95eb88f57b61d2160b0109d3e",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "node_modules/@openzeppelin/contracts/utils/math/Math.sol": "0x59973a93b1f983f94e10529f46ca46544a9fec2b5f56fb1390bbe9e0dc79f857",
+      "node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol": "0xc8cae21c9ae4a46e5162ff9bf5b351d6fa6a6eba72d515f3bc1bdfeda7fdf083",
+      "node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol": "0xb1970fac7b64e6c09611e6691791e848d5e3fe410fa5899e7df2e0afd77a99e3",
+      "src/Raffle.sol": "0x9067879c5698319f21be1aa9b6330943b5f0ea90ec32adcb5faf1e9081dfcddc",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef",
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a",
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "9adc4a307e063480905cbd66b58860a8d5c94afc4545193cc203a1cc629f3ccf",
+    "creation_bytecode_sha256": "682bcc4c6189e82791b116456182379c6fd5251a964c850858ad78c54020702a",
+    "runtime_bytecode_sha256": "11096926496bb57ac0540d6f467efa8a119ef3bfcbfa0776356180a0ee60904f",
+    "immutable_references": {
+      "41387": [
+        {
+          "start": 3133,
+          "length": 32
+        }
+      ],
+      "41390": [
+        {
+          "start": 2307,
+          "length": 32
+        },
+        {
+          "start": 2516,
+          "length": 32
+        },
+        {
+          "start": 4461,
+          "length": 32
+        },
+        {
+          "start": 4768,
+          "length": 32
+        },
+        {
+          "start": 6790,
+          "length": 32
+        },
+        {
+          "start": 9591,
+          "length": 32
+        },
+        {
+          "start": 11637,
+          "length": 32
+        },
+        {
+          "start": 11746,
+          "length": 32
+        }
+      ],
+      "51195": [
+        {
+          "start": 2902,
+          "length": 32
+        },
+        {
+          "start": 3461,
+          "length": 32
+        },
+        {
+          "start": 3721,
+          "length": 32
+        },
+        {
+          "start": 9420,
+          "length": 32
+        },
+        {
+          "start": 9471,
+          "length": 32
+        }
+      ],
+      "51200": [
+        {
+          "start": 1617,
+          "length": 32
+        },
+        {
+          "start": 5734,
+          "length": 32
+        },
+        {
+          "start": 9531,
+          "length": 32
+        },
+        {
+          "start": 10738,
+          "length": 32
+        }
+      ]
+    }
+  },
+  {
+    "profile": "audit_strict",
+    "contract": "RaffleFactory",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/audit_strict/RaffleFactory.sol/RaffleFactory.json",
+    "artifact_sha256": "6a39b1ac5440b674898f280907c021eeade612bd009370563e181e9b267f2090",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/RaffleFactory.sol": "RaffleFactory"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol": "0xcee9303d524c29fefc346775ec0be31d134a5f14c990fe04961a9f516eb23ad5",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol": "0x49eef0f77dd5b06a6aeead7945d9a4d0948137dc228fe045e07f62e80a4c5aa2",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol": "0xb0b1a6f3f0d59aca5c805994d8f64c24f570c280422f976dbae20f8b5b24b47c",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol": "0xd5ea07362ab630a6a3dee4285a74cf2377044ca2e4be472755ad64d7c5d4b69d",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": "0x0afcb7e740d1537b252cb2676f600465ce6938398569f09ba1b9ca240dde2dfc",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC20.sol": "0x1a6221315ce0307746c2c4827c125d821ee796c74a676787762f4778671d4f44",
+      "node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol": "0x1b88b3fb3d85ba5496d7d5f396f83ee1fddcdd6762059ff65992655b67920998",
+      "node_modules/@openzeppelin/contracts/proxy/Clones.sol": "0x5a1847c0c6b92d60711f04cba9eaff572ae1f657cff1b8ca4ba065bcdbd68d8b",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": "0xd6fa4088198f04eef10c5bce8a2f4d60554b7ec4b987f684393c01bf79b94d9f",
+      "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": "0x304d732678032a9781ae85c8f204c8fba3d3a5e31c02616964e75cfdc5049098",
+      "node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": "0xf6bb0dc431a9c50e25756412ec14cfcd4dc61dd40b8dc0e1b58ec09fce6d5564",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": "0x88cd5e3bee2e8c36b8d9058fbcaa81ad5704281b25634122234b55ea853d8055",
+      "node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": "0xf46268c37522320bb2119a5a394bc5c739a95c0c574c8d08e8c643f4d06e5c76",
+      "node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol": "0xc7efbc23214ad7dced8bf2249460f4bda114d57f6a0079f84040654280f455bd",
+      "node_modules/@openzeppelin/contracts/utils/Bytes.sol": "0xf80e4b96b6849936ea0fabd76cf81b13d7276295fddb1e1c07afb3ddf650b0ac",
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+      "node_modules/@openzeppelin/contracts/utils/Create2.sol": "0xe06ddfff69f3ba154d92102d9a85db2780e045303a587360cf12195216e851ca",
+      "node_modules/@openzeppelin/contracts/utils/Errors.sol": "0x6afa713bfd42cf0f7656efa91201007ac465e42049d7de1d50753a373648c123",
+      "node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol": "0x6ba3db1346fc75a832aa6cd075e12f6f1fa172fa2122a020f324c319fe5be75e",
+      "node_modules/@openzeppelin/contracts/utils/Panic.sol": "0xf7fe324703a64fc51702311dc51562d5cb1497734f074e4f483bfb6717572d7a",
+      "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol": "0xa516cbf1c7d15d3517c2d668601ce016c54395bf5171918a14e2686977465f53",
+      "node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+      "node_modules/@openzeppelin/contracts/utils/Strings.sol": "0x1fdc2de9585ab0f1c417f02a873a2b6343cd64bb7ffec6b00ffa11a4a158d9e8",
+      "node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": "0x2d9dc2fe26180f74c11c13663647d38e259e45f95eb88f57b61d2160b0109d3e",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "node_modules/@openzeppelin/contracts/utils/math/Math.sol": "0x59973a93b1f983f94e10529f46ca46544a9fec2b5f56fb1390bbe9e0dc79f857",
+      "node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol": "0xc8cae21c9ae4a46e5162ff9bf5b351d6fa6a6eba72d515f3bc1bdfeda7fdf083",
+      "node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol": "0xb1970fac7b64e6c09611e6691791e848d5e3fe410fa5899e7df2e0afd77a99e3",
+      "src/Raffle.sol": "0x9067879c5698319f21be1aa9b6330943b5f0ea90ec32adcb5faf1e9081dfcddc",
+      "src/RaffleFactory.sol": "0x7bacf809752ede88c43dbe2817a66d5e1b15c87fbdaae4fecfcbd9b5b92337e6",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef",
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a",
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "e371f9f87048a88c2015069e1fb7666e0333892e18a2c8a12001e774e0d38bb3",
+    "creation_bytecode_sha256": "f803fc58e6e03270f8c090045b35b058cddf16ba4692e1a4329368af59f97d5c",
+    "runtime_bytecode_sha256": "08c0a9c03c492a6c9d2cf1d30b66304328526cee7eb6bb0f2a68aa14ec5fb2ab",
+    "immutable_references": {
+      "53136": [
+        {
+          "start": 223,
+          "length": 32
+        },
+        {
+          "start": 1760,
+          "length": 32
+        },
+        {
+          "start": 2169,
+          "length": 32
+        },
+        {
+          "start": 2530,
+          "length": 32
+        }
+      ],
+      "53140": [
+        {
+          "start": 416,
+          "length": 32
+        },
+        {
+          "start": 2244,
+          "length": 32
+        },
+        {
+          "start": 2602,
+          "length": 32
+        }
+      ],
+      "53144": [
+        {
+          "start": 377,
+          "length": 32
+        },
+        {
+          "start": 920,
+          "length": 32
+        },
+        {
+          "start": 1793,
+          "length": 32
+        }
+      ],
+      "53148": [
+        {
+          "start": 293,
+          "length": 32
+        },
+        {
+          "start": 806,
+          "length": 32
+        },
+        {
+          "start": 2319,
+          "length": 32
+        },
+        {
+          "start": 2729,
+          "length": 32
+        }
+      ]
+    }
+  },
+  {
+    "profile": "audit_strict",
+    "contract": "IRaffle",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/audit_strict/IRaffle.sol/IRaffle.json",
+    "artifact_sha256": "c8c349b234ce09974f0356ea3d4f962768a16fb0ef397a9ec330ddc117e77d39",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/interfaces/IRaffle.sol": "IRaffle"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef"
+    },
+    "abi_sha256": "3af2eecbb9a5f01c9b58c82ef94f04b21e8e590c53c49f08175957a159c3c5b0",
+    "creation_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "runtime_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "immutable_references": {}
+  },
+  {
+    "profile": "audit_strict",
+    "contract": "IRaffleFactory",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/audit_strict/IRaffleFactory.sol/IRaffleFactory.json",
+    "artifact_sha256": "1fd29301bfd49341ac54cf8612b4bc5ab0daef62040350e69af9b861054b8379",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/interfaces/IRaffleFactory.sol": "IRaffleFactory"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a"
+    },
+    "abi_sha256": "19bb77c722ae65f2c88ac99e611f2d59291f5033c07ff277889cbb557dfdf097",
+    "creation_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "runtime_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "immutable_references": {}
+  },
+  {
+    "profile": "audit_strict",
+    "contract": "RaffleConstants",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/audit_strict/RaffleConstants.sol/RaffleConstants.json",
+    "artifact_sha256": "36eb10551bb8a25838420edaf36622d3129b157627a3e7044be264a39e38baec",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/libraries/RaffleConstants.sol": "RaffleConstants"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "creation_bytecode_sha256": "fe16c862102d11803a245aefdc4e3ecd0dfbe6ed81384726bd12490426c8e18f",
+    "runtime_bytecode_sha256": "88257ceef23c8708b1055ac80f1bcfa0dcb2ea1f2aea9ba50f40f95011376bdb",
+    "immutable_references": {}
+  },
+  {
+    "profile": "audit_release",
+    "contract": "Raffle",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/audit_release/Raffle.sol/Raffle.json",
+    "artifact_sha256": "0d67ed6b0eb2e8c49ad663794bf02d97c762845c6f02d5fd59130afe000c4cc1",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/Raffle.sol": "Raffle"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol": "0xcee9303d524c29fefc346775ec0be31d134a5f14c990fe04961a9f516eb23ad5",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol": "0x49eef0f77dd5b06a6aeead7945d9a4d0948137dc228fe045e07f62e80a4c5aa2",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol": "0xb0b1a6f3f0d59aca5c805994d8f64c24f570c280422f976dbae20f8b5b24b47c",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol": "0xd5ea07362ab630a6a3dee4285a74cf2377044ca2e4be472755ad64d7c5d4b69d",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": "0x0afcb7e740d1537b252cb2676f600465ce6938398569f09ba1b9ca240dde2dfc",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC20.sol": "0x1a6221315ce0307746c2c4827c125d821ee796c74a676787762f4778671d4f44",
+      "node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol": "0x1b88b3fb3d85ba5496d7d5f396f83ee1fddcdd6762059ff65992655b67920998",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": "0x304d732678032a9781ae85c8f204c8fba3d3a5e31c02616964e75cfdc5049098",
+      "node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": "0xf6bb0dc431a9c50e25756412ec14cfcd4dc61dd40b8dc0e1b58ec09fce6d5564",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": "0x88cd5e3bee2e8c36b8d9058fbcaa81ad5704281b25634122234b55ea853d8055",
+      "node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": "0xf46268c37522320bb2119a5a394bc5c739a95c0c574c8d08e8c643f4d06e5c76",
+      "node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol": "0xc7efbc23214ad7dced8bf2249460f4bda114d57f6a0079f84040654280f455bd",
+      "node_modules/@openzeppelin/contracts/utils/Bytes.sol": "0xf80e4b96b6849936ea0fabd76cf81b13d7276295fddb1e1c07afb3ddf650b0ac",
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+      "node_modules/@openzeppelin/contracts/utils/Panic.sol": "0xf7fe324703a64fc51702311dc51562d5cb1497734f074e4f483bfb6717572d7a",
+      "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol": "0xa516cbf1c7d15d3517c2d668601ce016c54395bf5171918a14e2686977465f53",
+      "node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+      "node_modules/@openzeppelin/contracts/utils/Strings.sol": "0x1fdc2de9585ab0f1c417f02a873a2b6343cd64bb7ffec6b00ffa11a4a158d9e8",
+      "node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": "0x2d9dc2fe26180f74c11c13663647d38e259e45f95eb88f57b61d2160b0109d3e",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "node_modules/@openzeppelin/contracts/utils/math/Math.sol": "0x59973a93b1f983f94e10529f46ca46544a9fec2b5f56fb1390bbe9e0dc79f857",
+      "node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol": "0xc8cae21c9ae4a46e5162ff9bf5b351d6fa6a6eba72d515f3bc1bdfeda7fdf083",
+      "node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol": "0xb1970fac7b64e6c09611e6691791e848d5e3fe410fa5899e7df2e0afd77a99e3",
+      "src/Raffle.sol": "0x9067879c5698319f21be1aa9b6330943b5f0ea90ec32adcb5faf1e9081dfcddc",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef",
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a",
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "9adc4a307e063480905cbd66b58860a8d5c94afc4545193cc203a1cc629f3ccf",
+    "creation_bytecode_sha256": "682bcc4c6189e82791b116456182379c6fd5251a964c850858ad78c54020702a",
+    "runtime_bytecode_sha256": "11096926496bb57ac0540d6f467efa8a119ef3bfcbfa0776356180a0ee60904f",
+    "immutable_references": {
+      "41387": [
+        {
+          "start": 3133,
+          "length": 32
+        }
+      ],
+      "41390": [
+        {
+          "start": 2307,
+          "length": 32
+        },
+        {
+          "start": 2516,
+          "length": 32
+        },
+        {
+          "start": 4461,
+          "length": 32
+        },
+        {
+          "start": 4768,
+          "length": 32
+        },
+        {
+          "start": 6790,
+          "length": 32
+        },
+        {
+          "start": 9591,
+          "length": 32
+        },
+        {
+          "start": 11637,
+          "length": 32
+        },
+        {
+          "start": 11746,
+          "length": 32
+        }
+      ],
+      "51195": [
+        {
+          "start": 2902,
+          "length": 32
+        },
+        {
+          "start": 3461,
+          "length": 32
+        },
+        {
+          "start": 3721,
+          "length": 32
+        },
+        {
+          "start": 9420,
+          "length": 32
+        },
+        {
+          "start": 9471,
+          "length": 32
+        }
+      ],
+      "51200": [
+        {
+          "start": 1617,
+          "length": 32
+        },
+        {
+          "start": 5734,
+          "length": 32
+        },
+        {
+          "start": 9531,
+          "length": 32
+        },
+        {
+          "start": 10738,
+          "length": 32
+        }
+      ]
+    }
+  },
+  {
+    "profile": "audit_release",
+    "contract": "RaffleFactory",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/audit_release/RaffleFactory.sol/RaffleFactory.json",
+    "artifact_sha256": "6a39b1ac5440b674898f280907c021eeade612bd009370563e181e9b267f2090",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/RaffleFactory.sol": "RaffleFactory"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol": "0xcee9303d524c29fefc346775ec0be31d134a5f14c990fe04961a9f516eb23ad5",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol": "0x49eef0f77dd5b06a6aeead7945d9a4d0948137dc228fe045e07f62e80a4c5aa2",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol": "0xb0b1a6f3f0d59aca5c805994d8f64c24f570c280422f976dbae20f8b5b24b47c",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol": "0xd5ea07362ab630a6a3dee4285a74cf2377044ca2e4be472755ad64d7c5d4b69d",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": "0x0afcb7e740d1537b252cb2676f600465ce6938398569f09ba1b9ca240dde2dfc",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC20.sol": "0x1a6221315ce0307746c2c4827c125d821ee796c74a676787762f4778671d4f44",
+      "node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol": "0x1b88b3fb3d85ba5496d7d5f396f83ee1fddcdd6762059ff65992655b67920998",
+      "node_modules/@openzeppelin/contracts/proxy/Clones.sol": "0x5a1847c0c6b92d60711f04cba9eaff572ae1f657cff1b8ca4ba065bcdbd68d8b",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": "0xd6fa4088198f04eef10c5bce8a2f4d60554b7ec4b987f684393c01bf79b94d9f",
+      "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": "0x304d732678032a9781ae85c8f204c8fba3d3a5e31c02616964e75cfdc5049098",
+      "node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": "0xf6bb0dc431a9c50e25756412ec14cfcd4dc61dd40b8dc0e1b58ec09fce6d5564",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": "0x88cd5e3bee2e8c36b8d9058fbcaa81ad5704281b25634122234b55ea853d8055",
+      "node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": "0xf46268c37522320bb2119a5a394bc5c739a95c0c574c8d08e8c643f4d06e5c76",
+      "node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol": "0xc7efbc23214ad7dced8bf2249460f4bda114d57f6a0079f84040654280f455bd",
+      "node_modules/@openzeppelin/contracts/utils/Bytes.sol": "0xf80e4b96b6849936ea0fabd76cf81b13d7276295fddb1e1c07afb3ddf650b0ac",
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+      "node_modules/@openzeppelin/contracts/utils/Create2.sol": "0xe06ddfff69f3ba154d92102d9a85db2780e045303a587360cf12195216e851ca",
+      "node_modules/@openzeppelin/contracts/utils/Errors.sol": "0x6afa713bfd42cf0f7656efa91201007ac465e42049d7de1d50753a373648c123",
+      "node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol": "0x6ba3db1346fc75a832aa6cd075e12f6f1fa172fa2122a020f324c319fe5be75e",
+      "node_modules/@openzeppelin/contracts/utils/Panic.sol": "0xf7fe324703a64fc51702311dc51562d5cb1497734f074e4f483bfb6717572d7a",
+      "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol": "0xa516cbf1c7d15d3517c2d668601ce016c54395bf5171918a14e2686977465f53",
+      "node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+      "node_modules/@openzeppelin/contracts/utils/Strings.sol": "0x1fdc2de9585ab0f1c417f02a873a2b6343cd64bb7ffec6b00ffa11a4a158d9e8",
+      "node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": "0x2d9dc2fe26180f74c11c13663647d38e259e45f95eb88f57b61d2160b0109d3e",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "node_modules/@openzeppelin/contracts/utils/math/Math.sol": "0x59973a93b1f983f94e10529f46ca46544a9fec2b5f56fb1390bbe9e0dc79f857",
+      "node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol": "0xc8cae21c9ae4a46e5162ff9bf5b351d6fa6a6eba72d515f3bc1bdfeda7fdf083",
+      "node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol": "0xb1970fac7b64e6c09611e6691791e848d5e3fe410fa5899e7df2e0afd77a99e3",
+      "src/Raffle.sol": "0x9067879c5698319f21be1aa9b6330943b5f0ea90ec32adcb5faf1e9081dfcddc",
+      "src/RaffleFactory.sol": "0x7bacf809752ede88c43dbe2817a66d5e1b15c87fbdaae4fecfcbd9b5b92337e6",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef",
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a",
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "e371f9f87048a88c2015069e1fb7666e0333892e18a2c8a12001e774e0d38bb3",
+    "creation_bytecode_sha256": "f803fc58e6e03270f8c090045b35b058cddf16ba4692e1a4329368af59f97d5c",
+    "runtime_bytecode_sha256": "08c0a9c03c492a6c9d2cf1d30b66304328526cee7eb6bb0f2a68aa14ec5fb2ab",
+    "immutable_references": {
+      "53136": [
+        {
+          "start": 223,
+          "length": 32
+        },
+        {
+          "start": 1760,
+          "length": 32
+        },
+        {
+          "start": 2169,
+          "length": 32
+        },
+        {
+          "start": 2530,
+          "length": 32
+        }
+      ],
+      "53140": [
+        {
+          "start": 416,
+          "length": 32
+        },
+        {
+          "start": 2244,
+          "length": 32
+        },
+        {
+          "start": 2602,
+          "length": 32
+        }
+      ],
+      "53144": [
+        {
+          "start": 377,
+          "length": 32
+        },
+        {
+          "start": 920,
+          "length": 32
+        },
+        {
+          "start": 1793,
+          "length": 32
+        }
+      ],
+      "53148": [
+        {
+          "start": 293,
+          "length": 32
+        },
+        {
+          "start": 806,
+          "length": 32
+        },
+        {
+          "start": 2319,
+          "length": 32
+        },
+        {
+          "start": 2729,
+          "length": 32
+        }
+      ]
+    }
+  },
+  {
+    "profile": "audit_release",
+    "contract": "IRaffle",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/audit_release/IRaffle.sol/IRaffle.json",
+    "artifact_sha256": "c8c349b234ce09974f0356ea3d4f962768a16fb0ef397a9ec330ddc117e77d39",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/interfaces/IRaffle.sol": "IRaffle"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef"
+    },
+    "abi_sha256": "3af2eecbb9a5f01c9b58c82ef94f04b21e8e590c53c49f08175957a159c3c5b0",
+    "creation_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "runtime_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "immutable_references": {}
+  },
+  {
+    "profile": "audit_release",
+    "contract": "IRaffleFactory",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/audit_release/IRaffleFactory.sol/IRaffleFactory.json",
+    "artifact_sha256": "1fd29301bfd49341ac54cf8612b4bc5ab0daef62040350e69af9b861054b8379",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/interfaces/IRaffleFactory.sol": "IRaffleFactory"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a"
+    },
+    "abi_sha256": "19bb77c722ae65f2c88ac99e611f2d59291f5033c07ff277889cbb557dfdf097",
+    "creation_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "runtime_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "immutable_references": {}
+  },
+  {
+    "profile": "audit_release",
+    "contract": "RaffleConstants",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/audit_release/RaffleConstants.sol/RaffleConstants.json",
+    "artifact_sha256": "36eb10551bb8a25838420edaf36622d3129b157627a3e7044be264a39e38baec",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/libraries/RaffleConstants.sol": "RaffleConstants"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "creation_bytecode_sha256": "fe16c862102d11803a245aefdc4e3ecd0dfbe6ed81384726bd12490426c8e18f",
+    "runtime_bytecode_sha256": "88257ceef23c8708b1055ac80f1bcfa0dcb2ea1f2aea9ba50f40f95011376bdb",
+    "immutable_references": {}
+  },
+  {
+    "profile": "coverage",
+    "contract": "Raffle",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/coverage/Raffle.sol/Raffle.json",
+    "artifact_sha256": "8dc19fe3b4df11058e28d5d33d0709eeec32cefbb210d409ccaa63b38f7ac3b0",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": false,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/Raffle.sol": "Raffle"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol": "0xcee9303d524c29fefc346775ec0be31d134a5f14c990fe04961a9f516eb23ad5",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol": "0x49eef0f77dd5b06a6aeead7945d9a4d0948137dc228fe045e07f62e80a4c5aa2",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol": "0xb0b1a6f3f0d59aca5c805994d8f64c24f570c280422f976dbae20f8b5b24b47c",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol": "0xd5ea07362ab630a6a3dee4285a74cf2377044ca2e4be472755ad64d7c5d4b69d",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": "0x0afcb7e740d1537b252cb2676f600465ce6938398569f09ba1b9ca240dde2dfc",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC20.sol": "0x1a6221315ce0307746c2c4827c125d821ee796c74a676787762f4778671d4f44",
+      "node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol": "0x1b88b3fb3d85ba5496d7d5f396f83ee1fddcdd6762059ff65992655b67920998",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": "0x304d732678032a9781ae85c8f204c8fba3d3a5e31c02616964e75cfdc5049098",
+      "node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": "0xf6bb0dc431a9c50e25756412ec14cfcd4dc61dd40b8dc0e1b58ec09fce6d5564",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": "0x88cd5e3bee2e8c36b8d9058fbcaa81ad5704281b25634122234b55ea853d8055",
+      "node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": "0xf46268c37522320bb2119a5a394bc5c739a95c0c574c8d08e8c643f4d06e5c76",
+      "node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol": "0xc7efbc23214ad7dced8bf2249460f4bda114d57f6a0079f84040654280f455bd",
+      "node_modules/@openzeppelin/contracts/utils/Bytes.sol": "0xf80e4b96b6849936ea0fabd76cf81b13d7276295fddb1e1c07afb3ddf650b0ac",
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+      "node_modules/@openzeppelin/contracts/utils/Panic.sol": "0xf7fe324703a64fc51702311dc51562d5cb1497734f074e4f483bfb6717572d7a",
+      "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol": "0xa516cbf1c7d15d3517c2d668601ce016c54395bf5171918a14e2686977465f53",
+      "node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+      "node_modules/@openzeppelin/contracts/utils/Strings.sol": "0x1fdc2de9585ab0f1c417f02a873a2b6343cd64bb7ffec6b00ffa11a4a158d9e8",
+      "node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": "0x2d9dc2fe26180f74c11c13663647d38e259e45f95eb88f57b61d2160b0109d3e",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "node_modules/@openzeppelin/contracts/utils/math/Math.sol": "0x59973a93b1f983f94e10529f46ca46544a9fec2b5f56fb1390bbe9e0dc79f857",
+      "node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol": "0xc8cae21c9ae4a46e5162ff9bf5b351d6fa6a6eba72d515f3bc1bdfeda7fdf083",
+      "node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol": "0xb1970fac7b64e6c09611e6691791e848d5e3fe410fa5899e7df2e0afd77a99e3",
+      "src/Raffle.sol": "0x9067879c5698319f21be1aa9b6330943b5f0ea90ec32adcb5faf1e9081dfcddc",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef",
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a",
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "9adc4a307e063480905cbd66b58860a8d5c94afc4545193cc203a1cc629f3ccf",
+    "creation_bytecode_sha256": "bc030b5d3fccaf93b7dfae4a8621934e9c189d2f8be2d232e9f7e81f816291a8",
+    "runtime_bytecode_sha256": "3a4dbcadff94233dc17cd0ea174f4a420ee7b9a416d56ae1b8b20894bff9935a",
+    "immutable_references": {
+      "41387": [
+        {
+          "start": 14994,
+          "length": 32
+        }
+      ],
+      "41390": [
+        {
+          "start": 6521,
+          "length": 32
+        },
+        {
+          "start": 7098,
+          "length": 32
+        },
+        {
+          "start": 10567,
+          "length": 32
+        },
+        {
+          "start": 10606,
+          "length": 32
+        },
+        {
+          "start": 11663,
+          "length": 32
+        },
+        {
+          "start": 15790,
+          "length": 32
+        },
+        {
+          "start": 18916,
+          "length": 32
+        },
+        {
+          "start": 19072,
+          "length": 32
+        }
+      ],
+      "51195": [
+        {
+          "start": 4641,
+          "length": 32
+        },
+        {
+          "start": 5036,
+          "length": 32
+        },
+        {
+          "start": 14465,
+          "length": 32
+        },
+        {
+          "start": 15530,
+          "length": 32
+        },
+        {
+          "start": 15618,
+          "length": 32
+        }
+      ],
+      "51200": [
+        {
+          "start": 6703,
+          "length": 32
+        },
+        {
+          "start": 8627,
+          "length": 32
+        },
+        {
+          "start": 15704,
+          "length": 32
+        },
+        {
+          "start": 17516,
+          "length": 32
+        }
+      ]
+    }
+  },
+  {
+    "profile": "coverage",
+    "contract": "RaffleFactory",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/coverage/RaffleFactory.sol/RaffleFactory.json",
+    "artifact_sha256": "d8cd3eba7c84a7a80031fff00d0b8174c613a9acdcc17cd9f44bdc100945b6a6",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": false,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/RaffleFactory.sol": "RaffleFactory"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol": "0xcee9303d524c29fefc346775ec0be31d134a5f14c990fe04961a9f516eb23ad5",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol": "0x49eef0f77dd5b06a6aeead7945d9a4d0948137dc228fe045e07f62e80a4c5aa2",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol": "0xb0b1a6f3f0d59aca5c805994d8f64c24f570c280422f976dbae20f8b5b24b47c",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol": "0xd5ea07362ab630a6a3dee4285a74cf2377044ca2e4be472755ad64d7c5d4b69d",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": "0x0afcb7e740d1537b252cb2676f600465ce6938398569f09ba1b9ca240dde2dfc",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC20.sol": "0x1a6221315ce0307746c2c4827c125d821ee796c74a676787762f4778671d4f44",
+      "node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol": "0x1b88b3fb3d85ba5496d7d5f396f83ee1fddcdd6762059ff65992655b67920998",
+      "node_modules/@openzeppelin/contracts/proxy/Clones.sol": "0x5a1847c0c6b92d60711f04cba9eaff572ae1f657cff1b8ca4ba065bcdbd68d8b",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": "0xd6fa4088198f04eef10c5bce8a2f4d60554b7ec4b987f684393c01bf79b94d9f",
+      "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": "0x304d732678032a9781ae85c8f204c8fba3d3a5e31c02616964e75cfdc5049098",
+      "node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": "0xf6bb0dc431a9c50e25756412ec14cfcd4dc61dd40b8dc0e1b58ec09fce6d5564",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": "0x88cd5e3bee2e8c36b8d9058fbcaa81ad5704281b25634122234b55ea853d8055",
+      "node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": "0xf46268c37522320bb2119a5a394bc5c739a95c0c574c8d08e8c643f4d06e5c76",
+      "node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol": "0xc7efbc23214ad7dced8bf2249460f4bda114d57f6a0079f84040654280f455bd",
+      "node_modules/@openzeppelin/contracts/utils/Bytes.sol": "0xf80e4b96b6849936ea0fabd76cf81b13d7276295fddb1e1c07afb3ddf650b0ac",
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+      "node_modules/@openzeppelin/contracts/utils/Create2.sol": "0xe06ddfff69f3ba154d92102d9a85db2780e045303a587360cf12195216e851ca",
+      "node_modules/@openzeppelin/contracts/utils/Errors.sol": "0x6afa713bfd42cf0f7656efa91201007ac465e42049d7de1d50753a373648c123",
+      "node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol": "0x6ba3db1346fc75a832aa6cd075e12f6f1fa172fa2122a020f324c319fe5be75e",
+      "node_modules/@openzeppelin/contracts/utils/Panic.sol": "0xf7fe324703a64fc51702311dc51562d5cb1497734f074e4f483bfb6717572d7a",
+      "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol": "0xa516cbf1c7d15d3517c2d668601ce016c54395bf5171918a14e2686977465f53",
+      "node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+      "node_modules/@openzeppelin/contracts/utils/Strings.sol": "0x1fdc2de9585ab0f1c417f02a873a2b6343cd64bb7ffec6b00ffa11a4a158d9e8",
+      "node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": "0x2d9dc2fe26180f74c11c13663647d38e259e45f95eb88f57b61d2160b0109d3e",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "node_modules/@openzeppelin/contracts/utils/math/Math.sol": "0x59973a93b1f983f94e10529f46ca46544a9fec2b5f56fb1390bbe9e0dc79f857",
+      "node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol": "0xc8cae21c9ae4a46e5162ff9bf5b351d6fa6a6eba72d515f3bc1bdfeda7fdf083",
+      "node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol": "0xb1970fac7b64e6c09611e6691791e848d5e3fe410fa5899e7df2e0afd77a99e3",
+      "src/Raffle.sol": "0x9067879c5698319f21be1aa9b6330943b5f0ea90ec32adcb5faf1e9081dfcddc",
+      "src/RaffleFactory.sol": "0x7bacf809752ede88c43dbe2817a66d5e1b15c87fbdaae4fecfcbd9b5b92337e6",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef",
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a",
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "e371f9f87048a88c2015069e1fb7666e0333892e18a2c8a12001e774e0d38bb3",
+    "creation_bytecode_sha256": "e21d51dd7386e3bc28a0bce12dbc612664e74e37685d4ac7c5ff14674e8dfe37",
+    "runtime_bytecode_sha256": "b23a44dc9a6985e5f56c47858df35e309952e04e00a99c91093518e761b7c756",
+    "immutable_references": {
+      "53136": [
+        {
+          "start": 2264,
+          "length": 32
+        },
+        {
+          "start": 2412,
+          "length": 32
+        },
+        {
+          "start": 2921,
+          "length": 32
+        },
+        {
+          "start": 3480,
+          "length": 32
+        }
+      ],
+      "53140": [
+        {
+          "start": 2548,
+          "length": 32
+        },
+        {
+          "start": 3025,
+          "length": 32
+        },
+        {
+          "start": 3583,
+          "length": 32
+        }
+      ],
+      "53144": [
+        {
+          "start": 1011,
+          "length": 32
+        },
+        {
+          "start": 2297,
+          "length": 32
+        },
+        {
+          "start": 2512,
+          "length": 32
+        }
+      ],
+      "53148": [
+        {
+          "start": 858,
+          "length": 32
+        },
+        {
+          "start": 2455,
+          "length": 32
+        },
+        {
+          "start": 3129,
+          "length": 32
+        },
+        {
+          "start": 3775,
+          "length": 32
+        }
+      ]
+    }
+  },
+  {
+    "profile": "coverage",
+    "contract": "IRaffle",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/coverage/IRaffle.sol/IRaffle.json",
+    "artifact_sha256": "eb0743565ea926df0b06e911f3b8bbade0fabeed7d4c3b40f4d9aa917fcadc39",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": false,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/interfaces/IRaffle.sol": "IRaffle"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef"
+    },
+    "abi_sha256": "3af2eecbb9a5f01c9b58c82ef94f04b21e8e590c53c49f08175957a159c3c5b0",
+    "creation_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "runtime_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "immutable_references": {}
+  },
+  {
+    "profile": "coverage",
+    "contract": "IRaffleFactory",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/coverage/IRaffleFactory.sol/IRaffleFactory.json",
+    "artifact_sha256": "2cd8e6fecf61a9b46679368efc4c2689a94caeff789ddd7fcf270aada9812dee",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": false,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/interfaces/IRaffleFactory.sol": "IRaffleFactory"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a"
+    },
+    "abi_sha256": "19bb77c722ae65f2c88ac99e611f2d59291f5033c07ff277889cbb557dfdf097",
+    "creation_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "runtime_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "immutable_references": {}
+  },
+  {
+    "profile": "coverage",
+    "contract": "RaffleConstants",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/coverage/RaffleConstants.sol/RaffleConstants.json",
+    "artifact_sha256": "f4005e669f0be5adafc5e8eddd103f723c5a0874ada4360d560f90a1718c33d6",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": false,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/libraries/RaffleConstants.sol": "RaffleConstants"
+      },
+      "evmVersion": "cancun",
+      "libraries": {}
+    },
+    "source_hashes": {
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "creation_bytecode_sha256": "665d200f47b3dafd8b79237ac4cddc6dfc0c616b33775d5616472a00e043cc53",
+    "runtime_bytecode_sha256": "fc9e328448d09c944c34301b77a76b7ae50938d5818e3794feb900acca8b0f61",
+    "immutable_references": {}
+  },
+  {
+    "profile": "comparison",
+    "contract": "Raffle",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/comparison/Raffle.sol/Raffle.json",
+    "artifact_sha256": "da09b1d1c263913e2276a5ef88ba5723186c1f716f1009f2b530afbabaced2b4",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 1000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/Raffle.sol": "Raffle"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol": "0xcee9303d524c29fefc346775ec0be31d134a5f14c990fe04961a9f516eb23ad5",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol": "0x49eef0f77dd5b06a6aeead7945d9a4d0948137dc228fe045e07f62e80a4c5aa2",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol": "0xb0b1a6f3f0d59aca5c805994d8f64c24f570c280422f976dbae20f8b5b24b47c",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol": "0xd5ea07362ab630a6a3dee4285a74cf2377044ca2e4be472755ad64d7c5d4b69d",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": "0x0afcb7e740d1537b252cb2676f600465ce6938398569f09ba1b9ca240dde2dfc",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC20.sol": "0x1a6221315ce0307746c2c4827c125d821ee796c74a676787762f4778671d4f44",
+      "node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol": "0x1b88b3fb3d85ba5496d7d5f396f83ee1fddcdd6762059ff65992655b67920998",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": "0x304d732678032a9781ae85c8f204c8fba3d3a5e31c02616964e75cfdc5049098",
+      "node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": "0xf6bb0dc431a9c50e25756412ec14cfcd4dc61dd40b8dc0e1b58ec09fce6d5564",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": "0x88cd5e3bee2e8c36b8d9058fbcaa81ad5704281b25634122234b55ea853d8055",
+      "node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": "0xf46268c37522320bb2119a5a394bc5c739a95c0c574c8d08e8c643f4d06e5c76",
+      "node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol": "0xc7efbc23214ad7dced8bf2249460f4bda114d57f6a0079f84040654280f455bd",
+      "node_modules/@openzeppelin/contracts/utils/Bytes.sol": "0xf80e4b96b6849936ea0fabd76cf81b13d7276295fddb1e1c07afb3ddf650b0ac",
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+      "node_modules/@openzeppelin/contracts/utils/Panic.sol": "0xf7fe324703a64fc51702311dc51562d5cb1497734f074e4f483bfb6717572d7a",
+      "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol": "0xa516cbf1c7d15d3517c2d668601ce016c54395bf5171918a14e2686977465f53",
+      "node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+      "node_modules/@openzeppelin/contracts/utils/Strings.sol": "0x1fdc2de9585ab0f1c417f02a873a2b6343cd64bb7ffec6b00ffa11a4a158d9e8",
+      "node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": "0x2d9dc2fe26180f74c11c13663647d38e259e45f95eb88f57b61d2160b0109d3e",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "node_modules/@openzeppelin/contracts/utils/math/Math.sol": "0x59973a93b1f983f94e10529f46ca46544a9fec2b5f56fb1390bbe9e0dc79f857",
+      "node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol": "0xc8cae21c9ae4a46e5162ff9bf5b351d6fa6a6eba72d515f3bc1bdfeda7fdf083",
+      "node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol": "0xb1970fac7b64e6c09611e6691791e848d5e3fe410fa5899e7df2e0afd77a99e3",
+      "src/Raffle.sol": "0x9067879c5698319f21be1aa9b6330943b5f0ea90ec32adcb5faf1e9081dfcddc",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef",
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a",
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "9adc4a307e063480905cbd66b58860a8d5c94afc4545193cc203a1cc629f3ccf",
+    "creation_bytecode_sha256": "4dc9eba89b6aa1587e70b86fb4152dc81389b65ab5b373923c7fe76831adb547",
+    "runtime_bytecode_sha256": "172d3472e8fb4600311be8318593af6208edce0ccb7f39ddaa46c4606c87c583",
+    "immutable_references": {
+      "41387": [
+        {
+          "start": 992,
+          "length": 32
+        }
+      ],
+      "41390": [
+        {
+          "start": 2501,
+          "length": 32
+        },
+        {
+          "start": 7998,
+          "length": 32
+        },
+        {
+          "start": 8552,
+          "length": 32
+        },
+        {
+          "start": 10856,
+          "length": 32
+        },
+        {
+          "start": 11698,
+          "length": 32
+        },
+        {
+          "start": 12236,
+          "length": 32
+        }
+      ],
+      "51195": [
+        {
+          "start": 1537,
+          "length": 32
+        },
+        {
+          "start": 8848,
+          "length": 32
+        },
+        {
+          "start": 9891,
+          "length": 32
+        },
+        {
+          "start": 11860,
+          "length": 32
+        }
+      ],
+      "51200": [
+        {
+          "start": 5879,
+          "length": 32
+        },
+        {
+          "start": 8348,
+          "length": 32
+        },
+        {
+          "start": 12287,
+          "length": 32
+        },
+        {
+          "start": 13073,
+          "length": 32
+        }
+      ]
+    }
+  },
+  {
+    "profile": "comparison",
+    "contract": "RaffleFactory",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/comparison/RaffleFactory.sol/RaffleFactory.json",
+    "artifact_sha256": "cc6b6d187d07441f488fe67fa7cdc9cc89e10052e0f2636d22cbf6de005506a0",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 1000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/RaffleFactory.sol": "RaffleFactory"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol": "0xcee9303d524c29fefc346775ec0be31d134a5f14c990fe04961a9f516eb23ad5",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol": "0x49eef0f77dd5b06a6aeead7945d9a4d0948137dc228fe045e07f62e80a4c5aa2",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol": "0xb0b1a6f3f0d59aca5c805994d8f64c24f570c280422f976dbae20f8b5b24b47c",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol": "0xd5ea07362ab630a6a3dee4285a74cf2377044ca2e4be472755ad64d7c5d4b69d",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC165.sol": "0x0afcb7e740d1537b252cb2676f600465ce6938398569f09ba1b9ca240dde2dfc",
+      "node_modules/@openzeppelin/contracts/interfaces/IERC20.sol": "0x1a6221315ce0307746c2c4827c125d821ee796c74a676787762f4778671d4f44",
+      "node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol": "0x1b88b3fb3d85ba5496d7d5f396f83ee1fddcdd6762059ff65992655b67920998",
+      "node_modules/@openzeppelin/contracts/proxy/Clones.sol": "0x5a1847c0c6b92d60711f04cba9eaff572ae1f657cff1b8ca4ba065bcdbd68d8b",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": "0xd6fa4088198f04eef10c5bce8a2f4d60554b7ec4b987f684393c01bf79b94d9f",
+      "node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": "0x304d732678032a9781ae85c8f204c8fba3d3a5e31c02616964e75cfdc5049098",
+      "node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": "0xf6bb0dc431a9c50e25756412ec14cfcd4dc61dd40b8dc0e1b58ec09fce6d5564",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": "0x88cd5e3bee2e8c36b8d9058fbcaa81ad5704281b25634122234b55ea853d8055",
+      "node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol": "0xf46268c37522320bb2119a5a394bc5c739a95c0c574c8d08e8c643f4d06e5c76",
+      "node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol": "0xc7efbc23214ad7dced8bf2249460f4bda114d57f6a0079f84040654280f455bd",
+      "node_modules/@openzeppelin/contracts/utils/Bytes.sol": "0xf80e4b96b6849936ea0fabd76cf81b13d7276295fddb1e1c07afb3ddf650b0ac",
+      "node_modules/@openzeppelin/contracts/utils/Context.sol": "0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2",
+      "node_modules/@openzeppelin/contracts/utils/Create2.sol": "0xe06ddfff69f3ba154d92102d9a85db2780e045303a587360cf12195216e851ca",
+      "node_modules/@openzeppelin/contracts/utils/Errors.sol": "0x6afa713bfd42cf0f7656efa91201007ac465e42049d7de1d50753a373648c123",
+      "node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol": "0x6ba3db1346fc75a832aa6cd075e12f6f1fa172fa2122a020f324c319fe5be75e",
+      "node_modules/@openzeppelin/contracts/utils/Panic.sol": "0xf7fe324703a64fc51702311dc51562d5cb1497734f074e4f483bfb6717572d7a",
+      "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol": "0xa516cbf1c7d15d3517c2d668601ce016c54395bf5171918a14e2686977465f53",
+      "node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": "0xcf74f855663ce2ae00ed8352666b7935f6cddea2932fdf2c3ecd30a9b1cd0e97",
+      "node_modules/@openzeppelin/contracts/utils/Strings.sol": "0x1fdc2de9585ab0f1c417f02a873a2b6343cd64bb7ffec6b00ffa11a4a158d9e8",
+      "node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": "0x2d9dc2fe26180f74c11c13663647d38e259e45f95eb88f57b61d2160b0109d3e",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "node_modules/@openzeppelin/contracts/utils/math/Math.sol": "0x59973a93b1f983f94e10529f46ca46544a9fec2b5f56fb1390bbe9e0dc79f857",
+      "node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol": "0xc8cae21c9ae4a46e5162ff9bf5b351d6fa6a6eba72d515f3bc1bdfeda7fdf083",
+      "node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol": "0xb1970fac7b64e6c09611e6691791e848d5e3fe410fa5899e7df2e0afd77a99e3",
+      "src/Raffle.sol": "0x9067879c5698319f21be1aa9b6330943b5f0ea90ec32adcb5faf1e9081dfcddc",
+      "src/RaffleFactory.sol": "0x7bacf809752ede88c43dbe2817a66d5e1b15c87fbdaae4fecfcbd9b5b92337e6",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef",
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a",
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "e371f9f87048a88c2015069e1fb7666e0333892e18a2c8a12001e774e0d38bb3",
+    "creation_bytecode_sha256": "38f5a5dbde033d264093815698d87e3ef4ce763fea4ff660a0c72de423aa10ce",
+    "runtime_bytecode_sha256": "bb165945eb834028b7bae1581c219ffdd5cc3fab2ae2f495e01e9b61cf78184a",
+    "immutable_references": {
+      "53136": [
+        {
+          "start": 656,
+          "length": 32
+        },
+        {
+          "start": 2179,
+          "length": 32
+        },
+        {
+          "start": 3201,
+          "length": 32
+        },
+        {
+          "start": 3435,
+          "length": 32
+        }
+      ],
+      "53140": [
+        {
+          "start": 362,
+          "length": 32
+        },
+        {
+          "start": 3141,
+          "length": 32
+        },
+        {
+          "start": 3375,
+          "length": 32
+        }
+      ],
+      "53144": [
+        {
+          "start": 430,
+          "length": 32
+        },
+        {
+          "start": 1440,
+          "length": 32
+        }
+      ],
+      "53148": [
+        {
+          "start": 558,
+          "length": 32
+        },
+        {
+          "start": 1241,
+          "length": 32
+        },
+        {
+          "start": 3046,
+          "length": 32
+        },
+        {
+          "start": 3315,
+          "length": 32
+        }
+      ]
+    }
+  },
+  {
+    "profile": "comparison",
+    "contract": "IRaffle",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/comparison/IRaffle.sol/IRaffle.json",
+    "artifact_sha256": "1df0eeafa4367ba7c3170335229e6c957a7a1232cf1bbdddd5dab5e89f3d50b0",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 1000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/interfaces/IRaffle.sol": "IRaffle"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "source_hashes": {
+      "node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol": "0x23a19b6fa394e21359d39d78a081ddaa68160cca4b8850afbec5843bd16a844f",
+      "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": "0x74ed01eb66b923d0d0cfe3be84604ac04b76482a55f9dd655e1ef4d367f95bc2",
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": "0xf78f05f3b8c9f75570e85300d7b4600d7f6f6a198449273f31d44c1641adb46f",
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": "0x8891738ffe910f0cf2da09566928589bf5d63f4524dd734fd9cedbac3274dd5c",
+      "src/interfaces/IRaffle.sol": "0x1c79f858c1da7595e27d54e5304b1b70888d40f3559e9a436ed9f0bbbbfaecef"
+    },
+    "abi_sha256": "3af2eecbb9a5f01c9b58c82ef94f04b21e8e590c53c49f08175957a159c3c5b0",
+    "creation_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "runtime_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "immutable_references": {}
+  },
+  {
+    "profile": "comparison",
+    "contract": "IRaffleFactory",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/comparison/IRaffleFactory.sol/IRaffleFactory.json",
+    "artifact_sha256": "ad74be7399ca3b3c3e2ec78418ed481ac6eede759a8e45aafdbd143381677868",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 1000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/interfaces/IRaffleFactory.sol": "IRaffleFactory"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "source_hashes": {
+      "src/interfaces/IRaffleFactory.sol": "0x074af1ebdc95b816343edb3da63eaa3c811b83bf94fab94f7ea04b8b1328d11a"
+    },
+    "abi_sha256": "19bb77c722ae65f2c88ac99e611f2d59291f5033c07ff277889cbb557dfdf097",
+    "creation_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "runtime_bytecode_sha256": "a54942c8e365f3784f38b8d437f9d708290db60738b00cdcfb934c32d1be97f3",
+    "immutable_references": {}
+  },
+  {
+    "profile": "comparison",
+    "contract": "RaffleConstants",
+    "artifact_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/profile-artifacts/comparison/RaffleConstants.sol/RaffleConstants.json",
+    "artifact_sha256": "050b467a9a0422bc1f14f16c53830e2ca5b408cfdf113695078a085033f0340c",
+    "compiler": {
+      "version": "0.8.36+commit.8a079791"
+    },
+    "settings": {
+      "remappings": [
+        "@chainlink/=node_modules/@chainlink/",
+        "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 1000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/libraries/RaffleConstants.sol": "RaffleConstants"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "source_hashes": {
+      "src/libraries/RaffleConstants.sol": "0x7329c3978d225184bd45c958e7301980f8f6d278f7d26f92a49bf964772bf682"
+    },
+    "abi_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "creation_bytecode_sha256": "248cccf363a2f82b5b89842db903a0ef226ac06415266b798b3ad3029529c25d",
+    "runtime_bytecode_sha256": "efd50b811418e34598e5f574e118753a05688fdd9695eeaa2945cd01205e4643",
+    "immutable_references": {}
+  }
+]

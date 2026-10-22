@@ -1,0 +1,428 @@
+{
+  "replay": {
+    "originalOutput": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution",
+    "reusedOriginalCalls": 11,
+    "originalFailedLedger": [
+      {
+        "id": "010",
+        "status": "failed",
+        "error": "Error: Native terminal error: The stream was interrupted. Please continue the task you were working on.",
+        "invocation": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/010/invocation.json",
+        "sha256": "ee6190d64f393528173bda57a58b1dc005e1c5e3b5de1d7a4c5c46564f1e6041"
+      },
+      {
+        "id": "011",
+        "status": "failed",
+        "error": "Error: Native terminal error: The stream was interrupted. Please continue the task you were working on.",
+        "invocation": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-03/S1/workflow-adapter-execution/agents/011/invocation.json",
+        "sha256": "0f783c2cc429b1afddab9c9eeb066708c68fdcdadf427f4e27777e68038d3ab9"
+      }
+    ],
+    "rawTimestampsNormalized": false
+  },
+  "method": "exact-pinned-ToB-JS-body-on-disclosed-native-agy-host-adapter",
+  "endedUtc": "2026-10-21T21:40:48.166Z",
+  "workflowResult": {
+    "root": "packages/contracts",
+    "dossier": "audit-context/DOSSIER.md",
+    "analyzed": [
+      {
+        "function": "createRaffle",
+        "file": "packages/contracts/src/RaffleFactory.sol",
+        "analysis": "audit-context/functions/01-createRaffle.md"
+      },
+      {
+        "function": "buyEntries",
+        "file": "packages/contracts/src/Raffle.sol",
+        "analysis": "audit-context/functions/02-buyEntries.md"
+      },
+      {
+        "function": "_settleWinningTicket",
+        "file": "packages/contracts/src/Raffle.sol",
+        "analysis": "audit-context/functions/03-_settleWinningTicket.md"
+      },
+      {
+        "function": "redeemWinningTicket",
+        "file": "packages/contracts/src/Raffle.sol",
+        "analysis": "audit-context/functions/04-redeemWinningTicket.md"
+      },
+      {
+        "function": "requestDraw",
+        "file": "packages/contracts/src/Raffle.sol",
+        "analysis": "audit-context/functions/05-requestDraw.md"
+      },
+      {
+        "function": "fulfillRandomWords",
+        "file": "packages/contracts/src/Raffle.sol",
+        "analysis": "audit-context/functions/06-fulfillRandomWords.md"
+      },
+      {
+        "function": "enableRefunds",
+        "file": "packages/contracts/src/Raffle.sol",
+        "analysis": "audit-context/functions/07-enableRefunds.md"
+      },
+      {
+        "function": "refundTickets",
+        "file": "packages/contracts/src/Raffle.sol",
+        "analysis": "audit-context/functions/08-refundTickets.md"
+      },
+      {
+        "function": "_validateCreateParams",
+        "file": "packages/contracts/src/RaffleFactory.sol",
+        "analysis": "audit-context/functions/09-_validateCreateParams.md"
+      },
+      {
+        "function": "initialize",
+        "file": "packages/contracts/src/Raffle.sol",
+        "analysis": "audit-context/functions/10-initialize.md"
+      },
+      {
+        "function": "onERC721Received",
+        "file": "packages/contracts/src/Raffle.sol",
+        "analysis": "audit-context/functions/11-onERC721Received.md"
+      },
+      {
+        "function": "_isProtocolDestination",
+        "file": "packages/contracts/src/Raffle.sol",
+        "analysis": "audit-context/functions/12-_isProtocolDestination.md"
+      }
+    ],
+    "notAnalyzed": [
+      "releaseSponsorPrize",
+      "releaseSponsorProceeds",
+      "releaseProtocolFees",
+      "_update",
+      "_transferQuote",
+      "_requireWinningTicket",
+      "constructor",
+      "constructor",
+      "settleWinningTicket"
+    ],
+    "trustBoundaries": [
+      {
+        "actor": "Factory Deployer (trusted)",
+        "entrypoint": "RaffleFactory.constructor (packages/contracts/src/RaffleFactory.sol:L65-L92)",
+        "reaches": "RaffleFactory._requireContract (L66-L67, L183-L185), IERC20Metadata(quoteToken_).decimals() staticcall (L71), and new Raffle(quoteToken_, vrfWrapper_) deployment (L89 -> Raffle.constructor at Raffle.sol:L155-L166 -> VRFV2PlusWrapperConsumerBase.constructor at L40-L47 -> vrfWrapper_.link() staticcall at L45), initializing immutables quoteToken, vrfWrapper, protocolTreasury, and raffleImplementation."
+      },
+      {
+        "actor": "Sponsor / Any External Caller (untrusted)",
+        "entrypoint": "RaffleFactory.createRaffle (packages/contracts/src/RaffleFactory.sol:L97-L148)",
+        "reaches": "RaffleFactory._validateCreateParams (L98, L154-L179 -> IERC165(params.prizeToken).supportsInterface staticcall at L172), Clones.clone (L106), IRaffle(raffle).initialize (L109-L121 -> Raffle._isProtocolDestination at Raffle.sol:L187-L195, L593-L605), factory registry mappings (raffleCount, raffleById, idByRaffle, isRaffle at L105, L123-L125), IERC721(params.prizeToken).safeTransferFrom (L128 -> Raffle.onERC721Received at Raffle.sol:L416-L431), IERC721(params.prizeToken).ownerOf (L129), and IRaffle(raffle).status (L132)."
+      },
+      {
+        "actor": "RaffleFactory Contract (trusted)",
+        "entrypoint": "Raffle.initialize (packages/contracts/src/Raffle.sol:L176-L206)",
+        "reaches": "Raffle._isProtocolDestination (L187, L190, L193 -> IRaffleFactory(factory).raffleImplementation() at L601 and IRaffleFactory(factory).isRaffle(destination) at L603), writing initialized, sponsor, sponsorRecipient, protocolTreasury, prizeToken, prizeTokenId, raffleId, reserveEntries, endTime, and status = Status.AwaitingPrize."
+      },
+      {
+        "actor": "Prize ERC-721 Contract (untrusted)",
+        "entrypoint": "Raffle.onERC721Received (packages/contracts/src/Raffle.sol:L416-L431)",
+        "reaches": "Validates status == Status.AwaitingPrize, msg.sender == address(prizeToken), tokenId == prizeTokenId, from == sponsor, and operator == factory (L421-L426), writes status = Status.Active (L428), and emits PrizeDeposited (L429)."
+      },
+      {
+        "actor": "Entry Buyer / Ticket Recipient (untrusted)",
+        "entrypoint": "Raffle.buyEntries (packages/contracts/src/Raffle.sol:L209-L237)",
+        "reaches": "Raffle._requireStatus(Status.Active) (L215), SafeERC20.safeTransferFrom on quoteToken (L224), writes totalEntries, ticketCount, _ticketRanges[ticketId], and unsettledPot (L230-L233), and calls ERC721._safeMint (L235 -> Raffle._update at L497-L502 -> Raffle._isProtocolDestination at L593-L605 -> ERC721._update -> ERC721Utils.checkOnERC721Received calling untrusted IERC721Receiver(recipient).onERC721Received when recipient.code.length > 0)."
+      },
+      {
+        "actor": "Permissionless Caller / Draw Requester (untrusted)",
+        "entrypoint": "Raffle.requestDraw (packages/contracts/src/Raffle.sol:L240-L273)",
+        "reaches": "Raffle._requireStatus(Status.Active) (L241), Raffle.drawRequestDeadline (L244, L458-L460), Raffle.getVrfRequestPrice (L249, L436-L438 -> i_vrfV2PlusWrapper.calculateRequestPriceNative), writes status = Status.Drawing, drawRequestedAt, and _requestInFlight = true (L252-L254), calls VRFV2PlusWrapperConsumerBase.requestRandomnessPayInNative (L257 -> i_vrfV2PlusWrapper.calculateRequestPriceNative and requestRandomWordsInNative{value: requestPrice}), writes vrfRequestId and _requestInFlight = false (L259-L260), and executes low-level assembly call(gas(), msg.sender, excess, 0, 0, 0, 0) when excess > 0 (L262-L270)."
+      },
+      {
+        "actor": "Chainlink VRF v2.5 Wrapper (trusted)",
+        "entrypoint": "VRFV2PlusWrapperConsumerBase.rawFulfillRandomWords (packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:L101-L107)",
+        "reaches": "Verifies msg.sender == address(i_vrfV2PlusWrapper) (L103-L105) and dispatches to Raffle.fulfillRandomWords (Raffle.sol:L509-L524), which checks _requestInFlight, status == Status.Drawing, requestId == vrfRequestId, randomWords.length == 1, and block.timestamp < callbackDeadline() (L510-L516), and on valid resolution writes winningEntry, resolvedAt, and status = Status.NftWon or Status.CashWon (L518-L521)."
+      },
+      {
+        "actor": "Sponsor or Permissionless Caller / Refund Enabler (untrusted)",
+        "entrypoint": "Raffle.enableRefunds (packages/contracts/src/Raffle.sol:L276-L301)",
+        "reaches": "Checks sponsor authority or endTime when status == Status.Active and totalEntries == 0 (L280-L284), drawRequestDeadline() when status == Status.Active and totalEntries != 0 (L285-L288), or callbackDeadline() when status == Status.Drawing (L289-L291), zeroes unsettledPot, writes remainingRefundLiability, and sets status = Status.Refunding (L296-L299)."
+      },
+      {
+        "actor": "Permissionless Caller / Settler (untrusted)",
+        "entrypoint": "Raffle.settleWinningTicket (packages/contracts/src/Raffle.sol:L304-L306)",
+        "reaches": "Raffle._settleWinningTicket (L533-L558 -> Raffle._requireWinningTicket at L579-L585 -> Raffle.ticketRange at L451-L455 and Math.mulDiv), setting settlementComplete = true, winningTicketId = ticketId, unsettledPot = 0, sponsorProceeds, protocolFees, and (for Status.CashWon) winnerProceeds."
+      },
+      {
+        "actor": "Winning Ticket Owner (untrusted)",
+        "entrypoint": "Raffle.redeemWinningTicket (packages/contracts/src/Raffle.sol:L309-L346)",
+        "reaches": "Lazily calls Raffle._settleWinningTicket if !settlementComplete (L314-L315), checks ERC721.ownerOf(ticketId) == msg.sender (L320-L321), writes winnerRecipient and winnerRedeemed = true (L323-L324), burns ticketId via ERC721._burn (L325), and either sets prizeClaimed = true and calls prizeToken.transferFrom(address(this), winner, prizeTokenId) + prizeToken.ownerOf(prizeTokenId) (Status.NftWon at L329-L337) or zeroes winnerProceeds and calls Raffle._transferQuote(winner, cashAmount) -> SafeERC20.safeTransfer on quoteToken (Status.CashWon at L338-L343)."
+      },
+      {
+        "actor": "Ticket Owner (untrusted)",
+        "entrypoint": "Raffle.refundTickets (packages/contracts/src/Raffle.sol:L349-L372)",
+        "reaches": "Raffle._requireStatus(Status.Refunding) (L350), loops over 1..100 ticketIds checking ERC721.ownerOf(ticketId) == msg.sender (L359-L360), reading Raffle.ticketRange(ticketId) (L362), and burning each ticket via ERC721._burn (L364), decrements remainingRefundLiability (L368), and calls Raffle._transferQuote(msg.sender, amount) -> SafeERC20.safeTransfer on quoteToken (L369)."
+      },
+      {
+        "actor": "Permissionless Caller / Claim Releaser (untrusted)",
+        "entrypoint": "Raffle.releaseSponsorProceeds, Raffle.releaseProtocolFees, Raffle.releaseSponsorPrize (packages/contracts/src/Raffle.sol:L375-L407)",
+        "reaches": "releaseSponsorProceeds zeroes sponsorProceeds and calls _transferQuote(sponsorRecipient, amount) (L375-L382); releaseProtocolFees zeroes protocolFees and calls _transferQuote(protocolTreasury, amount) (L385-L392); releaseSponsorPrize requires Status.CashWon or Status.Refunding and !prizeClaimed, sets prizeClaimed = true, and calls prizeToken.transferFrom(address(this), sponsorRecipient, prizeTokenId) + prizeToken.ownerOf(prizeTokenId) (L395-L407)."
+      },
+      {
+        "actor": "Ticket Owner or Approved Operator (untrusted)",
+        "entrypoint": "ERC721.transferFrom / safeTransferFrom / approve / setApprovalForAll (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L93-L136)",
+        "reaches": "Raffle._update (Raffle.sol:L497-L502) -> Raffle._isProtocolDestination (L593-L605) -> ERC721._update (updating _owners, _balances, _tokenApprovals) and, for safeTransferFrom, ERC721Utils.checkOnERC721Received calling IERC721Receiver(to).onERC721Received when to.code.length > 0."
+      }
+    ],
+    "fragilityClusters": [
+      {
+        "area": "Dynamic protocol-destination screening across time (Raffle._isProtocolDestination at Raffle.sol:L593-L605 and RaffleFactory.isRaffle at RaffleFactory.sol:L54, L125)",
+        "why": "_isProtocolDestination is evaluated at clone initialization (Raffle.sol:L187-L195), ticket mint/transfer (Raffle._update at L498), and USDC payouts (Raffle._transferQuote at L565), but not on ERC-721 prize transfers (L334, L404). Because it skips isRaffle when destination.code.length == 0 (L602) while RaffleFactory.isRaffle grows monotonically as CREATE clones are deployed (RaffleFactory.sol:L106, L125), a precomputed future clone address transitions from _isProtocolDestination == false before deployment to true after deployment."
+      },
+      {
+        "area": "Untrusted prizeToken callbacks during atomic creation and terminal delivery (RaffleFactory.sol:L128-L134, Raffle.sol:L334-L337, L404-L405, L416-L431)",
+        "why": "params.prizeToken is an arbitrary sponsor-supplied contract screened only for bytecode presence (RaffleFactory.sol:L155) and ERC-165 IERC721 support (L172). During createRaffle, safeTransferFrom (L128) invokes untrusted prizeToken code after clone initialization and registration; once onERC721Received sets status = Status.Active (Raffle.sol:L428), external calls into the active clone (such as buyEntries) can execute before RaffleCreated is emitted (RaffleFactory.sol:L136), and terminal prize delivery in redeemWinningTicket (Raffle.sol:L334-L337) and releaseSponsorPrize (L404-L405) depends on prizeToken.transferFrom and prizeToken.ownerOf behavior. Additionally, Raffle inherits ERC721 without overriding supportsInterface to report IERC721Receiver (ERC721.sol:L45-L50)."
+      },
+      {
+        "area": "VRF draw request in-flight guard, dual fee quoting, and deadline partitioning (Raffle.sol:L240-L273, L276-L301, L458-L465, L509-L524)",
+        "why": "requestDraw queries i_vrfV2PlusWrapper twice (L249 and L257, checking msg.value at L250 and L258), uses _requestInFlight (L254, L260, L511) to prevent a synchronous rawFulfillRandomWords callback from resolving before vrfRequestId is stored (L259), and refunds excess native ETH via assembly call (L266-L269) after clearing _requestInFlight. Resolution in fulfillRandomWords (L512) and refund activation in enableRefunds (L289-L291) partition time around callbackDeadline() (L463-L465), which relies on drawRequestedAt = uint64(block.timestamp) (L253) being non-zero whenever status == Status.Drawing."
+      },
+      {
+        "area": "Split creation validation between RaffleFactory._validateCreateParams and Raffle.initialize (RaffleFactory.sol:L98-L125, L154-L179; Raffle.sol:L176-L206)",
+        "why": "Validation of raffle configuration is divided across two contracts and before/after clone deployment: _validateCreateParams checks prizeToken code, ERC-165 IERC721 support, reserveEntries > 0, and pre-clone sink checks, while createRaffle checks endTime bounds; Raffle.initialize omits those checks but is the sole place screening msg.sender (sponsor), protocolTreasury vs. prizeToken, and sponsor/protocolTreasury/sponsorRecipient against the newly deployed clone address (destination == address(this) at Raffle.sol:L599) before isRaffle[raffle] is set at RaffleFactory.sol:L125."
+      },
+      {
+        "area": "Decoupled settlement vs. redemption and un-guarded ERC-721 ticket transfers (Raffle.sol:L235, L304-L346, L497-L502, L533-L558; ERC721.sol:L93-L136)",
+        "why": "_settleWinningTicket allocates protocolFees, sponsorProceeds, and winnerProceeds in storage without reading ticket ownership or performing external calls, whereas redeemWinningTicket, refundTickets, releaseSponsorProceeds, releaseProtocolFees, and releaseSponsorPrize perform independent pull-based transfers. Meanwhile, inherited ERC-721 transfer and approval functions do not carry nonReentrant and remain callable across all statuses and during external callbacks (_safeMint in buyEntries at L235, native refund in requestDraw at L267)."
+      }
+    ],
+    "unenforcedAssumptions": [
+      "createRaffle: params.prizeToken is an honest, standards-compliant ERC-721 contract that maintains exclusive custody of params.prizeTokenId in raffle after ownerOf(params.prizeTokenId) == raffle succeeds at creation and permits later transferFrom in redeemWinningTicket or releaseSponsorPrize",
+      "createRaffle: params.sponsorRecipient can receive quoteToken via SafeERC20.safeTransfer and params.prizeToken via IERC721.transferFrom without token-level blacklisting or revert",
+      "createRaffle: params.prizeToken does not invoke raffle.buyEntries during safeTransferFrom after calling raffle.onERC721Received before RaffleCreated is emitted",
+      "buyEntries: quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount) increases quoteToken.balanceOf(address(this)) by the exact grossAmount without fee-on-transfer deduction, rebasing, or untrusted callback hooks.",
+      "buyEntries: A future Raffle clone address that has not yet been deployed via Clones.clone (and thus currently has code.length == 0 and isRaffle == false) is not supplied as recipient before its creation.",
+      "redeemWinningTicket: In Status.NftWon, address(this) still holds prizeTokenId on prizeToken at redemption time and prizeToken.transferFrom(address(this), winner, prizeTokenId) transfers ownership to winner without reverting or pausing.",
+      "redeemWinningTicket: In Status.NftWon, prizeToken.ownerOf(deliveredPrizeTokenId) == winner truthfully reflects durable ownership of prizeTokenId by winner after prizeToken.transferFrom returns.",
+      "redeemWinningTicket: In Status.CashWon, quoteToken holds at least cashAmount for address(this) and executes transfer(winner, cashAmount) without fee-on-transfer, rebasing, or blacklisting reverts.",
+      "requestDraw: block.timestamp fits within uint64 without high-bit truncation when cast via drawRequestedAt = uint64(block.timestamp) at Raffle.sol:L253.",
+      "requestDraw: i_vrfV2PlusWrapper implements calculateRequestPriceNative and requestRandomWordsInNative without reverting for callbackGasLimit = 300_000, requestConfirmations = 30, and numWords = 1, accepts requestPrice wei matching calculateRequestPriceNative, and returns the requestId it will later pass to rawFulfillRandomWords.",
+      "fulfillRandomWords: The external i_vrfV2PlusWrapper supplies unbiased, unpredictable randomness in randomWords[0] and delivers valid ABI-encoded (uint256, uint256[]) calldata with sufficient gas to complete rawFulfillRandomWords.",
+      "enableRefunds: When requestDraw sets drawRequestedAt = uint64(block.timestamp), block.timestamp fits in uint64 so the cast does not wrap to 0 or a truncated timestamp used by callbackDeadline() at L290.",
+      "enableRefunds: quoteToken.balanceOf(address(this)) is at least unsettledPot when enableRefunds moves unsettledPot into remainingRefundLiability (no fee-on-transfer or negative rebasing on quoteToken).",
+      "refundTickets: quoteToken is canonical 6-decimal USDC that holds at least remainingRefundLiability for address(this) and executes transfer(msg.sender, amount) without fees, rebasing, or reentrant callbacks into Raffle.",
+      "_validateCreateParams: params.prizeToken is a standards-compliant, non-malicious ERC-721 contract beyond having non-empty bytecode (L155, L184) and returning true from IERC165.supportsInterface(type(IERC721).interfaceId) (L172-L177).",
+      "_validateCreateParams: params.sponsorRecipient is not an undeployed address that will later be deployed and registered as a Raffle clone by this RaffleFactory (which would cause isRaffle[sponsorRecipient] to become true at RaffleFactory.sol:L125 and make Raffle._isProtocolDestination return true during Raffle._transferQuote at Raffle.sol:L565, L602-L603).",
+      "_validateCreateParams: params.reserveEntries requires no upper bound below type(uint128).max (only params.reserveEntries != 0 is checked at L178).",
+      "initialize: params.prizeToken is a standards-compliant, non-malicious ERC-721 contract whose transferFrom and ownerOf behave according to EIP-721 at future redemption or release time.",
+      "initialize: Neither params.sponsorRecipient nor params.protocolTreasury is an undeployed address (code.length == 0 at initialization time) that will later be deployed and registered as a Raffle clone in RaffleFactory.isRaffle before quote-token claims are released via _transferQuote.",
+      "onERC721Received: Calling contract msg.sender (prizeToken) only invokes onERC721Received(factory, sponsor, prizeTokenId, ...) during a genuine transfer that vests ownership of prizeTokenId in the Raffle clone.",
+      "onERC721Received: prizeToken.safeTransferFrom invokes IERC721Receiver.onERC721Received directly without requiring IERC165.supportsInterface(type(IERC721Receiver).interfaceId) to return true on the Raffle clone (ERC721.supportsInterface at packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L45-L50 does not include IERC721Receiver).",
+      "_isProtocolDestination: An address for which _isProtocolDestination(destination, prizeToken_) returns false during Raffle.initialize (L187-L195) or Raffle._update (L498) will continue to have _isProtocolDestination return false at later claim/payout times (Raffle._transferQuote at L565, Raffle.redeemWinningTicket at L334, or Raffle.releaseSponsorPrize at L404) and across later Raffle.initialize calls (L190)."
+    ],
+    "unresolved": [
+      "requestDraw (audit-context/functions/05-requestDraw.md): unclear; need to inspect the deployed target-chain i_vrfV2PlusWrapper contract and VRF coordinator configuration to verify that VRF_CALLBACK_GAS_LIMIT = 300_000 (RaffleConstants.sol:L39) and VRF_REQUEST_CONFIRMATIONS = 30 (RaffleConstants.sol:L42) are within the wrapper's permitted gas and confirmation bounds.",
+      "Unenforced assumption (createRaffle): params.prizeToken is an honest, standards-compliant ERC-721 contract that maintains exclusive custody of params.prizeTokenId in raffle after ownerOf(params.prizeTokenId) == raffle succeeds at creation and permits later transferFrom in redeemWinningTicket or releaseSponsorPrize",
+      "Unenforced assumption (createRaffle): params.sponsorRecipient can receive quoteToken via SafeERC20.safeTransfer and params.prizeToken via IERC721.transferFrom without token-level blacklisting or revert",
+      "Unenforced assumption (createRaffle): params.prizeToken does not invoke raffle.buyEntries during safeTransferFrom after calling raffle.onERC721Received before RaffleCreated is emitted",
+      "Unenforced assumption (buyEntries): quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount) increases quoteToken.balanceOf(address(this)) by the exact grossAmount without fee-on-transfer deduction, rebasing, or untrusted callback hooks.",
+      "Unenforced assumption (buyEntries / _validateCreateParams / initialize / _isProtocolDestination): A future Raffle clone address that has not yet been deployed via Clones.clone (and thus currently has code.length == 0 and isRaffle == false) is not supplied as ticket recipient, sponsorRecipient, or protocolTreasury before its creation, so _isProtocolDestination returning false at initialization or ticket transfer remains false at later _transferQuote claim release.",
+      "Unenforced assumption (redeemWinningTicket / onERC721Received): In Status.NftWon, address(this) still holds prizeTokenId on prizeToken at redemption time, prizeToken.transferFrom(address(this), winner, prizeTokenId) transfers ownership without reverting,prizeToken.ownerOf(deliveredPrizeTokenId) == winner truthfully reflects durable ownership, and prizeToken.safeTransferFrom invokes onERC721Received without requiring IERC165.supportsInterface(type(IERC721Receiver).interfaceId) on Raffle.",
+      "Unenforced assumption (requestDraw / fulfillRandomWords / enableRefunds): block.timestamp fits within uint64 without high-bit truncation when cast via drawRequestedAt = uint64(block.timestamp) at Raffle.sol:L253 and resolvedAt = uint64(block.timestamp) at Raffle.sol:L520, and i_vrfV2PlusWrapper supplies unbiased randomness and valid ABI-encoded callback calldata."
+    ]
+  },
+  "error": null,
+  "calls": [
+    {
+      "id": "001",
+      "status": "succeeded",
+      "runtimeOrigin": "reused-original-validated-native-call",
+      "conversationId": "1fa9bbe7-8dbb-4420-860a-8c8deffbbbb5",
+      "error": null,
+      "usage": {
+        "input_tokens": 54517,
+        "output_tokens": 17726,
+        "thinking_tokens": 11333,
+        "cache_read_tokens": 71309,
+        "total_tokens": 72243
+      }
+    },
+    {
+      "id": "002",
+      "status": "succeeded",
+      "runtimeOrigin": "reused-original-validated-native-call",
+      "conversationId": "959f00c9-d083-4500-bc00-4abbabba1901",
+      "error": null,
+      "usage": {
+        "input_tokens": 72586,
+        "output_tokens": 23728,
+        "thinking_tokens": 10437,
+        "cache_read_tokens": 133999,
+        "total_tokens": 96314
+      }
+    },
+    {
+      "id": "003",
+      "status": "succeeded",
+      "runtimeOrigin": "reused-original-validated-native-call",
+      "conversationId": "48779a6e-a406-458f-b033-d8b286800eaf",
+      "error": null,
+      "usage": {
+        "input_tokens": 99861,
+        "output_tokens": 26320,
+        "thinking_tokens": 13174,
+        "cache_read_tokens": 203984,
+        "total_tokens": 126181
+      }
+    },
+    {
+      "id": "004",
+      "status": "succeeded",
+      "runtimeOrigin": "reused-original-validated-native-call",
+      "conversationId": "75af7de5-c860-4ece-a5ea-d1c85638be93",
+      "error": null,
+      "usage": {
+        "input_tokens": 100454,
+        "output_tokens": 16835,
+        "thinking_tokens": 6311,
+        "cache_read_tokens": 230093,
+        "total_tokens": 117289
+      }
+    },
+    {
+      "id": "005",
+      "status": "succeeded",
+      "runtimeOrigin": "reused-original-validated-native-call",
+      "conversationId": "c4fe5d1f-be50-45b3-aca2-c482d3a073e9",
+      "error": null,
+      "usage": {
+        "input_tokens": 130822,
+        "output_tokens": 28378,
+        "thinking_tokens": 12358,
+        "cache_read_tokens": 320577,
+        "total_tokens": 159200
+      }
+    },
+    {
+      "id": "006",
+      "status": "succeeded",
+      "runtimeOrigin": "reused-original-validated-native-call",
+      "conversationId": "bd4c5a5a-8feb-4ae4-af30-6898a6f45923",
+      "error": null,
+      "usage": {
+        "input_tokens": 93567,
+        "output_tokens": 28326,
+        "thinking_tokens": 13926,
+        "cache_read_tokens": 183768,
+        "total_tokens": 121893
+      }
+    },
+    {
+      "id": "007",
+      "status": "succeeded",
+      "runtimeOrigin": "reused-original-validated-native-call",
+      "conversationId": "c856345a-f1c8-47e2-a322-c11706a4cffe",
+      "error": null,
+      "usage": {
+        "input_tokens": 74476,
+        "output_tokens": 16381,
+        "thinking_tokens": 8161,
+        "cache_read_tokens": 115528,
+        "total_tokens": 90857
+      }
+    },
+    {
+      "id": "008",
+      "status": "succeeded",
+      "runtimeOrigin": "reused-original-validated-native-call",
+      "conversationId": "5032dcd3-e5de-4dc8-aa1e-52b6b63ae4f0",
+      "error": null,
+      "usage": {
+        "input_tokens": 62536,
+        "output_tokens": 15524,
+        "thinking_tokens": 6835,
+        "cache_read_tokens": 131624,
+        "total_tokens": 78060
+      }
+    },
+    {
+      "id": "009",
+      "status": "succeeded",
+      "runtimeOrigin": "reused-original-validated-native-call",
+      "conversationId": "e68cdfee-0105-4473-9e1e-0055666ad674",
+      "error": null,
+      "usage": {
+        "input_tokens": 78261,
+        "output_tokens": 19412,
+        "thinking_tokens": 7856,
+        "cache_read_tokens": 234017,
+        "total_tokens": 97673
+      }
+    },
+    {
+      "id": "010",
+      "status": "succeeded",
+      "runtimeOrigin": "fresh-native-High-after-transport-repair",
+      "conversationId": "63d68683-2521-44fe-b3cb-14e07c6be245",
+      "error": null,
+      "usage": {
+        "input_tokens": 59442,
+        "output_tokens": 14735,
+        "thinking_tokens": 6582,
+        "cache_read_tokens": 126544,
+        "total_tokens": 74177
+      }
+    },
+    {
+      "id": "011",
+      "status": "succeeded",
+      "runtimeOrigin": "fresh-native-High-after-transport-repair",
+      "conversationId": "fa2e0026-0f13-4f47-852b-9d3a0e5ca922",
+      "error": null,
+      "usage": {
+        "input_tokens": 77539,
+        "output_tokens": 20703,
+        "thinking_tokens": 9323,
+        "cache_read_tokens": 173981,
+        "total_tokens": 98242
+      }
+    },
+    {
+      "id": "012",
+      "status": "succeeded",
+      "runtimeOrigin": "reused-original-validated-native-call",
+      "conversationId": "b34bf3a3-59fc-4f1a-bb52-93c7575e7874",
+      "error": null,
+      "usage": {
+        "input_tokens": 65992,
+        "output_tokens": 14726,
+        "thinking_tokens": 7474,
+        "cache_read_tokens": 105022,
+        "total_tokens": 80718
+      }
+    },
+    {
+      "id": "013",
+      "status": "succeeded",
+      "runtimeOrigin": "reused-original-validated-native-call",
+      "conversationId": "cc70acb6-730c-4c51-8715-199ca67cb6f6",
+      "error": null,
+      "usage": {
+        "input_tokens": 74061,
+        "output_tokens": 19851,
+        "thinking_tokens": 11424,
+        "cache_read_tokens": 190903,
+        "total_tokens": 93912
+      }
+    },
+    {
+      "id": "014",
+      "status": "succeeded",
+      "runtimeOrigin": "fresh-native-High-after-transport-repair",
+      "conversationId": "786c74c2-7ff0-4a5a-98a5-ebcef8c1db6b",
+      "error": null,
+      "usage": {
+        "input_tokens": 201487,
+        "output_tokens": 30495,
+        "thinking_tokens": 4725,
+        "cache_read_tokens": 686400,
+        "total_tokens": 231982
+      }
+    }
+  ],
+  "uniqueConversations": 14,
+  "status": "completed",
+  "assessedSourceExecutedByHost": false,
+  "reviewImportPerformed": false
+}

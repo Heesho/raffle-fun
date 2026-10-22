@@ -1,0 +1,188 @@
+packages/contracts/src/RaffleFactory.sol
+   1 // SPDX-License-Identifier: MIT
+   2 pragma solidity 0.8.36;
+   3 
+   4 import { Clones } from "@openzeppelin/contracts/proxy/Clones.sol";
+   5 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+   6 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+   7 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+   8 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+   9 
+  10 import { Raffle } from "./Raffle.sol";
+  11 import { IRaffle } from "./interfaces/IRaffle.sol";
+  12 import { IRaffleFactory } from "./interfaces/IRaffleFactory.sol";
+  13 import { RaffleConstants } from "./libraries/RaffleConstants.sol";
+  14 
+  15 /// @title raffle.fun Canonical USDC Raffle Factory
+  16 /// @author heesho
+  17 /// @notice Atomically creates, funds, and registers autonomous fixed-implementation raffle clones.
+  18 /// @dev The implementation, canonical six-decimal USDC, treasury, fee, and Chainlink configuration are immutable. The
+  19 ///      factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.
+  20 /// @custom:version 1.0.0
+  21 contract RaffleFactory is IRaffleFactory, ReentrancyGuard {
+  22     // Constants
+  23 
+  24     /// @inheritdoc IRaffleFactory
+  25     uint32 public constant override callbackGasLimit = RaffleConstants.VRF_CALLBACK_GAS_LIMIT;
+  26 
+  27     /// @inheritdoc IRaffleFactory
+  28     uint16 public constant override requestConfirmations = RaffleConstants.VRF_REQUEST_CONFIRMATIONS;
+  29 
+  30     // Immutables and state
+  31 
+  32     /// @inheritdoc IRaffleFactory
+  33     address public immutable override quoteToken;
+  34 
+  35     /// @inheritdoc IRaffleFactory
+  36     address public immutable override vrfWrapper;
+  37 
+  38     /// @inheritdoc IRaffleFactory
+  39     address public immutable override protocolTreasury;
+  40 
+  41     /// @inheritdoc IRaffleFactory
+  42     address public immutable override raffleImplementation;
+  43 
+  44     /// @inheritdoc IRaffleFactory
+  45     uint256 public override raffleCount;
+  46 
+  47     /// @inheritdoc IRaffleFactory
+  48     mapping(uint256 raffleId => address raffle) public override raffleById;
+  49 
+  50     /// @inheritdoc IRaffleFactory
+  51     mapping(address raffle => uint256 raffleId) public override idByRaffle;
+  52 
+  53     /// @inheritdoc IRaffleFactory
+  54     mapping(address raffle => bool registered) public override isRaffle;
+  55 
+  56     // Constructor
+  57 
+  58     /// @notice Deploys the ownerless factory and its locked raffle implementation with one immutable configuration.
+  59     /// @dev The quote token must report exactly six decimals; the wrapper and quote token must contain deployed code.
+  60     ///      Deployment tooling must supply and verify the target chain's official USDC address because the constructor
+  61     ///      cannot prove token identity from metadata.
+  62     /// @param quoteToken_ Target chain's official six-decimal USDC contract trusted by every raffle.
+  63     /// @param vrfWrapper_ Official Chainlink VRF v2.5 native direct-funding wrapper for the target chain.
+  64     /// @param protocolTreasury_ Immutable protocol-fee recipient used by every raffle.
+  65     constructor(address quoteToken_, address vrfWrapper_, address protocolTreasury_) {
+  66         _requireContract(quoteToken_);
+  67         _requireContract(vrfWrapper_);
+  68         if (protocolTreasury_ == address(0)) revert ZeroAddress();
+  69 
+  70         uint8 quoteDecimals = 0;
+  71         try IERC20Metadata(quoteToken_).decimals() returns (uint8 decimals_) {
+  72             quoteDecimals = decimals_;
+  73         } catch {
+  74             revert UnsupportedQuoteToken(quoteToken_);
+  75         }
+  76         if (quoteDecimals != RaffleConstants.QUOTE_TOKEN_DECIMALS) {
+  77             revert InvalidQuoteTokenDecimals(quoteDecimals, RaffleConstants.QUOTE_TOKEN_DECIMALS);
+  78         }
+  79 
+  80         if (protocolTreasury_ == address(this) || protocolTreasury_ == quoteToken_ || protocolTreasury_ == vrfWrapper_)
+  81         {
+  82             revert UnsafeProtocolDestination(protocolTreasury_);
+  83         }
+  84 
+  85         quoteToken = quoteToken_;
+  86         vrfWrapper = vrfWrapper_;
+  87         protocolTreasury = protocolTreasury_;
+  88 
+  89         address implementation = address(new Raffle(quoteToken_, vrfWrapper_));
+  90         if (protocolTreasury_ == implementation) revert UnsafeProtocolDestination(protocolTreasury_);
+  91         raffleImplementation = implementation;
+  92     }
+  93 
+  94     // External state-changing functions
+  95 
+  96     /// @inheritdoc IRaffleFactory
+  97     function createRaffle(CreateRaffleParams calldata params) external override nonReentrant returns (address raffle) {
+  98         _validateCreateParams(params);
+  99         uint256 currentTime = block.timestamp;
+ 100         if (params.endTime <= currentTime) revert InvalidEndTime(currentTime, params.endTime);
+ 101         uint256 saleDuration = uint256(params.endTime) - currentTime;
+ 102         if (saleDuration > RaffleConstants.MAX_SALE_DURATION) {
+ 103             revert SaleDurationTooLong(saleDuration, RaffleConstants.MAX_SALE_DURATION);
+ 104         }
+ 105         uint256 raffleId = ++raffleCount;
+ 106         raffle = Clones.clone(raffleImplementation);
+ 107         // The fresh fixed-target clone can initialize only once; this function is nonReentrant and atomic.
+ 108         // slither-disable-next-line reentrancy-no-eth
+ 109         IRaffle(raffle)
+ 110             .initialize(
+ 111                 IRaffle.RaffleInitParams({
+ 112                 sponsor: msg.sender,
+ 113                 sponsorRecipient: params.sponsorRecipient,
+ 114                 protocolTreasury: protocolTreasury,
+ 115                 prizeToken: params.prizeToken,
+ 116                 prizeTokenId: params.prizeTokenId,
+ 117                 raffleId: raffleId,
+ 118                 reserveEntries: params.reserveEntries,
+ 119                 endTime: params.endTime
+ 120             })
+ 121             );
+ 122 
+ 123         raffleById[raffleId] = raffle;
+ 124         idByRaffle[raffle] = raffleId;
+ 125         isRaffle[raffle] = true;
+ 126 
+ 127         IERC721 prize = IERC721(params.prizeToken);
+ 128         prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId);
+ 129         if (prize.ownerOf(params.prizeTokenId) != raffle) {
+ 130             revert PrizeEscrowVerificationFailed(raffle, params.prizeToken, params.prizeTokenId);
+ 131         }
+ 132         if (IRaffle(raffle).status() != IRaffle.Status.Active) {
+ 133             revert PrizeEscrowVerificationFailed(raffle, params.prizeToken, params.prizeTokenId);
+ 134         }
+ 135 
+ 136         emit RaffleCreated(
+ 137             raffleId,
+ 138             raffle,
+ 139             msg.sender,
+ 140             params.sponsorRecipient,
+ 141             params.prizeToken,
+ 142             params.prizeTokenId,
+ 143             quoteToken,
+ 144             protocolTreasury,
+ 145             params.reserveEntries,
+ 146             params.endTime
+ 147         );
+ 148     }
+ 149 
+ 150     // Private view helpers
+ 151 
+ 152     /// @dev Validates the sponsor-selected token, recipient, reserve, and supported ERC-721 interface before cloning.
+ 153     /// @param params Prospective raffle configuration supplied by the sponsor.
+ 154     function _validateCreateParams(CreateRaffleParams calldata params) private view {
+ 155         _requireContract(params.prizeToken);
+ 156         if (params.sponsorRecipient == address(0)) revert ZeroAddress();
+ 157         if (
+ 158             params.prizeToken == address(this) || params.prizeToken == quoteToken || params.prizeToken == vrfWrapper
+ 159                 || params.prizeToken == raffleImplementation || isRaffle[params.prizeToken]
+ 160         ) {
+ 161             revert UnsafeProtocolDestination(params.prizeToken);
+ 162         }
+ 163         if (
+ 164             params.sponsorRecipient == address(this) || params.sponsorRecipient == quoteToken
+ 165                 || params.sponsorRecipient == vrfWrapper || params.sponsorRecipient == params.prizeToken
+ 166                 || params.sponsorRecipient == raffleImplementation || isRaffle[params.sponsorRecipient]
+ 167         ) {
+ 168             revert UnsafeProtocolDestination(params.sponsorRecipient);
+ 169         }
+ 170 
+ 171         bool supports721 = false;
+ 172         try IERC165(params.prizeToken).supportsInterface(type(IERC721).interfaceId) returns (bool supported) {
+ 173             supports721 = supported;
+ 174         } catch {
+ 175             revert UnsupportedPrizeToken(params.prizeToken);
+ 176         }
+ 177         if (!supports721) revert UnsupportedPrizeToken(params.prizeToken);
+ 178         if (params.reserveEntries == 0) revert ZeroReserveEntries();
+ 179     }
+ 180 
+ 181     /// @dev Reverts unless an address contains deployed code.
+ 182     /// @param account Address required to be a contract.
+ 183     function _requireContract(address account) private view {
+ 184         if (account.code.length == 0) revert NotContract(account);
+ 185     }
+ 186 }
+ 187 

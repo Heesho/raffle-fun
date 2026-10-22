@@ -1,0 +1,121 @@
+    32	abstract contract ReentrancyGuard {
+    33	    using StorageSlot for bytes32;
+    34	
+    35	    // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.ReentrancyGuard")) - 1)) & ~bytes32(uint256(0xff))
+    36	    bytes32 private constant REENTRANCY_GUARD_STORAGE =
+    37	        0x9b779b17422d0df92223018b32b4d1fa46e071723d6817e2486d003becc55f00;
+    38	
+    39	    // Booleans are more expensive than uint256 or any type that takes up a full
+    40	    // word because each write operation emits an extra SLOAD to first read the
+    41	    // slot's contents, replace the bits taken up by the boolean, and then write
+    42	    // back. This is the compiler's defense against contract upgrades and
+    43	    // pointer aliasing, and it cannot be disabled.
+    44	
+    45	    // The values being non-zero value makes deployment a bit more expensive,
+    46	    // but in exchange the refund on every call to nonReentrant will be lower in
+    47	    // amount. Since refunds are capped to a percentage of the total
+    48	    // transaction's gas, it is best to keep them low in cases like this one, to
+    49	    // increase the likelihood of the full refund coming into effect.
+    50	    uint256 private constant NOT_ENTERED = 1;
+    51	    uint256 private constant ENTERED = 2;
+    52	
+    53	    /**
+    54	     * @dev Unauthorized reentrant call.
+    55	     */
+    56	    error ReentrancyGuardReentrantCall();
+    57	
+    58	    constructor() {
+    59	        _reentrancyGuardStorageSlot().getUint256Slot().value = NOT_ENTERED;
+    60	    }
+    61	
+    62	    /**
+    63	     * @dev Prevents a contract from calling itself, directly or indirectly.
+    64	     * Calling a `nonReentrant` function from another `nonReentrant`
+    65	     * function is not supported. It is possible to prevent this from happening
+    66	     * by making the `nonReentrant` function external, and making it call a
+    67	     * `private` function that does the actual work.
+    68	     */
+    69	    modifier nonReentrant() {
+    70	        _nonReentrantBefore();
+    71	        _;
+    72	        _nonReentrantAfter();
+    73	    }
+    74	
+    75	    /**
+    76	     * @dev A `view` only version of {nonReentrant}. Use to block view functions
+    77	     * from being called, preventing reading from inconsistent contract state.
+    78	     *
+    79	     * CAUTION: This is a "view" modifier and does not change the reentrancy
+    80	     * status. Use it only on view functions. For payable or non-payable functions,
+    81	     * use the standard {nonReentrant} modifier instead.
+    82	     */
+    83	    modifier nonReentrantView() {
+    84	        _nonReentrantBeforeView();
+    85	        _;
+    86	    }
+    87	
+    88	    function _nonReentrantBeforeView() private view {
+    89	        if (_reentrancyGuardEntered()) {
+    90	            revert ReentrancyGuardReentrantCall();
+    91	        }
+    92	    }
+    93	
+    94	    function _nonReentrantBefore() private {
+    95	        // On the first call to nonReentrant, _status will be NOT_ENTERED
+    96	        _nonReentrantBeforeView();
+    97	
+    98	        // Any calls to nonReentrant after this point will fail
+    99	        _reentrancyGuardStorageSlot().getUint256Slot().value = ENTERED;
+   100	    }
+   101	
+   102	    function _nonReentrantAfter() private {
+   103	        // By storing the original value once again, a refund is triggered (see
+   104	        // https://eips.ethereum.org/EIPS/eip-2200)
+   105	        _reentrancyGuardStorageSlot().getUint256Slot().value = NOT_ENTERED;
+   106	    }
+   107	
+   108	    /**
+   109	     * @dev Returns true if the reentrancy guard is currently set to "entered", which indicates there is a
+   110	     * `nonReentrant` function in the call stack.
+   111	     */
+   112	    function _reentrancyGuardEntered() internal view returns (bool) {
+   113	        return _reentrancyGuardStorageSlot().getUint256Slot().value == ENTERED;
+   114	    }
+   115	
+   116	    function _reentrancyGuardStorageSlot() internal pure virtual returns (bytes32) {
+   117	        return REENTRANCY_GUARD_STORAGE;
+   118	    }
+    29	    /**
+    30	     * @dev Transfer `value` amount of `token` from the calling contract to `to`. If `token` returns no value,
+    31	     * non-reverting calls are assumed to be successful.
+    32	     */
+    33	    function safeTransfer(IERC20 token, address to, uint256 value) internal {
+    34	        if (!_safeTransfer(token, to, value, true)) {
+    35	            revert SafeERC20FailedOperation(address(token));
+    36	        }
+    37	    }
+   176	    function _safeTransfer(IERC20 token, address to, uint256 value, bool bubble) private returns (bool success) {
+   177	        bytes4 selector = IERC20.transfer.selector;
+   178	
+   179	        assembly ("memory-safe") {
+   180	            let fmp := mload(0x40)
+   181	            mstore(0x00, selector)
+   182	            mstore(0x04, and(to, shr(96, not(0))))
+   183	            mstore(0x24, value)
+   184	            success := call(gas(), token, 0, 0x00, 0x44, 0x00, 0x20)
+   185	            // if call success and return is true, all is good.
+   186	            // otherwise (not success or return is not true), we need to perform further checks
+   187	            if iszero(and(success, eq(mload(0x00), 1))) {
+   188	                // if the call was a failure and bubble is enabled, bubble the error
+   189	                if and(iszero(success), bubble) {
+   190	                    returndatacopy(fmp, 0x00, returndatasize())
+   191	                    revert(fmp, returndatasize())
+   192	                }
+   193	                // if the return value is not true, then the call is only successful if:
+   194	                // - the token address has code
+   195	                // - the returndata is empty
+   196	                success := and(success, and(iszero(returndatasize()), gt(extcodesize(token), 0)))
+   197	            }
+   198	            mstore(0x40, fmp)
+   199	        }
+   200	    }

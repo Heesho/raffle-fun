@@ -1,0 +1,3 @@
+You are the independent reverse-direction Align sweep in stage 5, the pinned Trail of Bits spec-to-code-compliance dynamic workflow. DO NOT spawn subagents or use collaboration.
+
+Inspect only target/ and audit-context/DOSSIER.md. Read the complete pinned skill/resources/workflow. Starting from every externally reachable and privileged operation (including inherited paths), identify consequential behavior the extracted documentation requirements do not describe. Helpers without external effects are not interesting. Empty is valid. Cite exact target-relative lines. Return only JSON matching the schema.

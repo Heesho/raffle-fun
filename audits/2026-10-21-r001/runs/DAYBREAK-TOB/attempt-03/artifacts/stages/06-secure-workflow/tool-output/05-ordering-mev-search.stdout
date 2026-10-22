@@ -1,0 +1,303 @@
+src/Raffle.sol:21:/// @notice Escrows one NFT and sells fixed-price USDC entries through one transferable ERC-721 ticket per purchase.
+src/Raffle.sol:23:///      callbacks, and winner proofs are O(1) in entry count. Tickets remain transferable bearer claims until their
+src/Raffle.sol:24:///      owners burn them for redemption or refund. Each raffle is a fixed, non-upgradeable ERC-1167 clone with no
+src/Raffle.sol:25:///      administrator or rescue path. Permissionless settlement only allocates liabilities; the winning-ticket owner
+src/Raffle.sol:44:    uint256 public constant override ENTRY_PRICE = RaffleConstants.ENTRY_PRICE;
+src/Raffle.sol:58:    IERC20 public immutable override quoteToken;
+src/Raffle.sol:79:    uint128 public override reserveEntries;
+src/Raffle.sol:82:    uint64 public override endTime;
+src/Raffle.sol:91:    uint256 public override unsettledPot;
+src/Raffle.sol:94:    uint256 public override remainingRefundLiability;
+src/Raffle.sol:97:    address public override winnerRecipient;
+src/Raffle.sol:100:    uint256 public override winnerProceeds;
+src/Raffle.sol:127:    bool public override settlementComplete;
+src/Raffle.sol:130:    bool public override winnerRedeemed;
+src/Raffle.sol:153:    /// @param quoteToken_ Canonical six-decimal USDC contract fixed for the implementation and every clone.
+src/Raffle.sol:155:    constructor(address quoteToken_, address vrfWrapper_)
+src/Raffle.sol:159:        if (msg.sender == address(0) || quoteToken_ == address(0)) revert ZeroAddress();
+src/Raffle.sol:162:        quoteToken = IERC20(quoteToken_);
+src/Raffle.sol:165:        status = Status.Refunding;
+src/Raffle.sol:170:    /// @notice Rejects direct native-token transfers that are not attached to `requestDraw`.
+src/Raffle.sol:203:        reserveEntries = params.reserveEntries;
+src/Raffle.sol:204:        endTime = params.endTime;
+src/Raffle.sol:209:    function buyEntries(address recipient, uint128 entryCount)
+src/Raffle.sol:216:        if (block.timestamp >= endTime) revert SaleEnded(endTime, block.timestamp);
+src/Raffle.sol:223:        uint256 grossAmount = uint256(entryCount) * ENTRY_PRICE;
+src/Raffle.sol:224:        quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount);
+src/Raffle.sol:233:        unsettledPot += grossAmount;
+src/Raffle.sol:240:    function requestDraw() external payable override nonReentrant returns (uint256 requestId) {
+src/Raffle.sol:242:        if (block.timestamp < endTime) revert RaffleNotEnded(endTime, block.timestamp);
+src/Raffle.sol:244:        uint256 requestDeadline = drawRequestDeadline();
+src/Raffle.sol:245:        if (block.timestamp >= requestDeadline) {
+src/Raffle.sol:246:            revert DrawRequestWindowExpired(requestDeadline, block.timestamp);
+src/Raffle.sol:249:        uint256 quotedFee = getVrfRequestPrice();
+src/Raffle.sol:250:        if (msg.value < quotedFee) revert InsufficientVrfFee(quotedFee, msg.value);
+src/Raffle.sol:253:        drawRequestedAt = uint64(block.timestamp);
+src/Raffle.sol:256:        uint256 paidPrice;
+src/Raffle.sol:257:        (requestId, paidPrice) = requestRandomnessPayInNative(callbackGasLimit, requestConfirmations, 1, extraArgs);
+src/Raffle.sol:258:        if (paidPrice > msg.value) revert InsufficientVrfFee(paidPrice, msg.value);
+src/Raffle.sol:262:        uint256 excess = msg.value - paidPrice;
+src/Raffle.sol:265:            address refundRecipient = msg.sender;
+src/Raffle.sol:267:                success := call(gas(), refundRecipient, excess, 0, 0, 0, 0)
+src/Raffle.sol:269:            if (!success) revert NativeRefundFailed(msg.sender, excess);
+src/Raffle.sol:272:        emit DrawRequested(requestId, msg.sender, paidPrice, excess, drawRequestedAt, callbackDeadline());
+src/Raffle.sol:276:    function enableRefunds() external override nonReentrant {
+src/Raffle.sol:277:        uint256 deadline;
+src/Raffle.sol:281:                deadline = endTime;
+src/Raffle.sol:282:                if (msg.sender != sponsor && block.timestamp < deadline) {
+src/Raffle.sol:283:                    revert RefundsNotAvailable(deadline, block.timestamp);
+src/Raffle.sol:286:                deadline = drawRequestDeadline();
+src/Raffle.sol:287:                if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+src/Raffle.sol:290:            deadline = callbackDeadline();
+src/Raffle.sol:291:            if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+src/Raffle.sol:296:        uint256 liability = unsettledPot;
+src/Raffle.sol:297:        unsettledPot = 0;
+src/Raffle.sol:298:        remainingRefundLiability = liability;
+src/Raffle.sol:299:        status = Status.Refunding;
+src/Raffle.sol:300:        emit RefundsEnabled(msg.sender, liability);
+src/Raffle.sol:304:    function settleWinningTicket(uint256 ticketId) external override nonReentrant returns (uint256 cashAmount) {
+src/Raffle.sol:305:        cashAmount = _settleWinningTicket(ticketId);
+src/Raffle.sol:310:        if (winnerRedeemed) revert WinningTicketAlreadyRedeemed();
+src/Raffle.sol:314:        if (!settlementComplete) {
+src/Raffle.sol:315:            _settleWinningTicket(ticketId);
+src/Raffle.sol:320:        address winner = ownerOf(ticketId);
+src/Raffle.sol:321:        if (msg.sender != winner) revert NotTicketOwner(ticketId, msg.sender, winner);
+src/Raffle.sol:323:        winnerRecipient = winner;
+src/Raffle.sol:324:        winnerRedeemed = true;
+src/Raffle.sol:334:            prizeToken.transferFrom(address(this), winner, deliveredPrizeTokenId);
+src/Raffle.sol:335:            if (prizeToken.ownerOf(deliveredPrizeTokenId) != winner) {
+src/Raffle.sol:336:                revert PrizeDeliveryVerificationFailed(winner);
+src/Raffle.sol:339:            cashAmount = winnerProceeds;
+src/Raffle.sol:340:            if (cashAmount == 0) revert NoWinnerProceeds();
+src/Raffle.sol:341:            winnerProceeds = 0;
+src/Raffle.sol:342:            _transferQuote(winner, cashAmount);
+src/Raffle.sol:345:        emit WinningTicketRedeemed(ticketId, winner, result, cashAmount, deliveredPrizeToken, deliveredPrizeTokenId);
+src/Raffle.sol:349:    function refundTickets(uint256[] calldata ticketIds) external override nonReentrant returns (uint256 amount) {
+src/Raffle.sol:350:        _requireStatus(Status.Refunding);
+src/Raffle.sol:352:        if (ticketQuantity == 0 || ticketQuantity > RaffleConstants.MAX_REFUND_TICKET_BATCH_SIZE) {
+src/Raffle.sol:353:            revert InvalidTicketBatchSize(ticketQuantity, RaffleConstants.MAX_REFUND_TICKET_BATCH_SIZE);
+src/Raffle.sol:367:        amount = aggregateEntries * ENTRY_PRICE;
+src/Raffle.sol:368:        remainingRefundLiability -= amount;
+src/Raffle.sol:369:        _transferQuote(msg.sender, amount);
+src/Raffle.sol:370:        uint256 liabilityAfter = remainingRefundLiability;
+src/Raffle.sol:371:        emit TicketsRefunded(msg.sender, ticketQuantity, aggregateEntries, amount, liabilityAfter);
+src/Raffle.sol:380:        _transferQuote(recipient, amount);
+src/Raffle.sol:390:        _transferQuote(treasury, amount);
+src/Raffle.sol:397:        if (currentStatus != Status.CashWon && currentStatus != Status.Refunding) {
+src/Raffle.sol:436:    function getVrfRequestPrice() public view override returns (uint256 fee) {
+src/Raffle.sol:437:        fee = i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit, 1);
+src/Raffle.sol:441:    function estimateVrfRequestPrice(uint256 requestGasPriceWei) public view override returns (uint256 fee) {
+src/Raffle.sol:442:        fee = i_vrfV2PlusWrapper.estimateRequestPriceNative(callbackGasLimit, 1, requestGasPriceWei);
+src/Raffle.sol:458:    function drawRequestDeadline() public view override returns (uint256 deadline) {
+src/Raffle.sol:459:        deadline = uint256(endTime) + RaffleConstants.DRAW_REQUEST_TIMEOUT;
+src/Raffle.sol:463:    function callbackDeadline() public view override returns (uint256 deadline) {
+src/Raffle.sol:464:        if (drawRequestedAt != 0) deadline = uint256(drawRequestedAt) + RaffleConstants.DRAW_CALLBACK_TIMEOUT;
+src/Raffle.sol:468:    function accountedQuoteBalance() public view override returns (uint256 amount) {
+src/Raffle.sol:469:        amount = unsettledPot + remainingRefundLiability + winnerProceeds + sponsorProceeds + protocolFees;
+src/Raffle.sol:474:        amount = uint256(totalEntries) * ENTRY_PRICE;
+src/Raffle.sol:512:                || block.timestamp >= callbackDeadline()
+src/Raffle.sol:520:        resolvedAt = uint64(block.timestamp);
+src/Raffle.sol:521:        status = totalEntries >= reserveEntries ? Status.NftWon : Status.CashWon;
+src/Raffle.sol:528:    /// @dev Validates the winning range once and allocates all terminal quote-token liabilities without transferring
+src/Raffle.sol:532:    /// @return cashAmount Raw six-decimal quote-token units allocated to the cash winner, or zero for `NftWon`.
+src/Raffle.sol:533:    function _settleWinningTicket(uint256 ticketId) private returns (uint256 cashAmount) {
+src/Raffle.sol:534:        if (settlementComplete) revert SettlementAlreadyComplete();
+src/Raffle.sol:539:        uint256 grossPot = unsettledPot;
+src/Raffle.sol:546:            cashAmount = Math.mulDiv(grossPot, RaffleConstants.CASH_WINNER_BPS, RaffleConstants.BPS);
+src/Raffle.sol:548:            winnerProceeds = cashAmount;
+src/Raffle.sol:551:        settlementComplete = true;
+src/Raffle.sol:553:        unsettledPot = 0;
+src/Raffle.sol:557:        emit WinningTicketSettled(ticketId, msg.sender, result, cashAmount, protocolFee, sponsorAmount);
+src/Raffle.sol:564:    function _transferQuote(address to, uint256 amount) private {
+src/Raffle.sol:565:        if (_isProtocolDestination(to, address(prizeToken))) revert InvalidQuoteDestination(to);
+src/Raffle.sol:566:        quoteToken.safeTransfer(to, amount);
+src/Raffle.sol:599:        unsafeDestination = destination == address(this) || destination == factory || destination == address(quoteToken)
+src/interfaces/IRaffleFactory.sol:8:///      verify that the immutable quote-token address is the target chain's official USDC; onchain construction checks
+src/interfaces/IRaffleFactory.sol:15:    /// @param sponsorRecipient Immutable recipient of sponsor quote proceeds and any returned prize.
+src/interfaces/IRaffleFactory.sol:18:    /// @param reserveEntries Global raw entry-count threshold selecting the NFT outcome when met or exceeded.
+src/interfaces/IRaffleFactory.sol:19:    /// @param endTime Exclusive sale-end Unix timestamp, in seconds.
+src/interfaces/IRaffleFactory.sol:24:        uint128 reserveEntries;
+src/interfaces/IRaffleFactory.sol:25:        uint64 endTime;
+src/interfaces/IRaffleFactory.sol:33:    /// @param sponsor Prize depositor and pre-end empty-raffle refund authority.
+src/interfaces/IRaffleFactory.sol:34:    /// @param sponsorRecipient Immutable recipient of sponsor quote proceeds and any returned prize.
+src/interfaces/IRaffleFactory.sol:37:    /// @param quoteToken Immutable canonical six-decimal USDC contract used by the raffle.
+src/interfaces/IRaffleFactory.sol:39:    /// @param reserveEntries Global raw entry-count threshold selecting the NFT outcome when met or exceeded.
+src/interfaces/IRaffleFactory.sol:40:    /// @param endTime Exclusive sale-end Unix timestamp, in seconds.
+src/interfaces/IRaffleFactory.sol:48:        address quoteToken,
+src/interfaces/IRaffleFactory.sol:50:        uint128 reserveEntries,
+src/interfaces/IRaffleFactory.sol:51:        uint64 endTime
+src/interfaces/IRaffleFactory.sol:63:    /// @notice Raised when the quote token cannot report its decimal precision.
+src/interfaces/IRaffleFactory.sol:64:    /// @param quoteToken Rejected quote-token contract.
+src/interfaces/IRaffleFactory.sol:65:    error UnsupportedQuoteToken(address quoteToken);
+src/interfaces/IRaffleFactory.sol:67:    /// @notice Raised when the quote token does not use the required six-decimal precision.
+src/interfaces/IRaffleFactory.sol:68:    /// @param actualDecimals Decimal precision reported by the quote token.
+src/interfaces/IRaffleFactory.sol:70:    error InvalidQuoteTokenDecimals(uint8 actualDecimals, uint8 requiredDecimals);
+src/interfaces/IRaffleFactory.sol:76:    /// @notice Raised when a raffle is configured with a zero reserve entry threshold.
+src/interfaces/IRaffleFactory.sol:77:    error ZeroReserveEntries();
+src/interfaces/IRaffleFactory.sol:81:    /// @param endTime Supplied exclusive sale-end Unix timestamp, in seconds.
+src/interfaces/IRaffleFactory.sol:82:    error InvalidEndTime(uint256 currentTime, uint256 endTime);
+src/interfaces/IRaffleFactory.sol:86:    /// @param maximumDuration Maximum permitted sale duration in seconds.
+src/interfaces/IRaffleFactory.sol:87:    error SaleDurationTooLong(uint256 duration, uint256 maximumDuration);
+src/interfaces/IRaffleFactory.sol:102:    /// @param params Sponsor-selected recipient, prize, reserve, and timing configuration.
+src/interfaces/IRaffleFactory.sol:109:    /// @return quoteTokenAddress Canonical USDC contract address trusted by this deployment.
+src/interfaces/IRaffleFactory.sol:110:    function quoteToken() external view returns (address quoteTokenAddress);
+src/interfaces/IRaffle.sol:10:/// @notice Defines one autonomous NFT raffle using fixed-price USDC entries and one transferable ERC-721 ticket per
+src/interfaces/IRaffle.sol:13:///      bearer claim until its owner atomically burns it for redemption or refund. The immutable quote token is trusted
+src/interfaces/IRaffle.sol:28:        /// @notice The reserve was met and the winning ticket may redeem the prize NFT.
+src/interfaces/IRaffle.sol:30:        /// @notice The reserve was missed and the winning ticket may redeem its cash allocation.
+src/interfaces/IRaffle.sol:32:        /// @notice Full ticket refunds are enabled and the sponsor may recover the prize NFT.
+src/interfaces/IRaffle.sol:33:        Refunding
+src/interfaces/IRaffle.sol:38:    /// @param sponsorRecipient Immutable recipient of sponsor quote proceeds and any returned prize.
+src/interfaces/IRaffle.sol:43:    /// @param reserveEntries Global raw entry-count threshold selecting the NFT outcome when met or exceeded.
+src/interfaces/IRaffle.sol:44:    /// @param endTime Unix timestamp, in seconds, at which entry sales end exclusively.
+src/interfaces/IRaffle.sol:52:        uint128 reserveEntries;
+src/interfaces/IRaffle.sol:53:        uint64 endTime;
+src/interfaces/IRaffle.sol:65:    /// @param buyer Address that paid the six-decimal quote-token amount.
+src/interfaces/IRaffle.sol:71:    /// @param grossAmount Raw six-decimal quote-token units paid, equal to `entryCount * ENTRY_PRICE`.
+src/interfaces/IRaffle.sol:88:    /// @param callbackDeadline Exclusive Unix-timestamp deadline for accepting the authenticated callback.
+src/interfaces/IRaffle.sol:95:        uint256 callbackDeadline
+src/interfaces/IRaffle.sol:110:    /// @notice Emitted when the raffle enters the full-refund branch.
+src/interfaces/IRaffle.sol:111:    /// @param finalizer Address that enabled refunds.
+src/interfaces/IRaffle.sol:112:    /// @param remainingRefundLiability Raw six-decimal quote-token units initially available for ticket refunds.
+src/interfaces/IRaffle.sol:113:    event RefundsEnabled(address indexed finalizer, uint256 remainingRefundLiability);
+src/interfaces/IRaffle.sol:115:    /// @notice Emitted when the winning ticket is proven and all terminal quote-token liabilities are allocated.
+src/interfaces/IRaffle.sol:117:    /// @param settler Address that performed permissionless settlement.
+src/interfaces/IRaffle.sol:119:    /// @param cashAmount Raw six-decimal quote-token units allocated to the cash winner; zero for `NftWon`.
+src/interfaces/IRaffle.sol:120:    /// @param protocolFee Raw six-decimal quote-token units allocated to the treasury, rounded down from gross sales.
+src/interfaces/IRaffle.sol:121:    /// @param sponsorAmount Raw six-decimal quote-token units allocated to the sponsor recipient as the remainder.
+src/interfaces/IRaffle.sol:122:    event WinningTicketSettled(
+src/interfaces/IRaffle.sol:124:        address indexed settler,
+src/interfaces/IRaffle.sol:133:    /// @param winner Ticket owner that received the prize at redemption time.
+src/interfaces/IRaffle.sol:135:    /// @param cashAmount Raw six-decimal quote-token units paid for `CashWon`; zero for `NftWon`.
+src/interfaces/IRaffle.sol:140:        address indexed winner,
+src/interfaces/IRaffle.sol:147:    /// @notice Emitted when an owner burns one or more tickets for a full quote-token refund.
+src/interfaces/IRaffle.sol:148:    /// @param owner Ticket owner that burned the tickets and received the refund.
+src/interfaces/IRaffle.sol:151:    /// @param amount Raw six-decimal quote-token units refunded, equal to `entryQuantity * ENTRY_PRICE`.
+src/interfaces/IRaffle.sol:152:    /// @param remainingRefundLiability Raw six-decimal quote-token units still claimable after this refund.
+src/interfaces/IRaffle.sol:153:    event TicketsRefunded(
+src/interfaces/IRaffle.sol:158:        uint256 remainingRefundLiability
+src/interfaces/IRaffle.sol:164:    /// @param amount Raw six-decimal quote-token units paid.
+src/interfaces/IRaffle.sol:170:    /// @param amount Raw six-decimal quote-token units paid.
+src/interfaces/IRaffle.sol:173:    /// @notice Emitted when the escrowed prize is returned after a cash result or refund transition.
+src/interfaces/IRaffle.sol:205:    /// @param endTime Exclusive sale-end Unix timestamp, in seconds.
+src/interfaces/IRaffle.sol:207:    error SaleEnded(uint256 endTime, uint256 currentTime);
+src/interfaces/IRaffle.sol:220:    /// @notice Raised when a refund batch is empty or exceeds the bounded ticket limit.
+src/interfaces/IRaffle.sol:222:    /// @param maximum Maximum ticket IDs accepted per refund transaction.
+src/interfaces/IRaffle.sol:223:    error InvalidTicketBatchSize(uint256 quantity, uint256 maximum);
+src/interfaces/IRaffle.sol:225:    /// @notice Raised when a quote-token claim targets a known protocol destination that could strand the claim.
+src/interfaces/IRaffle.sol:227:    error InvalidQuoteDestination(address destination);
+src/interfaces/IRaffle.sol:230:    /// @param endTime Exclusive sale-end Unix timestamp, in seconds.
+src/interfaces/IRaffle.sol:232:    error RaffleNotEnded(uint256 endTime, uint256 currentTime);
+src/interfaces/IRaffle.sol:234:    /// @notice Raised when a draw request is submitted at or after the exclusive request deadline.
+src/interfaces/IRaffle.sol:235:    /// @param deadline Exclusive draw-request Unix-timestamp deadline, in seconds.
+src/interfaces/IRaffle.sol:237:    error DrawRequestWindowExpired(uint256 deadline, uint256 currentTime);
+src/interfaces/IRaffle.sol:242:    /// @notice Raised when refunds are requested before the applicable liveness deadline.
+src/interfaces/IRaffle.sol:243:    /// @param deadline Unix timestamp, in seconds, at which refunds become available.
+src/interfaces/IRaffle.sol:245:    error RefundsNotAvailable(uint256 deadline, uint256 currentTime);
+src/interfaces/IRaffle.sol:247:    /// @notice Raised when supplied native value cannot cover the quoted or actual Chainlink request fee.
+src/interfaces/IRaffle.sol:253:    /// @param recipient Draw requester that was due the refund.
+src/interfaces/IRaffle.sol:255:    error NativeRefundFailed(address recipient, uint256 amount);
+src/interfaces/IRaffle.sol:257:    /// @notice Raised when no current cash-winner proceeds remain claimable.
+src/interfaces/IRaffle.sol:258:    error NoWinnerProceeds();
+src/interfaces/IRaffle.sol:282:    error SettlementAlreadyComplete();
+src/interfaces/IRaffle.sol:286:    /// @param winningTicketId Previously settled winning ticket ID.
+src/interfaces/IRaffle.sol:307:    /// @param params Clone-specific sponsor, prize, accounting, identifier, reserve, and timing configuration.
+src/interfaces/IRaffle.sol:314:    function buyEntries(address recipient, uint128 entryCount) external returns (uint256 ticketId);
+src/interfaces/IRaffle.sol:317:    /// @dev Callable by anyone only in `[endTime,drawRequestDeadline())` after at least one entry is sold. Any native
+src/interfaces/IRaffle.sol:320:    function requestDraw() external payable returns (uint256 requestId);
+src/interfaces/IRaffle.sol:322:    /// @notice Enables full refunds after the sold-raffle request deadline or an accepted request's callback deadline.
+src/interfaces/IRaffle.sol:324:    function enableRefunds() external;
+src/interfaces/IRaffle.sol:326:    /// @notice Proves which ticket contains the winning entry and allocates winner, sponsor, and protocol liabilities.
+src/interfaces/IRaffle.sol:328:    ///      occurs. The cash-winner allocation is rounded down; the sponsor receives the remaining raw units.
+src/interfaces/IRaffle.sol:330:    /// @return cashAmount Raw six-decimal quote-token units allocated to the winner, or zero for an NFT result.
+src/interfaces/IRaffle.sol:331:    function settleWinningTicket(uint256 ticketId) external returns (uint256 cashAmount);
+src/interfaces/IRaffle.sol:334:    /// @dev If necessary, this first settles the supplied winning ticket so the owner can complete both steps in one
+src/interfaces/IRaffle.sol:336:    /// @param ticketId Winning ticket to settle if needed, burn, and redeem.
+src/interfaces/IRaffle.sol:337:    /// @return cashAmount Raw six-decimal quote-token units paid for `CashWon`, or zero for `NftWon`.
+src/interfaces/IRaffle.sol:342:    /// @param ticketIds Ticket IDs owned by the caller and submitted for refund.
+src/interfaces/IRaffle.sol:343:    /// @return amount Raw six-decimal quote-token units paid, equal to represented entries times `ENTRY_PRICE`.
+src/interfaces/IRaffle.sol:344:    function refundTickets(uint256[] calldata ticketIds) external returns (uint256 amount);
+src/interfaces/IRaffle.sol:347:    /// @return amount Raw six-decimal quote-token units paid in this release.
+src/interfaces/IRaffle.sol:351:    /// @return amount Raw six-decimal quote-token units paid in this release.
+src/interfaces/IRaffle.sol:354:    /// @notice Returns the escrowed prize to the immutable sponsor recipient after `CashWon` or `Refunding`.
+src/interfaces/IRaffle.sol:359:    /// @notice Returns the wrapper's current native direct-funding price for the configured callback.
+src/interfaces/IRaffle.sol:360:    /// @return fee Native-token wei currently quoted by the wrapper; the value may change before request inclusion.
+src/interfaces/IRaffle.sol:361:    function getVrfRequestPrice() external view returns (uint256 fee);
+src/interfaces/IRaffle.sol:363:    /// @notice Estimates the native direct-funding price at a caller-selected gas price.
+src/interfaces/IRaffle.sol:364:    /// @param requestGasPriceWei Prospective transaction gas price in wei per gas.
+src/interfaces/IRaffle.sol:366:    function estimateVrfRequestPrice(uint256 requestGasPriceWei) external view returns (uint256 fee);
+src/interfaces/IRaffle.sol:375:    /// @notice Returns the exclusive deadline for initiating the draw.
+src/interfaces/IRaffle.sol:376:    /// @return deadline Unix timestamp, in seconds, equal to `endTime + 2 days`.
+src/interfaces/IRaffle.sol:377:    function drawRequestDeadline() external view returns (uint256 deadline);
+src/interfaces/IRaffle.sol:379:    /// @notice Returns the exclusive deadline for accepting the authenticated callback.
+src/interfaces/IRaffle.sol:380:    /// @return deadline Unix timestamp, in seconds, equal to `drawRequestedAt + 2 days`, or zero before a request.
+src/interfaces/IRaffle.sol:381:    function callbackDeadline() external view returns (uint256 deadline);
+src/interfaces/IRaffle.sol:383:    /// @notice Returns all currently outstanding quote-token liabilities tracked by the raffle.
+src/interfaces/IRaffle.sol:384:    /// @return amount Raw six-decimal quote-token units across the unsettled pot, refunds, and allocated claims.
+src/interfaces/IRaffle.sol:385:    function accountedQuoteBalance() external view returns (uint256 amount);
+src/interfaces/IRaffle.sol:389:    /// @return amount Raw six-decimal quote-token units equal to `totalEntries * ENTRY_PRICE`.
+src/interfaces/IRaffle.sol:394:    /// @notice Returns the fixed raw six-decimal quote-token price of one entry.
+src/interfaces/IRaffle.sol:395:    /// @return price One entry price, exactly 1,000,000 raw units.
+src/interfaces/IRaffle.sol:396:    function ENTRY_PRICE() external view returns (uint256 price);
+src/interfaces/IRaffle.sol:410:    /// @notice Returns the prize depositor and pre-end empty-raffle refund authority.
+src/interfaces/IRaffle.sol:414:    /// @notice Returns the immutable recipient of sponsor quote proceeds and returned prizes.
+src/interfaces/IRaffle.sol:424:    function quoteToken() external view returns (IERC20 token);
+src/interfaces/IRaffle.sol:443:    /// @return entries Reserve entry count.
+src/interfaces/IRaffle.sol:444:    function reserveEntries() external view returns (uint128 entries);
+src/interfaces/IRaffle.sol:448:    function endTime() external view returns (uint64 timestamp);
+src/interfaces/IRaffle.sol:459:    /// @return amount Raw six-decimal quote-token units collected before settlement or refund activation.
+src/interfaces/IRaffle.sol:460:    function unsettledPot() external view returns (uint256 amount);
+src/interfaces/IRaffle.sol:462:    /// @notice Returns the current aggregate full-refund liability.
+src/interfaces/IRaffle.sol:463:    /// @return amount Raw six-decimal quote-token units still claimable by unrefunded tickets.
+src/interfaces/IRaffle.sol:464:    function remainingRefundLiability() external view returns (uint256 amount);
+src/interfaces/IRaffle.sol:467:    /// @return recipient Winner at redemption time, or the zero address before redemption.
+src/interfaces/IRaffle.sol:468:    function winnerRecipient() external view returns (address recipient);
+src/interfaces/IRaffle.sol:470:    /// @notice Returns the current cash-winner liability.
+src/interfaces/IRaffle.sol:471:    /// @return amount Raw six-decimal quote-token units claimable by the winning ticket, or zero otherwise.
+src/interfaces/IRaffle.sol:472:    function winnerProceeds() external view returns (uint256 amount);
+src/interfaces/IRaffle.sol:475:    /// @return amount Raw six-decimal quote-token units claimable by the immutable sponsor recipient.
+src/interfaces/IRaffle.sol:479:    /// @return amount Raw six-decimal quote-token units claimable by the immutable treasury.
+src/interfaces/IRaffle.sol:499:    /// @return ticketId Sequential ticket ID, or zero before settlement.
+src/interfaces/IRaffle.sol:506:    /// @notice Returns whether terminal winner, sponsor, and protocol liabilities have been allocated.
+src/interfaces/IRaffle.sol:507:    /// @return complete True after winning-ticket settlement.
+src/interfaces/IRaffle.sol:508:    function settlementComplete() external view returns (bool complete);
+src/interfaces/IRaffle.sol:511:    /// @return redeemed True after successful winner redemption.
+src/interfaces/IRaffle.sol:512:    function winnerRedeemed() external view returns (bool redeemed);
+src/interfaces/IRaffle.sol:514:    /// @notice Returns whether the prize has been delivered to the winner or returned to the sponsor recipient.
+src/RaffleFactory.sol:33:    address public immutable override quoteToken;
+src/RaffleFactory.sol:59:    /// @dev The quote token must report exactly six decimals; the wrapper and quote token must contain deployed code.
+src/RaffleFactory.sol:62:    /// @param quoteToken_ Target chain's official six-decimal USDC contract trusted by every raffle.
+src/RaffleFactory.sol:65:    constructor(address quoteToken_, address vrfWrapper_, address protocolTreasury_) {
+src/RaffleFactory.sol:66:        _requireContract(quoteToken_);
+src/RaffleFactory.sol:70:        uint8 quoteDecimals = 0;
+src/RaffleFactory.sol:71:        try IERC20Metadata(quoteToken_).decimals() returns (uint8 decimals_) {
+src/RaffleFactory.sol:72:            quoteDecimals = decimals_;
+src/RaffleFactory.sol:74:            revert UnsupportedQuoteToken(quoteToken_);
+src/RaffleFactory.sol:76:        if (quoteDecimals != RaffleConstants.QUOTE_TOKEN_DECIMALS) {
+src/RaffleFactory.sol:77:            revert InvalidQuoteTokenDecimals(quoteDecimals, RaffleConstants.QUOTE_TOKEN_DECIMALS);
+src/RaffleFactory.sol:80:        if (protocolTreasury_ == address(this) || protocolTreasury_ == quoteToken_ || protocolTreasury_ == vrfWrapper_)
+src/RaffleFactory.sol:85:        quoteToken = quoteToken_;
+src/RaffleFactory.sol:89:        address implementation = address(new Raffle(quoteToken_, vrfWrapper_));
+src/RaffleFactory.sol:99:        uint256 currentTime = block.timestamp;
+src/RaffleFactory.sol:100:        if (params.endTime <= currentTime) revert InvalidEndTime(currentTime, params.endTime);
+src/RaffleFactory.sol:101:        uint256 saleDuration = uint256(params.endTime) - currentTime;
+src/RaffleFactory.sol:118:                reserveEntries: params.reserveEntries,
+src/RaffleFactory.sol:119:                endTime: params.endTime
+src/RaffleFactory.sol:143:            quoteToken,
+src/RaffleFactory.sol:145:            params.reserveEntries,
+src/RaffleFactory.sol:146:            params.endTime
+src/RaffleFactory.sol:152:    /// @dev Validates the sponsor-selected token, recipient, reserve, and supported ERC-721 interface before cloning.
+src/RaffleFactory.sol:158:            params.prizeToken == address(this) || params.prizeToken == quoteToken || params.prizeToken == vrfWrapper
+src/RaffleFactory.sol:164:            params.sponsorRecipient == address(this) || params.sponsorRecipient == quoteToken
+src/RaffleFactory.sol:178:        if (params.reserveEntries == 0) revert ZeroReserveEntries();
+src/libraries/RaffleConstants.sol:7:/// @dev Quote-token amounts use raw six-decimal units. Basis-point calculations round down through `Math.mulDiv`, and
+src/libraries/RaffleConstants.sol:8:///      the sponsor receives the remaining raw units after winner and protocol allocations.
+src/libraries/RaffleConstants.sol:17:    /// @notice Cash-result winner rate: 8,000 basis points, or 80% of gross sales.
+src/libraries/RaffleConstants.sol:18:    uint256 internal constant CASH_WINNER_BPS = 8000;
+src/libraries/RaffleConstants.sol:20:    /// @notice Global entry price: exactly 1,000,000 raw six-decimal quote-token units, or one USDC.
+src/libraries/RaffleConstants.sol:21:    uint256 internal constant ENTRY_PRICE = 1_000_000;
+src/libraries/RaffleConstants.sol:23:    /// @notice Decimal precision required from the immutable quote token.
+src/libraries/RaffleConstants.sol:24:    uint8 internal constant QUOTE_TOKEN_DECIMALS = 6;
+src/libraries/RaffleConstants.sol:26:    /// @notice Refund execution is bounded by tickets, while each ticket may represent any uint128 entry count.
+src/libraries/RaffleConstants.sol:27:    uint256 internal constant MAX_REFUND_TICKET_BATCH_SIZE = 100;
+src/libraries/RaffleConstants.sol:29:    /// @notice Maximum prospective raffle sale duration, measured from creation to the exclusive sale end.

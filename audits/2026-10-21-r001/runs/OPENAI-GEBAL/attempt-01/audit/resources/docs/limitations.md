@@ -1,0 +1,13 @@
+# Status and boundaries
+
+Version 0.2 is a repository/CLI harness for a model-led defensive Solidity source review. Its default workflow uses the assistant the owner already has: scoped intake, immutable source/context hashes, inert review import, evidence validation, unreviewed findings, owner decisions and reports. There is no website or hosted service.
+
+Executable support is intentionally bounded. Live verification covers Forge 1.3.1, Slither 0.11.3 and solc 0.8.26/0.8.28/0.8.30 against original fixtures, including nested monorepos and sandbox isolation. CI repeats those checks. It does not certify every Solidity codebase or establish the security of a selected protocol. See [verification](verification.md), [sandbox policy](sandbox.md) and [monorepo scope](monorepos.md). Missing dependencies, unsupported settings, failed checks and unavailable isolation remain explicit incomplete outcomes.
+
+Source-only completion means intake completed; it does not establish compiler, static-analysis, test, property or security coverage. External reviewer identity, settings, cost and quality are not independently verified. The assistant's operation is outside Gebal's sandbox and budget. Imported claims cannot turn a failed tool run into success, and findings remain unreviewed until an owner records a decision.
+
+OpenAI/Anthropic adapters have mocked HTTP contract tests; no live paid provider call is claimed. The preferred initial workflow does not require either adapter. There is no formal-proof integration, automatic independent reviewer orchestration, skeptical adjudication, generated executable artifact workflow, semantic dependency-impact reuse, measured reach/revert/vacuity metrics, USD pricing enforcement or meaningful security benchmark score. The evaluation script tests plumbing only.
+
+Later integrations such as Aderyn, Echidna, Halmos, Gemini, local compatible APIs, AutoProver and Certora are absent. There is no exploit generation, deployed-target discovery, wallet/transaction workflow, automatic source fix or project publication.
+
+The owner, local controller, approved tool image, Docker daemon and private store are trusted. Filesystem checks do not promise race-free safety against a concurrently hostile local writer. Persistent state needs ordinary disk capacity planning and private backup; no aggregate database quota or signed portable evidence archive is implemented. Reports verify referenced evidence and source hashes on export but do not authenticate who wrote local database records. Existing 0.1 records remain readable; execution needs a new 0.2 plan and approval.

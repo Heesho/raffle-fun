@@ -1,0 +1,80 @@
+{
+  "analysisFile": "spec-compliance/requirements/05-REQ-25.md",
+  "confidence": "high",
+  "documentProblem": "DESIGN.md L2 (\"Frontend discovery is advisory; transaction decisions must reread current chain state.\") spans both on-chain execution enforcement and off-chain client/frontend pre-submission behavior; packages/contracts contains only Solidity contracts, so off-chain client pre-submission state rereads cannot be verified from contract code alone.",
+  "evidence": [
+    {
+      "file": "packages/contracts/src/RaffleFactory.sol",
+      "lines": "L99-L104",
+      "quote": "uint256 currentTime = block.timestamp;\n        if (params.endTime <= currentTime) revert InvalidEndTime(currentTime, params.endTime);\n        uint256 saleDuration = uint256(params.endTime) - currentTime;\n        if (saleDuration > RaffleConstants.MAX_SALE_DURATION) {\n            revert SaleDurationTooLong(saleDuration, RaffleConstants.MAX_SALE_DURATION);\n        }",
+      "role": "Reads live block.timestamp during createRaffle to validate endTime and saleDuration on-chain."
+    },
+    {
+      "file": "packages/contracts/src/RaffleFactory.sol",
+      "lines": "L128-L134",
+      "quote": "prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId);\n        if (prize.ownerOf(params.prizeTokenId) != raffle) {\n            revert PrizeEscrowVerificationFailed(raffle, params.prizeToken, params.prizeTokenId);\n        }\n        if (IRaffle(raffle).status() != IRaffle.Status.Active) {\n            revert PrizeEscrowVerificationFailed(raffle, params.prizeToken, params.prizeTokenId);\n        }",
+      "role": "Rereads live external ERC-721 ownerOf and clone status() after safeTransferFrom during raffle creation."
+    },
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L215-L221",
+      "quote": "_requireStatus(Status.Active);\n        if (block.timestamp >= endTime) revert SaleEnded(endTime, block.timestamp);\n        if (recipient == address(0)) revert InvalidRecipient();\n        if (entryCount == 0) revert ZeroEntryCount();\n        if (entryCount > type(uint128).max - totalEntries) {\n            revert TotalEntriesOverflow(totalEntries, entryCount);\n        }",
+      "role": "Reads live status, block.timestamp, and totalEntries in buyEntries before assigning contiguous entry ranges from live storage."
+    },
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L241-L258",
+      "quote": "_requireStatus(Status.Active);\n        if (block.timestamp < endTime) revert RaffleNotEnded(endTime, block.timestamp);\n        if (totalEntries == 0) revert NoEntriesSold();\n        uint256 requestDeadline = drawRequestDeadline();\n        if (block.timestamp >= requestDeadline) {\n            revert DrawRequestWindowExpired(requestDeadline, block.timestamp);\n        }\n\n        uint256 quotedFee = getVrfRequestPrice();\n        if (msg.value < quotedFee) revert InsufficientVrfFee(quotedFee, msg.value);\n\n        status = Status.Drawing;\n        drawRequestedAt = uint64(block.timestamp);\n        _requestInFlight = true;\n        bytes memory extraArgs = VRFV2PlusClient._argsToBytes(VRFV2PlusClient.ExtraArgsV1({ nativePayment: true }));\n        uint256 paidPrice;\n        (requestId, paidPrice) = requestRandomnessPayInNative(callbackGasLimit, requestConfirmations, 1, extraArgs);\n        if (paidPrice > msg.value) revert InsufficientVrfFee(paidPrice, msg.value);",
+      "role": "Reads live status, block.timestamp, totalEntries, and live Chainlink VRF wrapper fee (both via getVrfRequestPrice and requestRandomnessPayInNative) in requestDraw."
+    },
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L320-L337",
+      "quote": "address winner = ownerOf(ticketId);\n        if (msg.sender != winner) revert NotTicketOwner(ticketId, msg.sender, winner);\n\n        winnerRecipient = winner;\n        winnerRedeemed = true;\n        _burn(ticketId);\n\n        address deliveredPrizeToken = address(0);\n        uint256 deliveredPrizeTokenId = 0;\n        if (result == Status.NftWon) {\n            if (prizeClaimed) revert PrizeAlreadyClaimed();\n            prizeClaimed = true;\n            deliveredPrizeToken = address(prizeToken);\n            deliveredPrizeTokenId = prizeTokenId;\n            prizeToken.transferFrom(address(this), winner, deliveredPrizeTokenId);\n            if (prizeToken.ownerOf(deliveredPrizeTokenId) != winner) {\n                revert PrizeDeliveryVerificationFailed(winner);\n            }\n        }",
+      "role": "Reads live ticket ownerOf(ticketId) at redemption time before burning, and rereads prizeToken.ownerOf after transferring the NFT prize."
+    },
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L357-L365",
+      "quote": "for (uint256 index; index < ticketQuantity; ++index) {\n            uint256 ticketId = ticketIds[index];\n            address owner = ownerOf(ticketId);\n            if (msg.sender != owner) revert NotTicketOwner(ticketId, msg.sender, owner);\n\n            (uint128 firstEntry, uint128 lastEntry) = ticketRange(ticketId);\n            aggregateEntries += uint256(lastEntry) - uint256(firstEntry) + 1;\n            _burn(ticketId);\n        }",
+      "role": "Rereads live ownerOf(ticketId) and ticketRange(ticketId) and burns each ticket per iteration in refundTickets."
+    },
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L579-L585",
+      "quote": "function _requireWinningTicket(uint256 ticketId) private view {\n        (uint128 firstEntry, uint128 lastEntry) = ticketRange(ticketId);\n        uint128 selectedEntry = winningEntry;\n        if (selectedEntry < firstEntry || selectedEntry > lastEntry) {\n            revert TicketDoesNotContainWinningEntry(ticketId, selectedEntry);\n        }\n    }",
+      "role": "Verifies off-chain/frontend-discovered candidate ticketId against live stored _ticketRanges[ticketId] and winningEntry during settlement."
+    },
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L598-L604",
+      "quote": "IRaffleFactory canonicalFactory = IRaffleFactory(factory);\n        unsafeDestination = destination == address(this) || destination == factory || destination == address(quoteToken)\n            || destination == address(i_vrfV2PlusWrapper) || destination == prizeToken_\n            || destination == canonicalFactory.raffleImplementation();\n        if (!unsafeDestination && destination.code.length != 0) {\n            unsafeDestination = canonicalFactory.isRaffle(destination);\n        }",
+      "role": "Rereads live code.length and canonicalFactory.isRaffle(destination) on every ticket transfer and quote-token payout."
+    }
+  ],
+  "reasoning": "Every on-chain state-changing function in RaffleFactory and Raffle reads and enforces live chain state during execution (status, block.timestamp, totalEntries, ticketCount, _ticketRanges, winningEntry, ownerOf(ticketId), live VRF wrapper pricing via calculateRequestPriceNative, live factory isRaffle registry, and post-transfer prizeToken.ownerOf) and exposes complete view getters for callers to reread current chain state, so the verdict is implemented rather than partial; off-chain client pre-submission behavior is outside packages/contracts.",
+  "requirementId": "REQ-25",
+  "searched": [
+    {
+      "result": "Found requirement at L2: \"Frontend discovery is advisory; transaction decisions must reread current chain state.\"",
+      "where": "DESIGN.md:L1-L4"
+    },
+    {
+      "result": "All 11 state-changing functions, internal hooks (_update, fulfillRandomWords), and helpers (_settleWinningTicket, _transferQuote, _requireStatus, _requireWinningTicket, _isProtocolDestination) read live storage and external chain state during execution.",
+      "where": "packages/contracts/src/Raffle.sol:L1-L614"
+    },
+    {
+      "result": "constructor and createRaffle read live code.length, decimals(), supportsInterface, block.timestamp, isRaffle, and reread prize.ownerOf and IRaffle(raffle).status() after safeTransferFrom.",
+      "where": "packages/contracts/src/RaffleFactory.sol:L1-L186"
+    },
+    {
+      "result": "Confirmed full external view getter surface and NatSpec notes on live state changes (e.g., IRaffle.sol:L360).",
+      "where": "packages/contracts/src/interfaces/IRaffle.sol:L1-L521, packages/contracts/src/interfaces/IRaffleFactory.sol:L1-L150, packages/contracts/src/libraries/RaffleConstants.sol:L1-L43"
+    },
+    {
+      "result": "Confirmed requestRandomnessPayInNative queries live i_vrfV2PlusWrapper.calculateRequestPriceNative (L82) and ERC721.ownerOf/_burn read and update live _owners[tokenId] storage.",
+      "where": "packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:L1-L118, packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L1-L433"
+    }
+  ],
+  "verdict": "implemented"
+}

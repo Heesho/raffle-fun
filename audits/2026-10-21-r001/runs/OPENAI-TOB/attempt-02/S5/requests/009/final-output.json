@@ -1,0 +1,52 @@
+{
+  "requirementId": "REQ-20",
+  "analysisFile": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/audit/S5/spec-compliance/requirements/01-REQ-20.md",
+  "verdict": "implemented",
+  "confidence": "high",
+  "evidence": [
+    {
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "lines": "L543-L548",
+      "quote": "if (result == Status.NftWon) {\n            sponsorAmount = grossPot - protocolFee;\n        } else {\n            cashAmount = Math.mulDiv(grossPot, RaffleConstants.CASH_WINNER_BPS, RaffleConstants.BPS);\n            sponsorAmount = grossPot - protocolFee - cashAmount;\n            winnerProceeds = cashAmount;",
+      "role": "Both outcomes allocate the entire residual to the sponsor."
+    },
+    {
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "lines": "L553-L555",
+      "quote": "unsettledPot = 0;\n        sponsorProceeds = sponsorAmount;\n        protocolFees = protocolFee;",
+      "role": "Preserves allocations as recorded liabilities when clearing the pot."
+    },
+    {
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "lines": "L375-L380",
+      "quote": "function releaseSponsorProceeds() external override nonReentrant returns (uint256 amount) {\n        amount = sponsorProceeds;\n        if (amount == 0) revert NoSponsorProceeds();\n        sponsorProceeds = 0;\n        address recipient = sponsorRecipient;\n        _transferQuote(recipient, amount);",
+      "role": "Pays the complete sponsor allocation, including residual units."
+    },
+    {
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "lines": "L296-L298",
+      "quote": "uint256 liability = unsettledPot;\n        unsettledPot = 0;\n        remainingRefundLiability = liability;",
+      "role": "Refund activation preserves the full pot without rounding."
+    }
+  ],
+  "searched": [
+    {
+      "where": "target/packages/contracts/src and target/DESIGN.md: rounding vocabulary, BPS, mulDiv, and all five quote-liability fields",
+      "result": "Located and read collection, settlement, refunds, accounting, and payout mutations; monetary rounding occurs at Raffle.sol:L540 and L546."
+    },
+    {
+      "where": "target/packages/contracts/src: _settleWinningTicket, _requireWinningTicket, _transferQuote, status and settlementComplete assignments",
+      "result": "Read both settlement callers, both allocation branches, four quote-transfer callers, and lifecycle guards."
+    },
+    {
+      "where": "target/packages/contracts/src: mulDiv|mulShr|ceilDiv|division|modulo|round|remainder|dust|sweep|rescue|balanceOf",
+      "result": "Two monetary mulDiv sites; the modulo expression selects the winning entry. No additional monetary division or dust/sweep implementation found."
+    },
+    {
+      "where": "Target-local OpenZeppelin Math, SafeERC20, ERC721, ERC721Utils, ReentrancyGuard, and StorageSlot dependencies",
+      "result": "Read rounding implementation and relevant transfer, ownership, mint/burn, receiver-check, and modifier callees."
+    }
+  ],
+  "reasoning": "Both settlement branches conserve the gross pot through subtraction-based sponsor allocations (Raffle.sol:L539-L555). Both settlement entry paths use that helper (L304-L317); refunds and payouts preserve exact recorded amounts (L296-L298,L339-L390).",
+  "documentProblem": null
+}

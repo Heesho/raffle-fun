@@ -1,0 +1,90 @@
+[
+  {
+    "name": "docker-cli-presence",
+    "argv": [
+      "/bin/zsh",
+      "-f",
+      "-c",
+      "command -v docker"
+    ],
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL",
+    "exit_code": 0,
+    "stdout_file": "docker-cli-presence.stdout.txt",
+    "stderr_file": "docker-cli-presence.stderr.txt",
+    "timeout_seconds": 15
+  },
+  {
+    "name": "socket-0",
+    "argv": [
+      "/usr/bin/stat",
+      "-f",
+      "%N type=%HT mode=%Sp",
+      "/var/run/docker.sock"
+    ],
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL",
+    "exit_code": 1,
+    "stdout_file": "socket-0.stdout.txt",
+    "stderr_file": "socket-0.stderr.txt",
+    "timeout_seconds": 15
+  },
+  {
+    "name": "socket-1",
+    "argv": [
+      "/usr/bin/stat",
+      "-f",
+      "%N type=%HT mode=%Sp",
+      "/Users/hishamel-husseini/.docker/run/docker.sock"
+    ],
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL",
+    "exit_code": 1,
+    "stdout_file": "socket-1.stdout.txt",
+    "stderr_file": "socket-1.stderr.txt",
+    "timeout_seconds": 15
+  },
+  {
+    "name": "socket-2",
+    "argv": [
+      "/usr/bin/stat",
+      "-f",
+      "%N type=%HT mode=%Sp",
+      "/Users/hishamel-husseini/.lima/gebal/sock/docker.sock"
+    ],
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL",
+    "exit_code": 0,
+    "stdout_file": "socket-2.stdout.txt",
+    "stderr_file": "socket-2.stderr.txt",
+    "timeout_seconds": 15
+  },
+  {
+    "name": "docker-info-0",
+    "argv": [
+      "/opt/homebrew/bin/docker",
+      "--host",
+      "unix:///var/run/docker.sock",
+      "info",
+      "--format",
+      "{{json .}}"
+    ],
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL",
+    "exit_code": 1,
+    "stdout_file": "docker-info-0.stdout.txt",
+    "stderr_file": "docker-info-0.stderr.txt",
+    "timeout_seconds": 15
+  },
+  {
+    "name": "docker-info-1",
+    "argv": [
+      "/opt/homebrew/bin/docker",
+      "--host",
+      "unix:///Users/hishamel-husseini/.lima/gebal/sock/docker.sock",
+      "info",
+      "--format",
+      "{{json .}}"
+    ],
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL",
+    "exit_code": 1,
+    "stdout_file": "docker-info-1.stdout.txt",
+    "stderr_file": "docker-info-1.stderr.txt",
+    "timeout_seconds": 15
+  }
+]

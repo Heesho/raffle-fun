@@ -1,0 +1,8 @@
+label=06-command-index
+started_at_utc=2026-10-21T23:27:55Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target
+command=/bin/zsh -c evidence=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow\;\ for\ f\ in\ \"\$evidence\"/logs/\*.meta\;\ do\ label=\$\(basename\ \"\$f\"\ .meta\)\;\ started=\$\(sed\ -n\ \"s/\^started_at_utc=//p\"\ \"\$f\"\)\;\ cwd=\$\(sed\ -n\ \"s/\^working_directory=//p\"\ \"\$f\"\)\;\ command=\$\(sed\ -n\ \"s/\^command=//p\"\ \"\$f\"\)\;\ code=\$\(sed\ -n\ \"s/\^exit_code=//p\"\ \"\$f\"\)\;\ printf\ \"label=%s\\nstarted_at_utc=%s\\nworking_directory=%s\\ncommand=%s\\nexit_code=%s\\n\\n\"\ \"\$label\"\ \"\$started\"\ \"\$cwd\"\ \"\$command\"\ \"\$code\"\;\ done 
+finished_at_utc=2026-10-21T23:27:56Z
+exit_code=0
+stdout=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tool-output/06-command-index.stdout
+stderr=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tool-output/06-command-index.stderr

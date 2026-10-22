@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "snapshotHash": "d0b726edfae0c24ed708c5c0f1908c40f4ab85da8d1708de38fe437a384dcc0a",
+  "contextHash": "c5b7124850800b51b1a5b5346ac3abe133da1f07d34f2d0764eab305fbb6947d",
+  "review": {
+    "gaps": [
+      "Requirements considered first: atomic single-prize escrow; immutable factory and fixed implementation clones; isolated assets; 1,000,000 raw USDC units per entry; inclusive transferable range tickets; reserve-dependent 95/5 or 80/15/5 allocation; complete refunds; aggregate floor fee with allocated remainder; strict request and callback boundaries; callback records results only; permissionless storage-only settlement; current-owner redemption with atomic rollback on delivery failure; independent sponsor and treasury claims.",
+      "Trust assumptions considered first: canonical six-decimal fee-free USDC and the canonical Chainlink wrapper are trusted as specified. Prize contracts and ticket recipients are untrusted. The review does not silently replace the exported requirement about arbitrary untrusted prizes with IRaffle.sol lines 14-15's narrower honest standards-compliant prize assumption. The terminal-delivery observation depends on interpreting untrusted prizes to include an ERC721 that accepts escrow and later rejects outgoing transfers; if that is excluded, it becomes a documented trust-model mismatch rather than an in-model defect.",
+      "Isolation is interpreted to include every clone registered by this canonical factory, including a recipient address that becomes a clone after initialization. Screening is additionally limited to this factory's registry; isolation across independently deployed factories is not established and requires a scope decision.",
+      "Reviewed all five production Solidity files in the authoritative context and selected pinned dependency bodies. No assessed code, compiler, existing tests, generated tests, exploits, proof tools, transactions, deployment lookups, or browser searches were executed. Source inspection is not measured test coverage or proof.",
+      "No candidate was identified for ordinary factory initialization authorization, implementation locking, same-factory existing-clone screening, exact prize callback field matching, callback sender authentication, request/callback equality deadlines, wrong-length or duplicate callback handling, owner-only redemption, bounded refund batches, or independently callable quote claims under the stated trusted-dependency assumptions. These are source-review conclusions, not safety certifications.",
+      "The wrapper implementation, actual deployment configuration, chain-specific canonical addresses, runtime callback gas sufficiency, and external prize behavior were not established by execution. The source callback is bounded and storage-only; the configured 300,000 gas limit was not measured.",
+      "The initial whole-context display was truncated. All five production files were subsequently inspected through complete or overlapping numbered extracts from the same context. The lockfile and dependency closure were not comprehensively reviewed; the resource record distinguishes inspected dependency spans.",
+      "Requested model selection was gpt-6-astra with model_reasoning_effort ultra. Provider-returned model identity, actual serving effort, token use, and cost are unknown and were not independently verified. No fallback or provider adapter was invoked by this reviewer. No peer findings, historical findings, raw target repository source, or other audit outputs were read before this response was sealed."
+    ],
+    "observations": [
+      {
+        "title": "An untrusted prize can leave the NFT winner without a terminal exit after sponsor allocation",
+        "description": "The exported specification treats arbitrary prize contracts as untrusted, while IRaffle narrows supported prizes to honest standards-compliant ERC721s. A prize can satisfy the factory's initial interface, callback and owner checks yet reject a later outgoing transfer. Once the VRF callback sets NftWon, enableRefunds rejects that status. Permissionless settlement allocates 95% to the sponsor and 5% to the treasury without attempting delivery, and those allocations can be released independently. The owner's redemption correctly rolls back its burn when transferFrom or the ownership verification fails, but there is no subsequent refund or alternate terminal exit, so the winner can retain only an indefinitely unredeemable ticket while the sale pot has been paid out. Under the exported untrusted-prize model this is a liveness and economic trust-boundary gap. Clarify whether permanently transferable honest prizes are a precondition; otherwise the design needs an explicit terminal-delivery failure policy that preserves the intended allocations and independent claims.",
+        "severity": "medium",
+        "confidence": "medium",
+        "source": [
+          { "path": "packages/contracts/src/interfaces/IRaffle.sol", "start": 10, "end": 15 },
+          { "path": "packages/contracts/src/RaffleFactory.sol", "start": 127, "end": 134 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 276, "end": 300 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 309, "end": 342 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 375, "end": 391 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 533, "end": 557 }
+        ],
+        "assumptions": [
+          "Arbitrary untrusted prize contracts may escrow successfully and later make outgoing transferFrom revert or make the post-transfer ownerOf check fail.",
+          "The reserve is met, the trusted wrapper resolves before its deadline, and settlement is completed.",
+          "The intended untrusted-prize guarantee includes a usable terminal outcome despite a prize transfer becoming unavailable. If honest permanently transferable prizes are the intended support boundary, the finding is instead a specification/documentation mismatch.",
+          "This observation does not claim reentrancy, unauthorized USDC withdrawal, or failure of EVM rollback. No executable adversarial artifact was constructed."
+        ]
+      },
+      {
+        "title": "Sponsor prize release can transfer an NFT into a clone registered after recipient validation",
+        "description": "Initialization screens sponsorRecipient once using the current factory registry, and code-less destinations are not queried. A currently unregistered future clone address can therefore be accepted as the immutable recipient. If that address later becomes a registered clone, releaseSponsorPrize still transfers the prize with raw transferFrom and only checks that ownerOf equals the configured recipient; it does not repeat the protocol-destination screen used by quote payouts. The transfer can succeed into the other clone without its ERC721 receiver hook, mark prizeClaimed true, and leave an unrelated NFT in a contract with no rescue route. This violates the stated prohibition on moving assets between raffle clones even with an honest prize token. Screen the current recipient at sponsor-prize release as well, and define how recipient configurations that later become invalid should be handled.",
+        "severity": "low",
+        "confidence": "high",
+        "source": [
+          { "path": "packages/contracts/src/Raffle.sol", "start": 190, "end": 205 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 395, "end": 410 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 564, "end": 566 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 593, "end": 604 },
+          { "path": "packages/contracts/src/RaffleFactory.sol", "start": 105, "end": 125 },
+          { "path": "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol", "start": 47, "end": 60 },
+          { "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol", "start": 115, "end": 135 }
+        ],
+        "assumptions": [
+          "The immutable sponsor recipient is selected as an address that is not the current clone and is not yet registered, but is later deployed as a clone of this same factory before prize release.",
+          "The original raffle reaches CashWon or Refunding and the prize has ordinary ERC721 transferFrom semantics.",
+          "The impact is loss of the sponsor-directed prize and violation of clone isolation; the source does not show theft from an unrelated honest user's raffle or impairment of the other clone's accounted USDC.",
+          "No address calculation, deployment, transaction, or executable reproduction was performed."
+        ]
+      }
+    ]
+  }
+}

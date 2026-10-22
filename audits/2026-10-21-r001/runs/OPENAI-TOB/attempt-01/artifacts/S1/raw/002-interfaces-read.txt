@@ -1,0 +1,162 @@
+FILE target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol
+    1 // SPDX-License-Identifier: MIT
+    2 // OpenZeppelin Contracts (last updated v5.4.0) (token/ERC721/IERC721.sol)
+    3 
+    4 pragma solidity >=0.6.2;
+    5 
+    6 import {IERC165} from "../../utils/introspection/IERC165.sol";
+    7 
+    8 /**
+    9  * @dev Required interface of an ERC-721 compliant contract.
+   10  */
+   11 interface IERC721 is IERC165 {
+   12     /**
+   13      * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
+   14      */
+   15     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+   16 
+   17     /**
+   18      * @dev Emitted when `owner` enables `approved` to manage the `tokenId` token.
+   19      */
+   20     event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
+   21 
+   22     /**
+   23      * @dev Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.
+   24      */
+   25     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
+   26 
+   27     /**
+   28      * @dev Returns the number of tokens in ``owner``'s account.
+   29      */
+   30     function balanceOf(address owner) external view returns (uint256 balance);
+   31 
+   32     /**
+   33      * @dev Returns the owner of the `tokenId` token.
+   34      *
+   35      * Requirements:
+   36      *
+   37      * - `tokenId` must exist.
+   38      */
+   39     function ownerOf(uint256 tokenId) external view returns (address owner);
+   40 
+   41     /**
+   42      * @dev Safely transfers `tokenId` token from `from` to `to`.
+   43      *
+   44      * Requirements:
+   45      *
+   46      * - `from` cannot be the zero address.
+   47      * - `to` cannot be the zero address.
+   48      * - `tokenId` token must exist and be owned by `from`.
+   49      * - If the caller is not `from`, it must be approved to move this token by either {approve} or {setApprovalForAll}.
+   50      * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon
+   51      *   a safe transfer.
+   52      *
+   53      * Emits a {Transfer} event.
+   54      */
+   55     function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external;
+   56 
+   57     /**
+   58      * @dev Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients
+   59      * are aware of the ERC-721 protocol to prevent tokens from being forever locked.
+   60      *
+   61      * Requirements:
+   62      *
+   63      * - `from` cannot be the zero address.
+   64      * - `to` cannot be the zero address.
+   65      * - `tokenId` token must exist and be owned by `from`.
+   66      * - If the caller is not `from`, it must have been allowed to move this token by either {approve} or
+   67      *   {setApprovalForAll}.
+   68      * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon
+   69      *   a safe transfer.
+   70      *
+   71      * Emits a {Transfer} event.
+   72      */
+   73     function safeTransferFrom(address from, address to, uint256 tokenId) external;
+   74 
+   75     /**
+   76      * @dev Transfers `tokenId` token from `from` to `to`.
+   77      *
+   78      * WARNING: Note that the caller is responsible to confirm that the recipient is capable of receiving ERC-721
+   79      * or else they may be permanently lost. Usage of {safeTransferFrom} prevents loss, though the caller must
+   80      * understand this adds an external call which potentially creates a reentrancy vulnerability.
+   81      *
+   82      * Requirements:
+   83      *
+   84      * - `from` cannot be the zero address.
+   85      * - `to` cannot be the zero address.
+   86      * - `tokenId` token must be owned by `from`.
+   87      * - If the caller is not `from`, it must be approved to move this token by either {approve} or {setApprovalForAll}.
+   88      *
+   89      * Emits a {Transfer} event.
+   90      */
+   91     function transferFrom(address from, address to, uint256 tokenId) external;
+   92 
+   93     /**
+   94      * @dev Gives permission to `to` to transfer `tokenId` token to another account.
+   95      * The approval is cleared when the token is transferred.
+   96      *
+   97      * Only a single account can be approved at a time, so approving the zero address clears previous approvals.
+   98      *
+   99      * Requirements:
+  100      *
+  101      * - The caller must own the token or be an approved operator.
+  102      * - `tokenId` must exist.
+  103      *
+  104      * Emits an {Approval} event.
+  105      */
+  106     function approve(address to, uint256 tokenId) external;
+  107 
+  108     /**
+  109      * @dev Approve or remove `operator` as an operator for the caller.
+  110      * Operators can call {transferFrom} or {safeTransferFrom} for any token owned by the caller.
+  111      *
+  112      * Requirements:
+  113      *
+  114      * - The `operator` cannot be the address zero.
+  115      *
+  116      * Emits an {ApprovalForAll} event.
+  117      */
+  118     function setApprovalForAll(address operator, bool approved) external;
+  119 
+  120     /**
+  121      * @dev Returns the account approved for `tokenId` token.
+  122      *
+  123      * Requirements:
+  124      *
+  125      * - `tokenId` must exist.
+  126      */
+  127     function getApproved(uint256 tokenId) external view returns (address operator);
+  128 
+  129     /**
+  130      * @dev Returns if the `operator` is allowed to manage all of the assets of `owner`.
+  131      *
+  132      * See {setApprovalForAll}
+  133      */
+  134     function isApprovedForAll(address owner, address operator) external view returns (bool);
+  135 }
+FILE target/packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol
+    1 // SPDX-License-Identifier: MIT
+    2 // OpenZeppelin Contracts (last updated v5.4.0) (utils/introspection/IERC165.sol)
+    3 
+    4 pragma solidity >=0.4.16;
+    5 
+    6 /**
+    7  * @dev Interface of the ERC-165 standard, as defined in the
+    8  * https://eips.ethereum.org/EIPS/eip-165[ERC].
+    9  *
+   10  * Implementers can declare support of contract interfaces, which can then be
+   11  * queried by others ({ERC165Checker}).
+   12  *
+   13  * For an implementation, see {ERC165}.
+   14  */
+   15 interface IERC165 {
+   16     /**
+   17      * @dev Returns true if this contract implements the interface defined by
+   18      * `interfaceId`. See the corresponding
+   19      * https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section]
+   20      * to learn more about how these ids are created.
+   21      *
+   22      * This function call must use less than 30 000 gas.
+   23      */
+   24     function supportsInterface(bytes4 interfaceId) external view returns (bool);
+   25 }

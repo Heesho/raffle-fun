@@ -1,0 +1,5 @@
+# Incidental extraction outputs
+
+Some Extract workers wrote additional draft summaries or requirement catalogs under the native output directory although the native extraction request only required a schema response. These files are not the native compliance report and make no substitute for the Align/Verify/Report phases. The final Report-phase request remains authoritative.
+
+Snapshots and exact recoveries from completed quoted heredoc commands are retained under incidental-extraction-output, with hashes and provenance. No recovery command was re-executed. Raw request events retain all observable write events. The first005 incidental REPORT.md was overwritten before version monitoring; that file-change event exposed paths but not its full content, so its earlier draft prose cannot be byte-for-byte recovered. The005 schema response and extraction catalog are retained. This limitation affects only an unsolicited intermediate draft; all required native requests, responses, analyses, and final report are separately retained.

@@ -1,0 +1,2095 @@
+{
+  "reconciled_utc": "2026-10-21T22:35:20.515074+00:00",
+  "source_report": {
+    "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+    "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+    "sha256": "8ce7d94cc8b647495014f011ff03c2093cc09e22e255606b44c94c1c1087d802",
+    "seal": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/artifact-integrity-seal.json",
+    "seal_sha256": "60c47bc20bbe2f9ddaf81dc395bf2da498b951cc29329efa538a5a6f37653091",
+    "seal_verified": true,
+    "all_bound_artifacts_verified": 93,
+    "distinct_bound_paths": 83,
+    "frozen_target": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+    "target_binding": "All43 source/build/dependency hashes match frozen clean context;12 original leaf report/receipt hashes match.",
+    "native_completion_receipt": null,
+    "native_artifact_preservation_receipt": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/native-artifact-preservation-receipt.json",
+    "source_only": false,
+    "source_only_note": "Sealed native source-analysis output; no executable proof newly adopted from this report.",
+    "native_terminal_status": "ERROR",
+    "qualification": "Artifact byte integrity only. Strict stream-interruption ERROR preserved even though original run produced final DONE/report and exact assembler exit0. No accepted transport success or final method semantic qualification; root coordinator OpenAI rejection is separate.",
+    "model_route": "Official CLI gemini-4-argon-high efforthigh; original fresh judge identity and12originalleaves bound; no delegated judge children; internal checkpoint unknown."
+  },
+  "receipt_verification": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/reconciliation/finalization/GEMINI-PASHOV-04-RECEIPT-VERIFICATION.json",
+  "native_counts": {
+    "final_confidence_scored_entries": 9,
+    "unscored_final_leads": 8,
+    "canonical_groups": 17,
+    "raw_observations": 33,
+    "raw_findings": 15,
+    "raw_leads": 18
+  },
+  "native_raw_inventory": [
+    {
+      "id": "L1-1",
+      "line": 46,
+      "native_row": "| `L1-1` | 1 | `LEAD` | `RaffleFactory` | `_validateCreateParams` | `unbounded-reserve-entries` | `RaffleFactory.sol:178` (`bundle:801`), `Raffle.sol:223,521` | `G06` |",
+      "cells": [
+        "`L1-1`",
+        "1",
+        "`LEAD`",
+        "`RaffleFactory`",
+        "`_validateCreateParams`",
+        "`unbounded-reserve-entries`",
+        "`RaffleFactory.sol:178` (`bundle:801`), `Raffle.sol:223,521`",
+        "`G06`"
+      ],
+      "group": "G06",
+      "targets": [
+        "CONFIG-002"
+      ]
+    },
+    {
+      "id": "L1-2",
+      "line": 47,
+      "native_row": "| `L1-2` | 1 | `LEAD` | `Raffle` | `_isProtocolDestination` | `unregistered-future-clone-destination` | `Raffle.sol:593\u2013605` (`bundle:596\u2013608`), `Raffle.sol:564\u2013567` | `G10` |",
+      "cells": [
+        "`L1-2`",
+        "1",
+        "`LEAD`",
+        "`Raffle`",
+        "`_isProtocolDestination`",
+        "`unregistered-future-clone-destination`",
+        "`Raffle.sol:593\u2013605` (`bundle:596\u2013608`), `Raffle.sol:564\u2013567`",
+        "`G10`"
+      ],
+      "group": "G10",
+      "targets": [
+        "RF-002",
+        "OBS-004"
+      ]
+    },
+    {
+      "id": "L3-1",
+      "line": 48,
+      "native_row": "| `L3-1` | 3 | `FINDING` | `Raffle` | `releaseSponsorProceeds` | `premature-sponsor-payout` | `bundle:536\u2013561` \u2192 `Raffle.sol:533\u2013558`; `bundle:378\u2013385` \u2192 `Raffle.sol:375\u2013382`; `bundle:777\u2013802` \u2192 `RaffleFactory.sol:154\u2013179`; `bundle:337` \u2192 `Raffle.sol:334`; `bundle:296` \u2192 `Raffle.sol:293` | `G01` |",
+      "cells": [
+        "`L3-1`",
+        "3",
+        "`FINDING`",
+        "`Raffle`",
+        "`releaseSponsorProceeds`",
+        "`premature-sponsor-payout`",
+        "`bundle:536\u2013561` \u2192 `Raffle.sol:533\u2013558`; `bundle:378\u2013385` \u2192 `Raffle.sol:375\u2013382`; `bundle:777\u2013802` \u2192 `RaffleFactory.sol:154\u2013179`; `bundle:337` \u2192 `Raffle.sol:334`; `bundle:296` \u2192 `Raffle.sol:293`",
+        "`G01`"
+      ],
+      "group": "G01",
+      "targets": [
+        "RF-001"
+      ]
+    },
+    {
+      "id": "L3-2",
+      "line": 49,
+      "native_row": "| `L3-2` | 3 | `FINDING` | `Raffle` | `buyEntries` | `sponsor-rebate-ticket-dilution` | `bundle:212\u2013240` \u2192 `Raffle.sol:209\u2013237`; `bundle:543\u2013547` \u2192 `Raffle.sol:540\u2013544` | `G03` |",
+      "cells": [
+        "`L3-2`",
+        "3",
+        "`FINDING`",
+        "`Raffle`",
+        "`buyEntries`",
+        "`sponsor-rebate-ticket-dilution`",
+        "`bundle:212\u2013240` \u2192 `Raffle.sol:209\u2013237`; `bundle:543\u2013547` \u2192 `Raffle.sol:540\u2013544`",
+        "`G03`"
+      ],
+      "group": "G03",
+      "targets": [
+        "CLOSED-002"
+      ]
+    },
+    {
+      "id": "L3-3",
+      "line": 50,
+      "native_row": "| `L3-3` | 3 | `FINDING` | `RaffleFactory` | `createRaffle` | `unbounded-reserve-entries` | `bundle:801` \u2192 `RaffleFactory.sol:178`; `bundle:243\u2013250` \u2192 `Raffle.sol:240\u2013247`; `bundle:524` \u2192 `Raffle.sol:521`; `bundle:548\u2013551` \u2192 `Raffle.sol:545\u2013548`; `bundle:398\u2013410` \u2192 `Raffle.sol:395\u2013407` | `G05` |",
+      "cells": [
+        "`L3-3`",
+        "3",
+        "`FINDING`",
+        "`RaffleFactory`",
+        "`createRaffle`",
+        "`unbounded-reserve-entries`",
+        "`bundle:801` \u2192 `RaffleFactory.sol:178`; `bundle:243\u2013250` \u2192 `Raffle.sol:240\u2013247`; `bundle:524` \u2192 `Raffle.sol:521`; `bundle:548\u2013551` \u2192 `Raffle.sol:545\u2013548`; `bundle:398\u2013410` \u2192 `Raffle.sol:395\u2013407`",
+        "`G05`"
+      ],
+      "group": "G05",
+      "targets": [
+        "CONFIG-002"
+      ]
+    },
+    {
+      "id": "L3-4",
+      "line": 51,
+      "native_row": "| `L3-4` | 3 | `FINDING` | `Raffle` | `enableRefunds` | `cancellation-frontrun-lock` | `bundle:282\u2013291` \u2192 `Raffle.sol:279\u2013288` | `G07` |",
+      "cells": [
+        "`L3-4`",
+        "3",
+        "`FINDING`",
+        "`Raffle`",
+        "`enableRefunds`",
+        "`cancellation-frontrun-lock`",
+        "`bundle:282\u2013291` \u2192 `Raffle.sol:279\u2013288`",
+        "`G07`"
+      ],
+      "group": "G07",
+      "targets": [
+        "CLOSED-004"
+      ]
+    },
+    {
+      "id": "L3-5",
+      "line": 52,
+      "native_row": "| `L3-5` | 3 | `LEAD` | `Raffle` | `_isProtocolDestination` | `future-clone-address-bypass` | `Raffle.sol:593\u2013605` (`bundle:596\u2013608`), `Raffle.sol:564\u2013567` | `G10` |",
+      "cells": [
+        "`L3-5`",
+        "3",
+        "`LEAD`",
+        "`Raffle`",
+        "`_isProtocolDestination`",
+        "`future-clone-address-bypass`",
+        "`Raffle.sol:593\u2013605` (`bundle:596\u2013608`), `Raffle.sol:564\u2013567`",
+        "`G10`"
+      ],
+      "group": "G10",
+      "targets": [
+        "RF-002",
+        "OBS-004"
+      ]
+    },
+    {
+      "id": "L3-6",
+      "line": 53,
+      "native_row": "| `L3-6` | 3 | `LEAD` | `Raffle` | `releaseSponsorProceeds` | `immutable-recipient-usdc-blacklist` | `Raffle.sol:198\u2013199,375\u2013382,385\u2013392` (`bundle:201\u2013202,378\u2013395`) | `G13` |",
+      "cells": [
+        "`L3-6`",
+        "3",
+        "`LEAD`",
+        "`Raffle`",
+        "`releaseSponsorProceeds`",
+        "`immutable-recipient-usdc-blacklist`",
+        "`Raffle.sol:198\u2013199,375\u2013382,385\u2013392` (`bundle:201\u2013202,378\u2013395`)",
+        "`G13`"
+      ],
+      "group": "G13",
+      "targets": [
+        "OBS-002"
+      ]
+    },
+    {
+      "id": "L3-7",
+      "line": 54,
+      "native_row": "| `L3-7` | 3 | `LEAD` | `Raffle` | `requestDraw` | `single-shot-vrf-request` | `Raffle.sol:240\u2013273,289\u2013291` (`bundle:243\u2013276,292\u2013294`) | `G12` |",
+      "cells": [
+        "`L3-7`",
+        "3",
+        "`LEAD`",
+        "`Raffle`",
+        "`requestDraw`",
+        "`single-shot-vrf-request`",
+        "`Raffle.sol:240\u2013273,289\u2013291` (`bundle:243\u2013276,292\u2013294`)",
+        "`G12`"
+      ],
+      "group": "G12",
+      "targets": [
+        "OBS-008",
+        "EVIDENCE-001"
+      ]
+    },
+    {
+      "id": "L4-1",
+      "line": 55,
+      "native_row": "| `L4-1` | 4 | `LEAD` | `Raffle` | `_isProtocolDestination` | `across-tx-clone-destination-bypass` | `Raffle.sol:593\u2013605,375\u2013382,395\u2013407`, `RaffleFactory.sol:106` | `G10` |",
+      "cells": [
+        "`L4-1`",
+        "4",
+        "`LEAD`",
+        "`Raffle`",
+        "`_isProtocolDestination`",
+        "`across-tx-clone-destination-bypass`",
+        "`Raffle.sol:593\u2013605,375\u2013382,395\u2013407`, `RaffleFactory.sol:106`",
+        "`G10`"
+      ],
+      "group": "G10",
+      "targets": [
+        "RF-002",
+        "OBS-004"
+      ]
+    },
+    {
+      "id": "L4-2",
+      "line": 56,
+      "native_row": "| `L4-2` | 4 | `LEAD` | `Raffle` | `enableRefunds` | `operation-interleaving-cancellation-block` | `Raffle.sol:276\u2013301,209\u2013237,349\u2013372` | `G07` |",
+      "cells": [
+        "`L4-2`",
+        "4",
+        "`LEAD`",
+        "`Raffle`",
+        "`enableRefunds`",
+        "`operation-interleaving-cancellation-block`",
+        "`Raffle.sol:276\u2013301,209\u2013237,349\u2013372`",
+        "`G07`"
+      ],
+      "group": "G07",
+      "targets": [
+        "CLOSED-004"
+      ]
+    },
+    {
+      "id": "L5-1",
+      "line": 57,
+      "native_row": "| `L5-1` | 5 | `FINDING` | `Raffle` | `_isProtocolDestination` | `time-of-check-destination-bypass` | `Raffle.sol:176\u2013206,209\u2013237,308\u2013346,349\u2013372,375\u2013382,395\u2013407,497\u2013502,564\u2013567,593\u2013605`; `RaffleFactory.sol:89,106,125,154\u2013179` | `G10` |",
+      "cells": [
+        "`L5-1`",
+        "5",
+        "`FINDING`",
+        "`Raffle`",
+        "`_isProtocolDestination`",
+        "`time-of-check-destination-bypass`",
+        "`Raffle.sol:176\u2013206,209\u2013237,308\u2013346,349\u2013372,375\u2013382,395\u2013407,497\u2013502,564\u2013567,593\u2013605`; `RaffleFactory.sol:89,106,125,154\u2013179`",
+        "`G10`"
+      ],
+      "group": "G10",
+      "targets": [
+        "RF-002",
+        "OBS-004"
+      ]
+    },
+    {
+      "id": "L5-2",
+      "line": 58,
+      "native_row": "| `L5-2` | 5 | `LEAD` | `Raffle` | `requestDraw` | `premature-in-flight-flag-reset` | `Raffle.sol:254\u2013271,509\u2013524` (`bundle:257\u2013274,512\u2013527`) | `G11` |",
+      "cells": [
+        "`L5-2`",
+        "5",
+        "`LEAD`",
+        "`Raffle`",
+        "`requestDraw`",
+        "`premature-in-flight-flag-reset`",
+        "`Raffle.sol:254\u2013271,509\u2013524` (`bundle:257\u2013274,512\u2013527`)",
+        "`G11`"
+      ],
+      "group": "G11",
+      "targets": [
+        "EVIDENCE-001"
+      ]
+    },
+    {
+      "id": "L8-1",
+      "line": 59,
+      "native_row": "| `L8-1` | 8 | `LEAD` | `Raffle` | `_isProtocolDestination` | `asymmetric-destination-check` | `Raffle.sol:593\u2013605,564\u2013567,395\u2013407,308\u2013346` | `G10` |",
+      "cells": [
+        "`L8-1`",
+        "8",
+        "`LEAD`",
+        "`Raffle`",
+        "`_isProtocolDestination`",
+        "`asymmetric-destination-check`",
+        "`Raffle.sol:593\u2013605,564\u2013567,395\u2013407,308\u2013346`",
+        "`G10`"
+      ],
+      "group": "G10",
+      "targets": [
+        "RF-002",
+        "OBS-004"
+      ]
+    },
+    {
+      "id": "L8-2",
+      "line": 60,
+      "native_row": "| `L8-2` | 8 | `LEAD` | `Raffle` | `initialize` | `asymmetric-input-validation` | `Raffle.sol:187\u2013189` (`bundle:190\u2013192`), `RaffleFactory.sol:154\u2013179` | `G16` |",
+      "cells": [
+        "`L8-2`",
+        "8",
+        "`LEAD`",
+        "`Raffle`",
+        "`initialize`",
+        "`asymmetric-input-validation`",
+        "`Raffle.sol:187\u2013189` (`bundle:190\u2013192`), `RaffleFactory.sol:154\u2013179`",
+        "`G16`"
+      ],
+      "group": "G16",
+      "targets": [
+        "ADVISORY-001"
+      ]
+    },
+    {
+      "id": "L9-1",
+      "line": 61,
+      "native_row": "| `L9-1` | 9 | `LEAD` | `Raffle` | `_isProtocolDestination` | `future-clone-sink-bypass` | `Raffle.sol:593\u2013605,375\u2013382`, `RaffleFactory.sol:106` | `G10` |",
+      "cells": [
+        "`L9-1`",
+        "9",
+        "`LEAD`",
+        "`Raffle`",
+        "`_isProtocolDestination`",
+        "`future-clone-sink-bypass`",
+        "`Raffle.sol:593\u2013605,375\u2013382`, `RaffleFactory.sol:106`",
+        "`G10`"
+      ],
+      "group": "G10",
+      "targets": [
+        "RF-002",
+        "OBS-004"
+      ]
+    },
+    {
+      "id": "L9-2",
+      "line": 62,
+      "native_row": "| `L9-2` | 9 | `LEAD` | `RaffleFactory` | `constructor` | `future-clone-treasury-collision` | `RaffleFactory.sol:65\u201392` (`bundle:688\u2013715`), `Raffle.sol:190\u2013192` | `G17` |",
+      "cells": [
+        "`L9-2`",
+        "9",
+        "`LEAD`",
+        "`RaffleFactory`",
+        "`constructor`",
+        "`future-clone-treasury-collision`",
+        "`RaffleFactory.sol:65\u201392` (`bundle:688\u2013715`), `Raffle.sol:190\u2013192`",
+        "`G17`"
+      ],
+      "group": "G17",
+      "targets": [
+        "CONFIG-001"
+      ]
+    },
+    {
+      "id": "L9-3",
+      "line": 63,
+      "native_row": "| `L9-3` | 9 | `LEAD` | `Raffle` | `releaseSponsorPrize` | `unsafe-erc721-prize-return` | `Raffle.sol:395\u2013407,176\u2013206` (`bundle:398\u2013410,179\u2013209`) | `G08` |",
+      "cells": [
+        "`L9-3`",
+        "9",
+        "`LEAD`",
+        "`Raffle`",
+        "`releaseSponsorPrize`",
+        "`unsafe-erc721-prize-return`",
+        "`Raffle.sol:395\u2013407,176\u2013206` (`bundle:398\u2013410,179\u2013209`)",
+        "`G08`"
+      ],
+      "group": "G08",
+      "targets": [
+        "RF-002",
+        "OBS-004"
+      ]
+    },
+    {
+      "id": "L9-4",
+      "line": 64,
+      "native_row": "| `L9-4` | 9 | `LEAD` | `Raffle` | `fulfillRandomWords` | `synchronous-vrf-callback-ignored` | `Raffle.sol:254,509\u2013516` (`bundle:257,512\u2013519`) | `G14` |",
+      "cells": [
+        "`L9-4`",
+        "9",
+        "`LEAD`",
+        "`Raffle`",
+        "`fulfillRandomWords`",
+        "`synchronous-vrf-callback-ignored`",
+        "`Raffle.sol:254,509\u2013516` (`bundle:257,512\u2013519`)",
+        "`G14`"
+      ],
+      "group": "G14",
+      "targets": [
+        "EVIDENCE-001"
+      ]
+    },
+    {
+      "id": "L10-1",
+      "line": 65,
+      "native_row": "| `L10-1` | 10 | `LEAD` | `Raffle` | `_isProtocolDestination` | `precomputed-clone-destination-bypass` | `Raffle.sol:593\u2013605,395\u2013407,564\u2013567,304\u2013306,349\u2013372`, `RaffleFactory.sol:106` | `G10` |",
+      "cells": [
+        "`L10-1`",
+        "10",
+        "`LEAD`",
+        "`Raffle`",
+        "`_isProtocolDestination`",
+        "`precomputed-clone-destination-bypass`",
+        "`Raffle.sol:593\u2013605,395\u2013407,564\u2013567,304\u2013306,349\u2013372`, `RaffleFactory.sol:106`",
+        "`G10`"
+      ],
+      "group": "G10",
+      "targets": [
+        "RF-002",
+        "OBS-004"
+      ]
+    },
+    {
+      "id": "L10-2",
+      "line": 66,
+      "native_row": "| `L10-2` | 10 | `LEAD` | `Raffle` | `getVrfRequestPrice` | `zero-gasprice-quote-mismatch` | `Raffle.sol:436\u2013438,249\u2013250,441\u2013443` (`bundle:439\u2013446,252\u2013253`) | `G15` |",
+      "cells": [
+        "`L10-2`",
+        "10",
+        "`LEAD`",
+        "`Raffle`",
+        "`getVrfRequestPrice`",
+        "`zero-gasprice-quote-mismatch`",
+        "`Raffle.sol:436\u2013438,249\u2013250,441\u2013443` (`bundle:439\u2013446,252\u2013253`)",
+        "`G15`"
+      ],
+      "group": "G15",
+      "targets": [
+        "EVIDENCE-001"
+      ]
+    },
+    {
+      "id": "L11-1",
+      "line": 67,
+      "native_row": "| `L11-1` | 11 | `FINDING` | `Raffle` | `_settleWinningTicket` | `sponsor-rebate-entry-dilution` | `bundle:212\u2013240` \u2192 `Raffle.sol:209\u2013237`; `bundle:543\u2013548` \u2192 `Raffle.sol:540\u2013545` | `G04` |",
+      "cells": [
+        "`L11-1`",
+        "11",
+        "`FINDING`",
+        "`Raffle`",
+        "`_settleWinningTicket`",
+        "`sponsor-rebate-entry-dilution`",
+        "`bundle:212\u2013240` \u2192 `Raffle.sol:209\u2013237`; `bundle:543\u2013548` \u2192 `Raffle.sol:540\u2013545`",
+        "`G04`"
+      ],
+      "group": "G04",
+      "targets": [
+        "CLOSED-002"
+      ]
+    },
+    {
+      "id": "L11-2",
+      "line": 68,
+      "native_row": "| `L11-2` | 11 | `FINDING` | `Raffle` | `buyEntries` | `reserve-cliff-pot-capture` | `bundle:212\u2013240` \u2192 `Raffle.sol:209\u2013237`; `bundle:524` \u2192 `Raffle.sol:521`; `bundle:546\u2013552` \u2192 `Raffle.sol:543\u2013549` | `G03` |",
+      "cells": [
+        "`L11-2`",
+        "11",
+        "`FINDING`",
+        "`Raffle`",
+        "`buyEntries`",
+        "`reserve-cliff-pot-capture`",
+        "`bundle:212\u2013240` \u2192 `Raffle.sol:209\u2013237`; `bundle:524` \u2192 `Raffle.sol:521`; `bundle:546\u2013552` \u2192 `Raffle.sol:543\u2013549`",
+        "`G03`"
+      ],
+      "group": "G03",
+      "targets": [
+        "CLOSED-002"
+      ]
+    },
+    {
+      "id": "L11-3",
+      "line": 69,
+      "native_row": "| `L11-3` | 11 | `FINDING` | `RaffleFactory` | `createRaffle` | `unbounded-reserve-cash-rake` | `bundle:801` \u2192 `RaffleFactory.sol:178`; `bundle:524` \u2192 `Raffle.sol:521`; `bundle:549\u2013551` \u2192 `Raffle.sol:546\u2013548`; `bundle:398\u2013410` \u2192 `Raffle.sol:395\u2013407`; `bundle:222` \u2192 `Raffle.sol:219` | `G05` |",
+      "cells": [
+        "`L11-3`",
+        "11",
+        "`FINDING`",
+        "`RaffleFactory`",
+        "`createRaffle`",
+        "`unbounded-reserve-cash-rake`",
+        "`bundle:801` \u2192 `RaffleFactory.sol:178`; `bundle:524` \u2192 `Raffle.sol:521`; `bundle:549\u2013551` \u2192 `Raffle.sol:546\u2013548`; `bundle:398\u2013410` \u2192 `Raffle.sol:395\u2013407`; `bundle:222` \u2192 `Raffle.sol:219`",
+        "`G05`"
+      ],
+      "group": "G05",
+      "targets": [
+        "CONFIG-002"
+      ]
+    },
+    {
+      "id": "L11-4",
+      "line": 70,
+      "native_row": "| `L11-4` | 11 | `FINDING` | `Raffle` | `enableRefunds` | `empty-raffle-cancel-block` | `bundle:282\u2013291` \u2192 `Raffle.sol:279\u2013288`; `bundle:212\u2013240` \u2192 `Raffle.sol:209\u2013237` | `G07` |",
+      "cells": [
+        "`L11-4`",
+        "11",
+        "`FINDING`",
+        "`Raffle`",
+        "`enableRefunds`",
+        "`empty-raffle-cancel-block`",
+        "`bundle:282\u2013291` \u2192 `Raffle.sol:279\u2013288`; `bundle:212\u2013240` \u2192 `Raffle.sol:209\u2013237`",
+        "`G07`"
+      ],
+      "group": "G07",
+      "targets": [
+        "CLOSED-004"
+      ]
+    },
+    {
+      "id": "L11-5",
+      "line": 71,
+      "native_row": "| `L11-5` | 11 | `FINDING` | `Raffle` | `requestDraw` | `uncompensated-vrf-fee-asymmetry` | `bundle:243\u2013276` \u2192 `Raffle.sol:240\u2013273`; `bundle:288\u2013294` \u2192 `Raffle.sol:285\u2013291` | `G09` |",
+      "cells": [
+        "`L11-5`",
+        "11",
+        "`FINDING`",
+        "`Raffle`",
+        "`requestDraw`",
+        "`uncompensated-vrf-fee-asymmetry`",
+        "`bundle:243\u2013276` \u2192 `Raffle.sol:240\u2013273`; `bundle:288\u2013294` \u2192 `Raffle.sol:285\u2013291`",
+        "`G09`"
+      ],
+      "group": "G09",
+      "targets": [
+        "OBS-008",
+        "CLOSED-002"
+      ]
+    },
+    {
+      "id": "L11-6",
+      "line": 72,
+      "native_row": "| `L11-6` | 11 | `LEAD` | `Raffle` | `releaseSponsorProceeds` | `premature-sponsor-payout-before-prize-delivery` | `Raffle.sol:533\u2013558,375\u2013382,308\u2013346` (`bundle:536\u2013561,378\u2013385,311\u2013349`) | `G01` |",
+      "cells": [
+        "`L11-6`",
+        "11",
+        "`LEAD`",
+        "`Raffle`",
+        "`releaseSponsorProceeds`",
+        "`premature-sponsor-payout-before-prize-delivery`",
+        "`Raffle.sol:533\u2013558,375\u2013382,308\u2013346` (`bundle:536\u2013561,378\u2013385,311\u2013349`)",
+        "`G01`"
+      ],
+      "group": "G01",
+      "targets": [
+        "RF-001"
+      ]
+    },
+    {
+      "id": "L12-1",
+      "line": 73,
+      "native_row": "| `L12-1` | 12 | `FINDING` | `Raffle` | `_isProtocolDestination` | `unregistered-future-clone-sink` | `bundle:729,748,789` \u2192 `RaffleFactory.sol:106,125,166`; `bundle:196,324,363,383,398\u2013410,501,568,596\u2013608` \u2192 `Raffle.sol:193,321,360,380,395\u2013407,498,565,593\u2013605` | `G10` |",
+      "cells": [
+        "`L12-1`",
+        "12",
+        "`FINDING`",
+        "`Raffle`",
+        "`_isProtocolDestination`",
+        "`unregistered-future-clone-sink`",
+        "`bundle:729,748,789` \u2192 `RaffleFactory.sol:106,125,166`; `bundle:196,324,363,383,398\u2013410,501,568,596\u2013608` \u2192 `Raffle.sol:193,321,360,380,395\u2013407,498,565,593\u2013605`",
+        "`G10`"
+      ],
+      "group": "G10",
+      "targets": [
+        "RF-002",
+        "OBS-004"
+      ]
+    },
+    {
+      "id": "L12-2",
+      "line": 74,
+      "native_row": "| `L12-2` | 12 | `FINDING` | `Raffle` | `enableRefunds` | `sponsor-cancel-frontrun-lock` | `bundle:282\u2013291,398\u2013410,212\u2013240,549` \u2192 `Raffle.sol:279\u2013288,395\u2013407,209\u2013237,546` | `G07` |",
+      "cells": [
+        "`L12-2`",
+        "12",
+        "`FINDING`",
+        "`Raffle`",
+        "`enableRefunds`",
+        "`sponsor-cancel-frontrun-lock`",
+        "`bundle:282\u2013291,398\u2013410,212\u2013240,549` \u2192 `Raffle.sol:279\u2013288,395\u2013407,209\u2013237,546`",
+        "`G07`"
+      ],
+      "group": "G07",
+      "targets": [
+        "CLOSED-004"
+      ]
+    },
+    {
+      "id": "L12-3",
+      "line": 75,
+      "native_row": "| `L12-3` | 12 | `FINDING` | `Raffle` | `_settleWinningTicket` | `premature-sponsor-proceeds-release` | `bundle:751` \u2192 `RaffleFactory.sol:128`; `bundle:524,307,536\u2013561,378\u2013385,311\u2013349,337` \u2192 `Raffle.sol:521,304,533\u2013558,375\u2013382,308\u2013346,334` | `G02` |",
+      "cells": [
+        "`L12-3`",
+        "12",
+        "`FINDING`",
+        "`Raffle`",
+        "`_settleWinningTicket`",
+        "`premature-sponsor-proceeds-release`",
+        "`bundle:751` \u2192 `RaffleFactory.sol:128`; `bundle:524,307,536\u2013561,378\u2013385,311\u2013349,337` \u2192 `Raffle.sol:521,304,533\u2013558,375\u2013382,308\u2013346,334`",
+        "`G02`"
+      ],
+      "group": "G02",
+      "targets": [
+        "RF-001"
+      ]
+    },
+    {
+      "id": "L12-4",
+      "line": 76,
+      "native_row": "| `L12-4` | 12 | `FINDING` | `RaffleFactory` | `_validateCreateParams` | `unbounded-reserve-entries` | `bundle:801` \u2192 `RaffleFactory.sol:178`; `bundle:226,524,549\u2013550,398` \u2192 `Raffle.sol:223,521,546\u2013547,395` | `G06` |",
+      "cells": [
+        "`L12-4`",
+        "12",
+        "`FINDING`",
+        "`RaffleFactory`",
+        "`_validateCreateParams`",
+        "`unbounded-reserve-entries`",
+        "`bundle:801` \u2192 `RaffleFactory.sol:178`; `bundle:226,524,549\u2013550,398` \u2192 `Raffle.sol:223,521,546\u2013547,395`",
+        "`G06`"
+      ],
+      "group": "G06",
+      "targets": [
+        "CONFIG-002"
+      ]
+    },
+    {
+      "id": "L12-5",
+      "line": 77,
+      "native_row": "| `L12-5` | 12 | `FINDING` | `Raffle` | `releaseSponsorPrize` | `unsafe-prize-nft-transfer` | `bundle:1362\u20131368` \u2192 `IRaffleFactory.sol:20\u201326`; `bundle:777\u2013802` \u2192 `RaffleFactory.sol:154\u2013179`; `bundle:179\u2013209,383,398\u2013410,337` \u2192 `Raffle.sol:176\u2013206,380,395\u2013407,334` | `G08` |",
+      "cells": [
+        "`L12-5`",
+        "12",
+        "`FINDING`",
+        "`Raffle`",
+        "`releaseSponsorPrize`",
+        "`unsafe-prize-nft-transfer`",
+        "`bundle:1362\u20131368` \u2192 `IRaffleFactory.sol:20\u201326`; `bundle:777\u2013802` \u2192 `RaffleFactory.sol:154\u2013179`; `bundle:179\u2013209,383,398\u2013410,337` \u2192 `Raffle.sol:176\u2013206,380,395\u2013407,334`",
+        "`G08`"
+      ],
+      "group": "G08",
+      "targets": [
+        "RF-002",
+        "OBS-004"
+      ]
+    },
+    {
+      "id": "L12-6",
+      "line": 78,
+      "native_row": "| `L12-6` | 12 | `LEAD` | `Raffle` | `requestDraw` | `premature-in-flight-flag-reset` | `bundle:263,270` \u2192 `Raffle.sol:260,267` | `G11` |",
+      "cells": [
+        "`L12-6`",
+        "12",
+        "`LEAD`",
+        "`Raffle`",
+        "`requestDraw`",
+        "`premature-in-flight-flag-reset`",
+        "`bundle:263,270` \u2192 `Raffle.sol:260,267`",
+        "`G11`"
+      ],
+      "group": "G11",
+      "targets": [
+        "EVIDENCE-001"
+      ]
+    }
+  ],
+  "native_group_inventory": [
+    {
+      "id": "G01",
+      "line": 153,
+      "heading": "### `G01` \u2014 `Raffle | releaseSponsorProceeds | premature-sponsor-payout` (`L3-1`, `L11-6`; `[agents: 2]`)",
+      "targets": [
+        "RF-001"
+      ]
+    },
+    {
+      "id": "G02",
+      "line": 167,
+      "heading": "### `G02` \u2014 `Raffle | _settleWinningTicket | premature-sponsor-proceeds-release` (`L12-3`; `[agents: 1]`)",
+      "targets": [
+        "RF-001"
+      ]
+    },
+    {
+      "id": "G03",
+      "line": 181,
+      "heading": "### `G03` \u2014 `Raffle | buyEntries | sponsor-rebate-ticket-dilution` (`L3-2`, `L11-2`; `[agents: 2]`)",
+      "targets": [
+        "CLOSED-002"
+      ]
+    },
+    {
+      "id": "G04",
+      "line": 195,
+      "heading": "### `G04` \u2014 `Raffle | _settleWinningTicket | sponsor-rebate-entry-dilution` (`L11-1`; `[agents: 1]`)",
+      "targets": [
+        "CLOSED-002"
+      ]
+    },
+    {
+      "id": "G05",
+      "line": 209,
+      "heading": "### `G05` \u2014 `RaffleFactory | createRaffle | unbounded-reserve-entries` (`L3-3`, `L11-3`; `[agents: 2]`)",
+      "targets": [
+        "CONFIG-002"
+      ]
+    },
+    {
+      "id": "G06",
+      "line": 223,
+      "heading": "### `G06` \u2014 `RaffleFactory | _validateCreateParams | unbounded-reserve-entries` (`L1-1`, `L12-4`; `[agents: 2]`)",
+      "targets": [
+        "CONFIG-002"
+      ]
+    },
+    {
+      "id": "G07",
+      "line": 237,
+      "heading": "### `G07` \u2014 `Raffle | enableRefunds | empty-raffle-cancel-block` (`L3-4`, `L4-2`, `L11-4`, `L12-2`; `[agents: 4]`)",
+      "targets": [
+        "CLOSED-004"
+      ]
+    },
+    {
+      "id": "G08",
+      "line": 251,
+      "heading": "### `G08` \u2014 `Raffle | releaseSponsorPrize | unsafe-prize-nft-transfer` (`L9-3`, `L12-5`; `[agents: 2]`)",
+      "targets": [
+        "RF-002",
+        "OBS-004"
+      ]
+    },
+    {
+      "id": "G09",
+      "line": 265,
+      "heading": "### `G09` \u2014 `Raffle | requestDraw | uncompensated-vrf-fee-asymmetry` (`L11-5`; `[agents: 1]`)",
+      "targets": [
+        "OBS-008",
+        "CLOSED-002"
+      ]
+    },
+    {
+      "id": "G10",
+      "line": 281,
+      "heading": "### `G10` \u2014 `Raffle | _isProtocolDestination | future-clone-sink-bypass` (`L1-2`, `L3-5`, `L4-1`, `L5-1`, `L8-1`, `L9-1`, `L10-1`, `L12-1`; `[agents: 8]`)",
+      "targets": [
+        "RF-002",
+        "OBS-004"
+      ]
+    },
+    {
+      "id": "G11",
+      "line": 295,
+      "heading": "### `G11` \u2014 `Raffle | requestDraw | premature-in-flight-flag-reset` (`L5-2`, `L12-6`; `[agents: 2]`)",
+      "targets": [
+        "EVIDENCE-001"
+      ]
+    },
+    {
+      "id": "G12",
+      "line": 304,
+      "heading": "### `G12` \u2014 `Raffle | requestDraw | single-shot-vrf-request` (`L3-7`; `[agents: 1]`)",
+      "targets": [
+        "OBS-008",
+        "EVIDENCE-001"
+      ]
+    },
+    {
+      "id": "G13",
+      "line": 313,
+      "heading": "### `G13` \u2014 `Raffle | releaseSponsorProceeds | immutable-recipient-usdc-blacklist` (`L3-6`; `[agents: 1]`)",
+      "targets": [
+        "OBS-002"
+      ]
+    },
+    {
+      "id": "G14",
+      "line": 323,
+      "heading": "### `G14` \u2014 `Raffle | fulfillRandomWords | synchronous-vrf-callback-ignored` (`L9-4`; `[agents: 1]`)",
+      "targets": [
+        "EVIDENCE-001"
+      ]
+    },
+    {
+      "id": "G15",
+      "line": 332,
+      "heading": "### `G15` \u2014 `Raffle | getVrfRequestPrice | zero-gasprice-quote-mismatch` (`L10-2`; `[agents: 1]`)",
+      "targets": [
+        "EVIDENCE-001"
+      ]
+    },
+    {
+      "id": "G16",
+      "line": 340,
+      "heading": "### `G16` \u2014 `Raffle | initialize | asymmetric-input-validation` (`L8-2`; `[agents: 1]`)",
+      "targets": [
+        "ADVISORY-001"
+      ]
+    },
+    {
+      "id": "G17",
+      "line": 348,
+      "heading": "### `G17` \u2014 `RaffleFactory | constructor | future-clone-treasury-collision` (`L9-2`; `[agents: 1]`)",
+      "targets": [
+        "CONFIG-001"
+      ]
+    }
+  ],
+  "append_attributions": [
+    {
+      "target": "RF-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 17,
+      "original_id": "1",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Allocation and release are function fragments of the same root, not two independent economic defects.",
+      "original_confidence": 90,
+      "native_group_id": "G02",
+      "original_title": "[90] **1. _settleWinningTicket allocates sponsorProceeds before the winner claims the prize**"
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 45,
+      "original_id": "2",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "95% payout above reserve is the configured seller share; requires a product-policy change to cap. No unauthorized fund extraction proved.",
+      "original_confidence": 90,
+      "native_group_id": "G04",
+      "original_title": "[90] **2. _settleWinningTicket pays the sponsor 95% of entries bought above reserveEntries**"
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 65,
+      "original_id": "3",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Sponsor paid purchases, reserve crossing and dilution follow disclosed economics. Native finding/confidence retained; no fixed odds/no-sponsor promise established.",
+      "original_confidence": 90,
+      "native_group_id": "G03",
+      "original_title": "[90] **3. buyEntries lets the sponsor buy entries to dilute buyers or force NftWon**"
+    },
+    {
+      "target": "RF-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 97,
+      "original_id": "4",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Premature proceeds is the existing conditional prize-delivery/payment root; dishonest prize versus honest transferable token scope remains explicit.",
+      "original_confidence": 90,
+      "native_group_id": "G01",
+      "original_title": "[90] **4. releaseSponsorProceeds pays the sponsor before redeemWinningTicket delivers the prize**"
+    },
+    {
+      "target": "CONFIG-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 115,
+      "original_id": "5",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Same public extreme reserve; bounding a threshold does not guarantee economic reachability.",
+      "original_confidence": 85,
+      "native_group_id": "G06",
+      "original_title": "[85] **5. _validateCreateParams sets no upper limit on reserveEntries**"
+    },
+    {
+      "target": "CONFIG-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 134,
+      "original_id": "6",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Extreme public reserve is a configuration risk and cash-outcome policy, not hidden buyer theft.",
+      "original_confidence": 85,
+      "native_group_id": "G05",
+      "original_title": "[85] **6. createRaffle accepts an unreachable reserveEntries that forces CashWon**"
+    },
+    {
+      "target": "CLOSED-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 163,
+      "original_id": "7",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "A paid entry executed before empty cancellation validly ends that exception. Native finding/confidence disagreement retained.",
+      "original_confidence": 75,
+      "native_group_id": "G07",
+      "original_title": "[75] **7. enableRefunds reverts before endTime when an attacker buys one entry**"
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 199,
+      "original_id": "8",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Unsafe prize return is a recipient capability issue with separately reproduced sponsor-selected future-clone subset; own-recipient loss, not general theft.",
+      "original_confidence": 75,
+      "native_group_id": "G08",
+      "original_title": "[75] **8. releaseSponsorPrize sends the prize via transferFrom without an ERC-721 receiver check**"
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 199,
+      "original_id": "8",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Unsafe prize return is a recipient capability issue with separately reproduced sponsor-selected future-clone subset; own-recipient loss, not general theft.",
+      "original_confidence": 75,
+      "native_group_id": "G08",
+      "original_title": "[75] **8. releaseSponsorPrize sends the prize via transferFrom without an ERC-721 receiver check**"
+    },
+    {
+      "target": "OBS-008",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 221,
+      "original_id": "9",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Caller pays a disclosed native VRF fee; CashWon is an explicit outcome. Sponsor cannot veto other permissionless callers; withholding alone is not control of the draw.",
+      "original_confidence": 75,
+      "native_group_id": "G09",
+      "original_title": "[75] **9. requestDraw charges the caller the VRF fee and allows CashWon draws**"
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 221,
+      "original_id": "9",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Caller pays a disclosed native VRF fee; CashWon is an explicit outcome. Sponsor cannot veto other permissionless callers; withholding alone is not control of the draw.",
+      "original_confidence": 75,
+      "native_group_id": "G09",
+      "original_title": "[75] **9. requestDraw charges the caller the VRF fee and allows CashWon draws**"
+    },
+    {
+      "target": "RF-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 153,
+      "original_id": "G01",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Premature proceeds is the existing conditional prize-delivery/payment root; dishonest prize versus honest transferable token scope remains explicit.",
+      "original_confidence": 90,
+      "native_heading": "### `G01` \u2014 `Raffle | releaseSponsorProceeds | premature-sponsor-payout` (`L3-1`, `L11-6`; `[agents: 2]`)",
+      "native_disposition": "finding"
+    },
+    {
+      "target": "RF-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 167,
+      "original_id": "G02",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Allocation and release are function fragments of the same root, not two independent economic defects.",
+      "original_confidence": 90,
+      "native_heading": "### `G02` \u2014 `Raffle | _settleWinningTicket | premature-sponsor-proceeds-release` (`L12-3`; `[agents: 1]`)",
+      "native_disposition": "finding"
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 181,
+      "original_id": "G03",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Sponsor paid purchases, reserve crossing and dilution follow disclosed economics. Native finding/confidence retained; no fixed odds/no-sponsor promise established.",
+      "original_confidence": 90,
+      "native_heading": "### `G03` \u2014 `Raffle | buyEntries | sponsor-rebate-ticket-dilution` (`L3-2`, `L11-2`; `[agents: 2]`)",
+      "native_disposition": "finding"
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 195,
+      "original_id": "G04",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "95% payout above reserve is the configured seller share; requires a product-policy change to cap. No unauthorized fund extraction proved.",
+      "original_confidence": 90,
+      "native_heading": "### `G04` \u2014 `Raffle | _settleWinningTicket | sponsor-rebate-entry-dilution` (`L11-1`; `[agents: 1]`)",
+      "native_disposition": "finding"
+    },
+    {
+      "target": "CONFIG-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 209,
+      "original_id": "G05",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Extreme public reserve is a configuration risk and cash-outcome policy, not hidden buyer theft.",
+      "original_confidence": 85,
+      "native_heading": "### `G05` \u2014 `RaffleFactory | createRaffle | unbounded-reserve-entries` (`L3-3`, `L11-3`; `[agents: 2]`)",
+      "native_disposition": "finding"
+    },
+    {
+      "target": "CONFIG-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 223,
+      "original_id": "G06",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Same public extreme reserve; bounding a threshold does not guarantee economic reachability.",
+      "original_confidence": 85,
+      "native_heading": "### `G06` \u2014 `RaffleFactory | _validateCreateParams | unbounded-reserve-entries` (`L1-1`, `L12-4`; `[agents: 2]`)",
+      "native_disposition": "finding"
+    },
+    {
+      "target": "CLOSED-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 237,
+      "original_id": "G07",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "A paid entry executed before empty cancellation validly ends that exception. Native finding/confidence disagreement retained.",
+      "original_confidence": 75,
+      "native_heading": "### `G07` \u2014 `Raffle | enableRefunds | empty-raffle-cancel-block` (`L3-4`, `L4-2`, `L11-4`, `L12-2`; `[agents: 4]`)",
+      "native_disposition": "finding"
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 251,
+      "original_id": "G08",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Unsafe prize return is a recipient capability issue with separately reproduced sponsor-selected future-clone subset; own-recipient loss, not general theft.",
+      "original_confidence": 75,
+      "native_heading": "### `G08` \u2014 `Raffle | releaseSponsorPrize | unsafe-prize-nft-transfer` (`L9-3`, `L12-5`; `[agents: 2]`)",
+      "native_disposition": "finding"
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 251,
+      "original_id": "G08",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Unsafe prize return is a recipient capability issue with separately reproduced sponsor-selected future-clone subset; own-recipient loss, not general theft.",
+      "original_confidence": 75,
+      "native_heading": "### `G08` \u2014 `Raffle | releaseSponsorPrize | unsafe-prize-nft-transfer` (`L9-3`, `L12-5`; `[agents: 2]`)",
+      "native_disposition": "finding"
+    },
+    {
+      "target": "OBS-008",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 265,
+      "original_id": "G09",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Caller pays a disclosed native VRF fee; CashWon is an explicit outcome. Sponsor cannot veto other permissionless callers; withholding alone is not control of the draw.",
+      "original_confidence": 75,
+      "native_heading": "### `G09` \u2014 `Raffle | requestDraw | uncompensated-vrf-fee-asymmetry` (`L11-5`; `[agents: 1]`)",
+      "native_disposition": "finding"
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 265,
+      "original_id": "G09",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Caller pays a disclosed native VRF fee; CashWon is an explicit outcome. Sponsor cannot veto other permissionless callers; withholding alone is not control of the draw.",
+      "original_confidence": 75,
+      "native_heading": "### `G09` \u2014 `Raffle | requestDraw | uncompensated-vrf-fee-asymmetry` (`L11-5`; `[agents: 1]`)",
+      "native_disposition": "finding"
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 281,
+      "original_id": "G10",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "original_confidence": null,
+      "native_heading": "### `G10` \u2014 `Raffle | _isProtocolDestination | future-clone-sink-bypass` (`L1-2`, `L3-5`, `L4-1`, `L5-1`, `L8-1`, `L9-1`, `L10-1`, `L12-1`; `[agents: 8]`)",
+      "native_disposition": "lead"
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 281,
+      "original_id": "G10",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "original_confidence": null,
+      "native_heading": "### `G10` \u2014 `Raffle | _isProtocolDestination | future-clone-sink-bypass` (`L1-2`, `L3-5`, `L4-1`, `L5-1`, `L8-1`, `L9-1`, `L10-1`, `L12-1`; `[agents: 8]`)",
+      "native_disposition": "lead"
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 295,
+      "original_id": "G11",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Wrapper-only callback guard blocks an ordinary refund recipient; synchronous trusted-wrapper behavior is an unvalidated integration assumption, not proven unprivileged reentrancy.",
+      "original_confidence": null,
+      "native_heading": "### `G11` \u2014 `Raffle | requestDraw | premature-in-flight-flag-reset` (`L5-2`, `L12-6`; `[agents: 2]`)",
+      "native_disposition": "lead"
+    },
+    {
+      "target": "OBS-008",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 304,
+      "original_id": "G12",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Timeout/refund cost and service availability remain operational dependencies; no attacker-controlled forced timeout demonstrated.",
+      "original_confidence": null,
+      "native_heading": "### `G12` \u2014 `Raffle | requestDraw | single-shot-vrf-request` (`L3-7`; `[agents: 1]`)",
+      "native_disposition": "lead"
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 304,
+      "original_id": "G12",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Timeout/refund cost and service availability remain operational dependencies; no attacker-controlled forced timeout demonstrated.",
+      "original_confidence": null,
+      "native_heading": "### `G12` \u2014 `Raffle | requestDraw | single-shot-vrf-request` (`L3-7`; `[agents: 1]`)",
+      "native_disposition": "lead"
+    },
+    {
+      "target": "OBS-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 313,
+      "original_id": "G13",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Issuer can block immutable payout recipient; pull-payment cohorts remain isolated.",
+      "original_confidence": null,
+      "native_heading": "### `G13` \u2014 `Raffle | releaseSponsorProceeds | immutable-recipient-usdc-blacklist` (`L3-6`; `[agents: 1]`)",
+      "native_disposition": "lead"
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 323,
+      "original_id": "G14",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Synchronous wrapper is not established for supported asynchronous VRF; no production exploit proved.",
+      "original_confidence": null,
+      "native_heading": "### `G14` \u2014 `Raffle | fulfillRandomWords | synchronous-vrf-callback-ignored` (`L9-4`; `[agents: 1]`)",
+      "native_disposition": "lead"
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 332,
+      "original_id": "G15",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Gas quote depends on eth_call parameters; explicit estimateVrfRequestPrice exists and underpayment reverts atomically. Offchain calls are not invariably zero gas price.",
+      "original_confidence": null,
+      "native_heading": "### `G15` \u2014 `Raffle | getVrfRequestPrice | zero-gasprice-quote-mismatch` (`L10-2`; `[agents: 1]`)",
+      "native_disposition": "lead"
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 340,
+      "original_id": "G16",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Initializer already applies sponsor guard atomically; earlier factory check is fail-fast consistency, not active-raffle vulnerability.",
+      "original_confidence": null,
+      "native_heading": "### `G16` \u2014 `Raffle | initialize | asymmetric-input-validation` (`L8-2`; `[agents: 1]`)",
+      "native_disposition": "lead"
+    },
+    {
+      "target": "CONFIG-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 348,
+      "original_id": "G17",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Final lead correctly states nonce collision. Gate paragraph incorrectly supposes matching clone registers first: initialize rejects treasury==self before registry. Actual risk is blocked creation at that nonce.",
+      "original_confidence": null,
+      "native_heading": "### `G17` \u2014 `RaffleFactory | constructor | future-clone-treasury-collision` (`L9-2`; `[agents: 1]`)",
+      "native_disposition": "lead"
+    },
+    {
+      "target": "CONFIG-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 46,
+      "original_id": "L1-1",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Same public extreme reserve; bounding a threshold does not guarantee economic reachability.",
+      "native_inventory_row": "| `L1-1` | 1 | `LEAD` | `RaffleFactory` | `_validateCreateParams` | `unbounded-reserve-entries` | `RaffleFactory.sol:178` (`bundle:801`), `Raffle.sol:223,521` | `G06` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G06",
+      "native_source_anchors": "`RaffleFactory.sol:178` (`bundle:801`), `Raffle.sol:223,521`"
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 47,
+      "original_id": "L1-2",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "native_inventory_row": "| `L1-2` | 1 | `LEAD` | `Raffle` | `_isProtocolDestination` | `unregistered-future-clone-destination` | `Raffle.sol:593\u2013605` (`bundle:596\u2013608`), `Raffle.sol:564\u2013567` | `G10` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G10",
+      "native_source_anchors": "`Raffle.sol:593\u2013605` (`bundle:596\u2013608`), `Raffle.sol:564\u2013567`"
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 47,
+      "original_id": "L1-2",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "native_inventory_row": "| `L1-2` | 1 | `LEAD` | `Raffle` | `_isProtocolDestination` | `unregistered-future-clone-destination` | `Raffle.sol:593\u2013605` (`bundle:596\u2013608`), `Raffle.sol:564\u2013567` | `G10` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G10",
+      "native_source_anchors": "`Raffle.sol:593\u2013605` (`bundle:596\u2013608`), `Raffle.sol:564\u2013567`"
+    },
+    {
+      "target": "RF-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 48,
+      "original_id": "L3-1",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Premature proceeds is the existing conditional prize-delivery/payment root; dishonest prize versus honest transferable token scope remains explicit.",
+      "native_inventory_row": "| `L3-1` | 3 | `FINDING` | `Raffle` | `releaseSponsorProceeds` | `premature-sponsor-payout` | `bundle:536\u2013561` \u2192 `Raffle.sol:533\u2013558`; `bundle:378\u2013385` \u2192 `Raffle.sol:375\u2013382`; `bundle:777\u2013802` \u2192 `RaffleFactory.sol:154\u2013179`; `bundle:337` \u2192 `Raffle.sol:334`; `bundle:296` \u2192 `Raffle.sol:293` | `G01` |",
+      "original_kind": "FINDING",
+      "native_group_id": "G01",
+      "native_source_anchors": "`bundle:536\u2013561` \u2192 `Raffle.sol:533\u2013558`; `bundle:378\u2013385` \u2192 `Raffle.sol:375\u2013382`; `bundle:777\u2013802` \u2192 `RaffleFactory.sol:154\u2013179`; `bundle:337` \u2192 `Raffle.sol:334`; `bundle:296` \u2192 `Raffle.sol:293`"
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 49,
+      "original_id": "L3-2",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Sponsor paid purchases, reserve crossing and dilution follow disclosed economics. Native finding/confidence retained; no fixed odds/no-sponsor promise established.",
+      "native_inventory_row": "| `L3-2` | 3 | `FINDING` | `Raffle` | `buyEntries` | `sponsor-rebate-ticket-dilution` | `bundle:212\u2013240` \u2192 `Raffle.sol:209\u2013237`; `bundle:543\u2013547` \u2192 `Raffle.sol:540\u2013544` | `G03` |",
+      "original_kind": "FINDING",
+      "native_group_id": "G03",
+      "native_source_anchors": "`bundle:212\u2013240` \u2192 `Raffle.sol:209\u2013237`; `bundle:543\u2013547` \u2192 `Raffle.sol:540\u2013544`"
+    },
+    {
+      "target": "CONFIG-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 50,
+      "original_id": "L3-3",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Extreme public reserve is a configuration risk and cash-outcome policy, not hidden buyer theft.",
+      "native_inventory_row": "| `L3-3` | 3 | `FINDING` | `RaffleFactory` | `createRaffle` | `unbounded-reserve-entries` | `bundle:801` \u2192 `RaffleFactory.sol:178`; `bundle:243\u2013250` \u2192 `Raffle.sol:240\u2013247`; `bundle:524` \u2192 `Raffle.sol:521`; `bundle:548\u2013551` \u2192 `Raffle.sol:545\u2013548`; `bundle:398\u2013410` \u2192 `Raffle.sol:395\u2013407` | `G05` |",
+      "original_kind": "FINDING",
+      "native_group_id": "G05",
+      "native_source_anchors": "`bundle:801` \u2192 `RaffleFactory.sol:178`; `bundle:243\u2013250` \u2192 `Raffle.sol:240\u2013247`; `bundle:524` \u2192 `Raffle.sol:521`; `bundle:548\u2013551` \u2192 `Raffle.sol:545\u2013548`; `bundle:398\u2013410` \u2192 `Raffle.sol:395\u2013407`"
+    },
+    {
+      "target": "CLOSED-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 51,
+      "original_id": "L3-4",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "A paid entry executed before empty cancellation validly ends that exception. Native finding/confidence disagreement retained.",
+      "native_inventory_row": "| `L3-4` | 3 | `FINDING` | `Raffle` | `enableRefunds` | `cancellation-frontrun-lock` | `bundle:282\u2013291` \u2192 `Raffle.sol:279\u2013288` | `G07` |",
+      "original_kind": "FINDING",
+      "native_group_id": "G07",
+      "native_source_anchors": "`bundle:282\u2013291` \u2192 `Raffle.sol:279\u2013288`"
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 52,
+      "original_id": "L3-5",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "native_inventory_row": "| `L3-5` | 3 | `LEAD` | `Raffle` | `_isProtocolDestination` | `future-clone-address-bypass` | `Raffle.sol:593\u2013605` (`bundle:596\u2013608`), `Raffle.sol:564\u2013567` | `G10` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G10",
+      "native_source_anchors": "`Raffle.sol:593\u2013605` (`bundle:596\u2013608`), `Raffle.sol:564\u2013567`"
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 52,
+      "original_id": "L3-5",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "native_inventory_row": "| `L3-5` | 3 | `LEAD` | `Raffle` | `_isProtocolDestination` | `future-clone-address-bypass` | `Raffle.sol:593\u2013605` (`bundle:596\u2013608`), `Raffle.sol:564\u2013567` | `G10` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G10",
+      "native_source_anchors": "`Raffle.sol:593\u2013605` (`bundle:596\u2013608`), `Raffle.sol:564\u2013567`"
+    },
+    {
+      "target": "OBS-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 53,
+      "original_id": "L3-6",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Issuer can block immutable payout recipient; pull-payment cohorts remain isolated.",
+      "native_inventory_row": "| `L3-6` | 3 | `LEAD` | `Raffle` | `releaseSponsorProceeds` | `immutable-recipient-usdc-blacklist` | `Raffle.sol:198\u2013199,375\u2013382,385\u2013392` (`bundle:201\u2013202,378\u2013395`) | `G13` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G13",
+      "native_source_anchors": "`Raffle.sol:198\u2013199,375\u2013382,385\u2013392` (`bundle:201\u2013202,378\u2013395`)"
+    },
+    {
+      "target": "OBS-008",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 54,
+      "original_id": "L3-7",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Timeout/refund cost and service availability remain operational dependencies; no attacker-controlled forced timeout demonstrated.",
+      "native_inventory_row": "| `L3-7` | 3 | `LEAD` | `Raffle` | `requestDraw` | `single-shot-vrf-request` | `Raffle.sol:240\u2013273,289\u2013291` (`bundle:243\u2013276,292\u2013294`) | `G12` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G12",
+      "native_source_anchors": "`Raffle.sol:240\u2013273,289\u2013291` (`bundle:243\u2013276,292\u2013294`)"
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 54,
+      "original_id": "L3-7",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Timeout/refund cost and service availability remain operational dependencies; no attacker-controlled forced timeout demonstrated.",
+      "native_inventory_row": "| `L3-7` | 3 | `LEAD` | `Raffle` | `requestDraw` | `single-shot-vrf-request` | `Raffle.sol:240\u2013273,289\u2013291` (`bundle:243\u2013276,292\u2013294`) | `G12` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G12",
+      "native_source_anchors": "`Raffle.sol:240\u2013273,289\u2013291` (`bundle:243\u2013276,292\u2013294`)"
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 55,
+      "original_id": "L4-1",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "native_inventory_row": "| `L4-1` | 4 | `LEAD` | `Raffle` | `_isProtocolDestination` | `across-tx-clone-destination-bypass` | `Raffle.sol:593\u2013605,375\u2013382,395\u2013407`, `RaffleFactory.sol:106` | `G10` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G10",
+      "native_source_anchors": "`Raffle.sol:593\u2013605,375\u2013382,395\u2013407`, `RaffleFactory.sol:106`"
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 55,
+      "original_id": "L4-1",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "native_inventory_row": "| `L4-1` | 4 | `LEAD` | `Raffle` | `_isProtocolDestination` | `across-tx-clone-destination-bypass` | `Raffle.sol:593\u2013605,375\u2013382,395\u2013407`, `RaffleFactory.sol:106` | `G10` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G10",
+      "native_source_anchors": "`Raffle.sol:593\u2013605,375\u2013382,395\u2013407`, `RaffleFactory.sol:106`"
+    },
+    {
+      "target": "CLOSED-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 56,
+      "original_id": "L4-2",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "A paid entry executed before empty cancellation validly ends that exception. Native finding/confidence disagreement retained.",
+      "native_inventory_row": "| `L4-2` | 4 | `LEAD` | `Raffle` | `enableRefunds` | `operation-interleaving-cancellation-block` | `Raffle.sol:276\u2013301,209\u2013237,349\u2013372` | `G07` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G07",
+      "native_source_anchors": "`Raffle.sol:276\u2013301,209\u2013237,349\u2013372`"
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 57,
+      "original_id": "L5-1",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "native_inventory_row": "| `L5-1` | 5 | `FINDING` | `Raffle` | `_isProtocolDestination` | `time-of-check-destination-bypass` | `Raffle.sol:176\u2013206,209\u2013237,308\u2013346,349\u2013372,375\u2013382,395\u2013407,497\u2013502,564\u2013567,593\u2013605`; `RaffleFactory.sol:89,106,125,154\u2013179` | `G10` |",
+      "original_kind": "FINDING",
+      "native_group_id": "G10",
+      "native_source_anchors": "`Raffle.sol:176\u2013206,209\u2013237,308\u2013346,349\u2013372,375\u2013382,395\u2013407,497\u2013502,564\u2013567,593\u2013605`; `RaffleFactory.sol:89,106,125,154\u2013179`"
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 57,
+      "original_id": "L5-1",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "native_inventory_row": "| `L5-1` | 5 | `FINDING` | `Raffle` | `_isProtocolDestination` | `time-of-check-destination-bypass` | `Raffle.sol:176\u2013206,209\u2013237,308\u2013346,349\u2013372,375\u2013382,395\u2013407,497\u2013502,564\u2013567,593\u2013605`; `RaffleFactory.sol:89,106,125,154\u2013179` | `G10` |",
+      "original_kind": "FINDING",
+      "native_group_id": "G10",
+      "native_source_anchors": "`Raffle.sol:176\u2013206,209\u2013237,308\u2013346,349\u2013372,375\u2013382,395\u2013407,497\u2013502,564\u2013567,593\u2013605`; `RaffleFactory.sol:89,106,125,154\u2013179`"
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 58,
+      "original_id": "L5-2",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Wrapper-only callback guard blocks an ordinary refund recipient; synchronous trusted-wrapper behavior is an unvalidated integration assumption, not proven unprivileged reentrancy.",
+      "native_inventory_row": "| `L5-2` | 5 | `LEAD` | `Raffle` | `requestDraw` | `premature-in-flight-flag-reset` | `Raffle.sol:254\u2013271,509\u2013524` (`bundle:257\u2013274,512\u2013527`) | `G11` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G11",
+      "native_source_anchors": "`Raffle.sol:254\u2013271,509\u2013524` (`bundle:257\u2013274,512\u2013527`)"
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 59,
+      "original_id": "L8-1",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "native_inventory_row": "| `L8-1` | 8 | `LEAD` | `Raffle` | `_isProtocolDestination` | `asymmetric-destination-check` | `Raffle.sol:593\u2013605,564\u2013567,395\u2013407,308\u2013346` | `G10` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G10",
+      "native_source_anchors": "`Raffle.sol:593\u2013605,564\u2013567,395\u2013407,308\u2013346`"
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 59,
+      "original_id": "L8-1",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "native_inventory_row": "| `L8-1` | 8 | `LEAD` | `Raffle` | `_isProtocolDestination` | `asymmetric-destination-check` | `Raffle.sol:593\u2013605,564\u2013567,395\u2013407,308\u2013346` | `G10` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G10",
+      "native_source_anchors": "`Raffle.sol:593\u2013605,564\u2013567,395\u2013407,308\u2013346`"
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 60,
+      "original_id": "L8-2",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Initializer already applies sponsor guard atomically; earlier factory check is fail-fast consistency, not active-raffle vulnerability.",
+      "native_inventory_row": "| `L8-2` | 8 | `LEAD` | `Raffle` | `initialize` | `asymmetric-input-validation` | `Raffle.sol:187\u2013189` (`bundle:190\u2013192`), `RaffleFactory.sol:154\u2013179` | `G16` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G16",
+      "native_source_anchors": "`Raffle.sol:187\u2013189` (`bundle:190\u2013192`), `RaffleFactory.sol:154\u2013179`"
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 61,
+      "original_id": "L9-1",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "native_inventory_row": "| `L9-1` | 9 | `LEAD` | `Raffle` | `_isProtocolDestination` | `future-clone-sink-bypass` | `Raffle.sol:593\u2013605,375\u2013382`, `RaffleFactory.sol:106` | `G10` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G10",
+      "native_source_anchors": "`Raffle.sol:593\u2013605,375\u2013382`, `RaffleFactory.sol:106`"
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 61,
+      "original_id": "L9-1",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "native_inventory_row": "| `L9-1` | 9 | `LEAD` | `Raffle` | `_isProtocolDestination` | `future-clone-sink-bypass` | `Raffle.sol:593\u2013605,375\u2013382`, `RaffleFactory.sol:106` | `G10` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G10",
+      "native_source_anchors": "`Raffle.sol:593\u2013605,375\u2013382`, `RaffleFactory.sol:106`"
+    },
+    {
+      "target": "CONFIG-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 62,
+      "original_id": "L9-2",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Final lead correctly states nonce collision. Gate paragraph incorrectly supposes matching clone registers first: initialize rejects treasury==self before registry. Actual risk is blocked creation at that nonce.",
+      "native_inventory_row": "| `L9-2` | 9 | `LEAD` | `RaffleFactory` | `constructor` | `future-clone-treasury-collision` | `RaffleFactory.sol:65\u201392` (`bundle:688\u2013715`), `Raffle.sol:190\u2013192` | `G17` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G17",
+      "native_source_anchors": "`RaffleFactory.sol:65\u201392` (`bundle:688\u2013715`), `Raffle.sol:190\u2013192`"
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 63,
+      "original_id": "L9-3",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Unsafe prize return is a recipient capability issue with separately reproduced sponsor-selected future-clone subset; own-recipient loss, not general theft.",
+      "native_inventory_row": "| `L9-3` | 9 | `LEAD` | `Raffle` | `releaseSponsorPrize` | `unsafe-erc721-prize-return` | `Raffle.sol:395\u2013407,176\u2013206` (`bundle:398\u2013410,179\u2013209`) | `G08` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G08",
+      "native_source_anchors": "`Raffle.sol:395\u2013407,176\u2013206` (`bundle:398\u2013410,179\u2013209`)"
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 63,
+      "original_id": "L9-3",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Unsafe prize return is a recipient capability issue with separately reproduced sponsor-selected future-clone subset; own-recipient loss, not general theft.",
+      "native_inventory_row": "| `L9-3` | 9 | `LEAD` | `Raffle` | `releaseSponsorPrize` | `unsafe-erc721-prize-return` | `Raffle.sol:395\u2013407,176\u2013206` (`bundle:398\u2013410,179\u2013209`) | `G08` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G08",
+      "native_source_anchors": "`Raffle.sol:395\u2013407,176\u2013206` (`bundle:398\u2013410,179\u2013209`)"
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 64,
+      "original_id": "L9-4",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Synchronous wrapper is not established for supported asynchronous VRF; no production exploit proved.",
+      "native_inventory_row": "| `L9-4` | 9 | `LEAD` | `Raffle` | `fulfillRandomWords` | `synchronous-vrf-callback-ignored` | `Raffle.sol:254,509\u2013516` (`bundle:257,512\u2013519`) | `G14` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G14",
+      "native_source_anchors": "`Raffle.sol:254,509\u2013516` (`bundle:257,512\u2013519`)"
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 65,
+      "original_id": "L10-1",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "native_inventory_row": "| `L10-1` | 10 | `LEAD` | `Raffle` | `_isProtocolDestination` | `precomputed-clone-destination-bypass` | `Raffle.sol:593\u2013605,395\u2013407,564\u2013567,304\u2013306,349\u2013372`, `RaffleFactory.sol:106` | `G10` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G10",
+      "native_source_anchors": "`Raffle.sol:593\u2013605,395\u2013407,564\u2013567,304\u2013306,349\u2013372`, `RaffleFactory.sol:106`"
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 65,
+      "original_id": "L10-1",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "native_inventory_row": "| `L10-1` | 10 | `LEAD` | `Raffle` | `_isProtocolDestination` | `precomputed-clone-destination-bypass` | `Raffle.sol:593\u2013605,395\u2013407,564\u2013567,304\u2013306,349\u2013372`, `RaffleFactory.sol:106` | `G10` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G10",
+      "native_source_anchors": "`Raffle.sol:593\u2013605,395\u2013407,564\u2013567,304\u2013306,349\u2013372`, `RaffleFactory.sol:106`"
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 66,
+      "original_id": "L10-2",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Gas quote depends on eth_call parameters; explicit estimateVrfRequestPrice exists and underpayment reverts atomically. Offchain calls are not invariably zero gas price.",
+      "native_inventory_row": "| `L10-2` | 10 | `LEAD` | `Raffle` | `getVrfRequestPrice` | `zero-gasprice-quote-mismatch` | `Raffle.sol:436\u2013438,249\u2013250,441\u2013443` (`bundle:439\u2013446,252\u2013253`) | `G15` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G15",
+      "native_source_anchors": "`Raffle.sol:436\u2013438,249\u2013250,441\u2013443` (`bundle:439\u2013446,252\u2013253`)"
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 67,
+      "original_id": "L11-1",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "95% payout above reserve is the configured seller share; requires a product-policy change to cap. No unauthorized fund extraction proved.",
+      "native_inventory_row": "| `L11-1` | 11 | `FINDING` | `Raffle` | `_settleWinningTicket` | `sponsor-rebate-entry-dilution` | `bundle:212\u2013240` \u2192 `Raffle.sol:209\u2013237`; `bundle:543\u2013548` \u2192 `Raffle.sol:540\u2013545` | `G04` |",
+      "original_kind": "FINDING",
+      "native_group_id": "G04",
+      "native_source_anchors": "`bundle:212\u2013240` \u2192 `Raffle.sol:209\u2013237`; `bundle:543\u2013548` \u2192 `Raffle.sol:540\u2013545`"
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 68,
+      "original_id": "L11-2",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Sponsor paid purchases, reserve crossing and dilution follow disclosed economics. Native finding/confidence retained; no fixed odds/no-sponsor promise established.",
+      "native_inventory_row": "| `L11-2` | 11 | `FINDING` | `Raffle` | `buyEntries` | `reserve-cliff-pot-capture` | `bundle:212\u2013240` \u2192 `Raffle.sol:209\u2013237`; `bundle:524` \u2192 `Raffle.sol:521`; `bundle:546\u2013552` \u2192 `Raffle.sol:543\u2013549` | `G03` |",
+      "original_kind": "FINDING",
+      "native_group_id": "G03",
+      "native_source_anchors": "`bundle:212\u2013240` \u2192 `Raffle.sol:209\u2013237`; `bundle:524` \u2192 `Raffle.sol:521`; `bundle:546\u2013552` \u2192 `Raffle.sol:543\u2013549`"
+    },
+    {
+      "target": "CONFIG-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 69,
+      "original_id": "L11-3",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Extreme public reserve is a configuration risk and cash-outcome policy, not hidden buyer theft.",
+      "native_inventory_row": "| `L11-3` | 11 | `FINDING` | `RaffleFactory` | `createRaffle` | `unbounded-reserve-cash-rake` | `bundle:801` \u2192 `RaffleFactory.sol:178`; `bundle:524` \u2192 `Raffle.sol:521`; `bundle:549\u2013551` \u2192 `Raffle.sol:546\u2013548`; `bundle:398\u2013410` \u2192 `Raffle.sol:395\u2013407`; `bundle:222` \u2192 `Raffle.sol:219` | `G05` |",
+      "original_kind": "FINDING",
+      "native_group_id": "G05",
+      "native_source_anchors": "`bundle:801` \u2192 `RaffleFactory.sol:178`; `bundle:524` \u2192 `Raffle.sol:521`; `bundle:549\u2013551` \u2192 `Raffle.sol:546\u2013548`; `bundle:398\u2013410` \u2192 `Raffle.sol:395\u2013407`; `bundle:222` \u2192 `Raffle.sol:219`"
+    },
+    {
+      "target": "CLOSED-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 70,
+      "original_id": "L11-4",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "A paid entry executed before empty cancellation validly ends that exception. Native finding/confidence disagreement retained.",
+      "native_inventory_row": "| `L11-4` | 11 | `FINDING` | `Raffle` | `enableRefunds` | `empty-raffle-cancel-block` | `bundle:282\u2013291` \u2192 `Raffle.sol:279\u2013288`; `bundle:212\u2013240` \u2192 `Raffle.sol:209\u2013237` | `G07` |",
+      "original_kind": "FINDING",
+      "native_group_id": "G07",
+      "native_source_anchors": "`bundle:282\u2013291` \u2192 `Raffle.sol:279\u2013288`; `bundle:212\u2013240` \u2192 `Raffle.sol:209\u2013237`"
+    },
+    {
+      "target": "OBS-008",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 71,
+      "original_id": "L11-5",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Caller pays a disclosed native VRF fee; CashWon is an explicit outcome. Sponsor cannot veto other permissionless callers; withholding alone is not control of the draw.",
+      "native_inventory_row": "| `L11-5` | 11 | `FINDING` | `Raffle` | `requestDraw` | `uncompensated-vrf-fee-asymmetry` | `bundle:243\u2013276` \u2192 `Raffle.sol:240\u2013273`; `bundle:288\u2013294` \u2192 `Raffle.sol:285\u2013291` | `G09` |",
+      "original_kind": "FINDING",
+      "native_group_id": "G09",
+      "native_source_anchors": "`bundle:243\u2013276` \u2192 `Raffle.sol:240\u2013273`; `bundle:288\u2013294` \u2192 `Raffle.sol:285\u2013291`"
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 71,
+      "original_id": "L11-5",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Caller pays a disclosed native VRF fee; CashWon is an explicit outcome. Sponsor cannot veto other permissionless callers; withholding alone is not control of the draw.",
+      "native_inventory_row": "| `L11-5` | 11 | `FINDING` | `Raffle` | `requestDraw` | `uncompensated-vrf-fee-asymmetry` | `bundle:243\u2013276` \u2192 `Raffle.sol:240\u2013273`; `bundle:288\u2013294` \u2192 `Raffle.sol:285\u2013291` | `G09` |",
+      "original_kind": "FINDING",
+      "native_group_id": "G09",
+      "native_source_anchors": "`bundle:243\u2013276` \u2192 `Raffle.sol:240\u2013273`; `bundle:288\u2013294` \u2192 `Raffle.sol:285\u2013291`"
+    },
+    {
+      "target": "RF-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 72,
+      "original_id": "L11-6",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Premature proceeds is the existing conditional prize-delivery/payment root; dishonest prize versus honest transferable token scope remains explicit.",
+      "native_inventory_row": "| `L11-6` | 11 | `LEAD` | `Raffle` | `releaseSponsorProceeds` | `premature-sponsor-payout-before-prize-delivery` | `Raffle.sol:533\u2013558,375\u2013382,308\u2013346` (`bundle:536\u2013561,378\u2013385,311\u2013349`) | `G01` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G01",
+      "native_source_anchors": "`Raffle.sol:533\u2013558,375\u2013382,308\u2013346` (`bundle:536\u2013561,378\u2013385,311\u2013349`)"
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 73,
+      "original_id": "L12-1",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "native_inventory_row": "| `L12-1` | 12 | `FINDING` | `Raffle` | `_isProtocolDestination` | `unregistered-future-clone-sink` | `bundle:729,748,789` \u2192 `RaffleFactory.sol:106,125,166`; `bundle:196,324,363,383,398\u2013410,501,568,596\u2013608` \u2192 `Raffle.sol:193,321,360,380,395\u2013407,498,565,593\u2013605` | `G10` |",
+      "original_kind": "FINDING",
+      "native_group_id": "G10",
+      "native_source_anchors": "`bundle:729,748,789` \u2192 `RaffleFactory.sol:106,125,166`; `bundle:196,324,363,383,398\u2013410,501,568,596\u2013608` \u2192 `Raffle.sol:193,321,360,380,395\u2013407,498,565,593\u2013605`"
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 73,
+      "original_id": "L12-1",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "native_inventory_row": "| `L12-1` | 12 | `FINDING` | `Raffle` | `_isProtocolDestination` | `unregistered-future-clone-sink` | `bundle:729,748,789` \u2192 `RaffleFactory.sol:106,125,166`; `bundle:196,324,363,383,398\u2013410,501,568,596\u2013608` \u2192 `Raffle.sol:193,321,360,380,395\u2013407,498,565,593\u2013605` | `G10` |",
+      "original_kind": "FINDING",
+      "native_group_id": "G10",
+      "native_source_anchors": "`bundle:729,748,789` \u2192 `RaffleFactory.sol:106,125,166`; `bundle:196,324,363,383,398\u2013410,501,568,596\u2013608` \u2192 `Raffle.sol:193,321,360,380,395\u2013407,498,565,593\u2013605`"
+    },
+    {
+      "target": "CLOSED-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 74,
+      "original_id": "L12-2",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "A paid entry executed before empty cancellation validly ends that exception. Native finding/confidence disagreement retained.",
+      "native_inventory_row": "| `L12-2` | 12 | `FINDING` | `Raffle` | `enableRefunds` | `sponsor-cancel-frontrun-lock` | `bundle:282\u2013291,398\u2013410,212\u2013240,549` \u2192 `Raffle.sol:279\u2013288,395\u2013407,209\u2013237,546` | `G07` |",
+      "original_kind": "FINDING",
+      "native_group_id": "G07",
+      "native_source_anchors": "`bundle:282\u2013291,398\u2013410,212\u2013240,549` \u2192 `Raffle.sol:279\u2013288,395\u2013407,209\u2013237,546`"
+    },
+    {
+      "target": "RF-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 75,
+      "original_id": "L12-3",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Allocation and release are function fragments of the same root, not two independent economic defects.",
+      "native_inventory_row": "| `L12-3` | 12 | `FINDING` | `Raffle` | `_settleWinningTicket` | `premature-sponsor-proceeds-release` | `bundle:751` \u2192 `RaffleFactory.sol:128`; `bundle:524,307,536\u2013561,378\u2013385,311\u2013349,337` \u2192 `Raffle.sol:521,304,533\u2013558,375\u2013382,308\u2013346,334` | `G02` |",
+      "original_kind": "FINDING",
+      "native_group_id": "G02",
+      "native_source_anchors": "`bundle:751` \u2192 `RaffleFactory.sol:128`; `bundle:524,307,536\u2013561,378\u2013385,311\u2013349,337` \u2192 `Raffle.sol:521,304,533\u2013558,375\u2013382,308\u2013346,334`"
+    },
+    {
+      "target": "CONFIG-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 76,
+      "original_id": "L12-4",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Same public extreme reserve; bounding a threshold does not guarantee economic reachability.",
+      "native_inventory_row": "| `L12-4` | 12 | `FINDING` | `RaffleFactory` | `_validateCreateParams` | `unbounded-reserve-entries` | `bundle:801` \u2192 `RaffleFactory.sol:178`; `bundle:226,524,549\u2013550,398` \u2192 `Raffle.sol:223,521,546\u2013547,395` | `G06` |",
+      "original_kind": "FINDING",
+      "native_group_id": "G06",
+      "native_source_anchors": "`bundle:801` \u2192 `RaffleFactory.sol:178`; `bundle:226,524,549\u2013550,398` \u2192 `Raffle.sol:223,521,546\u2013547,395`"
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 77,
+      "original_id": "L12-5",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Unsafe prize return is a recipient capability issue with separately reproduced sponsor-selected future-clone subset; own-recipient loss, not general theft.",
+      "native_inventory_row": "| `L12-5` | 12 | `FINDING` | `Raffle` | `releaseSponsorPrize` | `unsafe-prize-nft-transfer` | `bundle:1362\u20131368` \u2192 `IRaffleFactory.sol:20\u201326`; `bundle:777\u2013802` \u2192 `RaffleFactory.sol:154\u2013179`; `bundle:179\u2013209,383,398\u2013410,337` \u2192 `Raffle.sol:176\u2013206,380,395\u2013407,334` | `G08` |",
+      "original_kind": "FINDING",
+      "native_group_id": "G08",
+      "native_source_anchors": "`bundle:1362\u20131368` \u2192 `IRaffleFactory.sol:20\u201326`; `bundle:777\u2013802` \u2192 `RaffleFactory.sol:154\u2013179`; `bundle:179\u2013209,383,398\u2013410,337` \u2192 `Raffle.sol:176\u2013206,380,395\u2013407,334`"
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 77,
+      "original_id": "L12-5",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Unsafe prize return is a recipient capability issue with separately reproduced sponsor-selected future-clone subset; own-recipient loss, not general theft.",
+      "native_inventory_row": "| `L12-5` | 12 | `FINDING` | `Raffle` | `releaseSponsorPrize` | `unsafe-prize-nft-transfer` | `bundle:1362\u20131368` \u2192 `IRaffleFactory.sol:20\u201326`; `bundle:777\u2013802` \u2192 `RaffleFactory.sol:154\u2013179`; `bundle:179\u2013209,383,398\u2013410,337` \u2192 `Raffle.sol:176\u2013206,380,395\u2013407,334` | `G08` |",
+      "original_kind": "FINDING",
+      "native_group_id": "G08",
+      "native_source_anchors": "`bundle:1362\u20131368` \u2192 `IRaffleFactory.sol:20\u201326`; `bundle:777\u2013802` \u2192 `RaffleFactory.sol:154\u2013179`; `bundle:179\u2013209,383,398\u2013410,337` \u2192 `Raffle.sol:176\u2013206,380,395\u2013407,334`"
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/gate-ledger.md",
+      "report_line": 78,
+      "original_id": "L12-6",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Wrapper-only callback guard blocks an ordinary refund recipient; synchronous trusted-wrapper behavior is an unvalidated integration assumption, not proven unprivileged reentrancy.",
+      "native_inventory_row": "| `L12-6` | 12 | `LEAD` | `Raffle` | `requestDraw` | `premature-in-flight-flag-reset` | `bundle:263,270` \u2192 `Raffle.sol:260,267` | `G11` |",
+      "original_kind": "LEAD",
+      "native_group_id": "G11",
+      "native_source_anchors": "`bundle:263,270` \u2192 `Raffle.sol:260,267`"
+    },
+    {
+      "target": "CONFIG-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 258,
+      "original_id": "Leads item 1 (source ordinal; no native final ID)",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Final lead correctly states nonce collision. Gate paragraph incorrectly supposes matching clone registers first: initialize rejects treasury==self before registry. Actual risk is blocked creation at that nonce.",
+      "original_title": "- **RaffleFactory constructor does not check protocolTreasury against future clone addresses** \u2014 `RaffleFactory.constructor` \u2014 Code smells: The constructor checks protocolTreasury_ against address(this), quoteToken_, vrfWrapper_, and raffleImplementation, but it does not check future CREATE clone addresses. \u2014 A deployer who sets protocolTreasury_ to a future clone address makes createRaffle revert when the factory nonce reaches that address. This requires a bad deployment input.",
+      "native_group_id": "G17",
+      "original_kind": "unscored lead"
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 259,
+      "original_id": "Leads item 2 (source ordinal; no native final ID)",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "original_title": "- **_isProtocolDestination accepts a future clone address before deployment** \u2014 `Raffle._isProtocolDestination` \u2014 Code smells: _isProtocolDestination checks destination.code.length and isRaffle only at call time, while releaseSponsorPrize skips _isProtocolDestination. \u2014 A caller can pass a future clone address before createRaffle deploys that clone, so _transferQuote later reverts. We did not find a path that harms another user.",
+      "native_group_id": "G10",
+      "original_kind": "unscored lead"
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 259,
+      "original_id": "Leads item 2 (source ordinal; no native final ID)",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Counterfactual destination can strand its own chosen custody; permissionless settlement isolates unrelated claims. Native demotion to lead preserved beside Low/Info assessments.",
+      "original_title": "- **_isProtocolDestination accepts a future clone address before deployment** \u2014 `Raffle._isProtocolDestination` \u2014 Code smells: _isProtocolDestination checks destination.code.length and isRaffle only at call time, while releaseSponsorPrize skips _isProtocolDestination. \u2014 A caller can pass a future clone address before createRaffle deploys that clone, so _transferQuote later reverts. We did not find a path that harms another user.",
+      "native_group_id": "G10",
+      "original_kind": "unscored lead"
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 260,
+      "original_id": "Leads item 3 (source ordinal; no native final ID)",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Synchronous wrapper is not established for supported asynchronous VRF; no production exploit proved.",
+      "original_title": "- **fulfillRandomWords ignores a synchronous callback while _requestInFlight is true** \u2014 `Raffle.fulfillRandomWords` \u2014 Code smells: requestDraw sets _requestInFlight to true before requestRandomnessPayInNative, and fulfillRandomWords returns early without a revert while _requestInFlight is true. \u2014 A VRF wrapper that calls rawFulfillRandomWords inside requestRandomnessPayInNative leaves the raffle in Status.Drawing. The production Chainlink wrapper fulfills in a later block.",
+      "native_group_id": "G14",
+      "original_kind": "unscored lead"
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 261,
+      "original_id": "Leads item 4 (source ordinal; no native final ID)",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Gas quote depends on eth_call parameters; explicit estimateVrfRequestPrice exists and underpayment reverts atomically. Offchain calls are not invariably zero gas price.",
+      "original_title": "- **getVrfRequestPrice returns a zero-gas quote in off-chain view calls** \u2014 `Raffle.getVrfRequestPrice` \u2014 Code smells: getVrfRequestPrice calls calculateRequestPriceNative with tx.gasprice, which is zero in an off-chain view call and positive inside requestDraw. \u2014 An integrator that reads getVrfRequestPrice with a zero gas price sends too little value to requestDraw, so the call reverts. Callers can use estimateVrfRequestPrice instead.",
+      "native_group_id": "G15",
+      "original_kind": "unscored lead"
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 262,
+      "original_id": "Leads item 5 (source ordinal; no native final ID)",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Initializer already applies sponsor guard atomically; earlier factory check is fail-fast consistency, not active-raffle vulnerability.",
+      "original_title": "- **initialize checks _isProtocolDestination on sponsor unlike _validateCreateParams** \u2014 `Raffle.initialize` \u2014 Code smells: _validateCreateParams checks only prizeToken and sponsorRecipient, while initialize also runs _isProtocolDestination on sponsor. \u2014 The initialize function applies _isProtocolDestination to sponsor and rejects a prizeToken contract as sponsor. We did not find a path that harms active raffles.",
+      "native_group_id": "G16",
+      "original_kind": "unscored lead"
+    },
+    {
+      "target": "OBS-002",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 263,
+      "original_id": "Leads item 6 (source ordinal; no native final ID)",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Issuer can block immutable payout recipient; pull-payment cohorts remain isolated.",
+      "original_title": "- **releaseSponsorProceeds sends funds only to the immutable sponsorRecipient** \u2014 `Raffle.releaseSponsorProceeds` \u2014 Code smells: sponsorRecipient and protocolTreasury are immutable and have no fallback recipient if quoteToken blocks them. \u2014 The quoteToken issuer can block the immutable sponsorRecipient or protocolTreasury and lock those payouts forever. This path requires an external action by the token issuer.",
+      "native_group_id": "G13",
+      "original_kind": "unscored lead"
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 264,
+      "original_id": "Leads item 7 (source ordinal; no native final ID)",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Wrapper-only callback guard blocks an ordinary refund recipient; synchronous trusted-wrapper behavior is an unvalidated integration assumption, not proven unprivileged reentrancy.",
+      "original_title": "- **requestDraw clears _requestInFlight before the native refund call** \u2014 `Raffle.requestDraw` \u2014 Code smells: requestDraw sets _requestInFlight to false before the low-level native refund call to msg.sender, and rawFulfillRandomWords has no reentrancy lock. \u2014 The function clears _requestInFlight before the refund call, so a callback in that call can resolve the draw early. We did not verify a synchronous wrapper.",
+      "native_group_id": "G11",
+      "original_kind": "unscored lead"
+    },
+    {
+      "target": "OBS-008",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 265,
+      "original_id": "Leads item 8 (source ordinal; no native final ID)",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Timeout/refund cost and service availability remain operational dependencies; no attacker-controlled forced timeout demonstrated.",
+      "original_title": "- **requestDraw allows only one VRF request without a retry path** \u2014 `Raffle.requestDraw` \u2014 Code smells: requestDraw sets status to Status.Drawing with no retry path if the wrapper misses callbackDeadline, and the caller loses the native fee. \u2014 A caller who pays for requestDraw loses the native fee if the wrapper misses callbackDeadline. We did not find a way for an attacker to force this timeout.",
+      "native_group_id": "G12",
+      "original_kind": "unscored lead"
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-PASHOV-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/FIRST-PASS.md",
+      "report_line": 265,
+      "original_id": "Leads item 8 (source ordinal; no native final ID)",
+      "original_severity": null,
+      "original_status": "unqualified native-ERROR artifact observation; not method completion",
+      "proof_status": "Native written argument only; no new executed proof adopted",
+      "reconciled_reason": "Timeout/refund cost and service availability remain operational dependencies; no attacker-controlled forced timeout demonstrated.",
+      "original_title": "- **requestDraw allows only one VRF request without a retry path** \u2014 `Raffle.requestDraw` \u2014 Code smells: requestDraw sets status to Status.Drawing with no retry path if the wrapper misses callbackDeadline, and the caller loses the native fee. \u2014 A caller who pays for requestDraw loses the native fee if the wrapper misses callbackDeadline. We did not find a way for an attacker to force this timeout.",
+      "native_group_id": "G12",
+      "original_kind": "unscored lead"
+    }
+  ],
+  "post_seal_corrections": [
+    "Confidence scores90/85/75 are native confidence, not severity ratings. Ninefinal entries/17groups/33rawitems are different denominators and no model-vote proof.",
+    "The report states three implementation files in its scope table; receipt confirms43inputfiles including both interfaces. That does not independently prove all functions or dependencies reviewed.",
+    "Example fixes use signatures/error names absent from frozen source (external override/one return value/NoSponsorProceeds/ZeroEntryCount/etc). These are uncompiled model sketches, not ready patches.",
+    "Ban sponsor address purchases is bypassable by another funded address; entry caps and redirected excess fees change the economic product. No policy rewrite approved.",
+    "Native G09 raw fix asks sponsor-funded or reimbursed VRF fees, but final item9 snippet forbids missed-reserve draws; this changes outcome policy and does not implement that fee remedy.",
+    "Proposed releaseSponsorPrize fallback reroutes a fixed recipient to sponsor on any safe-transfer failure, changing beneficiary policy and token/reentrancy behavior. No fallback authorized or tested.",
+    "Native G17 ledger says treasury clone registers before later payout failures; initialize actually rejects treasury==self before registration. Final report lead correctly narrows to blocked factory nonce.",
+    "Final item9 sponsor-withhold language overstates capability: requestDraw is permissionless; sponsor can abstain but cannot block another funded caller.",
+    "Final method semantic qualification and strict transport success remain unaccepted after native ERROR. This source reconciliation is not replacement of the rejected coordinator."
+  ],
+  "new_production_root_causes": 0,
+  "native_transport_success_accepted": false,
+  "independent_final_method_semantic_acceptance": false,
+  "owner_acceptance": "not requested or inferred",
+  "reconciliation_is_separate_from_native_method_gate": true
+}

@@ -1,0 +1,10 @@
+--- baseline/src/Raffle.sol
++++ M4-purchase-always-reverts/src/Raffle.sol
+@@ -220,6 +220,7 @@
+             revert TotalEntriesOverflow(totalEntries, entryCount);
+         }
+ 
++        revert ZeroEntryCount();
+         uint256 grossAmount = uint256(entryCount) * ENTRY_PRICE;
+         quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount);
+ 

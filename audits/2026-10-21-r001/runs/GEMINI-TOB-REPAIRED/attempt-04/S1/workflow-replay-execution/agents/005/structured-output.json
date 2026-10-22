@@ -1,0 +1,127 @@
+{
+  "analysisFile": "audit-context/functions/04-redeemWinningTicket.md",
+  "assumptions": [
+    {
+      "claim": "In Status.NftWon, address(this) still holds prizeTokenId on prizeToken at redemption time and prizeToken.transferFrom(address(this), winner, prizeTokenId) transfers ownership to winner without reverting or pausing.",
+      "establishedBy": "RaffleFactory.createRaffle (packages/contracts/src/RaffleFactory.sol:L128-L131) and Raffle.onERC721Received (packages/contracts/src/Raffle.sol:L421-L430) establish initial escrow; nothing found on-chain prevents an external prizeToken contract from later pausing, blacklisting winner, or moving the token outside standard ERC-721 rules prior to L334 (post-transfer ownership is checked at L335-L337)."
+    },
+    {
+      "claim": "In Status.NftWon, prizeToken.ownerOf(deliveredPrizeTokenId) == winner truthfully reflects durable ownership of prizeTokenId by winner after prizeToken.transferFrom returns.",
+      "establishedBy": "nothing found (checked via external call to untrusted prizeToken at packages/contracts/src/Raffle.sol:L335-L337; truthfulness of prizeToken.ownerOf relies on external contract behavior)."
+    },
+    {
+      "claim": "In Status.CashWon, quoteToken holds at least cashAmount for address(this) and executes transfer(winner, cashAmount) without fee-on-transfer, rebasing, or blacklisting reverts.",
+      "establishedBy": "Raffle.buyEntries (packages/contracts/src/Raffle.sol:L223-L224, L233) and Raffle._settleWinningTicket (L539-L555) establish accounted liability bounds; nothing found on-chain enforces fee-free, non-rebasing, or non-blacklisting behavior of quoteToken beyond the decimals() == 6 and contract-code checks in RaffleFactory.constructor (packages/contracts/src/RaffleFactory.sol:L66-L78)."
+    },
+    {
+      "claim": "When settlementComplete is already true on entry, winningTicketId was previously validated to contain winningEntry and terminal liabilities (including winnerProceeds for Status.CashWon) were allocated.",
+      "establishedBy": "Raffle._settleWinningTicket (packages/contracts/src/Raffle.sol:L538-L555), the sole writer of settlementComplete = true (L551)."
+    },
+    {
+      "claim": "ERC721._balances[winner] >= 1 prior to the unchecked decrement in ERC721._update during _burn(ticketId).",
+      "establishedBy": "ERC721._update (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L217, L230, L236), which increments _balances[to] by 1 whenever _owners[tokenId] is set to a non-zero address."
+    }
+  ],
+  "callers": [
+    "External entrypoint (packages/contracts/src/Raffle.sol:L309), restricted to msg.sender == ownerOf(ticketId) (L320-L321); no internal callers."
+  ],
+  "calls": [
+    {
+      "callee": "ReentrancyGuard.nonReentrant (_nonReentrantBefore / _nonReentrantAfter)",
+      "kind": "external-source-available",
+      "propagates": "Reverts with ReentrancyGuardReentrantCall if REENTRANCY_GUARD_STORAGE == ENTERED (2), sets slot to ENTERED (2) before body execution, and resets slot to NOT_ENTERED (1) after execution (packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:L69-L118)."
+    },
+    {
+      "callee": "Raffle._settleWinningTicket",
+      "kind": "internal",
+      "propagates": "On the !settlementComplete path (L314-L315), verifies status is NftWon or CashWon (L535-L536), verifies ticketId's stored range contains winningEntry via _requireWinningTicket (L538, L579-L585), partitions unsettledPot into protocolFees, sponsorProceeds, and (for CashWon) winnerProceeds (L539-L555), zeroes unsettledPot (L553), sets winningTicketId = ticketId (L552), and sets settlementComplete = true (L551)."
+    },
+    {
+      "callee": "Raffle._requireWinningTicket / Raffle.ticketRange",
+      "kind": "internal",
+      "propagates": "Called by _settleWinningTicket (L538); reads _ticketRanges[ticketId] (L451-L455) and reverts with TicketDoesNotContainWinningEntry if winningEntry < firstEntry || winningEntry > lastEntry (L579-L585), rejecting unminted tickets (0, 0) since winningEntry >= 1 (L518-L519)."
+    },
+    {
+      "callee": "Math.mulDiv",
+      "kind": "external-source-available",
+      "propagates": "Called by _settleWinningTicket (L540, L546); computes floor(grossPot * bps / 10_000) via 512-bit multiplication without overflow since 500 < 10_000 and 8000 < 10_000 (packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:L206-L277)."
+    },
+    {
+      "callee": "ERC721.ownerOf / ERC721._requireOwned / ERC721._ownerOf",
+      "kind": "external-source-available",
+      "propagates": "Reads _owners[ticketId] and reverts with ERC721NonexistentToken(ticketId) if _owners[ticketId] == address(0), returning a non-zero owner address (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L61-L63, L146-L148, L426-L432)."
+    },
+    {
+      "callee": "ERC721._burn / Raffle._update / ERC721._update / ERC721._approve",
+      "kind": "external-source-available",
+      "propagates": "Bypasses _isProtocolDestination because to == address(0) (packages/contracts/src/Raffle.sol:L498), clears _tokenApprovals[ticketId] (ERC721.sol:L227, L398), decrements _balances[winner] unchecked (ERC721.sol:L230), sets _owners[ticketId] = address(0) (ERC721.sol:L240), emits Transfer(winner, address(0), ticketId) (ERC721.sol:L242), and verifies previousOwner != address(0) (ERC721.sol:L305-L307)."
+    },
+    {
+      "callee": "IERC721(prizeToken).transferFrom",
+      "kind": "external-black-box",
+      "propagates": "Untrusted external call on the Status.NftWon branch (packages/contracts/src/Raffle.sol:L334) with (address(this), winner, deliveredPrizeTokenId); assumed to transfer ERC-721 ownership of prizeTokenId from address(this) to winner, and any revert rolls back the entire redemption transaction."
+    },
+    {
+      "callee": "IERC721(prizeToken).ownerOf",
+      "kind": "external-black-box",
+      "propagates": "Untrusted external staticcall on the Status.NftWon branch (packages/contracts/src/Raffle.sol:L335) with (deliveredPrizeTokenId); caller requires return value == winner or reverts with PrizeDeliveryVerificationFailed(winner) (L335-L337)."
+    },
+    {
+      "callee": "Raffle._transferQuote / Raffle._isProtocolDestination",
+      "kind": "internal",
+      "propagates": "On the Status.CashWon branch (L342, L564-L567, L593-L605), screens winner against address(this), factory, quoteToken, i_vrfV2PlusWrapper, prizeToken, factory.raffleImplementation(), and (when winner.code.length != 0) factory.isRaffle(winner), reverting with InvalidQuoteDestination(winner) if matched, then calls quoteToken.safeTransfer(winner, cashAmount)."
+    },
+    {
+      "callee": "IRaffleFactory.raffleImplementation / IRaffleFactory.isRaffle",
+      "kind": "external-source-available",
+      "propagates": "Called by _isProtocolDestination (packages/contracts/src/Raffle.sol:L601, L603); returns the immutable implementation address and registry status from the trusted factory (packages/contracts/src/RaffleFactory.sol:L42, L54)."
+    },
+    {
+      "callee": "SafeERC20.safeTransfer / IERC20(quoteToken).transfer",
+      "kind": "external-black-box",
+      "propagates": "Called by _transferQuote (packages/contracts/src/Raffle.sol:L566); invokes quoteToken.transfer(winner, cashAmount) via assembly call and reverts if the call fails, returns false, or returns empty data when extcodesize(quoteToken) == 0 (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:L33-L37, L176-L200)."
+    }
+  ],
+  "file": "packages/contracts/src/Raffle.sol",
+  "function": "redeemWinningTicket",
+  "invariants": [
+    {
+      "claim": "redeemWinningTicket can succeed at most once per Raffle clone, and only when status is Status.NftWon or Status.CashWon.",
+      "evidence": "packages/contracts/src/Raffle.sol:L310-L312, L324"
+    },
+    {
+      "claim": "Redemption only succeeds for the unique ticketId whose stored range contains winningEntry, and leaves settlementComplete == true and winningTicketId == ticketId.",
+      "evidence": "packages/contracts/src/Raffle.sol:L314-L318, L538, L551-L552, L579-L585"
+    },
+    {
+      "claim": "Only the exact current ERC-721 owner of ticketId (not an approved operator) can execute redeemWinningTicket, and ticketId is burned (_owners[ticketId] == address(0)) along with winnerRedeemed = true and winnerRecipient = winner before any external prize or quote-token call occurs.",
+      "evidence": "packages/contracts/src/Raffle.sol:L320-L325; packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L240, L303-L308"
+    },
+    {
+      "claim": "On the Status.NftWon branch, prizeClaimed is set to true before prizeToken.transferFrom is invoked, cashAmount is 0, and completion requires prizeToken.ownerOf(prizeTokenId) == winner.",
+      "evidence": "packages/contracts/src/Raffle.sol:L309, L329-L337"
+    },
+    {
+      "claim": "On the Status.CashWon branch, cashAmount > 0, winnerProceeds is zeroed before _transferQuote is invoked, and winner is re-verified not to be a protocol destination before quoteToken.safeTransfer executes.",
+      "evidence": "packages/contracts/src/Raffle.sol:L338-L343, L564-L567, L593-L605"
+    }
+  ],
+  "lines": "L309-L346",
+  "openQuestions": [],
+  "sharedState": [
+    "status (packages/contracts/src/Raffle.sol:L124)",
+    "settlementComplete (packages/contracts/src/Raffle.sol:L127)",
+    "winningTicketId (packages/contracts/src/Raffle.sol:L121)",
+    "winningEntry (packages/contracts/src/Raffle.sol:L118)",
+    "_ticketRanges (packages/contracts/src/Raffle.sol:L139)",
+    "unsettledPot (packages/contracts/src/Raffle.sol:L91)",
+    "winnerProceeds (packages/contracts/src/Raffle.sol:L100)",
+    "sponsorProceeds (packages/contracts/src/Raffle.sol:L102)",
+    "protocolFees (packages/contracts/src/Raffle.sol:L105)",
+    "winnerRecipient (packages/contracts/src/Raffle.sol:L97)",
+    "winnerRedeemed (packages/contracts/src/Raffle.sol:L130)",
+    "prizeClaimed (packages/contracts/src/Raffle.sol:L133)",
+    "ERC721._owners, _balances, _tokenApprovals (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L28-L32)",
+    "ReentrancyGuard.REENTRANCY_GUARD_STORAGE (packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:L36-L37)"
+  ]
+}

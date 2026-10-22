@@ -1,0 +1,123 @@
+Workspace context:
+Current working directory / primary repository root: /workspace
+Workspace manifest: WORKSPACE.json
+Dependency repositories are checked out as top-level directories inside the same workspace root.
+When reporting file_path for dependency code, prefix it with the dependency alias directory.
+Primary repository: clean-context @ LOCAL_SNAPSHOT
+No dependency checkouts are listed in WORKSPACE.json.
+
+WORKSPACE.json:
+{
+  "dependencies": [],
+  "primary": {
+    "commit": "LOCAL_SNAPSHOT",
+    "kind": "local",
+    "path": "/workspace",
+    "repo": "clean-context",
+    "requested_commit": "LOCAL_SNAPSHOT"
+  }
+}
+
+You are investigating one externally reachable production flow in clean-context for concrete security vulnerabilities.
+
+Entrypoint:
+- kind: smart_contract_inherited_public_function
+- label: ERC721.approve(address,uint256)
+- handler: ERC721.approve
+- location: packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:93
+- external actor: Current ticket owner or an operator approved via setApprovalForAll on a Raffle clone
+- controlled input: to (address), tokenId (uint256), and caller context (msg.sender)
+
+Flow under review:
+- summary: An authorized caller (the current ticket owner or an operator approved for all of the owner's tickets via `setApprovalForAll`) approves address `to` for an existing, unburned raffle ticket `tokenId`, emitting `Approval` and writing `to` to `_tokenApprovals[tokenId]`.
+- trace: ["packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:93 ERC721.approve - Entrypoint receiving externally controlled `to` and `tokenId` on a Raffle clone.", "packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol:17 Context._msgSender - Resolves the caller context `msg.sender` as the `auth` address.", "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:375 ERC721._approve(address,uint256,address) - Forwards `to`, `tokenId`, and `auth` to the 4-argument `_approve` overload with `emitEvent = true`.", "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:383 ERC721._approve(address,uint256,address,bool) - Enters the ownership and authorization check branch because `emitEvent` is true.", "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:426 ERC721._requireOwned - Queries `_ownerOf(tokenId)` (`_owners[tokenId]`) and confirms the ticket exists (`owner != address(0)`).", "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:389 ERC721._approve(address,uint256,address,bool) - Verifies that `auth == owner` or `isApprovedForAll(owner, auth)` (`_operatorApprovals[owner][auth]`) is true.", "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:394 ERC721._approve(address,uint256,address,bool) - Emits `Approval(owner, to, tokenId)`.", "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:398 ERC721._approve(address,uint256,address,bool) - Updates storage mapping `_tokenApprovals[tokenId] = to`."]
+- terminal action: Emits `Approval(owner, to, tokenId)` and writes `_tokenApprovals[tokenId] = to` in `ERC721._approve`.
+- focal location: packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:398
+- input to sink: Caller-supplied `to` (address) and `tokenId` (uint256), along with caller context `msg.sender` as `auth`, reach `emit Approval(owner, to, tokenId)` and the storage write `_tokenApprovals[tokenId] = to`.
+- security relevance: Mutates `_tokenApprovals[tokenId]` to grant or revoke single-ticket transfer authority for a Raffle bearer ticket across any raffle lifecycle state before burn. Because `Raffle` tickets carry winning-prize and refund claims that require `ownerOf(ticketId)` at claim time, an approved `to` address can transfer the ticket to itself via `transferFrom`/`safeTransferFrom` and exercise those claims; additionally, `_approve` does not run `Raffle._isProtocolDestination(to, ...)`, deferring protocol-sink recipient validation to transfer time in `Raffle._update`.
+
+Review the source code for this exact flow, including the surrounding implementation and any necessary callers or callees. Report only vulnerabilities that are concrete, reachable from the stated external actor, and supported by code evidence. A valid finding must identify the vulnerable operation, the missing or flawed protection, a realistic malicious input or sequence, and the full trigger path.
+
+Do not report style issues, hypothetical concerns, test-only behavior, or vulnerabilities that require unsupported configuration or unproven assumptions. Set `exploitable` to true only when the stated external actor can realistically trigger the issue in the configured production path. When the flow contains no supported vulnerability, return a stub instead of inventing a finding.
+
+For each finding, point `file_path` and `line` to the actual vulnerable code, make `trigger_flow` an ordered list from attacker ingress to the vulnerable operation, and use `malicious_input_example` for a minimal realistic payload or sequence.
+
+Return only the structured data requested by the provided JSON schema. Always include the top-level boolean field `stub`, the top-level string field `stub_explanation`, and the top-level array `results`. Valid output combinations are strict: if you did not find anything for this step, return `stub` set to true, `results` set to an empty array, and `stub_explanation` set to a concise reason explaining why no result was found. A stub/no-finding response is a valid successful outcome for a lead that does not establish an actual bug; do not invent a result to avoid using `stub`. If you found one or more results, set `stub` to false, set `stub_explanation` to an empty string, and place at least one application record in `results`. Never return `stub: false` with an empty `results` array; that is invalid and fails the attempt. This is a multi-output step: return every application record in results.
+
+The exact JSON Schema for your final answer is:
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "_kritt_extractor_helper": {
+      "const": true,
+      "type": "boolean"
+    },
+    "results": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "explanation": {
+            "type": "string"
+          },
+          "exploitable": {
+            "type": "boolean"
+          },
+          "file_path": {
+            "type": "string"
+          },
+          "line": {
+            "type": "number"
+          },
+          "malicious_actor": {
+            "type": "string"
+          },
+          "malicious_input_example": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "trigger_flow": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "vulnerability_type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "explanation",
+          "file_path",
+          "line",
+          "malicious_input_example",
+          "summary",
+          "trigger_flow",
+          "vulnerability_type",
+          "malicious_actor",
+          "exploitable"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "stub": {
+      "type": "boolean"
+    },
+    "stub_explanation": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "_kritt_extractor_helper",
+    "stub",
+    "stub_explanation",
+    "results"
+  ],
+  "type": "object"
+}
+```
+The final top-level JSON object must include `_kritt_extractor_helper: true`; this is an extraction marker, not a finding field. Return only a JSON object that validates against this schema. Do not include markdown, commentary, or any text outside the JSON object.

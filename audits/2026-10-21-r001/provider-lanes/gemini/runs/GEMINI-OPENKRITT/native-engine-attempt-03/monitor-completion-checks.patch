@@ -1,0 +1,27 @@
+--- monitor_export-before-completion-checks.py
++++ monitor_export.py
+@@ -56,12 +56,23 @@
+  write(O/'CLI-CALL-RECEIPTS.json',calls)
+  mismatch=[s['id'] for s in data['steps'] if s.get('model') and (s['model']!=MODEL or s.get('thinking_effort')!='high' or s.get('harness')!='gemini-cli')]
+  if mismatch:issues.append({'issue':'native tuple mismatch','metadata':mismatch})
++ post_mismatch=[j['id'] for j in data['post_processing'] if j.get('model') and (j['model']!=MODEL or j.get('thinking_effort')!='high' or j.get('harness')!='gemini-cli')]
++ if post_mismatch:issues.append({'issue':'native postprocessing tuple mismatch','metadata':post_mismatch})
++ canonical=[v['id'] for v in data['findings'] if v.get('dedupe_is_canonical') is True]
++ missing_dedupe=[v['id'] for v in data['findings'] if v.get('dedupe_is_canonical') is None]
++ missing_rank=[v['id'] for v in data['findings'] if v.get('dedupe_is_canonical') is True and v.get('bounty_rank') is None]
++ configured_posts=set((scan.get('configuration') or {}).get('post_script_ids',[]))|{scan.get('post_script_id')};configured_posts.discard(None);configured_posts={int(v) for v in configured_posts}
++ enrichments={(v.get('vulnerability_id'),v.get('post_script_id')) for v in data['enrichments'] if v.get('supplemental_run_id') is None}
++ missing_posts=[{'finding_id':v,'post_script_id':pid} for v in canonical for pid in sorted(configured_posts) if (v,pid) not in enrichments]
++ open_jobs=[j['id'] for j in data['steps']+data['post_processing'] if j.get('status') in ['running','pending']]
++ if missing_dedupe or missing_rank or missing_posts or open_jobs:issues.append({'issue':'native completion obligations remain','missing_dedupe_ids':missing_dedupe,'missing_rank_ids':missing_rank,'missing_posts':missing_posts,'open_metadata_ids':open_jobs})
++
+  logical=lambda j:(j.get('kind','step'),j.get('step_id'),j.get('prev_id') or 0,j.get('prev_table'),j.get('repeat_run') or 1)
+  completed={logical(j) for j in data['steps'] if j['status']=='completed'}
+  unresolved=[j['id'] for j in data['steps'] if j['status']=='failed' and logical(j) not in completed]
+  if unresolved:issues.append({'issue':'unresolved native failed logical jobs','metadata':unresolved})
+  findings=data['findings'];counts=collections.Counter((s['kind'],s['status']) for s in data['steps'])
+- completion={'completed_utc':now(),'native_status':'completed','target_commit':COMMIT,'method':'actual pinned OpenKritt Python engine, native PostgreSQL queue/workflow/ranker/postprocessors; disclosed official agy file-spool adapter','requested_model':MODEL,'requested_effort':'high','provider_internal_identity':'not independently returned','calls':len(calls),'historical_network_failures':historical_network_failures,'native_resume_disclosure':'One native pending transition after network interruptions; failed attempts preserved and successful logical jobs retained. No provider safety rejection retried.','stage_counts':{str(k):v for k,v in counts.items()},'finding_records':len(findings),'canonical_findings':sum(bool(x.get('dedupe_is_canonical')) for x in findings),'qualification_issues':issues,'qualifies_route_and_source':not issues,'no_claim_of_independent_finding_validation':True}
++ completion={'completed_utc':now(),'native_status':'completed','target_commit':COMMIT,'method':'actual pinned OpenKritt Python engine, native PostgreSQL queue/workflow/ranker/postprocessors; disclosed official agy file-spool adapter','requested_model':MODEL,'requested_effort':'high','provider_internal_identity':'not independently returned','calls':len(calls),'historical_network_failures':historical_network_failures,'native_resume_disclosure':'One native pending transition after network interruptions; failed attempts preserved and successful logical jobs retained. No provider safety rejection retried.','stage_counts':{str(k):v for k,v in counts.items()},'required_post_script_ids':sorted(configured_posts),'postprocessing_tuple_mismatches':post_mismatch,'missing_dedupe_ids':missing_dedupe,'missing_rank_ids':missing_rank,'missing_post_enrichments':missing_posts,'open_metadata_ids':open_jobs,'finding_records':len(findings),'canonical_findings':sum(bool(x.get('dedupe_is_canonical')) for x in findings),'qualification_issues':issues,'qualifies_route_and_source':not issues,'no_claim_of_independent_finding_validation':True}
+  write(O/'COMPLETION-RECEIPT.json',completion)
+  lines=['# Gemini native OpenKritt first pass','',f'Target: `{COMMIT}`. Upstream OpenKritt: `43e1d19a00ce50bd93253d1c6c3a48cfffbcc4c3`.','', 'This is the actual native Python engine and PostgreSQL workflow, using a disclosed local file-spool adapter to the official macOS Antigravity CLI. Every direct call requests `gemini-4-argon-high`, effort `high`, and a fresh source workspace. Internal provider checkpoint identity is not independently returned. The adapter does not replace native queue, workflow, ranking or postprocessing decisions.','', 'This export preserves native findings without operator synthesis or independent security validation. Claim counts are output records, not votes or established defects.','', '## Execution','', '```json',json.dumps(completion,indent=2),'```','','| Native job | Kind | Step | Status | Model | Effort |','|---|---|---|---|---|---|']
+  for s in data['steps']:lines.append('| '+' | '.join(str(s.get(k) or '').replace('|','/') for k in ['id','kind','step_id','status','model','thinking_effort'])+' |')

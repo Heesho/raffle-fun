@@ -1,0 +1,36 @@
+Usage: gebal [options] [command]
+
+Bring-your-own-AI Solidity review harness. Source, evidence, decisions.
+
+Options:
+  -V, --version                  output the version number
+  --home <directory>             Private state directory outside assessed
+                                 projects
+  -h, --help                     display help for command
+
+Commands:
+  doctor                         Read-only runtime and isolation checks
+  init [options]                 Write a scope configuration template to an
+                                 explicitly selected path
+  plan [options] <repository>    Snapshot authorized local source and create a
+                                 plan; does not execute checks
+  review [options] <repository>  Snapshot authorized local source and create a
+                                 plan; does not execute checks
+  approve [options] <plan>       Approve this exact plan, including selected
+                                 existing tests and any provider egress
+  run [options] <plan>           Run an approved plan
+  status [run]
+  resume [options] <run>
+  cancel <run>
+  findings <run>
+  decide [options] <finding>
+  report [options] <run>
+  evidence [options] <sha256>    Verify and inspect a content-addressed artifact
+  compare <left> <right>
+  context [options] <run>        Export cold, pinned source context; no cloud
+                                 request or peer findings
+  import-review [options] <run>  Import validated unreviewed observations from
+                                 your own assistant; never executes content
+  evaluation                     Run isolated source-intake and parser controls;
+                                 not a security benchmark
+  help [command]                 display help for command

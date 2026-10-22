@@ -1,0 +1,39 @@
+Compiling 1 files with Solc 0.8.36
+Solc 0.8.36 finished in 660.87ms
+Compiler run successful!
+
+Ran 1 test for test/foundry/UntrustedPrize.t.sol:UntrustedPrizeProof
+[FAIL: EvmError: Revert] testFactoryActivatesWithoutPrizeOwnershipMutation() (gas: 227627)
+Traces:
+  [227627] UntrustedPrizeProof::testFactoryActivatesWithoutPrizeOwnershipMutation()
+    ├─ [23273] → new SixDecimalToken@0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f
+    │   └─ ← [Return] 116 bytes of code
+    ├─ [12464] → new DummyWrapper@0x2e234DAe75C793f67A35089C9d99245E1C58470b
+    │   └─ ← [Return] 62 bytes of code
+    ├─ [88897] → new <unknown>@0xF62849F9A0B5Bf2913b396098F7c7019b51A820a
+    │   ├─ [148] SixDecimalToken::decimals() [staticcall]
+    │   │   └─ ← [Return] 6
+    │   ├─ [28110] → new <unknown>@0x4f81992FCe2E1846dD528eC0102e6eE1f61ed3e2
+    │   │   ├─ [22] DummyWrapper::link() [staticcall]
+    │   │   │   └─ ← [Revert] EvmError: Revert
+    │   │   └─ ← [Revert]
+    │   └─ ← [Revert]
+    └─ ← [Revert] EvmError: Revert
+
+Backtrace:
+  at DummyWrapper.link
+  at 0x4f81992FCe2E1846dD528eC0102e6eE1f61ed3e2
+  at 0xF62849F9A0B5Bf2913b396098F7c7019b51A820a
+  at UntrustedPrizeProof.testFactoryActivatesWithoutPrizeOwnershipMutation
+
+Suite result: FAILED. 0 passed; 1 failed; 0 skipped; finished in 352.04µs (143.42µs CPU time)
+
+Ran 1 test suite in 5.26ms (352.04µs CPU time): 0 tests passed, 1 failed, 0 skipped (1 total tests)
+
+Failing tests:
+Encountered 1 failing test in test/foundry/UntrustedPrize.t.sol:UntrustedPrizeProof
+[FAIL: EvmError: Revert] testFactoryActivatesWithoutPrizeOwnershipMutation() (gas: 227627)
+
+Encountered a total of 1 failing tests, 0 tests succeeded
+
+Tip: Run `forge test --rerun` to retry only the 1 failed test

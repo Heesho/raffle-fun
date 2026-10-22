@@ -1,0 +1,23 @@
+{
+  "projectPath": "packages/contracts",
+  "paths": [
+    "packages/contracts/src/Raffle.sol",
+    "packages/contracts/src/RaffleFactory.sol",
+    "packages/contracts/src/interfaces/IRaffle.sol",
+    "packages/contracts/src/interfaces/IRaffleFactory.sol",
+    "packages/contracts/src/libraries/RaffleConstants.sol",
+    "packages/contracts/foundry.toml",
+    "packages/contracts/remappings.txt",
+    "packages/contracts/package.json",
+    "pnpm-lock.yaml"
+  ],
+  "dependencyPaths": [
+    "packages/contracts/node_modules/@openzeppelin/contracts",
+    "packages/contracts/node_modules/@chainlink/contracts"
+  ],
+  "exclusions": [],
+  "requirements": "# Clean design specification\nEthereum NFT raffle; immutable factory, ERC-1167 clones with immutable implementation. One entry costs 1,000,000 units of canonical six-decimal USDC. One purchase mints a transferable ERC721 ticket representing a contiguous inclusive range. Exactly one ERC721 prize is escrowed atomically at creation. Reserve met awards NFT and 95% sponsor / 5% treasury. Reserve missed awards 80% gross to winner, 15% sponsor, 5% treasury. Refund outcome pays 100% per entry and returns prize. Rounding is floor on aggregate protocol fee; remainder must be allocated without loss. No administrator, mutable configuration or upgrade. Request window [sale end, end+2days); callback accepted strictly before request timestamp+2days. Refunds open at deadline. Callback records result only. Settlement is permissionless, storage-only; redemption requires current ticket owner, burns claim atomically, and must revert all effects on delivery failure. Sponsor and treasury can claim independently after settlement. Never move assets between raffle clones. Quote token and Chainlink wrapper are trusted canonical dependencies; arbitrary prize contracts and ticket recipients are untrusted. Frontend discovery is advisory; transaction decisions must reread current chain state.\n\nThis specification was composed before scanner results and historical findings. Source, not design prose, determines actual behavior. No tests, audit history, accepted-risk lists or scanner results are provided.\n",
+  "permission": "authorized",
+  "sourceOnly": true,
+  "existingTests": false
+}

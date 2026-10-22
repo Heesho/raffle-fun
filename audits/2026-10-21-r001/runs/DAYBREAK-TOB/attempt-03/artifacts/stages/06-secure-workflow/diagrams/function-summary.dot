@@ -1,0 +1,54 @@
+digraph CallableSurface {
+  graph [rankdir=LR, bgcolor="white", label="Raffle callable surface (derived from Slither function-summary)", labelloc=t, fontsize=20, fontname="Helvetica"];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, fillcolor="#eef4ff"];
+  edge [fontname="Helvetica", fontsize=9, color="#566573"];
+
+  callers [shape=oval, fillcolor="#fff4cc", label="External actors\n(permissionless unless edge says otherwise)"];
+  factory_actor [shape=oval, fillcolor="#ffe0b2", label="Canonical factory"];
+  wrapper_actor [shape=oval, fillcolor="#ffe0b2", label="Configured VRF wrapper"];
+  prize_actor [shape=oval, fillcolor="#ffe0b2", label="Configured prize ERC-721"];
+  ticket_actor [shape=oval, fillcolor="#ffe0b2", label="Ticket owner / approved operator"];
+
+  subgraph cluster_factory {
+    label="RaffleFactory";
+    color="#7f8c8d";
+    create [label="createRaffle\nexternal, nonReentrant\nvalidates, clones, initializes, registers, escrows"];
+    factory_views [label="registry/config getters\npublic view"];
+  }
+
+  subgraph cluster_raffle {
+    label="Raffle clone";
+    color="#2e86c1";
+    initialize [label="initialize\nexternal; factory-only; once"];
+    buy [label="buyEntries\nexternal, nonReentrant\nActive + before end"];
+    draw [label="requestDraw\nexternal payable, nonReentrant\nActive + timed + entries"];
+    refunds [label="enableRefunds\nexternal, nonReentrant\ntime/status; sponsor early only if empty"];
+    settle [label="settleWinningTicket\nexternal, nonReentrant\npermissionless proof/allocation"];
+    redeem [label="redeemWinningTicket\nexternal, nonReentrant\ncurrent owner only"];
+    refundtickets [label="refundTickets\nexternal, nonReentrant\ncurrent owners only"];
+    release [label="releaseSponsorProceeds /\nreleaseProtocolFees / releaseSponsorPrize\nexternal, nonReentrant; fixed destinations"];
+    prizecb [label="onERC721Received\nexternal; exact prize/factory/sponsor tuple"];
+    vrfcb [label="rawFulfillRandomWords\nexternal; wrapper-only\nthen request/status/time/shape filters"];
+    erc721 [label="ERC-721 approve / transfer / safeTransfer\npublic; owner/operator authorization\nprotocol destinations screened in _update"];
+    views [label="ERC-721 + raffle views\npublic/external view or pure"];
+    receivefn [label="receive\nexternal payable; always reverts", fillcolor="#ffd6d6"];
+  }
+
+  callers -> create;
+  callers -> buy;
+  callers -> draw;
+  callers -> refunds;
+  callers -> settle;
+  callers -> release;
+  callers -> views;
+  callers -> factory_views;
+  callers -> receivefn;
+  factory_actor -> initialize [label="msg.sender == factory"];
+  prize_actor -> prizecb [label="token + tokenId + from + operator exact"];
+  wrapper_actor -> vrfcb [label="base caller authentication"];
+  ticket_actor -> redeem [label="msg.sender == ownerOf(ticketId)"];
+  ticket_actor -> refundtickets [label="msg.sender owns every ticket"];
+  ticket_actor -> erc721 [label="ERC-721 authorization"];
+  create -> initialize [label="fresh clone"];
+  create -> prizecb [label="safeTransferFrom callback"];
+}

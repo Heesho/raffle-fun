@@ -1,0 +1,41 @@
+{
+  "recorded_utc": "2026-10-21T21:36:11.782562+00:00",
+  "processes": [
+    {
+      "pid": 24365,
+      "argv": [
+        "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+        "scripts/monitor_export.py"
+      ]
+    },
+    {
+      "pid": 68662,
+      "argv": [
+        "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+        "watch_receipts.py"
+      ]
+    },
+    {
+      "pid": 82643,
+      "argv": [
+        "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+        "-u",
+        "/Users/hishamel-husseini/.local/share/glaze-audit-harnesses/openkritt/raffle-fun-r001-gemini-native/scripts/host_bridge.py"
+      ]
+    },
+    {
+      "pid": 12024,
+      "argv": [
+        "/usr/bin/caffeinate",
+        "-i",
+        "-w",
+        "82643"
+      ]
+    }
+  ],
+  "shutdown_policy": "After own native FIRST-PASS + all completion/source/tool-scope checks are sealed, require bridge active=0, verify PID argv, then SIGTERM owned host bridge; the scoped caffeinate should exit with it. Export monitor exits naturally on seal. After all eligible source receipts are reconciled and final register sealed, verify PID argv and SIGTERM own receipt watcher. No other providers/engines/scans are stopped.",
+  "native_engine_container": "raffle-r001-gemini-native-engine",
+  "native_engine_stop_optional": "docker --host unix:///Users/hishamel-husseini/.lima/glaze-openkritt-daybreak/sock/docker.sock stop raffle-r001-gemini-native-engine (only after native scan fully completed; owned engine logs outside audit root).",
+  "already_stopped_superseded_receipt_watcher": 61624,
+  "root_final_integrity_requirement": "No audit-root journal or heartbeat writers may remain before global package sealing."
+}

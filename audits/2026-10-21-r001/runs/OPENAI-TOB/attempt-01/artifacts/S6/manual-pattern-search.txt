@@ -1,0 +1,48 @@
+target/packages/contracts/src/RaffleFactory.sol:19:///      factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.
+target/packages/contracts/src/RaffleFactory.sol:99:        uint256 currentTime = block.timestamp;
+target/packages/contracts/src/RaffleFactory.sol:112:                sponsor: msg.sender,
+target/packages/contracts/src/RaffleFactory.sol:128:        prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId);
+target/packages/contracts/src/RaffleFactory.sol:139:            msg.sender,
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:7:/// @dev The factory has no owner, pause, upgrade, rescue, or mutable protocol configuration. Deployment tooling must
+target/packages/contracts/src/interfaces/IRaffleFactory.sol:79:    /// @notice Raised when the sale end is not strictly after the creation block timestamp.
+target/packages/contracts/src/Raffle.sol:24:///      owners burn them for redemption or refund. Each raffle is a fixed, non-upgradeable ERC-1167 clone with no
+target/packages/contracts/src/Raffle.sol:159:        if (msg.sender == address(0) || quoteToken_ == address(0)) revert ZeroAddress();
+target/packages/contracts/src/Raffle.sol:161:        factory = msg.sender;
+target/packages/contracts/src/Raffle.sol:178:        if (msg.sender != factory) revert OnlyFactory();
+target/packages/contracts/src/Raffle.sol:216:        if (block.timestamp >= endTime) revert SaleEnded(endTime, block.timestamp);
+target/packages/contracts/src/Raffle.sol:224:        quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount);
+target/packages/contracts/src/Raffle.sol:236:        emit TicketPurchased(msg.sender, recipient, ticketId, firstEntry, lastEntry, entryCount, grossAmount);
+target/packages/contracts/src/Raffle.sol:242:        if (block.timestamp < endTime) revert RaffleNotEnded(endTime, block.timestamp);
+target/packages/contracts/src/Raffle.sol:245:        if (block.timestamp >= requestDeadline) {
+target/packages/contracts/src/Raffle.sol:246:            revert DrawRequestWindowExpired(requestDeadline, block.timestamp);
+target/packages/contracts/src/Raffle.sol:253:        drawRequestedAt = uint64(block.timestamp);
+target/packages/contracts/src/Raffle.sol:265:            address refundRecipient = msg.sender;
+target/packages/contracts/src/Raffle.sol:267:                success := call(gas(), refundRecipient, excess, 0, 0, 0, 0)
+target/packages/contracts/src/Raffle.sol:269:            if (!success) revert NativeRefundFailed(msg.sender, excess);
+target/packages/contracts/src/Raffle.sol:272:        emit DrawRequested(requestId, msg.sender, paidPrice, excess, drawRequestedAt, callbackDeadline());
+target/packages/contracts/src/Raffle.sol:282:                if (msg.sender != sponsor && block.timestamp < deadline) {
+target/packages/contracts/src/Raffle.sol:283:                    revert RefundsNotAvailable(deadline, block.timestamp);
+target/packages/contracts/src/Raffle.sol:287:                if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+target/packages/contracts/src/Raffle.sol:291:            if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+target/packages/contracts/src/Raffle.sol:300:        emit RefundsEnabled(msg.sender, liability);
+target/packages/contracts/src/Raffle.sol:321:        if (msg.sender != winner) revert NotTicketOwner(ticketId, msg.sender, winner);
+target/packages/contracts/src/Raffle.sol:334:            prizeToken.transferFrom(address(this), winner, deliveredPrizeTokenId);
+target/packages/contracts/src/Raffle.sol:360:            if (msg.sender != owner) revert NotTicketOwner(ticketId, msg.sender, owner);
+target/packages/contracts/src/Raffle.sol:369:        _transferQuote(msg.sender, amount);
+target/packages/contracts/src/Raffle.sol:371:        emit TicketsRefunded(msg.sender, ticketQuantity, aggregateEntries, amount, liabilityAfter);
+target/packages/contracts/src/Raffle.sol:381:        emit SponsorProceedsReleased(msg.sender, recipient, amount);
+target/packages/contracts/src/Raffle.sol:391:        emit ProtocolFeesReleased(msg.sender, treasury, amount);
+target/packages/contracts/src/Raffle.sol:404:        prizeToken.transferFrom(address(this), recipient, prizeTokenId);
+target/packages/contracts/src/Raffle.sol:406:        emit SponsorPrizeReleased(msg.sender, recipient, address(prizeToken), prizeTokenId);
+target/packages/contracts/src/Raffle.sol:410:    /// @dev Unrelated NFTs forced here with unsafe `transferFrom` remain outside protocol accounting and cannot be
+target/packages/contracts/src/Raffle.sol:422:            status != Status.AwaitingPrize || msg.sender != address(prizeToken) || tokenId != prizeTokenId
+target/packages/contracts/src/Raffle.sol:425:            revert UnexpectedPrize(msg.sender, tokenId, from, operator);
+target/packages/contracts/src/Raffle.sol:429:        emit PrizeDeposited(msg.sender, tokenId, from);
+target/packages/contracts/src/Raffle.sol:508:    /// @param randomWords Callback words; exactly one word is required for resolution.
+target/packages/contracts/src/Raffle.sol:509:    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+target/packages/contracts/src/Raffle.sol:511:            _requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1
+target/packages/contracts/src/Raffle.sol:512:                || block.timestamp >= callbackDeadline()
+target/packages/contracts/src/Raffle.sol:518:        uint128 resolvedEntry = uint128((randomWords[0] % uint256(totalEntries)) + 1);
+target/packages/contracts/src/Raffle.sol:520:        resolvedAt = uint64(block.timestamp);
+target/packages/contracts/src/Raffle.sol:557:        emit WinningTicketSettled(ticketId, msg.sender, result, cashAmount, protocolFee, sponsorAmount);
+target/packages/contracts/src/Raffle.sol:566:        quoteToken.safeTransfer(to, amount);

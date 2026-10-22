@@ -1,0 +1,276 @@
+{
+  "requirements": [
+    {
+      "id": "REQ-01",
+      "quote": "Atomically creates, funds, and registers autonomous fixed-implementation raffle clones.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L17",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Creation, funding, and registration succeed or revert together, without leaving partial creation state."
+    },
+    {
+      "id": "REQ-02",
+      "quote": "Atomically creates, funds, and registers autonomous fixed-implementation raffle clones.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L17",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "The factory creates raffle clones."
+    },
+    {
+      "id": "REQ-03",
+      "quote": "Atomically creates, funds, and registers autonomous fixed-implementation raffle clones.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L17",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "The factory funds each newly created raffle; this sentence does not specify the funding asset or amount."
+    },
+    {
+      "id": "REQ-04",
+      "quote": "Atomically creates, funds, and registers autonomous fixed-implementation raffle clones.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L17",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "The factory registers each newly created raffle."
+    },
+    {
+      "id": "REQ-05",
+      "quote": "autonomous fixed-implementation raffle clones.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L17",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "Not fully checkable: 'autonomous' does not define which operations must proceed without which actors or dependencies."
+    },
+    {
+      "id": "REQ-06",
+      "quote": "fixed-implementation raffle clones.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L17",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Each raffle clone retains a fixed implementation target throughout its lifetime."
+    },
+    {
+      "id": "REQ-07",
+      "quote": "The implementation, canonical six-decimal USDC, treasury, fee, and Chainlink configuration are immutable.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L18",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The factory's raffle implementation cannot change after deployment."
+    },
+    {
+      "id": "REQ-08",
+      "quote": "The implementation, canonical six-decimal USDC, treasury, fee, and Chainlink configuration are immutable.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L18",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The factory's configured canonical USDC address cannot change after deployment."
+    },
+    {
+      "id": "REQ-09",
+      "quote": "The implementation, canonical six-decimal USDC, treasury, fee, and Chainlink configuration are immutable.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L18",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The configured protocol treasury cannot change after deployment."
+    },
+    {
+      "id": "REQ-10",
+      "quote": "The implementation, canonical six-decimal USDC, treasury, fee, and Chainlink configuration are immutable.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L18",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "The configured protocol fee cannot change after deployment; this sentence specifies no fee value."
+    },
+    {
+      "id": "REQ-11",
+      "quote": "The implementation, canonical six-decimal USDC, treasury, fee, and Chainlink configuration are immutable.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L18",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The Chainlink configuration cannot change after deployment."
+    },
+    {
+      "id": "REQ-12",
+      "quote": "factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L19",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "The factory has no owner role."
+    },
+    {
+      "id": "REQ-13",
+      "quote": "factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L19",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "The factory exposes no mechanism to pause its operation."
+    },
+    {
+      "id": "REQ-14",
+      "quote": "factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L19",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The factory has no upgrade mechanism."
+    },
+    {
+      "id": "REQ-15",
+      "quote": "factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L19",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "The factory has no asset-rescue mechanism."
+    },
+    {
+      "id": "REQ-16",
+      "quote": "factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L19",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "No protocol-configuration setting can be changed after factory deployment."
+    },
+    {
+      "id": "REQ-17",
+      "quote": "Deploys the ownerless factory and its locked raffle implementation with one immutable configuration.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L58",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "Deploying the factory also deploys its raffle implementation."
+    },
+    {
+      "id": "REQ-18",
+      "quote": "Deploys the ownerless factory and its locked raffle implementation with one immutable configuration.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L58",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "Not fully checkable: 'locked' does not define which calls or state transitions must be prohibited on the implementation."
+    },
+    {
+      "id": "REQ-19",
+      "quote": "The quote token must report exactly six decimals",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L59",
+      "kind": "invariant",
+      "force": "mandatory",
+      "checkable": "Factory deployment requires the quote token's reported decimals to equal exactly six."
+    },
+    {
+      "id": "REQ-20",
+      "quote": "the wrapper and quote token must contain deployed code.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L59",
+      "kind": "invariant",
+      "force": "mandatory",
+      "checkable": "Factory deployment requires deployed code at vrfWrapper_."
+    },
+    {
+      "id": "REQ-21",
+      "quote": "the wrapper and quote token must contain deployed code.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L59",
+      "kind": "invariant",
+      "force": "mandatory",
+      "checkable": "Factory deployment requires deployed code at quoteToken_."
+    },
+    {
+      "id": "REQ-22",
+      "quote": "Deployment tooling must supply and verify the target chain's official USDC address",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L60",
+      "kind": "trust-boundary",
+      "force": "mandatory",
+      "checkable": "Deployment tooling supplies the target chain's official USDC address as quoteToken_; establishing this requires tooling and chain-specific deployment evidence."
+    },
+    {
+      "id": "REQ-23",
+      "quote": "Deployment tooling must supply and verify the target chain's official USDC address",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L60",
+      "kind": "trust-boundary",
+      "force": "mandatory",
+      "checkable": "Deployment tooling verifies that the supplied quoteToken_ is the target chain's official USDC address."
+    },
+    {
+      "id": "REQ-24",
+      "quote": "cannot prove token identity from metadata.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L61",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "The constructor's token-metadata checks alone do not establish official USDC identity; that identity requires independent chain-specific evidence."
+    },
+    {
+      "id": "REQ-25",
+      "quote": "Target chain's official six-decimal USDC contract trusted by every raffle.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L62",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "Every factory-created raffle uses quoteToken_ as its trusted quote-token contract."
+    },
+    {
+      "id": "REQ-26",
+      "quote": "Official Chainlink VRF v2.5 native direct-funding wrapper for the target chain.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L63",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "vrfWrapper_ is the target chain's official Chainlink VRF v2.5 native direct-funding wrapper; official-address identity requires deployment evidence."
+    },
+    {
+      "id": "REQ-27",
+      "quote": "Immutable protocol-fee recipient used by every raffle.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L64",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "Every factory-created raffle uses protocolTreasury_ as its protocol-fee recipient."
+    },
+    {
+      "id": "REQ-28",
+      "quote": "The fresh fixed-target clone can initialize only once",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L107",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "A newly created clone cannot be successfully initialized more than once."
+    },
+    {
+      "id": "REQ-29",
+      "quote": "this function is nonReentrant",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L107",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "createRaffle cannot be reentered while an invocation is executing."
+    },
+    {
+      "id": "REQ-30",
+      "quote": "Validates the sponsor-selected token, recipient, reserve, and supported ERC-721 interface before cloning.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L152",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "The sponsor-selected prize token is validated before clone creation; the comment does not define the full token-validity predicate."
+    },
+    {
+      "id": "REQ-31",
+      "quote": "Validates the sponsor-selected token, recipient, reserve, and supported ERC-721 interface before cloning.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L152",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "The sponsor-selected recipient is validated before clone creation; the comment does not define the recipient-validity predicate."
+    },
+    {
+      "id": "REQ-32",
+      "quote": "Validates the sponsor-selected token, recipient, reserve, and supported ERC-721 interface before cloning.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L152",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "The sponsor-selected reserve is validated before clone creation; the comment does not specify the permitted reserve range."
+    },
+    {
+      "id": "REQ-33",
+      "quote": "Validates the sponsor-selected token, recipient, reserve, and supported ERC-721 interface before cloning.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L152",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "The prize token's support for the ERC-721 interface is validated before clone creation."
+    },
+    {
+      "id": "REQ-34",
+      "quote": "Reverts unless an address contains deployed code.",
+      "location": "target/packages/contracts/src/RaffleFactory.sol:L181",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "_requireContract(account) reverts whenever account contains no deployed code."
+    }
+  ]
+}

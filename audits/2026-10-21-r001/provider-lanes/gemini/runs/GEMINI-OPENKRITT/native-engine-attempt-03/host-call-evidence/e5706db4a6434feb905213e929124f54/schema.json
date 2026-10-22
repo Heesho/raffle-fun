@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "_kritt_extractor_helper": {
+      "type": "boolean",
+      "const": true
+    },
+    "stub": {
+      "type": "boolean"
+    },
+    "stub_explanation": {
+      "type": "string"
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "explanation": {
+            "type": "string"
+          },
+          "file_path": {
+            "type": "string"
+          },
+          "line": {
+            "type": "number"
+          },
+          "malicious_input_example": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "trigger_flow": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "vulnerability_type": {
+            "type": "string"
+          },
+          "malicious_actor": {
+            "type": "string"
+          },
+          "exploitable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "explanation",
+          "file_path",
+          "line",
+          "malicious_input_example",
+          "summary",
+          "trigger_flow",
+          "vulnerability_type",
+          "malicious_actor",
+          "exploitable"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "_kritt_extractor_helper",
+    "stub",
+    "stub_explanation",
+    "results"
+  ],
+  "additionalProperties": false
+}

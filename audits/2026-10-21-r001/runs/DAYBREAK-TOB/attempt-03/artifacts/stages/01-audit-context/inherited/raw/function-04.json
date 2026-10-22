@@ -1,0 +1,94 @@
+{
+  "selection": {
+    "model": "gpt-daybreak-blue-latest",
+    "reasoning_effort": "ultra",
+    "access_program": "daybreak_blue",
+    "fallback": false,
+    "provider_identity": "unknown",
+    "provider_returned_model": "unknown"
+  },
+  "function": "Raffle.fulfillRandomWords",
+  "file": "target/packages/contracts/src/Raffle.sol",
+  "lines": "L509-L524",
+  "analysisFile": ".audit-work/stages/01-audit-context/functions/04-Raffle.fulfillRandomWords.md",
+  "invariants": [
+    {
+      "claim": "The only source-visible external dispatch authenticates msg.sender as the immutable configured wrapper before invoking the internal override.",
+      "evidence": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:L99-L107; target/packages/contracts/src/Raffle.sol:L509"
+    },
+    {
+      "claim": "A decoded callback is ignored if the request is still in flight, status is not Drawing, the ID differs, the word count is not one, or the timestamp is at/after the callback deadline.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L509-L516"
+    },
+    {
+      "claim": "An accepted callback has exactly one indexable word and a nonzero, draw-frozen totalEntries value.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L215-L220, L240-L254, L511-L518"
+    },
+    {
+      "claim": "An accepted word maps to a one-based winningEntry in [1,totalEntries].",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L85, L518-L519"
+    },
+    {
+      "claim": "Acceptance writes winningEntry and resolvedAt, then changes Drawing to NftWon exactly when totalEntries >= reserveEntries and to CashWon otherwise.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L519-L523"
+    },
+    {
+      "claim": "Callback acceptance and Drawing-state refund activation occupy complementary timestamp intervals: callback before the deadline, refunds at or after it.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L289-L291, L511-L515"
+    },
+    {
+      "claim": "A callback made during the wrapper request cannot resolve because _requestInFlight is true until after the returned ID is stored.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L252-L260, L511-L515"
+    },
+    {
+      "claim": "The callback records the selected entry, timestamp, and result only; quote-token liability allocation remains in _settleWinningTicket.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L518-L524, L533-L558"
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "The configured wrapper is the intended Chainlink wrapper and supplies the intended unpredictable, unbiased callback word.",
+      "establishedBy": "nothing found on chain beyond a code-length check; deployment trust is documented at target/packages/contracts/src/RaffleFactory.sol:L58-L67, and the external request is interface-only at target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:L68-L81"
+    },
+    {
+      "claim": "The request ID returned by requestRandomWordsInNative is bound by the deployed wrapper to the later callback carrying the corresponding word.",
+      "establishedBy": "nothing found in the target's wrapper implementation because only the interface is present; Raffle stores the returned ID and compares it at target/packages/contracts/src/Raffle.sol:L257-L260, L511-L515"
+    },
+    {
+      "claim": "totalEntries is nonzero on an accepted callback and does not change after the Drawing transition.",
+      "establishedBy": "requestDraw rejects zero before writing Drawing at target/packages/contracts/src/Raffle.sol:L240-L254; buyEntries requires Active and is the source-visible writer at target/packages/contracts/src/Raffle.sol:L215-L233"
+    },
+    {
+      "claim": "reserveEntries is the fixed nonzero threshold supplied through the canonical factory path.",
+      "establishedBy": "one-time factory-only initialization at target/packages/contracts/src/Raffle.sol:L176-L179, L197-L205, with factory validation and parameter forwarding at target/packages/contracts/src/RaffleFactory.sol:L109-L120, L178-L179"
+    },
+    {
+      "claim": "block.timestamp is representable as uint64 when resolvedAt is written.",
+      "establishedBy": "nothing found; target/packages/contracts/src/Raffle.sol:L520 narrows without a local range check"
+    }
+  ],
+  "calls": [
+    {
+      "callee": "Raffle.callbackDeadline",
+      "kind": "internal",
+      "propagates": "Returns zero before a request timestamp and otherwise drawRequestedAt plus the two-day timeout; fulfillRandomWords depends on it for the exclusive acceptance boundary (target/packages/contracts/src/Raffle.sol:L462-L465, L511-L515; target/packages/contracts/src/libraries/RaffleConstants.sol:L35-L36)."
+    }
+  ],
+  "callers": [
+    "VRFV2PlusWrapperConsumerBase.rawFulfillRandomWords authenticates msg.sender against i_vrfV2PlusWrapper and then dispatches to this override (target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:L99-L107)."
+  ],
+  "sharedState": [
+    "status: requestDraw writes Drawing, enableRefunds writes Refunding, fulfillRandomWords reads it and writes NftWon or CashWon, and settlement/redemption consume the terminal value (target/packages/contracts/src/Raffle.sol:L252, L289-L300, L311-L315, L511-L521, L533-L536).",
+    "_requestInFlight and vrfRequestId: requestDraw brackets the external request and persists its returned ID; fulfillRandomWords gates acceptance on both (target/packages/contracts/src/Raffle.sol:L252-L260, L511-L515).",
+    "drawRequestedAt: requestDraw writes it, callbackDeadline derives the deadline from it, and fulfillRandomWords gates on that deadline (target/packages/contracts/src/Raffle.sol:L253, L462-L465, L512).",
+    "totalEntries: buyEntries advances it and builds ticket ranges; requestDraw checks it is nonzero; fulfillRandomWords uses it as the modulo divisor and reserve comparator (target/packages/contracts/src/Raffle.sol:L226-L233, L243, L518-L521).",
+    "reserveEntries: initialize stores the factory-validated threshold and fulfillRandomWords reads it for the terminal result (target/packages/contracts/src/Raffle.sol:L203, L521; target/packages/contracts/src/RaffleFactory.sol:L178-L179).",
+    "winningEntry: fulfillRandomWords writes it and _requireWinningTicket later reads it to validate settlement evidence (target/packages/contracts/src/Raffle.sol:L519, L579-L584).",
+    "resolvedAt: fulfillRandomWords is its source-visible writer; the value is exposed by the generated getter (target/packages/contracts/src/Raffle.sol:L114-L118, L520; target/packages/contracts/src/interfaces/IRaffle.sol:L488-L496)."
+  ],
+  "openQuestions": [
+    "unclear; need to inspect the deployed wrapper implementation and deployment evidence to establish configured-code identity, callback-word provenance, and returned-ID/callback-ID binding (target/packages/contracts/src/RaffleFactory.sol:L58-L67; target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:L68-L81)",
+    "unclear; need to inspect deployed wrapper fulfillment/retry semantics after VrfCallbackIgnored is emitted and the handler returns successfully (target/packages/contracts/src/Raffle.sol:L509-L516)",
+    "unclear; need to inspect deployment-chain timestamp bounds to establish that block.timestamp fits uint64 at resolution (target/packages/contracts/src/Raffle.sol:L520)"
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "kind": "append-only register patch; merge into RF-001 without multiplying root causes",
+  "created_utc": "2026-10-21T18:06:16.080633+00:00",
+  "base_register_sha256": "0c0c7cb9302aabdedfc074783116ed7d11c5b1361f3349d4eb5165b0f8c32b2f",
+  "source_report": {
+    "report_key": "DAYBREAK-PASHOV/attempt-03",
+    "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-PASHOV/attempt-03/FIRST-PASS.md",
+    "sha256": "e0f6f414a66a23835b7410a8f17d6aee4db9e97fa3ef67d507c0e934765b748f",
+    "seal": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-PASHOV/attempt-03/SEAL.json",
+    "seal_sha256": "c7f20bff3e4f4d3e73237de63679b6d2c08c42449dacab42efaf81eb3e1a6385",
+    "seal_verified": true,
+    "frozen_target": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+    "source_only": true
+  },
+  "append_attributions": [
+    {
+      "target": "RF-001",
+      "original_id": "1",
+      "native_key": "rafflefactory|createraffle|fake-prize-escrow",
+      "report_line": 17,
+      "original_confidence": 90,
+      "original_security_severity": "not assigned by native report",
+      "proof_status": "source-only; no executed test claimed in this sealed report",
+      "reconciled_classification": "existing conditional prize-trust/payment root chain; preserve prior High/Medium/Low disagreement"
+    },
+    {
+      "target": "RF-001",
+      "original_id": "2",
+      "native_key": "raffle|releasesponsorproceeds|payout-before-prize-delivery",
+      "report_line": 71,
+      "original_confidence": 90,
+      "original_security_severity": "not assigned by native report",
+      "proof_status": "source-only; no executed test claimed in this sealed report",
+      "reconciled_classification": "existing conditional prize-trust/payment root chain; preserve prior High/Medium/Low disagreement"
+    }
+  ],
+  "remediation_proposal_review": {
+    "id": "AQ-008",
+    "category": "unvalidated_remediation_proposal; not frozen production defect",
+    "status": "proposed Option C rejected as ready patch by source reasoning; not executed",
+    "source_report": "Finding 2, Fix Option C",
+    "problem": "NftWon may be reached before settlementComplete. The proposed branch takes only sponsorProceeds + protocolFees (both zero) and leaves unsettledPot unchanged, initializes zero remainingRefundLiability and switches to Refunding. Refund subtraction at frozen Raffle.sol:368 then underflows for any positive claim.",
+    "required_reaudit": "Handle pre-settlement and settled NftWon independently; migrate every accounted liability exactly once; preserve funding for full fallback; reject already delivered/paid branches as specified; verify ticket burns/refunds and all claim orderings. No proposed code was applied."
+  },
+  "other_proposal_limits": [
+    "Allowlisting can reduce arbitrary prize exposure but does not prove continuing transferability of upgradeable or pausable collections.",
+    "Gating sponsor proceeds alone leaves protocol fees released and does not fund a full refund.",
+    "Gating both payments without a timeout/fallback can lock money indefinitely when prize delivery is impossible.",
+    "A malicious prize can falsely report delivery even with ownerOf checks."
+  ],
+  "provider_boundary": {
+    "native_judge_provider_rejections": 0,
+    "seal_reports_auxiliary_provider_rejection_occurrences": 90,
+    "affected_routes_retried_or_counted": false,
+    "comment": "Preserved as reported by verified seal; no retry performed here."
+  },
+  "owner_acceptance": "not_requested_or_inferred"
+}

@@ -1,0 +1,4 @@
+{
+  "refuted": false,
+  "reasoning": "DESIGN.md:L2 explicitly states: \"Frontend discovery is advisory; transaction decisions must reread current chain state.\" \u201cAdvisory\u201d qualifies discovery, while rereading remains mandatory. Reading the complete document revealed no exemption. The execution-time fee query at target/packages/contracts/src/Raffle.sol:L249-L250,L436-L438 does not establish frontend decision ordering. Source inventories and client/caller searches found no frontend decision path, supporting the original source-scoped \u201cabsent\u201d verdict without establishing an external frontend defect. Analysis and search evidence written to audit/S5/spec-compliance/requirements/04-REQ-44-document-refutation.md."
+}

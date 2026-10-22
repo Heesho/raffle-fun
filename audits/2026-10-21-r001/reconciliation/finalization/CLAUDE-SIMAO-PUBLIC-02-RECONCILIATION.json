@@ -1,0 +1,1828 @@
+{
+  "reconciled_utc": "2026-10-21T23:51:19.837898+00:00",
+  "source_report": {
+    "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+    "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/preserved/FIRST-PASS.md",
+    "sha256": "21a16f6a3dd82428a3ee25864428cc166e351953d9aa96c543f1cf0b97a805de",
+    "seal": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/SEAL.json",
+    "seal_sha256": "641f20a3ad7b9e286b1f7bdc4737ebc387de68fe76b3d834edcb07ea8272baed",
+    "seal_verified": true,
+    "frozen_target": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+    "completion_receipt": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/completion-receipt.json",
+    "completion_receipt_sha256": "6cf09e630dc2b9ba63049cc787060d3e9d56ff42285eab77e8e13ae2c1aa84be",
+    "all_bound_object_records_verified": 125,
+    "distinct_bound_paths": 122,
+    "target_binding": "43 actual protected files in current native workdir independently match frozen clean context; inherited same-cell pre-lens source/map/bundles explicitly disclosed.",
+    "source_only": true,
+    "qualification": "QUALIFIED_MODIFIED_METHOD: separately disclosed public-evidence Simao variant, 12 foreground Opus5.5/max lenses and native Turn6. Original unmodified Anthropic reasoning_extraction refusal and killed public-evidence a01 remain unchanged. Cleanup denied and preserved; no retry.",
+    "model_route": "Requested and provider-returned claude-opus-5-5, requested max effort; internal revision unknown.",
+    "native_findings": {
+      "Medium": 5,
+      "Low": 3,
+      "unverified_leads": 7
+    },
+    "raw_items": 43,
+    "groups": 15,
+    "new_production_roots": 0,
+    "semantic_adjudication_correction": "Coordinator Lead-1\u2192RF-002 mapping is incorrect: native Lead-1/D01 is forged escrow, retained under RF-001; native Lead-6/D12 is future-clone RF-002."
+  },
+  "append_attributions": [
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "RaffleFactory::createRaffle",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/native-report.md",
+      "report_line": 225,
+      "original_id": "Lead-1",
+      "original_label": "- `RaffleFactory::createRaffle` \u2014 The escrow check relies entirely on the prize contract's own `onERC721Received` call and `ownerOf` answer ([RaffleFactory.sol:128-134](../packages/contracts/src/RaffleFactory.sol#L128-L134), [Raffle.sol:421-428](../packages/contracts/src/Raffle.sol#L421-L428)), so a hostile prize can fake the escrow. \u2014 No loss beyond the risk of a worthless prize, which buyers can see, was established. [lenses: 1]",
+      "native_group": "D01"
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "RaffleFactory::createRaffle",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/turn6/dedup-ledger.md",
+      "report_line": 57,
+      "original_id": "D01",
+      "original_label": "spoofable-escrow-verification",
+      "native_final_id": "Lead-1",
+      "native_members": [
+        "R39"
+      ],
+      "native_gates": {
+        "G1": [
+          "ALLOWS",
+          "F:129/F:132 and Raffle.sol:421-426 verify escrow only through calls and answers of the prize contract itself, so a hostile prize can forge onERC721Received and ownerOf."
+        ],
+        "G2": [
+          "ALLOWS",
+          "Any sponsor can deploy a hostile ERC-165 contract at zero cost; F:155-177 checks only code presence, protocol plumbing and supportsInterface."
+        ],
+        "G3": [
+          "UNCERTAIN",
+          "Buyers of that raffle are not the sponsor, but they opted into an unvetted prize contract; the harm equals entering a raffle for a worthless prize."
+        ],
+        "G4": [
+          "BLOCKS",
+          "No incremental loss is established beyond the buyer-visible worthless-prize risk, and no check that only queries the prize contract can remove it."
+        ]
+      }
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "RaffleFactory::createRaffle",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-11-output.md",
+      "report_line": 44,
+      "report_end_line": 51,
+      "original_id": "R39",
+      "original_label": "RaffleFactory | createRaffle | spoofable-escrow-verification",
+      "native_lens": 11,
+      "native_group": "D01",
+      "native_final_id": "Lead-1",
+      "native_fields": {
+        "smell": "Escrow at creation is \"verified\" only through the prize contract's own answers.",
+        "unverified": "This may add no risk beyond \"the prize is worthless\". A hostile contract at its own address is simply a worthless collection that buyers can inspect. Making a genuinely valuable collection behave this way would need a hostile upgrade or admin action, which the protocol cannot control. No on-chain check that only asks the prize contract can fix this.",
+        "description": "The escrow checks cannot enforce DESIGN.md's \"untrusted prize\" stance; they hold only for honest ERC-721s, which is what IRaffle.sol:14-15 assumes. The recommendation is to document the prize trust boundary for buyers, not to change code."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": "Medium",
+      "original_status": "FINDING",
+      "function": "Raffle::buyEntries",
+      "reconciled_reason": "Paid sponsor participation and reserve crossing are specified economic behavior. No protected fixed odds/cash outcome, free entry or unauthorized withdrawal was established. Native Medium/Low dissent retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/native-report.md",
+      "report_line": 67,
+      "original_id": "M-2",
+      "original_label": "## M-2. `Raffle::buyEntries()` lets the sponsor buy entries that `NftWon` rebates at 95%, so a last-block sponsor purchase dilutes earlier buyers' odds on the NFT at 5% of the entry price [lenses: 1]",
+      "native_group": "D02"
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": "Medium",
+      "original_status": "FINDING",
+      "function": "Raffle::buyEntries",
+      "reconciled_reason": "Paid sponsor participation and reserve crossing are specified economic behavior. No protected fixed odds/cash outcome, free entry or unauthorized withdrawal was established. Native Medium/Low dissent retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/turn6/dedup-ledger.md",
+      "report_line": 69,
+      "original_id": "D02",
+      "original_label": "sponsor-rebated-late-dilution",
+      "native_final_id": "M-2",
+      "native_members": [
+        "R07"
+      ],
+      "native_gates": {
+        "G1": [
+          "ALLOWS",
+          "buyEntries (:215-221) checks only status, sale time, recipient, count and overflow; it has no cap once the reserve is met and no exclusion of sponsor-controlled buyers. _update (:497-502) screens only protocol plumbing."
+        ],
+        "G2": [
+          "ALLOWS",
+          "Sponsor capital is locked only from endTime-1 until settle plus release (minutes to hours), and 95% comes back in NftWon. It is not flash-loanable, but the attack pays whenever NFT value > 5% of the final pot; sybil purchases cannot be told apart from real ones."
+        ],
+        "G3": [
+          "ALLOWS",
+          "Victims are the organic ticket holders who bought before the sale closed: their odds of winning the NFT are diluted while their USDC goes to sponsorRecipient and the treasury."
+        ],
+        "G4": [
+          "ALLOWS",
+          "Expected value moves between cohorts. R07 example: Alice -9,000 USDC EV, sponsor +4,500, treasury +4,500."
+        ]
+      }
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "FINDING",
+      "function": "Raffle::buyEntries",
+      "reconciled_reason": "Paid sponsor participation and reserve crossing are specified economic behavior. No protected fixed odds/cash outcome, free entry or unauthorized withdrawal was established. Native Medium/Low dissent retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-3-output.md",
+      "report_line": 16,
+      "report_end_line": 31,
+      "original_id": "R07",
+      "original_label": "Raffle | buyEntries | sponsor-rebated-late-dilution",
+      "native_lens": 3,
+      "native_group": "D02",
+      "native_final_id": "M-2",
+      "native_fields": {
+        "root_cause": "Raffle.sol:544 (`sponsorAmount = grossPot - protocolFee`, with grossPot = unsettledPot at :539, credited at :554) pays the sponsor 95% of the whole pot, including entries the sponsor bought through any address. `buyEntries` (Raffle.sol:215-233) has no entry cap once `reserveEntries` is met and does not exclude the rebated party. Each sponsor-funded entry therefore costs the sponsor only 5% of ENTRY_PRICE but carries full weight in the uniform draw (Raffle.sol:518). This breaks DESIGN.md's uniform \"one entry costs 1,000,000 units\" for exactly one cohort. Earlier buyers cannot exit after the sponsor's late purchase: refunds open only at endTime+2d (Raffle.sol:286-287), and anyone, including the sponsor, can draw at endTime (Raffle.sol:242).",
+        "internal_pre": "The raffle resolves NftWon (totalEntries >= reserveEntries, Raffle.sol:521). The sponsor controls or colludes with sponsorRecipient, which is the default setup. The attack pays off whenever the NFT value V > 0.05 * organic entries N.",
+        "external_pre": "The sponsor has k USDC available from the last block before endTime until releaseSponsorProceeds, typically minutes: requestDraw at endTime, then 30 confirmations, then settle and release. 95% of it comes back. A flash loan does not work because entries lock funds across transactions.",
+        "path": "",
+        "impact": "The cohort of organic ticket holders who bought before the sale closed is left holding the loss.",
+        "mitigation": "Stop the sale at the reserve in buyEntries (`if (lastEntry > reserveEntries) revert ...`), so no sponsor-rebated entries can be minted after organic demand meets the reserve. A buyer blocklist on sponsor/sponsorRecipient alone is not enough, because purchases are permissionless (sybil). A sponsor fill of the gap below the reserve remains possible; it is tracked as a separate lead."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": "Low",
+      "original_status": "FINDING",
+      "function": "Raffle::buyEntries",
+      "reconciled_reason": "Paid sponsor participation and reserve crossing are specified economic behavior. No protected fixed odds/cash outcome, free entry or unauthorized withdrawal was established. Native Medium/Low dissent retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/native-report.md",
+      "report_line": 207,
+      "original_id": "L-3",
+      "original_label": "## L-3. `Raffle::buyEntries()` lets the sponsor fill the reserve shortfall at about 5% net cost after seeing demand, cancelling buyers' 80% cash outcome [lenses: 2]",
+      "native_group": "D03"
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": "Low",
+      "original_status": "FINDING",
+      "function": "Raffle::buyEntries",
+      "reconciled_reason": "Paid sponsor participation and reserve crossing are specified economic behavior. No protected fixed odds/cash outcome, free entry or unauthorized withdrawal was established. Native Medium/Low dissent retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/turn6/dedup-ledger.md",
+      "report_line": 83,
+      "original_id": "D03",
+      "original_label": "reserve-self-dealing",
+      "native_final_id": "L-3",
+      "native_members": [
+        "R28",
+        "R32"
+      ],
+      "native_gates": {
+        "G1": [
+          "ALLOWS",
+          "Nothing in buyEntries (:209-237) excludes sponsor-funded entries from the reserve test at :521."
+        ],
+        "G2": [
+          "ALLOWS",
+          "The sponsor buys the shortfall just before endTime, and 95% of it comes back under NftWon."
+        ],
+        "G3": [
+          "ALLOWS",
+          "Victims are under-reserve organic buyers, whose CashWon expected value (80% of the pot) is replaced by a smaller chance at the NFT."
+        ],
+        "G4": [
+          "UNCERTAIN",
+          "The expected-value transfer is real only when the NFT is worth less than about 0.8x the pot, and buyers were never guaranteed CashWon: any third party crossing the reserve gives the same outcome."
+        ]
+      }
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::buyEntries",
+      "reconciled_reason": "Paid sponsor participation and reserve crossing are specified economic behavior. No protected fixed odds/cash outcome, free entry or unauthorized withdrawal was established. Native Medium/Low dissent retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-8-output.md",
+      "report_line": 43,
+      "report_end_line": 46,
+      "original_id": "R28",
+      "original_label": "Raffle | buyEntries | reserve-self-dealing",
+      "native_lens": 8,
+      "native_group": "D03",
+      "native_final_id": "L-3",
+      "native_fields": {
+        "smell": "(Outside the DoS lens; passed on to the economic/cross-cohort lens.) Only totalEntries >= reserveEntries decides the outcome (Raffle.sol:521), and nothing excludes entries the sponsor paid for. NftWon pays grossPot - fee back to the sponsor (Raffle.sol:544). So buying whatever is missing from the reserve costs the sponsor only the 5% fee on those entries, and lets it flip a raffle that missed its reserve after seeing demand. Path: reserve 10,000; organic buyers hold 2,000 entries (2,000 USDC) one block before endTime. The honest outcome would be CashWon: winner 1,600, sponsor 300 + NFT, treasury 100. Instead the sponsor buys 8,000 entries from a fresh address. The callback gives NftWon; settlement pays the sponsor 9,500 (net +1,500 on an 8,000 outlay), and the sponsor's address holds 80% of entries for its own NFT. With an NFT value V = 3,000 USDC, organic buyers' expected value falls from 1,600 to 600 (-1,000), the sponsor's rises from 3,300 to 3,900 (+600), and the treasury's from 100 to 500 (+400). These sum to zero.",
+        "unverified": "This is not a DoS issue. It is unclear whether DESIGN.md means the reserve to protect only the sponsor, in which case a sponsor buying in is the same as having set a lower reserve. Addresses the sponsor controls cannot be identified on-chain, so any fix is at the design level.",
+        "description": "Buyers rely on the 80% cash payout when the reserve is missed, but the sponsor can cancel it at 5% cost by buying in at the last moment, after seeing demand."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::buyEntries",
+      "reconciled_reason": "Paid sponsor participation and reserve crossing are specified economic behavior. No protected fixed odds/cash outcome, free entry or unauthorized withdrawal was established. Native Medium/Low dissent retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-9-output.md",
+      "report_line": 28,
+      "report_end_line": 31,
+      "original_id": "R32",
+      "original_label": "Raffle | buyEntries | sponsor-self-dealing-reserve",
+      "native_lens": 9,
+      "native_group": "D03",
+      "native_final_id": "L-3",
+      "native_fields": {
+        "smell": "buyEntries (Raffle.sol:209-237) places no restriction on the sponsor or sponsorRecipient. The outcome is decided by totalEntries >= reserveEntries (Raffle.sol:521) over gross entries, including the sponsor's own. NftWon pays 95% of the gross pot to sponsorRecipient (Raffle.sol:543-544). So the sponsor can cross its own reserve at a net cost of 5% of the shortfall and flip a CashWon (80% cash to a buyer) into an NftWon (95% to itself).",
+        "unverified": "Unclear whether this counts as a defect or as an accepted property of the reserve design. Sybil addresses make a msg.sender != sponsor check useless, so there is no minimal on-chain fix. Numbers: reserve 1,000; buyers hold 900 entries (900 USDC); NFT worth 300 USDC. Honest CashWon: winner 720, sponsor 135 + NFT, treasury 45. If the sponsor buys 100 entries just before endTime, the result is NftWon: sponsor receives 950 (net +850 after paying 100, plus a 10% chance at its own NFT); buyers' expected value falls from 720 to 0.9 x 300 = 270 (-450); sponsor gains about +445; treasury gains +5.",
+        "description": "The reserve is meant to measure third-party demand, but the payee can satisfy it, letting the privileged sponsor turn buyers' cash-lottery expectation into its own proceeds."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::requestDraw",
+      "reconciled_reason": "Trusted immutable wrapper/service liveness assumption; timeout refunds bound principal exposure. Native requester fee/availability risk also relates to OBS-008.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/native-report.md",
+      "report_line": 226,
+      "original_id": "Lead-2",
+      "original_label": "- `Raffle::requestDraw` \u2014 The Chainlink wrapper is immutable and has no migration path, so if it is deprecated every raffle is forced into refunds, and a draw requester can lose their fee. \u2014 The trigger is a trusted dependency, and the refund deadlines ([Raffle.sol:286-291](../packages/contracts/src/Raffle.sol#L286-L291)) prevent any loss of principal. Demoted from [lenses: 2].",
+      "native_group": "D04"
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::requestDraw",
+      "reconciled_reason": "Trusted immutable wrapper/service liveness assumption; timeout refunds bound principal exposure. Native requester fee/availability risk also relates to OBS-008.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/turn6/dedup-ledger.md",
+      "report_line": 96,
+      "original_id": "D04",
+      "original_label": "immutable-vrf-wrapper-dependency",
+      "native_final_id": "Lead-2",
+      "native_members": [
+        "R26",
+        "R36"
+      ],
+      "native_gates": {
+        "G1": [
+          "BLOCKS",
+          "enableRefunds (:286-291) guarantees 100% refunds after endTime+2d or drawRequestedAt+2d, so no principal can be lost. Only time and the requester's own fee remain at risk."
+        ],
+        "G2": [
+          "BLOCKS",
+          "The trigger is Chainlink, a trusted canonical dependency under DESIGN.md, disabling or migrating the wrapper; no attacker can create it."
+        ],
+        "G3": [
+          "UNCERTAIN",
+          "Buyers and sponsors are delayed. The fee loss falls on whoever chose to request the draw."
+        ],
+        "G4": [
+          "BLOCKS",
+          "Funds are locked only for a bounded time and then refunded in full; nothing is lost."
+        ]
+      }
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::requestDraw",
+      "reconciled_reason": "Trusted immutable wrapper/service liveness assumption; timeout refunds bound principal exposure. Native requester fee/availability risk also relates to OBS-008.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-8-output.md",
+      "report_line": 29,
+      "report_end_line": 32,
+      "original_id": "R26",
+      "original_label": "Raffle | requestDraw | external-dependency-dos",
+      "native_lens": 8,
+      "native_group": "D04",
+      "native_final_id": "Lead-2",
+      "native_fields": {
+        "smell": "The VRF wrapper can never change. RaffleFactory stores it as an immutable (RaffleFactory.sol:86), builds it into the single implementation (RaffleFactory.sol:89, inherited immutable i_vrfV2PlusWrapper), has no admin to repoint it, and createRaffle (RaffleFactory.sol:97-148) never checks that the wrapper still works. If the wrapper is disabled or unconfigured, getVrfRequestPrice and requestRandomnessPayInNative (Raffle.sol:249, 257) revert for every raffle. If the wrapper's subscription runs out of funds, a paid request is accepted but never fulfilled. After such an event, sponsors can still create raffles and buyers can still buy (Raffle.sol:209-237), but no raffle can ever resolve. Each one only moves to Refunding at endTime + 2d (Raffle.sol:286-287) or drawRequestedAt + 2d (Raffle.sol:290-291). Buyers' USDC and sponsors' NFTs are locked for up to 30d of sale + 2d (or + 4d). In the unfunded case, whoever requests the draw loses the native VRF fee.",
+        "unverified": "The wrapper implementation is not in node_modules; only VRFV2PlusWrapperConsumerBase.sol and IVRFV2PlusWrapper.sol are. The disabled and unfunded behaviour therefore comes from public Chainlink v2.5 semantics, not from source in the repo. No principal is lost because the refund path stays intact. DESIGN.md treats the wrapper as a trusted canonical dependency and rules out mutable configuration, so this is probably accepted design. The impact is limited to time-bounded locking.",
+        "description": "Because the wrapper is immutable and never checked, a deprecation on Chainlink's side puts every live and future raffle into a \"lock, then refund\" mode that only redeploying the factory can fix."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::requestDraw",
+      "reconciled_reason": "Trusted immutable wrapper/service liveness assumption; timeout refunds bound principal exposure. Native requester fee/availability risk also relates to OBS-008.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-10-output.md",
+      "report_line": 38,
+      "report_end_line": 46,
+      "original_id": "R36",
+      "original_label": "Raffle | requestDraw | immutable-vrf-wrapper-dependency",
+      "native_lens": 10,
+      "native_group": "D04",
+      "native_final_id": "Lead-2",
+      "native_fields": {
+        "smell": "The Chainlink wrapper can never be changed, each raffle gets one request attempt, and there is no admin.",
+        "unverified": "Whether Chainlink will retire v2.5, or move the mainnet wrapper to a new coordinator, while a raffle is live. The impact is liveness (sponsor sales never complete, the protocol earns no fees) plus the draw requester's fee. Principal is safe: refunds and prize return still work.",
+        "description": "The whole factory hard-depends on one Chainlink wrapper with no migration path, so a Chainlink-side sunset turns every raffle into a refund."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": "Medium",
+      "original_status": "FINDING",
+      "function": "Raffle::_settleWinningTicket",
+      "reconciled_reason": "Paid sponsor participation and reserve crossing are specified economic behavior. No protected fixed odds/cash outcome, free entry or unauthorized withdrawal was established. Native Medium/Low dissent retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/native-report.md",
+      "report_line": 96,
+      "original_id": "M-3",
+      "original_label": "## M-3. `Raffle::_settleWinningTicket()` computes the `NftWon` sponsor share over the gross pot, including sponsor-funded entries, so the sponsor can buy odds on its own NFT at a 95% discount [lenses: 3]",
+      "native_group": "D05"
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": "Medium",
+      "original_status": "FINDING",
+      "function": "Raffle::_settleWinningTicket",
+      "reconciled_reason": "Paid sponsor participation and reserve crossing are specified economic behavior. No protected fixed odds/cash outcome, free entry or unauthorized withdrawal was established. Native Medium/Low dissent retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/turn6/dedup-ledger.md",
+      "report_line": 109,
+      "original_id": "D05",
+      "original_label": "sponsor-self-entry-rebate",
+      "native_final_id": "M-3",
+      "native_members": [
+        "R04",
+        "R21",
+        "R42"
+      ],
+      "native_gates": {
+        "G1": [
+          "ALLOWS",
+          ":544 computes the NftWon sponsor share over the gross pot, with no exclusion or cap for sponsor-funded entries."
+        ],
+        "G2": [
+          "ALLOWS",
+          "Same as D02: the sponsor's capital is short-lived and 95% of it is rebated."
+        ],
+        "G3": [
+          "ALLOWS",
+          "Victims are the organic buyers (variant A) and the under-reserve buyers (variant B)."
+        ],
+        "G4": [
+          "ALLOWS",
+          "Expected value moves between cohorts (variant A examples above)."
+        ]
+      }
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::_settleWinningTicket",
+      "reconciled_reason": "Paid sponsor participation and reserve crossing are specified economic behavior. No protected fixed odds/cash outcome, free entry or unauthorized withdrawal was established. Native Medium/Low dissent retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-2-output.md",
+      "report_line": 16,
+      "report_end_line": 22,
+      "original_id": "R04",
+      "original_label": "Raffle | _settleWinningTicket | sponsor-self-entry-rebate",
+      "native_lens": 2,
+      "native_group": "D05",
+      "native_final_id": "M-3",
+      "native_fields": {
+        "smell": "The NftWon branch at Raffle.sol:543-544 (stored at :554) credits sponsorRecipient with 95% of grossPot, and grossPot includes entries the sponsor bought itself. buyEntries (Raffle.sol:209-237) accepts any payer. So a sponsor-funded entry costs the sponsor only 5% net, yet it has the same win probability as a buyer's entry that costs 100%, and it dilutes buyers' odds on the fixed-value NFT.",
+        "unverified": "DESIGN.md neither forbids nor discloses sponsor participation, so it is unclear whether it is an accepted raffle trust assumption. Sponsor purchases cannot be told apart from sybil buyers, so no single code operation removes the root cause. Partial fix: cap sponsorProceeds at reserveEntries\u00d7ENTRY_PRICE\u00d795% and send the surplus to the winner/cash pool. That removes variant A; variant B would still need disclosure.",
+        "description": "The NftWon split rebates 95% of what the sponsor pays for its own entries back to sponsorRecipient, so the sponsor can buy odds on its own NFT at a 95% discount and shift expected value from ticket buyers to itself and the treasury."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::_settleWinningTicket",
+      "reconciled_reason": "Paid sponsor participation and reserve crossing are specified economic behavior. No protected fixed odds/cash outcome, free entry or unauthorized withdrawal was established. Native Medium/Low dissent retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-7-output.md",
+      "report_line": 30,
+      "report_end_line": 43,
+      "original_id": "R21",
+      "original_label": "Raffle | _settleWinningTicket | sponsor-self-purchase-rebate",
+      "native_lens": 7,
+      "native_group": "D05",
+      "native_final_id": "M-3",
+      "native_fields": {
+        "smell": "Raffle.sol:544 sets the NftWon sponsor share to `grossPot - protocolFee`. grossPot (L539) includes every purchase, whoever made it. Nothing in buyEntries (L209-237) or _update (L497-502) excludes the sponsor or sponsorRecipient as buyer or recipient. So under NftWon an entry the sponsor buys from any address nets out at 1,000,000 - 950,000 = 50,000 raw units (0.05 USDC), while every other buyer pays 1 USDC. Sales close at endTime (L216), so nobody can respond to a buy in the last block before it.",
+        "unverified": "Whether the design accepts sponsor participation. DESIGN.md does not forbid it, and the money map lists \"may also buy entries\" as a normal sponsor action. No identity check survives Sybil addresses, so there is no single small code fix. A design change such as capping the NftWon sponsor share at reserveEntries*ENTRY_PRICE, with the excess paid to the winner, fixes (a) but not (b). The losses are expected-value transfers, not deterministic theft.",
+        "description": "Because L544 rebates 95% of the sponsor's own spend, a last-block dilution or reserve flip has positive expected value for the sponsor. Non-sponsor buyers carry the loss, and the treasury captures part of it."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::_settleWinningTicket",
+      "reconciled_reason": "Paid sponsor participation and reserve crossing are specified economic behavior. No protected fixed odds/cash outcome, free entry or unauthorized withdrawal was established. Native Medium/Low dissent retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-12-output.md",
+      "report_line": 33,
+      "report_end_line": 36,
+      "original_id": "R42",
+      "original_label": "Raffle | _settleWinningTicket | sponsor-self-entry-rebate",
+      "native_lens": 12,
+      "native_group": "D05",
+      "native_final_id": "M-3",
+      "native_fields": {
+        "smell": "In NftWon, `sponsorAmount = grossPot - protocolFee` (Raffle.sol:544) is computed on the gross pot. That pot includes entries the sponsor bought itself, from any address. So each sponsor-funded entry costs the sponsor 5% net, while every other entrant pays 100%. Because buyEntries (:209-237) stays open until endTime, the sponsor can watch demand and shill-enter in the last block, diluting buyers' odds and keeping its NFT. Numbers: the NFT is worth 10,000 USDC and the reserve is 2,000. Buyers purchase 2,000 entries (2,000 USDC). Just before endTime the sponsor buys 18,000 entries from a fresh address. NftWon with a pot of 20,000 gives sponsorProceeds 19,000 and fee 1,000. The sponsor ends +1,000 USDC net and keeps the NFT with probability 0.9. Buyers' expected value drops from 10,000 to 1,000 USDC (-9,000). The sponsor gains +8,100 and the treasury +900 (checked arithmetically). This is profitable whenever the NFT is worth more than 5% of the final pot. In CashWon a self-entry nets -5% (0.80 winner share + 0.15 sponsor share), so only NftWon is exposed.",
+        "unverified": "Whether sponsor participation is an accepted design risk. The money map says the sponsor \"may also buy entries\" and DESIGN.md is silent. Excluding addresses is defeated by Sybil addresses, so there is no one-line mitigation. This is an economic/game-theory issue at the edge of the flow-symmetry lens.",
+        "description": "The 95% sponsor share refunds the sponsor's own entries, so a sponsor can shill-enter at a 5% cost to win back its prize with high probability, and honest entrants hold the loss."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": "Medium",
+      "original_status": "FINDING",
+      "function": "Raffle::_settleWinningTicket",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/native-report.md",
+      "report_line": 115,
+      "original_id": "M-4",
+      "original_label": "## M-4. `Raffle::_settleWinningTicket()` books the `NftWon` 95%/5% split with no dependency on NFT delivery, so an undeliverable prize strands the winner once everyone else is paid [lenses: 2]",
+      "native_group": "D06"
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": "Medium",
+      "original_status": "FINDING",
+      "function": "Raffle::_settleWinningTicket",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/turn6/dedup-ledger.md",
+      "report_line": 125,
+      "original_id": "D06",
+      "original_label": "nftwon-split-without-delivery",
+      "native_final_id": "M-4",
+      "native_members": [
+        "R01",
+        "R41"
+      ],
+      "native_gates": {
+        "G1": [
+          "ALLOWS",
+          "The NftWon split (:543-555) has no delivery dependency. Both release functions (:375-392) check only amount != 0, NftWon has no route to Refunding (:292-293), and releaseSponsorPrize excludes NftWon (:397-398)."
+        ],
+        "G2": [
+          "ALLOWS",
+          "A sponsor-administered upgradeable or pausable collection passes F:154-179 and the escrow checks at F:128-134, and DESIGN.md calls prize contracts untrusted."
+        ],
+        "G3": [
+          "ALLOWS",
+          "The victim is the winning-ticket holder (buyer cohort)."
+        ],
+        "G4": [
+          "ALLOWS",
+          "The prize can never be delivered after 100% of the pot is paid out."
+        ]
+      }
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::_settleWinningTicket",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-1-output.md",
+      "report_line": 20,
+      "report_end_line": 23,
+      "original_id": "R01",
+      "original_label": "Raffle | _settleWinningTicket | sponsor-paid-before-prize-delivery",
+      "native_lens": 1,
+      "native_group": "D06",
+      "native_final_id": "M-4",
+      "native_fields": {
+        "smell": "In the NftWon branch, the full sale price for the NFT, sponsorAmount = grossPot - protocolFee (95%), is credited to sponsorProceeds at settlement (Raffle.sol:544, :554). releaseSponsorProceeds (:375-380) pays it with no check of prizeClaimed or winnerRedeemed, so the USDC leg is never tied to the NFT leg (redeemWinningTicket :334-336). No state turns an undeliverable prize into a cash or refund claim: releaseSponsorPrize is barred in NftWon (:397-398), enableRefunds is barred after resolution (:292-293), and there is no deadline or fallback.",
+        "unverified": "Whether a prize that can refuse transferFrom(raffle, winner, id) after escrow is in the threat model. DESIGN.md says \"arbitrary prize contracts ... are untrusted\", but it also says \"Sponsor and treasury can claim independently after settlement\", and IRaffle.sol:14-15 says \"Supported prizes are honest, standards-compliant ERC-721s\". Against a fully malicious prize, coupling alone would not protect buyers either, because the contract could fake delivery. The defect bites hardest for collections that are honest but can restrict transfers (pause, creator transfer-approval hooks, transfer-validator level changes, migrations) and for owner-upgradeable prize contracts.",
+        "description": "Concrete path. (1) Sponsor creates a raffle (reserveEntries = 1,000) whose prize is an owner-upgradeable ERC-721 that passes F:154-179 and the escrow checks at F:128-134. (2) Buyers buy 5,000 entries, so USDC held is 5,000e6. (3) VRF resolves to NftWon. (4) Sponsor upgrades the prize so transfers out of the raffle revert. (5) Anyone calls settleWinningTicket(w): sponsorProceeds = 4,750e6 and protocolFees = 250e6. (6) releaseSponsorProceeds sends 4,750 USDC to sponsorRecipient. (7) redeemWinningTicket(w) reverts at :334 forever. USDC is conserved (5,000 in = 4,750 + 250 out), but the winning-ticket holder is left holding the loss: no NFT and no USDC claim. With an upgradeable prize the sponsor can also recover the NFT. Minimal mitigation if in scope: in releaseSponsorProceeds, require prizeClaimed when status == NftWon. Trade-off: a winner who never redeems then also defers the sponsor's proceeds."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::_settleWinningTicket",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-12-output.md",
+      "report_line": 26,
+      "report_end_line": 29,
+      "original_id": "R41",
+      "original_label": "Raffle | _settleWinningTicket | missing-fallback-undeliverable-prize",
+      "native_lens": 12,
+      "native_group": "D06",
+      "native_final_id": "M-4",
+      "native_fields": {
+        "smell": "In the NftWon branch, Raffle.sol:544 (`sponsorAmount = grossPot - protocolFee`) and :554-555 make 95% of the pot payable to sponsorRecipient and 5% to the treasury. Neither depends on the NFT being delivered. `releaseSponsorProceeds` (:375-382) has no `prizeClaimed`/delivery gate. The only way the NFT leaves is `redeemWinningTicket` (:334-337). It reverts entirely if the prize contract refuses `transferFrom(raffle, ...)` or misreports `ownerOf`. No state converts an undeliverable NftWon prize into cash or refunds: NftWon can never reach Refunding, and `releaseSponsorPrize` is barred in NftWon (:397). The escrow proof at creation also comes from the same untrusted contract: the prize contract can call `onERC721Received` (:421-428) directly, and the factory trusts its `ownerOf` (F:128-132). Trail: (1) a sponsor that administers an upgradeable ERC-721 collection raffles token #1 with reserve 1,000; (2) buyers purchase 5,000 entries (5,000 USDC); (3) VRF resolves NftWon and anyone settles, giving sponsorProceeds = 4,750 USDC (4,750,000,000 raw) and protocolFees = 250 USDC; (4) the sponsor calls releaseSponsorProceeds and receives 4,750 USDC; (5) the sponsor upgrades the collection so any transfer whose `from` is the raffle reverts; (6) every `redeemWinningTicket` by the winning-ticket owner now reverts forever.",
+        "unverified": "Whether sponsor-controlled or admin-mutable prize contracts are in the threat model. DESIGN.md says \"arbitrary prize contracts ... are untrusted\", but IRaffle.sol:14-15 says \"Supported prizes are honest, standards-compliant ERC-721s\". DESIGN.md also says \"Sponsor and treasury can claim independently after settlement\", so the independence is deliberate. Any delivery gate must still handle a winner who never redeems, because there is no redemption deadline. A fully malicious prize can fake both escrow and delivery, so no on-chain change protects against it. The gap is concrete only for admin-mutable collections (upgradeable, pausable or blocklisting).",
+        "description": "The NftWon branch pays the sponsor and treasury for a prize whose delivery depends only on the untrusted prize contract, so a prize that becomes non-transferable after settlement leaves the winning-ticket owner, and the buyers who funded the pot, holding the entire loss."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "CLOSED-004",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::enableRefunds",
+      "reconciled_reason": "Paid entry before the empty-raffle cancellation changes its valid precondition. No unpaid ticket or unauthorized principal loss established; empty-cancel documentation remains DOC-001.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/native-report.md",
+      "report_line": 227,
+      "original_id": "Lead-3",
+      "original_label": "- `Raffle::enableRefunds` \u2014 A 1-entry front-run removes the sponsor's option to cancel an empty raffle ([Raffle.sol:280-287](../packages/contracts/src/Raffle.sol#L280-L287)). \u2014 No value is lost beyond the sale window the sponsor chose. Demoted from [lenses: 3].",
+      "native_group": "D07"
+    },
+    {
+      "target": "CLOSED-004",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::enableRefunds",
+      "reconciled_reason": "Paid entry before the empty-raffle cancellation changes its valid precondition. No unpaid ticket or unauthorized principal loss established; empty-cancel documentation remains DOC-001.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/turn6/dedup-ledger.md",
+      "report_line": 140,
+      "original_id": "D07",
+      "original_label": "empty-raffle-cancel-griefing",
+      "native_final_id": "Lead-3",
+      "native_members": [
+        "R15",
+        "R23",
+        "R27"
+      ],
+      "native_gates": {
+        "G1": [
+          "ALLOWS",
+          "Once totalEntries > 0 the sponsor's early path at :280-284 is gone, and nothing prevents a 1-entry front-run."
+        ],
+        "G2": [
+          "ALLOWS",
+          "Costs 1 USDC plus gas, which is refundable."
+        ],
+        "G3": [
+          "ALLOWS",
+          "The victim is the sponsor, a third party to the griefer."
+        ],
+        "G4": [
+          "BLOCKS",
+          "No value is lost: the NFT stays escrowed only for the sale window the sponsor chose. The sponsor can draw at endTime and recover the prize through CashWon and releaseSponsorPrize, and the documented empty-raffle semantics (I:322-323) still hold."
+        ]
+      }
+    },
+    {
+      "target": "CLOSED-004",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::enableRefunds",
+      "reconciled_reason": "Paid entry before the empty-raffle cancellation changes its valid precondition. No unpaid ticket or unauthorized principal loss established; empty-cancel documentation remains DOC-001.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-4-output.md",
+      "report_line": 59,
+      "report_end_line": 62,
+      "original_id": "R15",
+      "original_label": "Raffle | enableRefunds | empty-raffle-cancel-griefing",
+      "native_lens": 4,
+      "native_group": "D07",
+      "native_final_id": "Lead-3",
+      "native_fields": {
+        "smell": "The sponsor can only cancel early while `totalEntries == 0` (Raffle.sol:280-284). Anyone can front-run the cancel with buyEntries(griefer, 1) for 1 USDC. After that, the call requires now >= endTime + 2 days (Raffle.sol:286-287).",
+        "unverified": "Material loss. The griefer's 1 USDC comes back in full (refund) or 80% (CashWon). The sponsor's NFT stays escrowed only within a window the sponsor chose (at most 30 days plus 2), so the harm is opportunity cost.",
+        "description": "Low-impact denial of the sponsor's early-exit right at the cost of gas. Noted for completeness."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "CLOSED-004",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::enableRefunds",
+      "reconciled_reason": "Paid entry before the empty-raffle cancellation changes its valid precondition. No unpaid ticket or unauthorized principal loss established; empty-cancel documentation remains DOC-001.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-7-output.md",
+      "report_line": 59,
+      "report_end_line": 67,
+      "original_id": "R23",
+      "original_label": "Raffle | enableRefunds | frontrun-cancel-grief",
+      "native_lens": 7,
+      "native_group": "D07",
+      "native_final_id": "Lead-3",
+      "native_fields": {
+        "smell": "The sponsor's discretionary early exit only works while totalEntries == 0 (L280-284).",
+        "unverified": "Whether this matters. The sponsor had already committed the NFT until endTime, and the \"empty raffles only\" cancel rule is documented (IRaffle.sol:323). The sponsor can defend by requesting the draw, or by buying entries at the 5% effective cost described in LEAD 1.",
+        "description": "A near-free 1-entry front-run removes the sponsor's only cancellation right. The impact is a longer NFT lock-up and a lost option, not theft."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "CLOSED-004",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::enableRefunds",
+      "reconciled_reason": "Paid entry before the empty-raffle cancellation changes its valid precondition. No unpaid ticket or unauthorized principal loss established; empty-cancel documentation remains DOC-001.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-8-output.md",
+      "report_line": 36,
+      "report_end_line": 39,
+      "original_id": "R27",
+      "original_label": "Raffle | enableRefunds | griefing-cancel-block",
+      "native_lens": 8,
+      "native_group": "D07",
+      "native_final_id": "Lead-3",
+      "native_fields": {
+        "smell": "The sponsor can only cancel immediately while totalEntries == 0 (Raffle.sol:280-284), and any address can remove that option for 1 USDC. Path: (1) the sponsor creates a raffle with endTime = now + 30 days and reserveEntries = 500; (2) griefer G calls buyEntries(G, 1) and pays 1 USDC (Raffle.sol:209-237); (3) the sponsor's enableRefunds now reverts until drawRequestDeadline = endTime + 2 days (Raffle.sol:286-287); (4) the sponsor either pays the VRF fee to draw (CashWon: G gets 0.8 USDC, the sponsor gets 0.15 USDC and the NFT back through releaseSponsorPrize) or waits 32 days for refunds (G gets the 1 USDC back). G's cost: gas plus 1 USDC, fully recovered if refunds happen (0.2 USDC net if the sponsor draws). The sponsor's NFT stays locked for up to 32 days instead of being withdrawable at once.",
+        "unverified": "It is unclear whether \"closes an empty raffle immediately for the sponsor\" (IRaffle.sol:323) was meant to give the sponsor a cancel right that survives a 1-USDC entry. The griefing purchase looks exactly like a real one, and the sponsor committed to endTime when creating the raffle, so this is probably accepted design. The lock is time-bounded and no principal is lost.",
+        "description": "One 1-USDC entry locks the sponsor's NFT into the full sale window plus the 2-day request window, with no way back out."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": "Medium",
+      "original_status": "FINDING",
+      "function": "Raffle::redeemWinningTicket",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/native-report.md",
+      "report_line": 133,
+      "original_id": "M-5",
+      "original_label": "## M-5. `Raffle::redeemWinningTicket()` is the only exit from the terminal `NftWon` state and has no fallback when prize delivery fails, permanently stranding the winning ticket [lenses: 1]",
+      "native_group": "D08"
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": "Medium",
+      "original_status": "FINDING",
+      "function": "Raffle::redeemWinningTicket",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/turn6/dedup-ledger.md",
+      "report_line": 151,
+      "original_id": "D08",
+      "original_label": "stuck-terminal-state",
+      "native_final_id": "M-5",
+      "native_members": [
+        "R25"
+      ],
+      "native_gates": {
+        "G1": [
+          "ALLOWS",
+          "The NftWon branch (:329-337) has one delivery path, and any revert undoes the burn. There is no alternative exit: enableRefunds rejects NftWon (:292-293), releaseSponsorPrize rejects it (:397-398), and there is no deadline."
+        ],
+        "G2": [
+          "ALLOWS",
+          "The factory accepts admin-gated or sponsor-controlled prize collections (R25 step 6)."
+        ],
+        "G3": [
+          "ALLOWS",
+          "The victim is the winning-ticket holder."
+        ],
+        "G4": [
+          "ALLOWS",
+          "The pot is paid out (950/50) while the prize can never be delivered."
+        ]
+      }
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::redeemWinningTicket",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-8-output.md",
+      "report_line": 22,
+      "report_end_line": 25,
+      "original_id": "R25",
+      "original_label": "Raffle | redeemWinningTicket | stuck-terminal-state",
+      "native_lens": 8,
+      "native_group": "D08",
+      "native_final_id": "M-5",
+      "native_fields": {
+        "smell": "NftWon is a terminal state with no exit if the prize leg can never complete. In NftWon the NFT can only leave through prizeToken.transferFrom(address(this), winner, id) plus the ownerOf re-check (Raffle.sol:334-337). releaseSponsorPrize rejects NftWon (Raffle.sol:397-399). enableRefunds rejects every terminal status (Raffle.sol:279-293). No path turns an undeliverable prize into refunds or cash. Settlement, however, has already credited sponsorProceeds = grossPot - protocolFee (Raffle.sol:544, 554), and releaseSponsorProceeds pays it without checking prizeClaimed (Raffle.sol:375-382). Path: (1) sponsor S escrows token #1 of collection P via createRaffle with reserveEntries = 1,000; (2) buyers buy 1,000 entries = 1,000 USDC; (3) the VRF callback resolves NftWon (Raffle.sol:521); (4) anyone settles: sponsorProceeds = 950 USDC, protocolFees = 50 USDC; (5) anyone calls releaseSponsorProceeds and 950 USDC goes to sponsorRecipient; (6) P permanently blocks transfers out of the clone (admin pause, per-address blocklist, a transfer-validator policy that turns off owner-initiated transfers by contracts, or a sponsor-controlled P whose transferFrom reverts or whose ownerOf lies); (7) every redeemWinningTicket call reverts, which undoes the burn (Raffle.sol:325, 334-337). The winning ticket cannot be refunded either (Raffle.sol:350). Outcome: all 1,000 USDC from buyers is paid out (950 to the sponsor, 50 to the treasury). The winning-ticket holder keeps a claim that can never be redeemed, and the NFT is stuck in the clone with no recovery path.",
+        "unverified": "(a) Whether the trust model makes this reportable. DESIGN.md says arbitrary prize contracts are untrusted, but it also says \"Sponsor and treasury can claim independently after settlement\", and IRaffle.sol:14-15 limits support to \"honest, standards-compliant ERC-721s\". (b) Whether blocking delivery adds any loss. If the sponsor controls P, blocking adds nothing over raffling a worthless token: the sponsor collects 950 either way. A sponsor also gains nothing by blocking a valuable token, because it is stuck for them too. Extra loss only appears when a third-party admin of a real collection permanently restricts transfers out of the clone. Working offline, I could not confirm any live collection that accepts the factory's inbound safeTransferFrom (RaffleFactory.sol:128) but later blocks the raffle's outbound transferFrom. (c) A temporary pause only delays the winner: there is no redemption deadline, so they can redeem after the unpause.",
+        "description": "The NftWon branch ties a final state to a delivery made by an untrusted contract while paying the sponsor's 95% with no condition. The smallest code fix is to make releaseSponsorProceeds (Raffle.sol:375-382) require prizeClaimed when status == NftWon, or to add a fallback for failed delivery. Both conflict with DESIGN.md's \"claim independently after settlement\", and the first lets a winner who never redeems freeze the sponsor's share."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": "Medium",
+      "original_status": "FINDING",
+      "function": "Raffle::releaseSponsorProceeds",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/native-report.md",
+      "report_line": 25,
+      "original_id": "M-1",
+      "original_label": "## M-1. `Raffle::releaseSponsorProceeds()` releases the `NftWon` 95% (and `releaseProtocolFees()` the 5%) without checking `prizeClaimed`, so a prize that stops transferring out of the clone leaves the winning-ticket holder with nothing after the whole pot is paid out [lenses: 9]",
+      "native_group": "D09"
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": "Medium",
+      "original_status": "FINDING",
+      "function": "Raffle::releaseSponsorProceeds",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/turn6/dedup-ledger.md",
+      "report_line": 166,
+      "original_id": "D09",
+      "original_label": "payout-decoupled-from-prize-delivery",
+      "native_final_id": "M-1",
+      "native_members": [
+        "R05",
+        "R10",
+        "R11",
+        "R16",
+        "R19",
+        "R24",
+        "R30",
+        "R34",
+        "R37"
+      ],
+      "native_gates": {
+        "G1": [
+          "ALLOWS",
+          ":375-382 checks only amount != 0 and the _transferQuote destination screen; there is no status or prizeClaimed check, and releaseProtocolFees (:385-392) is identical. NftWon has no exit to refunds (:292-293) or to prize return (:397-398). Redeem (:334-337) reverts atomically, which strands the winner rather than protecting them."
+        ],
+        "G2": [
+          "ALLOWS",
+          "internal_pre NftWon is the normal reserve-met state. The external_pre (prize transfers out of the clone blocked after escrow) costs nothing for a sponsor who administers the collection, and happens with no attacker for third-party-administered collections. The factory accepts any ERC-165 ERC-721 (F:155-177), and DESIGN.md calls prize contracts untrusted; the code does not enforce the 'honest' assumption at IRaffle.sol:14-15."
+        ],
+        "G3": [
+          "ALLOWS",
+          "The victim is the owner of the winning ticket (buyer cohort, including secondary-market purchasers)."
+        ],
+        "G4": [
+          "ALLOWS",
+          "The prize is never delivered while 100% of the buyers' pot is paid out (R11: 11,400 + 600 USDC). In the upgrade/seize variant the sponsor keeps both the NFT and 95%."
+        ]
+      }
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseSponsorProceeds",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-2-output.md",
+      "report_line": 26,
+      "report_end_line": 30,
+      "original_id": "R05",
+      "original_label": "Raffle | releaseSponsorProceeds | prize-leg-decoupled-payout",
+      "native_lens": 2,
+      "native_group": "D09",
+      "native_final_id": "M-1",
+      "native_fields": {
+        "smell": "In NftWon, _settleWinningTicket (Raffle.sol:543-544, :554-555) makes 95% sponsorProceeds and 5% protocolFees releasable right away through releaseSponsorProceeds (:375-382) and releaseProtocolFees (:385-392). Neither depends on the winner's prize transfer in redeemWinningTicket (:329-337: prizeToken.transferFrom plus an ownerOf check) ever succeeding. DESIGN.md says prize contracts are untrusted. Suppose the prize contract stops honouring the clone's transfer after settlement, for example through a collection-admin pause, an ERC721C-style transfer-validator policy raised after deposit, or an upgradeable collection the sponsor controls. Then every redemption reverts. The winning ticket has no fallback claim: no conversion to CashWon, no refund, no timeout. The NFT is stranded in the clone after 100% of the pot has left.",
+        "unverified": "The trust model conflicts. IRaffle.sol:14-15 says supported prizes are honest, standards-compliant ERC-721s, while DESIGN.md calls prize contracts untrusted. A fully malicious prize is economically just a worthless prize, which no escrow can protect against, so real impact depends on the case where a third party freezes the collection. DESIGN.md also requires sponsor and treasury to claim independently after settlement, so holding proceeds until delivery would conflict with the spec. Sibling: receipt-type prizes whose value a third party can drain while escrowed (e.g. cancelable stream NFTs) have the same decoupled payout.",
+        "description": "NftWon pays the whole pot to sponsor and treasury whether or not the escrowed NFT can still be delivered, so if the prize contract later freezes the transfer, the winning ticket is left with a claim it cannot redeem and no cash or refund fallback."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseSponsorProceeds",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-3-output.md",
+      "report_line": 49,
+      "report_end_line": 52,
+      "original_id": "R10",
+      "original_label": "Raffle | releaseSponsorProceeds | payout-decoupled-from-prize-delivery",
+      "native_lens": 3,
+      "native_group": "D09",
+      "native_final_id": "M-1",
+      "native_fields": {
+        "smell": "In NftWon, settlement allocates 95% of the buyers' pot to sponsorProceeds (Raffle.sol:544, 554). releaseSponsorProceeds (Raffle.sol:375-382) pays it out whether or not the NFT leg (redeemWinningTicket, Raffle.sol:329-337) ever succeeds. There is no redemption timeout and no fallback to refunds. If the prize collection blocks transfers out of the raffle after creation (an admin-pausable, upgradeable or transfer-validator-gated collection, or a sponsor-controlled contract), the winner can never redeem, while the sponsor keeps 95% and the treasury 5%.",
+        "unverified": "(1) Whether such prizes are in scope. DESIGN.md says arbitrary prize contracts are untrusted, but IRaffle.sol:14-15 says supported prizes are honest, standards-compliant ERC-721s, and DESIGN.md explicitly lets sponsor and treasury claim independently after settlement. (2) Gating sponsor proceeds on prizeClaimed would swap this for a sponsor-side stuck-funds risk if the winner never redeems. This belongs mainly to the trust/integration lens and is recorded here as a split-between-cohorts symptom.",
+        "description": "The sponsor is paid from the pot regardless of whether the buyers' prize can actually be delivered, so a transfer freeze on the prize after creation leaves the winning cohort with nothing."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "FINDING",
+      "function": "Raffle::releaseSponsorProceeds",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-4-output.md",
+      "report_line": 17,
+      "report_end_line": 30,
+      "original_id": "R11",
+      "original_label": "Raffle | releaseSponsorProceeds | payment-released-without-delivery",
+      "native_lens": 4,
+      "native_group": "D09",
+      "native_final_id": "M-1",
+      "native_fields": {
+        "root_cause": "Raffle.sol:375-378 `releaseSponsorProceeds()` pays out the NftWon sponsor allocation (95% of the pot). `_settleWinningTicket` makes that allocation claimable at settlement (Raffle.sol:543-544, 554). The only guard is `amount == 0` at :377. No `prizeClaimed` (delivery) check is performed. The same gap exists in `releaseProtocolFees()` at Raffle.sol:385-388 for the 5% fee. NftWon also has no way out to refunds: `enableRefunds` reverts for every status except Active and Drawing (Raffle.sol:292-293), and `releaseSponsorPrize` rejects NftWon (Raffle.sol:397-398). So payment and delivery are decoupled. If the prize contract stops honouring the clone's own `transferFrom(raffle -> winner)` at Raffle.sol:334, or the `ownerOf` re-check at :335 fails, every redemption reverts. Meanwhile the sponsor and the treasury are paid in full.",
+        "internal_pre": "Raffle resolved as NftWon (totalEntries >= reserveEntries when the sale ends; Raffle.sol:521).",
+        "external_pre": "After escrow, the prize ERC-721 refuses or redirects the clone's transfer of the prize. Possible causes: the collection admin pauses transfers, applies a transfer restriction (operator, owner-initiated or account freeze that hits the clone), or upgrades the collection. A third possibility is a sponsor-controlled collection whose admin seizes or locks the token. DESIGN.md: \"arbitrary prize contracts ... are untrusted\". The pause and transfer-restriction behaviours are general ERC-721 ecosystem facts, not code vendored in this repo.",
+        "path": "",
+        "impact": "The winning-ticket holder bears the whole loss. That is Alice, or anyone who bought the winning ticket on the secondary market at roughly the NFT's value. The NFT she won can never be delivered, and NftWon is terminal with no refund or cash fallback. Meanwhile 100% of the buyers' 12,000 USDC has already gone out: 11,400 to the sponsor recipient and 600 to the treasury. In the seize variant, where S controls the prize contract, S keeps both the NFT and the 11,400 USDC. This breaks money-map invariants 7 (the prize leaves exactly once, to the winner in NftWon) and 15 (every claimant can eventually collect). Suggested severity: Medium, because it depends on an external pre-condition on the prize contract.",
+        "mitigation": "In releaseSponsorProceeds(), and likewise in releaseProtocolFees(), add `if (status == Status.NftWon && !prizeClaimed) revert PrizeNotDelivered();` so the NftWon allocation is paid only against actual delivery. Optionally pair this with an NftWon delivery deadline that turns an undeliverable prize into refunds, so the gated pot cannot be stranded either."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseSponsorProceeds",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-5-output.md",
+      "report_line": 22,
+      "report_end_line": 25,
+      "original_id": "R16",
+      "original_label": "Raffle | releaseSponsorProceeds | cross-asset-escrow-decoupling",
+      "native_lens": 5,
+      "native_group": "D09",
+      "native_final_id": "M-1",
+      "native_fields": {
+        "smell": "In NftWon, `_settleWinningTicket` allocates `sponsorProceeds = grossPot - protocolFee` and `protocolFees` (Raffle.sol:543-544, :554-555). `releaseSponsorProceeds` (:375-382) and `releaseProtocolFees` (:385-392) then pay both out without checking that the NFT can be delivered. The winner's prize has exactly one delivery path: an external `prizeToken.transferFrom` on a contract that DESIGN.md calls untrusted (:334-337). If that call reverts (collection-wide pause, per-address freeze, creator transfer-validator change, upgrade), redemption reverts atomically as designed. But NftWon is terminal (`enableRefunds` reverts at :292-293), and no branch turns an undeliverable prize into cash or refunds. Partial path: (1) 30,000 entries are sold, so the pot is 30,000 USDC; the reserve is met and the raffle resolves NftWon. (2) The prize collection's admin blocks transfers out of the raffle. (3) Anyone settles; 28,500 USDC is released to sponsorRecipient (:378-380) and 1,500 USDC to the treasury (:388-390). (4) Every `redeemWinningTicket` by the winning-ticket owner reverts at :334. The winning-ticket holder carries the whole loss: buyers funded a pot that was fully paid out for a prize that is never delivered.",
+        "unverified": "(a) The intended trust model is ambiguous. DESIGN.md says \"arbitrary prize contracts ... are untrusted\" but also \"Sponsor and treasury can claim independently after settlement\", and IRaffle.sol:14-15 limits support to \"honest, standards-compliant ERC-721s\". (b) Adversary profit is not established. A sponsor who controls the freeze ends no better off than with an honest outcome, because the NFT leaves the sponsor either way. The exceptions are a sponsor who extorts the winner to unfreeze, or one who can seize the token through an admin function; in the seizure case no escrow ordering helps. So only a grief or an external-freeze path is established, not a profitable theft.",
+        "description": "The NftWon USDC payout to sponsor and treasury and the NFT delivery to the winner settle independently, so a failed NFT delivery strands the winner after the pot is fully paid out. Gating `releaseSponsorProceeds` on `winnerRedeemed` when `status == NftWon` would link the two, at the cost of making the sponsor's payout depend on the winner acting."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseSponsorProceeds",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-6-output.md",
+      "report_line": 17,
+      "report_end_line": 20,
+      "original_id": "R19",
+      "original_label": "Raffle | releaseSponsorProceeds | cross-asset-payout-decoupling",
+      "native_lens": 6,
+      "native_group": "D09",
+      "native_final_id": "M-1",
+      "native_fields": {
+        "smell": "In NftWon, _settleWinningTicket makes 95% of the pot claimable by sponsorRecipient (Raffle.sol:544, :554). releaseSponsorProceeds (Raffle.sol:375-382) pays it without checking prizeClaimed or winnerRedeemed. The NFT leg (redeemWinningTicket, Raffle.sol:334-335) depends on the prize contract, which DESIGN.md says is untrusted, and it has no fallback: releaseSponsorPrize is barred in NftWon (Raffle.sol:397), and enableRefunds rejects terminal states (Raffle.sol:279-294). Suppose the prize contract permanently blocks transfers out of the clone (an admin pause, or a transfer-validator or blocklist entry on the clone address). Then the winning-ticket holder gets nothing while sponsorRecipient (950,000*T raw) and the treasury (50,000*T raw) are paid in full. Example with T = 10,000 entries: 9,500 USDC go to sponsorRecipient, 500 USDC go to the treasury, and the winning ticket is worthless.",
+        "unverified": "This is outside Lens 6 (no arithmetic defect). Unclear whether a sponsor can profit from it. Profit needs a prize contract where the sponsor controls an admin seizure or unfreeze path; otherwise it is only griefing. The IRaffle.sol NatSpec says \"Supported prizes are honest, standards-compliant ERC-721s\", which conflicts with DESIGN.md's untrusted-prize statement. Gating sponsor proceeds on prizeClaimed would create the opposite problem: proceeds held hostage by a winner who never redeems.",
+        "description": "The sponsor and treasury USDC legs settle independently of NFT delivery, so an undeliverable prize leaves only the winner unpaid, with no refund path."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseSponsorProceeds",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-7-output.md",
+      "report_line": 71,
+      "report_end_line": 79,
+      "original_id": "R24",
+      "original_label": "Raffle | releaseSponsorProceeds | proceeds-released-before-prize-delivery",
+      "native_lens": 7,
+      "native_group": "D09",
+      "native_final_id": "M-1",
+      "native_fields": {
+        "smell": "Cross-lens: this is mainly an integration/trust issue, with an ordering angle. In NftWon, permissionless settlement (L533-558) credits 95% of the pot to sponsorProceeds. releaseSponsorProceeds (L375-382) and its sibling releaseProtocolFees (L385-392) pay out without checking winnerRedeemed or prizeClaimed. The winner's side (L334-337) depends on the sponsor-chosen prize contract, which DESIGN.md calls untrusted. totalEntries is frozen at endTime, so the outcome branch at L521 is known before the VRF runs.",
+        "unverified": "The documented trust model contradicts itself. IRaffle.sol:14-15 says \"Supported prizes are honest, standards-compliant ERC-721s\", while DESIGN.md says \"arbitrary prize contracts ... are untrusted\". This is outside this lens's core scope and is flagged for the integration lens.",
+        "description": "NftWon USDC payouts are released independently of NFT delivery, so a sponsor-controlled prize contract can collect the pot and block the winner. The sponsor has a timing advantage because the outcome class is known at endTime."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseSponsorProceeds",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-9-output.md",
+      "report_line": 14,
+      "report_end_line": 17,
+      "original_id": "R30",
+      "original_label": "Raffle | releaseSponsorProceeds | untrusted-prize-delivery-decoupled",
+      "native_lens": 9,
+      "native_group": "D09",
+      "native_final_id": "M-1",
+      "native_fields": {
+        "smell": "In NftWon, _settleWinningTicket allocates 95% of the pot to sponsorProceeds (Raffle.sol:543-544, :554). releaseSponsorProceeds (Raffle.sol:375-382) pays it out with no dependency on the NFT leg. prizeClaimed is set only at :331, immediately before the delivery at :334-336. Whether the prize was escrowed and delivered is checked only by asking the prize contract itself: ownerOf at F:129 and Raffle.sol:335. Activation also trusts the operator/from arguments that this same contract passes to onERC721Received (Raffle.sol:422-428). DESIGN.md says \"arbitrary prize contracts ... are untrusted\". I:14-15 instead assumes \"honest, standards-compliant ERC-721s\".",
+        "unverified": "Concrete only for a sponsor-controlled prize contract: (1) sponsor deploys a pausable ERC-721 and creates a raffle with reserve 10,000; (2) buyers buy 10,000 entries (10,000 USDC); (3) VRF resolves NftWon, anyone settles, releaseSponsorProceeds pays 9,500 USDC to sponsorRecipient and the treasury takes 500; (4) the sponsor pauses transfers, so redeemWinningTicket reverts at :334 forever. The winner, and every buyer whose USDC formed the pot, hold the loss. I could not show an honest-sponsor case where delivery fails permanently after payout: a third-party admin pause or ERC721C validator change can, and ENS expiry is recoverable by renewal during grace. DESIGN.md also says \"Sponsor and treasury can claim independently after settlement\", so gating sponsor proceeds on prizeClaimed would contradict the spec. No on-chain check can defend against a prize contract that lies in ownerOf.",
+        "description": "The spec cannot both treat prize contracts as untrusted and release the sponsor's 95% independently of NFT delivery. The money map's cross-asset coupling is a real trust gap, bounded only by buyers vetting the prize contract."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "FINDING",
+      "function": "Raffle::releaseSponsorProceeds",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-10-output.md",
+      "report_line": 9,
+      "report_end_line": 24,
+      "original_id": "R34",
+      "original_label": "Raffle | releaseSponsorProceeds | admin-gated-prize-transfer",
+      "native_lens": 10,
+      "native_group": "D09",
+      "native_final_id": "M-1",
+      "native_fields": {
+        "root_cause": "Raffle.sol:376. `releaseSponsorProceeds` pays out `sponsorProceeds` with no check on `status` or `prizeClaimed`. In `NftWon`, `_settleWinningTicket` allocates 95% to the sponsor and 5% to the treasury (Raffle.sol:543-544, 554-555) through permissionless, storage-only settlement. Neither step depends on the NFT leg in `redeemWinningTicket` (Raffle.sol:329-337) ever succeeding. `NftWon` also has no fallback for the winner: `enableRefunds` only accepts Active or Drawing (Raffle.sol:279-293), `releaseSponsorPrize` excludes NftWon (Raffle.sol:397), and `winnerProceeds` stays 0. The code assumes the escrowed ERC-721 can still be transferred out of the clone when the winner redeems. Real ERC-721s let an admin revoke that after deposit: OpenZeppelin `ERC721Pausable` (`_update` is `whenNotPaused` and reverts `EnforcedPause()`), Manifold Creator Core's admin-set transfer-approval hook (`setApproveTransfer`), Limit Break ERC721-C transfer validators (creator-set soulbound or OTC-blocking policies, account freezing), and upgradeable ERC-721 proxies. DESIGN.md says \"arbitrary prize contracts ... are untrusted\", but IRaffle.sol:14-15 assumes \"honest\" prizes. The code follows the weaker of the two.",
+        "internal_pre": "The reserve is met, so the result is `NftWon`. No other state is needed.",
+        "external_pre": "The prize collection has an owner-controlled transfer gate (pause, approve-transfer hook, validator policy or freeze, or proxy upgrade), and the sponsor controls it or colludes with whoever does. The common case qualifies: an artist raffling a token from their own Manifold or OpenZeppelin collection.",
+        "path": "",
+        "impact": "The buyer cohort paid 20,000 USDC. S takes 19,000 USDC and the treasury 1,000 USDC, and the NFT is never delivered. Winner W is left holding the loss: the claim on C#7 can never be redeemed and there is no cash or refund substitute. This defeats the protocol's trust-minimising guarantee (\"Exactly one ERC721 prize is escrowed atomically at creation\") while fully protecting the sponsor's 95%. S's cost is a token S controls anyway.",
+        "mitigation": "In `releaseSponsorProceeds` (Raffle.sol:375-376), add `if (status == Status.NftWon && !prizeClaimed) revert` so NftWon sponsor proceeds unlock only after `redeemWinningTicket` has delivered and verified the prize. Optionally apply the same gate to `releaseProtocolFees`. This narrows DESIGN.md's \"claim independently after settlement\" for the NftWon branch only. That is the branch where the sponsor can control the opposite leg, and the gate removes the sponsor's profit from blocking the prize."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "RF-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseSponsorProceeds",
+      "reconciled_reason": "Existing conditional untrusted-prize truth/delivery/proceeds family. Preserve native Medium findings and unverified spoofed-escrow lead separately; no model agreement as proof. Honest permanent delivery, later refusal and dishonest getter cases differ.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-11-output.md",
+      "report_line": 20,
+      "report_end_line": 28,
+      "original_id": "R37",
+      "original_label": "Raffle | releaseSponsorProceeds | terminal-state-no-fallback",
+      "native_lens": 11,
+      "native_group": "D09",
+      "native_final_id": "M-1",
+      "native_fields": {
+        "smell": "In NftWon, `_settleWinningTicket` books 95% of the pot as `sponsorProceeds` (Raffle.sol:544, :554). `releaseSponsorProceeds` (Raffle.sol:375-381) pays it with no dependency on `prizeClaimed` or `winnerRedeemed`. The winner's only exit is `prizeToken.transferFrom(address(this), winner, prizeTokenId)` (Raffle.sol:334). NftWon is an absorbing state: `enableRefunds` reverts outside Active/Drawing (Raffle.sol:292-293), and `releaseSponsorPrize` excludes NftWon (Raffle.sol:397-398). If the prize becomes non-transferable out of the raffle after resolution, there is no cash or refund fallback. Concrete sequence:",
+        "unverified": "It is unclear whether such a prize is in scope. DESIGN.md says \"arbitrary prize contracts ... are untrusted\", but IRaffle.sol:14-15 limits support to \"honest, standards-compliant ERC-721s\". DESIGN.md also asks that sponsor and treasury \"claim independently after settlement\", which this behaviour satisfies. The third-party collection behaviours above (pause, transfer-validator levels, ENS expiry and grace) are not vendored in this workspace and were not verified from source.",
+        "description": "The NftWon terminal state releases the sponsor's 95% independently of an NFT leg that an untrusted or admin-controlled prize can freeze, and offers no path back to refunds. If this is in scope, the minimal fix is to gate NftWon `releaseSponsorProceeds` on `prizeClaimed == true`, plus a long winner-inactivity timeout so an absent winner cannot lock the sponsor forever."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "OBS-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseSponsorProceeds",
+      "reconciled_reason": "Immutable sponsor/treasury recipient issuer freeze is a conditional external integration risk. No general redirect/theft capability established.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/native-report.md",
+      "report_line": 228,
+      "original_id": "Lead-4",
+      "original_label": "- `Raffle::releaseSponsorProceeds` \u2014 `sponsorRecipient` is immutable and cannot be redirected if USDC blacklists it ([Raffle.sol:564-567](../packages/contracts/src/Raffle.sol#L564-L567)). \u2014 No attacker path; only the chosen recipient loses. [lenses: 1]",
+      "native_group": "D10"
+    },
+    {
+      "target": "OBS-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseSponsorProceeds",
+      "reconciled_reason": "Immutable sponsor/treasury recipient issuer freeze is a conditional external integration risk. No general redirect/theft capability established.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/turn6/dedup-ledger.md",
+      "report_line": 190,
+      "original_id": "D10",
+      "original_label": "immutable-recipient-no-reroute",
+      "native_final_id": "Lead-4",
+      "native_members": [
+        "R43"
+      ],
+      "native_gates": {
+        "G1": [
+          "ALLOWS",
+          "sponsorRecipient is written once at :198, and there is no claim-to or redirect path."
+        ],
+        "G2": [
+          "BLOCKS",
+          "Requires Circle (trusted canonical USDC under DESIGN.md) to blacklist the recipient; there is no attacker path."
+        ],
+        "G3": [
+          "BLOCKS",
+          "Only the recipient the sponsor chose loses."
+        ],
+        "G4": [
+          "ALLOWS",
+          "The funds would be permanently stuck."
+        ]
+      }
+    },
+    {
+      "target": "OBS-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseSponsorProceeds",
+      "reconciled_reason": "Immutable sponsor/treasury recipient issuer freeze is a conditional external integration risk. No general redirect/theft capability established.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-12-output.md",
+      "report_line": 40,
+      "report_end_line": 43,
+      "original_id": "R43",
+      "original_label": "Raffle | releaseSponsorProceeds | immutable-recipient-no-reroute",
+      "native_lens": 12,
+      "native_group": "D10",
+      "native_final_id": "Lead-4",
+      "native_fields": {
+        "smell": "`releaseSponsorProceeds` (Raffle.sol:375-382), `releaseProtocolFees` (:385-392) and `releaseSponsorPrize` (:402-405) can only pay the recipients fixed at initialize (:198-199); the treasury is also a factory immutable. Ticket-backed claims (`refundTickets`, `redeemWinningTicket`) have an escape: the holder can transfer the bearer ticket to a clean address. The sponsor and treasury claims have no such path. If USDC blacklists `sponsorRecipient` after settlement, or blacklists the factory-wide `protocolTreasury` at any time, `_transferQuote` -> `safeTransfer` (:564-567) reverts permanently. The allocated USDC is then locked in the clone forever, and for the treasury this hits every raffle from the factory.",
+        "unverified": "Whether recipient-level USDC blacklisting is in scope for a \"trusted canonical dependency\". The loss falls only on the sponsor or the protocol, never on buyers, so this is likely Low/Info.",
+        "description": "Sibling asymmetry: ticket claims can be re-routed by transferring the bearer ticket, but sponsor and treasury claims are pinned to immutable recipients with no fallback, so a USDC freeze on a recipient strands those funds permanently."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "OBS-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseProtocolFees",
+      "reconciled_reason": "Immutable sponsor/treasury recipient issuer freeze is a conditional external integration risk. No general redirect/theft capability established.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/native-report.md",
+      "report_line": 229,
+      "original_id": "Lead-5",
+      "original_label": "- `Raffle::releaseProtocolFees` \u2014 `protocolTreasury` is immutable and shared by the whole factory, so a USDC blacklist would freeze every raffle's fee ([Raffle.sol:385-390](../packages/contracts/src/Raffle.sol#L385-L390)). \u2014 No attacker path; only the treasury loses. [lenses: 1]",
+      "native_group": "D11"
+    },
+    {
+      "target": "OBS-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseProtocolFees",
+      "reconciled_reason": "Immutable sponsor/treasury recipient issuer freeze is a conditional external integration risk. No general redirect/theft capability established.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/turn6/dedup-ledger.md",
+      "report_line": 202,
+      "original_id": "D11",
+      "original_label": "usdc-blacklist-immutable-recipient",
+      "native_final_id": "Lead-5",
+      "native_members": [
+        "R35"
+      ],
+      "native_gates": {
+        "G1": [
+          "ALLOWS",
+          "protocolTreasury is immutable, and there is no redirect path."
+        ],
+        "G2": [
+          "BLOCKS",
+          "Requires Circle to blacklist the treasury; there is no attacker path."
+        ],
+        "G3": [
+          "BLOCKS",
+          "Only the protocol treasury loses."
+        ],
+        "G4": [
+          "ALLOWS",
+          "The fees would be stuck factory-wide."
+        ]
+      }
+    },
+    {
+      "target": "OBS-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseProtocolFees",
+      "reconciled_reason": "Immutable sponsor/treasury recipient issuer freeze is a conditional external integration risk. No general redirect/theft capability established.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-10-output.md",
+      "report_line": 27,
+      "report_end_line": 35,
+      "original_id": "R35",
+      "original_label": "Raffle | releaseProtocolFees | usdc-blacklist-immutable-recipient",
+      "native_lens": 10,
+      "native_group": "D11",
+      "native_final_id": "Lead-5",
+      "native_fields": {
+        "smell": "Two USDC claim legs pay out only to addresses that can never change, and neither has a redirect or claim-to path.",
+        "unverified": "No third-party victim. Only the blacklisted beneficiary loses, and only after an outside Circle action. I could not construct an attacker-induced path.",
+        "description": "Immutable USDC recipients with no redirect path turn a USDC blacklist into a permanent freeze of protocol fees (factory-wide) or sponsor proceeds (per raffle)."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "RF-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseSponsorPrize",
+      "reconciled_reason": "Narrow self-selected future-clone sponsor-prize destination, with existing independent honest-ERC721 root reproduction. Native lead/self-harm demotion retained; not third-party EOA theft.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/native-report.md",
+      "report_line": 230,
+      "original_id": "Lead-6",
+      "original_label": "- `Raffle::releaseSponsorPrize` \u2014 The NFT return is not re-checked at payout ([Raffle.sol:402-405](../packages/contracts/src/Raffle.sol#L402-L405)), and the init-time check skips addresses with no code ([:602](../packages/contracts/src/Raffle.sol#L602)). A `sponsorRecipient` set to a future clone address therefore moves the prize into another clone, against `DESIGN.md` \"Never move assets between raffle clones\". \u2014 Only the sponsor who chose that address loses. Demoted from [lenses: 5].",
+      "native_group": "D12"
+    },
+    {
+      "target": "RF-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseSponsorPrize",
+      "reconciled_reason": "Narrow self-selected future-clone sponsor-prize destination, with existing independent honest-ERC721 root reproduction. Native lead/self-harm demotion retained; not third-party EOA theft.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/turn6/dedup-ledger.md",
+      "report_line": 212,
+      "original_id": "D12",
+      "original_label": "missing-payout-time-destination-screen",
+      "native_final_id": "Lead-6",
+      "native_members": [
+        "R02",
+        "R14",
+        "R18",
+        "R33",
+        "R40"
+      ],
+      "native_gates": {
+        "G1": [
+          "ALLOWS",
+          ":402-405 makes no payout-time _isProtocolDestination check. The init-time screen skips the registry for code-less addresses (:602), and F:166 only sees clones that are already registered."
+        ],
+        "G2": [
+          "ALLOWS",
+          "Reachable only by the sponsor deliberately choosing a future clone CREATE address as sponsorRecipient."
+        ],
+        "G3": [
+          "BLOCKS",
+          "Self-harm only: the sponsor who chose the address is the only party that loses, and the receiving clone's accounting is unaffected."
+        ],
+        "G4": [
+          "ALLOWS",
+          "The NFT is permanently stranded in another clone."
+        ]
+      }
+    },
+    {
+      "target": "RF-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseSponsorPrize",
+      "reconciled_reason": "Narrow self-selected future-clone sponsor-prize destination, with existing independent honest-ERC721 root reproduction. Native lead/self-harm demotion retained; not third-party EOA theft.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-1-output.md",
+      "report_line": 27,
+      "report_end_line": 30,
+      "original_id": "R02",
+      "original_label": "Raffle | releaseSponsorPrize | missing-payout-destination-screen",
+      "native_lens": 1,
+      "native_group": "D12",
+      "native_final_id": "Lead-6",
+      "native_fields": {
+        "smell": "All four USDC exits re-screen the payee at payout time via _transferQuote -> _isProtocolDestination (Raffle.sol:565). The NFT exit releaseSponsorPrize (:402-405) sends the prize to sponsorRecipient with no payout-time screen. sponsorRecipient is screened only once, at initialize (:193-195), and isRaffle is queried only when the address already has code (:602-603). F:166 likewise checks only raffles that are already registered.",
+        "unverified": "Any victim other than the sponsor. The screen result can flip only if sponsorRecipient is a code-less address that later becomes a factory clone (the CREATE address keccak(rlp(factory, nonce)), via OZ Clones.clone). Only the sponsor chooses that address, so the harm found so far is self-inflicted.",
+        "description": "If sponsorRecipient is set to the factory's future clone address, releaseSponsorPrize moves the prize into another raffle clone, where no path can release it. That violates DESIGN.md \"Never move assets between raffle clones\". The USDC sibling reverts instead (sponsorProceeds frozen). Minimal mitigation: in releaseSponsorPrize, revert if _isProtocolDestination(recipient, address(prizeToken)), mirroring _transferQuote."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "RF-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseSponsorPrize",
+      "reconciled_reason": "Narrow self-selected future-clone sponsor-prize destination, with existing independent honest-ERC721 root reproduction. Native lead/self-harm demotion retained; not third-party EOA theft.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-4-output.md",
+      "report_line": 52,
+      "report_end_line": 55,
+      "original_id": "R14",
+      "original_label": "Raffle | releaseSponsorPrize | codeless-destination-screen-bypass",
+      "native_lens": 4,
+      "native_group": "D12",
+      "native_final_id": "Lead-6",
+      "native_fields": {
+        "smell": "`_isProtocolDestination` only queries `isRaffle` when `destination.code.length != 0` (Raffle.sol:602-604). Clones are deployed with CREATE from the factory (OZ Clones.clone), so their addresses are predictable from the factory nonce. A sponsorRecipient set to a not-yet-deployed clone address therefore passes F:_validateCreateParams (F:163-169) and initialize (Raffle.sol:193-195). The same applies to a ticket sent to such an address. Once that clone exists, releaseSponsorProceeds reverts with InvalidQuoteDestination forever (Raffle.sol:565). releaseSponsorPrize has no runtime screen at all, so it moves the prize into the other clone via transferFrom (Raffle.sol:402-405). This contradicts DESIGN.md: \"Never move assets between raffle clones\".",
+        "unverified": "Any victim other than the party that chose the address. The recipient is chosen by the sponsor and ticket transfers are started by the owner, so every path found is self-harm.",
+        "description": "Informational only; no third-party loss path was found. Calling `_isProtocolDestination(recipient, address(prizeToken))` in releaseSponsorPrize would match the check `_transferQuote` already makes."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "RF-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseSponsorPrize",
+      "reconciled_reason": "Narrow self-selected future-clone sponsor-prize destination, with existing independent honest-ERC721 root reproduction. Native lead/self-harm demotion retained; not third-party EOA theft.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-5-output.md",
+      "report_line": 36,
+      "report_end_line": 39,
+      "original_id": "R18",
+      "original_label": "Raffle | releaseSponsorPrize | config-time-only-destination-screen",
+      "native_lens": 5,
+      "native_group": "D12",
+      "native_final_id": "Lead-6",
+      "native_fields": {
+        "smell": "DESIGN.md requires \"Never move assets between raffle clones.\" `sponsorRecipient` is screened only at creation: `RaffleFactory._validateCreateParams` checks the `isRaffle` mapping (RaffleFactory.sol:163-169), and `Raffle.initialize` calls `_isProtocolDestination` (Raffle.sol:193), which skips the `isRaffle` query for addresses with no code (:602). Clones are deployed with CREATE (OZ `Clones.clone`: `create(value, 0x09, 0x37)`), so each future raffle address depends only on the factory address and nonce. These addresses can be predicted, and anyone can advance the nonce through the permissionless `createRaffle`. A sponsorRecipient equal to a future clone address therefore passes both screens. After a later `createRaffle` registers a raffle at that address, `releaseSponsorPrize` (:402-405) transfers the prize NFT into that clone without a delivery-time screen, and no function can ever move it out. The USDC path for the same recipient, `_transferQuote`, re-screens at payout (:565) and reverts, which strands `sponsorProceeds` instead. The same skip for code-less addresses in `_update` (:498 \u2192 :602) lets a ticket be sent to a future clone address, where it later becomes unreachable.",
+        "unverified": "No actor other than the sponsor (for sponsorRecipient) or the ticket owner or operator (for tickets) chooses these destinations. Pointing at the raffle's own address is caught (:599, `destination == address(this)`), and a recipient that is already a raffle is caught (RaffleFactory.sol:166; Raffle.sol:602-603). On current evidence this harms only the party who chose the address, so it is not reportable as a finding. It is listed because it is the one reachable state that violates DESIGN.md's cross-clone invariant, and because sibling payout sites screen inconsistently.",
+        "description": "Re-running `_isProtocolDestination(recipient, address(prizeToken))` before Raffle.sol:404 would make the NFT payout behave like `_transferQuote`, but because sponsorRecipient is immutable the prize would still be stranded rather than moved."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "RF-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseSponsorPrize",
+      "reconciled_reason": "Narrow self-selected future-clone sponsor-prize destination, with existing independent honest-ERC721 root reproduction. Native lead/self-harm demotion retained; not third-party EOA theft.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-9-output.md",
+      "report_line": 35,
+      "report_end_line": 38,
+      "original_id": "R33",
+      "original_label": "Raffle | releaseSponsorPrize | missing-payout-time-destination-screen",
+      "native_lens": 9,
+      "native_group": "D12",
+      "native_final_id": "Lead-6",
+      "native_fields": {
+        "smell": "USDC payouts re-screen the recipient at payout time through _transferQuote (Raffle.sol:564-567). The two NFT payouts, releaseSponsorPrize (Raffle.sol:404) and redeemWinningTicket NftWon (Raffle.sol:334), do not. Two earlier screens both accept a not-yet-deployed CREATE address of the factory's next clone as sponsorRecipient: the init-time screen (Raffle.sol:193 via _isProtocolDestination, which skips the registry for code-less addresses at :602) and the factory screen (F:166, isRaffle mapping). Once a clone is created at that address, anyone can call releaseSponsorPrize and push the prize into another raffle clone. That breaks DESIGN.md \"Never move assets between raffle clones\", and the NFT cannot be recovered there (no rescue path, Raffle.sol:410-411). releaseSponsorProceeds meanwhile reverts with InvalidQuoteDestination forever.",
+        "unverified": "No third-party victim: only the sponsor chooses sponsorRecipient, so the loss is self-inflicted, and the receiving clone's own accounting is unaffected. The ticket-side sibling (_update, Raffle.sol:498, same code-less gap) is also self-harm only.",
+        "description": "The destination screen is applied unevenly across asset types and can be bypassed with counterfactual clone addresses, so the spec invariant is enforced for USDC but not for the prize NFT."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "RF-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::releaseSponsorPrize",
+      "reconciled_reason": "Narrow self-selected future-clone sponsor-prize destination, with existing independent honest-ERC721 root reproduction. Native lead/self-harm demotion retained; not third-party EOA theft.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-11-output.md",
+      "report_line": 55,
+      "report_end_line": 63,
+      "original_id": "R40",
+      "original_label": "Raffle | releaseSponsorPrize | payout-screen-inconsistency",
+      "native_lens": 11,
+      "native_group": "D12",
+      "native_final_id": "Lead-6",
+      "native_fields": {
+        "smell": "The two payout paths screen differently:",
+        "unverified": "No third-party victim was found. The sponsor always chooses `sponsorRecipient`, so the only loser is that sponsor, and the NFT that lands in the other clone affects none of that clone's accounting. This is recorded to complete the saturation sweep of the payout-screen pattern, not as a reportable bug.",
+        "description": "The gap between the code-gated `initialize` screen and the payout-time screen can only be reached by deliberate sponsor misconfiguration. Adding the same `_isProtocolDestination` check before Raffle.sol:404 would make the two payout paths consistent."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "LEAD-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": "Low",
+      "original_status": "FINDING",
+      "function": "Raffle::_update",
+      "reconciled_reason": "External market order staleness and fulfillment visibility/ordering remain preconditions. Source-only native review did not prove the deployment or marketplace exploit; native Low versus unverified lead distinction retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/native-report.md",
+      "report_line": 159,
+      "original_id": "L-1",
+      "original_label": "## L-1. `Raffle::_update()` keeps tickets transferable while the VRF result is pending, so anyone reading the fulfillment can snipe stale listings of the winning ticket or dump losing tickets into standing bids [lenses: 7]",
+      "native_group": "D13"
+    },
+    {
+      "target": "LEAD-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": "Low",
+      "original_status": "FINDING",
+      "function": "Raffle::_update",
+      "reconciled_reason": "External market order staleness and fulfillment visibility/ordering remain preconditions. Source-only native review did not prove the deployment or marketplace exploit; native Low versus unverified lead distinction retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/turn6/dedup-ledger.md",
+      "report_line": 228,
+      "original_id": "D13",
+      "original_label": "ticket-transfer-during-pending-vrf",
+      "native_final_id": "L-1",
+      "native_members": [
+        "R03",
+        "R06",
+        "R09",
+        "R12",
+        "R22",
+        "R29",
+        "R31"
+      ],
+      "native_gates": {
+        "G1": [
+          "ALLOWS",
+          "_update (:497-502) screens destinations but never status, so tickets move freely in Drawing and in the resolution block."
+        ],
+        "G2": [
+          "UNCERTAIN",
+          "Needs pre-inclusion visibility of the VRF fulfillment (not verified offline) plus a stale open order on a secondary market."
+        ],
+        "G3": [
+          "ALLOWS",
+          "Victims are counterparties with open sell listings or bids (third parties)."
+        ],
+        "G4": [
+          "UNCERTAIN",
+          "Real value moves (R22: seller under-paid 16,500 USDC), but this is close to standard MEV on user-chosen open orders."
+        ]
+      }
+    },
+    {
+      "target": "LEAD-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::_update",
+      "reconciled_reason": "External market order staleness and fulfillment visibility/ordering remain preconditions. Source-only native review did not prove the deployment or marketplace exploit; native Low versus unverified lead distinction retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-1-output.md",
+      "report_line": 34,
+      "report_end_line": 37,
+      "original_id": "R03",
+      "original_label": "Raffle | _update | outcome-frontrun-ticket-transfer",
+      "native_lens": 1,
+      "native_group": "D13",
+      "native_final_id": "L-1",
+      "native_fields": {
+        "smell": "Tickets stay freely transferable while status == Drawing (_update only screens destinations, Raffle.sol:497-502). The outcome winningEntry = randomWords[0] % totalEntries + 1 (:518) is a pure function of the pending VRF fulfillment's proof, because totalEntries is frozen once the sale ends (:216, :242).",
+        "unverified": "Whether fulfillments on the target chain travel through a public mempool, and whether ticket bids or listings of meaningful size exist. This is a Phase-4 cross-time transfer of loss between ticket-market counterparties, not a protocol ledger drift. DESIGN.md's bearer-claim model and \"transaction decisions must reread current chain state\" may accept it.",
+        "description": "A holder who computes that their ticket loses can sell into a standing bid, or a searcher can buy a listed winning ticket, in the block before the callback lands. The counterparty is left holding a zero-value ticket or loses the prize. Possible mitigation: block ticket transfers while status == Drawing."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "LEAD-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::_update",
+      "reconciled_reason": "External market order staleness and fulfillment visibility/ordering remain preconditions. Source-only native review did not prove the deployment or marketplace exploit; native Low versus unverified lead distinction retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-2-output.md",
+      "report_line": 34,
+      "report_end_line": 37,
+      "original_id": "R06",
+      "original_label": "Raffle | _update | post-request-ticket-transfer",
+      "native_lens": 2,
+      "native_group": "D13",
+      "native_final_id": "L-1",
+      "native_fields": {
+        "smell": "_update (Raffle.sol:497-502) only screens destinations, so tickets can still move during Drawing: after requestDraw (:252) and before fulfillRandomWords (:509-524) records the result. winningEntry = randomWords[0] % totalEntries + 1 (:518) follows deterministically from the VRF proof in the pending Chainlink fulfillment transaction. A mempool observer can therefore know the winning ticket before the callback is included and act ahead of it: (a) fill standing collection-wide offers with tickets known to lose, or (b) buy the winning ticket from a pending listing. Chainlink's VRF guidance is to stop accepting inputs once randomness has been requested.",
+        "unverified": "The VRF v2.5 coordinator is not vendored in node_modules, so I did not verify how the word is derived from the proof or whether fulfillments pass through the public mempool. Transferability in every state is an explicit design choice (Raffle.sol:25-29 NatSpec, DESIGN.md). Only secondary-market counterparties trading during Drawing can be hurt.",
+        "description": "Tickets stay transferable while the draw outcome can be worked out publicly from the pending VRF fulfillment, so informed holders can offload losing tickets or snipe the winning ticket from counterparties who don't know the result."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "LEAD-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::_update",
+      "reconciled_reason": "External market order staleness and fulfillment visibility/ordering remain preconditions. Source-only native review did not prove the deployment or marketplace exploit; native Low versus unverified lead distinction retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-3-output.md",
+      "report_line": 42,
+      "report_end_line": 45,
+      "original_id": "R09",
+      "original_label": "Raffle | _update | vrf-outcome-frontrun-ticket-trade",
+      "native_lens": 3,
+      "native_group": "D13",
+      "native_final_id": "L-1",
+      "native_fields": {
+        "smell": "_update (Raffle.sol:497-502) allows ticket transfers in every status, including Drawing (the NatSpec at Raffle.sol:491 says so deliberately). The pending VRF fulfillment (wrapper -> rawFulfillRandomWords -> Raffle.sol:518) lets any mempool observer work out winningEntry before it executes. The observer can fill a stale marketplace listing of the winning ticket, or sell a losing ticket into a standing collection bid, ahead of or bundled right after the callback. Example: Alice lists ticket #7 (500 of 1,000 entries; NFT worth 2,000 USDC) at 900 USDC. Bob simulates the pending fulfillment, sees that entry 742 (in #7) wins, fills the listing first, and redeems the NFT. Alice's EV falls from about 1,000 to about 450.",
+        "unverified": "(1) Whether Chainlink's mainnet VRF fulfillments go through the public mempool. (2) Whether any fillable marketplace order exists at fulfillment time. (3) A Drawing-only transfer lock can be bypassed by bundling [fulfillment, fill], because status becomes NftWon mid-bundle. The only robust fix, blocking operator-initiated transfers from requestDraw onward, conflicts with the documented bearer-claim design. Victims are external order makers; the protocol's own accounting is unaffected.",
+        "description": "Tickets stay tradeable while the draw result can be derived publicly but is not yet on-chain, which allows trades against stale secondary-market orders by someone who already knows the result."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "LEAD-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::_update",
+      "reconciled_reason": "External market order staleness and fulfillment visibility/ordering remain preconditions. Source-only native review did not prove the deployment or marketplace exploit; native Low versus unverified lead distinction retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-4-output.md",
+      "report_line": 38,
+      "report_end_line": 41,
+      "original_id": "R12",
+      "original_label": "Raffle | _update | informed-ticket-trading-during-draw",
+      "native_lens": 4,
+      "native_group": "D13",
+      "native_final_id": "L-1",
+      "native_fields": {
+        "smell": "Tickets stay transferable in Drawing. `_update` (Raffle.sol:497-502) screens only the destination, never the status. The VRF callback (Raffle.sol:518-521) is the only state change between \"random word exists\" and \"winner recorded\". Anyone who can read a pending fulfillment can compute winningEntry = word % totalEntries + 1 before it lands. They can then buy the winning ticket from an open listing, taking the prize from the seller, or sell losing tickets into open collection offers, passing the loss to the bidder. This is the Phase-4 pattern of joining just before a distribution or leaving just before a loss.",
+        "unverified": "Two things are unverified. First, whether VRF v2.5 fulfillment transactions on the target chain are visible in a public mempool before inclusion; the wrapper/coordinator source is not vendored under packages/contracts. Second, whether ticket listings or offers exist on any marketplace during Drawing.",
+        "description": "If fulfillment calldata is public before inclusion, a searcher can bundle a fill of the listed winning ticket ahead of the callback and take the NFT or the 80% cash from the seller. Blocking ticket transfers while status == Drawing would close the window."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "LEAD-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::_update",
+      "reconciled_reason": "External market order staleness and fulfillment visibility/ordering remain preconditions. Source-only native review did not prove the deployment or marketplace exploit; native Low versus unverified lead distinction retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-7-output.md",
+      "report_line": 47,
+      "report_end_line": 55,
+      "original_id": "R22",
+      "original_label": "Raffle | _update | vrf-reveal-ticket-sniping",
+      "native_lens": 7,
+      "native_group": "D13",
+      "native_final_id": "L-1",
+      "native_fields": {
+        "smell": "Tickets stay transferable while status == Drawing and within the block that resolves the draw. _update (L497-502) only rejects protocol addresses (L599-604), and L491 says this is intended. On Ethereum L1 the Chainlink fulfillment transaction carries the VRF proof in the public mempool. A searcher can compute randomWords[0] % totalEntries + 1 (L518) and map it to a ticket with ticketRange (L451-455) before L521 executes.",
+        "unverified": "That holders actually leave marketplace orders open across requestDraw. That the VRF node broadcasts publicly rather than through a private relay. Freezing transfers only during Drawing does not stop a same-block back-run of the fulfillment. The fix is therefore a design choice: block transfers other than mint and burn from requestDraw until block.timestamp > resolvedAt, and document that holders must cancel orders before the draw.",
+        "description": "Because bearer tickets can be traded across a public randomness reveal, any searcher can snipe stale listings. The victims are ticket holders with open orders; the protocol's own accounting is unaffected."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "LEAD-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::_update",
+      "reconciled_reason": "External market order staleness and fulfillment visibility/ordering remain preconditions. Source-only native review did not prove the deployment or marketplace exploit; native Low versus unverified lead distinction retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-8-output.md",
+      "report_line": 50,
+      "report_end_line": 53,
+      "original_id": "R29",
+      "original_label": "Raffle | _update | vrf-input-after-request",
+      "native_lens": 8,
+      "native_group": "D13",
+      "native_final_id": "L-1",
+      "native_fields": {
+        "smell": "(Outside the DoS lens; passed on.) Tickets stay transferable while status == Drawing. Raffle.sol:497-502 only screens destinations, and Raffle.sol:491 says tickets are transferable \"in every lifecycle state\". So the input that decides who gets paid, ticket ownership, can change after the VRF request. The calldata of the coordinator's fulfillment fixes randomWords[0]. Anyone watching the mempool can therefore compute winningEntry = randomWords[0] % totalEntries + 1 (Raffle.sol:518) and the ticket that contains it before the callback lands. They can then trade ahead of it: buy the winning ticket from an open listing, or sell known losing tickets into open collection offers. Path: a CashWon raffle with 1,000 entries and a 1,000 USDC pot. Holder H has an open listing for ticket #7 (entries 101-110) at 9 USDC. The fulfillment transaction is pending, and its random word maps to entry 105. A bot fills H's listing at 9 USDC before the callback, then calls redeemWinningTicket(7) after resolution and receives 800 USDC (Raffle.sol:339-342). H gives up about 791 USDC of value.",
+        "unverified": "I could not confirm offline whether Ethereum-mainnet VRF fulfillments go through the public mempool. Even if they do not, a back-run right after resolution sniping a stale listing causes the same loss to the seller. That makes the protocol's share of the blame small and mostly a question of listing hygiene. Chainlink advises against accepting inputs after a randomness request. The smallest change would be for _update to reject ticket transfers that are neither mints nor burns while status == Drawing, but that removes only the pre-resolution window.",
+        "description": "Because tickets remain transferable during Drawing, anyone who reads the pending fulfillment can trade against counterparties who cannot see it."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "LEAD-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::_update",
+      "reconciled_reason": "External market order staleness and fulfillment visibility/ordering remain preconditions. Source-only native review did not prove the deployment or marketplace exploit; native Low versus unverified lead distinction retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-9-output.md",
+      "report_line": 21,
+      "report_end_line": 24,
+      "original_id": "R31",
+      "original_label": "Raffle | _update | transfer-during-pending-randomness",
+      "native_lens": 9,
+      "native_group": "D13",
+      "native_final_id": "L-1",
+      "native_fields": {
+        "smell": "_update (Raffle.sol:497-502) gates ticket transfers only on protocol destinations, never on status, so tickets keep trading while status == Drawing. The VRF v2.5 fulfillment transaction carries the proof in its calldata. Anyone who simulates it before inclusion can compute winningEntry = word % totalEntries + 1 (Raffle.sol:518), find the winning ticket via ticketRange, and act first: fill a standing marketplace sell order for the winning ticket at its pre-draw price, or dump a losing ticket into a standing bid. The victim is the holder with the open sell order or the bidder.",
+        "unverified": "Needs an off-chain standing order that stays open through the roughly 30-confirmation callback window. Judges may treat this as ordinary MEV on user-chosen orders. The NatSpec (Raffle.sol:491, I:12-13) explicitly keeps tickets transferable \"in every lifecycle state\". Blocking transfers only during Drawing would also not protect listings left open after resolution.",
+        "description": "Chainlink's guidance is to stop accepting user inputs once randomness is requested. Here ownership of the claim stays tradeable while the result sits in the mempool, so watchers can extract value from holders with open orders."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": "Low",
+      "original_status": "FINDING",
+      "function": "Raffle::fulfillRandomWords",
+      "reconciled_reason": "Paid sponsor participation and reserve crossing are specified economic behavior. No protected fixed odds/cash outcome, free entry or unauthorized withdrawal was established. Native Medium/Low dissent retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/native-report.md",
+      "report_line": 189,
+      "original_id": "L-2",
+      "original_label": "## L-2. `Raffle::fulfillRandomWords()` counts sponsor-funded entries toward `reserveEntries`, so the sponsor can flip a `CashWon` raffle to `NftWon` for about 5% of the shortfall [lenses: 4]",
+      "native_group": "D14"
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": "Low",
+      "original_status": "FINDING",
+      "function": "Raffle::fulfillRandomWords",
+      "reconciled_reason": "Paid sponsor participation and reserve crossing are specified economic behavior. No protected fixed odds/cash outcome, free entry or unauthorized withdrawal was established. Native Medium/Low dissent retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/turn6/dedup-ledger.md",
+      "report_line": 247,
+      "original_id": "D14",
+      "original_label": "sponsor-reserve-flip",
+      "native_final_id": "L-2",
+      "native_members": [
+        "R08",
+        "R13",
+        "R20",
+        "R38"
+      ],
+      "native_gates": {
+        "G1": [
+          "ALLOWS",
+          ":521 compares totalEntries, which includes sponsor-funded entries, with reserveEntries; nothing excludes them."
+        ],
+        "G2": [
+          "ALLOWS",
+          "The sponsor buys the shortfall at endTime-1, and 95% of it comes back under NftWon."
+        ],
+        "G3": [
+          "ALLOWS",
+          "Victims are the under-reserve buyers."
+        ],
+        "G4": [
+          "UNCERTAIN",
+          "Expected value moves only when the NFT is worth less than about 0.8x the pot (R08 example above)."
+        ]
+      }
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::fulfillRandomWords",
+      "reconciled_reason": "Paid sponsor participation and reserve crossing are specified economic behavior. No protected fixed odds/cash outcome, free entry or unauthorized withdrawal was established. Native Medium/Low dissent retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-3-output.md",
+      "report_line": 35,
+      "report_end_line": 38,
+      "original_id": "R08",
+      "original_label": "Raffle | fulfillRandomWords | sponsor-reserve-flip",
+      "native_lens": 3,
+      "native_group": "D14",
+      "native_final_id": "L-2",
+      "native_fields": {
+        "smell": "The NftWon/CashWon regime check (Raffle.sol:521) counts sponsor-bought entries, which are rebated 95% through sponsorProceeds (Raffle.sol:544). When organic demand N < reserve R, the sponsor can fill R-N in the last block before endTime at a 5% cost. That turns a CashWon raffle (buyers' EV 0.8 USDC per entry) into NftWon. Example with R = 1,000, N = 900, NFT worth V = 500 USDC: honest CashWon gives buyers 720 USDC EV and the sponsor 135 USDC + the NFT (635). If the sponsor buys 100 entries, the raffle becomes NftWon: sponsor = 950 - 100 + 0.1*500 = 900 (+265); buyers' EV = 0.9*500 = 450 (-270); treasury +5.",
+        "unverified": "(1) Whether under-reserve buyers are entitled to expect CashWon. The reserve may be meant only as sponsor protection, and organic demand reaching R gives the same regime. (2) The flip pays only when V is below roughly 0.8*R (an overpriced reserve); with V = 900 in the example it is unprofitable and helps buyers. (3) There is no sybil-proof code fix: the sale cap proposed for the dilution FINDING does not close this gap.",
+        "description": "A sponsor-funded fill of the gap below the reserve in the last block lets the sponsor choose the payout regime after seeing demand, at a 5% cost, and moves EV from under-reserve buyers to the sponsor."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::fulfillRandomWords",
+      "reconciled_reason": "Paid sponsor participation and reserve crossing are specified economic behavior. No protected fixed odds/cash outcome, free entry or unauthorized withdrawal was established. Native Medium/Low dissent retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-4-output.md",
+      "report_line": 45,
+      "report_end_line": 48,
+      "original_id": "R13",
+      "original_label": "Raffle | fulfillRandomWords | reserve-flip-by-sponsor-top-up",
+      "native_lens": 4,
+      "native_group": "D14",
+      "native_final_id": "L-2",
+      "native_fields": {
+        "smell": "The outcome predicate `totalEntries >= reserveEntries` (Raffle.sol:521) counts the sponsor's own entries. In NftWon the sponsor gets back 95% of whatever it paid in (Raffle.sol:544). So the sponsor can meet its own reserve at about 5% cost and turn a CashWon (80% of the pot to a buyer) into an NftWon whenever the NFT is worth less than the cash prize. Worked example (arithmetic checked): reserve 1,000; buyers hold 900 entries; the NFT is worth 500 USDC. If the sponsor buys 100 entries before endTime, the sponsor's expected value rises by 265 USDC, the buyers' falls by 270 USDC and the treasury gains 5.",
+        "unverified": "Whether this is an accepted mechanism-design property. The reserve is public, any party can push the total over it, and the sponsor can buy from fresh addresses, so there is no on-chain fix.",
+        "description": "Buying the reserve shortfall with the sponsor's own money lets the sponsor pick the outcome branch that is worse for buyers. This is probably accepted design and is reported only for calibration."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::fulfillRandomWords",
+      "reconciled_reason": "Paid sponsor participation and reserve crossing are specified economic behavior. No protected fixed odds/cash outcome, free entry or unauthorized withdrawal was established. Native Medium/Low dissent retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-6-output.md",
+      "report_line": 24,
+      "report_end_line": 27,
+      "original_id": "R20",
+      "original_label": "Raffle | fulfillRandomWords | reserve-threshold-self-funding",
+      "native_lens": 6,
+      "native_group": "D14",
+      "native_final_id": "L-2",
+      "native_fields": {
+        "smell": "The outcome test `totalEntries >= reserveEntries` (Raffle.sol:521) also counts entries the sponsor paid for. In NftWon, 95% of every entry, including the sponsor's own, returns to sponsorRecipient (Raffle.sol:544, :554). So the sponsor can flip a raffle that is below reserve from CashWon to NftWon for a 5% toll on the gap. Example: reserve 10,000 entries, 8,000 entries bought by other users. The sponsor buys 2,000 entries at endTime-1, which Raffle.sol:216 allows. Without the flip (CashWon), the winner gets 6,400 USDC and sponsorRecipient gets 1,200 USDC plus the NFT back. With the flip (NftWon), sponsorRecipient gets 9,500 USDC (net +7,500 after the 2,000 USDC outlay) and the sponsor's tickets have a 20% chance of winning the NFT. With the NFT worth 5,000 USDC: sponsor expected value rises from 6,200 to 8,500 (+2,300). The other buyers' expected value falls from 6,400 to 4,000 (-2,400). The treasury gains 100. The changes sum to zero.",
+        "unverified": "This is outside Lens 6 (economic/MEV). DESIGN.md does not forbid sponsor participation, and any address can buy (Sybil), so this may be an accepted property of reserve auctions. The flip only pays when the sponsor values the NFT below 0.8 x the pot from other buyers (here, below 7,875 USDC). Buyers can see totalEntries and reserveEntries on-chain, but they cannot exit before the outcome except by selling the ticket, because refundTickets requires Refunding.",
+        "description": "The sponsor can meet the reserve with their own entries, 95% of which come back to them, turning a cash raffle into an NFT raffle after buyers have committed."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::fulfillRandomWords",
+      "reconciled_reason": "Paid sponsor participation and reserve crossing are specified economic behavior. No protected fixed odds/cash outcome, free entry or unauthorized withdrawal was established. Native Medium/Low dissent retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-11-output.md",
+      "report_line": 32,
+      "report_end_line": 40,
+      "original_id": "R38",
+      "original_label": "Raffle | fulfillRandomWords | reserve-threshold-manipulation",
+      "native_lens": 11,
+      "native_group": "D14",
+      "native_final_id": "L-2",
+      "native_fields": {
+        "smell": "The outcome flips at `totalEntries >= reserveEntries` (Raffle.sol:521). Crossing the threshold moves the 80% cash leg owed to the winner (Raffle.sol:546-548) into the sponsor's 95% (Raffle.sol:544). `buyEntries` (Raffle.sol:209-237) does not restrict who buys. Because `sponsorProceeds` includes 95% of the sponsor's own purchases, the sponsor (or a Sybil wallet) can meet its own reserve for about 5% of the shortfall. Concrete sequence:",
+        "unverified": "Buyers would get the same outcome if an unrelated third party had bought the same 400 entries. So the \"loss\" is measured against a CashWon outcome that buyers were never guaranteed. Neither the design nor the NatSpec says whether the reserve is meant to protect buyers or is purely a sponsor option. No address-based check can stop Sybil self-purchase.",
+        "description": "The reserve threshold acts as a cheap sponsor option (cost about 5% of the shortfall) to turn a buyer-favourable CashWon into an NftWon sale of an overvalued NFT. This is a design-economics lead, not a code defect."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    },
+    {
+      "target": "LEAD-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::fulfillRandomWords",
+      "reconciled_reason": "External market order staleness and fulfillment visibility/ordering remain preconditions. Source-only native review did not prove the deployment or marketplace exploit; native Low versus unverified lead distinction retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/native-report.md",
+      "report_line": 231,
+      "original_id": "Lead-7",
+      "original_label": "- `Raffle::fulfillRandomWords` \u2014 The outcome can be derived from the pending fulfillment while tickets are still tradeable ([Raffle.sol:518-521](../packages/contracts/src/Raffle.sol#L518-L521)). \u2014 Mempool visibility and coordinator semantics were not verified. Same mechanism as L-1. [lenses: 1]",
+      "native_group": "D15"
+    },
+    {
+      "target": "LEAD-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::fulfillRandomWords",
+      "reconciled_reason": "External market order staleness and fulfillment visibility/ordering remain preconditions. Source-only native review did not prove the deployment or marketplace exploit; native Low versus unverified lead distinction retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/turn6/dedup-ledger.md",
+      "report_line": 262,
+      "original_id": "D15",
+      "original_label": "vrf-result-preview-ticket-sniping",
+      "native_final_id": "Lead-7",
+      "native_members": [
+        "R17"
+      ],
+      "native_gates": {
+        "G1": [
+          "ALLOWS",
+          "The outcome at :518 is deterministic, and transfers are open (:497-502)."
+        ],
+        "G2": [
+          "UNCERTAIN",
+          "Mempool visibility and the coordinator's delivery semantics are not verified (wrapper and coordinator are not vendored)."
+        ],
+        "G3": [
+          "ALLOWS",
+          "Victims are holders with resting orders."
+        ],
+        "G4": [
+          "UNCERTAIN",
+          "Close to generic stale-order NFT MEV."
+        ]
+      }
+    },
+    {
+      "target": "LEAD-001",
+      "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+      "original_severity": null,
+      "original_status": "LEAD",
+      "function": "Raffle::fulfillRandomWords",
+      "reconciled_reason": "External market order staleness and fulfillment visibility/ordering remain preconditions. Source-only native review did not prove the deployment or marketplace exploit; native Low versus unverified lead distinction retained.",
+      "proof_status": "Source-derived native reasoning only; no executable proof newly run or adopted from this variant.",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/raw-lens-outputs/lens-5-output.md",
+      "report_line": 29,
+      "report_end_line": 32,
+      "original_id": "R17",
+      "original_label": "Raffle | fulfillRandomWords | vrf-result-preview-ticket-sniping",
+      "native_lens": 5,
+      "native_group": "D15",
+      "native_final_id": "Lead-7",
+      "native_fields": {
+        "smell": "The result is a pure function of the single VRF word: `winningEntry = word % totalEntries + 1` and NftWon/CashWon (Raffle.sol:518-521). Every ticket range is public (`ticketRange` :451-455). Tickets stay transferable while Drawing and after resolution: `_update` (:497-502) only screens destinations, and the NatSpec at :491 says tickets are transferable \"in every lifecycle state\". Once the oracle's fulfillment transaction, which carries the proof, is visible and before `RaffleResolved` is mined, a watcher can derive the winning ticket ID. The watcher can then fill any resting marketplace order selling that ticket, or sell known-losing tickets into resting bids, before holders can see the result on-chain. Ticket holders with resting orders lose through adverse selection.",
+        "unverified": "(a) Whether Chainlink's Ethereum VRF nodes broadcast fulfillments through the public mempool or privately. (b) Whether the v2.5 coordinator's `fulfillRandomWords` accepts an observed proof from any caller, which would let a sniper deliver it and trade in one atomic transaction. The coordinator and wrapper sources are not vendored under packages/contracts. (c) Whether this goes beyond generic stale-order NFT MEV, given that the design deliberately keeps tickets transferable. The outcome cannot be re-rolled, because reverting a delivery does not change the proof. This is information leakage only; no protocol-held funds are at risk.",
+        "description": "Information about the winner leaks before the state change while the tickets it prices are still tradable. Blocking ticket transfers while `status == Drawing` would close only the pre-inclusion window and conflicts with the bearer-claim design."
+      },
+      "raw_id_origin": "Native Turn6 raw-item extraction ID; original lens header has no standalone ID."
+    }
+  ],
+  "group_mapping": {
+    "D01": "RF-001",
+    "D02": "CLOSED-002",
+    "D03": "CLOSED-002",
+    "D04": "EVIDENCE-001",
+    "D05": "CLOSED-002",
+    "D06": "RF-001",
+    "D07": "CLOSED-004",
+    "D08": "RF-001",
+    "D09": "RF-001",
+    "D10": "OBS-002",
+    "D11": "OBS-002",
+    "D12": "RF-002",
+    "D13": "LEAD-001",
+    "D14": "CLOSED-002",
+    "D15": "LEAD-001"
+  },
+  "corrections": {
+    "report_key": "CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+    "native_report": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/native-capture/evidence/native-report.md",
+    "items": [
+      "Coordinator SEMANTIC-ADJUDICATION.md:20 maps Lead-1 to RF-002, but native-report.md:225 and D01 identify forged escrow/ownerOf truthfulness. Correct primary family RF-001; Lead-6 remains RF-002. Original adjudication unchanged.",
+      "Native-report.md:41 says a transfer block is visible before anyone buys; a later admin pause/upgrade can arise after entry. This sentence does not remove the documented post-entry precondition. Named external collections are illustrative, not verified live exploit proofs.",
+      "Native-report.md:169 overstates that absent tokenURI prevents a marketplace from displaying claims; external integrations can read range/status getters. Retain OBS-007 metadata limitations without that absolute claim.",
+      "Native report Last-User-Out tests are source-analysis traces, not twelve executable conservation campaigns. Native uniformity prose does not eliminate already assessed modulo bias.",
+      "Mitigation options are unimplemented proposals. Delivery gates need both payout buckets plus complete pre/post-settlement liability and refund policy; dishonest getters cannot prove delivery. No native Option C or sponsor cap is an approved fix."
+    ]
+  },
+  "native_original_ids_preserved": {
+    "final_ids": 15,
+    "group_ids": 15,
+    "raw_ids": 43
+  },
+  "owner_acceptance": false,
+  "new_production_root_count": 0,
+  "all_prior_seals_unchanged": true
+}

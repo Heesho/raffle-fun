@@ -1,0 +1,86 @@
+
+
+Contract Raffle is VRFV2PlusWrapperConsumerBase is ReentrancyGuard is ERC721 is ERC165 is Context (src/Raffle.sol#28-614)
++--------------------------+----------------------------------------------+----------------+
+| Variables                | Types                                        | Inherited From |
++--------------------------+----------------------------------------------+----------------+
+| _name                    | string                                       | ERC721         |
+| _symbol                  | string                                       | ERC721         |
+| _owners                  | mapping(uint256 => address)                  | ERC721         |
+| _balances                | mapping(address => uint256)                  | ERC721         |
+| _tokenApprovals          | mapping(uint256 => address)                  | ERC721         |
+| _operatorApprovals       | mapping(address => mapping(address => bool)) | ERC721         |
+| sponsor                  | address                                      |                |
+| sponsorRecipient         | address                                      |                |
+| protocolTreasury         | address                                      |                |
+| prizeToken               | IERC721                                      |                |
+| prizeTokenId             | uint256                                      |                |
+| raffleId                 | uint256                                      |                |
+| reserveEntries           | uint128                                      |                |
+| endTime                  | uint64                                       |                |
+| totalEntries             | uint128                                      |                |
+| ticketCount              | uint128                                      |                |
+| unsettledPot             | uint256                                      |                |
+| remainingRefundLiability | uint256                                      |                |
+| winnerRecipient          | address                                      |                |
+| winnerProceeds           | uint256                                      |                |
+| sponsorProceeds          | uint256                                      |                |
+| protocolFees             | uint256                                      |                |
+| vrfRequestId             | uint256                                      |                |
+| drawRequestedAt          | uint64                                       |                |
+| resolvedAt               | uint64                                       |                |
+| winningEntry             | uint128                                      |                |
+| winningTicketId          | uint256                                      |                |
+| status                   | IRaffle.Status                               |                |
+| settlementComplete       | bool                                         |                |
+| winnerRedeemed           | bool                                         |                |
+| prizeClaimed             | bool                                         |                |
+| initialized              | bool                                         |                |
+| _ticketRanges            | mapping(uint256 => Raffle.TicketRange)       |                |
+| _requestInFlight         | bool                                         |                |
++--------------------------+----------------------------------------------+----------------+
++-------------------------------------------------+-----------------------+------------------------------+
+| Functions                                       | Modifiers             | Inherited From               |
++-------------------------------------------------+-----------------------+------------------------------+
+| constructor(address,address)                    |                       |                              |
+| receive()                                       | payable               |                              |
+| initialize(IRaffle.RaffleInitParams)            |                       |                              |
+| buyEntries(address,uint128)                     | nonReentrant          |                              |
+| requestDraw()                                   | nonReentrant, payable |                              |
+| enableRefunds()                                 | nonReentrant          |                              |
+| settleWinningTicket(uint256)                    | nonReentrant          |                              |
+| redeemWinningTicket(uint256)                    | nonReentrant          |                              |
+| refundTickets(uint256[])                        | nonReentrant          |                              |
+| releaseSponsorProceeds()                        | nonReentrant          |                              |
+| releaseProtocolFees()                           | nonReentrant          |                              |
+| releaseSponsorPrize()                           | nonReentrant          |                              |
+| onERC721Received(address,address,uint256,bytes) |                       |                              |
+| approve(address,uint256)                        |                       | ERC721                       |
+| setApprovalForAll(address,bool)                 |                       | ERC721                       |
+| transferFrom(address,address,uint256)           |                       | ERC721                       |
+| safeTransferFrom(address,address,uint256)       |                       | ERC721                       |
+| safeTransferFrom(address,address,uint256,bytes) |                       | ERC721                       |
+| rawFulfillRandomWords(uint256,uint256[])        |                       | VRFV2PlusWrapperConsumerBase |
++-------------------------------------------------+-----------------------+------------------------------+
+
+
+Contract RaffleFactory is ReentrancyGuard (src/RaffleFactory.sol#21-186)
++-------------+-----------------------------+----------------+
+| Variables   | Types                       | Inherited From |
++-------------+-----------------------------+----------------+
+| raffleCount | uint256                     |                |
+| raffleById  | mapping(uint256 => address) |                |
+| idByRaffle  | mapping(address => uint256) |                |
+| isRaffle    | mapping(address => bool)    |                |
++-------------+-----------------------------+----------------+
++-------------------------------------------------+--------------+----------------+
+| Functions                                       | Modifiers    | Inherited From |
++-------------------------------------------------+--------------+----------------+
+| constructor(address,address,address)            |              |                |
+| createRaffle(IRaffleFactory.CreateRaffleParams) | nonReentrant |                |
++-------------------------------------------------+--------------+----------------+
+. analyzed (36 contracts)
+Multiple frameworks detected: Foundry, Hardhat. Using Foundry (highest priority). Use --compile-force-framework to override.
+'forge clean' running (wd: /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S2/work/scratch/contracts-unmodified)
+'forge config --json' running
+'forge build --build-info --deny never --skip ./test/foundry/** ./script/** --force' running (wd: /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S2/work/scratch/contracts-unmodified)

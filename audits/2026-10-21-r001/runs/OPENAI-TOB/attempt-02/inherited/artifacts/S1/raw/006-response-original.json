@@ -1,0 +1,118 @@
+{
+  "function": "refundTickets",
+  "file": "target/packages/contracts/src/Raffle.sol",
+  "lines": "L349-L372",
+  "analysisFile": "audit/S1/audit-context/functions/05-refundTickets.md",
+  "invariants": [
+    {
+      "claim": "Success requires Refunding and 1\u2013100 submitted IDs.",
+      "evidence": "Raffle.sol L350-L354, L573-L575; RaffleConstants.sol L27"
+    },
+    {
+      "claim": "Every submitted ticket exists and is currently owned by msg.sender; repeated IDs fail after the first burn.",
+      "evidence": "Raffle.sol L359-L364; ERC721.sol L426-L431, L240"
+    },
+    {
+      "claim": "Refund equals the sum of inclusive stored range lengths times ENTRY_PRICE and debits liability before payout.",
+      "evidence": "Raffle.sol L362-L369; RaffleConstants.sol L21"
+    },
+    {
+      "claim": "Successful burns clear ownership and individual approvals and decrement owner balances while preserving historical ranges.",
+      "evidence": "Raffle.sol L138-L139, L364, L497-L502; ERC721.sol L216-L244, L303-L308, L398"
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "ownerOf must reject nonexistent and already burned tokens before historical ranges are read.",
+      "establishedBy": "ERC721.ownerOf L61-L63 -> _requireOwned L426-L431 -> _ownerOf L146-L148"
+    },
+    {
+      "claim": "ticketRange returns an ordered positive purchased range; it does not validate this itself.",
+      "establishedBy": "Raffle.buyEntries L218-L235; ticketRange L451-L455 is a storage read only"
+    },
+    {
+      "claim": "Burn authorization is owner-only despite _burn passing zero auth.",
+      "establishedBy": "Raffle.refundTickets L359-L360; ERC721._burn L303-L308 and _update L220-L221 skip authorization for zero auth"
+    },
+    {
+      "claim": "ERC721 balances agree with ownership for unchecked burn decrements.",
+      "establishedBy": "ERC721._update L216-L244; Raffle._update L497-L502 delegates its state changes"
+    },
+    {
+      "claim": "Refund liability corresponds to outstanding purchase value.",
+      "establishedBy": "Raffle.buyEntries L223-L234; enableRefunds L296-L299; refundTickets L363-L368"
+    },
+    {
+      "claim": "Quote-token successful transfer delivers exactly the nominal amount under standard non-rebasing fee-free semantics.",
+      "establishedBy": "nothing found; trust declared Raffle.sol L560-L561, while SafeERC20.sol L184-L196 checks return status/data without balance deltas"
+    },
+    {
+      "claim": "Destination queries reach the canonical factory getters.",
+      "establishedBy": "Raffle.constructor L159-L162; RaffleFactory.constructor L89-L91; factory getters L42, L54"
+    }
+  ],
+  "calls": [
+    {
+      "callee": "ReentrancyGuard.nonReentrant -> _nonReentrantBefore/_nonReentrantBeforeView/_reentrancyGuardEntered/_reentrancyGuardStorageSlot/StorageSlot.getUint256Slot -> _nonReentrantAfter",
+      "kind": "internal",
+      "propagates": "Rejects entered state before body, writes entered during all calls, restores not-entered afterward; direct chosen-slot access (ReentrancyGuard.sol L69-L73, L88-L118; StorageSlot.sol L93-L97)."
+    },
+    {
+      "callee": "Raffle._requireStatus",
+      "kind": "internal",
+      "propagates": "Returns only for required lifecycle (Raffle.sol L573-L575)."
+    },
+    {
+      "callee": "ERC721.ownerOf -> _requireOwned -> _ownerOf",
+      "kind": "internal",
+      "propagates": "Nonzero current ownership or revert; supplies existence check before range read (ERC721.sol L61-L63, L146-L148, L426-L431)."
+    },
+    {
+      "callee": "Raffle.ticketRange",
+      "kind": "internal",
+      "propagates": "Returns stored endpoints; establishes neither existence nor ordering (Raffle.sol L451-L455)."
+    },
+    {
+      "callee": "ERC721._burn -> Raffle._update -> ERC721._update -> _ownerOf/_approve",
+      "kind": "internal",
+      "propagates": "Zero destination bypasses Raffle screening; zero auth skips base authorization. Removes owner, clears individual approval, decrements owner balance, emits Transfer; zero previous owner reverts (Raffle.sol L497-L502; ERC721.sol L216-L244, L303-L308, L383-L399)."
+    },
+    {
+      "callee": "Raffle._transferQuote -> _isProtocolDestination",
+      "kind": "internal",
+      "propagates": "Screens fixed destinations and canonical implementation, conditionally registry-checks code-bearing recipients, then calls safeTransfer (Raffle.sol L564-L566, L598-L604)."
+    },
+    {
+      "callee": "RaffleFactory.raffleImplementation",
+      "kind": "external-source-available",
+      "propagates": "Returns immutable implementation used by destination screening; reached only when preceding OR comparisons are false (RaffleFactory.sol L42, L89-L91; Raffle.sol L599-L601)."
+    },
+    {
+      "callee": "RaffleFactory.isRaffle",
+      "kind": "external-source-available",
+      "propagates": "Returns registry bit when destination has code and prior screen is false (RaffleFactory.sol L54, L123-L125; Raffle.sol L602-L604)."
+    },
+    {
+      "callee": "SafeERC20.safeTransfer -> _safeTransfer",
+      "kind": "internal",
+      "propagates": "Bubbles call failures; accepts success word 1 or successful empty returndata with code; otherwise reverts. Does not measure actual payment (SafeERC20.sol L33-L37, L176-L200)."
+    },
+    {
+      "callee": "quoteToken.transfer(msg.sender, amount)",
+      "kind": "external-black-box",
+      "propagates": "Receives zero native value and encoded transfer arguments with forwarded gas. Economic transfer semantics assumed; token may fail, return hostile data, or attempt callbacks after burns/debit (SafeERC20.sol L176-L196; Raffle.sol L364-L369)."
+    }
+  ],
+  "callers": [
+    "Public external ticket owner (Raffle.sol L349, L359-L360; IRaffle.sol L340-L344)"
+  ],
+  "sharedState": [
+    "remainingRefundLiability: enableRefunds initializes; refundTickets debits (Raffle.sol L296-L299, L368).",
+    "_ticketRanges and unsettledPot: buyEntries establishes range/value; refundTickets reads ranges after ownership validation (Raffle.sol L223-L234, L359-L363).",
+    "ERC721 ownership, balances and token approvals: burn mutates shared ledger (ERC721.sol L216-L244, L398).",
+    "Reentrancy guard slot: held across payout (ReentrancyGuard.sol L69-L73, L94-L118)."
+  ],
+  "openQuestions": [
+    "unclear; need to inspect the concrete canonical quote-token implementation/configuration to establish actual delivery, restriction/pause behavior, and callbacks (IERC20.sol L35-L41; SafeERC20.sol L176-L200; Raffle.sol L560-L566)."
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "documents": [
+    {
+      "path": "target/DESIGN.md",
+      "describes": "Authoritative clean protocol design: immutable factory and isolated clones, NFT escrow, entry tickets, outcome economics and rounding, draw and refund deadlines, settlement/redemption, independent claims, trust boundaries, and advisory frontend discovery.",
+      "kind": "design-doc"
+    },
+    {
+      "path": "target/packages/contracts/src/interfaces/IRaffle.sol",
+      "describes": "Raffle lifecycle and API semantics, entry ranges and bearer tickets, draw timing and callback handling, settlement and redemption, refund batches, payouts, destination restrictions, state queries and events.",
+      "kind": "inline-docs"
+    },
+    {
+      "path": "target/packages/contracts/src/interfaces/IRaffleFactory.sol",
+      "describes": "Immutable factory configuration, atomic raffle creation and prize escrow, sponsor parameters and validation, and canonical raffle registry queries.",
+      "kind": "inline-docs"
+    },
+    {
+      "path": "target/packages/contracts/src/libraries/RaffleConstants.sol",
+      "describes": "Fixed v1 price, six-decimal token precision, fee and cash-winner percentages, sponsor remainder, refund batch bound, maximum sale duration, draw timeouts, and VRF parameters.",
+      "kind": "inline-docs"
+    },
+    {
+      "path": "target/packages/contracts/src/Raffle.sol",
+      "describes": "Raffle implementation NatSpec adds constant-time entry operations, locked implementation and isolated clone storage, native-transfer rejection, exact prize acceptance, ticket destination checks, callback behavior, storage-only settlement, and quote-token assumptions.",
+      "kind": "inline-docs"
+    },
+    {
+      "path": "target/packages/contracts/src/RaffleFactory.sol",
+      "describes": "Factory implementation NatSpec specifies immutable ownerless operation, deployment dependency checks and canonical token assumptions, atomic creation, and supported prize validation.",
+      "kind": "inline-docs"
+    }
+  ],
+  "codePaths": [
+    "target/packages/contracts/src/Raffle.sol",
+    "target/packages/contracts/src/RaffleFactory.sol",
+    "target/packages/contracts/src/libraries/RaffleConstants.sol",
+    "target/packages/contracts/src/interfaces/IRaffle.sol",
+    "target/packages/contracts/src/interfaces/IRaffleFactory.sol"
+  ],
+  "language": "Solidity 0.8.36"
+}

@@ -1,0 +1,148 @@
+{
+  "schema": "raffle-audit-daybreak-pre-exit-read-only-verification/v1",
+  "verified_at": "2026-10-22T01:14:55.836419+00:00",
+  "status": "PASS_READY_FOR_COMPLETION_RECEIPT_AND_PARENT_POST_EXIT_SEAL",
+  "target_commit": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "global_delivery_seal_created": false,
+  "global_delivery_seal_owner": "parent after Daybreak coordinator and wrapper exit",
+  "strict_delivery_verifier": {
+    "command": "python3 verify-delivery.py --require-terminal",
+    "verified_at": "2026-10-22T01:13:45.766123+00:00",
+    "exit_code": 0,
+    "ok": true,
+    "issues": [],
+    "required_cells_present": 15,
+    "total_matrix_rows": 23,
+    "unfinished_eligible_cells": [],
+    "registered_report_hash_records": 110,
+    "halmos_manifest_files": 3394,
+    "compiler_artifacts": 35,
+    "historical_tool_preimages": 9,
+    "pinned_dependency_fork_tests": 2
+  },
+  "freeze_verification": {
+    "command": "python3 verify-freeze.py",
+    "exit_code": 0,
+    "ok": true,
+    "verified_files_per_root": 435,
+    "dependency_files": 31,
+    "production_files": 5,
+    "errors": []
+  },
+  "matrix": {
+    "path": "matrix.json",
+    "sha256": "a40b13e32c77830afbb8a2db62b09b5e6a37b798862d3506b9e22801ee478feb",
+    "rows": 23,
+    "complete": 10,
+    "qualified_complete": 10,
+    "provider_rejected": 3,
+    "pending": 0,
+    "rejected_cells": ["OPENAI-SIMAO", "OPENAI-PASHOV", "OPENAI-TOB"],
+    "coordinator_outside_rows": true,
+    "evidence_path_hash_pairs_checked": 78,
+    "evidence_path_hash_errors": 0
+  },
+  "promoted_documents": [
+    {
+      "path": "FINAL-AUDIT-REPORT.md",
+      "sha256": "c28a122b672970358a22ad7ead20be8580ac2cb303b3d3c334d373cd9e73b97b"
+    },
+    {
+      "path": "STATUS.md",
+      "sha256": "a657a4d2b30af6852f29a19407f213a5861b22febc3934ffdba3c22bb128288f"
+    },
+    {
+      "path": "INDEX.md",
+      "sha256": "292e952298348dfcfbd481c51fbc9128226c3d9796cc0baf9319435c2568ead6"
+    },
+    {
+      "path": "PROVIDER-HANDOFF-VALIDATION.md",
+      "sha256": "983e26c46a182f4e41beb37557152cff001f4e6d705f3fdc636d2e66453aadb6"
+    },
+    {
+      "path": "provider-handoff-validation.json",
+      "sha256": "e9bc34fe32f28d4cf51e2d793bb988a005adf94e1c52a40ef2ea7ef87c6f0320"
+    },
+    {
+      "path": "PER-FILE-PROPERTY-COVERAGE.md",
+      "sha256": "fa49b242467570c839c5a1be70973a20ff5c76c37241f7657f08d44eab67cae0"
+    },
+    {
+      "path": "per-file-property-coverage.json",
+      "sha256": "06ff0b44411c4db8b19d7a76ba3ba504bf75f7d3d773edb70653ea02d7dcc360"
+    }
+  ],
+  "final_reconciliation": {
+    "source_report_paths": 28,
+    "distinct_report_hashes": 27,
+    "attribution_links": 739,
+    "findings_and_observations": 21,
+    "assurance_issues": 9,
+    "production_root_families": 2,
+    "pending_eligible_receipts": 0,
+    "register_sha256": "14fd10f03ae1ae1e503d04e8ff68d382319d42cced4552d12eab92b04f0f6242",
+    "report_sha256": "b5b443439f827ce572d5ba57efde0f9d474211756b13aa3df798c58654e80c7b",
+    "seal_sha256": "c5e388d04b64d71c22ada44b36c6f8e7b27a0bf37052cd6039845a9d5dd33186",
+    "receipt_registry_sha256": "8eec53152e5d98e9724d82451f46de71f4b77ceff732b87fb58f5a048f0f8ffc",
+    "receipt_integrity_sha256": "85ac3a6d823bc92d9072fd0535e51401a923dbdb2e0a708a271b22fe9af6aec5"
+  },
+  "receipt_integrity_qualification": {
+    "qualified_for_reconciliation_publication": true,
+    "original_verifier_ok": false,
+    "known_historical_mismatch_count": 4,
+    "additional_errors": 0,
+    "metadata_gaps": 0,
+    "all_historical_bindings_intact": false
+  },
+  "claude_openkritt_modified_method": {
+    "status": "QUALIFIED_MODIFIED_METHOD_COMPLETE",
+    "completed_logical_lineages": 193,
+    "metadata_attempts": 195,
+    "historical_failed_metadata_ids": [21, 22],
+    "finding_records": 0,
+    "canonical_findings": 0,
+    "completion_receipt_sha256": "52b75bba1bb78ce25514b950a102364409e69ca19204e420dadfa773b23cfebe",
+    "raw_first_pass_seal_sha256": "d13dd715c36102d61818d67598d92510665237ee1acf8f838026c131b6d31417",
+    "final_seal_sha256": "bbab1ac2c461fca324aa50c7c142a402293000fa47ecf79607cd831f569ab8a1",
+    "original_cell_relabeled_complete": false,
+    "zero_findings_is_proof_of_absence": false
+  },
+  "writer_shutdown": {
+    "reconciliation_watcher_pid": 68662,
+    "watcher_absent": true,
+    "shutdown_receipt_sha256": "c94ad10ddd20e204c6b94db348e9eb3908ad1b4f52b3e148e8724abb6872a0e0",
+    "shutdown_seal_sha256": "cd9d7bcb2e5c9e3144d262852f2b2e9ea63866bd8bf26784758eca4e15709b4c",
+    "source_handoff_sha256": "59deaf1c2121145a45601b69987d9c04dc3147656f64c5798feb0ea383be6f80",
+    "source_handoff_seal_sha256": "f413391a2851fa3924284db3f3844f90068cc82fe43320d03d6dbeb6cb84a901",
+    "idle_awake_stop_marker_present": true,
+    "daybreak_process_bound_wake_lease_exits_with_coordinator": true
+  },
+  "reproduction": {
+    "claude_prompt_sha256": "c92225a12a41ab26e036ef5b259e7f14138d759ed8522970f3aa27b085ed6079",
+    "gemini_prompt_sha256": "3e8b30d8c8432dfa10f5326fdc51ae55adc591afdce8525b317730a1457e9c58",
+    "fresh_directories_required": true,
+    "prompts_are_not_new_run_evidence": true
+  },
+  "link_check": {
+    "verified_at": "2026-10-22T01:14:55.836419+00:00",
+    "documents": 5,
+    "relative_or_absolute_local_links_checked": 166,
+    "missing_links_after_this_receipt_is_created": 0
+  },
+  "route": {
+    "requested_model": "gpt-daybreak-blue-latest",
+    "accepted_local_selection": "gpt-daybreak-blue-latest",
+    "requested_access_program": "daybreak_blue",
+    "reasoning_effort": "ultra",
+    "provider_returned_identity": null,
+    "fallback_used": false,
+    "actual_openai_safety_rejection_received": false,
+    "route_evidence_sha256": "c32d301de24c2613d6adf549622043cb70df9df02b7845c5e34fb4039c5e8d89",
+    "auxiliary_subagent_availability_error_sha256": "e217ad3311e2d05171dce568bc25d7f4e79f89de309b91da9ceff696b4e1cbcf"
+  },
+  "limitations": [
+    "This is read-only integrity and bookkeeping verification, not a new security judgment or proof of absence.",
+    "Exactly four qualified historical OpenAI ToB binding mismatches remain; two exact prefixes were recovered and two S4 runtime preimages remain unavailable.",
+    "Parent-owned whole-package FINAL-VERIFICATION.json, DELIVERY-MANIFEST.json, and DELIVERY-SEAL.json can be created only after the Daybreak coordinator and wrapper exit."
+  ]
+}

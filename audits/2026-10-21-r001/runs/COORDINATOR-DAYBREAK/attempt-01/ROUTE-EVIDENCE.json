@@ -1,0 +1,42 @@
+{
+  "schema": "daybreak-coordinator-route-evidence/v1",
+  "recorded_at": "2026-10-21T23:37:20Z",
+  "status": "REQUESTED_AND_ACCEPTED",
+  "request": {
+    "user_instruction": "use daybreak for the coordinator then",
+    "model_alias": "gpt-daybreak-blue-latest",
+    "cyber_access_program": "daybreak_blue",
+    "reasoning_effort": "ultra",
+    "fallback_allowed": false,
+    "multi_agent_runner_feature": false,
+    "outer_timeout": null
+  },
+  "acceptance": {
+    "thread_started": true,
+    "thread_id": "01a160c8-1d3c-70d1-886c-257cfbb9bf2b",
+    "runner_pid_at_recording": 71117,
+    "runner_version": "codex-cli 0.163.0-alpha.10.2",
+    "actual_openai_safety_rejection_received": false,
+    "fallback_used": false,
+    "provider_returned_underlying_identity": null,
+    "identity_note": "The selected alias and access-program parameter are recorded exactly. No underlying model identity is inferred from the alias."
+  },
+  "scope": {
+    "coordinator_outside_original_23_matrix_slots": true,
+    "prior_provider_rejections_preserved": true,
+    "standard_provider_harnesses_not_retried_as_daybreak": true
+  },
+  "evidence": {
+    "command": {
+      "path": "runs/COORDINATOR-DAYBREAK/attempt-01/command.json",
+      "sha256": "9521f3fdffcc44607c2112696809accf60685e38b557cb19857786ec13dc7b3a"
+    },
+    "authorization": {
+      "path": "runs/COORDINATOR-DAYBREAK/attempt-01/handoff-authorization.json",
+      "sha256": "0e5fbcd5c63c0276407a62cbdb76c065f8276d19e11feab7ff54e5cea4c05cde"
+    },
+    "event_stream": "runs/COORDINATOR-DAYBREAK/attempt-01/events.jsonl",
+    "official_program_documentation_consulted": "https://developers.openai.com/api/docs/guides/daybreak"
+  },
+  "program_semantics": "The access-program parameter selects already-approved access. It does not itself grant access, identify an underlying model, or disable safeguards."
+}

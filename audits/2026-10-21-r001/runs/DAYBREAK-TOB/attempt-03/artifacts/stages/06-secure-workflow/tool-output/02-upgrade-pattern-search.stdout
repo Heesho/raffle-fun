@@ -1,0 +1,175 @@
+src/Raffle.sol:24:///      owners burn them for redemption or refund. Each raffle is a fixed, non-upgradeable ERC-1167 clone with no
+src/Raffle.sol:136:    bool public override initialized;
+src/Raffle.sol:151:    /// @notice Deploys and locks the implementation shared by one factory's minimal-proxy raffles.
+src/Raffle.sol:152:    /// @dev Constructor state belongs to the implementation. Clones share these immutables but hold isolated storage.
+src/Raffle.sol:153:    /// @param quoteToken_ Canonical six-decimal USDC contract fixed for the implementation and every clone.
+src/Raffle.sol:154:    /// @param vrfWrapper_ Chainlink VRF v2.5 native direct-funding wrapper fixed for the implementation and all clones.
+src/Raffle.sol:164:        initialized = true;
+src/Raffle.sol:176:    function initialize(RaffleInitParams calldata params) external override {
+src/Raffle.sol:177:        if (initialized) revert AlreadyInitialized();
+src/Raffle.sol:179:        initialized = true;
+src/Raffle.sol:588:    ///      Initialization supplies the prospective prize token because clone storage is not populated yet; runtime
+src/Raffle.sol:601:            || destination == canonicalFactory.raffleImplementation();
+src/Raffle.sol:607:    /// @dev Validates the wrapper before passing it to the inherited constructor initializer.
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:73:    /// @dev Performs a Solidity function call using a low level `delegatecall` and ignoring the return data.
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:74:    function delegatecallNoReturn(address target, bytes memory data) internal returns (bool success) {
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:76:            success := delegatecall(gas(), target, add(data, 0x20), mload(data), 0x00, 0x00)
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:80:    /// @dev Performs a Solidity function call using a low level `delegatecall` and returns the first 64 bytes of the result
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:85:    function delegatecallReturn64Bytes(
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:90:            success := delegatecall(gas(), target, add(data, 0x20), mload(data), 0x00, 0x40)
+src/interfaces/IRaffleFactory.sol:7:/// @dev The factory has no owner, pause, upgrade, rescue, or mutable protocol configuration. Deployment tooling must
+src/interfaces/IRaffleFactory.sol:30:    /// @notice Emitted after a raffle clone is initialized, registered, funded, and active.
+src/interfaces/IRaffleFactory.sol:32:    /// @param raffle Newly created fixed-target ERC-1167 clone.
+src/interfaces/IRaffleFactory.sol:93:    /// @notice Raised when the exact configured prize is not owned by an active clone after escrow.
+src/interfaces/IRaffleFactory.sol:94:    /// @param raffle Newly created clone expected to hold the prize and report `Active`.
+src/interfaces/IRaffleFactory.sol:101:    /// @notice Creates, initializes, registers, and funds one autonomous fixed-target raffle clone atomically.
+src/interfaces/IRaffleFactory.sol:103:    /// @return raffle Address of the newly created and activated clone.
+src/interfaces/IRaffleFactory.sol:128:    /// @notice Returns the immutable implementation targeted by every registered ERC-1167 clone.
+src/interfaces/IRaffleFactory.sol:129:    /// @return implementation Locked raffle implementation address.
+src/interfaces/IRaffleFactory.sol:130:    function raffleImplementation() external view returns (address implementation);
+src/interfaces/IRaffleFactory.sol:138:    /// @return registered True only for a successfully created canonical clone.
+src/interfaces/IRaffleFactory.sol:143:    /// @return raffle Registered clone address, or the zero address for an unknown identifier.
+node_modules/@openzeppelin/contracts/utils/Strings.sol:202:     * @dev Implementation of {tryParseUint-string-uint256-uint256} that does not check bounds. Caller should make sure that
+node_modules/@openzeppelin/contracts/utils/Strings.sol:275:     * @dev Implementation of {tryParseInt-string-uint256-uint256} that does not check bounds. Caller should make sure that
+node_modules/@openzeppelin/contracts/utils/Strings.sol:350:     * @dev Implementation of {tryParseHexUint-string-uint256-uint256} that does not check bounds. Caller should make sure that
+src/interfaces/IRaffle.sol:22:        /// @notice The clone is initialized and waiting for the factory to escrow the configured prize.
+src/interfaces/IRaffle.sol:36:    /// @notice Complete clone-specific configuration supplied once by the canonical factory.
+src/interfaces/IRaffle.sol:184:    /// @notice Raised when a caller other than the immutable factory attempts clone initialization.
+src/interfaces/IRaffle.sol:187:    /// @notice Raised when initialization is attempted more than once or on the locked implementation.
+src/interfaces/IRaffle.sol:188:    error AlreadyInitialized();
+src/interfaces/IRaffle.sol:266:    /// @notice Raised when initialization or a ticket transfer targets known protocol plumbing.
+src/interfaces/IRaffle.sol:305:    /// @notice Initializes a fresh fixed-target clone with its immutable-per-raffle configuration.
+src/interfaces/IRaffle.sol:307:    /// @param params Clone-specific sponsor, prize, accounting, identifier, reserve, and timing configuration.
+src/interfaces/IRaffle.sol:308:    function initialize(RaffleInitParams calldata params) external;
+src/interfaces/IRaffle.sol:406:    /// @notice Returns the immutable factory authorized to initialize this implementation's clones.
+src/interfaces/IRaffle.sol:518:    /// @notice Returns whether this implementation or clone has completed its one-time initialization step.
+src/interfaces/IRaffle.sol:519:    /// @return complete True for the locked implementation and every initialized clone.
+src/interfaces/IRaffle.sol:520:    function initialized() external view returns (bool complete);
+src/RaffleFactory.sol:4:import { Clones } from "@openzeppelin/contracts/proxy/Clones.sol";
+src/RaffleFactory.sol:17:/// @notice Atomically creates, funds, and registers autonomous fixed-implementation raffle clones.
+src/RaffleFactory.sol:18:/// @dev The implementation, canonical six-decimal USDC, treasury, fee, and Chainlink configuration are immutable. The
+src/RaffleFactory.sol:19:///      factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.
+src/RaffleFactory.sol:42:    address public immutable override raffleImplementation;
+src/RaffleFactory.sol:58:    /// @notice Deploys the ownerless factory and its locked raffle implementation with one immutable configuration.
+src/RaffleFactory.sol:89:        address implementation = address(new Raffle(quoteToken_, vrfWrapper_));
+src/RaffleFactory.sol:90:        if (protocolTreasury_ == implementation) revert UnsafeProtocolDestination(protocolTreasury_);
+src/RaffleFactory.sol:91:        raffleImplementation = implementation;
+src/RaffleFactory.sol:106:        raffle = Clones.clone(raffleImplementation);
+src/RaffleFactory.sol:107:        // The fresh fixed-target clone can initialize only once; this function is nonReentrant and atomic.
+src/RaffleFactory.sol:110:            .initialize(
+src/RaffleFactory.sol:159:                || params.prizeToken == raffleImplementation || isRaffle[params.prizeToken]
+src/RaffleFactory.sol:166:                || params.sponsorRecipient == raffleImplementation || isRaffle[params.sponsorRecipient]
+node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:42:    // back. This is the compiler's defense against contract upgrades and
+node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol:13: * For an implementation, see {ERC165}.
+node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol:9: * @dev Implementation of the {IERC165} interface.
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:10: * Storage slots are often used to avoid storage conflict when dealing with upgradeable contracts.
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:15: * Example usage to set ERC-1967 implementation slot:
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:17: * contract ERC1967 {
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:19: *     bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:21: *     function _getImplementation() internal view returns (address) {
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:22: *         return StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:25: *     function _setImplementation(address newImplementation) internal {
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:26: *         require(newImplementation.code.length > 0);
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:27: *         StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = newImplementation;
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:2:// OpenZeppelin Contracts (last updated v5.5.0) (proxy/Clones.sol)
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:11: * deploying minimal proxy contracts, also known as "clones".
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:13: * > To simply and cheaply clone contract functionality in an immutable way, this standard specifies
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:14: * > a minimal bytecode implementation that delegates all calls to a known, fixed address.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:16: * The library includes functions to deploy a proxy using either `create` (traditional deployment) or `create2`
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:17: * (salted deterministic deployment). It also includes functions to predict the addresses of clones deployed using the
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:20:library Clones {
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:21:    error CloneArgumentsTooLong();
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:24:     * @dev Deploys and returns the address of a clone that mimics the behavior of `implementation`.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:28:     * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:29:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:30:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:32:    function clone(address implementation) internal returns (address instance) {
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:33:        return clone(implementation, 0);
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:37:     * @dev Same as {xref-Clones-clone-address-}[clone], but with a `value` parameter to send native currency
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:40:     * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:41:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:42:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:47:    function clone(address implementation, uint256 value) internal returns (address instance) {
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:52:            // Cleans the upper 96 bits of the `implementation` word, then packs the first 3 bytes
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:53:            // of the `implementation` address with the bytecode before the address.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:54:            mstore(0x00, or(shr(232, shl(96, implementation)), 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000))
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:55:            // Packs the remaining 17 bytes of `implementation` with the bytecode after the address.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:56:            mstore(0x20, or(shl(120, implementation), 0x5af43d82803e903d91602b57fd5bf3))
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:65:     * @dev Deploys and returns the address of a clone that mimics the behavior of `implementation`.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:68:     * the clone. Using the same `implementation` and `salt` multiple times will revert, since
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:69:     * the clones cannot be deployed twice at the same address.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:71:     * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:72:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:73:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:75:    function cloneDeterministic(address implementation, bytes32 salt) internal returns (address instance) {
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:76:        return cloneDeterministic(implementation, salt, 0);
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:80:     * @dev Same as {xref-Clones-cloneDeterministic-address-bytes32-}[cloneDeterministic], but with
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:83:     * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:84:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:85:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:90:    function cloneDeterministic(
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:91:        address implementation,
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:99:            // Cleans the upper 96 bits of the `implementation` word, then packs the first 3 bytes
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:100:            // of the `implementation` address with the bytecode before the address.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:101:            mstore(0x00, or(shr(232, shl(96, implementation)), 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000))
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:102:            // Packs the remaining 17 bytes of `implementation` with the bytecode after the address.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:103:            mstore(0x20, or(shl(120, implementation), 0x5af43d82803e903d91602b57fd5bf3))
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:112:     * @dev Computes the address of a clone deployed using {Clones-cloneDeterministic}.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:115:        address implementation,
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:123:            mstore(add(ptr, 0x14), implementation)
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:132:     * @dev Computes the address of a clone deployed using {Clones-cloneDeterministic}.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:135:        address implementation,
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:138:        return predictDeterministicAddress(implementation, salt, address(this));
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:142:     * @dev Deploys and returns the address of a clone that mimics the behavior of `implementation` with custom
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:144:     * access the arguments within the implementation, use {fetchCloneArgs}.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:148:     * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:149:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:150:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:152:    function cloneWithImmutableArgs(address implementation, bytes memory args) internal returns (address instance) {
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:153:        return cloneWithImmutableArgs(implementation, args, 0);
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:157:     * @dev Same as {xref-Clones-cloneWithImmutableArgs-address-bytes-}[cloneWithImmutableArgs], but with a `value`
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:160:     * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:161:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:162:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:167:    function cloneWithImmutableArgs(
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:168:        address implementation,
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:175:        bytes memory bytecode = _cloneCodeWithImmutableArgs(implementation, args);
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:185:     * @dev Deploys and returns the address of a clone that mimics the behavior of `implementation` with custom
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:187:     * access the arguments within the implementation, use {fetchCloneArgs}.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:189:     * This function uses the create2 opcode and a `salt` to deterministically deploy the clone. Using the same
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:190:     * `implementation`, `args` and `salt` multiple times will revert, since the clones cannot be deployed twice
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:193:     * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:194:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:195:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:197:    function cloneDeterministicWithImmutableArgs(
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:198:        address implementation,
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:202:        return cloneDeterministicWithImmutableArgs(implementation, args, salt, 0);
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:206:     * @dev Same as {xref-Clones-cloneDeterministicWithImmutableArgs-address-bytes-bytes32-}[cloneDeterministicWithImmutableArgs],
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:209:     * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:210:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:211:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:216:    function cloneDeterministicWithImmutableArgs(
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:217:        address implementation,
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:222:        bytes memory bytecode = _cloneCodeWithImmutableArgs(implementation, args);
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:227:     * @dev Computes the address of a clone deployed using {Clones-cloneDeterministicWithImmutableArgs}.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:230:        address implementation,
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:235:        bytes memory bytecode = _cloneCodeWithImmutableArgs(implementation, args);
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:240:     * @dev Computes the address of a clone deployed using {Clones-cloneDeterministicWithImmutableArgs}.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:243:        address implementation,
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:247:        return predictDeterministicAddressWithImmutableArgs(implementation, args, salt, address(this));
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:251:     * @dev Get the immutable args attached to a clone.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:253:     * - If `instance` is a clone that was deployed using `clone` or `cloneDeterministic`, this
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:255:     * - If `instance` is a clone that was deployed using `cloneWithImmutableArgs` or
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:256:     *   `cloneDeterministicWithImmutableArgs`, this function will return the args array used at
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:258:     * - If `instance` is NOT a clone deployed using this library, the behavior is undefined. This
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:259:     *   function should only be used to check addresses that are known to be clones.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:261:    function fetchCloneArgs(address instance) internal view returns (bytes memory) {
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:270:     * @dev Helper that prepares the initcode of the proxy with immutable args.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:273:     * `mcopy`. Unfortunately, that opcode is not available before cancun. A pure solidity implementation using
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:277:     * With the proxy code taking 45 bytes, that limits the length of the immutable args to 24531 bytes.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:279:    function _cloneCodeWithImmutableArgs(
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:280:        address implementation,
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:283:        if (args.length > 0x5fd3) revert CloneArgumentsTooLong();
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:289:                implementation,
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:15: * @dev Implementation of https://eips.ethereum.org/EIPS/eip-721[ERC-721] Non-Fungible Token Standard, including
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:37:     * @dev Initializes the contract by setting a `name` and a `symbol` to the token collection.

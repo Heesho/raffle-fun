@@ -1,0 +1,101 @@
+{
+  "stage_id": "S1-FUNCTION-11",
+  "accepted_local_selection": {
+    "model": "gpt-daybreak-blue-latest",
+    "reasoning_effort": "ultra",
+    "access_program": "daybreak_blue",
+    "fallback": false
+  },
+  "provider_returned_model": "unknown",
+  "function": "Raffle._update(address,uint256,address)",
+  "file": "target/packages/contracts/src/Raffle.sol",
+  "lines": "L497-L502",
+  "analysisFile": ".audit-work/stages/01-audit-context/functions/11-Raffle._update.md",
+  "invariants": [
+    {
+      "claim": "A successful non-burn update has passed the local-address, factory-implementation, and applicable same-factory raffle-registry destination screen before any ERC-721 mutation.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L498-L501, L593-L604"
+    },
+    {
+      "claim": "After super._update succeeds, _owners[ticketId] equals to; an existing owner's balance was decremented, a nonzero recipient's balance was incremented, token approval was cleared for an existing token, and Transfer was emitted.",
+      "evidence": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L216-L244"
+    },
+    {
+      "claim": "previousOwner equals the _ownerOf(ticketId) value observed before the inherited ledger writes.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L501; target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L216-L244"
+    },
+    {
+      "claim": "A nonzero auth is checked as owner, operator, or token-approved address before ledger mutation; zero auth skips that check.",
+      "evidence": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L164-L187, L216-L222"
+    },
+    {
+      "claim": "Burns skip destination classification and preserve the historical _ticketRanges entry while deleting current ERC-721 ownership through super._update.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L138-L139, L492-L501; target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L303-L307"
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "The canonical immutable factory responds with ABI-decodable raffleImplementation() and isRaffle(address) values when the relevant helper branches call them.",
+      "establishedBy": "Raffle stores its deployer as factory at target/packages/contracts/src/Raffle.sol:L155-L164; RaffleFactory deploys the implementation and declares both public values at target/packages/contracts/src/RaffleFactory.sol:L42-L54, L89-L91."
+    },
+    {
+      "claim": "For auth == address(0), operation-specific validity and authority are supplied by the wrapper/caller rather than by _update.",
+      "establishedBy": "_mint checks previousOwner == 0 and _burn checks previousOwner != 0 at ERC721.sol:L259-L267 and L303-L307; Raffle redemption/refund check msg.sender against ownerOf before burn at Raffle.sol:L320-L325 and L357-L365; inherited _transfer post-checks existence and from equality at ERC721.sol:L321-L330."
+    },
+    {
+      "claim": "The inherited unchecked balance decrement relies on owner slots and balances already satisfying ERC-721 owner/balance consistency.",
+      "establishedBy": "ERC721 documents the relation at ERC721.sol:L138-L145 and its core update maintains both sides at L224-L240; Raffle delegates ownership mutations through Raffle.sol:L497-L501."
+    },
+    {
+      "claim": "The prizeToken used to screen a purchase recipient has been initialized before the mint route is reachable.",
+      "establishedBy": "initialize stores prizeToken and enters AwaitingPrize at Raffle.sol:L176-L205; prize receipt enters Active at L416-L429; buyEntries requires Active before _safeMint at L215 and L235."
+    },
+    {
+      "claim": "Safe-path receiver behavior may include revert, a non-acceptance selector, or nested calls after ownership has been written.",
+      "establishedBy": "ERC721 invokes ERC721Utils after transfer/mint at ERC721.sol:L127-L136, L279-L290 and L360-L363; the black-box call and its result/failure handling are at ERC721Utils.sol:L25-L48."
+    }
+  ],
+  "calls": [
+    {
+      "callee": "Raffle._isProtocolDestination",
+      "kind": "internal",
+      "propagates": "Classifies each nonzero recipient against local protocol addresses, the factory implementation, and conditionally the factory raffle registry before ownership mutation (Raffle.sol:L498-L500, L593-L604)."
+    },
+    {
+      "callee": "IRaffleFactory.raffleImplementation",
+      "kind": "external-source-available",
+      "propagates": "Supplies the immutable implementation identity used in destination classification; a call/decode failure propagates before super._update (Raffle.sol:L598-L601; RaffleFactory.sol:L42, L89-L91)."
+    },
+    {
+      "callee": "IRaffleFactory.isRaffle",
+      "kind": "external-source-available",
+      "propagates": "For an otherwise-unclassified destination with code, supplies same-factory registration state written by createRaffle (Raffle.sol:L602-L604; RaffleFactory.sol:L54, L123-L128)."
+    },
+    {
+      "callee": "ERC721._update",
+      "kind": "internal",
+      "propagates": "Establishes nonzero-auth authorization, clears token approval, updates balances and owner, emits Transfer, and returns the prior owner across mint/transfer/burn shapes (ERC721.sol:L216-L244)."
+    },
+    {
+      "callee": "IERC721Receiver.onERC721Received (safe caller paths after _update)",
+      "kind": "external-black-box",
+      "propagates": "Safe mint/transfer completion depends on the contract recipient returning the acceptance selector; receiver failure is reverted/bubbled and nested calls occur after the ownership write (ERC721.sol:L127-L136, L279-L290, L360-L363; ERC721Utils.sol:L25-L48)."
+    }
+  ],
+  "callers": [
+    "ERC721.transferFrom(address,address,uint256) -> Raffle._update(to,tokenId,_msgSender()), then verifies previousOwner == from (target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L114-L125).",
+    "Both ERC721.safeTransferFrom overloads -> transferFrom -> Raffle._update, then receiver acceptance (target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L127-L136).",
+    "Raffle.buyEntries -> ERC721._safeMint -> _mint -> Raffle._update(to,tokenId,0), then receiver acceptance (target/packages/contracts/src/Raffle.sol:L209-L235; target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L259-L290).",
+    "Raffle.redeemWinningTicket -> ERC721._burn -> Raffle._update(0,tokenId,0) (target/packages/contracts/src/Raffle.sol:L309-L325; target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L303-L307).",
+    "Raffle.refundTickets loop -> ERC721._burn -> Raffle._update(0,tokenId,0) (target/packages/contracts/src/Raffle.sol:L349-L365; target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L303-L307).",
+    "Inherited ERC721._transfer and _safeTransfer are internal zero-auth routes through the override; the latter adds receiver acceptance (target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L321-L363)."
+  ],
+  "sharedState": [
+    "ERC721._owners, _balances, _tokenApprovals, _operatorApprovals (target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L28-L34, L164-L168, L224-L240).",
+    "Raffle factory, quoteToken, prizeToken, and inherited i_vrfV2PlusWrapper destination identities (target/packages/contracts/src/Raffle.sol:L54-L70, L155-L164; VRFV2PlusWrapperConsumerBase.sol:L34-L47).",
+    "RaffleFactory.raffleImplementation and isRaffle registry (target/packages/contracts/src/RaffleFactory.sol:L42-L54, L89-L91, L123-L128).",
+    "Raffle._ticketRanges remains coupled by ticket ID but is not changed on transfer or burn (target/packages/contracts/src/Raffle.sol:L138-L139, L226-L235, L451-L455).",
+    "Inherited approve/setApprovalForAll write the authorization state consumed and partly cleared by updates (target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L92-L112, L383-L417)."
+  ],
+  "openQuestions": []
+}

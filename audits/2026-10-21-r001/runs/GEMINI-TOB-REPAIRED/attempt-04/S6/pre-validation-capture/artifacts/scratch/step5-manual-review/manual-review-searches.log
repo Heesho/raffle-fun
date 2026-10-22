@@ -1,0 +1,140 @@
+=== STEP 5 MANUAL REVIEW CODEBASE SEARCHES ===
+--- 5.1 Privacy & Visibility Searches (private state variables, commit/reveal, secret/hash/password) ---
+packages/contracts/src/RaffleFactory.sol:154:    function _validateCreateParams(CreateRaffleParams calldata params) private view {
+packages/contracts/src/RaffleFactory.sol:183:    function _requireContract(address account) private view {
+packages/contracts/src/Raffle.sol:139:    mapping(uint256 ticketId => TicketRange range) private _ticketRanges;
+packages/contracts/src/Raffle.sol:142:    bool private _requestInFlight;
+packages/contracts/src/Raffle.sol:533:    function _settleWinningTicket(uint256 ticketId) private returns (uint256 cashAmount) {
+packages/contracts/src/Raffle.sol:564:    function _transferQuote(address to, uint256 amount) private {
+packages/contracts/src/Raffle.sol:573:    function _requireStatus(Status expected) private view {
+packages/contracts/src/Raffle.sol:579:    function _requireWinningTicket(uint256 ticketId) private view {
+packages/contracts/src/Raffle.sol:594:        private
+packages/contracts/src/Raffle.sol:610:    function _validatedVrfWrapper(address wrapper) private pure returns (address validatedWrapper) {
+
+--- 5.2 Front-Running, Ordering & Timestamp Boundary Searches ---
+packages/contracts/src/RaffleFactory.sol:99:        uint256 currentTime = block.timestamp;
+packages/contracts/src/RaffleFactory.sol:100:        if (params.endTime <= currentTime) revert InvalidEndTime(currentTime, params.endTime);
+packages/contracts/src/RaffleFactory.sol:101:        uint256 saleDuration = uint256(params.endTime) - currentTime;
+packages/contracts/src/RaffleFactory.sol:119:                endTime: params.endTime
+packages/contracts/src/RaffleFactory.sol:146:            params.endTime
+packages/contracts/src/interfaces/IRaffle.sol:44:    /// @param endTime Unix timestamp, in seconds, at which entry sales end exclusively.
+packages/contracts/src/interfaces/IRaffle.sol:53:        uint64 endTime;
+packages/contracts/src/interfaces/IRaffle.sol:88:    /// @param callbackDeadline Exclusive Unix-timestamp deadline for accepting the authenticated callback.
+packages/contracts/src/interfaces/IRaffle.sol:205:    /// @param endTime Exclusive sale-end Unix timestamp, in seconds.
+packages/contracts/src/interfaces/IRaffle.sol:207:    error SaleEnded(uint256 endTime, uint256 currentTime);
+packages/contracts/src/interfaces/IRaffle.sol:230:    /// @param endTime Exclusive sale-end Unix timestamp, in seconds.
+packages/contracts/src/interfaces/IRaffle.sol:232:    error RaffleNotEnded(uint256 endTime, uint256 currentTime);
+packages/contracts/src/interfaces/IRaffle.sol:234:    /// @notice Raised when a draw request is submitted at or after the exclusive request deadline.
+packages/contracts/src/interfaces/IRaffle.sol:235:    /// @param deadline Exclusive draw-request Unix-timestamp deadline, in seconds.
+packages/contracts/src/interfaces/IRaffle.sol:237:    error DrawRequestWindowExpired(uint256 deadline, uint256 currentTime);
+packages/contracts/src/interfaces/IRaffle.sol:242:    /// @notice Raised when refunds are requested before the applicable liveness deadline.
+packages/contracts/src/interfaces/IRaffle.sol:243:    /// @param deadline Unix timestamp, in seconds, at which refunds become available.
+packages/contracts/src/interfaces/IRaffle.sol:245:    error RefundsNotAvailable(uint256 deadline, uint256 currentTime);
+packages/contracts/src/interfaces/IRaffle.sol:317:    /// @dev Callable by anyone only in `[endTime,drawRequestDeadline())` after at least one entry is sold. Any native
+packages/contracts/src/interfaces/IRaffle.sol:320:    function requestDraw() external payable returns (uint256 requestId);
+packages/contracts/src/interfaces/IRaffle.sol:322:    /// @notice Enables full refunds after the sold-raffle request deadline or an accepted request's callback deadline.
+packages/contracts/src/interfaces/IRaffle.sol:324:    function enableRefunds() external;
+packages/contracts/src/interfaces/IRaffle.sol:331:    function settleWinningTicket(uint256 ticketId) external returns (uint256 cashAmount);
+packages/contracts/src/interfaces/IRaffle.sol:375:    /// @notice Returns the exclusive deadline for initiating the draw.
+packages/contracts/src/interfaces/IRaffle.sol:376:    /// @return deadline Unix timestamp, in seconds, equal to `endTime + 2 days`.
+packages/contracts/src/interfaces/IRaffle.sol:377:    function drawRequestDeadline() external view returns (uint256 deadline);
+packages/contracts/src/interfaces/IRaffle.sol:379:    /// @notice Returns the exclusive deadline for accepting the authenticated callback.
+packages/contracts/src/interfaces/IRaffle.sol:380:    /// @return deadline Unix timestamp, in seconds, equal to `drawRequestedAt + 2 days`, or zero before a request.
+packages/contracts/src/interfaces/IRaffle.sol:381:    function callbackDeadline() external view returns (uint256 deadline);
+packages/contracts/src/interfaces/IRaffle.sol:448:    function endTime() external view returns (uint64 timestamp);
+packages/contracts/src/interfaces/IRaffleFactory.sol:19:    /// @param endTime Exclusive sale-end Unix timestamp, in seconds.
+packages/contracts/src/interfaces/IRaffleFactory.sol:25:        uint64 endTime;
+packages/contracts/src/interfaces/IRaffleFactory.sol:40:    /// @param endTime Exclusive sale-end Unix timestamp, in seconds.
+packages/contracts/src/interfaces/IRaffleFactory.sol:51:        uint64 endTime
+packages/contracts/src/interfaces/IRaffleFactory.sol:81:    /// @param endTime Supplied exclusive sale-end Unix timestamp, in seconds.
+packages/contracts/src/interfaces/IRaffleFactory.sol:82:    error InvalidEndTime(uint256 currentTime, uint256 endTime);
+packages/contracts/src/Raffle.sol:82:    uint64 public override endTime;
+packages/contracts/src/Raffle.sol:170:    /// @notice Rejects direct native-token transfers that are not attached to `requestDraw`.
+packages/contracts/src/Raffle.sol:204:        endTime = params.endTime;
+packages/contracts/src/Raffle.sol:216:        if (block.timestamp >= endTime) revert SaleEnded(endTime, block.timestamp);
+packages/contracts/src/Raffle.sol:240:    function requestDraw() external payable override nonReentrant returns (uint256 requestId) {
+packages/contracts/src/Raffle.sol:242:        if (block.timestamp < endTime) revert RaffleNotEnded(endTime, block.timestamp);
+packages/contracts/src/Raffle.sol:245:        if (block.timestamp >= requestDeadline) {
+packages/contracts/src/Raffle.sol:246:            revert DrawRequestWindowExpired(requestDeadline, block.timestamp);
+packages/contracts/src/Raffle.sol:253:        drawRequestedAt = uint64(block.timestamp);
+packages/contracts/src/Raffle.sol:276:    function enableRefunds() external override nonReentrant {
+packages/contracts/src/Raffle.sol:277:        uint256 deadline;
+packages/contracts/src/Raffle.sol:281:                deadline = endTime;
+packages/contracts/src/Raffle.sol:282:                if (msg.sender != sponsor && block.timestamp < deadline) {
+packages/contracts/src/Raffle.sol:283:                    revert RefundsNotAvailable(deadline, block.timestamp);
+packages/contracts/src/Raffle.sol:286:                deadline = drawRequestDeadline();
+packages/contracts/src/Raffle.sol:287:                if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+packages/contracts/src/Raffle.sol:290:            deadline = callbackDeadline();
+packages/contracts/src/Raffle.sol:291:            if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+packages/contracts/src/Raffle.sol:304:    function settleWinningTicket(uint256 ticketId) external override nonReentrant returns (uint256 cashAmount) {
+packages/contracts/src/Raffle.sol:305:        cashAmount = _settleWinningTicket(ticketId);
+packages/contracts/src/Raffle.sol:315:            _settleWinningTicket(ticketId);
+packages/contracts/src/Raffle.sol:458:    function drawRequestDeadline() public view override returns (uint256 deadline) {
+packages/contracts/src/Raffle.sol:459:        deadline = uint256(endTime) + RaffleConstants.DRAW_REQUEST_TIMEOUT;
+packages/contracts/src/Raffle.sol:463:    function callbackDeadline() public view override returns (uint256 deadline) {
+packages/contracts/src/Raffle.sol:464:        if (drawRequestedAt != 0) deadline = uint256(drawRequestedAt) + RaffleConstants.DRAW_CALLBACK_TIMEOUT;
+packages/contracts/src/Raffle.sol:512:                || block.timestamp >= callbackDeadline()
+packages/contracts/src/Raffle.sol:520:        resolvedAt = uint64(block.timestamp);
+packages/contracts/src/Raffle.sol:533:    function _settleWinningTicket(uint256 ticketId) private returns (uint256 cashAmount) {
+
+--- 5.3 Cryptography, Randomness & Hashing Searches ---
+packages/contracts/src/libraries/RaffleConstants.sol:39:    uint32 internal constant VRF_CALLBACK_GAS_LIMIT = 300_000;
+packages/contracts/src/libraries/RaffleConstants.sol:42:    uint16 internal constant VRF_REQUEST_CONFIRMATIONS = 30;
+packages/contracts/src/RaffleFactory.sol:25:    uint32 public constant override callbackGasLimit = RaffleConstants.VRF_CALLBACK_GAS_LIMIT;
+packages/contracts/src/RaffleFactory.sol:28:    uint16 public constant override requestConfirmations = RaffleConstants.VRF_REQUEST_CONFIRMATIONS;
+packages/contracts/src/RaffleFactory.sol:36:    address public immutable override vrfWrapper;
+packages/contracts/src/RaffleFactory.sol:63:    /// @param vrfWrapper_ Official Chainlink VRF v2.5 native direct-funding wrapper for the target chain.
+packages/contracts/src/RaffleFactory.sol:65:    constructor(address quoteToken_, address vrfWrapper_, address protocolTreasury_) {
+packages/contracts/src/RaffleFactory.sol:67:        _requireContract(vrfWrapper_);
+packages/contracts/src/RaffleFactory.sol:80:        if (protocolTreasury_ == address(this) || protocolTreasury_ == quoteToken_ || protocolTreasury_ == vrfWrapper_)
+packages/contracts/src/RaffleFactory.sol:86:        vrfWrapper = vrfWrapper_;
+packages/contracts/src/RaffleFactory.sol:89:        address implementation = address(new Raffle(quoteToken_, vrfWrapper_));
+packages/contracts/src/RaffleFactory.sol:158:            params.prizeToken == address(this) || params.prizeToken == quoteToken || params.prizeToken == vrfWrapper
+packages/contracts/src/RaffleFactory.sol:165:                || params.sponsorRecipient == vrfWrapper || params.sponsorRecipient == params.prizeToken
+packages/contracts/src/interfaces/IRaffle.sol:4:import { IVRFV2PlusWrapper } from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol";
+packages/contracts/src/interfaces/IRaffle.sol:26:        /// @notice A Chainlink VRF request was accepted and its callback window is open.
+packages/contracts/src/interfaces/IRaffle.sol:82:    /// @notice Emitted when the raffle pays for and records its one Chainlink VRF request.
+packages/contracts/src/interfaces/IRaffle.sol:105:    /// @param requestId Request ID that produced the accepted randomness.
+packages/contracts/src/interfaces/IRaffle.sol:316:    /// @notice Pays the current native Chainlink fee and requests the raffle's one random word.
+packages/contracts/src/interfaces/IRaffle.sol:365:    /// @return fee Estimated native-token wei for the configured callback and one random word.
+packages/contracts/src/interfaces/IRaffle.sol:426:    /// @notice Returns the immutable Chainlink VRF v2.5 native direct-funding wrapper.
+packages/contracts/src/interfaces/IRaffle.sol:428:    function vrfWrapper() external view returns (IVRFV2PlusWrapper wrapper);
+packages/contracts/src/interfaces/IRaffle.sol:484:    function vrfRequestId() external view returns (uint256 requestId);
+packages/contracts/src/interfaces/IRaffleFactory.sol:112:    /// @notice Returns the immutable Chainlink VRF v2.5 native direct-funding wrapper used by every raffle.
+packages/contracts/src/interfaces/IRaffleFactory.sol:114:    function vrfWrapper() external view returns (address wrapperAddress);
+packages/contracts/src/Raffle.sol:4:import { VRFV2PlusWrapperConsumerBase } from "@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol";
+packages/contracts/src/Raffle.sol:5:import { IVRFV2PlusWrapper } from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol";
+packages/contracts/src/Raffle.sol:6:import { VRFV2PlusClient } from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
+packages/contracts/src/Raffle.sol:28:contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusWrapperConsumerBase {
+packages/contracts/src/Raffle.sol:47:    uint32 public constant override callbackGasLimit = RaffleConstants.VRF_CALLBACK_GAS_LIMIT;
+packages/contracts/src/Raffle.sol:50:    uint16 public constant override requestConfirmations = RaffleConstants.VRF_REQUEST_CONFIRMATIONS;
+packages/contracts/src/Raffle.sol:109:    uint256 public override vrfRequestId;
+packages/contracts/src/Raffle.sol:154:    /// @param vrfWrapper_ Chainlink VRF v2.5 native direct-funding wrapper fixed for the implementation and all clones.
+packages/contracts/src/Raffle.sol:155:    constructor(address quoteToken_, address vrfWrapper_)
+packages/contracts/src/Raffle.sol:157:        VRFV2PlusWrapperConsumerBase(_validatedVrfWrapper(vrfWrapper_))
+packages/contracts/src/Raffle.sol:255:        bytes memory extraArgs = VRFV2PlusClient._argsToBytes(VRFV2PlusClient.ExtraArgsV1({ nativePayment: true }));
+packages/contracts/src/Raffle.sol:259:        vrfRequestId = requestId;
+packages/contracts/src/Raffle.sol:437:        fee = i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit, 1);
+packages/contracts/src/Raffle.sol:442:        fee = i_vrfV2PlusWrapper.estimateRequestPriceNative(callbackGasLimit, 1, requestGasPriceWei);
+packages/contracts/src/Raffle.sol:446:    function vrfWrapper() public view override returns (IVRFV2PlusWrapper wrapper) {
+packages/contracts/src/Raffle.sol:447:        wrapper = i_vrfV2PlusWrapper;
+packages/contracts/src/Raffle.sol:504:    /// @dev Authenticated randomness selects only an entry. No ticket search, loop, user call, or token transfer
+packages/contracts/src/Raffle.sol:508:    /// @param randomWords Callback words; exactly one word is required for resolution.
+packages/contracts/src/Raffle.sol:509:    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+packages/contracts/src/Raffle.sol:511:            _requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1
+packages/contracts/src/Raffle.sol:514:            emit VrfCallbackIgnored(requestId, vrfRequestId, status);
+packages/contracts/src/Raffle.sol:518:        uint128 resolvedEntry = uint128((randomWords[0] % uint256(totalEntries)) + 1);
+packages/contracts/src/Raffle.sol:600:            || destination == address(i_vrfV2PlusWrapper) || destination == prizeToken_
+
+--- 5.4 External Calls, Token Transfers, Native ETH & DeFi Interaction Searches ---
+packages/contracts/src/RaffleFactory.sol:128:        prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId);
+packages/contracts/src/Raffle.sol:171:    receive() external payable {
+packages/contracts/src/Raffle.sol:224:        quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount);
+packages/contracts/src/Raffle.sol:257:        (requestId, paidPrice) = requestRandomnessPayInNative(callbackGasLimit, requestConfirmations, 1, extraArgs);
+packages/contracts/src/Raffle.sol:267:                success := call(gas(), refundRecipient, excess, 0, 0, 0, 0)
+packages/contracts/src/Raffle.sol:334:            prizeToken.transferFrom(address(this), winner, deliveredPrizeTokenId);
+packages/contracts/src/Raffle.sol:404:        prizeToken.transferFrom(address(this), recipient, prizeTokenId);
+packages/contracts/src/Raffle.sol:410:    /// @dev Unrelated NFTs forced here with unsafe `transferFrom` remain outside protocol accounting and cannot be
+packages/contracts/src/Raffle.sol:437:        fee = i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit, 1);
+packages/contracts/src/Raffle.sol:442:        fee = i_vrfV2PlusWrapper.estimateRequestPriceNative(callbackGasLimit, 1, requestGasPriceWei);
+packages/contracts/src/Raffle.sol:566:        quoteToken.safeTransfer(to, amount);

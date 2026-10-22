@@ -1,0 +1,123 @@
+Workspace context:
+Current working directory / primary repository root: /workspace
+Workspace manifest: WORKSPACE.json
+Dependency repositories are checked out as top-level directories inside the same workspace root.
+When reporting file_path for dependency code, prefix it with the dependency alias directory.
+Primary repository: clean-context @ LOCAL_SNAPSHOT
+No dependency checkouts are listed in WORKSPACE.json.
+
+WORKSPACE.json:
+{
+  "dependencies": [],
+  "primary": {
+    "commit": "LOCAL_SNAPSHOT",
+    "kind": "local",
+    "path": "/workspace",
+    "repo": "clean-context",
+    "requested_commit": "LOCAL_SNAPSHOT"
+  }
+}
+
+You are investigating one externally reachable production flow in clean-context for concrete security vulnerabilities.
+
+Entrypoint:
+- kind: smart_contract_external_function
+- label: Raffle.redeemWinningTicket(uint256)
+- handler: Raffle.redeemWinningTicket
+- location: packages/contracts/src/Raffle.sol:309
+- external actor: Current ERC-721 owner of the winning ticket after VRF draw resolution
+- controlled input: ticketId (uint256) and caller context (msg.sender)
+
+Flow under review:
+- summary: Pre-settled cash prize redemption flow when status is Status.CashWon and settlementComplete is already true: verifies ticketId matches winningTicketId and msg.sender is the current owner of ticketId, burns the ticket, zeroes winnerProceeds, screens msg.sender against protocol destinations, and transfers the quoteToken cash prize to msg.sender.
+- trace: ["packages/contracts/src/Raffle.sol:309 Raffle.redeemWinningTicket - Enters nonReentrant entrypoint in Status.CashWon with settlementComplete == true", "packages/contracts/src/Raffle.sol:316 Raffle.redeemWinningTicket - Verifies ticketId == winningTicketId", "packages/contracts/src/Raffle.sol:320 Raffle.redeemWinningTicket - Verifies msg.sender == ownerOf(ticketId)", "packages/contracts/src/Raffle.sol:323 Raffle.redeemWinningTicket - Sets winnerRecipient = winner, winnerRedeemed = true, and burns ticketId via _burn(ticketId) -> _update(address(0), ticketId, address(0))", "packages/contracts/src/Raffle.sol:339 Raffle.redeemWinningTicket - Reads cashAmount = winnerProceeds, checks cashAmount != 0 (or reverts with NoWinnerProceeds), zeroes winnerProceeds = 0, and calls _transferQuote(winner, cashAmount)", "packages/contracts/src/Raffle.sol:564 Raffle._transferQuote - Checks _isProtocolDestination(winner, address(prizeToken)) and executes quoteToken.safeTransfer(winner, cashAmount)", "packages/contracts/src/Raffle.sol:345 Raffle.redeemWinningTicket - Emits WinningTicketRedeemed and returns cashAmount"]
+- terminal action: External calls to IRaffleFactory(factory) in _isProtocolDestination and quoteToken.safeTransfer(winner, cashAmount) in _transferQuote, followed by emitting WinningTicketRedeemed and returning cashAmount
+- focal location: packages/contracts/src/Raffle.sol:566
+- input to sink: ticketId (uint256) is matched against winningTicketId and burned; msg.sender validated as current ownerOf(ticketId) is screened by _isProtocolDestination and receives winnerProceeds via quoteToken.safeTransfer(winner, cashAmount)
+- security relevance: Disburses pre-allocated winnerProceeds to whoever owns winningTicketId at redemption time after burning the ticket and zeroing winnerProceeds. Screens the recipient against protocol plumbing via _isProtocolDestination (which queries factory.raffleImplementation() and, if winner has code, factory.isRaffle(winner)) before calling quoteToken.safeTransfer.
+
+Review the source code for this exact flow, including the surrounding implementation and any necessary callers or callees. Report only vulnerabilities that are concrete, reachable from the stated external actor, and supported by code evidence. A valid finding must identify the vulnerable operation, the missing or flawed protection, a realistic malicious input or sequence, and the full trigger path.
+
+Do not report style issues, hypothetical concerns, test-only behavior, or vulnerabilities that require unsupported configuration or unproven assumptions. Set `exploitable` to true only when the stated external actor can realistically trigger the issue in the configured production path. When the flow contains no supported vulnerability, return a stub instead of inventing a finding.
+
+For each finding, point `file_path` and `line` to the actual vulnerable code, make `trigger_flow` an ordered list from attacker ingress to the vulnerable operation, and use `malicious_input_example` for a minimal realistic payload or sequence.
+
+Return only the structured data requested by the provided JSON schema. Always include the top-level boolean field `stub`, the top-level string field `stub_explanation`, and the top-level array `results`. Valid output combinations are strict: if you did not find anything for this step, return `stub` set to true, `results` set to an empty array, and `stub_explanation` set to a concise reason explaining why no result was found. A stub/no-finding response is a valid successful outcome for a lead that does not establish an actual bug; do not invent a result to avoid using `stub`. If you found one or more results, set `stub` to false, set `stub_explanation` to an empty string, and place at least one application record in `results`. Never return `stub: false` with an empty `results` array; that is invalid and fails the attempt. This is a multi-output step: return every application record in results.
+
+The exact JSON Schema for your final answer is:
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "_kritt_extractor_helper": {
+      "const": true,
+      "type": "boolean"
+    },
+    "results": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "explanation": {
+            "type": "string"
+          },
+          "exploitable": {
+            "type": "boolean"
+          },
+          "file_path": {
+            "type": "string"
+          },
+          "line": {
+            "type": "number"
+          },
+          "malicious_actor": {
+            "type": "string"
+          },
+          "malicious_input_example": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "trigger_flow": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "vulnerability_type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "explanation",
+          "file_path",
+          "line",
+          "malicious_input_example",
+          "summary",
+          "trigger_flow",
+          "vulnerability_type",
+          "malicious_actor",
+          "exploitable"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "stub": {
+      "type": "boolean"
+    },
+    "stub_explanation": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "_kritt_extractor_helper",
+    "stub",
+    "stub_explanation",
+    "results"
+  ],
+  "type": "object"
+}
+```
+The final top-level JSON object must include `_kritt_extractor_helper: true`; this is an extraction marker, not a finding field. Return only a JSON object that validates against this schema. Do not include markdown, commentary, or any text outside the JSON object.

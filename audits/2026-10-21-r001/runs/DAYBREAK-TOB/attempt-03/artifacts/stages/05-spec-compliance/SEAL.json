@@ -1,0 +1,54 @@
+{
+  "stage": "S5",
+  "skill": "spec-to-code-compliance",
+  "status": "sealed",
+  "sealed_at": "2026-10-21T22:41:15Z",
+  "target_sha": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "source_only": true,
+  "test_or_scanner_exposure": false,
+  "report_sha256": "e2cdee01bc21252af38f022c23588b07bdfe1b2712cca64208872166afc74e72",
+  "manifest_sha256": "0822174165933e7c47d9fe3053ac766526ae351a356564bc8d9067ade4336278",
+  "manifest_files": 477,
+  "native_phase_counts": {
+    "documents": 1,
+    "requirements_extracted": 56,
+    "requirements_checked": 56,
+    "full_requirement_analyses": 56,
+    "initially_implemented": 45,
+    "nonimplemented_candidates": 11,
+    "refutation_contexts": 22,
+    "survived": 7,
+    "dropped": 4,
+    "unverified": 0,
+    "checks_failed": 0,
+    "not_checked": 0,
+    "undocumented_behaviors": 11
+  },
+  "controller_adaptation": {
+    "native_max_limit": 30,
+    "checked": 56,
+    "reason": "Authorized complete per-property coverage; preserved native Extract-Align-Verify-Report phases, schemas, evidence rules, reverse sweep, and two refuters per non-implemented record."
+  },
+  "local_incidents": [
+    "Discovery attempt 1 failed pre-analysis because the strict output schema omitted optional properties from required; the repaired schema and both attempts are preserved.",
+    "REQ-51 refuter launcher attempt 1 failed before provider dispatch with a transient xargs exec error; unchanged jobs completed through the validated explicit interpreter route.",
+    "REQ-56 refuter launcher attempt 1 failed before provider dispatch due a controller path transcription error; unchanged jobs completed through the validated absolute route.",
+    "The report context encountered a local command CreateProcess/realpath error, repaired it in-context, wrote and validated the report, and exited zero."
+  ],
+  "provider_rejection": false,
+  "route": {
+    "model": "gpt-daybreak-blue-latest",
+    "access_program": "daybreak_blue",
+    "reasoning_effort": "ultra",
+    "fallback": false,
+    "multi_agent": false,
+    "provider_returned_identity": "unknown"
+  },
+  "freeze_verification": {
+    "ok": true,
+    "verified_files_per_root": 435,
+    "production_files": 5,
+    "dependency_files": 31,
+    "record": "../../logs/freeze-after-s5.json"
+  }
+}

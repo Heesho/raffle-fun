@@ -1,0 +1,15 @@
+# Isolated OpenKritt method and compatibility disclosure
+
+Pinned upstream43e1d19a00ce50bd93253d1c6c3a48cfffbcc4c3; base engine imagec247b67cb3b2… has zero Python-file differences from that source. This campaign uses a fresh raffle-fun-r001 directory, fresh PostgreSQL volume/network and auth-only fresh Codex homes. No old project DB, source, reports, corpora, account memory or provider configuration is loaded. The clean target has only one newly created frozen-snapshot Git commit.
+
+The native baseline controller does not emit an explicit cyber-access program, and base Codex0.145.0 lacks that flag. A separately pinned0.159.2 also rejects the flag locally. Official npm Codex0.163.0 accepts the flag for both exec and resume. CLI package upgrade is a runtime compatibility change, not a target remediation.
+
+The disclosed patch injects --cyber-access-program daybreak_blue only for exact modelgpt-daybreak-blue-latest, including resume. Exact gpt-6-astra stays on the default standard route. All calls retain ultra. Any unrequested model is rejected locally; multi_agent is disabled. Model aliases alone do not establish the program. No custom endpoint/provider definition is used.
+
+For shared-host isolation, startup routines that enumerate/delete global old scan/snapshot containers are guarded off, and our runner names/network labels are unique. Both automatic Docker prune flags are false. Unrelated engine/resources remain untouched. Base and current images are held by named container references. The initial local socket mount error was repaired by using the existing rootless Docker socket path; diagnostic retained.
+
+The unmodified bundled external-flow-analysis workflow and all three native stage prompt/schema definitions are seeded from pinned defaultWorkflowSeeds.json into fresh DB records. Only per-scan scope/configuration describes the authorized clean source and independence boundaries. Native engine queue, model selection, validation, deduplication/ranker/post-processing logic executes. Selected native post-scripts: PoC Creator, Report Creator, Is Malicious Actor in scope, Ease of exploitability; native Blockchain security triage ranker. No synthetic findings will be inserted to force post-processing if the native workflow returns no findings. In that case stages with no eligible inputs must be marked not invoked, not fabricated as model calls.
+
+The native worker runs directly against fresh PostgreSQL; no backend/frontend HTTP service is started or exposed. No ports are published. Per-job model runner containers mount only their fresh home and isolated clean checkout. The engine's read-only local source mount is not shared into the model runner. Output sessions and native metadata will be exported after completion without copying authentication files.
+
+Provider rejection is final for the affected lane: no retry, rewording, model substitution or alternate provider route is permitted. Local setup failures are repaired and retained as superseded diagnostics. Completion and provider-returned identity remain unclaimed until actual stage evidence exists.

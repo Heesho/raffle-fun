@@ -1,0 +1,24 @@
+{
+  "reviewed_utc": "2026-10-21T21:46:21.553335+00:00",
+  "commands": [
+    "find packages/contracts -maxdepth 3 -not -path '*/node_modules*'",
+    "find packages/contracts/src packages/contracts/contracts -maxdepth 4 2>/dev/null || find packages/contracts -maxdepth 3 -not -path '*/.*'",
+    "find packages/contracts/contracts -type f",
+    "find packages/contracts -maxdepth 3 -not -path '*/.*'",
+    "find packages/contracts -maxdepth 3 -not -path '*/node_modules*' -not -path '*/.*'",
+    "find . -maxdepth 3 -not -path '*/node_modules*' -not -path '*/.*'",
+    "find packages/contracts -maxdepth 3",
+    "find . -maxdepth 3 -not -path '*/.*'",
+    "find packages/contracts -maxdepth 4 -not -path '*/node_modules/*'",
+    "find packages/contracts/src -type f",
+    "find . -maxdepth 3 -not -path '*/.*' -not -path '*/node_modules*'",
+    "find . -name \"ReentrancyGuard.sol\" -o -name \"ERC721.sol\" -o -name \"VRFV2PlusWrapperConsumerBase.sol\"",
+    "find packages/contracts/src packages/contracts/contracts -maxdepth 3 2>/dev/null || find packages/contracts -maxdepth 3 -not -path '*/node_modules*'",
+    "find packages/contracts -maxdepth 4 -type f",
+    "find packages/contracts/src packages/contracts/contracts -maxdepth 3 2>/dev/null || find packages/contracts -maxdepth 2"
+  ],
+  "classification": "read-only listings restricted to relative frozen workspace trees; fallback shell OR only retries another local find listing; redirects only suppress stderr to /dev/null",
+  "basis": "Exact tool parameter strings; host launch working directory is each fresh workspace. No script execution, shell substitution, outside path, network or model delegation appears in these commands.",
+  "limitation": "These exact command strings are reviewed; all new strings require manual review. Does not assert OS sandbox or provider memory isolation.",
+  "previous_detector": "Broad find prefix + metacharacter filter, replaced by exact reviewed-command set."
+}

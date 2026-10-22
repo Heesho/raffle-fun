@@ -1,0 +1,1002 @@
+{
+  "schema": "daybreak-audit-stage-ledger-v1",
+  "generated_at": "2026-10-21T08:02:11Z",
+  "cell": "DAYBREAK-PASHOV",
+  "authorization": "defensive smart contract audit",
+  "target": {
+    "supplied_sha": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+    "source_root": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target",
+    "git_verification": "UNAVAILABLE: source bundle has no .git metadata",
+    "modified": false
+  },
+  "upstream": {
+    "name": "pashov/solidity-auditor",
+    "supplied_pin": "8ce544c9c9affab448d3dc4c79191d052e3a57ec",
+    "git_verification": "UNAVAILABLE: pinned snapshot has no .git metadata",
+    "version_file": "4",
+    "remote_version_check": "BLOCKED: curl exit 6 under restricted network",
+    "content_hashes_recorded": true
+  },
+  "policy": {
+    "passes_planned": 1,
+    "memory_enabled": false,
+    "historical_inputs_loaded": false,
+    "fallback_enabled": false,
+    "target_files_mutated": false,
+    "explicit_interfaces_in_scope": [
+      "IRaffle.sol",
+      "IRaffleFactory.sol"
+    ]
+  },
+  "controller_runtime": {
+    "requested_model": "gpt-daybreak-blue-latest",
+    "accepted_local_selection": "gpt-daybreak-blue-latest",
+    "provider_returned_model": "unknown",
+    "provider_returned_identity": "unknown",
+    "requested_reasoning_effort": "ultra",
+    "accepted_local_reasoning_effort": "ultra",
+    "requested_access_program": "daybreak_blue",
+    "accepted_local_access_program": "daybreak_blue",
+    "fallback_enabled": false,
+    "evidence": "evidence/controller-runner-selection.json"
+  },
+  "resources_loaded": [
+    {
+      "category": "production_source",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/src/Raffle.sol",
+      "sha256": "6e4c977922c3e39fafaa8c4c4fb74a971f1817eca9b6552eb8a540969f968617",
+      "loaded_by": [
+        "controller",
+        "all_12_bundles"
+      ]
+    },
+    {
+      "category": "production_source",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/src/RaffleFactory.sol",
+      "sha256": "d0e62b34faa42513fd968f915262728fe66a15c4b9af13a3c66f496704142ace",
+      "loaded_by": [
+        "controller",
+        "all_12_bundles"
+      ]
+    },
+    {
+      "category": "production_source",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/src/interfaces/IRaffle.sol",
+      "sha256": "a43ede9e8802d636a566fb225ed65bdf70f06d17f4734a1632a0a9f84aa5b2dd",
+      "loaded_by": [
+        "controller",
+        "all_12_bundles"
+      ]
+    },
+    {
+      "category": "production_source",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/src/interfaces/IRaffleFactory.sol",
+      "sha256": "747d238e4c7dc5b517f91c796dec87d9ddbfec9c626d1ff21467c60d780d03cf",
+      "loaded_by": [
+        "controller",
+        "all_12_bundles"
+      ]
+    },
+    {
+      "category": "production_source",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/src/libraries/RaffleConstants.sol",
+      "sha256": "0893f1a70ac03ad557e0b4c8bdf6a2f73d317f8417d1b4a3c1a571b893ed54b6",
+      "loaded_by": [
+        "controller",
+        "all_12_bundles"
+      ]
+    },
+    {
+      "category": "clean_spec",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/DESIGN.md",
+      "sha256": "25b4248a342c3be6a48380cb692bbd8087801baee8ed85c4e5d584d1bb9cbba1",
+      "loaded_by": [
+        "controller",
+        "all_12_bundles"
+      ]
+    },
+    {
+      "category": "dependency_manifest",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/dependency-hashes.json",
+      "sha256": "1447879cda291c3f34ffde9ab85a3fc094e49688fc90ecda0a858df6048d1141",
+      "loaded_by": [
+        "controller",
+        "bundle_builder"
+      ]
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+      "sha256": "ff0eb9902bf0ac099205615fac90eacf34fae637571b05aab3ea35dea53d5f17",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+      "sha256": "9055c2994b37dea1a41b7b7926dcb510f05dbe2540b0aafc5fbee9558fffd0ca",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+      "sha256": "01b6f5c4fa45fd38822b286ecef6daf983d27306dd6362496fa71b3e4600b72c",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+      "sha256": "a48aaaeaed60e65f04f6c8772e5673dda663dcfa7913fdadd14b412300b9d5f1",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+      "sha256": "bdfdbe133991c0c78042957ff5cd97167926fcaf6d15664f3835a076cb066457",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+      "sha256": "5779bc848bde39f1ad7bc02b4f708a0040888e0083b1a33f119cd94639350134",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+      "sha256": "270fc8401c1a13fae6a7a4a2dd6e381b95d658896701e51f0d3e2688acab3dec",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+      "sha256": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+      "sha256": "75704538dcb223239280c6726d9a31cf769a7816718517c997fc7d63bdb70778",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+      "sha256": "eafee3ffdc7cb2fba4bf6bd16fb28f8e5b4679742e81c2ad42a1b1df5c179feb",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "sha256": "ef8e2398c78851bd2ec12bc48d923058c557889d5a3d5ee4919c17ff0fb3517e",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+      "sha256": "fa7068f56bc180571a6095be6eaef06d51dbe81e30cb128397d993c9599ecc30",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+      "sha256": "61a2b12c96857aaa35f48aeda67a4281637a42494c0b3795be0ae976aa7b3793",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+      "sha256": "e318709bbe73a7831d64c1351e8bdc43780b245f25191234e361e6ab9b98c67b",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+      "sha256": "3ce9120a27934c75a074cb785d3a88868069ef6529dbe4dc6b845af0836f3c70",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+      "sha256": "1ed50b1056af886752f0fb48a0165d381e69bb4a4b18b893b066dc144a7e08d7",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+      "sha256": "847fda5460fee70f56f4200f59b82ae622bb03c79c77e67af010e31b7e2cc5b6",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+      "sha256": "b48e95db8c85866c1d88af8e82f346e0d22d24b5aac5b936079d958c72e13b9f",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+      "sha256": "33223782ea652dca413702ce92f9f59d91d758a035065b24bbedb7dc60c63a78",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+      "sha256": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+      "sha256": "9c3a75a925a6dac9e88b03cddc58d42fe3131b0aaaad84408521f3f7af2f991b",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+      "sha256": "dfb3f56fa928a7c6cae41a7ce2c86b9210fa18d33fa26389099d66a0fa790368",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+      "sha256": "0158e2d3e0e28bedd99eec13dcf1a8aa3a70a5b7e4bb2ad709609c95fcc740d1",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+      "sha256": "f3b89bb466c2a79b10c1816d342fbfbec49fe82695cba92bd46e7d31af698011",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+      "sha256": "8cf045f295b8c6035d14012a9bc2e8ab2b5ce24749a199ca0190519c4bf2dcc0",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+      "sha256": "f81ec96e909daa2cd27536274a30d916b26d5fc91261bed8d7a6a3e157f3825c",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+      "sha256": "0b7132f17d14d1d84b41b0bb429be62dafdff00fd3470f68724d8018eb07f57a",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+      "sha256": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+      "sha256": "0704b9d6c032cca8512a3bc3f30f49f86f1f03102d2896a3d23e794b82efea66",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+      "sha256": "9623aa59745a23a72f313adc5adbf583968bf366a7cbf3fc43c1148d7d2c3c86",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "reachable_dependency",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol",
+      "sha256": "e128cbe9c6c406d5a42c26e4079c0a95b369ce552f2d0c3dfd2fcb836c5708f2",
+      "loaded_by": "all_12_bundles"
+    },
+    {
+      "category": "compiler_config",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/target/packages/contracts/foundry.toml",
+      "sha256": "0fdce809ea1675dac422cff420a3402b2f28aabed0631595e43823033fa8ef50",
+      "loaded_by": "local_compile_copy"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/SKILL.md",
+      "sha256": "4e3fa4b23b62fa5e32cbc2ec041ac3143ddf89f721434c59e2c10da06ad637a3",
+      "loaded_by": "controller"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/VERSION",
+      "sha256": "7de1555df0c2700329e815b93b32c571c3ea54dc967b89e81ab73b9972b72d1d",
+      "loaded_by": "controller"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/agent-prompts.md",
+      "sha256": "5285c7bac64ac11e56b6ee36b2a0e9d62b22510ad53be577c00beba573e837e5",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/dedup-and-assembly.md",
+      "sha256": "35c53f5bbd841109e9a324b2de55cb92bf3e0b495b62cd610a79bcd212a65141",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/judging.md",
+      "sha256": "c49b0f60777f5fae71c7b79ea41d36f0e38e114b476529a998c01133c157b43d",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/report-formatting.md",
+      "sha256": "2597b23f9e216df7b4c7877a9cb07b44d2cea2f8ef3fb8526881b6589016f349",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/report-language.md",
+      "sha256": "20e162ff6dd57e1b267594f4f543183f6043dbd913556fe34b4bea47296f3a2d",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/senior-auditor-sop.md",
+      "sha256": "44a265f9af0068a2eb14d285320285f7907fde7eed27b30d61aee5b56052b063",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/assemble.sh",
+      "sha256": "f81c647ea530f0d0827e67b8a822673ebd559e07194f934f3096dc68a30675b7",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/hacking-agents/access-control-agent.md",
+      "sha256": "8904a3ae34b25fc070e3be323542607fd1aa241403fac912c0a1a5ab63e66595",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/hacking-agents/asymmetry-agent.md",
+      "sha256": "8180f5542c3cca3e7abf5816314879df44fe2f5f3840f780a17de67d504e10ad",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/hacking-agents/boundary-agent.md",
+      "sha256": "45973022ea62c73cd406c3ffaa318c2ba2a6f68c92e4a6ada6dfb32fb69823dc",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/hacking-agents/economic-security-agent.md",
+      "sha256": "94d36d8d5faffedf9adab1571ad67daa0cb257f04de4b6ded699d646f1ddf378",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/hacking-agents/execution-trace-agent.md",
+      "sha256": "970afaeb794047b62abcb27751c51c3b5cdb245761f0bfd643461bdccd4e80ff",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/hacking-agents/first-principles-agent.md",
+      "sha256": "68d3c81d51479ab5f748791c4f27442095d23f38f07de4302c38ea1422333470",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/hacking-agents/flow-gap-agent.md",
+      "sha256": "93756415a7ca1610c3e9dc7f14d1d86298bf23b474d64dbfe5a6791ce3390b0b",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/hacking-agents/invariant-agent.md",
+      "sha256": "c224fd26b179ccd00525ee72376a270290c3121be4bc02960733b8c9bc329e0f",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/hacking-agents/math-precision-agent.md",
+      "sha256": "e43bd597e9cceb9a542795c05393dbaea1b9810393d7fc0ec5db1162ef2f213e",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/hacking-agents/numerical-gap-agent.md",
+      "sha256": "257ef47089f020fe8f63b8c8229fef163bd82eb51bdf2d41bcb060db47591cec",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/hacking-agents/periphery-agent.md",
+      "sha256": "de0b3b0ce44ade13f263ea06f127b94599594c89b39348dd6fc870a949649406",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/hacking-agents/shared-rules.md",
+      "sha256": "4aacf567ceee1d2ee9a29f30574221e3b636bf829697a9440bfc0a685031f66a",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "workflow_instruction",
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/pashov/solidity-auditor/references/hacking-agents/trust-gap-agent.md",
+      "sha256": "56d4cc61dd6d6486788d25a2581acf8792b05583e2996d32c5fd5914f84bb946",
+      "loaded_by": "controller_or_specialist_bundle"
+    },
+    {
+      "category": "runner_config",
+      "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-PASHOV/attempt-01/runner-selection.json",
+      "sha256": "a0bd1a8a974e59d41c29b151501502caad820720f58fd4b542cb80d011eaa900",
+      "loaded_by": "controller"
+    },
+    {
+      "category": "runner_config",
+      "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-PASHOV/attempt-01/command.json",
+      "sha256": "cc2ec634874f4991ad1e8a3a420cd10ad8771b23caa269b96e9677c23e06ef15",
+      "loaded_by": "controller"
+    }
+  ],
+  "stages": [
+    {
+      "stage_id": "P1-T1-DISCOVER",
+      "identity": "native Turn 1 discovery and explicit filename scope",
+      "completion": "COMPLETE",
+      "coverage": "5/5 production files, DESIGN.md, and all 31 dependency-manifest files hashed",
+      "artifacts": {
+        "scope_sha256": "124bc514d047137f79ccc0a6738cf3222cd08e4f848df2d87750ad0b655c6408",
+        "scan_stamp": "20261021-005158"
+      }
+    },
+    {
+      "stage_id": "P1-T2-PREPARE",
+      "identity": "native Turn 2 source and 12 bundle construction",
+      "completion": "COMPLETE",
+      "coverage": "12/12 bundles include all five production files, clean spec, reachable dependencies, SOP, specialty, shared rules, and report language",
+      "artifacts": {
+        "source_sha256": "000ab3aca6b2dbed9bfdaaee866034b017db11e4f9d44a8d7b6a02cc3baf7445",
+        "preserved_bundle": "native/bundle-preserved/"
+      }
+    },
+    {
+      "stage_id": "P1-T3-SPECIALISTS",
+      "identity": "native Turn 3a/3b parallel specialist pass",
+      "completion": "FAILED",
+      "agents_returned": "0/12",
+      "analytical_coverage": 0,
+      "failure": "all threads failed workspace routing discovery before a response; native no-respawn rule applied",
+      "children": [
+        {
+          "stage_id": "P1-S01",
+          "stage_type": "specialist",
+          "specialty": "math-precision",
+          "pass": 1,
+          "independent_fresh_context": true,
+          "ephemeral": true,
+          "prior_project_memory": false,
+          "repeated_run_finding_memory": false,
+          "requested_model": "gpt-daybreak-blue-latest",
+          "accepted_local_selection": "gpt-daybreak-blue-latest",
+          "provider_returned_model": "unknown",
+          "provider_returned_identity": "unknown",
+          "requested_reasoning_effort": "ultra",
+          "accepted_local_reasoning_effort": "ultra",
+          "requested_access_program": "daybreak_blue",
+          "accepted_local_access_program": "daybreak_blue",
+          "fallback_enabled": false,
+          "thread_id": "01a15d74-306b-72e2-98af-6dd27cf91858",
+          "started_at": "2026-10-21T07:54:17Z",
+          "finished_at": "2026-10-21T07:54:34Z",
+          "exit_code": 1,
+          "completion": "FAILED",
+          "analytical_coverage": 0,
+          "failure": "workspace routing discovery failed before any specialist response",
+          "raw_response_present": false,
+          "artifacts": {
+            "prompt_sha256": "ba10374205cd270bbfc1c1bd45b23e37a1c17ca3bb65a849f8b4b1a402f9ffb7",
+            "bundle_sha256": "07d856e8eeca8913b9d2959ad6f0ca8226c173b90f2d1e9d27c4f019645d829a",
+            "events_sha256": "1bd8f9f8d0cbc6afac6efece5249db8f2ccda4e4b776d8f78963c0dbfd8dffef",
+            "stderr_sha256": "a6b820fe02a76775a8c5e21bb786e3758616e972fddbfbb576840560e0aa873f"
+          },
+          "precontext_launch_attempt": {
+            "completion": "FAILED_BEFORE_THREAD",
+            "failure": "in-process app-server could not write the inherited read-only CODEX_HOME",
+            "retained_at": "precontext-launch-failure/"
+          }
+        },
+        {
+          "stage_id": "P1-S02",
+          "stage_type": "specialist",
+          "specialty": "access-control",
+          "pass": 1,
+          "independent_fresh_context": true,
+          "ephemeral": true,
+          "prior_project_memory": false,
+          "repeated_run_finding_memory": false,
+          "requested_model": "gpt-daybreak-blue-latest",
+          "accepted_local_selection": "gpt-daybreak-blue-latest",
+          "provider_returned_model": "unknown",
+          "provider_returned_identity": "unknown",
+          "requested_reasoning_effort": "ultra",
+          "accepted_local_reasoning_effort": "ultra",
+          "requested_access_program": "daybreak_blue",
+          "accepted_local_access_program": "daybreak_blue",
+          "fallback_enabled": false,
+          "thread_id": "01a15d74-3034-7b83-8d12-a65accbfbb8c",
+          "started_at": "2026-10-21T07:54:17Z",
+          "finished_at": "2026-10-21T07:54:34Z",
+          "exit_code": 1,
+          "completion": "FAILED",
+          "analytical_coverage": 0,
+          "failure": "workspace routing discovery failed before any specialist response",
+          "raw_response_present": false,
+          "artifacts": {
+            "prompt_sha256": "8175e5133ea826a269742ab88263b1c86604134c430d0b67815d59bfb069bb31",
+            "bundle_sha256": "f868aa1a1222c62a55928766189d209a82acf4746207e5a60c6f586c94f0ccab",
+            "events_sha256": "7ad3205e4b3fa9012d656d5ead6aeef6894c7b2470723fd436b8fb199e0b7187",
+            "stderr_sha256": "d0edc736941b536dace2d09305eaebfe015a779c9238316f5a8fc354afa6bf6b"
+          },
+          "precontext_launch_attempt": {
+            "completion": "FAILED_BEFORE_THREAD",
+            "failure": "in-process app-server could not write the inherited read-only CODEX_HOME",
+            "retained_at": "precontext-launch-failure/"
+          }
+        },
+        {
+          "stage_id": "P1-S03",
+          "stage_type": "specialist",
+          "specialty": "economic-security",
+          "pass": 1,
+          "independent_fresh_context": true,
+          "ephemeral": true,
+          "prior_project_memory": false,
+          "repeated_run_finding_memory": false,
+          "requested_model": "gpt-daybreak-blue-latest",
+          "accepted_local_selection": "gpt-daybreak-blue-latest",
+          "provider_returned_model": "unknown",
+          "provider_returned_identity": "unknown",
+          "requested_reasoning_effort": "ultra",
+          "accepted_local_reasoning_effort": "ultra",
+          "requested_access_program": "daybreak_blue",
+          "accepted_local_access_program": "daybreak_blue",
+          "fallback_enabled": false,
+          "thread_id": "01a15d74-3034-7200-b697-e006bb656a40",
+          "started_at": "2026-10-21T07:54:17Z",
+          "finished_at": "2026-10-21T07:54:34Z",
+          "exit_code": 1,
+          "completion": "FAILED",
+          "analytical_coverage": 0,
+          "failure": "workspace routing discovery failed before any specialist response",
+          "raw_response_present": false,
+          "artifacts": {
+            "prompt_sha256": "cf08ca7c338dffcd7ee56032e45866b930270f5e10f5207fb0396705384c3e09",
+            "bundle_sha256": "c0a353175693d5fbb566e82c018604e2e7d96b7212def9b2922ebc178f8079a6",
+            "events_sha256": "27655f24462a09579efa54f710fa7d020c4cb3fdb53ee560f5b3aa9b42bae1fe",
+            "stderr_sha256": "b72e44b9d3277e4d8a4a41d474d145a47b97755d56f1b2e5a8253ef131ec5956"
+          },
+          "precontext_launch_attempt": {
+            "completion": "FAILED_BEFORE_THREAD",
+            "failure": "in-process app-server could not write the inherited read-only CODEX_HOME",
+            "retained_at": "precontext-launch-failure/"
+          }
+        },
+        {
+          "stage_id": "P1-S04",
+          "stage_type": "specialist",
+          "specialty": "execution-trace",
+          "pass": 1,
+          "independent_fresh_context": true,
+          "ephemeral": true,
+          "prior_project_memory": false,
+          "repeated_run_finding_memory": false,
+          "requested_model": "gpt-daybreak-blue-latest",
+          "accepted_local_selection": "gpt-daybreak-blue-latest",
+          "provider_returned_model": "unknown",
+          "provider_returned_identity": "unknown",
+          "requested_reasoning_effort": "ultra",
+          "accepted_local_reasoning_effort": "ultra",
+          "requested_access_program": "daybreak_blue",
+          "accepted_local_access_program": "daybreak_blue",
+          "fallback_enabled": false,
+          "thread_id": "01a15d74-306f-7f62-9750-5a4256b56dd7",
+          "started_at": "2026-10-21T07:54:17Z",
+          "finished_at": "2026-10-21T07:54:34Z",
+          "exit_code": 1,
+          "completion": "FAILED",
+          "analytical_coverage": 0,
+          "failure": "workspace routing discovery failed before any specialist response",
+          "raw_response_present": false,
+          "artifacts": {
+            "prompt_sha256": "4032649ec78d29db94a7b70b850afe4ef287d5c62daf2c78d4536666f00c73a1",
+            "bundle_sha256": "231d5d1875faf111c6bff16dfe8bf41a944a3d964b2960bdec4c5cf6804fba3a",
+            "events_sha256": "8948b08605c885007edcd608982f33bd979a04abf7cbe30f3290367082b136e7",
+            "stderr_sha256": "6eb2565b1546db9ffbc9ac334d70eb0089cb1c0853377f2972816c04c9916ece"
+          },
+          "precontext_launch_attempt": {
+            "completion": "FAILED_BEFORE_THREAD",
+            "failure": "in-process app-server could not write the inherited read-only CODEX_HOME",
+            "retained_at": "precontext-launch-failure/"
+          }
+        },
+        {
+          "stage_id": "P1-S05",
+          "stage_type": "specialist",
+          "specialty": "invariant",
+          "pass": 1,
+          "independent_fresh_context": true,
+          "ephemeral": true,
+          "prior_project_memory": false,
+          "repeated_run_finding_memory": false,
+          "requested_model": "gpt-daybreak-blue-latest",
+          "accepted_local_selection": "gpt-daybreak-blue-latest",
+          "provider_returned_model": "unknown",
+          "provider_returned_identity": "unknown",
+          "requested_reasoning_effort": "ultra",
+          "accepted_local_reasoning_effort": "ultra",
+          "requested_access_program": "daybreak_blue",
+          "accepted_local_access_program": "daybreak_blue",
+          "fallback_enabled": false,
+          "thread_id": "01a15d74-302d-7562-9049-8eb46ac1f10f",
+          "started_at": "2026-10-21T07:54:17Z",
+          "finished_at": "2026-10-21T07:54:34Z",
+          "exit_code": 1,
+          "completion": "FAILED",
+          "analytical_coverage": 0,
+          "failure": "workspace routing discovery failed before any specialist response",
+          "raw_response_present": false,
+          "artifacts": {
+            "prompt_sha256": "4ebf65d438228c953093f3c4fbc6aae831b719501e6cb141885c5a616e35d89e",
+            "bundle_sha256": "7b4f661521483ae3bd5a1427ac458c3363686edad5a30c397fcc7305a6f15211",
+            "events_sha256": "0383d5965d812eac84622d5e666fe2518523017c790e8314a386215f6e927f34",
+            "stderr_sha256": "3e5fce45484d41cf25288f1efb7cf677c547f01e47874f0d501b046347803d46"
+          },
+          "precontext_launch_attempt": {
+            "completion": "FAILED_BEFORE_THREAD",
+            "failure": "in-process app-server could not write the inherited read-only CODEX_HOME",
+            "retained_at": "precontext-launch-failure/"
+          }
+        },
+        {
+          "stage_id": "P1-S06",
+          "stage_type": "specialist",
+          "specialty": "periphery",
+          "pass": 1,
+          "independent_fresh_context": true,
+          "ephemeral": true,
+          "prior_project_memory": false,
+          "repeated_run_finding_memory": false,
+          "requested_model": "gpt-daybreak-blue-latest",
+          "accepted_local_selection": "gpt-daybreak-blue-latest",
+          "provider_returned_model": "unknown",
+          "provider_returned_identity": "unknown",
+          "requested_reasoning_effort": "ultra",
+          "accepted_local_reasoning_effort": "ultra",
+          "requested_access_program": "daybreak_blue",
+          "accepted_local_access_program": "daybreak_blue",
+          "fallback_enabled": false,
+          "thread_id": "01a15d74-3074-71b3-a21b-5d393bfce22c",
+          "started_at": "2026-10-21T07:54:17Z",
+          "finished_at": "2026-10-21T07:54:34Z",
+          "exit_code": 1,
+          "completion": "FAILED",
+          "analytical_coverage": 0,
+          "failure": "workspace routing discovery failed before any specialist response",
+          "raw_response_present": false,
+          "artifacts": {
+            "prompt_sha256": "e3084bbce17c7fd5435fcfd897579dd218cdf583377b1f55d14b0bca8dbbafc6",
+            "bundle_sha256": "206578c22b4665a817b9c444b665ae493b174f324eb021c444c8e8575bed4689",
+            "events_sha256": "6afd8e1c5cf047299e42759ab32e45b9ab29be5ea1420426047a5f6463501380",
+            "stderr_sha256": "5d7ec4ea654d5d792a94ba3cad8525eafd7c8cb3dff740c84905dbed3283fbb4"
+          },
+          "precontext_launch_attempt": {
+            "completion": "FAILED_BEFORE_THREAD",
+            "failure": "in-process app-server could not write the inherited read-only CODEX_HOME",
+            "retained_at": "precontext-launch-failure/"
+          }
+        },
+        {
+          "stage_id": "P1-S07",
+          "stage_type": "specialist",
+          "specialty": "first-principles",
+          "pass": 1,
+          "independent_fresh_context": true,
+          "ephemeral": true,
+          "prior_project_memory": false,
+          "repeated_run_finding_memory": false,
+          "requested_model": "gpt-daybreak-blue-latest",
+          "accepted_local_selection": "gpt-daybreak-blue-latest",
+          "provider_returned_model": "unknown",
+          "provider_returned_identity": "unknown",
+          "requested_reasoning_effort": "ultra",
+          "accepted_local_reasoning_effort": "ultra",
+          "requested_access_program": "daybreak_blue",
+          "accepted_local_access_program": "daybreak_blue",
+          "fallback_enabled": false,
+          "thread_id": "01a15d74-306e-7f73-be93-11bb715ed537",
+          "started_at": "2026-10-21T07:54:17Z",
+          "finished_at": "2026-10-21T07:54:35Z",
+          "exit_code": 1,
+          "completion": "FAILED",
+          "analytical_coverage": 0,
+          "failure": "workspace routing discovery failed before any specialist response",
+          "raw_response_present": false,
+          "artifacts": {
+            "prompt_sha256": "ecf03f2c3729aab24296d32083976f259e12e1229e169409a771c242d33e5446",
+            "bundle_sha256": "f36b769b6f6b156988bca320d355565c8f14216f53e14c6e6c6283834ed36248",
+            "events_sha256": "bc5ee6225adcc141d4b683c8f2b45cf400663bb1f1b5ea108aa316be923dc175",
+            "stderr_sha256": "dc56907f09a9bc7c7039593fb7416b3dbebd4fa3bce4a443b260d9c114bda2a1"
+          },
+          "precontext_launch_attempt": {
+            "completion": "FAILED_BEFORE_THREAD",
+            "failure": "in-process app-server could not write the inherited read-only CODEX_HOME",
+            "retained_at": "precontext-launch-failure/"
+          }
+        },
+        {
+          "stage_id": "P1-S08",
+          "stage_type": "specialist",
+          "specialty": "asymmetry",
+          "pass": 1,
+          "independent_fresh_context": true,
+          "ephemeral": true,
+          "prior_project_memory": false,
+          "repeated_run_finding_memory": false,
+          "requested_model": "gpt-daybreak-blue-latest",
+          "accepted_local_selection": "gpt-daybreak-blue-latest",
+          "provider_returned_model": "unknown",
+          "provider_returned_identity": "unknown",
+          "requested_reasoning_effort": "ultra",
+          "accepted_local_reasoning_effort": "ultra",
+          "requested_access_program": "daybreak_blue",
+          "accepted_local_access_program": "daybreak_blue",
+          "fallback_enabled": false,
+          "thread_id": "01a15d74-2fd6-7c53-85ff-76d2dbdd9cac",
+          "started_at": "2026-10-21T07:54:17Z",
+          "finished_at": "2026-10-21T07:54:34Z",
+          "exit_code": 1,
+          "completion": "FAILED",
+          "analytical_coverage": 0,
+          "failure": "workspace routing discovery failed before any specialist response",
+          "raw_response_present": false,
+          "artifacts": {
+            "prompt_sha256": "dd9e942bf04d87703d1ff9cf7234f3bfcc01f92629bf1ed32d51180265ba6fe3",
+            "bundle_sha256": "f3e39fab5a26388d7069836d82e86d3d38a12cdf0502ffd4191b8ba10395007f",
+            "events_sha256": "9b3593985d584fc0cc5cce00ce6ffc71a1f1e11e19e42b9bafc52745024eb24f",
+            "stderr_sha256": "8e633edf571055b5ac4b2589f08cca5561b03472639b1310107e87fd88e3ac32"
+          },
+          "precontext_launch_attempt": {
+            "completion": "FAILED_BEFORE_THREAD",
+            "failure": "in-process app-server could not write the inherited read-only CODEX_HOME",
+            "retained_at": "precontext-launch-failure/"
+          }
+        },
+        {
+          "stage_id": "P1-S09",
+          "stage_type": "specialist",
+          "specialty": "boundary",
+          "pass": 1,
+          "independent_fresh_context": true,
+          "ephemeral": true,
+          "prior_project_memory": false,
+          "repeated_run_finding_memory": false,
+          "requested_model": "gpt-daybreak-blue-latest",
+          "accepted_local_selection": "gpt-daybreak-blue-latest",
+          "provider_returned_model": "unknown",
+          "provider_returned_identity": "unknown",
+          "requested_reasoning_effort": "ultra",
+          "accepted_local_reasoning_effort": "ultra",
+          "requested_access_program": "daybreak_blue",
+          "accepted_local_access_program": "daybreak_blue",
+          "fallback_enabled": false,
+          "thread_id": "01a15d74-3034-7fb1-bae4-5511f3f93a75",
+          "started_at": "2026-10-21T07:54:17Z",
+          "finished_at": "2026-10-21T07:54:34Z",
+          "exit_code": 1,
+          "completion": "FAILED",
+          "analytical_coverage": 0,
+          "failure": "workspace routing discovery failed before any specialist response",
+          "raw_response_present": false,
+          "artifacts": {
+            "prompt_sha256": "9a07202031501d74ef26b5455a5ad086ae23c2acde4b99cd13a1385d75e93c18",
+            "bundle_sha256": "bfbb4c5dc7e2de451b35f7323ab7e66885b7e24e8795f417dafa4072cab0a99e",
+            "events_sha256": "d753055d5bf7a6d3f944505e1eb011b68145781d9977f91684d4526baddee99e",
+            "stderr_sha256": "00a3bb037f98b80220f8bea98d6ce0bced8595e4bf8b40bee57700d335df513b"
+          },
+          "precontext_launch_attempt": {
+            "completion": "FAILED_BEFORE_THREAD",
+            "failure": "in-process app-server could not write the inherited read-only CODEX_HOME",
+            "retained_at": "precontext-launch-failure/"
+          }
+        },
+        {
+          "stage_id": "P1-S10",
+          "stage_type": "specialist",
+          "specialty": "numerical-gap",
+          "pass": 1,
+          "independent_fresh_context": true,
+          "ephemeral": true,
+          "prior_project_memory": false,
+          "repeated_run_finding_memory": false,
+          "requested_model": "gpt-daybreak-blue-latest",
+          "accepted_local_selection": "gpt-daybreak-blue-latest",
+          "provider_returned_model": "unknown",
+          "provider_returned_identity": "unknown",
+          "requested_reasoning_effort": "ultra",
+          "accepted_local_reasoning_effort": "ultra",
+          "requested_access_program": "daybreak_blue",
+          "accepted_local_access_program": "daybreak_blue",
+          "fallback_enabled": false,
+          "thread_id": "01a15d74-3029-7850-935a-de6fc5be3d67",
+          "started_at": "2026-10-21T07:54:17Z",
+          "finished_at": "2026-10-21T07:54:35Z",
+          "exit_code": 1,
+          "completion": "FAILED",
+          "analytical_coverage": 0,
+          "failure": "workspace routing discovery failed before any specialist response",
+          "raw_response_present": false,
+          "artifacts": {
+            "prompt_sha256": "b7d01aaa35389cef554caff83c37861d8d37931a35ed35da7ccae5812f4e5b14",
+            "bundle_sha256": "7682376d35f6ec2148971b86fca5c1b43f89bc5f2cdb3eb0e09c8e5db52814df",
+            "events_sha256": "bbb8aad1ae430b97767a95ea2828ffdc3a53bf10fd2b22337173bf345f3240d7",
+            "stderr_sha256": "c187ac4600dcd8dce1b6f921e53e1826ae2759cee01363d2c6d814e468138b79"
+          },
+          "precontext_launch_attempt": {
+            "completion": "FAILED_BEFORE_THREAD",
+            "failure": "in-process app-server could not write the inherited read-only CODEX_HOME",
+            "retained_at": "precontext-launch-failure/"
+          }
+        },
+        {
+          "stage_id": "P1-S11",
+          "stage_type": "specialist",
+          "specialty": "trust-gap",
+          "pass": 1,
+          "independent_fresh_context": true,
+          "ephemeral": true,
+          "prior_project_memory": false,
+          "repeated_run_finding_memory": false,
+          "requested_model": "gpt-daybreak-blue-latest",
+          "accepted_local_selection": "gpt-daybreak-blue-latest",
+          "provider_returned_model": "unknown",
+          "provider_returned_identity": "unknown",
+          "requested_reasoning_effort": "ultra",
+          "accepted_local_reasoning_effort": "ultra",
+          "requested_access_program": "daybreak_blue",
+          "accepted_local_access_program": "daybreak_blue",
+          "fallback_enabled": false,
+          "thread_id": "01a15d74-3036-7ab1-ab84-483f42261b28",
+          "started_at": "2026-10-21T07:54:17Z",
+          "finished_at": "2026-10-21T07:54:34Z",
+          "exit_code": 1,
+          "completion": "FAILED",
+          "analytical_coverage": 0,
+          "failure": "workspace routing discovery failed before any specialist response",
+          "raw_response_present": false,
+          "artifacts": {
+            "prompt_sha256": "f1a73b8ac657d0c03b8802687209bdb0c6e7ea8853ab19d65c40e99909660aa1",
+            "bundle_sha256": "e5ae16014bf824fec922438374ec199a3b6320464b0f0634e5961e1d901360de",
+            "events_sha256": "0e355d51f98dfed4db2a4b26bbfc41082e64f5cb136127a5d9d29167c2546682",
+            "stderr_sha256": "99819dd36c790143c6318189ee4151f28c5de0602a2b1928acb7bce8b259521d"
+          },
+          "precontext_launch_attempt": {
+            "completion": "FAILED_BEFORE_THREAD",
+            "failure": "in-process app-server could not write the inherited read-only CODEX_HOME",
+            "retained_at": "precontext-launch-failure/"
+          }
+        },
+        {
+          "stage_id": "P1-S12",
+          "stage_type": "specialist",
+          "specialty": "flow-gap",
+          "pass": 1,
+          "independent_fresh_context": true,
+          "ephemeral": true,
+          "prior_project_memory": false,
+          "repeated_run_finding_memory": false,
+          "requested_model": "gpt-daybreak-blue-latest",
+          "accepted_local_selection": "gpt-daybreak-blue-latest",
+          "provider_returned_model": "unknown",
+          "provider_returned_identity": "unknown",
+          "requested_reasoning_effort": "ultra",
+          "accepted_local_reasoning_effort": "ultra",
+          "requested_access_program": "daybreak_blue",
+          "accepted_local_access_program": "daybreak_blue",
+          "fallback_enabled": false,
+          "thread_id": "01a15d74-303d-76a1-ab25-349d058871c2",
+          "started_at": "2026-10-21T07:54:17Z",
+          "finished_at": "2026-10-21T07:54:35Z",
+          "exit_code": 1,
+          "completion": "FAILED",
+          "analytical_coverage": 0,
+          "failure": "workspace routing discovery failed before any specialist response",
+          "raw_response_present": false,
+          "artifacts": {
+            "prompt_sha256": "d9b7c55c5994073ad948e02ac1420ce0c5e3b4d16cb324c5e73fe64876cedee3",
+            "bundle_sha256": "0e7514412489d52b38b16eb8d246c92d82d5a37bf56af612e2ff1056f8618d0e",
+            "events_sha256": "88cbd45c8bd8f410215b783e4aef49fa088dc64ffeb56f8b9c48467247642604",
+            "stderr_sha256": "c73a888f02a2895be8e86708002b0c747dcc384fce2dbdf5885510d266630802"
+          },
+          "precontext_launch_attempt": {
+            "completion": "FAILED_BEFORE_THREAD",
+            "failure": "in-process app-server could not write the inherited read-only CODEX_HOME",
+            "retained_at": "precontext-launch-failure/"
+          }
+        }
+      ]
+    },
+    {
+      "stage_id": "P1-T4-DEDUP",
+      "identity": "native Turn 4 deduplication and canonicalization",
+      "completion": "INCOMPLETE/BLOCKED",
+      "requested_model": "gpt-daybreak-blue-latest",
+      "accepted_local_selection": "not_invoked",
+      "provider_returned_model": "unknown",
+      "provider_returned_identity": "unknown",
+      "reasoning_effort": "ultra",
+      "access_program": "daybreak_blue",
+      "reason": "no specialist response existed to deduplicate"
+    },
+    {
+      "stage_id": "P1-T4-JUDGE",
+      "identity": "native four-gate judge",
+      "completion": "INCOMPLETE/BLOCKED",
+      "requested_model": "gpt-daybreak-blue-latest",
+      "accepted_local_selection": "not_invoked",
+      "provider_returned_model": "unknown",
+      "provider_returned_identity": "unknown",
+      "reasoning_effort": "ultra",
+      "access_program": "daybreak_blue",
+      "reason": "no deduplicated specialist item existed to gate"
+    },
+    {
+      "stage_id": "P1-T4-RUN-RECORD",
+      "identity": "native run-1.md recording",
+      "completion": "INCOMPLETE/BLOCKED",
+      "run_file_present": false,
+      "scope_marker": "pass_1_failed=1"
+    },
+    {
+      "stage_id": "P1-T5-ASSEMBLE",
+      "identity": "native assemble.sh",
+      "completion": "COMPLETE",
+      "model_driven": false,
+      "exit_code": 0,
+      "findings": 0,
+      "leads": 0,
+      "run_files": 0,
+      "report_warning": "No pass produced a run file. This scan reviewed nothing.",
+      "exact_report_sha256": "cb2738cb6de293fa356f30367174487017b3cea1efd4dc174858dbecc1554fc4"
+    },
+    {
+      "stage_id": "LOCAL-COMPILE",
+      "identity": "Forge compile against an isolated copy",
+      "completion": "COMPLETE",
+      "exit_code": 0,
+      "result": "36 files compiled with solc 0.8.36"
+    },
+    {
+      "stage_id": "CONTROLLER-PROOF-01",
+      "identity": "controller-only untrusted-prize proof; excluded from native report",
+      "completion": "COMPLETE",
+      "model_runtime": "controller runtime above",
+      "result": "2 tests passed",
+      "proof_sha256": "4c03c516021b6ae353427055a241cd7c260498c4cd4d7887c96d0433e60ed902",
+      "proof_output_sha256": "85f61bdbb4d58135c4f18cc375c3e8ef38d9f9ca72c560589720322539014ee3",
+      "classification": "LEAD because the native judge stage was blocked"
+    }
+  ],
+  "coverage": {
+    "native_specialist_outputs": "0/12",
+    "native_dedup": false,
+    "native_judging": false,
+    "native_assembly": true,
+    "compilation": true,
+    "controller_only_targeted_proof": true,
+    "full_scan_claimed": false
+  },
+  "native_run_directory": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-PASHOV/.solidity-auditor/runs/20261021-005158"
+}

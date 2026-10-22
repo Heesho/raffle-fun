@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#283246"/></marker></defs>
+<rect width="100%" height="100%" fill="#fafbfd"/>
+<rect x="20" y="15" width="1240" height="42" rx="4" fill="#182438" stroke="#182438" stroke-width="1"/>
+<text x="36" y="38" font-family="monospace" font-size="13" fill="#ffffff" font-weight="bold">SLITHER STEP 3: INHERITANCE GRAPH &amp; C3 LINEARIZATION (raffle-fun Solidity 0.8.36)</text>
+<line x1="540" y1="230" x2="170" y2="290" stroke="#324664" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="600" y1="230" x2="455" y2="290" stroke="#324664" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="680" y1="230" x2="765" y2="290" stroke="#324664" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="740" y1="230" x2="1095" y2="290" stroke="#324664" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="170" y1="400" x2="170" y2="450" stroke="#324664" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="390" y1="590" x2="455" y2="380" stroke="#324664" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="460" y="80" width="360" height="150" rx="4" fill="#e8f4ff" stroke="#145aa0" stroke-width="2"/>
+<rect x="460" y="80" width="360" height="24" rx="4" fill="#145aa0" stroke="#145aa0" stroke-width="1"/>
+<text x="468" y="95" font-family="monospace" font-size="10" fill="#ffffff" font-weight="bold">Raffle (src/Raffle.sol) [Owned]</text>
+<text x="470" y="120" font-family="monospace" font-size="9" fill="#191e28">Inherits: ERC721, ReentrancyGuard,</text>
+<text x="470" y="135" font-family="monospace" font-size="9" fill="#191e28">  VRFV2PlusWrapperConsumerBase, IRaffle, IERC721Receiver</text>
+<text x="470" y="150" font-family="monospace" font-size="9" fill="#191e28">Overrides: name(), symbol(), _update(),</text>
+<text x="470" y="165" font-family="monospace" font-size="9" fill="#191e28">  fulfillRandomWords()</text>
+<text x="470" y="180" font-family="monospace" font-size="9" fill="#191e28">State Vars: 31 public + 2 private (_ticketRanges,</text>
+<text x="470" y="195" font-family="monospace" font-size="9" fill="#191e28">  _requestInFlight)</text>
+<text x="470" y="210" font-family="monospace" font-size="9" fill="#191e28">Zero state variable shadowing across 9 bases</text>
+<rect x="40" y="290" width="260" height="110" rx="4" fill="#ffffff" stroke="#505a6e" stroke-width="2"/>
+<rect x="40" y="290" width="260" height="24" rx="4" fill="#505a6e" stroke="#505a6e" stroke-width="1"/>
+<text x="48" y="305" font-family="monospace" font-size="10" fill="#ffffff" font-weight="bold">ERC721 (OZ v5.1.0)</text>
+<text x="50" y="330" font-family="monospace" font-size="9" fill="#191e28">1: Context</text>
+<text x="50" y="345" font-family="monospace" font-size="9" fill="#191e28">2: ERC165</text>
+<text x="50" y="360" font-family="monospace" font-size="9" fill="#191e28">3: IERC721</text>
+<text x="50" y="375" font-family="monospace" font-size="9" fill="#191e28">4: IERC721Metadata</text>
+<text x="50" y="390" font-family="monospace" font-size="9" fill="#191e28">5: IERC721Errors</text>
+<rect x="330" y="290" width="250" height="90" rx="4" fill="#ffffff" stroke="#505a6e" stroke-width="2"/>
+<rect x="330" y="290" width="250" height="24" rx="4" fill="#505a6e" stroke="#505a6e" stroke-width="1"/>
+<text x="338" y="305" font-family="monospace" font-size="10" fill="#ffffff" font-weight="bold">ReentrancyGuard (OZ v5.1.0)</text>
+<text x="340" y="330" font-family="monospace" font-size="9" fill="#191e28">_status (NOT_ENTERED=1, ENTERED=2)</text>
+<text x="340" y="345" font-family="monospace" font-size="9" fill="#191e28">nonReentrant modifier</text>
+<text x="340" y="360" font-family="monospace" font-size="9" fill="#191e28">Note: clone starts at 0 (!= 2)</text>
+<rect x="610" y="290" width="310" height="110" rx="4" fill="#ffffff" stroke="#505a6e" stroke-width="2"/>
+<rect x="610" y="290" width="310" height="24" rx="4" fill="#505a6e" stroke="#505a6e" stroke-width="1"/>
+<text x="618" y="305" font-family="monospace" font-size="10" fill="#ffffff" font-weight="bold">VRFV2PlusWrapperConsumerBase</text>
+<text x="620" y="330" font-family="monospace" font-size="9" fill="#191e28">Immutable: i_vrfV2PlusWrapper</text>
+<text x="620" y="345" font-family="monospace" font-size="9" fill="#191e28">Immutable: i_linkToken (via link())</text>
+<text x="620" y="360" font-family="monospace" font-size="9" fill="#191e28">rawFulfillRandomWords -&gt; fulfillRandomWords</text>
+<text x="620" y="375" font-family="monospace" font-size="9" fill="#191e28">requestRandomnessPayInNative()</text>
+<rect x="950" y="290" width="290" height="110" rx="4" fill="#e8f4ff" stroke="#145aa0" stroke-width="2"/>
+<rect x="950" y="290" width="290" height="24" rx="4" fill="#145aa0" stroke="#145aa0" stroke-width="1"/>
+<text x="958" y="305" font-family="monospace" font-size="10" fill="#ffffff" font-weight="bold">IRaffle &amp; IERC721Receiver</text>
+<text x="960" y="330" font-family="monospace" font-size="9" fill="#191e28">IRaffle (src/interfaces/IRaffle.sol)</text>
+<text x="960" y="345" font-family="monospace" font-size="9" fill="#191e28">  Pure interface (Status enum, events,</text>
+<text x="960" y="360" font-family="monospace" font-size="9" fill="#191e28">  errors, function signatures)</text>
+<text x="960" y="375" font-family="monospace" font-size="9" fill="#191e28">IERC721Receiver (onERC721Received)</text>
+<rect x="40" y="450" width="260" height="100" rx="4" fill="#f5f7fa" stroke="#788291" stroke-width="2"/>
+<rect x="40" y="450" width="260" height="24" rx="4" fill="#788291" stroke="#788291" stroke-width="1"/>
+<text x="48" y="465" font-family="monospace" font-size="10" fill="#ffffff" font-weight="bold">Context &amp; ERC165 -&gt; IERC165</text>
+<text x="50" y="490" font-family="monospace" font-size="9" fill="#191e28">Context: _msgSender(), _msgData()</text>
+<text x="50" y="505" font-family="monospace" font-size="9" fill="#191e28">ERC165: supportsInterface(bytes4)</text>
+<text x="50" y="520" font-family="monospace" font-size="9" fill="#191e28">IERC721 / IERC721Metadata / IERC6093</text>
+<rect x="40" y="590" width="540" height="135" rx="4" fill="#e8f4ff" stroke="#145aa0" stroke-width="2"/>
+<rect x="40" y="590" width="540" height="24" rx="4" fill="#145aa0" stroke="#145aa0" stroke-width="1"/>
+<text x="48" y="605" font-family="monospace" font-size="10" fill="#ffffff" font-weight="bold">RaffleFactory (src/RaffleFactory.sol) [Owned]</text>
+<text x="50" y="630" font-family="monospace" font-size="9" fill="#191e28">Inherits: ReentrancyGuard (1), IRaffleFactory (2)</text>
+<text x="50" y="645" font-family="monospace" font-size="9" fill="#191e28">Deploys: master Raffle implementation in constructor</text>
+<text x="50" y="660" font-family="monospace" font-size="9" fill="#191e28">Clones: Clones.clone(raffleImplementation) in createRaffle()</text>
+<text x="50" y="675" font-family="monospace" font-size="9" fill="#191e28">State: quoteToken, vrfWrapper, protocolTreasury, callbackGasLimit,</text>
+<text x="50" y="690" font-family="monospace" font-size="9" fill="#191e28">  requestConfirmations, raffleCount, raffleById, idByRaffle, isRaffle</text>
+<rect x="610" y="590" width="630" height="135" rx="4" fill="#ebf8ee" stroke="#287841" stroke-width="2"/>
+<rect x="610" y="590" width="630" height="24" rx="4" fill="#287841" stroke="#287841" stroke-width="1"/>
+<text x="618" y="605" font-family="monospace" font-size="10" fill="#ffffff" font-weight="bold">RaffleConstants (src/libraries/RaffleConstants.sol) [Owned]</text>
+<text x="620" y="630" font-family="monospace" font-size="9" fill="#191e28">Standalone Library (no inheritance)</text>
+<text x="620" y="645" font-family="monospace" font-size="9" fill="#191e28">ENTRY_PRICE = 1e6 | PROTOCOL_FEE_BPS = 100 | BPS_DENOMINATOR = 10_000</text>
+<text x="620" y="660" font-family="monospace" font-size="9" fill="#191e28">MIN_SALE_DURATION = 1 hours | MAX_SALE_DURATION = 30 days</text>
+<text x="620" y="675" font-family="monospace" font-size="9" fill="#191e28">DRAW_REQUEST_TIMEOUT = 2 days | DRAW_CALLBACK_TIMEOUT = 2 days</text>
+<text x="620" y="690" font-family="monospace" font-size="9" fill="#191e28">MIN_CALLBACK_GAS_LIMIT = 200_000 | MAX_ENTRIES_PER_PURCHASE = 1_000</text>
+<text x="620" y="705" font-family="monospace" font-size="9" fill="#191e28">MAX_REFUND_TICKET_BATCH_SIZE = 100</text>
+</svg>

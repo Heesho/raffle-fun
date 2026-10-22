@@ -1,0 +1,41 @@
+{
+  "analysisFile": "spec-compliance/requirements/10-REQ-17-4.md",
+  "confidence": "high",
+  "evidence": [
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L416-L426",
+      "quote": "    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata)\n        external\n        override\n        returns (bytes4 selector)\n    {\n        if (\n            status != Status.AwaitingPrize || msg.sender != address(prizeToken) || tokenId != prizeTokenId\n                || from != sponsor || operator != factory\n        ) {\n            revert UnexpectedPrize(msg.sender, tokenId, from, operator);\n        }",
+      "role": "Compares the callback's tokenId against prizeTokenId and reverts with UnexpectedPrize(msg.sender, tokenId, from, operator) whenever tokenId != prizeTokenId."
+    },
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L176-L205",
+      "quote": "    function initialize(RaffleInitParams calldata params) external override {\n        if (initialized) revert AlreadyInitialized();\n        if (msg.sender != factory) revert OnlyFactory();\n        initialized = true;\n...\n        prizeToken = IERC721(params.prizeToken);\n        prizeTokenId = params.prizeTokenId;",
+      "role": "Initializes prizeTokenId once from the factory's RaffleInitParams and locks further initialization."
+    },
+    {
+      "file": "packages/contracts/src/interfaces/IRaffle.sol",
+      "lines": "L202",
+      "quote": "    error UnexpectedPrize(address token, uint256 tokenId, address from, address operator);",
+      "role": "Declares the UnexpectedPrize custom error signature reverted by onERC721Received."
+    }
+  ],
+  "reasoning": "Raffle.onERC721Received (packages/contracts/src/Raffle.sol:L416-L431) has no modifiers or early returns before the guard at L421-L426, where it evaluates tokenId != prizeTokenId (L422) against the once-initialized prizeTokenId storage variable (L201). Because every earlier operand in the disjunction (status != Status.AwaitingPrize || msg.sender != address(prizeToken)) is a non-reverting read and comparison, any call with tokenId != prizeTokenId unconditionally enters the if block and reverts with UnexpectedPrize(msg.sender, tokenId, from, operator) at L425, making the verdict implemented rather than partial.",
+  "requirementId": "REQ-17-4",
+  "searched": [
+    {
+      "result": "2 hits in Raffle.sol (L416 implementation, L430 selector return) and 1 hit in IERC721Receiver.sol (L22 interface declaration)",
+      "where": "onERC721Received across packages/contracts/src/ and dependencies"
+    },
+    {
+      "result": "15 hits across Raffle.sol (L74 declaration, L201 write in initialize, L333, L404-L406, L422 comparison in onERC721Received), RaffleFactory.sol (L116, L128-L133, L142), IRaffle.sol, and IRaffleFactory.sol; no writes outside initialize",
+      "where": "prizeTokenId across packages/contracts/src/"
+    },
+    {
+      "result": "2 hits: declaration in IRaffle.sol:L202 and revert in Raffle.sol:L425",
+      "where": "UnexpectedPrize across packages/contracts/src/"
+    }
+  ],
+  "verdict": "implemented"
+}

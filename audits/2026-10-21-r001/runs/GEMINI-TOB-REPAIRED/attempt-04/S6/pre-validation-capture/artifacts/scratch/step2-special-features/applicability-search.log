@@ -1,0 +1,132 @@
+=== Step 2 Applicability Search: Upgradeability / Clones / Proxies / Initializers ===
+src/RaffleFactory.sol:4:import { Clones } from "@openzeppelin/contracts/proxy/Clones.sol";
+src/RaffleFactory.sol:19:///      factory has no owner, pause, upgrade, rescue, or mutable protocol configuration.
+src/RaffleFactory.sol:106:        raffle = Clones.clone(raffleImplementation);
+src/RaffleFactory.sol:107:        // The fresh fixed-target clone can initialize only once; this function is nonReentrant and atomic.
+src/RaffleFactory.sol:110:            .initialize(
+src/interfaces/IRaffle.sol:22:        /// @notice The clone is initialized and waiting for the factory to escrow the configured prize.
+src/interfaces/IRaffle.sol:308:    function initialize(RaffleInitParams calldata params) external;
+src/interfaces/IRaffle.sol:406:    /// @notice Returns the immutable factory authorized to initialize this implementation's clones.
+src/interfaces/IRaffle.sol:519:    /// @return complete True for the locked implementation and every initialized clone.
+src/interfaces/IRaffle.sol:520:    function initialized() external view returns (bool complete);
+src/interfaces/IRaffleFactory.sol:7:/// @dev The factory has no owner, pause, upgrade, rescue, or mutable protocol configuration. Deployment tooling must
+src/interfaces/IRaffleFactory.sol:30:    /// @notice Emitted after a raffle clone is initialized, registered, funded, and active.
+src/interfaces/IRaffleFactory.sol:101:    /// @notice Creates, initializes, registers, and funds one autonomous fixed-target raffle clone atomically.
+src/Raffle.sol:24:///      owners burn them for redemption or refund. Each raffle is a fixed, non-upgradeable ERC-1167 clone with no
+src/Raffle.sol:136:    bool public override initialized;
+src/Raffle.sol:152:    /// @dev Constructor state belongs to the implementation. Clones share these immutables but hold isolated storage.
+src/Raffle.sol:164:        initialized = true;
+src/Raffle.sol:176:    function initialize(RaffleInitParams calldata params) external override {
+src/Raffle.sol:177:        if (initialized) revert AlreadyInitialized();
+src/Raffle.sol:179:        initialized = true;
+src/Raffle.sol:607:    /// @dev Validates the wrapper before passing it to the inherited constructor initializer.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:2:// OpenZeppelin Contracts (last updated v5.5.0) (proxy/Clones.sol)
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:20:library Clones {
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:29:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:30:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:37:     * @dev Same as {xref-Clones-clone-address-}[clone], but with a `value` parameter to send native currency
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:41:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:42:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:72:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:73:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:80:     * @dev Same as {xref-Clones-cloneDeterministic-address-bytes32-}[cloneDeterministic], but with
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:84:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:85:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:112:     * @dev Computes the address of a clone deployed using {Clones-cloneDeterministic}.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:132:     * @dev Computes the address of a clone deployed using {Clones-cloneDeterministic}.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:149:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:150:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:157:     * @dev Same as {xref-Clones-cloneWithImmutableArgs-address-bytes-}[cloneWithImmutableArgs], but with a `value`
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:161:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:162:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:194:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:195:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:206:     * @dev Same as {xref-Clones-cloneDeterministicWithImmutableArgs-address-bytes-bytes32-}[cloneDeterministicWithImmutableArgs],
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:210:     * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:211:     * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:227:     * @dev Computes the address of a clone deployed using {Clones-cloneDeterministicWithImmutableArgs}.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:240:     * @dev Computes the address of a clone deployed using {Clones-cloneDeterministicWithImmutableArgs}.
+node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:6:import {StorageSlot} from "./StorageSlot.sol";
+node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:33:    using StorageSlot for bytes32;
+node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:42:    // back. This is the compiler's defense against contract upgrades and
+node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:59:        _reentrancyGuardStorageSlot().getUint256Slot().value = NOT_ENTERED;
+node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:99:        _reentrancyGuardStorageSlot().getUint256Slot().value = ENTERED;
+node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:105:        _reentrancyGuardStorageSlot().getUint256Slot().value = NOT_ENTERED;
+node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:113:        return _reentrancyGuardStorageSlot().getUint256Slot().value == ENTERED;
+node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:116:    function _reentrancyGuardStorageSlot() internal pure virtual returns (bytes32) {
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:2:// OpenZeppelin Contracts (last updated v5.1.0) (utils/StorageSlot.sol)
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:3:// This file was procedurally generated from scripts/generate/templates/StorageSlot.js.
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:10: * Storage slots are often used to avoid storage conflict when dealing with upgradeable contracts.
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:17: * contract ERC1967 {
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:22: *         return StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:27: *         StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = newImplementation;
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:34:library StorageSlot {
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:73:    /// @dev Performs a Solidity function call using a low level `delegatecall` and ignoring the return data.
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:74:    function delegatecallNoReturn(address target, bytes memory data) internal returns (bool success) {
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:76:            success := delegatecall(gas(), target, add(data, 0x20), mload(data), 0x00, 0x00)
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:80:    /// @dev Performs a Solidity function call using a low level `delegatecall` and returns the first 64 bytes of the result
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:85:    function delegatecallReturn64Bytes(
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:90:            success := delegatecall(gas(), target, add(data, 0x20), mload(data), 0x00, 0x40)
+=== Step 2 Applicability Search: ERC Standards & Token Interactions ===
+src/RaffleFactory.sol:5:import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+src/RaffleFactory.sol:6:import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+src/RaffleFactory.sol:8:import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+src/RaffleFactory.sol:59:    /// @dev The quote token must report exactly six decimals; the wrapper and quote token must contain deployed code.
+src/RaffleFactory.sol:71:        try IERC20Metadata(quoteToken_).decimals() returns (uint8 decimals_) {
+src/RaffleFactory.sol:72:            quoteDecimals = decimals_;
+src/RaffleFactory.sol:127:        IERC721 prize = IERC721(params.prizeToken);
+src/RaffleFactory.sol:128:        prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId);
+src/RaffleFactory.sol:129:        if (prize.ownerOf(params.prizeTokenId) != raffle) {
+src/RaffleFactory.sol:172:        try IERC165(params.prizeToken).supportsInterface(type(IERC721).interfaceId) returns (bool supported) {
+src/interfaces/IRaffle.sol:5:import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+src/interfaces/IRaffle.sol:6:import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+src/interfaces/IRaffle.sol:10:/// @notice Defines one autonomous NFT raffle using fixed-price USDC entries and one transferable ERC-721 ticket per
+src/interfaces/IRaffle.sol:12:/// @dev Ticket IDs are sequential. Each ticket stores one inclusive uint128 entry range and remains a transferable
+src/interfaces/IRaffle.sol:14:///      canonical six-decimal USDC with standard, non-rebasing, fee-free transfers. Supported prizes are honest,
+src/interfaces/IRaffle.sol:201:    /// @param operator Address identified as the transfer operator.
+src/interfaces/IRaffle.sol:266:    /// @notice Raised when initialization or a ticket transfer targets known protocol plumbing.
+src/interfaces/IRaffle.sol:299:    /// @notice Raised when the prize token does not report the expected owner after transfer.
+src/interfaces/IRaffle.sol:327:    /// @dev Anyone may execute; ownership is not read, the ticket remains transferable, and no external asset transfer
+src/interfaces/IRaffle.sol:424:    function quoteToken() external view returns (IERC20 token);
+src/interfaces/IRaffle.sol:432:    function prizeToken() external view returns (IERC721 token);
+src/Raffle.sol:7:import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+src/Raffle.sol:8:import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+src/Raffle.sol:9:import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+src/Raffle.sol:10:import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+src/Raffle.sol:11:import { IERC721Receiver } from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+src/Raffle.sol:21:/// @notice Escrows one NFT and sells fixed-price USDC entries through one transferable ERC-721 ticket per purchase.
+src/Raffle.sol:23:///      callbacks, and winner proofs are O(1) in entry count. Tickets remain transferable bearer claims until their
+src/Raffle.sol:28:contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusWrapperConsumerBase {
+src/Raffle.sol:29:    using SafeERC20 for IERC20;
+src/Raffle.sol:58:    IERC20 public immutable override quoteToken;
+src/Raffle.sol:70:    IERC721 public override prizeToken;
+src/Raffle.sol:156:        ERC721("", "")
+src/Raffle.sol:162:        quoteToken = IERC20(quoteToken_);
+src/Raffle.sol:170:    /// @notice Rejects direct native-token transfers that are not attached to `requestDraw`.
+src/Raffle.sol:200:        prizeToken = IERC721(params.prizeToken);
+src/Raffle.sol:224:        quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount);
+src/Raffle.sol:235:        _safeMint(recipient, ticketId);
+src/Raffle.sol:320:        address winner = ownerOf(ticketId);
+src/Raffle.sol:334:            prizeToken.transferFrom(address(this), winner, deliveredPrizeTokenId);
+src/Raffle.sol:335:            if (prizeToken.ownerOf(deliveredPrizeTokenId) != winner) {
+src/Raffle.sol:342:            _transferQuote(winner, cashAmount);
+src/Raffle.sol:359:            address owner = ownerOf(ticketId);
+src/Raffle.sol:369:        _transferQuote(msg.sender, amount);
+src/Raffle.sol:380:        _transferQuote(recipient, amount);
+src/Raffle.sol:390:        _transferQuote(treasury, amount);
+src/Raffle.sol:404:        prizeToken.transferFrom(address(this), recipient, prizeTokenId);
+src/Raffle.sol:405:        if (prizeToken.ownerOf(prizeTokenId) != recipient) revert PrizeDeliveryVerificationFailed(recipient);
+src/Raffle.sol:410:    /// @dev Unrelated NFTs forced here with unsafe `transferFrom` remain outside protocol accounting and cannot be
+src/Raffle.sol:412:    /// @param operator ERC-721 transfer operator, which must be the canonical factory.
+src/Raffle.sol:416:    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata)
+src/Raffle.sol:430:        selector = IERC721Receiver.onERC721Received.selector;
+src/Raffle.sol:491:    /// @dev Tickets remain transferable bearer claims in every lifecycle state. Known protocol sinks are rejected
+src/Raffle.sol:494:    /// @param ticketId Ticket being minted, transferred, or burned.
+src/Raffle.sol:504:    /// @dev Authenticated randomness selects only an entry. No ticket search, loop, user call, or token transfer
+src/Raffle.sol:528:    /// @dev Validates the winning range once and allocates all terminal quote-token liabilities without transferring
+src/Raffle.sol:560:    /// @dev Transfers one complete current USDC claim through SafeERC20 after rejecting known protocol sinks. The
+src/Raffle.sol:561:    ///      canonical USDC trust model assumes standard, non-rebasing, fee-free transfer semantics.
+src/Raffle.sol:563:    /// @param amount Raw six-decimal USDC units transferred.
+src/Raffle.sol:564:    function _transferQuote(address to, uint256 amount) private {
+src/Raffle.sol:566:        quoteToken.safeTransfer(to, amount);
+=== Step 2 Applicability Search: Truffle / Test files ===

@@ -1,0 +1,75 @@
+{
+  "timestamp_utc": "2026-10-21T07:56:12.737568Z",
+  "setup_diagnostics_used": 3,
+  "limit": 3,
+  "D1": {
+    "kind": "pinned source/applicability inspection",
+    "upstream_commit": "43e1d19a00ce50bd93253d1c6c3a48cfffbcc4c3",
+    "native_docker_required": true,
+    "native_postgres_required": true
+  },
+  "D2": {
+    "kind": "native harness import and exact command construction attempted",
+    "error_type": "ModuleNotFoundError",
+    "message": "No module named 'jsonschema'",
+    "command_construction_executed": false,
+    "python_modules": {
+      "jsonschema": false,
+      "psycopg": false
+    },
+    "local_postgres_binaries": {
+      "postgres": null,
+      "initdb": null,
+      "pg_ctl": null,
+      "psql": null
+    }
+  },
+  "D3": {
+    "kind": "bounded Docker availability and native engine entrypoint diagnostic",
+    "checks": [
+      {
+        "argv": [
+          "docker",
+          "--version"
+        ],
+        "exit_code": 0,
+        "stdout": "Docker version 29.8.2, build 7fc2dff9bc\n",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "docker",
+          "info",
+          "--format",
+          "{{.ServerVersion}}"
+        ],
+        "exit_code": 1,
+        "stdout": "\n",
+        "stderr": "failed to connect to the docker API at unix:///var/run/docker.sock; check if the path is correct and if the daemon is running: dial unix /var/run/docker.sock: connect: no such file or directory\n"
+      },
+      {
+        "argv": [
+          "git",
+          "status",
+          "--porcelain"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "native_engine_startup": {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "-m",
+        "open_kritt_engine"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/openkritt/engine/open_kritt_engine/__main__.py\", line 1, in <module>\n    from .worker import main\n  File \"/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/openkritt/engine/open_kritt_engine/worker.py\", line 24, in <module>\n    from .db import QUOTA_RETRY_MAX_SECONDS, Database, now_utc\n  File \"/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/openkritt/engine/open_kritt_engine/db.py\", line 7, in <module>\n    import psycopg\nModuleNotFoundError: No module named 'psycopg'\n"
+    }
+  },
+  "model_scan_invocations": 0,
+  "credentials_read": false
+}

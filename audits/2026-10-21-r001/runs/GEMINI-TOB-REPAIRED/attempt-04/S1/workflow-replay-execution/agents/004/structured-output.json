@@ -1,0 +1,83 @@
+{
+  "analysisFile": "audit-context/functions/03-_settleWinningTicket.md",
+  "assumptions": [
+    {
+      "claim": "When status is Status.NftWon or Status.CashWon, winningEntry >= 1 (in [1, totalEntries]), so an unminted ticketId whose _ticketRanges entry is (0, 0) fails selectedEntry > lastEntry in _requireWinningTicket.",
+      "establishedBy": "Raffle.requestDraw (packages/contracts/src/Raffle.sol:L243, L252) and Raffle.fulfillRandomWords (packages/contracts/src/Raffle.sol:L511, L518-L521)"
+    },
+    {
+      "claim": "Minted ticket ranges in _ticketRanges[1..ticketCount] partition [1, totalEntries] into contiguous, non-overlapping inclusive intervals [firstEntry, lastEntry] with 1 <= firstEntry <= lastEntry <= totalEntries, and unminted ticket IDs have (0, 0).",
+      "establishedBy": "Raffle.buyEntries (packages/contracts/src/Raffle.sol:L218-L232)"
+    },
+    {
+      "claim": "Prior to the first _settleWinningTicket execution in Status.NftWon or Status.CashWon, unsettledPot == uint256(totalEntries) * ENTRY_PRICE >= 1_000_000, so on the Status.CashWon branch winnerProceeds == floor(grossPot * 8000 / 10_000) >= 800_000 > 0 (required by Raffle.redeemWinningTicket at L340).",
+      "establishedBy": "Raffle.buyEntries (packages/contracts/src/Raffle.sol:L218, L223, L233), Raffle.requestDraw (packages/contracts/src/Raffle.sol:L243, L252), Raffle.enableRefunds (packages/contracts/src/Raffle.sol:L279-L299), and Raffle._settleWinningTicket (packages/contracts/src/Raffle.sol:L534, L551)"
+    },
+    {
+      "claim": "Prior to _settleWinningTicket execution, winnerProceeds == 0, sponsorProceeds == 0, protocolFees == 0, and remainingRefundLiability == 0, so overwriting these fields (and leaving winnerProceeds untouched on Status.NftWon) preserves accountedQuoteBalance().",
+      "establishedBy": "Raffle._settleWinningTicket (packages/contracts/src/Raffle.sol:L534, L551) and Raffle.enableRefunds (packages/contracts/src/Raffle.sol:L279-L299)"
+    },
+    {
+      "claim": "The Raffle clone holds at least unsettledPot raw units of quoteToken to back the allocated winnerProceeds, sponsorProceeds, and protocolFees claims.",
+      "establishedBy": "Raffle.buyEntries (packages/contracts/src/Raffle.sol:L223-L224, L233) and RaffleFactory.constructor / Raffle.constructor quoteToken configuration (packages/contracts/src/RaffleFactory.sol:L66-L85, packages/contracts/src/Raffle.sol:L155-L162)"
+    },
+    {
+      "claim": "RaffleConstants.PROTOCOL_FEE_BPS + RaffleConstants.CASH_WINNER_BPS <= RaffleConstants.BPS and RaffleConstants.BPS > 0, preventing division by zero in Math.mulDiv and arithmetic underflow in grossPot - protocolFee and grossPot - protocolFee - cashAmount.",
+      "establishedBy": "RaffleConstants (packages/contracts/src/libraries/RaffleConstants.sol:L12-L18)"
+    }
+  ],
+  "callers": [
+    "Raffle.settleWinningTicket (packages/contracts/src/Raffle.sol:L304-L306)",
+    "Raffle.redeemWinningTicket (packages/contracts/src/Raffle.sol:L309-L346, call at L315)"
+  ],
+  "calls": [
+    {
+      "callee": "Raffle._requireWinningTicket",
+      "kind": "internal",
+      "propagates": "Reverts with TicketDoesNotContainWinningEntry unless _ticketRanges[ticketId].firstEntry <= winningEntry <= _ticketRanges[ticketId].lastEntry (packages/contracts/src/Raffle.sol:L579-L585); relies on caller/state invariant winningEntry >= 1 to reject unminted (0, 0) ranges."
+    },
+    {
+      "callee": "Raffle.ticketRange",
+      "kind": "internal",
+      "propagates": "Returns stored (_ticketRanges[ticketId].firstEntry, _ticketRanges[ticketId].lastEntry) without validation, returning (0, 0) for unminted ticket IDs (packages/contracts/src/Raffle.sol:L451-L455)."
+    },
+    {
+      "callee": "Math.mulDiv",
+      "kind": "external-source-available",
+      "propagates": "Computes exact floor(grossPot * bps / 10_000) via 512-bit intermediate multiplication (Math.mul512), reverting only if denominator == 0 or result >= 2^256 (packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:L37-L46, L143-L150, L206-L277; Panic.sol:L50-L56; SafeCast.sol:L1157-L1161). Guarantees protocolFee <= grossPot * 500 / 10_000 and cashAmount <= grossPot * 8000 / 10_000."
+    }
+  ],
+  "file": "packages/contracts/src/Raffle.sol",
+  "function": "_settleWinningTicket",
+  "invariants": [
+    {
+      "claim": "_settleWinningTicket can succeed at most once per Raffle clone and only when status is Status.NftWon or Status.CashWon.",
+      "evidence": "packages/contracts/src/Raffle.sol:L534-L536, L551"
+    },
+    {
+      "claim": "Upon completion, winningTicketId is set to a ticketId whose stored range satisfies _ticketRanges[ticketId].firstEntry <= winningEntry <= _ticketRanges[ticketId].lastEntry.",
+      "evidence": "packages/contracts/src/Raffle.sol:L538, L552, L579-L585"
+    },
+    {
+      "claim": "Upon completion, unsettledPot is 0 and the pre-call unsettledPot (grossPot) is partitioned without loss across protocolFees + sponsorProceeds + winnerProceeds == grossPot (with winnerProceeds == 0 on Status.NftWon and winnerProceeds == floor(grossPot * 8000 / 10_000) on Status.CashWon).",
+      "evidence": "packages/contracts/src/Raffle.sol:L539-L555; packages/contracts/src/libraries/RaffleConstants.sol:L12-L18"
+    },
+    {
+      "claim": "_settleWinningTicket performs no external calls and does not read or mutate ERC-721 ticket ownership.",
+      "evidence": "packages/contracts/src/Raffle.sol:L533-L558, L579-L585, L451-L455"
+    }
+  ],
+  "lines": "L533-L558",
+  "openQuestions": [],
+  "sharedState": [
+    "settlementComplete (packages/contracts/src/Raffle.sol:L127)",
+    "status (packages/contracts/src/Raffle.sol:L124)",
+    "winningEntry (packages/contracts/src/Raffle.sol:L118)",
+    "_ticketRanges (packages/contracts/src/Raffle.sol:L139)",
+    "unsettledPot (packages/contracts/src/Raffle.sol:L91)",
+    "winningTicketId (packages/contracts/src/Raffle.sol:L121)",
+    "winnerProceeds (packages/contracts/src/Raffle.sol:L100)",
+    "sponsorProceeds (packages/contracts/src/Raffle.sol:L103)",
+    "protocolFees (packages/contracts/src/Raffle.sol:L106)"
+  ]
+}

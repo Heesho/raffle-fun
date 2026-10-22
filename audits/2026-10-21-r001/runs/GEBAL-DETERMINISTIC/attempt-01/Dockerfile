@@ -1,0 +1,2 @@
+FROM sha256:8650f0012153891af2dc212f3fbc3407f3f3bbc0a1ee35f9e9d5511179190a4b
+COPY solc /usr/local/bin/solc

@@ -1,0 +1,53 @@
+{
+  "id": "008",
+  "prompt": "Find behavior in the code at target that the documentation does not describe.\n\nContext: {\"language\":\"Solidity 0.8.36\",\"codePaths\":[\"target/packages/contracts/src/Raffle.sol\",\"target/packages/contracts/src/RaffleFactory.sol\",\"target/packages/contracts/src/libraries/RaffleConstants.sol\",\"target/packages/contracts/src/interfaces/IRaffle.sol\",\"target/packages/contracts/src/interfaces/IRaffleFactory.sol\"],\"documents\":[{\"path\":\"target/DESIGN.md\",\"describes\":\"Authoritative clean protocol design: immutable factory and isolated clones, NFT escrow, entry tickets, outcome economics and rounding, draw and refund deadlines, settlement/redemption, independent claims, trust boundaries, and advisory frontend discovery.\"},{\"path\":\"target/packages/contracts/src/interfaces/IRaffle.sol\",\"describes\":\"Raffle lifecycle and API semantics, entry ranges and bearer tickets, draw timing and callback handling, settlement and redemption, refund batches, payouts, destination restrictions, state queries and events.\"},{\"path\":\"target/packages/contracts/src/interfaces/IRaffleFactory.sol\",\"describes\":\"Immutable factory configuration, atomic raffle creation and prize escrow, sponsor parameters and validation, and canonical raffle registry queries.\"},{\"path\":\"target/packages/contracts/src/libraries/RaffleConstants.sol\",\"describes\":\"Fixed v1 price, six-decimal token precision, fee and cash-winner percentages, sponsor remainder, refund batch bound, maximum sale duration, draw timeouts, and VRF parameters.\"},{\"path\":\"target/packages/contracts/src/Raffle.sol\",\"describes\":\"Raffle implementation NatSpec adds constant-time entry operations, locked implementation and isolated clone storage, native-transfer rejection, exact prize acceptance, ticket destination checks, callback behavior, storage-only settlement, and quote-token assumptions.\"},{\"path\":\"target/packages/contracts/src/RaffleFactory.sol\",\"describes\":\"Factory implementation NatSpec specifies immutable ownerless operation, deployment dependency checks and canonical token assumptions, atomic creation, and supported prize validation.\"}]}\n\nThese are the requirements already extracted from the documentation:\n[{\"id\":\"REQ-20\",\"quote\":\"remainder must be allocated without loss.\"},{\"id\":\"REQ-33\",\"quote\":\"must revert all effects on delivery failure.\"},{\"id\":\"REQ-38\",\"quote\":\"Never move assets between raffle clones.\"},{\"id\":\"REQ-44\",\"quote\":\"transaction decisions must reread current chain state.\"}]\n\nWork from the code inward: look at what an outside actor can reach — entrypoints, public and external functions,\nprivileged operations, upgrade and admin paths, fallbacks, anything that moves value or changes permissions. For\neach, ask whether a reader of the documentation alone would know it exists and what it does.\n\nReport what is both undocumented and consequential. A helper with no external effect is not interesting; an admin\nfunction that can redirect funds and appears in no document is. Empty is a valid answer, and a short accurate list\nbeats a long one padded with getters.\n\nCite a file and line for every claim about the code, and quote the document verbatim for every\nclaim about intent. Where you cannot cite, do not assert — say what you could not establish. A short answer with\ncited claims is worth more than a long one with padded ones.",
+  "options": {
+    "schema": {
+      "type": "object",
+      "required": [
+        "behaviors"
+      ],
+      "properties": {
+        "behaviors": {
+          "type": "array",
+          "description": "Externally reachable behavior the documentation does not describe. Empty is a valid answer.",
+          "items": {
+            "type": "object",
+            "required": [
+              "what",
+              "file",
+              "lines",
+              "whyItMatters"
+            ],
+            "properties": {
+              "what": {
+                "type": "string"
+              },
+              "file": {
+                "type": "string"
+              },
+              "lines": {
+                "type": "string"
+              },
+              "whyItMatters": {
+                "type": "string",
+                "description": "what a reader of the documentation alone would wrongly believe"
+              },
+              "reachableBy": {
+                "type": "string",
+                "description": "which actor can trigger it"
+              }
+            }
+          }
+        }
+      }
+    },
+    "label": "undocumented-behavior",
+    "phase": "Align"
+  },
+  "accepted_model": "gpt-6-astra",
+  "accepted_effort": "ultra",
+  "provider_returned_model": "unknown",
+  "provider_returned_effort": "unknown",
+  "fallback_enabled": false
+}

@@ -1,0 +1,106 @@
+{
+  "function": "_update",
+  "file": "target/packages/contracts/src/Raffle.sol",
+  "lines": "L497-L502",
+  "analysisFile": "audit/S1/audit-context/functions/10-_update.md",
+  "invariants": [
+    {
+      "claim": "Burn destinations bypass screening; every successful nonzero update passes the helper before inherited authorization and writes.",
+      "evidence": "Raffle.sol L498-L501."
+    },
+    {
+      "claim": "A successful nonzero update excludes this raffle, factory, quote token, wrapper, prize token and canonical implementation; addresses with code must additionally be unregistered in the canonical factory.",
+      "evidence": "Raffle.sol L598-L604."
+    },
+    {
+      "claim": "With nonzero auth, inherited authority is checked against the current stored owner before ownership mutation.",
+      "evidence": "ERC721.sol L146-L147, L164-L187, L217-L222."
+    },
+    {
+      "claim": "Existing-owner updates clear per-token approval, adjust nonzero-address balances, assign owner, emit Transfer and return the previous owner.",
+      "evidence": "ERC721.sol L225-L244, L383-L399."
+    },
+    {
+      "claim": "The hook and its callees impose no lifecycle or timestamp condition; transfer callers remain governed by authorization and destination screening.",
+      "evidence": "Raffle.sol L497-L502, L593-L605; ERC721.sol L115-L125, L216-L245."
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "Factory getter results correspond to the inspected canonical factory implementation; the hook itself does not authenticate factory code.",
+      "establishedBy": "Canonical construction: RaffleFactory.sol L89-L91 deploys Raffle; Raffle.sol L155-L162 captures that constructor caller. Nothing found establishing this identity for arbitrary independent Raffle deployments."
+    },
+    {
+      "claim": "Zero-auth operations rely on callers for ownership authority and operation-specific existence constraints; superclass authorization is conditional.",
+      "establishedBy": "ERC721.sol L220-L222 skips authorization for zero auth; _mint L259-L266 and _burn L303-L307 establish opposite existence conditions; Raffle.redeemWinningTicket L320-L325 and refundTickets L359-L364 establish owner-only claims."
+    },
+    {
+      "claim": "Inherited unchecked balance arithmetic relies on consistent owner/balance storage.",
+      "establishedBy": "ERC721._ownerOf L146-L147 and _update L217-L240 maintain the paired ledger; Raffle.buyEntries L217-L235 bounds issuance and provides sequential IDs; no fresh balance-bound assertion in ERC721._update L229-L237."
+    },
+    {
+      "claim": "Receiver acceptance is supplied only by safe caller wrappers, not by this hook or ordinary transferFrom.",
+      "establishedBy": "ERC721.sol L115-L136, L287-L289; ERC721Utils.checkOnERC721Received L32-L47 checks contracts, while code-less destinations bypass that callback."
+    }
+  ],
+  "calls": [
+    {
+      "callee": "Raffle._isProtocolDestination",
+      "kind": "internal",
+      "propagates": "Raffle.sol L593-L605 establishes the explicit forbidden set, conditionally reads implementation and code-gates registry lookup; getter failures propagate and zero-address burns skip the entire helper at L498."
+    },
+    {
+      "callee": "RaffleFactory.raffleImplementation",
+      "kind": "external-source-available",
+      "propagates": "Transitive generated immutable getter supplies the forbidden implementation address; RaffleFactory.sol L42, L89-L91; IRaffleFactory.sol L128-L130; Raffle.sol L601."
+    },
+    {
+      "callee": "RaffleFactory.isRaffle",
+      "kind": "external-source-available",
+      "propagates": "Transitive generated mapping getter classifies unmatched destinations with code; declaration RaffleFactory.sol L54, registration L123-L125, interface IRaffleFactory.sol L136-L139, conditional call Raffle.sol L602-L604."
+    },
+    {
+      "callee": "ERC721._update",
+      "kind": "internal",
+      "propagates": "ERC721.sol L216-L245 conditionally establishes authority, clears old-owner approval, updates balances and owner, emits Transfer, and returns the previous owner; does not establish existence for zero auth."
+    },
+    {
+      "callee": "ERC721._ownerOf",
+      "kind": "internal",
+      "propagates": "ERC721.sol L146-L147 supplies the actual stored owner, including zero; called before authorization at L217."
+    },
+    {
+      "callee": "ERC721._checkAuthorized / ERC721._isAuthorized",
+      "kind": "internal",
+      "propagates": "ERC721.sol L164-L187 establishes nonzero spender owner/operator/token approval, or reverts with nonexistent-token versus insufficient-approval distinction; only called when auth is nonzero, L220-L222."
+    },
+    {
+      "callee": "ERC721.isApprovedForAll / ERC721._getApproved",
+      "kind": "internal",
+      "propagates": "ERC721.sol L110-L111 and L153-L154 read operator/token approvals for the short-circuit authority predicate L164-L167."
+    },
+    {
+      "callee": "ERC721._approve",
+      "kind": "internal",
+      "propagates": "ERC721.sol L227 passes (zero, ticketId, zero, false), so L385-L396 skips owner, authorization and event branches; L398 clears token approval. Other branches call _requireOwned and may call isApprovedForAll."
+    },
+    {
+      "callee": "ERC721._requireOwned",
+      "kind": "internal",
+      "propagates": "Conditional transitive _approve branch ERC721.sol L385-L386; implementation L426-L431 reads owner and rejects zero. Not executed for _update's fixed clearing arguments."
+    }
+  ],
+  "callers": [
+    "Raffle.buyEntries L223-L235 -> ERC721._safeMint L279-L289 -> _mint L259-L266.",
+    "ERC721.transferFrom L115-L125; safeTransferFrom L128-L136 delegates to it.",
+    "Raffle.redeemWinningTicket L320-L325 and refundTickets L359-L364 -> ERC721._burn L303-L307.",
+    "ERC721 internal _transfer L321-L331 and its _safeTransfer wrappers L352-L362."
+  ],
+  "sharedState": [
+    "ERC721 ownership, balances, token approvals and operator approvals: ERC721.sol L28-L34, L110-L111, L216-L245, L383-L418.",
+    "Raffle destination configuration: factory/quoteToken/prizeToken Raffle.sol L55-L70, initialized L161-L162/L200 and read L498/L598-L604.",
+    "Canonical implementation and registry: RaffleFactory.sol L42/L54, writes L89-L91/L123-L125.",
+    "Current ownership selects claim recipient; historical ticket ranges remain separate: Raffle.sol L138-L139, L232, L320-L325, L359-L364."
+  ],
+  "openQuestions": []
+}

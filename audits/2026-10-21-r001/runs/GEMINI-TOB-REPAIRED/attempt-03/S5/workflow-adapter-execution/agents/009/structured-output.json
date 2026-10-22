@@ -1,0 +1,45 @@
+{
+  "analysisFile": "spec-compliance/requirements/01-REQ-10.md",
+  "confidence": "high",
+  "evidence": [
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L533-L558",
+      "quote": "        uint256 grossPot = unsettledPot;\n        uint256 protocolFee = Math.mulDiv(grossPot, RaffleConstants.PROTOCOL_FEE_BPS, RaffleConstants.BPS);\n        uint256 sponsorAmount;\n\n        if (result == Status.NftWon) {\n            sponsorAmount = grossPot - protocolFee;\n        } else {\n            cashAmount = Math.mulDiv(grossPot, RaffleConstants.CASH_WINNER_BPS, RaffleConstants.BPS);\n            sponsorAmount = grossPot - protocolFee - cashAmount;\n            winnerProceeds = cashAmount;\n        }\n\n        settlementComplete = true;\n        winningTicketId = ticketId;\n        unsettledPot = 0;\n        sponsorProceeds = sponsorAmount;\n        protocolFees = protocolFee;",
+      "role": "Computes protocolFee and cashAmount via floor-rounded Math.mulDiv and sets sponsorAmount to the exact subtraction remainder of grossPot so winnerProceeds + sponsorProceeds + protocolFees equals unsettledPot with zero remainder."
+    },
+    {
+      "file": "packages/contracts/src/libraries/RaffleConstants.sol",
+      "lines": "L12-L18",
+      "quote": "    uint256 internal constant BPS = 10_000;\n\n    /// @notice Global protocol fee rate: 500 basis points, or 5% of gross sales.\n    uint256 internal constant PROTOCOL_FEE_BPS = 500;\n\n    /// @notice Cash-result winner rate: 8,000 basis points, or 80% of gross sales.\n    uint256 internal constant CASH_WINNER_BPS = 8000;",
+      "role": "Defines the basis-point constants (500 / 10_000 and 8,000 / 10_000) ensuring protocolFee + cashAmount never exceeds grossPot."
+    },
+    {
+      "file": "packages/contracts/src/Raffle.sol",
+      "lines": "L304-L318",
+      "quote": "    function settleWinningTicket(uint256 ticketId) external override nonReentrant returns (uint256 cashAmount) {\n        cashAmount = _settleWinningTicket(ticketId);\n    }\n\n    /// @inheritdoc IRaffle\n    function redeemWinningTicket(uint256 ticketId) external override nonReentrant returns (uint256 cashAmount) {\n        if (winnerRedeemed) revert WinningTicketAlreadyRedeemed();\n        Status result = status;\n        if (result != Status.NftWon && result != Status.CashWon) revert InvalidStatus(result);\n\n        if (!settlementComplete) {\n            _settleWinningTicket(ticketId);\n        } else if (ticketId != winningTicketId) {\n            revert WinningTicketMismatch(ticketId, winningTicketId);\n        }",
+      "role": "Routes both standalone settlement and combined settlement-plus-redemption through _settleWinningTicket exactly once."
+    }
+  ],
+  "reasoning": "In _settleWinningTicket (packages/contracts/src/Raffle.sol:L533-L558), both winning status branches (Status.NftWon and Status.CashWon) compute protocolFee (and cashAmount in CashWon) via floor-rounded Math.mulDiv and derive sponsorAmount by subtracting protocolFee (and cashAmount in CashWon) from grossPot = unsettledPot (L543 and L547). The function zeroes unsettledPot (L553) and writes winnerProceeds (L548, or leaves it 0 in NftWon), sponsorProceeds (L554), and protocolFees (L555) once under the settlementComplete guard (L534, L551). Because all settlement paths call _settleWinningTicket (L305, L315) and winnerProceeds + sponsorProceeds + protocolFees equals the entire pre-settlement unsettledPot on both branches with zero unallocated remainder, the verdict is implemented rather than partial.",
+  "requirementId": "REQ-10",
+  "searched": [
+    {
+      "result": "3 hits in packages/contracts/src/Raffle.sol: L305 (settleWinningTicket), L315 (redeemWinningTicket), L533 (definition)",
+      "where": "_settleWinningTicket across packages/contracts/src/"
+    },
+    {
+      "result": "6 hits in Raffle.sol (L91 declaration, L233 increment in buyEntries, L296-L297 refund move in enableRefunds, L469 sum in accountedQuoteBalance, L539 read and L553 zeroing in _settleWinningTicket) and 1 hit in IRaffle.sol (L460)",
+      "where": "unsettledPot across packages/contracts/src/"
+    },
+    {
+      "result": "Raffle.sol L100-L106 declarations, L339-L341/L376-L378/L386-L388 claim zeroing, L469 sum in accountedQuoteBalance, L548/L554-L555 writes in _settleWinningTicket",
+      "where": "winnerProceeds, sponsorProceeds, protocolFees across packages/contracts/src/"
+    },
+    {
+      "result": "2 hits in Raffle.sol (L540, L546) and floor-rounding definition in packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:L206-L277",
+      "where": "Math.mulDiv in Raffle.sol and @openzeppelin/contracts/utils/math/Math.sol"
+    }
+  ],
+  "verdict": "implemented"
+}

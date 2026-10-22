@@ -1,0 +1,46 @@
+{
+  "id": "016",
+  "prompt": "Try to refute this claimed divergence between documentation and code at target.\n\nRequirement REQ-44, from target/DESIGN.md:L2: \"transaction decisions must reread current chain state.\"\nClaimed verdict: absent (confidence: high)\nReasoning given: The contextual requirement is \"Frontend discovery is advisory; transaction decisions must reread current chain state.\" (target/DESIGN.md:L2). The supplied target lacks the frontend decision/submission layer. Contract-side live checks do not establish that caller ordering. This is absence within the supplied source, not an observed stale-read path or a claim about an external frontend.\nEvidence cited: [{\"file\":\"target/packages/contracts/src/Raffle.sol\",\"lines\":\"L249-L250\",\"quote\":\"uint256 quotedFee = getVrfRequestPrice();\\n        if (msg.value < quotedFee) revert InsufficientVrfFee(quotedFee, msg.value);\",\"role\":\"Execution-time fee check; does not establish frontend refresh ordering.\"},{\"file\":\"target/packages/contracts/src/Raffle.sol\",\"lines\":\"L436-L438\",\"quote\":\"function getVrfRequestPrice() public view override returns (uint256 fee) {\\n        fee = i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit, 1);\\n    }\",\"role\":\"Provides a chain query, but no frontend consumer was found.\"}]\nWhere it searched: [{\"where\":\"rg --files --hidden --no-ignore target, excluding .git and test directories; repeated with application-source extensions and node_modules excluded\",\"result\":\"Project source comprises five Solidity files and hardhat.config.ts. Remaining files are specification, build/dependency files, and vendored Solidity. No frontend or transaction-submission script.\"},{\"where\":\"frontend|discovery|advisory|reread|re-read|refresh|refetch|cache|stale|indexer|subgraph in DESIGN.md and contracts/src\",\"result\":\"Two matching lines: DESIGN.md:L2 and the historical-range comment at Raffle.sol:L138; no refresh implementation.\"},{\"where\":\"Hidden/ignored Solidity and JS/TS/UI source, including dependencies: frontend/refresh vocabulary and readContract|readContracts|writeContract|simulateContract|sendTransaction|eth_call|eth_sendTransaction|useReadContract|useWriteContract|publicClient|walletClient|blockTag|getLogs|queryFilter\",\"result\":\"0 matching lines.\"},{\"where\":\"Callers of createRaffle, buyEntries, requestDraw, enableRefunds, settlement/redemption, refunds, and release functions\",\"result\":\"Contract/interface declarations and internal settlement calls only; no frontend transaction caller.\"},{\"where\":\"Raffle/Factory helpers, read-API consumers, ERC721 ownership paths, ReentrancyGuard, Chainlink consumer, transfer and clone helpers\",\"result\":\"Live execution-time checks and queries found and traced; no discovery-to-refresh-to-transaction-decision implementation.\"}]\nFull analysis: /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/audit/S5/spec-compliance/requirements/04-REQ-44.md\n\nCheck the reading of the document rather than the code. The most common way this verdict is wrong is that the requirement does not say what the finding claims it says: a scope limited elsewhere in the document, a definition given earlier, a sentence that recommends rather than requires, or an example that narrows it.\n\nRefute it if it does not hold up. If it holds up, say so — do not manufacture a refutation, and do not refute\nmerely because you would have worded it differently. If the divergence is real but described inaccurately, leave\n'refuted' false and put the accurate version in 'correction'. If it is real but the wrong category — an 'absent'\nthat is really a 'partial' — set 'revisedVerdict'.\n\nCite a file and line for every claim about the code, and quote the document verbatim for every\nclaim about intent. Where you cannot cite, do not assert — say what you could not establish. A short answer with\ncited claims is worth more than a long one with padded ones.",
+  "options": {
+    "schema": {
+      "type": "object",
+      "required": [
+        "refuted",
+        "reasoning"
+      ],
+      "properties": {
+        "refuted": {
+          "type": "boolean",
+          "description": "true if the claimed divergence does not hold up"
+        },
+        "reasoning": {
+          "type": "string"
+        },
+        "correction": {
+          "type": "string",
+          "description": "If the divergence is real but described wrongly, the accurate version."
+        },
+        "revisedVerdict": {
+          "type": "string",
+          "enum": [
+            "implemented",
+            "partial",
+            "contradicted",
+            "absent",
+            "stronger-than-spec",
+            "undecidable"
+          ],
+          "description": "Set only if the original verdict was the wrong category."
+        }
+      }
+    },
+    "label": "refute:REQ-44",
+    "phase": "Verify",
+    "effort": "medium"
+  },
+  "accepted_model": "gpt-6-astra",
+  "accepted_effort": "ultra",
+  "provider_returned_model": "unknown",
+  "provider_returned_effort": "unknown",
+  "fallback_enabled": false
+}

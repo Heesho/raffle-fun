@@ -1,0 +1,123 @@
+Workspace context:
+Current working directory / primary repository root: /workspace
+Workspace manifest: WORKSPACE.json
+Dependency repositories are checked out as top-level directories inside the same workspace root.
+When reporting file_path for dependency code, prefix it with the dependency alias directory.
+Primary repository: clean-context @ LOCAL_SNAPSHOT
+No dependency checkouts are listed in WORKSPACE.json.
+
+WORKSPACE.json:
+{
+  "dependencies": [],
+  "primary": {
+    "commit": "LOCAL_SNAPSHOT",
+    "kind": "local",
+    "path": "/workspace",
+    "repo": "clean-context",
+    "requested_commit": "LOCAL_SNAPSHOT"
+  }
+}
+
+You are investigating one externally reachable production flow in clean-context for concrete security vulnerabilities.
+
+Entrypoint:
+- kind: smart_contract_constructor
+- label: RaffleFactory.constructor(address,address,address)
+- handler: RaffleFactory.constructor
+- location: packages/contracts/src/RaffleFactory.sol:65
+- external actor: Protocol deployer executing contract deployment transaction
+- controlled input: quoteToken_ (address), vrfWrapper_ (address), protocolTreasury_ (address)
+
+Flow under review:
+- summary: Reverts factory deployment during initial parameter validation if quoteToken_ or vrfWrapper_ has no deployed bytecode (NotContract) or if protocolTreasury_ is the zero address (ZeroAddress).
+- trace: ["packages/contracts/src/RaffleFactory.sol:65 RaffleFactory.constructor - Entrypoint receiving quoteToken_, vrfWrapper_, and protocolTreasury_", "packages/contracts/src/RaffleFactory.sol:66 RaffleFactory.constructor - Calls _requireContract(quoteToken_)", "packages/contracts/src/RaffleFactory.sol:67 RaffleFactory.constructor - Calls _requireContract(vrfWrapper_)", "packages/contracts/src/RaffleFactory.sol:184 RaffleFactory._requireContract - Reverts with NotContract(account) when account.code.length == 0", "packages/contracts/src/RaffleFactory.sol:68 RaffleFactory.constructor - Reverts with ZeroAddress() when protocolTreasury_ == address(0)"]
+- terminal action: Reverts deployment transaction with NotContract(account) or ZeroAddress().
+- focal location: packages/contracts/src/RaffleFactory.sol:184
+- input to sink: quoteToken_ and vrfWrapper_ are passed to _requireContract(account) which checks account.code.length == 0, and protocolTreasury_ is checked against address(0).
+- security relevance: Prevents deploying the factory with EOA/empty addresses for quoteToken_ or vrfWrapper_ (which would cause low-level token calls in SafeERC20 or clone operations to behave unexpectedly) or a zero-address protocolTreasury_ that would permanently trap or burn protocol fees.
+
+Review the source code for this exact flow, including the surrounding implementation and any necessary callers or callees. Report only vulnerabilities that are concrete, reachable from the stated external actor, and supported by code evidence. A valid finding must identify the vulnerable operation, the missing or flawed protection, a realistic malicious input or sequence, and the full trigger path.
+
+Do not report style issues, hypothetical concerns, test-only behavior, or vulnerabilities that require unsupported configuration or unproven assumptions. Set `exploitable` to true only when the stated external actor can realistically trigger the issue in the configured production path. When the flow contains no supported vulnerability, return a stub instead of inventing a finding.
+
+For each finding, point `file_path` and `line` to the actual vulnerable code, make `trigger_flow` an ordered list from attacker ingress to the vulnerable operation, and use `malicious_input_example` for a minimal realistic payload or sequence.
+
+Return only the structured data requested by the provided JSON schema. Always include the top-level boolean field `stub`, the top-level string field `stub_explanation`, and the top-level array `results`. Valid output combinations are strict: if you did not find anything for this step, return `stub` set to true, `results` set to an empty array, and `stub_explanation` set to a concise reason explaining why no result was found. A stub/no-finding response is a valid successful outcome for a lead that does not establish an actual bug; do not invent a result to avoid using `stub`. If you found one or more results, set `stub` to false, set `stub_explanation` to an empty string, and place at least one application record in `results`. Never return `stub: false` with an empty `results` array; that is invalid and fails the attempt. This is a multi-output step: return every application record in results.
+
+The exact JSON Schema for your final answer is:
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "_kritt_extractor_helper": {
+      "const": true,
+      "type": "boolean"
+    },
+    "results": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "explanation": {
+            "type": "string"
+          },
+          "exploitable": {
+            "type": "boolean"
+          },
+          "file_path": {
+            "type": "string"
+          },
+          "line": {
+            "type": "number"
+          },
+          "malicious_actor": {
+            "type": "string"
+          },
+          "malicious_input_example": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "trigger_flow": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "vulnerability_type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "explanation",
+          "file_path",
+          "line",
+          "malicious_input_example",
+          "summary",
+          "trigger_flow",
+          "vulnerability_type",
+          "malicious_actor",
+          "exploitable"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "stub": {
+      "type": "boolean"
+    },
+    "stub_explanation": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "_kritt_extractor_helper",
+    "stub",
+    "stub_explanation",
+    "results"
+  ],
+  "type": "object"
+}
+```
+The final top-level JSON object must include `_kritt_extractor_helper: true`; this is an extraction marker, not a finding field. Return only a JSON object that validates against this schema. Do not include markdown, commentary, or any text outside the JSON object.

@@ -1,0 +1,410 @@
+{
+  "schema": "raffle-audit-coverage/v1",
+  "schema_extension": "finalization-coverage-qualifications/v1",
+  "final": true,
+  "finalization_gates": {
+    "parameter_substitution_complete": true,
+    "claude_openkritt_terminal_gate_passed": true
+  },
+  "target": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "interpretation": "Source review, context inclusion, instrumented counters, bounded executions, symbolic domains, provider workflow completion, public-fork compatibility, and reconciliation are separate measurements. Missing executable denominators are not 100 percent coverage. Passing counts, report counts, and agreement are not security votes or universal proofs.",
+  "final_matrix_context": {
+    "rows": 23,
+    "complete_or_qualified_complete": 20,
+    "actual_openai_provider_rejected": 3,
+    "external_claude_gemini_effective_complete": 10,
+    "coordinator_in_rows": false,
+    "claude_openkritt_terminal_gate_passed": true
+  },
+  "files": [
+    {
+      "path": "packages/contracts/src/Raffle.sol",
+      "source_review": "All production functions, exposed inherited entry points, and relevant used dependency paths mapped.",
+      "instrumented": {
+        "lines": [246, 247],
+        "functions": [31, 31],
+        "branches": [52, 58]
+      },
+      "limits": [
+        "Coverage uses instrumented unoptimized bytecode rather than the production profile.",
+        "External prize, quote-token, wrapper, marketplace, and deployed-instance behavior is not contained in this denominator."
+      ]
+    },
+    {
+      "path": "packages/contracts/src/RaffleFactory.sol",
+      "source_review": "Constructor, all production functions, clone creation, parameter validation, registries, and getters mapped.",
+      "instrumented": {
+        "lines": [61, 61],
+        "functions": [4, 4],
+        "branches": [17, 18]
+      },
+      "limits": [
+        "Coverage uses instrumented unoptimized bytecode rather than the production profile.",
+        "Canonical external identity, deployment nonce, and live constructor configuration remain deployment responsibilities."
+      ]
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IRaffle.sol",
+      "source_review": "All types, events, errors, signatures, generated getters, and the honest-prize specification conflict mapped.",
+      "instrumented": null,
+      "limits": ["No meaningful executable denominator for an interface."]
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IRaffleFactory.sol",
+      "source_review": "All declarations and deployment-identity assumptions mapped.",
+      "instrumented": null,
+      "limits": ["No meaningful executable denominator for an interface."]
+    },
+    {
+      "path": "packages/contracts/src/libraries/RaffleConstants.sol",
+      "source_review": "All economic, deadline, batch, callback, gas, and unit constants mapped.",
+      "instrumented": null,
+      "limits": ["No meaningful executable denominator for constants-only declarations."]
+    }
+  ],
+  "dependency_source_review": {
+    "reachable_files": 31,
+    "coverage": "Actual used ERC721/receiver/guard, SafeERC20, Clones, Math, Chainlink base paths, interfaces, and supporting types reviewed.",
+    "limits": "Frozen inclusion is not an independent full audit of every unused package API, deployed wrapper implementation, live quote-token administration, or external collection behavior.",
+    "evidence": "runs/SUP-S1/attempt-01/COVERAGE.md"
+  },
+  "properties": [
+    {
+      "id": "P01",
+      "property": "Quote custody and solvency",
+      "evidence_summary": "Foundry exact-solvency invariant; Echidna sales/liability properties; Medusa; bounded Halmos terminal drains.",
+      "limits": "Exact-transfer quote mocks. Fee/rebase/false-success tokens are unsupported; no universal issuer blacklist/pause proof."
+    },
+    {
+      "id": "P02",
+      "property": "Per-beneficiary 80/15/5, 95/5 and full refunds",
+      "evidence_summary": "Independent literal-rate fuzz/invariants; Halmos literal expected balances; late ToB unit/fuzz ledgers.",
+      "limits": "Aggregate conservation does not itself assert each beneficiary rate; larger domains and payout permutations rely on source/fuzz rather than universal proof."
+    },
+    {
+      "id": "P03",
+      "property": "Range partition, ticket sequence and unique winner",
+      "evidence_summary": "Three range/sequence/winner invariants; Echidna; source proof; late purchase-only campaigns.",
+      "limits": "Original Halmos covers two tickets/two owners; late invariants are bounded; arbitrary callback words and uniformity are not universally proved."
+    },
+    {
+      "id": "P04",
+      "property": "Current-owner authorization and atomic rollback",
+      "evidence_summary": "Unauthorized/operator/transfer tests; original and terminal Halmos owner checks; late negative paths.",
+      "limits": "Stateful handlers commonly select actual owners; owner-check deletion survived the short invariant suite; Python model lacks EVM rollback."
+    },
+    {
+      "id": "P05",
+      "property": "Initialization and factory-clone consistency",
+      "evidence_summary": "Factory unit/security tests, local Hardhat integration, complete source entrypoint pass.",
+      "limits": "Canonical token/wrapper and live candidate bytecode remain deployment responsibilities; no candidate deployment was supplied."
+    },
+    {
+      "id": "P06",
+      "property": "Lifecycle/deadline boundaries and refund liveness",
+      "evidence_summary": "Boundary regressions, deadline invariant, Echidna monotonic/deadline properties, late lifecycle examples.",
+      "limits": "Valid-action prefilters exclude the forbidden request boundary; inclusive-deadline mutant survived invariants. Ordinary-path liveness assumes functioning dependencies and a funded caller."
+    },
+    {
+      "id": "P07",
+      "property": "NFT custody and successful delivery",
+      "evidence_summary": "Malicious callback/token tests; Echidna custody; honest-OZ Halmos delivery; forged and paused-prize post-pass reproductions.",
+      "limits": "A selected prize can self-attest dishonestly or later pause, seize, or refuse transfer. Receiver acceptance and ownerOf do not prove lasting truthfulness or outbound capability."
+    },
+    {
+      "id": "P08",
+      "property": "Economic payout versus prize delivery",
+      "evidence_summary": "Sealed source findings; Daybreak Simao proofs; Gemini ToB paused-prize pass; Claude/Daybreak ToB ledgers; RF-001.",
+      "limits": "Sponsor/protocol payout can be independent of later delivery. Controlling severity is conditional High under untrusted-prize scope; Critical remains dissent; the trust-model decision is unresolved."
+    },
+    {
+      "id": "P09",
+      "property": "Recipient and clone-destination isolation",
+      "evidence_summary": "Same-factory future-prize reproduction; Claude S6 future quote-lock case; Daybreak S6 existing other-factory ticket case.",
+      "limits": "Three narrow own-recipient or bearer-loss variants only; no arbitrary EOA theft, buyer-refund loss, or cross-raffle accounted-fund drain."
+    },
+    {
+      "id": "P10",
+      "property": "VRF authority, callback ordering and gas",
+      "evidence_summary": "Inherited wrapper-auth source pass; mock callback/security/fee tests; gas checks; pinned mainnet/Sepolia request-path tests.",
+      "limits": "No genuine off-chain fulfillment, complete billing/configuration/finality proof, or arbitrary callback-word formal proof. Modulo bias and reorg remain bounded/external."
+    },
+    {
+      "id": "P11",
+      "property": "Transfer, reentrancy and rollback",
+      "evidence_summary": "OZ/guard/SafeERC20 reachable-path review; malicious receiver/quote/prize controls; late callback-order tests.",
+      "limits": "Exact-transfer quote assumption; arbitrary ERC721 honesty cannot be inferred; safe receipt does not prove future outbound capability."
+    },
+    {
+      "id": "P12",
+      "property": "Gas-bounded batching and callback work",
+      "evidence_summary": "Maximum-100 refund observation at 667412 gas; 61 gas-baseline tests; O(1) callback source pass.",
+      "limits": "Local gas observations and selected profiles are not universal block-inclusion guarantees."
+    },
+    {
+      "id": "P13",
+      "property": "Handler reachability and nonvacuity",
+      "evidence_summary": "Four-mutant experiment; unit/fuzz/security killed all four; extended invariant killed the fee mutant; late handlers record bounded calls.",
+      "limits": "All four mutants survived short invariants; purchase-disabled survived strict invariants through caught reverts. Reported calls include no-ops/reverts and are not all economic actions."
+    },
+    {
+      "id": "P14",
+      "property": "SDK/frontend/indexer consistency",
+      "evidence_summary": "16 SDK, 25 web, 8 subgraph tests; codegen/build/typechecks; canonical ABI sets 125/26.",
+      "limits": "Top-level ABI order differs; no complete deployed wallet/browser/indexer/chain flow."
+    },
+    {
+      "id": "P15",
+      "property": "Reference mathematics and model fidelity",
+      "evidence_summary": "Independent formulas and balance deltas; 11 standalone Python tests; rollback diagnostic.",
+      "limits": "Python tests are not Solidity differential verification; rejected lazy redemption mutates Python state without EVM rollback."
+    },
+    {
+      "id": "P16",
+      "property": "Dependency and supply chain",
+      "evidence_summary": "Actual 31-file Solidity closure review; 69 distinct GHSA reachability review; 1286 registry signatures.",
+      "limits": "Git-sourced era-contracts lacks an npm packument attestation; signatures do not certify all dependencies or deployed administration."
+    }
+  ],
+  "rf002_expanded_variants": [
+    {
+      "variant": "future_same_factory_prize_stranding",
+      "executed": true,
+      "mechanism": "Sponsor selects the predictable address of a future same-factory clone; after deployment an honest NFT sponsor prize can be transferred into that clone and stranded.",
+      "evidence": "reconciliation/recipient-validation/RecipientValidation.t.sol"
+    },
+    {
+      "variant": "future_same_factory_quote_claim_lock",
+      "executed": true,
+      "mechanism": "Future recipient becomes registered; sponsor quote-proceeds release reverts while unrelated protocol-fee release remains possible. The backed immutable claim is unavailable.",
+      "evidence": "provider-lanes/claude/runs/CLAUDE-TOB/S6/attempt-02/generated-capture/harness-props/props/foundry/RaffleScenarios.t.sol"
+    },
+    {
+      "variant": "existing_other_factory_ticket_loss",
+      "executed": true,
+      "mechanism": "Owner-selected transfer to an existing clone from another factory passes the factory-local registry check; the receiving clone has no general outbound owner call.",
+      "evidence": "runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tests/sources/S6SecureWorkflow.t.sol"
+    }
+  ],
+  "rf002_limits": {
+    "severity": "Low",
+    "demonstrated": "Narrow own-recipient or bearer-claim loss under selector-controlled destination choices.",
+    "not_demonstrated": [
+      "Arbitrary EOA theft",
+      "Attacker selection of an unrelated victim's immutable recipient",
+      "Loss of buyer refund liabilities",
+      "Drain of another raffle's accounted quote funds",
+      "All recipient compositions"
+    ],
+    "evidence": "reconciliation/finalization/RF002-PROOF-SCOPE-ADDENDUM.md"
+  },
+  "core_campaigns": {
+    "foundry_release": {
+      "passed": 79,
+      "failed": 0,
+      "historical_unconfigured_rpc_skip": 1,
+      "fuzz_tests": 9,
+      "cases_per_fuzz_test": 100000,
+      "reported_invariant_calls": 233698304,
+      "limits": "Native calls include caught reverts and no-op returns and are not all successful economic actions.",
+      "evidence": "runs/TOOL-RELEASE-EXTENDED/attempt-01/campaign-statistics-final.json"
+    },
+    "echidna_extended": {
+      "campaigns": [
+        {"actual_calls": 100040, "properties": 6, "sequence_length": 100, "workers": 1, "seed": 2026102101},
+        {"actual_calls": 100077, "properties": 6, "sequence_length": 100, "workers": 1, "seed": 2026102102}
+      ],
+      "limits": "Earlier 180-second and 3000-target attempts remain incomplete/short history. Native rejected-input and revert counts are unknown.",
+      "evidence": "ECHIDNA-EXTENDED-RESULTS.json"
+    },
+    "medusa": {
+      "native_checks": 26,
+      "actual_properties": 6,
+      "limits": "The other 20 checks are not independent invariants."
+    },
+    "halmos": {
+      "domains": "Two symbolic amounts 1..16, two actors/tickets, exact-transfer quote, fixed VRF mocks, both refund orders, all bounded winners, selected payout orders.",
+      "direct_accounting_properties_passed": 3,
+      "residual_queries_discharged_unsat": 11,
+      "native_timeouts_preserved": true,
+      "limits": "Not proof over arbitrary actors, amounts, transfers, callback words, hostile tokens, prize code, or payout permutations.",
+      "evidence": "runs/TOOL-HALMOS-CONTINUATION/CLOSURE.json"
+    },
+    "mutation": {
+      "valid_mutants": 4,
+      "killed_by_unit_fuzz_security": 4,
+      "survived_short_invariants": 4,
+      "fee_mutant_killed_at_invariant_runs": 120,
+      "purchase_disabled_survived_strict_invariants": true,
+      "stale_historical_definitions": 11,
+      "historical_definition_total": 52,
+      "evidence": "runs/TOOL-MUTATION-QUALITY/SUMMARY.md"
+    }
+  },
+  "late_declared_workflow_campaigns": {
+    "claude_tob_s6": {
+      "foundry": {"passed": 20, "failed": 0, "suites": 6, "fuzz_tests": 2, "cases_per_fuzz_test": 2000},
+      "echidna_properties": {"calls": 400073, "properties": 9, "seed": 6206211},
+      "echidna_assertions": {"calls": 400047, "checks": 38, "seed": 9917731},
+      "medusa": {"calls": 3116102, "passes": 46, "workers": 4},
+      "slither_structural_predicates": 12,
+      "halmos": {"passed": 7, "timeout_unknown": 2},
+      "limits": [
+        "Two raffles and four actors; ordinary entry counts 1..25 plus a large-buy action; refund batches at most eight; bounded warps and corruption modes.",
+        "Full 100-ticket batches, every dishonest-prize delivery branch, and paidPrice greater than msg.value were not universally exercised.",
+        "Manticore unavailable; Halmos substitution disclosed; two timeout obligations are not passes or counterexamples."
+      ],
+      "evidence": "provider-lanes/claude/runs/CLAUDE-TOB/S6/attempt-02/preserved/evidence/04-properties/"
+    },
+    "daybreak_tob_s6": {
+      "foundry": {"passed": 21, "failed": 0, "fuzz_tests": 2, "cases_per_fuzz_test": 10000},
+      "invariants": {"properties": 3, "runs": 256, "calls_per_run": 128, "reported_calls": 98304},
+      "echidna": {"calls": 20007, "properties": 4, "sequence_length": 64, "seed": 1396142931},
+      "intentional_negative_properties": 2,
+      "slither": {"results": 14, "high_or_medium": 0, "exit_code": 255, "exit_interpretation": "finding gate, not analyzer failure"},
+      "formal_proof": false,
+      "limits": [
+        "Invariant handler is one actor buying entries 1..1000 in one active raffle.",
+        "Echidna is purchase-only and becomes a no-op after at most 64 successful buys.",
+        "Separate lifecycle/adversarial examples do not turn the active-only invariant campaign into terminal or multi-actor proof.",
+        "Source-first seal bytes changed between watcher observations; current seal verifies but the older observed bytes were not retained."
+      ],
+      "evidence": "runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/properties/SECURITY_PROPERTIES.md"
+    },
+    "gemini_tob_s3": {
+      "suite_tests": 9,
+      "paused_prize_reproduction_passed": true,
+      "limits": [
+        "Conditional mock demonstration, not a named deployed collection result.",
+        "Separate TIA-02 uses vm.prank for a contract that has no claim-originating method; it does not prove that recipient can originate the call."
+      ],
+      "evidence": "runs/GEMINI-TOB-REPAIRED/attempt-04/S3/pre-validation-capture/artifacts/scratch/contracts-orig/test/foundry/TokenIntegrationProperties.t.sol"
+    }
+  },
+  "aq009": {
+    "category": "audit assurance issue; not a frozen production defect",
+    "status": "Specific source refutations and proof limitations recorded.",
+    "corrections": [
+      "Present NatSpec, @inheritdoc, author headers, return documentation, ignored-callback event, and indexed events were incorrectly described as absent.",
+      "Tests/scripts/deployment tools omitted from a reduced cold context do not prove repository-wide absence.",
+      "S3 TIA-02 uses vm.prank for a contract without a claim-originating function.",
+      "S5 raw denominator is 219 extracted, 10 checked, and 209 unchecked; the report's 196-unchecked statement is incorrect.",
+      "REQ-21 universal no-cross-clone hold conflicts with the report's own future-clone description."
+    ],
+    "evidence": "reconciliation/finalization/GEMINI-TOB-04-RECONCILIATION.md"
+  },
+  "public_dependency_forks": {
+    "workflow_status": "COMPLETE",
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "mainnet_block": 26242794,
+    "mainnet_block_hash": "0x8fdbd950a706924ce62a5904c1b6b575b51f27f72ec968cb83ccd24c6a2dd7ac",
+    "sepolia_block": 11964220,
+    "sepolia_block_hash": "0xc9cd9fb1482946d20622e8ea7749f3d06b6f83f2484f079d4a93de82f906585e",
+    "duration_seconds": 7.305324291810393,
+    "remote_operations": "Read-only JSON-RPC; local fork-state writes only.",
+    "production_broadcast": false,
+    "source": "Frozen maintained EthereumFork.t.sol without alteration.",
+    "stdout_sha256": "df0cb8dbed4ba2033e59268bd7714c157bd30cc6f1722bd7c8e5639d8a45fb9f",
+    "limitations": [
+      "Mock ERC721 prize and cheatcode-funded quote balances.",
+      "No genuine off-chain VRF proof or fulfillment.",
+      "No supplied live Raffle/Factory instance or deployment-bytecode identity.",
+      "Current/future issuer and wrapper administration, failures, pricing, and finality not universally verified."
+    ],
+    "evidence": "PUBLIC-FORK-VALIDATION.md"
+  },
+  "adjacent_packages": {
+    "hardhat_tests": 22,
+    "sdk_tests": 16,
+    "web_tests": 25,
+    "subgraph_tests": 8,
+    "python_model_tests": 11,
+    "config_package_selected_tests": 0,
+    "raffle_abi_entries": 125,
+    "factory_abi_entries": 26,
+    "abi_result": "Canonical entry sets, tuple shapes, and parameter order match; top-level array order differs, so this is not byte-for-byte array equality."
+  },
+  "provider_qualification_boundary": {
+    "claude_openkritt": {
+      "completed_logical_lineages": 193,
+      "metadata_attempts": 195,
+      "historical_failed_metadata_ids": [21, 22],
+      "native_records": 0,
+      "canonical_findings": 0,
+      "completion_receipt_sha256": "52b75bba1bb78ce25514b950a102364409e69ca19204e420dadfa773b23cfebe",
+      "raw_first_pass_seal_sha256": "d13dd715c36102d61818d67598d92510665237ee1acf8f838026c131b6d31417",
+      "final_method_seal_sha256": "bbab1ac2c461fca324aa50c7c142a402293000fa47ecf79607cd831f569ab8a1",
+      "zero_findings_is_proof_of_absence": false,
+      "independent_openai_validator": "PROVIDER_REJECTED / INCOMPLETE"
+    },
+    "preserved_limits": [
+      "Claude Simao original refusal and killed first public-evidence attempt.",
+      "Claude OpenKritt original bundled-runner blocker and modified-method disclosure.",
+      "Claude ToB selected-function and requirement bounds, original timeout, and two Halmos unknowns.",
+      "Gemini native and transport ERROR histories, missing literal historical paths, disclosed adapters, and unknown internal model revisions.",
+      "A completed provider lane does not add line/branch coverage unless a separately cited campaign executed it."
+    ],
+    "evidence": "PROVIDER-HANDOFF-VALIDATION.md"
+  },
+  "assurance_limits": {
+    "pre_seal_status_exposure": {
+      "lane": "CLAUDE-OPENKRITT",
+      "exposed_to_coordination_readers": true,
+      "adopted_as_finding": false,
+      "fed_back_to_native_reviewer": false,
+      "complete_pre_seal_narrative_non_exposure_claimed": false,
+      "evidence": "reconciliation/finalization/PARENT-STATUS-EXPOSURE-ADDENDUM.json"
+    },
+    "historical_receipt_mismatches": {
+      "count": 4,
+      "expected_final_integrity_ok": false,
+      "schema_or_path_gaps_expected": 0,
+      "two_grown_logs_with_exact_prefixes_recovered": true,
+      "two_s4_runtime_bindings_without_exact_old_copy": true,
+      "additional_or_changed_mismatch_blocks_finalization": true,
+      "frozen_source_mismatch": false,
+      "evidence": "reconciliation/finalization/KNOWN-HISTORICAL-BINDING-LIMITS.json"
+    },
+    "removed_gemini_literal_inputs": {
+      "pashov_absent_paths": 13,
+      "simao_absent_paths": 14,
+      "exact_preserved_per_leaf_copies_verified": true,
+      "original_literal_paths_restored": false
+    }
+  },
+  "reconciliation": {
+    "source_report_paths": 28,
+    "distinct_first_pass_hashes": 27,
+    "original_attribution_links": 739,
+    "findings_and_observations": 21,
+    "assurance_issues": 9,
+    "production_root_families": 2,
+    "final_register_sha256": "14fd10f03ae1ae1e503d04e8ff68d382319d42cced4552d12eab92b04f0f6242",
+    "final_reconciliation_sha256": "b5b443439f827ce572d5ba57efde0f9d474211756b13aa3df798c58654e80c7b",
+    "final_reconciliation_seal_sha256": "c5e388d04b64d71c22ada44b36c6f8e7b27a0bf37052cd6039845a9d5dd33186"
+  },
+  "evidence": {
+    "foundry": "runs/TOOL-RELEASE-EXTENDED/attempt-01/campaign-statistics-final.json",
+    "echidna": "ECHIDNA-EXTENDED-RESULTS.json",
+    "halmos": "runs/TOOL-HALMOS-CONTINUATION/CLOSURE.json",
+    "mutation": "runs/TOOL-MUTATION-QUALITY/SUMMARY.md",
+    "source": "runs/SUP-S1/attempt-01/COVERAGE.md",
+    "scanner": "reconciliation/scanner-triage.json",
+    "dependency": "reconciliation/DEPENDENCY-REVIEW.md",
+    "recipient": "runs/TOOL-RECIPIENT-VALIDATION/attempt-01/stdout.txt",
+    "simao": "runs/DAYBREAK-SIMAO/attempt-03/POST-SEAL-PROOF.md",
+    "public_fork": "PUBLIC-FORK-VALIDATION.md",
+    "rf002": "reconciliation/finalization/RF002-PROOF-SCOPE-ADDENDUM.md",
+    "aq009": "reconciliation/finalization/GEMINI-TOB-04-RECONCILIATION.md"
+  },
+  "generic_area_applicability": {
+    "custom_signature_permit_domains": "NOT_APPLICABLE in the five production files; ordinary transaction nonces, external token approvals, and ERC721 authorization are separate.",
+    "upgrade_admin_transitions": "No mutable protocol upgrade/admin entry point. Constructor configuration, implementation lock, clone initialization, and fixed beneficiaries are in scope; external dependencies may retain their own administration.",
+    "amm_lending_flash_liquidity": "NOT_APPLICABLE as protocol mechanisms; secondary-market ordering remains an unresolved external lead.",
+    "cross_chain_messaging": "NOT_APPLICABLE; chain-specific deployment identity and finality remain external.",
+    "price_oracle_freshness": "No direct price feed. Trusted wrapper fee pricing/fallback and live configuration are external; VRF authentication, binding, and deadlines are applicable.",
+    "shares_interest_rewards": "NOT_APPLICABLE; entry ranges, bearer tickets, quote-token micro-units, and pending terminal liabilities are applicable."
+  }
+}

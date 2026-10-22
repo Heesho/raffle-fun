@@ -1,0 +1,670 @@
+
+FILE target/packages/contracts/src/Raffle.sol
+  176     function initialize(RaffleInitParams calldata params) external override {
+  177         if (initialized) revert AlreadyInitialized();
+  178         if (msg.sender != factory) revert OnlyFactory();
+  179         initialized = true;
+  180 
+  181         if (
+  182             params.sponsor == address(0) || params.sponsorRecipient == address(0)
+  183                 || params.protocolTreasury == address(0) || params.prizeToken == address(0)
+  184         ) {
+  185             revert ZeroAddress();
+  186         }
+  187         if (_isProtocolDestination(params.sponsor, params.prizeToken)) {
+  188             revert UnsafeProtocolDestination(params.sponsor);
+  189         }
+  190         if (_isProtocolDestination(params.protocolTreasury, params.prizeToken)) {
+  191             revert UnsafeProtocolDestination(params.protocolTreasury);
+  192         }
+  193         if (_isProtocolDestination(params.sponsorRecipient, params.prizeToken)) {
+  194             revert UnsafeProtocolDestination(params.sponsorRecipient);
+  195         }
+  196 
+  197         sponsor = params.sponsor;
+  198         sponsorRecipient = params.sponsorRecipient;
+  199         protocolTreasury = params.protocolTreasury;
+  200         prizeToken = IERC721(params.prizeToken);
+  201         prizeTokenId = params.prizeTokenId;
+  202         raffleId = params.raffleId;
+  203         reserveEntries = params.reserveEntries;
+  204         endTime = params.endTime;
+  205         status = Status.AwaitingPrize;
+  206     }
+  416     function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata)
+  417         external
+  418         override
+  419         returns (bytes4 selector)
+  420     {
+  421         if (
+  422             status != Status.AwaitingPrize || msg.sender != address(prizeToken) || tokenId != prizeTokenId
+  423                 || from != sponsor || operator != factory
+  424         ) {
+  425             revert UnexpectedPrize(msg.sender, tokenId, from, operator);
+  426         }
+  427 
+  428         status = Status.Active;
+  429         emit PrizeDeposited(msg.sender, tokenId, from);
+  430         selector = IERC721Receiver.onERC721Received.selector;
+  431     }
+  560     /// @dev Transfers one complete current USDC claim through SafeERC20 after rejecting known protocol sinks. The
+  561     ///      canonical USDC trust model assumes standard, non-rebasing, fee-free transfer semantics.
+  562     /// @param to Immutable or owner-derived recipient of the claim.
+  563     /// @param amount Raw six-decimal USDC units transferred.
+  564     function _transferQuote(address to, uint256 amount) private {
+  565         if (_isProtocolDestination(to, address(prizeToken))) revert InvalidQuoteDestination(to);
+  566         quoteToken.safeTransfer(to, amount);
+  567     }
+  568 
+  569     // Private view and pure helpers
+  570 
+  571     /// @dev Reverts unless the raffle is in the expected lifecycle state.
+  572     /// @param expected Status required by the calling operation.
+  573     function _requireStatus(Status expected) private view {
+  574         if (status != expected) revert InvalidStatus(status);
+  575     }
+  576 
+  577     /// @dev Reverts unless the supplied ticket's stored inclusive range contains the selected winning entry.
+  578     /// @param ticketId Candidate winning ticket ID.
+  579     function _requireWinningTicket(uint256 ticketId) private view {
+  580         (uint128 firstEntry, uint128 lastEntry) = ticketRange(ticketId);
+  581         uint128 selectedEntry = winningEntry;
+  582         if (selectedEntry < firstEntry || selectedEntry > lastEntry) {
+  583             revert TicketDoesNotContainWinningEntry(ticketId, selectedEntry);
+  584         }
+  585     }
+  586 
+  587     /// @dev Identifies same-factory protocol plumbing that cannot safely own a ticket or receive a payout.
+  588     ///      Initialization supplies the prospective prize token because clone storage is not populated yet; runtime
+  589     ///      checks pass the stored prize token. Code-less addresses are not queried in the registry.
+  590     /// @param destination Address being screened.
+  591     /// @param prizeToken_ Configured or prospective prize-token address to reject.
+  592     /// @return unsafeDestination True when the address is known same-factory protocol plumbing.
+  593     function _isProtocolDestination(address destination, address prizeToken_)
+  594         private
+  595         view
+  596         returns (bool unsafeDestination)
+  597     {
+  598         IRaffleFactory canonicalFactory = IRaffleFactory(factory);
+  599         unsafeDestination = destination == address(this) || destination == factory || destination == address(quoteToken)
+  600             || destination == address(i_vrfV2PlusWrapper) || destination == prizeToken_
+  601             || destination == canonicalFactory.raffleImplementation();
+  602         if (!unsafeDestination && destination.code.length != 0) {
+  603             unsafeDestination = canonicalFactory.isRaffle(destination);
+  604         }
+  605     }
+  606 
+  607     /// @dev Validates the wrapper before passing it to the inherited constructor initializer.
+  608     /// @param wrapper Prospective Chainlink wrapper address.
+  609     /// @return validatedWrapper The same nonzero wrapper address.
+  610     function _validatedVrfWrapper(address wrapper) private pure returns (address validatedWrapper) {
+  611         if (wrapper == address(0)) revert ZeroAddress();
+  612         validatedWrapper = wrapper;
+  613     }
+  614 }
+
+FILE target/packages/contracts/src/interfaces/IRaffleFactory.sol
+    1 // SPDX-License-Identifier: MIT
+    2 pragma solidity 0.8.36;
+    3 
+    4 /// @title raffle.fun Raffle Factory Interface
+    5 /// @author heesho
+    6 /// @notice Defines atomic ERC-1167 raffle creation for one immutable USDC, treasury, and Chainlink configuration.
+    7 /// @dev The factory has no owner, pause, upgrade, rescue, or mutable protocol configuration. Deployment tooling must
+    8 ///      verify that the immutable quote-token address is the target chain's official USDC; onchain construction checks
+    9 ///      only code presence and six-decimal metadata.
+   10 /// @custom:version 1.0.0
+   11 interface IRaffleFactory {
+   12     // Types
+   13 
+   14     /// @notice Sponsor-selected configuration for one new raffle.
+   15     /// @param sponsorRecipient Immutable recipient of sponsor quote proceeds and any returned prize.
+   16     /// @param prizeToken Standards-compliant ERC-721 prize contract.
+   17     /// @param prizeTokenId Token ID to escrow atomically during creation.
+   18     /// @param reserveEntries Global raw entry-count threshold selecting the NFT outcome when met or exceeded.
+   19     /// @param endTime Exclusive sale-end Unix timestamp, in seconds.
+   20     struct CreateRaffleParams {
+   21         address sponsorRecipient;
+   22         address prizeToken;
+   23         uint256 prizeTokenId;
+   24         uint128 reserveEntries;
+   25         uint64 endTime;
+   26     }
+   27 
+   28     // Events
+   29 
+   30     /// @notice Emitted after a raffle clone is initialized, registered, funded, and active.
+   31     /// @param raffleId One-based canonical raffle identifier.
+   32     /// @param raffle Newly created fixed-target ERC-1167 clone.
+   33     /// @param sponsor Prize depositor and pre-end empty-raffle refund authority.
+   34     /// @param sponsorRecipient Immutable recipient of sponsor quote proceeds and any returned prize.
+   35     /// @param prizeToken ERC-721 contract of the escrowed prize.
+   36     /// @param prizeTokenId Token ID of the escrowed prize.
+   37     /// @param quoteToken Immutable canonical six-decimal USDC contract used by the raffle.
+   38     /// @param protocolTreasury Immutable recipient of protocol fees.
+   39     /// @param reserveEntries Global raw entry-count threshold selecting the NFT outcome when met or exceeded.
+   40     /// @param endTime Exclusive sale-end Unix timestamp, in seconds.
+   41     event RaffleCreated(
+   42         uint256 indexed raffleId,
+   43         address indexed raffle,
+   44         address indexed sponsor,
+   45         address sponsorRecipient,
+   46         address prizeToken,
+   47         uint256 prizeTokenId,
+   48         address quoteToken,
+   49         address protocolTreasury,
+   50         uint128 reserveEntries,
+   51         uint64 endTime
+   52     );
+   53 
+   54     // Errors
+   55 
+   56     /// @notice Raised when a required address is the zero address.
+   57     error ZeroAddress();
+   58 
+   59     /// @notice Raised when an address required to contain deployed code is not a contract.
+   60     /// @param account Address whose code length was zero.
+   61     error NotContract(address account);
+   62 
+   63     /// @notice Raised when the quote token cannot report its decimal precision.
+   64     /// @param quoteToken Rejected quote-token contract.
+   65     error UnsupportedQuoteToken(address quoteToken);
+   66 
+   67     /// @notice Raised when the quote token does not use the required six-decimal precision.
+   68     /// @param actualDecimals Decimal precision reported by the quote token.
+   69     /// @param requiredDecimals Required decimal precision, exactly six.
+   70     error InvalidQuoteTokenDecimals(uint8 actualDecimals, uint8 requiredDecimals);
+   71 
+   72     /// @notice Raised when the prize contract does not report ERC-721 interface support.
+   73     /// @param prizeToken Rejected prize-token contract.
+   74     error UnsupportedPrizeToken(address prizeToken);
+   75 
+   76     /// @notice Raised when a raffle is configured with a zero reserve entry threshold.
+   77     error ZeroReserveEntries();
+   78 
+   79     /// @notice Raised when the sale end is not strictly after the creation block timestamp.
+   80     /// @param currentTime Current block Unix timestamp, in seconds.
+   81     /// @param endTime Supplied exclusive sale-end Unix timestamp, in seconds.
+   82     error InvalidEndTime(uint256 currentTime, uint256 endTime);
+   83 
+   84     /// @notice Raised when the prospective sale duration exceeds the fixed 30-day limit.
+   85     /// @param duration Prospective sale duration in seconds.
+   86     /// @param maximumDuration Maximum permitted sale duration in seconds.
+   87     error SaleDurationTooLong(uint256 duration, uint256 maximumDuration);
+   88 
+   89     /// @notice Raised when a configured token or recipient is known protocol plumbing.
+   90     /// @param destination Rejected address.
+   91     error UnsafeProtocolDestination(address destination);
+   92 
+   93     /// @notice Raised when the exact configured prize is not owned by an active clone after escrow.
+   94     /// @param raffle Newly created clone expected to hold the prize and report `Active`.
+   95     /// @param prizeToken ERC-721 prize contract.
+   96     /// @param prizeTokenId Configured prize token ID.
+   97     error PrizeEscrowVerificationFailed(address raffle, address prizeToken, uint256 prizeTokenId);
+   98 
+   99     // External state-changing functions
+  100 
+  101     /// @notice Creates, initializes, registers, and funds one autonomous fixed-target raffle clone atomically.
+  102     /// @param params Sponsor-selected recipient, prize, reserve, and timing configuration.
+  103     /// @return raffle Address of the newly created and activated clone.
+  104     function createRaffle(CreateRaffleParams calldata params) external returns (address raffle);
+  105 
+  106     // Public generated getters
+  107 
+  108     /// @notice Returns the immutable canonical six-decimal USDC contract used by every raffle.
+  109     /// @return quoteTokenAddress Canonical USDC contract address trusted by this deployment.
+  110     function quoteToken() external view returns (address quoteTokenAddress);
+  111 
+  112     /// @notice Returns the immutable Chainlink VRF v2.5 native direct-funding wrapper used by every raffle.
+  113     /// @return wrapperAddress Wrapper contract address.
+  114     function vrfWrapper() external view returns (address wrapperAddress);
+  115 
+  116     /// @notice Returns the immutable recipient of protocol fees from every raffle.
+  117     /// @return treasuryAddress Protocol treasury address.
+  118     function protocolTreasury() external view returns (address treasuryAddress);
+  119 
+  120     /// @notice Returns the fixed Chainlink callback execution limit used by every raffle.
+  121     /// @return gasLimit Callback gas units requested from the wrapper.
+  122     function callbackGasLimit() external view returns (uint32 gasLimit);
+  123 
+  124     /// @notice Returns the fixed Chainlink confirmation count used by every raffle.
+  125     /// @return confirmations Blocks requested before callback fulfillment.
+  126     function requestConfirmations() external view returns (uint16 confirmations);
+  127 
+  128     /// @notice Returns the immutable implementation targeted by every registered ERC-1167 clone.
+  129     /// @return implementation Locked raffle implementation address.
+  130     function raffleImplementation() external view returns (address implementation);
+  131 
+  132     /// @notice Returns the lifetime number of successfully created raffles.
+  133     /// @return count Latest one-based raffle identifier and total registered raffle count.
+  134     function raffleCount() external view returns (uint256 count);
+  135 
+  136     /// @notice Returns whether an address is a raffle registered by this factory.
+  137     /// @param raffle Address to check.
+  138     /// @return registered True only for a successfully created canonical clone.
+  139     function isRaffle(address raffle) external view returns (bool registered);
+  140 
+  141     /// @notice Returns the canonical raffle address for an identifier.
+  142     /// @param raffleId One-based raffle identifier.
+  143     /// @return raffle Registered clone address, or the zero address for an unknown identifier.
+  144     function raffleById(uint256 raffleId) external view returns (address raffle);
+  145 
+  146     /// @notice Returns the canonical identifier assigned to a raffle address.
+  147     /// @param raffle Address to query.
+  148     /// @return raffleId One-based identifier, or zero for an unregistered address.
+  149     function idByRaffle(address raffle) external view returns (uint256 raffleId);
+  150 }
+
+FILE target/packages/contracts/src/interfaces/IRaffle.sol
+    1 // SPDX-License-Identifier: MIT
+    2 pragma solidity 0.8.36;
+    3 
+    4 import { IVRFV2PlusWrapper } from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol";
+    5 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+    6 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+    7 
+    8 /// @title raffle.fun Raffle Interface
+    9 /// @author heesho
+   10 /// @notice Defines one autonomous NFT raffle using fixed-price USDC entries and one transferable ERC-721 ticket per
+   11 ///         purchase.
+   12 /// @dev Ticket IDs are sequential. Each ticket stores one inclusive uint128 entry range and remains a transferable
+   13 ///      bearer claim until its owner atomically burns it for redemption or refund. The immutable quote token is trusted
+   14 ///      canonical six-decimal USDC with standard, non-rebasing, fee-free transfers. Supported prizes are honest,
+   15 ///      standards-compliant ERC-721s.
+   16 /// @custom:version 1.0.0
+   17 interface IRaffle {
+   18     // Types
+   19 
+   20     /// @notice The single authoritative raffle lifecycle and economic result.
+   21     enum Status {
+   22         /// @notice The clone is initialized and waiting for the factory to escrow the configured prize.
+   23         AwaitingPrize,
+   24         /// @notice The prize is escrowed and entry sales or post-sale draw initiation are available.
+   25         Active,
+   26         /// @notice A Chainlink VRF request was accepted and its callback window is open.
+   27         Drawing,
+   28         /// @notice The reserve was met and the winning ticket may redeem the prize NFT.
+   29         NftWon,
+   30         /// @notice The reserve was missed and the winning ticket may redeem its cash allocation.
+   31         CashWon,
+   32         /// @notice Full ticket refunds are enabled and the sponsor may recover the prize NFT.
+   33         Refunding
+   34     }
+   35 
+   36     /// @notice Complete clone-specific configuration supplied once by the canonical factory.
+   37     /// @param sponsor Prize depositor and empty-raffle cancellation authority.
+   38     /// @param sponsorRecipient Immutable recipient of sponsor quote proceeds and any returned prize.
+   39     /// @param protocolTreasury Immutable recipient of protocol fees.
+   40     /// @param prizeToken Standards-compliant ERC-721 prize contract.
+   41     /// @param prizeTokenId Token ID of the prize escrowed by this raffle.
+   42     /// @param raffleId One-based canonical factory identifier for this raffle.
+
+FILE target/packages/contracts/src/libraries/RaffleConstants.sol
+    1 // SPDX-License-Identifier: MIT
+    2 pragma solidity 0.8.36;
+    3 
+    4 /// @title raffle.fun Protocol Constants
+    5 /// @author heesho
+    6 /// @notice Defines the fixed v1 economics, timing, and bounded-execution limits shared by the factory and raffles.
+    7 /// @dev Quote-token amounts use raw six-decimal units. Basis-point calculations round down through `Math.mulDiv`, and
+    8 ///      the sponsor receives the remaining raw units after winner and protocol allocations.
+    9 /// @custom:version 1.0.0
+   10 library RaffleConstants {
+   11     /// @notice Denominator used for every global protocol basis-point rate.
+   12     uint256 internal constant BPS = 10_000;
+   13 
+   14     /// @notice Global protocol fee rate: 500 basis points, or 5% of gross sales.
+   15     uint256 internal constant PROTOCOL_FEE_BPS = 500;
+   16 
+   17     /// @notice Cash-result winner rate: 8,000 basis points, or 80% of gross sales.
+   18     uint256 internal constant CASH_WINNER_BPS = 8000;
+   19 
+   20     /// @notice Global entry price: exactly 1,000,000 raw six-decimal quote-token units, or one USDC.
+   21     uint256 internal constant ENTRY_PRICE = 1_000_000;
+   22 
+   23     /// @notice Decimal precision required from the immutable quote token.
+   24     uint8 internal constant QUOTE_TOKEN_DECIMALS = 6;
+   25 
+   26     /// @notice Refund execution is bounded by tickets, while each ticket may represent any uint128 entry count.
+   27     uint256 internal constant MAX_REFUND_TICKET_BATCH_SIZE = 100;
+   28 
+   29     /// @notice Maximum prospective raffle sale duration, measured from creation to the exclusive sale end.
+   30     uint256 internal constant MAX_SALE_DURATION = 30 days;
+   31 
+   32     /// @notice Duration after sale end during which a sold raffle may initiate its draw, in seconds.
+   33     uint256 internal constant DRAW_REQUEST_TIMEOUT = 2 days;
+   34 
+   35     /// @notice Duration after an accepted request during which its authenticated callback may resolve, in seconds.
+   36     uint256 internal constant DRAW_CALLBACK_TIMEOUT = 2 days;
+   37 
+   38     /// @notice Gas-unit limit requested for the single-word Chainlink callback.
+   39     uint32 internal constant VRF_CALLBACK_GAS_LIMIT = 300_000;
+   40 
+   41     /// @notice Block confirmations requested from Chainlink before callback fulfillment.
+   42     uint16 internal constant VRF_REQUEST_CONFIRMATIONS = 30;
+   43 }
+
+FILE target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol
+    1 // SPDX-License-Identifier: MIT
+    2 // OpenZeppelin Contracts (last updated v5.5.0) (proxy/Clones.sol)
+    3 
+    4 pragma solidity ^0.8.20;
+    5 
+    6 import {Create2} from "../utils/Create2.sol";
+    7 import {Errors} from "../utils/Errors.sol";
+    8 
+    9 /**
+   10  * @dev https://eips.ethereum.org/EIPS/eip-1167[ERC-1167] is a standard for
+   11  * deploying minimal proxy contracts, also known as "clones".
+   12  *
+   13  * > To simply and cheaply clone contract functionality in an immutable way, this standard specifies
+   14  * > a minimal bytecode implementation that delegates all calls to a known, fixed address.
+   15  *
+   16  * The library includes functions to deploy a proxy using either `create` (traditional deployment) or `create2`
+   17  * (salted deterministic deployment). It also includes functions to predict the addresses of clones deployed using the
+   18  * deterministic method.
+   19  */
+   20 library Clones {
+   21     error CloneArgumentsTooLong();
+   22 
+   23     /**
+   24      * @dev Deploys and returns the address of a clone that mimics the behavior of `implementation`.
+   25      *
+   26      * This function uses the create opcode, which should never revert.
+   27      *
+   28      * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+   29      * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+   30      * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+   31      */
+   32     function clone(address implementation) internal returns (address instance) {
+   33         return clone(implementation, 0);
+   34     }
+   35 
+   36     /**
+   37      * @dev Same as {xref-Clones-clone-address-}[clone], but with a `value` parameter to send native currency
+   38      * to the new contract.
+   39      *
+   40      * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+   41      * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+   42      * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+   43      *
+   44      * NOTE: Using a non-zero value at creation will require the contract using this function (e.g. a factory)
+   45      * to always have enough balance for new deployments. Consider exposing this function under a payable method.
+   46      */
+   47     function clone(address implementation, uint256 value) internal returns (address instance) {
+   48         if (address(this).balance < value) {
+   49             revert Errors.InsufficientBalance(address(this).balance, value);
+   50         }
+   51         assembly ("memory-safe") {
+   52             // Cleans the upper 96 bits of the `implementation` word, then packs the first 3 bytes
+   53             // of the `implementation` address with the bytecode before the address.
+   54             mstore(0x00, or(shr(232, shl(96, implementation)), 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000))
+   55             // Packs the remaining 17 bytes of `implementation` with the bytecode after the address.
+   56             mstore(0x20, or(shl(120, implementation), 0x5af43d82803e903d91602b57fd5bf3))
+   57             instance := create(value, 0x09, 0x37)
+   58         }
+   59         if (instance == address(0)) {
+   60             revert Errors.FailedDeployment();
+   61         }
+   62     }
+   63 
+   64     /**
+   65      * @dev Deploys and returns the address of a clone that mimics the behavior of `implementation`.
+   66      *
+   67      * This function uses the create2 opcode and a `salt` to deterministically deploy
+   68      * the clone. Using the same `implementation` and `salt` multiple times will revert, since
+   69      * the clones cannot be deployed twice at the same address.
+   70      *
+   71      * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+   72      * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+   73      * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+   74      */
+   75     function cloneDeterministic(address implementation, bytes32 salt) internal returns (address instance) {
+   76         return cloneDeterministic(implementation, salt, 0);
+   77     }
+   78 
+   79     /**
+   80      * @dev Same as {xref-Clones-cloneDeterministic-address-bytes32-}[cloneDeterministic], but with
+   81      * a `value` parameter to send native currency to the new contract.
+   82      *
+   83      * WARNING: This function does not check if `implementation` has code. A clone that points to an address
+   84      * without code cannot be initialized. Initialization calls may appear to be successful when, in reality, they
+   85      * have no effect and leave the clone uninitialized, allowing a third party to initialize it later.
+   86      *
+   87      * NOTE: Using a non-zero value at creation will require the contract using this function (e.g. a factory)
+   88      * to always have enough balance for new deployments. Consider exposing this function under a payable method.
+   89      */
+   90     function cloneDeterministic(
+   91         address implementation,
+   92         bytes32 salt,
+   93         uint256 value
+   94     ) internal returns (address instance) {
+   95         if (address(this).balance < value) {
+   96             revert Errors.InsufficientBalance(address(this).balance, value);
+   97         }
+   98         assembly ("memory-safe") {
+   99             // Cleans the upper 96 bits of the `implementation` word, then packs the first 3 bytes
+  100             // of the `implementation` address with the bytecode before the address.
+
+FILE target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol
+    1 // SPDX-License-Identifier: MIT
+    2 // OpenZeppelin Contracts (last updated v5.5.0) (utils/ReentrancyGuard.sol)
+    3 
+    4 pragma solidity ^0.8.20;
+    5 
+    6 import {StorageSlot} from "./StorageSlot.sol";
+    7 
+    8 /**
+    9  * @dev Contract module that helps prevent reentrant calls to a function.
+   10  *
+   11  * Inheriting from `ReentrancyGuard` will make the {nonReentrant} modifier
+   12  * available, which can be applied to functions to make sure there are no nested
+   13  * (reentrant) calls to them.
+   14  *
+   15  * Note that because there is a single `nonReentrant` guard, functions marked as
+   16  * `nonReentrant` may not call one another. This can be worked around by making
+   17  * those functions `private`, and then adding `external` `nonReentrant` entry
+   18  * points to them.
+   19  *
+   20  * TIP: If EIP-1153 (transient storage) is available on the chain you're deploying at,
+   21  * consider using {ReentrancyGuardTransient} instead.
+   22  *
+   23  * TIP: If you would like to learn more about reentrancy and alternative ways
+   24  * to protect against it, check out our blog post
+   25  * https://blog.openzeppelin.com/reentrancy-after-istanbul/[Reentrancy After Istanbul].
+   26  *
+   27  * IMPORTANT: Deprecated. This storage-based reentrancy guard will be removed and replaced
+   28  * by the {ReentrancyGuardTransient} variant in v6.0.
+   29  *
+   30  * @custom:stateless
+   31  */
+   32 abstract contract ReentrancyGuard {
+   33     using StorageSlot for bytes32;
+   34 
+   35     // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.ReentrancyGuard")) - 1)) & ~bytes32(uint256(0xff))
+   36     bytes32 private constant REENTRANCY_GUARD_STORAGE =
+   37         0x9b779b17422d0df92223018b32b4d1fa46e071723d6817e2486d003becc55f00;
+   38 
+   39     // Booleans are more expensive than uint256 or any type that takes up a full
+   40     // word because each write operation emits an extra SLOAD to first read the
+   41     // slot's contents, replace the bits taken up by the boolean, and then write
+   42     // back. This is the compiler's defense against contract upgrades and
+   43     // pointer aliasing, and it cannot be disabled.
+   44 
+   45     // The values being non-zero value makes deployment a bit more expensive,
+   46     // but in exchange the refund on every call to nonReentrant will be lower in
+   47     // amount. Since refunds are capped to a percentage of the total
+   48     // transaction's gas, it is best to keep them low in cases like this one, to
+   49     // increase the likelihood of the full refund coming into effect.
+   50     uint256 private constant NOT_ENTERED = 1;
+   51     uint256 private constant ENTERED = 2;
+   52 
+   53     /**
+   54      * @dev Unauthorized reentrant call.
+   55      */
+   56     error ReentrancyGuardReentrantCall();
+   57 
+   58     constructor() {
+   59         _reentrancyGuardStorageSlot().getUint256Slot().value = NOT_ENTERED;
+   60     }
+   61 
+   62     /**
+   63      * @dev Prevents a contract from calling itself, directly or indirectly.
+   64      * Calling a `nonReentrant` function from another `nonReentrant`
+   65      * function is not supported. It is possible to prevent this from happening
+   66      * by making the `nonReentrant` function external, and making it call a
+   67      * `private` function that does the actual work.
+   68      */
+   69     modifier nonReentrant() {
+   70         _nonReentrantBefore();
+   71         _;
+   72         _nonReentrantAfter();
+   73     }
+   74 
+   75     /**
+   76      * @dev A `view` only version of {nonReentrant}. Use to block view functions
+   77      * from being called, preventing reading from inconsistent contract state.
+   78      *
+   79      * CAUTION: This is a "view" modifier and does not change the reentrancy
+   80      * status. Use it only on view functions. For payable or non-payable functions,
+   81      * use the standard {nonReentrant} modifier instead.
+   82      */
+   83     modifier nonReentrantView() {
+   84         _nonReentrantBeforeView();
+   85         _;
+   86     }
+   87 
+   88     function _nonReentrantBeforeView() private view {
+   89         if (_reentrancyGuardEntered()) {
+   90             revert ReentrancyGuardReentrantCall();
+   91         }
+   92     }
+   93 
+   94     function _nonReentrantBefore() private {
+   95         // On the first call to nonReentrant, _status will be NOT_ENTERED
+   96         _nonReentrantBeforeView();
+   97 
+   98         // Any calls to nonReentrant after this point will fail
+   99         _reentrancyGuardStorageSlot().getUint256Slot().value = ENTERED;
+  100     }
+  101 
+  102     function _nonReentrantAfter() private {
+  103         // By storing the original value once again, a refund is triggered (see
+  104         // https://eips.ethereum.org/EIPS/eip-2200)
+  105         _reentrancyGuardStorageSlot().getUint256Slot().value = NOT_ENTERED;
+  106     }
+  107 
+  108     /**
+  109      * @dev Returns true if the reentrancy guard is currently set to "entered", which indicates there is a
+  110      * `nonReentrant` function in the call stack.
+  111      */
+  112     function _reentrancyGuardEntered() internal view returns (bool) {
+  113         return _reentrancyGuardStorageSlot().getUint256Slot().value == ENTERED;
+  114     }
+  115 
+  116     function _reentrancyGuardStorageSlot() internal pure virtual returns (bytes32) {
+  117         return REENTRANCY_GUARD_STORAGE;
+  118     }
+  119 }
+
+FILE target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol
+    1 // SPDX-License-Identifier: MIT
+    2 // OpenZeppelin Contracts (last updated v5.1.0) (utils/StorageSlot.sol)
+    3 // This file was procedurally generated from scripts/generate/templates/StorageSlot.js.
+    4 
+    5 pragma solidity ^0.8.20;
+    6 
+    7 /**
+    8  * @dev Library for reading and writing primitive types to specific storage slots.
+    9  *
+   10  * Storage slots are often used to avoid storage conflict when dealing with upgradeable contracts.
+   11  * This library helps with reading and writing to such slots without the need for inline assembly.
+   12  *
+   13  * The functions in this library return Slot structs that contain a `value` member that can be used to read or write.
+   14  *
+   15  * Example usage to set ERC-1967 implementation slot:
+   16  * ```solidity
+   17  * contract ERC1967 {
+   18  *     // Define the slot. Alternatively, use the SlotDerivation library to derive the slot.
+   19  *     bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
+   20  *
+   21  *     function _getImplementation() internal view returns (address) {
+   22  *         return StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;
+   23  *     }
+   24  *
+   25  *     function _setImplementation(address newImplementation) internal {
+   26  *         require(newImplementation.code.length > 0);
+   27  *         StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = newImplementation;
+   28  *     }
+   29  * }
+   30  * ```
+   31  *
+   32  * TIP: Consider using this library along with {SlotDerivation}.
+   33  */
+   34 library StorageSlot {
+   35     struct AddressSlot {
+   36         address value;
+   37     }
+   38 
+   39     struct BooleanSlot {
+   40         bool value;
+   41     }
+   42 
+   43     struct Bytes32Slot {
+   44         bytes32 value;
+   45     }
+   46 
+   47     struct Uint256Slot {
+   48         uint256 value;
+   49     }
+   50 
+   51     struct Int256Slot {
+   52         int256 value;
+   53     }
+   54 
+   55     struct StringSlot {
+   56         string value;
+   57     }
+   58 
+   59     struct BytesSlot {
+   60         bytes value;
+   61     }
+   62 
+   63     /**
+   64      * @dev Returns an `AddressSlot` with member `value` located at `slot`.
+   65      */
+   66     function getAddressSlot(bytes32 slot) internal pure returns (AddressSlot storage r) {
+   67         assembly ("memory-safe") {
+   68             r.slot := slot
+   69         }
+   70     }
+   71 
+   72     /**
+   73      * @dev Returns a `BooleanSlot` with member `value` located at `slot`.
+   74      */
+   75     function getBooleanSlot(bytes32 slot) internal pure returns (BooleanSlot storage r) {
+   76         assembly ("memory-safe") {
+   77             r.slot := slot
+   78         }
+   79     }
+   80 
+   81     /**
+   82      * @dev Returns a `Bytes32Slot` with member `value` located at `slot`.
+   83      */
+   84     function getBytes32Slot(bytes32 slot) internal pure returns (Bytes32Slot storage r) {
+   85         assembly ("memory-safe") {
+   86             r.slot := slot
+   87         }
+   88     }
+   89 
+   90     /**
+   91      * @dev Returns a `Uint256Slot` with member `value` located at `slot`.
+   92      */
+   93     function getUint256Slot(bytes32 slot) internal pure returns (Uint256Slot storage r) {
+   94         assembly ("memory-safe") {
+   95             r.slot := slot
+   96         }
+   97     }
+   98 
+   99     /**
+  100      * @dev Returns a `Int256Slot` with member `value` located at `slot`.

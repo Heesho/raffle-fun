@@ -1,0 +1,164 @@
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+    ╭▸ src/mocks/AdversarialVRFV2PlusWrapper.sol:104:41
+    │
+104 │             uint256 callbackRequestId = uint256(int256(requestId) + synchronousRequestIdOffset);
+    │                                         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │       
+    │       // casting to 'uint256' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │       
+    │       
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+warning[unsafe-typecast]: typecasts that can truncate values should be checked
+    ╭▸ src/mocks/AdversarialVRFV2PlusWrapper.sol:104:49
+    │
+104 │             uint256 callbackRequestId = uint256(int256(requestId) + synchronousRequestIdOffset);
+    │                                                 ━━━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │       
+    │       // casting to 'int256' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │       
+    │       
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#unsafe-typecast
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:216:13
+    │
+216 │         if (block.timestamp >= endTime) revert SaleEnded(endTime, block.timestamp);
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:242:13
+    │
+242 │         if (block.timestamp < endTime) revert RaffleNotEnded(endTime, block.timestamp);
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:245:13
+    │
+245 │         if (block.timestamp >= requestDeadline) {
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:282:46
+    │
+282 │                 if (msg.sender != sponsor && block.timestamp < deadline) {
+    │                                              ━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:287:21
+    │
+287 │                 if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+    │                     ━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:291:17
+    │
+291 │             if (block.timestamp < deadline) revert RefundsNotAvailable(deadline, block.timestamp);
+    │                 ━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/Raffle.sol:512:20
+    │
+512 │                 || block.timestamp >= callbackDeadline()
+    │                    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ test/foundry/invariant/RaffleHandler.sol:62:57
+   │
+62 │         if (raffle.status() != IRaffle.Status.Active || block.timestamp >= raffle.endTime()) return;
+   │                                                         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ test/foundry/invariant/RaffleHandler.sol:87:13
+   │
+87 │         if (block.timestamp < raffle.endTime()) vm.warp(raffle.endTime());
+   │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ test/foundry/invariant/RaffleHandler.sol:93:13
+   │
+93 │         if (block.timestamp < deadline) vm.warp(deadline);
+   │             ━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ test/foundry/invariant/RaffleHandler.sol:99:13
+   │
+99 │         if (block.timestamp < deadline - 1) vm.warp(deadline - 1);
+   │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ test/foundry/invariant/RaffleHandler.sol:105:30
+    │
+105 │         if (deadline != 0 && block.timestamp < deadline) vm.warp(deadline);
+    │                              ━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ test/foundry/invariant/RaffleHandler.sol:111:13
+    │
+111 │         if (block.timestamp < farFuture) vm.warp(farFuture);
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ test/foundry/invariant/RaffleHandler.sol:117:87
+    │
+117 │             raffle.status() != IRaffle.Status.Active || raffle.totalEntries() == 0 || block.timestamp < raffle.endTime()
+    │                                                                                       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ test/foundry/invariant/RaffleHandler.sol:118:20
+    │
+118 │                 || block.timestamp >= raffle.drawRequestDeadline()
+    │                    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ test/foundry/invariant/RaffleHandler.sol:154:20
+    │
+154 │                 && block.timestamp >= raffle.drawRequestDeadline());
+    │                    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ test/foundry/invariant/RaffleHandler.sol:155:64
+    │
+155 │         ready = ready || (current == IRaffle.Status.Drawing && block.timestamp >= raffle.callbackDeadline());
+    │                                                                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://book.getfoundry.sh/reference/forge/forge-lint#block-timestamp
+

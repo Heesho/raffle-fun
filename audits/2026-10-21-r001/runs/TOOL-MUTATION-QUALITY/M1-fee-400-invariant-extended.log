@@ -1,0 +1,393 @@
+COMMAND: ["forge", "test", "--root", "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/mutation-quality/M1-fee-400", "--match-contract", "RaffleInvariantTest", "--no-match-path", "**/fork/**"]
+ENV: {"FOUNDRY_INVARIANT_RUNS": "512", "FOUNDRY_INVARIANT_DEPTH": "64"}
+No files changed, compilation skipped
+{"timestamp":1792569391,"event":"failure","invariant":"invariantBranchEconomicsRemainEightyFifteenFiveNinetyFiveFiveOrFullRefund","target":"test/foundry/invariant/RaffleInvariant.t.sol:RaffleInvariantTest","reason":"assertion failed: 960000 != 900000"}
+
+Ran 9 tests for test/foundry/invariant/RaffleInvariant.t.sol:RaffleInvariantTest
+[FAIL: assertion failed: 960000 != 900000]
+	[Sequence] (original: 17, shrunk: 5)
+		sender=0xF16843B0E21cafFCa9458569F9a0C5394e55C028 addr=[test/foundry/invariant/RaffleHandler.sol:RaffleHandler]0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9 calldata=buy(uint128) args=[249795710011656 [2.497e14]]
+		sender=0x000000000000000000000000000000000000220E addr=[test/foundry/invariant/RaffleHandler.sol:RaffleHandler]0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9 calldata=warpToLastDrawRequestSecond() args=[]
+		sender=0xCf2902bF0Ef65D4891e3Aff1793769b59998d001 addr=[test/foundry/invariant/RaffleHandler.sol:RaffleHandler]0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9 calldata=requestDraw() args=[]
+		sender=0x000000000000000000000000000000000000013c addr=[test/foundry/invariant/RaffleHandler.sol:RaffleHandler]0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9 calldata=fulfill(uint256) args=[179007878529794544071130123401749905 [1.79e35]]
+		sender=0x0000000000000000000000000000000000000E0F addr=[test/foundry/invariant/RaffleHandler.sol:RaffleHandler]0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9 calldata=settleCandidateWinner(uint256) args=[463763931030511100655 [4.637e20]]
+ invariantBranchEconomicsRemainEightyFifteenFiveNinetyFiveFiveOrFullRefund() (runs: 120, calls: 7680, reverts: 0)
+
+╭---------------+-----------------------------+-------+---------+----------╮
+| Contract      | Selector                    | Calls | Reverts | Discards |
++==========================================================================+
+| RaffleHandler | buy                         | 431   | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | donate                      | 493   | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | enableRefunds               | 444   | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | fulfill                     | 448   | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | redeemRefund                | 443   | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseProceeds             | 452   | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseSponsorPrize         | 469   | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseWinnerClaim          | 469   | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | requestDraw                 | 418   | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | settleCandidateWinner       | 462   | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | transferBeforeOrAfterEnd    | 463   | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpFarPastEnd              | 446   | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToCallbackDeadline      | 448   | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToDrawRequestDeadline   | 472   | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToEnd                   | 425   | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToLastDrawRequestSecond | 440   | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | wrongCallback               | 474   | 0       | 0        |
+╰---------------+-----------------------------+-------+---------+----------╯
+
+[PASS] invariantDrawAndCallbackDeadlinesAreHardAndOrdered() (runs: 512, calls: 32768, reverts: 0)
+
+╭---------------+-----------------------------+-------+---------+----------╮
+| Contract      | Selector                    | Calls | Reverts | Discards |
++==========================================================================+
+| RaffleHandler | buy                         | 1873  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | donate                      | 1972  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | enableRefunds               | 1964  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | fulfill                     | 1958  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | redeemRefund                | 1913  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseProceeds             | 1871  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseSponsorPrize         | 1950  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseWinnerClaim          | 1872  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | requestDraw                 | 1908  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | settleCandidateWinner       | 1964  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | transferBeforeOrAfterEnd    | 1969  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpFarPastEnd              | 1915  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToCallbackDeadline      | 1956  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToDrawRequestDeadline   | 1946  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToEnd                   | 1903  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToLastDrawRequestSecond | 1874  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | wrongCallback               | 1960  | 0       | 0        |
+╰---------------+-----------------------------+-------+---------+----------╯
+
+[PASS] invariantPrizeCustodyMatchesClaimMarker() (runs: 512, calls: 32768, reverts: 0)
+
+╭---------------+-----------------------------+-------+---------+----------╮
+| Contract      | Selector                    | Calls | Reverts | Discards |
++==========================================================================+
+| RaffleHandler | buy                         | 1873  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | donate                      | 1972  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | enableRefunds               | 1964  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | fulfill                     | 1958  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | redeemRefund                | 1913  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseProceeds             | 1871  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseSponsorPrize         | 1950  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseWinnerClaim          | 1872  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | requestDraw                 | 1908  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | settleCandidateWinner       | 1964  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | transferBeforeOrAfterEnd    | 1969  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpFarPastEnd              | 1915  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToCallbackDeadline      | 1956  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToDrawRequestDeadline   | 1946  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToEnd                   | 1903  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToLastDrawRequestSecond | 1874  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | wrongCallback               | 1960  | 0       | 0        |
+╰---------------+-----------------------------+-------+---------+----------╯
+
+[PASS] invariantQuoteAccountingIsExactAndSolvent() (runs: 512, calls: 32768, reverts: 0)
+
+╭---------------+-----------------------------+-------+---------+----------╮
+| Contract      | Selector                    | Calls | Reverts | Discards |
++==========================================================================+
+| RaffleHandler | buy                         | 1873  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | donate                      | 1972  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | enableRefunds               | 1964  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | fulfill                     | 1958  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | redeemRefund                | 1913  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseProceeds             | 1871  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseSponsorPrize         | 1950  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseWinnerClaim          | 1872  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | requestDraw                 | 1908  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | settleCandidateWinner       | 1964  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | transferBeforeOrAfterEnd    | 1969  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpFarPastEnd              | 1915  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToCallbackDeadline      | 1956  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToDrawRequestDeadline   | 1946  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToEnd                   | 1903  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToLastDrawRequestSecond | 1874  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | wrongCallback               | 1960  | 0       | 0        |
+╰---------------+-----------------------------+-------+---------+----------╯
+
+[PASS] invariantRangesPartitionEverySoldEntryExactlyOnce() (runs: 512, calls: 32768, reverts: 0)
+
+╭---------------+-----------------------------+-------+---------+----------╮
+| Contract      | Selector                    | Calls | Reverts | Discards |
++==========================================================================+
+| RaffleHandler | buy                         | 1873  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | donate                      | 1972  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | enableRefunds               | 1964  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | fulfill                     | 1958  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | redeemRefund                | 1913  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseProceeds             | 1871  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseSponsorPrize         | 1950  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseWinnerClaim          | 1872  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | requestDraw                 | 1908  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | settleCandidateWinner       | 1964  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | transferBeforeOrAfterEnd    | 1969  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpFarPastEnd              | 1915  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToCallbackDeadline      | 1956  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToDrawRequestDeadline   | 1946  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToEnd                   | 1903  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToLastDrawRequestSecond | 1874  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | wrongCallback               | 1960  | 0       | 0        |
+╰---------------+-----------------------------+-------+---------+----------╯
+
+[PASS] invariantSettlementAndRedemptionMarkersMatchTicketState() (runs: 512, calls: 32768, reverts: 0)
+
+╭---------------+-----------------------------+-------+---------+----------╮
+| Contract      | Selector                    | Calls | Reverts | Discards |
++==========================================================================+
+| RaffleHandler | buy                         | 1873  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | donate                      | 1972  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | enableRefunds               | 1964  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | fulfill                     | 1958  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | redeemRefund                | 1913  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseProceeds             | 1871  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseSponsorPrize         | 1950  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseWinnerClaim          | 1872  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | requestDraw                 | 1908  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | settleCandidateWinner       | 1964  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | transferBeforeOrAfterEnd    | 1969  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpFarPastEnd              | 1915  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToCallbackDeadline      | 1956  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToDrawRequestDeadline   | 1946  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToEnd                   | 1903  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToLastDrawRequestSecond | 1874  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | wrongCallback               | 1960  | 0       | 0        |
+╰---------------+-----------------------------+-------+---------+----------╯
+
+[PASS] invariantStatusAndTerminalTransitionsAreMonotonic() (runs: 512, calls: 32768, reverts: 0)
+
+╭---------------+-----------------------------+-------+---------+----------╮
+| Contract      | Selector                    | Calls | Reverts | Discards |
++==========================================================================+
+| RaffleHandler | buy                         | 1873  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | donate                      | 1972  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | enableRefunds               | 1964  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | fulfill                     | 1958  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | redeemRefund                | 1913  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseProceeds             | 1871  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseSponsorPrize         | 1950  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseWinnerClaim          | 1872  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | requestDraw                 | 1908  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | settleCandidateWinner       | 1964  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | transferBeforeOrAfterEnd    | 1969  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpFarPastEnd              | 1915  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToCallbackDeadline      | 1956  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToDrawRequestDeadline   | 1946  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToEnd                   | 1903  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToLastDrawRequestSecond | 1874  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | wrongCallback               | 1960  | 0       | 0        |
+╰---------------+-----------------------------+-------+---------+----------╯
+
+[PASS] invariantTicketIdsAreSequential() (runs: 512, calls: 32768, reverts: 0)
+
+╭---------------+-----------------------------+-------+---------+----------╮
+| Contract      | Selector                    | Calls | Reverts | Discards |
++==========================================================================+
+| RaffleHandler | buy                         | 1873  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | donate                      | 1972  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | enableRefunds               | 1964  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | fulfill                     | 1958  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | redeemRefund                | 1913  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseProceeds             | 1871  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseSponsorPrize         | 1950  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseWinnerClaim          | 1872  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | requestDraw                 | 1908  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | settleCandidateWinner       | 1964  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | transferBeforeOrAfterEnd    | 1969  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpFarPastEnd              | 1915  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToCallbackDeadline      | 1956  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToDrawRequestDeadline   | 1946  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToEnd                   | 1903  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToLastDrawRequestSecond | 1874  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | wrongCallback               | 1960  | 0       | 0        |
+╰---------------+-----------------------------+-------+---------+----------╯
+
+[PASS] invariantWinningEntryHasExactlyOneReceiptProof() (runs: 512, calls: 32768, reverts: 0)
+
+╭---------------+-----------------------------+-------+---------+----------╮
+| Contract      | Selector                    | Calls | Reverts | Discards |
++==========================================================================+
+| RaffleHandler | buy                         | 1873  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | donate                      | 1972  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | enableRefunds               | 1964  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | fulfill                     | 1958  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | redeemRefund                | 1913  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseProceeds             | 1871  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseSponsorPrize         | 1950  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | releaseWinnerClaim          | 1872  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | requestDraw                 | 1908  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | settleCandidateWinner       | 1964  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | transferBeforeOrAfterEnd    | 1969  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpFarPastEnd              | 1915  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToCallbackDeadline      | 1956  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToDrawRequestDeadline   | 1946  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToEnd                   | 1903  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | warpToLastDrawRequestSecond | 1874  | 0       | 0        |
+|---------------+-----------------------------+-------+---------+----------|
+| RaffleHandler | wrongCallback               | 1960  | 0       | 0        |
+╰---------------+-----------------------------+-------+---------+----------╯
+
+Suite result: FAILED. 8 passed; 1 failed; 0 skipped; finished in 10.62s (57.33s CPU time)
+
+Ran 1 test suite in 10.62s (10.62s CPU time): 8 tests passed, 1 failed, 0 skipped (9 total tests)
+
+Failing tests:
+Encountered 1 failing test in test/foundry/invariant/RaffleInvariant.t.sol:RaffleInvariantTest
+[FAIL: assertion failed: 960000 != 900000]
+	[Sequence] (original: 17, shrunk: 5)
+		sender=0xF16843B0E21cafFCa9458569F9a0C5394e55C028 addr=[test/foundry/invariant/RaffleHandler.sol:RaffleHandler]0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9 calldata=buy(uint128) args=[249795710011656 [2.497e14]]
+		sender=0x000000000000000000000000000000000000220E addr=[test/foundry/invariant/RaffleHandler.sol:RaffleHandler]0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9 calldata=warpToLastDrawRequestSecond() args=[]
+		sender=0xCf2902bF0Ef65D4891e3Aff1793769b59998d001 addr=[test/foundry/invariant/RaffleHandler.sol:RaffleHandler]0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9 calldata=requestDraw() args=[]
+		sender=0x000000000000000000000000000000000000013c addr=[test/foundry/invariant/RaffleHandler.sol:RaffleHandler]0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9 calldata=fulfill(uint256) args=[179007878529794544071130123401749905 [1.79e35]]
+		sender=0x0000000000000000000000000000000000000E0F addr=[test/foundry/invariant/RaffleHandler.sol:RaffleHandler]0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9 calldata=settleCandidateWinner(uint256) args=[463763931030511100655 [4.637e20]]
+ invariantBranchEconomicsRemainEightyFifteenFiveNinetyFiveFiveOrFullRefund() (runs: 120, calls: 7680, reverts: 0)
+
+Encountered a total of 1 failing tests, 8 tests succeeded
+
+Tip: Run `forge test --rerun` to retry only the 1 failed test
+
+Fuzz seed: 0x524146464c45 (use `--fuzz-seed` to reproduce)

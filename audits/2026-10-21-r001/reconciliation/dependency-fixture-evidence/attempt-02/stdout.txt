@@ -1,0 +1,23 @@
+{
+  "result": "LOCAL_UNIT_REACHABILITY_CONFIRMED",
+  "dangerouslyAllowLocalIP": false,
+  "bytes": 19,
+  "events": [
+    {
+      "stage": "Next preflight DNS",
+      "host": "attacker.invalid",
+      "returned": "8.8.8.8"
+    },
+    {
+      "stage": "fetch socket DNS",
+      "host": "attacker.invalid",
+      "returned": "127.0.0.1"
+    },
+    {
+      "stage": "local fixture received request",
+      "url": "/fixture.png",
+      "remote": "127.0.0.1"
+    }
+  ],
+  "limits": "Calls locked Next internal function directly. Does not test full /_next/image parameter validation, TLS, real DNS cache behavior, deployment reachability, or successful production exploit."
+}

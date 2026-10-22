@@ -1,0 +1,77 @@
+{
+  "id": "004",
+  "prompt": "Extract the checkable requirements from target/packages/contracts/src/interfaces/IRaffleFactory.sol (repo root target). It specifies: Immutable factory configuration, atomic raffle creation and prize escrow, sponsor parameters and validation, and canonical raffle registry queries.\n\nA requirement is any claim that could be true or false of an implementation: an invariant, a formula, who is\nallowed to do what, the order things must happen in, what must revert or error, an economic assumption. Quote each\none verbatim — the quote is what a later agent will check the code against, so a paraphrase loses the thing being\nchecked.\n\nSplit compound claims. \"Swaps must charge 0.3% and enforce 1% maximum slippage\" is two requirements, because the\ncode can get one right and the other wrong.\n\nExtract what the document says, however many that is. Do not pad the list to look thorough, and do not promote a\nbackground sentence into a requirement to reach a count. If a claim is too vague to check, extract it anyway and\nsay so in 'checkable' — a requirement nobody can verify is worth reporting.\n\nSet 'force' from the document's own language: mandatory for MUST/NEVER/ALWAYS, descriptive for prose that merely\nnarrates what the system does.",
+  "options": {
+    "schema": {
+      "type": "object",
+      "required": [
+        "requirements"
+      ],
+      "properties": {
+        "requirements": {
+          "type": "array",
+          "description": "One entry per independently checkable claim. Split compound sentences into separate entries.",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "quote",
+              "location",
+              "kind",
+              "force"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "stable short id, e.g. REQ-04"
+              },
+              "quote": {
+                "type": "string",
+                "description": "the requirement verbatim from the document, not paraphrased"
+              },
+              "location": {
+                "type": "string",
+                "description": "e.g. \"§4.1\" or \"README.md, Fees\""
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "invariant",
+                  "formula",
+                  "access-control",
+                  "state-machine",
+                  "error-handling",
+                  "ordering",
+                  "economic",
+                  "trust-boundary",
+                  "other"
+                ]
+              },
+              "force": {
+                "type": "string",
+                "enum": [
+                  "mandatory",
+                  "recommended",
+                  "optional",
+                  "descriptive"
+                ],
+                "description": "mandatory for MUST/NEVER/ALWAYS; descriptive for prose that states what the system does"
+              },
+              "checkable": {
+                "type": "string",
+                "description": "what would have to be true of the code for this to hold, in one line"
+              }
+            }
+          }
+        }
+      }
+    },
+    "label": "target/packages/contracts/src/interfaces/IRaffleFactory.sol",
+    "phase": "Extract"
+  },
+  "accepted_model": "gpt-6-astra",
+  "accepted_effort": "ultra",
+  "provider_returned_model": "unknown",
+  "provider_returned_effort": "unknown",
+  "fallback_enabled": false
+}

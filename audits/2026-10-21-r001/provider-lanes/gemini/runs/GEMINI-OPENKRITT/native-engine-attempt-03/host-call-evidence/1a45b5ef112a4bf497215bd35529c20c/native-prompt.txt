@@ -1,0 +1,123 @@
+Workspace context:
+Current working directory / primary repository root: /workspace
+Workspace manifest: WORKSPACE.json
+Dependency repositories are checked out as top-level directories inside the same workspace root.
+When reporting file_path for dependency code, prefix it with the dependency alias directory.
+Primary repository: clean-context @ LOCAL_SNAPSHOT
+No dependency checkouts are listed in WORKSPACE.json.
+
+WORKSPACE.json:
+{
+  "dependencies": [],
+  "primary": {
+    "commit": "LOCAL_SNAPSHOT",
+    "kind": "local",
+    "path": "/workspace",
+    "repo": "clean-context",
+    "requested_commit": "LOCAL_SNAPSHOT"
+  }
+}
+
+You are investigating one externally reachable production flow in clean-context for concrete security vulnerabilities.
+
+Entrypoint:
+- kind: smart_contract_external_function
+- label: Raffle.releaseProtocolFees()
+- handler: Raffle.releaseProtocolFees
+- location: packages/contracts/src/Raffle.sol:385
+- external actor: Any external EVM account or contract after winning ticket settlement
+- controlled input: Caller context (msg.sender)
+
+Flow under review:
+- summary: When `protocolFees > 0` after winning ticket settlement (`NftWon` or `CashWon`), any external caller can invoke `releaseProtocolFees()` to zero `protocolFees`, validate `protocolTreasury` against protocol plumbing addresses via `_isProtocolDestination`, transfer the full accumulated `quoteToken` fee balance to `protocolTreasury`, emit `ProtocolFeesReleased`, and return the transferred amount.
+- trace: ["packages/contracts/src/Raffle.sol:385 Raffle.releaseProtocolFees - Enters permissionless external entrypoint guarded by nonReentrant.", "packages/contracts/src/Raffle.sol:386 Raffle.releaseProtocolFees - Reads accumulated `protocolFees` storage variable into `amount`.", "packages/contracts/src/Raffle.sol:387 Raffle.releaseProtocolFees - Validates `amount != 0` (passes when settlement has allocated positive protocol fees that have not yet been claimed).", "packages/contracts/src/Raffle.sol:388 Raffle.releaseProtocolFees - Clears `protocolFees = 0` in storage before external calls.", "packages/contracts/src/Raffle.sol:389-390 Raffle.releaseProtocolFees - Loads stored `protocolTreasury` and dispatches `_transferQuote(treasury, amount)`.", "packages/contracts/src/Raffle.sol:564-565 Raffle._transferQuote - Screens `treasury` via `_isProtocolDestination(to, address(prizeToken))` and reverts with `InvalidQuoteDestination` if flagged.", "packages/contracts/src/Raffle.sol:593-605 Raffle._isProtocolDestination - Compares `treasury` against `address(this)`, `factory`, `quoteToken`, `i_vrfV2PlusWrapper`, `prizeToken`, `canonicalFactory.raffleImplementation()`, and (when `treasury.code.length != 0`) `canonicalFactory.isRaffle(treasury)`.", "packages/contracts/src/Raffle.sol:566 Raffle._transferQuote - Executes `quoteToken.safeTransfer(treasury, amount)` to transfer the six-decimal USDC fee claim to `protocolTreasury`.", "packages/contracts/src/Raffle.sol:391 Raffle.releaseProtocolFees - Emits `ProtocolFeesReleased(msg.sender, treasury, amount)` and returns `amount`."]
+- terminal action: External ERC-20 token transfer `quoteToken.safeTransfer(protocolTreasury, amount)` followed by `ProtocolFeesReleased(msg.sender, treasury, amount)` event emission and return of `amount`.
+- focal location: packages/contracts/src/Raffle.sol:390
+- input to sink: Caller context (msg.sender) triggers the permissionless release and is logged as the indexed `caller` in `ProtocolFeesReleased(msg.sender, treasury, amount)`, while the transfer destination (`protocolTreasury`) and transfer amount (`protocolFees`) are read from contract storage.
+- security relevance: Zeroes the accumulated `protocolFees` liability and executes an external ERC-20 transfer of `quoteToken` to `protocolTreasury` after screening the recipient against protocol plumbing addresses; security review must verify strict CEI ordering, single-payout idempotency, accounting isolation from `unsettledPot`/`sponsorProceeds`/`winnerProceeds`/`remainingRefundLiability`, and that `protocolTreasury` cannot be a protocol sink.
+
+Review the source code for this exact flow, including the surrounding implementation and any necessary callers or callees. Report only vulnerabilities that are concrete, reachable from the stated external actor, and supported by code evidence. A valid finding must identify the vulnerable operation, the missing or flawed protection, a realistic malicious input or sequence, and the full trigger path.
+
+Do not report style issues, hypothetical concerns, test-only behavior, or vulnerabilities that require unsupported configuration or unproven assumptions. Set `exploitable` to true only when the stated external actor can realistically trigger the issue in the configured production path. When the flow contains no supported vulnerability, return a stub instead of inventing a finding.
+
+For each finding, point `file_path` and `line` to the actual vulnerable code, make `trigger_flow` an ordered list from attacker ingress to the vulnerable operation, and use `malicious_input_example` for a minimal realistic payload or sequence.
+
+Return only the structured data requested by the provided JSON schema. Always include the top-level boolean field `stub`, the top-level string field `stub_explanation`, and the top-level array `results`. Valid output combinations are strict: if you did not find anything for this step, return `stub` set to true, `results` set to an empty array, and `stub_explanation` set to a concise reason explaining why no result was found. A stub/no-finding response is a valid successful outcome for a lead that does not establish an actual bug; do not invent a result to avoid using `stub`. If you found one or more results, set `stub` to false, set `stub_explanation` to an empty string, and place at least one application record in `results`. Never return `stub: false` with an empty `results` array; that is invalid and fails the attempt. This is a multi-output step: return every application record in results.
+
+The exact JSON Schema for your final answer is:
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "_kritt_extractor_helper": {
+      "const": true,
+      "type": "boolean"
+    },
+    "results": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "explanation": {
+            "type": "string"
+          },
+          "exploitable": {
+            "type": "boolean"
+          },
+          "file_path": {
+            "type": "string"
+          },
+          "line": {
+            "type": "number"
+          },
+          "malicious_actor": {
+            "type": "string"
+          },
+          "malicious_input_example": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "trigger_flow": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "vulnerability_type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "explanation",
+          "file_path",
+          "line",
+          "malicious_input_example",
+          "summary",
+          "trigger_flow",
+          "vulnerability_type",
+          "malicious_actor",
+          "exploitable"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "stub": {
+      "type": "boolean"
+    },
+    "stub_explanation": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "_kritt_extractor_helper",
+    "stub",
+    "stub_explanation",
+    "results"
+  ],
+  "type": "object"
+}
+```
+The final top-level JSON object must include `_kritt_extractor_helper: true`; this is an extraction marker, not a finding field. Return only a JSON object that validates against this schema. Do not include markdown, commentary, or any text outside the JSON object.

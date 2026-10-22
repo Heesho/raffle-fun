@@ -1,0 +1,131 @@
+Compiling 1 files with Solc 0.8.36
+Solc 0.8.36 finished in 3.89s
+Compiler run successful with warnings:
+Warning (5159): "selfdestruct" has been deprecated. Note that, starting from the Cancun hard fork, the underlying opcode no longer deletes the code and data associated with an account and only transfers its Ether to the beneficiary, unless executed in the same transaction in which the contract was created (see EIP-6780). Any use in newly deployed contracts is strongly discouraged even if the new behavior is taken into account. Future changes to the EVM might further reduce the functionality of the opcode.
+   --> /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/Helpers.sol:116:9:
+    |
+116 |         selfdestruct(to);
+    |         ^^^^^^^^^^^^
+
+
+Ran 2 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:F_ReentrancyTest
+[PASS] test_F1_ticketRecipientCannotReenterAnyGuardedEntryPoint() (gas: 1333490)
+[PASS] test_F2_maliciousPrizeCannotReenterDuringDelivery() (gas: 2229418)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 1.57ms (515.08µs CPU time)
+
+Ran 6 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:C_VrfTest
+[PASS] test_C1_synchronousCallbackDuringRequestIsIgnored() (gas: 878810)
+[PASS] test_C2_wrongIdWrongLengthReplayAreIgnoredWithoutReverting() (gas: 877700)
+[PASS] test_C3_onlyWrapperCanDeliverRandomness() (gas: 460008)
+[PASS] test_C4_callbackGasIsFarBelowLimit() (gas: 851705)
+[PASS] test_C5_excessFeeRefundedAndRefundFailureRevertsWholeRequest() (gas: 1169705)
+[PASS] test_C6_insufficientFeeReverts() (gas: 708627)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 1.88ms (767.17µs CPU time)
+
+Ran 4 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:E_AccessTest
+[PASS] test_E1_implementationIsLockedAndInert() (gas: 49877)
+[PASS] test_E2_cloneCannotBeReinitialized() (gas: 455158)
+[PASS] test_E3_factoryRejectsInvalidOrProtocolParameters() (gas: 192699)
+[PASS] test_E4_ticketsCannotBeSentToProtocolPlumbing() (gas: 1088195)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 2.07ms (619.63µs CPU time)
+
+Ran 4 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:A_TimingTest
+[PASS] test_A1_saleEndsExclusivelyAtEndTime() (gas: 717784)
+[PASS] test_A2_requestWindowIsHalfOpen_endTime_to_endPlus2Days() (gas: 2155294)
+[PASS] test_A3_refundsOpenExactlyAtRequestDeadline() (gas: 700739)
+[PASS] test_A4_callbackAcceptedStrictlyBeforeCallbackDeadline() (gas: 1544418)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 2.53ms (1.51ms CPU time)
+
+Ran 4 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:D_RedemptionTest
+[PASS] test_D1_onlyCurrentOwnerRedeems() (gas: 1097466)
+[PASS] test_D2_deliveryFailureRevertsBurnAndInlineSettlement() (gas: 979628)
+[FAIL: sponsor share still escrowed (800000 != 600000)] test_D3_sponsorAndTreasuryClaimIndependently_blocklistedSponsorRecipient() (gas: 1178238)
+[PASS] test_D4_settlementWithNonWinningOrNonexistentTicketReverts() (gas: 1033427)
+Suite result: FAILED. 3 passed; 1 failed; 0 skipped; finished in 2.52ms (1.16ms CPU time)
+Warning: Replayed invariant failure from "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/mutant-runs/M03-cash-sponsor-overallocated/cache/invariant/failures/RaffleInvariantTest/invariant_globalProperties" file. 
+Run `forge clean` or remove file to ignore failure and to continue invariant test campaign.
+Warning: Replayed invariant failure from "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/mutant-runs/M03-cash-sponsor-overallocated/cache/invariant/failures/RaffleInvariantTest/invariant_noSpecViolation" file. 
+Run `forge clean` or remove file to ignore failure and to continue invariant test campaign.
+
+Ran 6 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleValidation.t.sol:H_ValidationTest
+[PASS] test_H1_factoryConstructorValidation() (gas: 492070)
+[PASS] test_H2_prizeContractAsSponsorIsRejectedAtInitialize() (gas: 198382)
+[PASS] test_H3_unsolicitedSafeTransferToActiveRaffleRejected() (gas: 494008)
+[PASS] test_H4_nonCompliantPrizeWithoutHookCannotEscrow() (gas: 1234312)
+[PASS] test_H5_PoC_lyingPrizeFakesEscrowAndDelivery() (gas: 1062304)
+[PASS] test_H6_doubleClaimsAndWrongStateClaimsRevert() (gas: 1635384)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 2.97ms (1.52ms CPU time)
+
+Ran 4 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/HandlerSanity.t.sol:HandlerSanityTest
+[FAIL: releaseProtocolFees: outcome mismatch] test_sanity_cashWonLifecycle() (gas: 1888392)
+[PASS] test_sanity_drawingTimeoutAndEmptyRaffle() (gas: 1485888)
+[FAIL: redeem: inline settlement] test_sanity_failureModes() (gas: 1313547)
+[PASS] test_sanity_nftWonAndRefundLifecycles() (gas: 2731299)
+Suite result: FAILED. 2 passed; 2 failed; 0 skipped; finished in 3.53ms (3.24ms CPU time)
+
+Ran 4 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:B_EconomicsTest
+[FAIL: 15% sponsor (120238971830000000 != 90179228872500000); counterexample: calldata=0x0ddde4ff000004f6d0611cffbf3150dcb143ffe04f4a50612b8e795b8e46f1257247aa8d000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000491eaa8c4a46ee args=[34261077174033501684976705636920664226239394044604029486018601194859149 [3.426e70], false, 20581391146829550 [2.058e16]]] testFuzz_B1_settlementSplitsAreExactAndLossless(uint256,bool,uint256) (runs: 0, μ: 0, ~: 0)
+[PASS] testFuzz_B2_refundPaysExactlyPerEntryAndReturnsPrize(uint256,uint256,uint256) (runs: 300, μ: 920588, ~: 920577)
+[PASS] test_B3_entryCountOverflowGuardAndMaxRaffleStillSettles() (gas: 962451)
+[PASS] test_B4_refundBatchBoundsDuplicatesAndForeignTickets() (gas: 849295)
+Suite result: FAILED. 3 passed; 1 failed; 0 skipped; finished in 113.74ms (133.44ms CPU time)
+
+Ran 2 tests for /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleInvariant.t.sol:RaffleInvariantTest
+[FAIL: I1 quote balance != liabilities + donations]
+	[Sequence] (original: 6, shrunk: 6)
+		sender=0x59A9cd6fbDd8F7436A651d4122668c6c5cBC0313 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=warp(uint256) args=[399217637105724499 [3.992e17]]
+		sender=0x00000000000000000000000000000000000000eA addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=buy(uint256,uint256,uint256,uint256) args=[422882253041610989231193284595763471405366934204466287046928524952663 [4.228e68], 125229 [1.252e5], 6343183218199 [6.343e12], 21185940 [2.118e7]]
+		sender=0x89dc7eEb7Dc6a54A329291E48e1d0432CC00795E addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=warp(uint256) args=[108837383485065340633149636093004766203899643007943563 [1.088e53]]
+		sender=0x9A5a3ea1A7F612943C0E90d0Cf15c223096916e0 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=requestDraw(uint256,uint256,uint256) args=[49342377871762172949538912 [4.934e25], 3879246600648137584536437234153374672787189273801359393931795943045492 [3.879e69], 93877536865458787533128682828783303902305758105927950009994 [9.387e58]]
+		sender=0x0000000000000000000000000000000000002334 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=fulfill(uint256,uint256) args=[61150506637876748752455014019279311663100412852100130909511682509730 [6.115e67], 2]
+		sender=0x00000000000000000000000000000000000003Fa addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=settle(uint256,uint256,uint256,bool) args=[103958964594 [1.039e11], 1824703154737890462562988573108073444187784886795866919243275863671726726 [1.824e72], 2163065852731376299391773036482707642138232 [2.163e42], true]
+ invariant_globalProperties() (runs: 1, calls: 1, reverts: 1)
+[FAIL: settle: sponsor allocation]
+	[Sequence] (original: 6, shrunk: 6)
+		sender=0x59A9cd6fbDd8F7436A651d4122668c6c5cBC0313 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=warp(uint256) args=[399217637105724499 [3.992e17]]
+		sender=0x0000000000000000000000000000000000000266 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=buy(uint256,uint256,uint256,uint256) args=[422882253041610989231193284595763471405366934204466287046928524952663 [4.228e68], 125229 [1.252e5], 6343183218199 [6.343e12], 21185940 [2.118e7]]
+		sender=0x7cAf100C8d8c1fA8c6b8dB1B569cA596e743a541 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=warp(uint256) args=[108837383485065340633149636093004766203899643007943563 [1.088e53]]
+		sender=0xdB895668ECFE2E581c4226dD01C1fE53509e6a3f addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=requestDraw(uint256,uint256,uint256) args=[49342377871762172949538912 [4.934e25], 3879246600648137584536437234153374672787189273801359393931795943045492 [3.879e69], 93877536865458787533128682828783303902305758105927950009994 [9.387e58]]
+		sender=0x000000000000000000000000000000000000231D addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=fulfill(uint256,uint256) args=[61150506637876748752455014019279311663100412852100130909511682509730 [6.115e67], 2]
+		sender=0x00000000000000000000000000000000000003f9 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=settle(uint256,uint256,uint256,bool) args=[103958964594 [1.039e11], 1824703154737890462562988573108073444187784886795866919243275863671726726 [1.824e72], 2163065852731376299391773036482707642138232 [2.163e42], true]
+ invariant_noSpecViolation() (runs: 1, calls: 1, reverts: 1)
+Suite result: FAILED. 0 passed; 2 failed; 0 skipped; finished in 7.86s (13.15s CPU time)
+
+Ran 9 test suites in 7.86s (7.99s CPU time): 30 tests passed, 6 failed, 0 skipped (36 total tests)
+
+Failing tests:
+Encountered 2 failing tests in /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/HandlerSanity.t.sol:HandlerSanityTest
+[FAIL: releaseProtocolFees: outcome mismatch] test_sanity_cashWonLifecycle() (gas: 1888392)
+[FAIL: redeem: inline settlement] test_sanity_failureModes() (gas: 1313547)
+
+Encountered 2 failing tests in /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleInvariant.t.sol:RaffleInvariantTest
+[FAIL: I1 quote balance != liabilities + donations]
+	[Sequence] (original: 6, shrunk: 6)
+		sender=0x59A9cd6fbDd8F7436A651d4122668c6c5cBC0313 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=warp(uint256) args=[399217637105724499 [3.992e17]]
+		sender=0x00000000000000000000000000000000000000eA addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=buy(uint256,uint256,uint256,uint256) args=[422882253041610989231193284595763471405366934204466287046928524952663 [4.228e68], 125229 [1.252e5], 6343183218199 [6.343e12], 21185940 [2.118e7]]
+		sender=0x89dc7eEb7Dc6a54A329291E48e1d0432CC00795E addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=warp(uint256) args=[108837383485065340633149636093004766203899643007943563 [1.088e53]]
+		sender=0x9A5a3ea1A7F612943C0E90d0Cf15c223096916e0 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=requestDraw(uint256,uint256,uint256) args=[49342377871762172949538912 [4.934e25], 3879246600648137584536437234153374672787189273801359393931795943045492 [3.879e69], 93877536865458787533128682828783303902305758105927950009994 [9.387e58]]
+		sender=0x0000000000000000000000000000000000002334 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=fulfill(uint256,uint256) args=[61150506637876748752455014019279311663100412852100130909511682509730 [6.115e67], 2]
+		sender=0x00000000000000000000000000000000000003Fa addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=settle(uint256,uint256,uint256,bool) args=[103958964594 [1.039e11], 1824703154737890462562988573108073444187784886795866919243275863671726726 [1.824e72], 2163065852731376299391773036482707642138232 [2.163e42], true]
+ invariant_globalProperties() (runs: 1, calls: 1, reverts: 1)
+[FAIL: settle: sponsor allocation]
+	[Sequence] (original: 6, shrunk: 6)
+		sender=0x59A9cd6fbDd8F7436A651d4122668c6c5cBC0313 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=warp(uint256) args=[399217637105724499 [3.992e17]]
+		sender=0x0000000000000000000000000000000000000266 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=buy(uint256,uint256,uint256,uint256) args=[422882253041610989231193284595763471405366934204466287046928524952663 [4.228e68], 125229 [1.252e5], 6343183218199 [6.343e12], 21185940 [2.118e7]]
+		sender=0x7cAf100C8d8c1fA8c6b8dB1B569cA596e743a541 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=warp(uint256) args=[108837383485065340633149636093004766203899643007943563 [1.088e53]]
+		sender=0xdB895668ECFE2E581c4226dD01C1fE53509e6a3f addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=requestDraw(uint256,uint256,uint256) args=[49342377871762172949538912 [4.934e25], 3879246600648137584536437234153374672787189273801359393931795943045492 [3.879e69], 93877536865458787533128682828783303902305758105927950009994 [9.387e58]]
+		sender=0x000000000000000000000000000000000000231D addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=fulfill(uint256,uint256) args=[61150506637876748752455014019279311663100412852100130909511682509730 [6.115e67], 2]
+		sender=0x00000000000000000000000000000000000003f9 addr=[/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/src/RaffleHandler.sol:RaffleHandler]0xc7183455a4C133Ae270771860664b6B7ec320bB1 calldata=settle(uint256,uint256,uint256,bool) args=[103958964594 [1.039e11], 1824703154737890462562988573108073444187784886795866919243275863671726726 [1.824e72], 2163065852731376299391773036482707642138232 [2.163e42], true]
+ invariant_noSpecViolation() (runs: 1, calls: 1, reverts: 1)
+
+Encountered 1 failing test in /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:B_EconomicsTest
+[FAIL: 15% sponsor (120238971830000000 != 90179228872500000); counterexample: calldata=0x0ddde4ff000004f6d0611cffbf3150dcb143ffe04f4a50612b8e795b8e46f1257247aa8d000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000491eaa8c4a46ee args=[34261077174033501684976705636920664226239394044604029486018601194859149 [3.426e70], false, 20581391146829550 [2.058e16]]] testFuzz_B1_settlementSplitsAreExactAndLossless(uint256,bool,uint256) (runs: 0, μ: 0, ~: 0)
+
+Encountered 1 failing test in /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001-claude/cells/CLAUDE-TOB/S6/attempt-01/work/tob-s6-artifacts/harness/test/RaffleUnit.t.sol:D_RedemptionTest
+[FAIL: sponsor share still escrowed (800000 != 600000)] test_D3_sponsorAndTreasuryClaimIndependently_blocklistedSponsorRecipient() (gas: 1178238)
+
+Encountered a total of 6 failing tests, 30 tests succeeded
+
+Tip: Run `forge test --rerun` to retry only the 6 failed tests
+
+Fuzz seed: 0x4d555441 (use `--fuzz-seed` to reproduce)

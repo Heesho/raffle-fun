@@ -1,0 +1,188 @@
+{
+  "cell": "OPENAI-TOB",
+  "attempt": "02",
+  "continuation_of": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/OPENAI-TOB/attempt-01",
+  "status": "IN_PROGRESS",
+  "started_at": "2026-10-21T17:37:52.513394+00:00",
+  "arbitrary_deadline": null,
+  "method": "Explicit six-stage Trail of Bits aggregate, continuation of same-cell native stages",
+  "upstream_pin": "82fe8226252622fa807643bdca1710901198553a",
+  "target_commit": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "source_manifest": "source-manifest.json",
+  "before_verification": "freeze-before.json",
+  "model_policy": {
+    "requested_model": "gpt-6-astra",
+    "requested_effort": "ultra",
+    "provider_returned_model": "unknown",
+    "provider_returned_effort": "unknown",
+    "cli": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/bin/codex",
+    "ignore_user_config": true,
+    "ephemeral": true,
+    "multi_agent": false,
+    "access_program_override": null,
+    "fallback": false,
+    "genuine_provider_rejection": "terminate affected route, no retry or rephrase",
+    "local_runtime_failures": "repair"
+  },
+  "inherited_stages": [
+    {
+      "id": "S1",
+      "name": "audit-context-building",
+      "status": "INCOMPLETE",
+      "started_at": "2026-10-21T07:48:43Z",
+      "native_runtime": "Pinned audit-context.js executed via local primitive adapter",
+      "native_workflow": "audit/S1/native/workflow-original.js",
+      "exposure": "orientation/source only; no prior findings",
+      "limit": 12,
+      "adapted_workflow_status": "COMPLETE",
+      "native_host_status": "BLOCKED: upstream Workflow and literal Write tools unavailable",
+      "native_result": "audit/S1/native/result.json",
+      "seal": "audit/S1/SEAL.json",
+      "coverage": {
+        "functions_analyzed": 12,
+        "candidates": 40,
+        "functions_below_cut": 28,
+        "production_files": 5
+      }
+    },
+    {
+      "id": "S2",
+      "name": "entry-point-analyzer",
+      "status": "INCOMPLETE",
+      "stage": "S2",
+      "source_analysis": "COMPLETE",
+      "native_tool_step": "DEFERRED to S6 by source-only sealing order",
+      "model": "gpt-6-astra",
+      "effort": "ultra",
+      "provider_returned_model": "unknown",
+      "finished_at": "2026-10-21T08:06:09.121705+00:00",
+      "coverage": {
+        "production_files": 5,
+        "state_changing_signatures": 18,
+        "rejected_receive_paths": 1
+      },
+      "seal": "audit/S2/SEAL.json"
+    },
+    {
+      "id": "S3",
+      "name": "token-integration-analyzer",
+      "status": "INCOMPLETE",
+      "stage": "S3",
+      "source_analysis": "COMPLETE",
+      "native_tool_step": "DEFERRED to S6",
+      "model": "gpt-6-astra",
+      "effort": "ultra",
+      "provider_returned_model": "unknown",
+      "finished_at": "2026-10-21T08:08:07.954473+00:00",
+      "coverage": {
+        "production_files": 5,
+        "assessment_categories": 10,
+        "weird_token_patterns": 24,
+        "confirmed_findings": 0,
+        "conditional_leads": 2
+      },
+      "seal": "audit/S3/SEAL.json"
+    },
+    {
+      "id": "S4",
+      "name": "guidelines-advisor",
+      "status": "INCOMPLETE",
+      "exposure": "target source + own pinned skill/resources only; no prior conclusions",
+      "source_workflow": "COMPLETE five phases /11areas",
+      "native_tools": "deferred to S6",
+      "test_quality": "UNKNOWN excluded by source boundary",
+      "seal": "audit/S4/SEAL.json"
+    },
+    {
+      "id": "S5",
+      "name": "spec-to-code-compliance",
+      "status": "INCOMPLETE",
+      "stage": "S5",
+      "cutoff_at": "2026-10-21T08:15:38.031792+00:00",
+      "reason": "Fixed 30 minute budget; source-only stage stopped before S6 tool stages",
+      "completed_responses": [
+        "audit/S5/native/001-response.json",
+        "audit/S5/native/002-response.json"
+      ],
+      "pending_requests": [
+        "audit/S5/native/003-request.json",
+        "audit/S5/native/004-request.json",
+        "audit/S5/native/005-request.json",
+        "audit/S5/native/006-request.json",
+        "audit/S5/native/007-request.json"
+      ],
+      "native_phases": {
+        "discover": "COMPLETE",
+        "extract": "PARTIAL",
+        "align": "NOT RUN",
+        "verify": "NOT RUN",
+        "report": "NOT RUN"
+      },
+      "native_host": "BLOCKED; pinned logic ran through disclosed adapter",
+      "model": "gpt-6-astra",
+      "effort": "ultra",
+      "provider_returned_model": "unknown",
+      "provider_returned_effort": "unknown",
+      "fallback": false
+    },
+    {
+      "id": "S6",
+      "name": "building-secure-contracts/secure-workflow-guide",
+      "status": "INCOMPLETE",
+      "stage": "S6",
+      "source_analysis": "COMPLETE bounded manual pass",
+      "native_scan": "COMPLETE with14triaged results",
+      "erc721": "COMPLETE native command",
+      "diagrams": "GENERATED; full visual review INCOMPLETE",
+      "echidna": "BLOCKED compilation: solc unavailable",
+      "manticore": "BLOCKED unavailable executable",
+      "model": "gpt-6-astra",
+      "effort": "ultra",
+      "provider_returned_model": "unknown",
+      "provider_returned_effort": "unknown",
+      "recorded_at": "2026-10-21T08:18:22.981361+00:00"
+    }
+  ],
+  "native_host_compatibility": "Actual pinned JavaScript through disclosed primitive adapter; not upstream Workflow host. Retain original bytes and patches.",
+  "stages": [
+    {
+      "id": "S1",
+      "name": "audit-context-building",
+      "status": "COMPLETE_VIA_DISCLOSED_ADAPTER_INHERITED",
+      "inherited_evidence": "inherited/artifacts/S1"
+    },
+    {
+      "id": "S2",
+      "name": "entry-point-analyzer",
+      "status": "INHERITED_SOURCE_COMPLETE_PENDING_NATIVE_TOOLS",
+      "inherited_evidence": "inherited/artifacts/S2"
+    },
+    {
+      "id": "S3",
+      "name": "token-integration-analyzer",
+      "status": "INHERITED_SOURCE_COMPLETE_PENDING_NATIVE_TOOLS",
+      "inherited_evidence": "inherited/artifacts/S3"
+    },
+    {
+      "id": "S4",
+      "name": "guidelines-advisor",
+      "status": "INHERITED_SOURCE_COMPLETE_PENDING_NATIVE_TOOLS",
+      "inherited_evidence": "inherited/artifacts/S4"
+    },
+    {
+      "id": "S5",
+      "name": "spec-to-code-compliance",
+      "status": "CONTINUING",
+      "inherited_evidence": "inherited/artifacts/S5"
+    },
+    {
+      "id": "S6",
+      "name": "building-secure-contracts/secure-workflow-guide",
+      "status": "CONTINUING",
+      "inherited_evidence": "inherited/artifacts/S6"
+    }
+  ],
+  "boundary_notes": "boundary-notes.json",
+  "new_source_seal": null,
+  "external_reconciliation": "NONE"
+}

@@ -1,0 +1,109 @@
+[
+  {
+    "schemaVersion": 1,
+    "id": "3941f9e4-b09f-4ea1-b5cc-c3e0f01ecec5",
+    "createdAt": "2026-10-21T08:18:56.195Z",
+    "runId": "35ab82ba-9e64-4934-bd96-e3969b01a965",
+    "title": "Self-reported ERC-721 state cannot enforce prize custody or delivery against an untrusted prize contract",
+    "description": "The factory accepts any contract that self-reports IERC721 support, activates the clone when that same configured contract calls onERC721Received with the expected arguments, and treats that contract's ownerOf response as escrow proof. After an NFT result, settleWinningTicket allocates the pot without rechecking prize custody, and releaseSponsorProceeds can pay the sponsor before the winner attempts delivery. A sponsor-controlled prize contract can therefore pass creation (or genuinely transfer the token and later pause, seize, or block it), allow sales, permit settlement and sponsor withdrawal, and then make transferFrom or ownerOf fail during redeemWinningTicket. The failed redemption atomically rolls back its local burn and flags, but it cannot roll back sponsor proceeds released in an earlier transaction. Under the stated untrusted-prize model, the winning bearer claim can be left without a bounded delivery path while 95% of gross sales has already left the raffle.\nAssumptions: The clean requirement's untrusted-prize boundary includes sponsor-controlled transfer pausing or seizure, or false ERC-165 and ownerOf responses; if prizes are instead trusted to preserve standard ERC-721 ownership and transfer semantics, this path is excluded.; At least one purchase occurs, reserveEntries is met, the correct winning ticket is settled, and sponsor proceeds are released before the winner's failed redemption.; The canonical quote token and VRF wrapper behave according to the trusted-dependency assumptions.",
+    "severity": "high",
+    "confidence": "high",
+    "evidenceType": "model",
+    "source": [
+      {
+        "path": "packages/contracts/src/RaffleFactory.sol",
+        "start": 127,
+        "end": 134
+      },
+      {
+        "path": "packages/contracts/src/RaffleFactory.sol",
+        "start": 154,
+        "end": 178
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 304,
+        "end": 345
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 375,
+        "end": 381
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 416,
+        "end": 430
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 533,
+        "end": 557
+      }
+    ],
+    "evidence": [
+      "865a3c18dc2685f97f62c2cd9ee8fbc5ca588ec10720941ec5fba5e9b6d389a2"
+    ],
+    "observationIds": [
+      "68df3263-72ec-4adf-b47a-cab8bffb7b92"
+    ],
+    "fingerprint": "60c5f149e119b1a927b62df5f4c28ab8ea720dfbb073609703c93a3e2bae4d06"
+  },
+  {
+    "schemaVersion": 1,
+    "id": "713c1ebb-6f09-4ec1-8655-70cb391ee248",
+    "createdAt": "2026-10-21T08:18:56.196Z",
+    "runId": "35ab82ba-9e64-4934-bd96-e3969b01a965",
+    "title": "Clone-isolation checks recognize only current clones of the same factory",
+    "description": "Both creation-time validation and runtime destination screening consult only the current factory's isRaffle registry. A Raffle clone from another factory is absent from that registry while still reporting IERC721 support through inheritance. Concretely, factory B can accept existing clone A as a prize-token contract; transfer of an A ticket to the new B clone passes A's local destination screen, and B's expected-prize callback activates, moving an asset directly between raffle clones. A foreign clone can also be selected as sponsorRecipient or protocolTreasury, after which _transferQuote sends USDC into that clone as an unaccounted balance. The reviewed clone exposes no generic execute or rescue path for such USDC. These paths violate the absolute cross-clone isolation requirement and can strand assets, although they require a sponsor, deployer, or ticket owner to select or approve the foreign clone.\nAssumptions: Two independently deployed reviewed factories and their clones exist, and neither factory registers the other's clones.; A sponsor, factory deployer, or ticket owner deliberately selects or approves a foreign clone address; no external global registry reconciliation is assumed.; For the payout-lock consequence, the foreign clone receives standard USDC and exposes only the reviewed code, with no separate control or rescue path.",
+    "severity": "low",
+    "confidence": "high",
+    "evidenceType": "model",
+    "source": [
+      {
+        "path": "packages/contracts/src/RaffleFactory.sol",
+        "start": 154,
+        "end": 178
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 28,
+        "end": 28
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 416,
+        "end": 430
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 497,
+        "end": 502
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 564,
+        "end": 567
+      },
+      {
+        "path": "packages/contracts/src/Raffle.sol",
+        "start": 593,
+        "end": 604
+      },
+      {
+        "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        "start": 44,
+        "end": 49
+      }
+    ],
+    "evidence": [
+      "865a3c18dc2685f97f62c2cd9ee8fbc5ca588ec10720941ec5fba5e9b6d389a2"
+    ],
+    "observationIds": [
+      "40bbcc07-6f9e-455d-a6da-8cf6597e64b4"
+    ],
+    "fingerprint": "c841aa5bfb5df688d46a60f20c95fe1a1037c4bb4947635b39da94708a1479e0"
+  }
+]
+(node:73172) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)

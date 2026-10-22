@@ -1,0 +1,3 @@
+No fixed-price claim arithmetic or Last User Out defect found. Deposits, refunds, and both settlement splits conserve every raw USDC unit; the 1,000,000-unit entry price makes the 80% and 5% allocations exact.
+
+One concrete candidate remains: standalone settlement and independent proceeds release let a sponsor collect 95% after an NFT result even when its untrusted/pausable prize permanently rejects winner delivery. At 100 entries, the sponsor can receive 95,000,000 raw USDC while the 5,000,000 fee is also releasable and redemption continually reverts. Relevant lines: `Raffle.sol:304-346`, `:375-392`, and `:528-558`; factory escrow checks are `RaffleFactory.sol:127-134,171-177`.

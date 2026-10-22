@@ -1,0 +1,1135 @@
+{
+  "schema": "raffle-audit-final-matrix-transformation-blueprint/v1",
+  "purpose": "Read-only-derived implementation blueprint for the final 23-row matrix.json refresh. This file is not the matrix, a reconciliation decision, or a delivery seal.",
+  "audit_root": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001",
+  "frozen_target_commit": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "baseline": {
+    "matrix_path": "matrix.json",
+    "matrix_sha256": "7756fbf6570af5aea6948e23b6b7e22c5539d1b60f618c3d7e0222a2b267ffe3",
+    "matrix_updated_at": "2026-10-21T21:52:13.240866+00:00",
+    "working_register_path": "reconciliation/finalization/working-register.json",
+    "working_register_sha256": "1a91af2f284b1e50032e091adda4d3a4595715aeb77f6a10735a952d713ff91a",
+    "state_path": "reconciliation/finalization/state.json",
+    "state_sha256": "be2caff0d1ef4dc6e6cd22db273d926ff1df65a1899f1f153846367b71ef5074",
+    "literal_matrix_counts": {
+      "rows": 23,
+      "workflow_status": {
+        "COMPLETE": 14,
+        "INCOMPLETE": 9
+      },
+      "execution_state": {
+        "COMPLETE": 2,
+        "SEALED": 12,
+        "RUNNING": 5,
+        "PROVIDER_REJECTED": 4
+      }
+    },
+    "evidence_adjusted_state_before_claude_openkritt_terminal_receipt": {
+      "COMPLETE": 10,
+      "QUALIFIED_COMPLETE": 9,
+      "PROVIDER_REJECTED": 3,
+      "RUNNING": 1,
+      "running_lane": "CLAUDE-OPENKRITT"
+    },
+    "claude_openkritt_last_observation": {
+      "path": "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/native-resume-supervisor/observations.jsonl",
+      "observed_at": "2026-10-22T00:34:12.568660+00:00",
+      "status": "running",
+      "progress": "95%",
+      "progress_label": "183 / 193 workflow lineages",
+      "completed_attempts": 183,
+      "running_attempts": 3,
+      "failed_attempts_preserved": 2,
+      "active_job_count": 3,
+      "final_capture_present": false
+    }
+  },
+  "target_counts_after_parameter_substitution": {
+    "rows": 23,
+    "required_harness_cells": 15,
+    "optional_daybreak_cells": 5,
+    "supplementary_reviews": 3,
+    "effective_status": {
+      "COMPLETE": 10,
+      "QUALIFIED_COMPLETE": 10,
+      "PROVIDER_REJECTED": 3
+    },
+    "workflow_status": {
+      "COMPLETE": 20,
+      "INCOMPLETE": 3
+    },
+    "execution_state": {
+      "SEALED": 20,
+      "PROVIDER_REJECTED": 3
+    },
+    "required_external_15": {
+      "COMPLETE": 4,
+      "QUALIFIED_COMPLETE": 8,
+      "PROVIDER_REJECTED": 3
+    },
+    "daybreak_5": {
+      "COMPLETE": 3,
+      "QUALIFIED_COMPLETE": 2
+    },
+    "supplementary_3": {
+      "COMPLETE": 3
+    },
+    "counting_rule": "Count each matrix row once by effective_status. QUALIFIED_COMPLETE is an effective completed row but never rewrites an original provider refusal, native ERROR, timeout, transport failure, or method limitation. Counts are not model votes."
+  },
+  "schema_transformation": {
+    "preserve_existing_top_level_fields": [
+      "target",
+      "required_harness_cells",
+      "optional_daybreak_cells",
+      "supplementary_reviews",
+      "runs"
+    ],
+    "top_level_set_or_add": {
+      "updated_at": "<actual UTC matrix write time>",
+      "row_count": 23,
+      "effective_counts": {
+        "complete": 10,
+        "qualified_complete": 10,
+        "provider_rejected": 3,
+        "pending": 0
+      },
+      "counts_are_not_model_votes": true,
+      "coordinator_included_in_runs": false
+    },
+    "row_required_fields": [
+      "id",
+      "provider",
+      "method",
+      "required",
+      "requested_model",
+      "accepted_local_selection",
+      "provider_returned_identity",
+      "reasoning_effort",
+      "requested_access_program",
+      "fallback",
+      "workflow_status",
+      "execution_state",
+      "effective_status",
+      "status_basis",
+      "selected_attempt",
+      "method_variant",
+      "method_modified",
+      "actual_method",
+      "source_coverage",
+      "findings",
+      "limitations",
+      "historical_outcomes",
+      "evidence"
+    ],
+    "row_field_rules": {
+      "provider_returned_identity": "Keep null unless a provider-origin receipt explicitly returns an underlying identity. A requested model, accepted local selection, CLI init tuple, display selection, or coordinator identity is not a provider-returned identity. All five DAYBREAK rows remain null.",
+      "limitations": "Append-only union. Preserve every existing matrix limitation verbatim, then append the selected-variant qualifications below. Do not replace historical wording with a cleaner summary.",
+      "historical_outcomes": "Append-only array of original refusals, blockers, timeouts, ERROR receipts, failed continuations, and superseded attempts. No historical outcome is relabeled successful.",
+      "evidence": "Use audit-root-relative paths. receipt.kind may be completion_receipt, status_receipt, adjudication_receipt, seal_verification_receipt, sealed_first_pass_used_as_receipt, or consolidated_provider_first_pass_used_as_receipt. Do not call a report a completion receipt when none exists.",
+      "effective_status": "One of COMPLETE, QUALIFIED_COMPLETE, PROVIDER_REJECTED. This is the sole final count field.",
+      "workflow_status": "Set COMPLETE for COMPLETE or QUALIFIED_COMPLETE; set INCOMPLETE for PROVIDER_REJECTED.",
+      "execution_state": "Set SEALED only when the selected evidence pair exists and verifies; otherwise PROVIDER_REJECTED for the three terminal OpenAI refusals. Never use SEALED for the parameterized Claude OpenKritt row before its final seal verifies.",
+      "selected_attempt": "Normalize to an audit-root-relative path, even where the old matrix used a bare attempt name.",
+      "validation_evidence": "May be retained for compatibility, but evidence is the authoritative structured replacement. Do not drop old validation_evidence entries."
+    },
+    "coordinator_metadata_outside_rows": {
+      "id": "COORDINATOR-DAYBREAK",
+      "path": "runs/COORDINATOR-DAYBREAK/attempt-01",
+      "coordinator_outside_original_23_slots": true,
+      "provider_returned_identity": null,
+      "must_not_be_appended_to_runs": true,
+      "must_not_change_any_23_row_denominator": true
+    }
+  },
+  "rows": [
+    {
+      "ordinal": 1,
+      "id": "OPENAI-SIMAO",
+      "provider": "OPENAI",
+      "baseline": "INCOMPLETE / PROVIDER_REJECTED / no selected_attempt",
+      "final": {
+        "workflow_status": "INCOMPLETE",
+        "execution_state": "PROVIDER_REJECTED",
+        "effective_status": "PROVIDER_REJECTED",
+        "status_basis": "TERMINAL_PROVIDER_REJECTION",
+        "selected_attempt": "runs/OPENAI-SIMAO/attempt-01",
+        "method_variant": "ORIGINAL_UNMODIFIED_PARTIAL",
+        "method_modified": false
+      },
+      "original_vs_selected": "Same attempt. Retain raw partial stages only; there is no substitute completion.",
+      "evidence": {
+        "receipt": {
+          "kind": "status_receipt",
+          "path": "runs/OPENAI-SIMAO/attempt-01/CELL-STATUS.json",
+          "sha256": "c73febce1cfedad24b063847284ef9e17c2ae1c01babe89ddc24f75df0f0f71b"
+        },
+        "seal": {
+          "path": "runs/OPENAI-SIMAO/attempt-01/FAILURE-SEAL.json",
+          "sha256": "b1531c6ceda0fc78a456bd7d96964a0c099b4e2b052f769f9c17e12427e94ade"
+        }
+      },
+      "disclosures": [
+        "Explicit OpenAI cybersecurity-risk filter halted the controller.",
+        "No complete first-pass model report, retry, fallback, or substitute is claimed.",
+        "Provider-returned identity remains unknown."
+      ]
+    },
+    {
+      "ordinal": 2,
+      "id": "OPENAI-PASHOV",
+      "provider": "OPENAI",
+      "baseline": "INCOMPLETE / PROVIDER_REJECTED / no selected_attempt",
+      "final": {
+        "workflow_status": "INCOMPLETE",
+        "execution_state": "PROVIDER_REJECTED",
+        "effective_status": "PROVIDER_REJECTED",
+        "status_basis": "TERMINAL_PROVIDER_REJECTION",
+        "selected_attempt": "runs/OPENAI-PASHOV/attempt-01",
+        "method_variant": "ORIGINAL_UNMODIFIED_PARTIAL",
+        "method_modified": false
+      },
+      "original_vs_selected": "Same sealed partial attempt; do not upgrade it to completed.",
+      "evidence": {
+        "receipt": {
+          "kind": "seal_verification_receipt",
+          "path": "runs/OPENAI-PASHOV/attempt-01/SEAL-VERIFICATION.json",
+          "sha256": "73768f3faf695881473cbd7eab158cee91fa1ebd69543fbd7db1e0e3685c2e8d"
+        },
+        "seal": {
+          "path": "runs/OPENAI-PASHOV/attempt-01/SEAL.json",
+          "sha256": "0b2ea344e6b3ce53148d17c6d8ca647ceea974ade8cb4945ee0a9c8adbe72352"
+        },
+        "supporting": [
+          {
+            "kind": "sealed_partial_first_pass",
+            "path": "runs/OPENAI-PASHOV/attempt-01/FIRST-PASS.md",
+            "sha256": "fcd0833741c06943bcbf82f3c348596d8a5706e84f7f2ed60e028243ebdc6961"
+          }
+        ]
+      },
+      "disclosures": [
+        "Only 5 of 12 required specialists returned reports; seven were blocked by the runtime cybersecurity-risk filter.",
+        "Native assembly and preservation do not erase the 5/12 coverage shortfall.",
+        "No retry, fallback, or substitute model is claimed; provider-returned identity remains unknown."
+      ]
+    },
+    {
+      "ordinal": 3,
+      "id": "OPENAI-OPENKRITT",
+      "provider": "OPENAI",
+      "baseline": "COMPLETE / SEALED / attempt-02",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "QUALIFIED_COMPLETE",
+        "status_basis": "SEALED_COMPATIBILITY_PATCHED_NATIVE_METHOD",
+        "selected_attempt": "runs/OPENAI-OPENKRITT/attempt-02",
+        "method_variant": "COMPATIBILITY_PATCHED_NATIVE_OPENKRITT",
+        "method_modified": true
+      },
+      "original_vs_selected": "Original attempt-01 setup blocker remains historical; select attempt-02 only as the disclosed patched native variant.",
+      "evidence": {
+        "receipt": {
+          "kind": "status_receipt",
+          "path": "runs/OPENAI-OPENKRITT/attempt-02/result.json",
+          "sha256": "4530a95ebde38957f88f57edc6833dc38243323664a9e5d777a1321a8f5002ee"
+        },
+        "seal": {
+          "path": "runs/OPENAI-OPENKRITT/attempt-02/SEAL.json",
+          "sha256": "536d8e929affbe80bc59ae77e3e7fb564759fba028016f74c6517eada3b8736f"
+        }
+      },
+      "disclosures": [
+        "Disclose the CLI/routing/resource-isolation compatibility patch and preserve the original blocked attempt.",
+        "The native engine produced zero finding records; zero is not proof of absence.",
+        "The independent OpenKritt validator was provider-rejected and was not retried.",
+        "Provider-returned identity remains unknown."
+      ]
+    },
+    {
+      "ordinal": 4,
+      "id": "OPENAI-TOB",
+      "provider": "OPENAI",
+      "baseline": "INCOMPLETE / PROVIDER_REJECTED / attempt-02",
+      "final": {
+        "workflow_status": "INCOMPLETE",
+        "execution_state": "PROVIDER_REJECTED",
+        "effective_status": "PROVIDER_REJECTED",
+        "status_basis": "TERMINAL_PROVIDER_REJECTION",
+        "selected_attempt": "runs/OPENAI-TOB/attempt-02",
+        "method_variant": "CONTINUATION_REJECTED_WITH_PRIOR_PARTIAL_RETAINED",
+        "method_modified": true
+      },
+      "original_vs_selected": "Attempt-01 remains a separately sealed partial source record. Attempt-02 is the selected terminal continuation outcome and was provider-rejected.",
+      "evidence": {
+        "receipt": {
+          "kind": "status_receipt",
+          "path": "runs/OPENAI-TOB/attempt-02/CELL-STATUS.json",
+          "sha256": "bbccfd6f0a4e7dda0b939115b73663e54a450a042ca7d96ec7626e45a55cfb0c"
+        },
+        "seal": {
+          "path": "runs/OPENAI-TOB/attempt-02/FAILURE-SEAL.json",
+          "sha256": "99356d42b99d8ffe103fa66c75389b279110eff7aae74051d312e637cb7e2ba0"
+        },
+        "supporting": [
+          {
+            "kind": "historical_partial_first_pass",
+            "path": "runs/OPENAI-TOB/attempt-01/FIRST-PASS.md",
+            "sha256": "02f0aed858f16ac377786589c1db2879e8f0315a9b2829af8ace2baa58c00829"
+          },
+          {
+            "kind": "historical_partial_seal",
+            "path": "runs/OPENAI-TOB/attempt-01/SEAL.json",
+            "sha256": "ad703fab2659ef9d5490498292c3f2393ce83797d346000db9123377abd764bf"
+          }
+        ]
+      },
+      "disclosures": [
+        "Actual OpenAI cybersecurity-risk rejection occurred at 18:07:51 UTC during the native continuation; no retry was made.",
+        "No new first-pass seal exists for the incomplete continuation and unfinished S5/S6 finding contents are not adopted.",
+        "Earlier sealed source stages remain separate; the native JavaScript host uses a disclosed primitive adapter.",
+        "Retain the four known historical receipt-integrity errors described in validation_concerns."
+      ]
+    },
+    {
+      "ordinal": 5,
+      "id": "OPENAI-GEBAL",
+      "provider": "OPENAI",
+      "baseline": "COMPLETE / SEALED / attempt-02",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "COMPLETE",
+        "status_basis": "SEALED_NATIVE_SOURCE_ONLY_METHOD",
+        "selected_attempt": "runs/OPENAI-GEBAL/attempt-02",
+        "method_variant": "ORIGINAL_GEBAL_SOURCE_ONLY_WITH_SEPARATE_COMPATIBILITY_CONTEXT",
+        "method_modified": false
+      },
+      "original_vs_selected": "Retain attempt-01 history; select attempt-02 source-only completion and its delivery record.",
+      "evidence": {
+        "receipt": {
+          "kind": "completion_receipt",
+          "path": "runs/OPENAI-GEBAL/attempt-02/DELIVERY.json",
+          "sha256": "7f6b359cf9a95c45a184e9821a70127381244d8497db58887ff8a1eb32c1a82a"
+        },
+        "seal": {
+          "path": "runs/OPENAI-GEBAL/attempt-02/SEAL.json",
+          "sha256": "a9ce50f58a9cdd06d6d8883302ceaf369d359dfe35b37f2e2265ec60639910d1"
+        }
+      },
+      "disclosures": [
+        "Source-only own-model export/import review.",
+        "The separate test-inclusive deterministic compatibility context does not rebind the cold review.",
+        "Provider-returned identity remains unknown."
+      ]
+    },
+    {
+      "ordinal": 6,
+      "id": "CLAUDE-SIMAO",
+      "provider": "CLAUDE",
+      "baseline": "INCOMPLETE / PROVIDER_REJECTED with RUNNING public-evidence continuation",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "QUALIFIED_COMPLETE",
+        "status_basis": "QUALIFIED_MODIFIED_METHOD",
+        "selected_attempt": "provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02",
+        "method_variant": "PUBLIC_EVIDENCE_SIMAO",
+        "method_modified": true
+      },
+      "original_vs_selected": "Original CLAUDE-SIMAO attempt-01 stays PROVIDER_REJECTED. Count only the separately named public-evidence attempt-02 variant as qualified complete.",
+      "evidence": {
+        "receipt": {
+          "kind": "completion_receipt",
+          "path": "provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/completion-receipt.json",
+          "sha256": "6cf09e630dc2b9ba63049cc787060d3e9d56ff42285eab77e8e13ae2c1aa84be"
+        },
+        "seal": {
+          "path": "provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-02/SEAL.json",
+          "sha256": "641f20a3ad7b9e286b1f7bdc4737ebc387de68fe76b3d834edcb07ea8272baed"
+        },
+        "supporting": [
+          {
+            "kind": "original_provider_refusal",
+            "path": "provider-lanes/claude/runs/CLAUDE-SIMAO/attempt-01/events.jsonl",
+            "sha256": "bef036c018ba6a4917deebb15594f9f41089d10c474e323e96934fde37811625"
+          },
+          {
+            "kind": "killed_modified_attempt",
+            "path": "provider-lanes/claude/runs/CLAUDE-SIMAO-PUBLIC-EVIDENCE/attempt-01/WORKFLOW-ASSESSMENT.json",
+            "sha256": "7b7f02601038e257e64ef10d39d55435ecad505dfe51cd8458edcc5da034ef5a"
+          }
+        ]
+      },
+      "disclosures": [
+        "Original unmodified method was refused by Anthropic reasoning_extraction safeguard and is not relabeled complete.",
+        "Public-evidence attempt-01 was killed during wait with 12 children; it remains incomplete.",
+        "Attempt-02 replaces private working-reasoning trace requests with concise public evidence summaries while retaining 12 lenses, judge, proof, and Turn 6.",
+        "Cleanup denial remains preserved; no hidden reasoning was requested or inferred; provider-internal revision remains unknown."
+      ]
+    },
+    {
+      "ordinal": 7,
+      "id": "CLAUDE-PASHOV",
+      "provider": "CLAUDE",
+      "baseline": "COMPLETE / COMPLETE / no selected_attempt",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "COMPLETE",
+        "status_basis": "CONSOLIDATED_PROVIDER_FIRST_PASS_SEAL",
+        "selected_attempt": "provider-lanes/claude/runs/CLAUDE-PASHOV/attempt-01",
+        "method_variant": "ORIGINAL_PASHOV",
+        "method_modified": false
+      },
+      "original_vs_selected": "Same native attempt, now referenced through the immutable consolidated Claude first-pass seal.",
+      "evidence": {
+        "receipt": {
+          "kind": "consolidated_provider_first_pass_used_as_receipt",
+          "path": "provider-lanes/claude/FIRST-PASS.md",
+          "sha256": "16cb0e68e79fba00c1ba91878e682184db08a175fbcf9164dd7b51cc469aefb2"
+        },
+        "seal": {
+          "path": "provider-lanes/claude/FIRST-PASS.md.sha256",
+          "sha256": "92f356b9a814bda5d2394c9f5b79123b76dc4e1003816d14d25c38f5986f6379",
+          "bound_receipt_sha256": "16cb0e68e79fba00c1ba91878e682184db08a175fbcf9164dd7b51cc469aefb2"
+        },
+        "supporting": [
+          {
+            "kind": "lane_final_result",
+            "path": "provider-lanes/claude/runs/CLAUDE-PASHOV/attempt-01/final-result.md",
+            "sha256": "04b38997ccb262f808dbcc4f5d4c4bfac1860614f26e567641e1606e0b2ad36b"
+          }
+        ]
+      },
+      "disclosures": [
+        "Twelve specialist passes cover five production and 31 dependency files, subject to native workflow semantic limits.",
+        "Highest max effort was accepted locally, but server-applied effort was not echoed.",
+        "Tool-assisted proof sketches mean this is not a strictly source-only method.",
+        "The seal is provider-consolidated, not a unique per-cell seal."
+      ]
+    },
+    {
+      "ordinal": 8,
+      "id": "CLAUDE-OPENKRITT",
+      "provider": "CLAUDE",
+      "baseline": "INCOMPLETE / RUNNING / original route blocked; modified controller active",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "QUALIFIED_COMPLETE",
+        "status_basis": "CONDITIONAL_QUALIFIED_MODIFIED_METHOD",
+        "selected_attempt": "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/final-capture",
+        "method_variant": "MODIFIED_NATIVE_OPENKRITT",
+        "method_modified": true,
+        "apply_when": "Only after the final-capture receipt and seal exist, hash-verify, and satisfy claude_openkritt_parameterization. Until then this row remains INCOMPLETE / RUNNING and target counts remain 19 + 3 + 1."
+      },
+      "original_vs_selected": "Original CLAUDE-OPENKRITT attempt-01 remains blocked by the bundled runner route. Select only the separately disclosed CLAUDE-OPENKRITT-MOD final capture after its terminal gate passes.",
+      "evidence": {
+        "receipt": {
+          "kind": "completion_receipt",
+          "path": "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/final-capture/COMPLETION-RECEIPT.json",
+          "sha256": "<CLAUDE_OPENKRITT_COMPLETION_RECEIPT_SHA256>"
+        },
+        "seal": {
+          "path": "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/final-capture/SEAL.json",
+          "sha256": "<CLAUDE_OPENKRITT_SEAL_SHA256>"
+        },
+        "supporting": [
+          {
+            "kind": "original_blocker",
+            "path": "provider-lanes/claude/runs/CLAUDE-OPENKRITT/attempt-01/BLOCKED.md",
+            "sha256": "03a7b330c843e2bcc95239dfcb12ee76eb9949098d6b4138aaaba767dc6572e2"
+          },
+          {
+            "kind": "recorded_method_patch",
+            "path": "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/openkritt-mod.patch",
+            "sha256": "489af1123620057d4839ca2cd8532d1a239b110f710e77d73e8f079eac099fc8"
+          },
+          {
+            "kind": "pre_seal_status_exposure",
+            "path": "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/PRE-SEAL-STATUS-EXPOSURE.json",
+            "sha256": "21eb12d8b6b900e6c8e95b94ca97ac71918320f10659cb7e6fedbfd17030da68"
+          },
+          {
+            "kind": "reconciliation_exposure_receipt",
+            "path": "reconciliation/finalization/ACCIDENTAL-STATUS-ENDPOINT-EXPOSURE.json",
+            "sha256": "2d0110eafeba5fa01f7aa1e8bd7b5c125be0b7bc79dc782b58ada7e14872dbb4"
+          },
+          {
+            "kind": "reconciliation_exposure_seal",
+            "path": "reconciliation/finalization/ACCIDENTAL-STATUS-ENDPOINT-EXPOSURE-SEAL.json",
+            "sha256": "87a03e40b611cd6708c0c3ea7e66500315e07ef4f9f63ab6809143ae986263eb"
+          },
+          {
+            "kind": "parent_exposure_addendum",
+            "path": "reconciliation/finalization/PARENT-STATUS-EXPOSURE-ADDENDUM.json",
+            "sha256": "71512e40e7207efe6c63ce3861c9aab6bbf624c3d70b11592d60be8b67fc13ff"
+          },
+          {
+            "kind": "parent_exposure_addendum_seal",
+            "path": "reconciliation/finalization/PARENT-STATUS-EXPOSURE-ADDENDUM-SEAL.json",
+            "sha256": "9d356a3844ef746913dc4888b5e6dd114f11ba37c4f5af68bd27198350af6b44"
+          }
+        ]
+      },
+      "disclosures": [
+        "Original blocked route is not relabeled complete.",
+        "Modified method uses an isolated VM, the recorded four-file catalog/runner patch, disclosed package-lock metadata drift, external-flow-analysis depths 0/1/2, no configured agent skills, and only post-script 4.",
+        "Historical metadata failures 21 and 22 remain failed; later completed logical counterparts may close the logical work without rewriting failed rows.",
+        "Pre-seal recentEmptyResults explanation prose was exposed to coordination readers and the parent bridge, was not adopted or fed back to the reviewer, and prevents a complete pre-seal narrative non-exposure claim.",
+        "Provider-returned identity remains unknown. Zero native findings, if final, is not proof of absence or independent finding validation."
+      ]
+    },
+    {
+      "ordinal": 9,
+      "id": "CLAUDE-TOB",
+      "provider": "CLAUDE",
+      "baseline": "INCOMPLETE / RUNNING / S6 continuation active",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "QUALIFIED_COMPLETE",
+        "status_basis": "QUALIFIED_APPEND_ONLY_CONTINUATION",
+        "selected_attempt": "provider-lanes/claude/runs/CLAUDE-TOB/S6/attempt-02",
+        "method_variant": "SIX_DECLARED_TOB_SKILLS_WITH_S6_CONTINUATION",
+        "method_modified": true
+      },
+      "original_vs_selected": "Preserve the immutable consolidated first pass and original S6 attempt-01 timeout; add S6 attempt-02 as an append-only completion of the six declared stages.",
+      "evidence": {
+        "receipt": {
+          "kind": "completion_receipt",
+          "path": "provider-lanes/claude/runs/CLAUDE-TOB/completion-receipt.json",
+          "sha256": "9332959f51dbee07d74468fa989cdd76555f1a8c22f1ae9b3716763c5e2f0b91"
+        },
+        "seal": {
+          "path": "provider-lanes/claude/runs/CLAUDE-TOB/CONTINUATION-SEAL.json",
+          "sha256": "4244729480f43f3825695d55319153536f076f1d778ee4ac65054899da239516"
+        }
+      },
+      "disclosures": [
+        "Completion covers six declared skills, not the full Trail of Bits catalog.",
+        "S1 analyzed 12 selected functions and left nine without equal-depth analysis.",
+        "S5 checked 10 of 248 extracted requirements; 238 remain deferred/unknown.",
+        "Original S6 attempt-01 timeout, Halmos exit 1 and two timeout/unknown obligations remain preserved; Manticore was unavailable; no formal proof is claimed.",
+        "Provider-internal revision remains unknown."
+      ]
+    },
+    {
+      "ordinal": 10,
+      "id": "CLAUDE-GEBAL",
+      "provider": "CLAUDE",
+      "baseline": "COMPLETE / COMPLETE / no selected_attempt",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "COMPLETE",
+        "status_basis": "CONSOLIDATED_PROVIDER_FIRST_PASS_SEAL",
+        "selected_attempt": "provider-lanes/claude/runs/CLAUDE-GEBAL/native-attempt-01",
+        "method_variant": "ORIGINAL_NATIVE_GEBAL_COLD_REVIEW",
+        "method_modified": false
+      },
+      "original_vs_selected": "Select native-attempt-01 and its cold review; retain the deterministic intake-only compatibility work as separate context.",
+      "evidence": {
+        "receipt": {
+          "kind": "consolidated_provider_first_pass_used_as_receipt",
+          "path": "provider-lanes/claude/FIRST-PASS.md",
+          "sha256": "16cb0e68e79fba00c1ba91878e682184db08a175fbcf9164dd7b51cc469aefb2"
+        },
+        "seal": {
+          "path": "provider-lanes/claude/FIRST-PASS.md.sha256",
+          "sha256": "92f356b9a814bda5d2394c9f5b79123b76dc4e1003816d14d25c38f5986f6379",
+          "bound_receipt_sha256": "16cb0e68e79fba00c1ba91878e682184db08a175fbcf9164dd7b51cc469aefb2"
+        },
+        "supporting": [
+          {
+            "kind": "native_report",
+            "path": "provider-lanes/claude/runs/CLAUDE-GEBAL/native-attempt-01/report.json",
+            "sha256": "35ef421690002e2ea914ad4d5d73054e6b746e4095fdbdea73b192169f2e2801"
+          }
+        ]
+      },
+      "disclosures": [
+        "Complete cold native external-agent review over the 39-file context, including five production and 31 dependency files.",
+        "Native deterministic task-list execution was intake-only; no build, tests, or scanner ran in the cold review.",
+        "Separate deterministic compatibility work does not rebind the cold review; the seal is provider-consolidated, not unique per cell."
+      ]
+    },
+    {
+      "ordinal": 11,
+      "id": "GEMINI-SIMAO",
+      "provider": "GEMINI",
+      "baseline": "INCOMPLETE / RUNNING / fresh correction active",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "QUALIFIED_COMPLETE",
+        "status_basis": "PASS_WITH_APPEND_ONLY_ADJUDICATION",
+        "selected_attempt": "runs/GEMINI-SIMAO-REPAIRED/attempt-04",
+        "method_variant": "NATIVE_SUCCESS_PLUS_DAYBREAK_SEMANTIC_ADJUDICATION",
+        "method_modified": true
+      },
+      "original_vs_selected": "Supersede the stale attempt-01 matrix selection with repaired attempt-04 plus the append-only semantic adjudication. Do not rewrite leaf transport histories.",
+      "evidence": {
+        "receipt": {
+          "kind": "adjudication_receipt",
+          "path": "runs/COORDINATOR-DAYBREAK/attempt-01/gemini-simao-adjudication/semantic-adjudication-receipt.json",
+          "sha256": "af182427a77c15869ed529239a25d0da067b182587e81f73c718d51adb743307"
+        },
+        "seal": {
+          "path": "runs/COORDINATOR-DAYBREAK/attempt-01/gemini-simao-adjudication/integrity-manifest.json",
+          "sha256": "bb980a314b3c65c9cc445af9e961c64416440cb2ce0298e384f655399fd86aae"
+        },
+        "supporting": [
+          {
+            "kind": "native_completion_receipt",
+            "path": "runs/GEMINI-SIMAO-REPAIRED/attempt-04/adjudication/native-first-pass/native-completion-receipt.json",
+            "sha256": "43d3c2364efcc7cd73cc3e0c9884e3c03f4d87418678e55b0e5ae020f790b36f"
+          },
+          {
+            "kind": "native_artifact_seal",
+            "path": "runs/GEMINI-SIMAO-REPAIRED/attempt-04/adjudication/native-first-pass/artifact-integrity-seal.json",
+            "sha256": "c95268ecd8269b24c1dba217fb31869a5c8144310a3b4ae1fc473924b786cc64"
+          },
+          {
+            "kind": "leaf_input_copy_recovery",
+            "path": "reconciliation/finalization/GEMINI-SIMAO-LEAF-INPUT-COPY-RECOVERY.json",
+            "sha256": "9b92135c1e7ce33d8a265c84e820eabba93e157d659857733a747c6adeb4bb14"
+          },
+          {
+            "kind": "leaf_input_copy_recovery_seal",
+            "path": "reconciliation/finalization/GEMINI-SIMAO-LEAF-INPUT-COPY-RECOVERY-SEAL.json",
+            "sha256": "0630c4d1239e2742933755cd16564c8484ff39919fff5915d144758166b9dd45"
+          }
+        ]
+      },
+      "disclosures": [
+        "Native terminal SUCCESS is retained, but native text, severity, anchors, and patches are not accepted verbatim; the effective chain is qualified by append-only adjudication.",
+        "Historical leaf 03 and 04 native ERROR/failed receipts remain unchanged.",
+        "Fourteen exact effective input copies were independently hash-verified; literal original paths remain absent and the copies were not reconstructed.",
+        "Provider-internal model revision and server-applied effort remain unknown; the independent OpenKritt validator rejection remains separate."
+      ]
+    },
+    {
+      "ordinal": 12,
+      "id": "GEMINI-PASHOV",
+      "provider": "GEMINI",
+      "baseline": "INCOMPLETE / RUNNING / fresh correction active",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "QUALIFIED_COMPLETE",
+        "status_basis": "QUALIFIED_METHOD_OUTPUT_WITH_NATIVE_ERRORS_PRESERVED",
+        "selected_attempt": "runs/GEMINI-PASHOV-REPAIRED/attempt-04",
+        "method_variant": "METHOD_OUTPUT_ADJUDICATION_AFTER_STICKY_NATIVE_ERROR",
+        "method_modified": true
+      },
+      "original_vs_selected": "Use repaired attempt-04 artifacts plus authorized Daybreak adjudication. Original and both same-UUID continuation statuses remain ERROR/failed.",
+      "evidence": {
+        "receipt": {
+          "kind": "adjudication_receipt",
+          "path": "runs/COORDINATOR-DAYBREAK/attempt-01/gemini-pashov-adjudication/completion-receipt.json",
+          "sha256": "71f7217e769720ad230d8eac6c3f8fedc906abc7c56029729f250a8942d95bf7"
+        },
+        "seal": {
+          "path": "runs/COORDINATOR-DAYBREAK/attempt-01/gemini-pashov-adjudication/SEAL.json",
+          "sha256": "0462347eae39b0cba0ffc41545fe85938e71bee4223a54df50e872bdfb6cbb48"
+        },
+        "supporting": [
+          {
+            "kind": "native_artifact_preservation_receipt",
+            "path": "runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/native-artifact-preservation-receipt.json",
+            "sha256": "545e810ec59a374761a7e1a44e7eeeaf6d1d9666a33de6be96bf3fe913058e41"
+          },
+          {
+            "kind": "native_artifact_seal",
+            "path": "runs/GEMINI-PASHOV-REPAIRED/attempt-04/adjudication/native-first-pass/artifact-integrity-seal.json",
+            "sha256": "60c47bc20bbe2f9ddaf81dc395bf2da498b951cc29329efa538a5a6f37653091"
+          },
+          {
+            "kind": "leaf_input_copy_recovery",
+            "path": "reconciliation/finalization/GEMINI-PASHOV-LEAF-INPUT-COPY-RECOVERY.json",
+            "sha256": "bc274c79c7bec7fb22d2520447e3cf4d318c44d11f2a05c84af7b096ea9061b8"
+          },
+          {
+            "kind": "leaf_input_copy_recovery_seal",
+            "path": "reconciliation/finalization/GEMINI-PASHOV-LEAF-INPUT-COPY-RECOVERY-SEAL.json",
+            "sha256": "587bb3339b458b39799df075cd6245dfbc8dfd4e525bce3b31576f2efb110745"
+          },
+          {
+            "kind": "request_5_recovery_chronology",
+            "path": "runs/COORDINATOR-DAYBREAK/attempt-01/gemini-pashov-adjudication/GEMINI-PASHOV-REQUEST-05-PREIMAGE-RECOVERY.json",
+            "sha256": "61b14bffacbf500756536ec7f8f4896a9fdb46e876c3a42bc8850a3c5ccd5d20"
+          },
+          {
+            "kind": "request_5_recovery_seal",
+            "path": "runs/COORDINATOR-DAYBREAK/attempt-01/gemini-pashov-adjudication/GEMINI-PASHOV-REQUEST-05-PREIMAGE-RECOVERY-SEAL.json",
+            "sha256": "b496978703157d21d765da6424df6ad9c7fc5385a30bd4f853209da0bafda1ed"
+          }
+        ]
+      },
+      "disclosures": [
+        "This qualifies method-output completion only; nativeRunSucceeded remains false and original plus two continuations remain ERROR/failed.",
+        "Leaf 03 and 04 ERROR/failed states remain preserved; stale aggregate/progress files remain immutable.",
+        "Thirteen exact effective input copies were independently hash-verified; literal original paths remain absent.",
+        "Preserve request-5 reconstructed-preimage chronology and the broken Pashov Option C assurance issue; no patch or native severity is approved."
+      ]
+    },
+    {
+      "ordinal": 13,
+      "id": "GEMINI-OPENKRITT",
+      "provider": "GEMINI",
+      "baseline": "COMPLETE / SEALED / native-engine-attempt-03",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "QUALIFIED_COMPLETE",
+        "status_basis": "SEALED_NATIVE_ENGINE_WITH_DISCLOSED_TRANSPORT_ADAPTER",
+        "selected_attempt": "provider-lanes/gemini/runs/GEMINI-OPENKRITT/native-engine-attempt-03",
+        "method_variant": "PINNED_NATIVE_OPENKRITT_WITH_FILE_SPOOL_ADAPTER",
+        "method_modified": true
+      },
+      "original_vs_selected": "Retain earlier incomplete/setup attempts; select native-engine-attempt-03.",
+      "evidence": {
+        "receipt": {
+          "kind": "completion_receipt",
+          "path": "provider-lanes/gemini/runs/GEMINI-OPENKRITT/native-engine-attempt-03/COMPLETION-RECEIPT.json",
+          "sha256": "5063ea02a411a62e18a5d5c4bc3a348a6c841df368a0a9775ddf48042d3e4048"
+        },
+        "seal": {
+          "path": "provider-lanes/gemini/runs/GEMINI-OPENKRITT/native-engine-attempt-03/SEAL.json",
+          "sha256": "ce98e240eb079d845a7148353085774835e8f6b765ec3d8a4daac91068e74a7b"
+        }
+      },
+      "disclosures": [
+        "Actual pinned Python/PostgreSQL OpenKritt engine; official agy file-spool and inherited resource-isolation compatibility adaptation are disclosed.",
+        "Preserve three network-failed CLI calls, six failed native metadata rows, and the native resume transition without rewriting completed or failed history.",
+        "Zero finding records meant ranker/postprocessors had no eligible work; do not claim independent finding validation or proof of absence.",
+        "Provider-internal revision and server-applied effort remain unknown."
+      ]
+    },
+    {
+      "ordinal": 14,
+      "id": "GEMINI-TOB",
+      "provider": "GEMINI",
+      "baseline": "COMPLETE / SEALED / repaired attempt-04",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "QUALIFIED_COMPLETE",
+        "status_basis": "QUALIFIED_ADAPTER_AND_SAME_UUID_TRANSPORT_RECOVERY",
+        "selected_attempt": "runs/GEMINI-TOB-REPAIRED/attempt-04",
+        "method_variant": "SIX_DECLARED_TOB_SKILLS_WITH_DISCLOSED_ADAPTER_AND_RECOVERY",
+        "method_modified": true
+      },
+      "original_vs_selected": "Use repaired attempt-04; preserve every original strict transport ERROR and sticky CLI record.",
+      "evidence": {
+        "receipt": {
+          "kind": "completion_receipt",
+          "path": "runs/GEMINI-TOB-REPAIRED/attempt-04/COMPLETION-RECEIPT.json",
+          "sha256": "62ffb8b6d3a19bf676e043b4145c9dbb4afb8757aafb6fd789efcfe3b9154865"
+        },
+        "seal": {
+          "path": "runs/GEMINI-TOB-REPAIRED/attempt-04/SEAL.json",
+          "sha256": "a4ba3346bf6a438bb7f4d58850848dffba4578ffa64b929c64503bdb9daab643"
+        }
+      },
+      "disclosures": [
+        "Six declared skills only, not the full Trail of Bits catalog.",
+        "S1 analyzed 12 selected functions and left nine not analyzed; S5 checked 10 of 219 requirements and left 209 unchecked.",
+        "S1/S5 use exact pinned bodies on a disclosed workflow-primitive adapter; S2/S3/S4/S6 preserve byte-identical historical ERROR receipts despite same-UUID terminal DONE responses.",
+        "Optional on-chain analysis lacked a deployment, Manticore was unavailable, and slither-prop gaps are not proofs.",
+        "Provider-internal revision and server-applied effort remain unknown."
+      ]
+    },
+    {
+      "ordinal": 15,
+      "id": "GEMINI-GEBAL",
+      "provider": "GEMINI",
+      "baseline": "COMPLETE / SEALED / repaired attempt-03",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "COMPLETE",
+        "status_basis": "SEALED_UNMODIFIED_NATIVE_GEBAL_COLD_REVIEW",
+        "selected_attempt": "runs/GEMINI-GEBAL-REPAIRED/attempt-03",
+        "method_variant": "UNMODIFIED_PINNED_NATIVE_GEBAL",
+        "method_modified": false
+      },
+      "original_vs_selected": "Retain earlier incomplete/provenance attempts; select repaired attempt-03 without rebinding its cold context.",
+      "evidence": {
+        "receipt": {
+          "kind": "completion_receipt",
+          "path": "runs/GEMINI-GEBAL-REPAIRED/attempt-03/COMPLETION-RECEIPT.json",
+          "sha256": "1da91f2495d3cdbf9f79e87c15cac002f1cb856c5fe459972df3c37c93b3e9c1"
+        },
+        "seal": {
+          "path": "runs/GEMINI-GEBAL-REPAIRED/attempt-03/EVIDENCE-SEAL.json",
+          "sha256": "145d5aac6ceb384f11cded625d18ca997fd67ff92db030f3359659c1dc3da187"
+        }
+      },
+      "disclosures": [
+        "Unmodified pinned native Gebal intake/context/schema-import/report over a 39-file cold source context.",
+        "Source-only; no deterministic tool execution or executable security proof in this cell.",
+        "Model observations are not validated security verdicts; provider-internal identity and server-applied effort remain unknown."
+      ]
+    },
+    {
+      "ordinal": 16,
+      "id": "DAYBREAK-SIMAO",
+      "provider": "DAYBREAK",
+      "baseline": "COMPLETE / SEALED / attempt-03",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "COMPLETE",
+        "status_basis": "SEALED_NATIVE_CORRECTED_ATTEMPT",
+        "selected_attempt": "runs/DAYBREAK-SIMAO/attempt-03",
+        "method_variant": "ORIGINAL_SIMAO_CORRECTED_ATTEMPT",
+        "method_modified": false
+      },
+      "original_vs_selected": "Preserve attempt-01 and interrupted/rejected auxiliary history; select completed attempt-03.",
+      "evidence": {
+        "receipt": {
+          "kind": "sealed_first_pass_used_as_receipt",
+          "path": "runs/DAYBREAK-SIMAO/attempt-03/FIRST-PASS.md",
+          "sha256": "e44b2b1995fdf0410fc4608fbce64ba0fa28ae76e185564651468cad066a6f7c"
+        },
+        "seal": {
+          "path": "runs/DAYBREAK-SIMAO/attempt-03/SEAL.json",
+          "sha256": "e4f532492a514f2d289a4dec5f1036791d704de003880eaa3ccdc26eb4e24c8a"
+        }
+      },
+      "disclosures": [
+        "Earlier interrupted and rejected auxiliary attempts remain preserved.",
+        "The sealed first pass is source-only; later proof follow-ups remain separate.",
+        "Provider-returned Daybreak identity remains unknown."
+      ]
+    },
+    {
+      "ordinal": 17,
+      "id": "DAYBREAK-PASHOV",
+      "provider": "DAYBREAK",
+      "baseline": "COMPLETE / SEALED / attempt-03",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "COMPLETE",
+        "status_basis": "SEALED_NATIVE_CORRECTED_ATTEMPT",
+        "selected_attempt": "runs/DAYBREAK-PASHOV/attempt-03",
+        "method_variant": "ORIGINAL_PASHOV_CORRECTED_ATTEMPT",
+        "method_modified": false
+      },
+      "original_vs_selected": "Preserve attempt-01 and interrupted/rejected auxiliary history; select completed attempt-03.",
+      "evidence": {
+        "receipt": {
+          "kind": "sealed_first_pass_used_as_receipt",
+          "path": "runs/DAYBREAK-PASHOV/attempt-03/FIRST-PASS.md",
+          "sha256": "e0f6f414a66a23835b7410a8f17d6aee4db9e97fa3ef67d507c0e934765b748f"
+        },
+        "seal": {
+          "path": "runs/DAYBREAK-PASHOV/attempt-03/SEAL.json",
+          "sha256": "c7f20bff3e4f4d3e73237de63679b6d2c08c42449dacab42efaf81eb3e1a6385"
+        }
+      },
+      "disclosures": [
+        "Earlier interrupted and rejected auxiliary attempts remain preserved.",
+        "The selected attempt is source-only and does not turn model findings into proof.",
+        "Provider-returned Daybreak identity remains unknown."
+      ]
+    },
+    {
+      "ordinal": 18,
+      "id": "DAYBREAK-OPENKRITT",
+      "provider": "DAYBREAK",
+      "baseline": "COMPLETE / SEALED / attempt-02",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "QUALIFIED_COMPLETE",
+        "status_basis": "SEALED_COMPATIBILITY_PATCHED_NATIVE_METHOD",
+        "selected_attempt": "runs/DAYBREAK-OPENKRITT/attempt-02",
+        "method_variant": "COMPATIBILITY_PATCHED_NATIVE_OPENKRITT",
+        "method_modified": true
+      },
+      "original_vs_selected": "Preserve blocked attempt-01; select compatibility-patched native attempt-02.",
+      "evidence": {
+        "receipt": {
+          "kind": "status_receipt",
+          "path": "runs/DAYBREAK-OPENKRITT/attempt-02/result.json",
+          "sha256": "b0a8d705b36e0a3ad930b681e86e7114ea547d754ab3cb14ff82d15eeec99485"
+        },
+        "seal": {
+          "path": "runs/DAYBREAK-OPENKRITT/attempt-02/SEAL.json",
+          "sha256": "57abd758e1fad29ae0a6338115383ced3eae5fd596fffef7dc5f322737e22c7a"
+        }
+      },
+      "disclosures": [
+        "Disclose the CLI/routing/resource-isolation compatibility patch and preserve the original blocker.",
+        "Native output contains four finding records and three canonical findings; reconciliation remains controlling.",
+        "The independent OpenKritt validator was provider-rejected and not retried.",
+        "Provider-returned Daybreak identity remains unknown."
+      ]
+    },
+    {
+      "ordinal": 19,
+      "id": "DAYBREAK-TOB",
+      "provider": "DAYBREAK",
+      "baseline": "INCOMPLETE / RUNNING / attempt-03",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "QUALIFIED_COMPLETE",
+        "status_basis": "PASS_WITH_APPEND_ONLY_SEMANTIC_RECONCILIATION",
+        "selected_attempt": "runs/DAYBREAK-TOB/attempt-03",
+        "method_variant": "SIX_DECLARED_TOB_STAGES_PLUS_ADJUDICATION",
+        "method_modified": true
+      },
+      "original_vs_selected": "Preserve attempt-02 and early attempt-03 source stages; select the final six-stage attempt-03 plus the coordinator adjudication.",
+      "evidence": {
+        "receipt": {
+          "kind": "adjudication_receipt",
+          "path": "runs/COORDINATOR-DAYBREAK/attempt-01/daybreak-tob-adjudication/completion-receipt.json",
+          "sha256": "db0cc0de07f46980d1883cbe5a5d59cd90a4c9eac9f456960eb77ece9fedbed1"
+        },
+        "seal": {
+          "path": "runs/COORDINATOR-DAYBREAK/attempt-01/daybreak-tob-adjudication/SEAL.json",
+          "sha256": "88d6fe572781c0272d2b7e7dc7edc7bd220058fadbaec2fe68a75941ba3be6bf"
+        },
+        "supporting": [
+          {
+            "kind": "source_first_pass",
+            "path": "runs/DAYBREAK-TOB/attempt-03/FIRST-PASS.md",
+            "sha256": "981bea8dd6fe0e96328c38cf8375f93bc8bdf272476b4defcbeca71fdfdd9bc6"
+          },
+          {
+            "kind": "source_first_pass_current_seal",
+            "path": "runs/DAYBREAK-TOB/attempt-03/SEAL.json",
+            "sha256": "c7d730eb6687f33fbc6e10bc43671ad1975813a03e05d37cbb2d85b6ca2ba82b"
+          },
+          {
+            "kind": "final_six_stage_report",
+            "path": "runs/DAYBREAK-TOB/attempt-03/REPORT.md",
+            "sha256": "32ad9d271ef4d3ecb7f4b093b22d0beed2162305e29a5d746e5f907038e90360"
+          },
+          {
+            "kind": "final_six_stage_seal",
+            "path": "runs/DAYBREAK-TOB/attempt-03/FINAL-SEAL.json",
+            "sha256": "f0adec605906be11bab443e05711eae6278de90b076f100ade0ead817c2a1b4f"
+          }
+        ]
+      },
+      "disclosures": [
+        "Completion covers six declared skills, not the full Trail of Bits catalog.",
+        "Preserve the lane's Critical dissent; controlling reconciliation retains conditional RF-001 High rather than adopting unconditional Critical.",
+        "Preserve the watcher-observed source-seal-version gap: current seal verifies, but older observed bytes were not retained and no cause is inferred.",
+        "Campaigns are bounded: 21/21 unit/fuzz, two 10,000-case fuzz tests, 98,304 purchase-only invariant calls, two intentional negative-property failures, Echidna 20,007 calls/4 properties, Slither 14 results with no High/Medium and exit 255; no formal proof.",
+        "Provider-returned Daybreak identity remains unknown; no owner acceptance or production-ready mitigation is inferred."
+      ]
+    },
+    {
+      "ordinal": 20,
+      "id": "DAYBREAK-GEBAL",
+      "provider": "DAYBREAK",
+      "baseline": "COMPLETE / SEALED / attempt-02",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "COMPLETE",
+        "status_basis": "SEALED_NATIVE_SOURCE_ONLY_METHOD",
+        "selected_attempt": "runs/DAYBREAK-GEBAL/attempt-02",
+        "method_variant": "ORIGINAL_GEBAL_SOURCE_ONLY_WITH_SEPARATE_COMPATIBILITY_CONTEXT",
+        "method_modified": false
+      },
+      "original_vs_selected": "Retain attempt-01; select attempt-02 source-only review.",
+      "evidence": {
+        "receipt": {
+          "kind": "sealed_first_pass_used_as_receipt",
+          "path": "runs/DAYBREAK-GEBAL/attempt-02/FIRST-PASS.md",
+          "sha256": "5e55669ca6587b2210d58e262b96c94c252065ec9a90052a327b6dfd1931c150"
+        },
+        "seal": {
+          "path": "runs/DAYBREAK-GEBAL/attempt-02/SEAL.json",
+          "sha256": "3fdd011f9fc31553a85beaba92a45c97024df9d5ba29bae0b761d5bf4f933361"
+        }
+      },
+      "disclosures": [
+        "Source-only own-model export/import method.",
+        "Separate test-inclusive deterministic compatibility work does not rebind the cold review.",
+        "Provider-returned Daybreak identity remains unknown."
+      ]
+    },
+    {
+      "ordinal": 21,
+      "id": "SUP-A1",
+      "provider": null,
+      "baseline": "COMPLETE / SEALED / no selected_attempt",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "COMPLETE",
+        "status_basis": "SEALED_SUPPLEMENTARY_FIRST_PASS",
+        "selected_attempt": "runs/SUP-A1/attempt-01",
+        "method_variant": "ORIGINAL_SUPPLEMENTARY_REVIEW",
+        "method_modified": false
+      },
+      "original_vs_selected": "Same attempt-01.",
+      "evidence": {
+        "receipt": {
+          "kind": "sealed_first_pass_used_as_receipt",
+          "path": "runs/SUP-A1/attempt-01/FIRST-PASS.md",
+          "sha256": "c0c7d5de057e4cba87141ce5e4a296ce560e194ed2469bb9d3c674794cc20a28"
+        },
+        "seal": {
+          "path": "runs/SUP-A1/attempt-01/SEAL.json",
+          "sha256": "72751ab0143247d887c07d51ccbcd4025d5da1067a3aabcea842124a4b35bc0e"
+        }
+      },
+      "disclosures": [
+        "Source-only first pass; later tool follow-ups remain separately recorded."
+      ]
+    },
+    {
+      "ordinal": 22,
+      "id": "SUP-A2",
+      "provider": null,
+      "baseline": "COMPLETE / SEALED / no selected_attempt",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "COMPLETE",
+        "status_basis": "SEALED_SUPPLEMENTARY_FIRST_PASS",
+        "selected_attempt": "runs/SUP-A2/attempt-01",
+        "method_variant": "ORIGINAL_SUPPLEMENTARY_REVIEW",
+        "method_modified": false
+      },
+      "original_vs_selected": "Same attempt-01.",
+      "evidence": {
+        "receipt": {
+          "kind": "sealed_first_pass_used_as_receipt",
+          "path": "runs/SUP-A2/attempt-01/FIRST-PASS.md",
+          "sha256": "0c5a8de1cb58ecb28b4367cb0be3bd62b8ea24ac08046bc06ceda7a38b919e7a"
+        },
+        "seal": {
+          "path": "runs/SUP-A2/attempt-01/SEAL.json",
+          "sha256": "8519c3641f21def7a5463304b07c24201263ee716c0ac50ec19f8ff9adf6ee1f"
+        }
+      },
+      "disclosures": [
+        "Source-only first pass; later tool follow-ups remain separately recorded."
+      ]
+    },
+    {
+      "ordinal": 23,
+      "id": "SUP-S1",
+      "provider": null,
+      "baseline": "COMPLETE / SEALED / no selected_attempt",
+      "final": {
+        "workflow_status": "COMPLETE",
+        "execution_state": "SEALED",
+        "effective_status": "COMPLETE",
+        "status_basis": "SEALED_SUPPLEMENTARY_FIRST_PASS",
+        "selected_attempt": "runs/SUP-S1/attempt-01",
+        "method_variant": "ORIGINAL_SUPPLEMENTARY_REVIEW",
+        "method_modified": false
+      },
+      "original_vs_selected": "Same attempt-01.",
+      "evidence": {
+        "receipt": {
+          "kind": "sealed_first_pass_used_as_receipt",
+          "path": "runs/SUP-S1/attempt-01/FIRST-PASS.md",
+          "sha256": "5ce7947150c196581dd0e2bb3b76afd0ba3742dcc134ac416407865ea41d551f"
+        },
+        "seal": {
+          "path": "runs/SUP-S1/attempt-01/SEAL.json",
+          "sha256": "fc19e3160cb5324dea5db596a61dad5eeda856c4f488a71749d3565c236b6285"
+        }
+      },
+      "disclosures": [
+        "Source-only first pass; later tool follow-ups remain separately recorded."
+      ]
+    }
+  ],
+  "claude_openkritt_parameterization": {
+    "substitute_only_after": [
+      "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/final-capture/COMPLETION-RECEIPT.json exists",
+      "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/final-capture/SEAL.json exists",
+      "The receipt reports nativeStatus=completed, qualificationIssues=[], qualifiesRouteSourceAndNativeWorkflow=true, open metadata rows=0, unresolved failed logical jobs=0, and historical failures preserved.",
+      "The seal status is QUALIFIED_MODIFIED_METHOD_COMPLETE. If findings exist and the seal instead reports a semantic gate pending, do not use the 20/3 target until that gate is sealed.",
+      "The receipt and seal bind target commit 9238b6ce8eb7f768c0dcd0cfcef26e1427a03155, the requested claude-opus-5-5/max route, all 43 frozen inputs, and the disclosed method patch/worktree drift.",
+      "Recompute SHA-256 from the final files and replace both angle-bracket placeholders; do not copy hashes from mutable status output.",
+      "Register the receipt through the exclusive reconciliation owner before editing matrix.json, then confirm state.json has zero source receipt, semantic, and post-source gates pending."
+    ],
+    "expected_paths": {
+      "first_pass": "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/final-capture/FIRST-PASS.md",
+      "completion_receipt": "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/final-capture/COMPLETION-RECEIPT.json",
+      "integrity_manifest": "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/final-capture/INTEGRITY-MANIFEST.json",
+      "seal": "provider-lanes/claude/runs/CLAUDE-OPENKRITT-MOD/attempt-01/final-capture/SEAL.json"
+    },
+    "if_terminal_failure": "Do not force 20/3. Preserve the terminal failure as its actual status, update counts honestly, and leave this blueprint target unsatisfied."
+  },
+  "validation_concerns": [
+    {
+      "severity": "BLOCKING",
+      "concern": "CLAUDE-OPENKRITT is still running and has no final-capture receipt or seal. The 20/3 count is conditional, not current."
+    },
+    {
+      "severity": "BLOCKING",
+      "concern": "The current working register and state hashes are pre-Claude-final. Re-read both after the final receipt is registered and before writing matrix.json; do not preserve stale hashes as current truth."
+    },
+    {
+      "severity": "BLOCKING_FOR_DELIVERY_NOT_MATRIX_SEMANTICS",
+      "concern": "Rerun receipt integrity after Claude registration and all document writes. Delivery is acceptable only with zero gaps and exactly the four already disclosed historical errors; any new error or gap blocks delivery."
+    },
+    {
+      "severity": "KNOWN_HISTORICAL_LIMIT",
+      "concern": "OPENAI-TOB attempt-01 events.jsonl: sealed expected 9776eddcd0608a348b15b8c3375aaf4a261f3db1b88bb08e0cc5807756d18041, current fdbb08e902a6713b35498cb49ad8f3f0e4cde87cf827edbf147c2ed7272472e8; exact sealed prefix recovered."
+    },
+    {
+      "severity": "KNOWN_HISTORICAL_LIMIT",
+      "concern": "OPENAI-TOB attempt-01 stderr.txt: sealed expected b0a79b598a2a9c312185c658bc57b555806388a79d0690bb0e2c010b98d91397, current 26c6dca4e3d5c625ec86f667f360facc18615d1b8ebfaa34fea23f078f0c2c74; exact sealed prefix recovered."
+    },
+    {
+      "severity": "KNOWN_HISTORICAL_LIMIT",
+      "concern": "OPENAI-TOB S4 STATUS.json: sealed expected 200038490e786f19e0d1325e11c1dffcd958a8f14b564a06100f23f07592fa84, current 9cfaeb948930b704c6f6b3b82d2ae81ac8ae38ed658577c1d453a443f08bbcf9; no exact old copy found."
+    },
+    {
+      "severity": "KNOWN_HISTORICAL_LIMIT",
+      "concern": "OPENAI-TOB S4 raw/001-resources.json: sealed expected 65355322591cfc9d8d27d3eeb37cb9a8007eec2daec5e7cf2fcc2137868f34ba, current 5873a2a5f4831c9c83f17b240eafd0fd86538ef7cee271a64b17645657555d97; no exact old copy found."
+    },
+    {
+      "severity": "SCHEMA_DISCLOSURE",
+      "concern": "CLAUDE-PASHOV and CLAUDE-GEBAL have no unique per-cell completion receipt/seal pair in the adopted register. They legitimately share the immutable consolidated Claude FIRST-PASS.md and checksum seal; retain the receipt kind so this is not misrepresented."
+    },
+    {
+      "severity": "SCHEMA_DISCLOSURE",
+      "concern": "DAYBREAK-SIMAO, DAYBREAK-PASHOV, DAYBREAK-GEBAL, and the three supplementary rows use sealed first-pass reports as lane receipts because no standalone completion receipt exists. Do not rename those artifacts."
+    },
+    {
+      "severity": "STATUS_INTEGRITY",
+      "concern": "QUALIFIED_COMPLETE never means the historical native result was SUCCESS. In particular, Gemini Pashov remains native ERROR across original plus two continuations, Claude Simao's original method remains provider-rejected, and Claude OpenKritt's original route remains blocked."
+    },
+    {
+      "severity": "IDENTITY_INTEGRITY",
+      "concern": "All five DAYBREAK provider_returned_identity values remain null. The Daybreak coordinator is also identity-unknown and outside the 23 rows. Do not infer identity from requested route, local selection, or access program."
+    },
+    {
+      "severity": "SCOPE_INTEGRITY",
+      "concern": "The coordinator, OpenAI orchestration rejection receipts, tools, late campaigns, and reconciliation agents are outside the 23-row denominator and must not be added as rows or votes."
+    },
+    {
+      "severity": "DELIVERY_STATE",
+      "concern": "No DELIVERY-MANIFEST, DELIVERY-SEAL, or READY-FOR-PARENT exists at this snapshot. This blueprint does not authorize or imply final delivery."
+    }
+  ],
+  "implementation_order": [
+    "Wait for and validate the Claude OpenKritt final-capture receipt and seal, or preserve its actual terminal failure.",
+    "Have the exclusive reconciliation owner register the terminal disposition and reach zero pending source, semantic, and post-source gates.",
+    "Re-read matrix.json, working-register.json, and state.json; abort on unexpected baseline changes rather than overwriting concurrent reconciliation work.",
+    "Apply the 23 row transformations while preserving every old limitation, validation_evidence item, refusal, error, and failed attempt in append-only history.",
+    "Recompute every cited receipt and seal hash; require all non-placeholder pairs to match this blueprint and substitute the two Claude OpenKritt hashes from the final files.",
+    "Validate exactly 23 unique ids, exactly 20 COMPLETE/QUALIFIED_COMPLETE and three PROVIDER_REJECTED, no RUNNING rows, 15 required external cells, five Daybreak cells, and three supplementary rows.",
+    "Confirm the three provider-rejected rows are exactly OPENAI-SIMAO, OPENAI-PASHOV, and OPENAI-TOB; confirm COORDINATOR-DAYBREAK is absent from runs.",
+    "Refresh dependent status/report/index/provider-validation/coverage artifacts, then rerun receipt integrity and only afterward create any package-level delivery seal."
+  ]
+}

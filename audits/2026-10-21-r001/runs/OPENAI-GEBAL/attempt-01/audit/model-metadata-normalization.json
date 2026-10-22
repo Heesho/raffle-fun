@@ -1,0 +1,27 @@
+{
+  "createdAt": "2026-10-21T08:12:03.151490+00:00",
+  "policy": "Preserve every raw response and seal; normalize absent provider fields separately rather than rewriting original artifacts.",
+  "normalizations": [
+    {
+      "source": "audit/specialists/accounting/SEAL.json",
+      "rawField": "providerReturnedIdentity",
+      "rawValue": null,
+      "normalizedProviderReturnedModel": "unknown",
+      "acceptedLocalSelection": "gpt-6-astra",
+      "acceptedLocalReasoningEffort": "ultra",
+      "acceptanceEvidence": "Successful explicit collaboration spawn request; not provider identity evidence."
+    },
+    {
+      "source": "runner-selection.json in run output",
+      "rawField": "provider_returned_identity",
+      "rawValue": null,
+      "normalizedProviderReturnedModel": "unknown"
+    }
+  ],
+  "appliesToAllStages": {
+    "providerReturnedModel": "unknown",
+    "providerReturnedEffort": "unknown",
+    "accessProgram": "unknown",
+    "fallbackEnabled": false
+  }
+}

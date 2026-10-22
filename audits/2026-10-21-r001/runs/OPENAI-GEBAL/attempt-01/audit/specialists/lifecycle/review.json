@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "snapshotHash": "50f9efb6b671450adc50c493c35692429d5dc4b5ded6d7b123a79df21361cc0e",
+  "contextHash": "2df5cb1e4b5b8f0f3c0663ef5fb41a1a3a2d12ed2304560034c3a691cfa80142",
+  "review": {
+    "observations": [
+      {
+        "title": "Arbitrary-prize trust requirement exceeds the ownership evidence accepted by escrow and delivery",
+        "description": "The embedded clean specification treats arbitrary prize contracts as untrusted, but IRaffle explicitly supports honest standards-compliant ERC721s. Factory validation relies on the selected contract reporting ERC721 support; the same selected contract supplies the deposit callback and ownerOf result used to verify escrow. Redemption similarly trusts transferFrom and ownerOf. These calls can detect reversion or inconsistent answers, but cannot establish the truth of a dishonest token's ownership reports. If an admitted prize later refuses delivery, redemption reverts and preserves the ticket; terminal NftWon cannot enter refunds, while storage-only settlement can allocate independent sponsor/treasury claims. This is an informational trust-model mismatch, not a demonstrated failure with an honest ERC721. Clarify whether untrusted refers to hostile callbacks while ERC721 ownership semantics are trusted; a stronger promise against dishonest ownership is not enforced by these checks.",
+        "severity": "informational",
+        "confidence": "high",
+        "source": [
+          {
+            "path": "packages/contracts/src/interfaces/IRaffle.sol",
+            "start": 12,
+            "end": 15
+          },
+          {
+            "path": "packages/contracts/src/RaffleFactory.sol",
+            "start": 127,
+            "end": 134
+          },
+          {
+            "path": "packages/contracts/src/RaffleFactory.sol",
+            "start": 154,
+            "end": 178
+          },
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 329,
+            "end": 337
+          },
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 276,
+            "end": 299
+          },
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 533,
+            "end": 557
+          }
+        ],
+        "assumptions": [
+          "The clean specification's arbitrary-prize trust language includes dishonest or permanently uncooperative ownership semantics.",
+          "An honest standard ERC721 is not assumed for this conditional observation; otherwise this is a documentation reconciliation item.",
+          "Canonical USDC and Chainlink wrapper remain trusted; no executed exploit or successful theft is claimed."
+        ]
+      },
+      {
+        "title": "Destination exclusions identify only clones in the local factory registry",
+        "description": "The raffle destination screen and factory prize/recipient validation query only the immutable local factory registry. A clone of a different deployment of the same factory is not identified by that mapping. If configured as a sponsor or treasury quote recipient, such a clone is not categorically excluded and quote release can transfer assets into it, where no general surplus recovery exists. Another deployment's raffle-ticket contract is likewise not excluded as a prize merely for being a raffle. This falls short of a literal global prohibition on assets moving between raffle clones. It is conditional on multiple deployments being within that requirement and does not demonstrate an attacker redirecting an existing correctly configured raffle. If isolation is intended only among one canonical factory's registered clones, this is not a defect.",
+        "severity": "low",
+        "confidence": "medium",
+        "source": [
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 587,
+            "end": 604
+          },
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 375,
+            "end": 391
+          },
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 564,
+            "end": 567
+          },
+          {
+            "path": "packages/contracts/src/RaffleFactory.sol",
+            "start": 65,
+            "end": 91
+          },
+          {
+            "path": "packages/contracts/src/RaffleFactory.sol",
+            "start": 154,
+            "end": 168
+          }
+        ],
+        "assumptions": [
+          "The no-interclone-transfer requirement covers clones from more than one deployment of this factory code.",
+          "A configured recipient or prize token may be a clone from another factory; configuration-induced loss is included in scope.",
+          "No unauthorized redirection, same-factory bypass, or executed asset movement is asserted."
+        ]
+      }
+    ],
+    "gaps": [
+      "Source-only supplemental review; no compile, test, exploit, analyzer, proof, transaction, browser, or runtime gas check was performed.",
+      "Requested model gpt-6-astra with reasoning ultra and fallback disabled; provider-returned model identity, enforced settings, usage and cost were unavailable and are not independently verified.",
+      "Only audit/context.json supplied assessed source. Five explicit production files and relevant inherited dependency paths were read; full lockfile and incidental unused transitive surfaces were inventoried but not semantically audited.",
+      "Actual canonical token/wrapper implementations, deployment addresses, chain state, arbitrary prize contracts, recipients, and frontend were absent. Canonical dependency semantics are assumed.",
+      "Arbitrary prize ownership truth and eventual transferability cannot be established by the same untrusted contract reporting ERC165 and ownerOf; clarify the honest-prize restriction in IRaffle against the clean specification.",
+      "Clarify whether clone isolation is local to one canonical factory or global across multiple deployments; the cross-factory observation is conditional.",
+      "Prize release uses transferFrom without receiver acceptance. The stated requirements do not mandate safe-transfer acceptance, so recipient incompatibility was not elevated to a separate defect.",
+      "No source-supported initialization takeover, callback deadline bypass, current-owner redemption bypass, duplicate claim, or reentrancy accounting corruption was identified under stated canonical dependency assumptions; this is not proof of absence."
+    ]
+  }
+}

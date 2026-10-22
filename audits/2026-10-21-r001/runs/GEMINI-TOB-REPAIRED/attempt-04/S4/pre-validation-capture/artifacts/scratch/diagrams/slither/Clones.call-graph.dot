@@ -1,0 +1,71 @@
+strict digraph {
+rankdir="LR"
+node [shape=box]
+subgraph cluster_1034_Clones {
+label = "Clones"
+"1034_cloneWithImmutableArgs(address,bytes,uint256)" [label="cloneWithImmutableArgs(address,bytes,uint256)"]
+"1034_predictDeterministicAddress(address,bytes32,address)" [label="predictDeterministicAddress(address,bytes32,address)"]
+"1034_cloneDeterministicWithImmutableArgs(address,bytes,bytes32,uint256)" [label="cloneDeterministicWithImmutableArgs(address,bytes,bytes32,uint256)"]
+"1034_clone(address)" [label="clone(address)"]
+"1034_predictDeterministicAddress(address,bytes32)" [label="predictDeterministicAddress(address,bytes32)"]
+"1034_cloneDeterministic(address,bytes32,uint256)" [label="cloneDeterministic(address,bytes32,uint256)"]
+"1034_clone(address,uint256)" [label="clone(address,uint256)"]
+"1034_cloneDeterministic(address,bytes32)" [label="cloneDeterministic(address,bytes32)"]
+"1034_cloneWithImmutableArgs(address,bytes)" [label="cloneWithImmutableArgs(address,bytes)"]
+"1034__cloneCodeWithImmutableArgs(address,bytes)" [label="_cloneCodeWithImmutableArgs(address,bytes)"]
+"1034_fetchCloneArgs(address)" [label="fetchCloneArgs(address)"]
+"1034_cloneDeterministicWithImmutableArgs(address,bytes,bytes32)" [label="cloneDeterministicWithImmutableArgs(address,bytes,bytes32)"]
+"1034_predictDeterministicAddressWithImmutableArgs(address,bytes,bytes32,address)" [label="predictDeterministicAddressWithImmutableArgs(address,bytes,bytes32,address)"]
+"1034_predictDeterministicAddressWithImmutableArgs(address,bytes,bytes32)" [label="predictDeterministicAddressWithImmutableArgs(address,bytes,bytes32)"]
+"1034_predictDeterministicAddress(address,bytes32)" -> "1034_predictDeterministicAddress(address,bytes32,address)"
+"1034_cloneDeterministicWithImmutableArgs(address,bytes,bytes32,uint256)" -> "1034__cloneCodeWithImmutableArgs(address,bytes)"
+"1034_cloneDeterministicWithImmutableArgs(address,bytes,bytes32)" -> "1034_cloneDeterministicWithImmutableArgs(address,bytes,bytes32,uint256)"
+"1034_predictDeterministicAddressWithImmutableArgs(address,bytes,bytes32)" -> "1034_predictDeterministicAddressWithImmutableArgs(address,bytes,bytes32,address)"
+"1034_cloneWithImmutableArgs(address,bytes)" -> "1034_cloneWithImmutableArgs(address,bytes,uint256)"
+"1034_predictDeterministicAddressWithImmutableArgs(address,bytes,bytes32,address)" -> "1034__cloneCodeWithImmutableArgs(address,bytes)"
+"1034_clone(address)" -> "1034_clone(address,uint256)"
+"1034_cloneWithImmutableArgs(address,bytes,uint256)" -> "1034__cloneCodeWithImmutableArgs(address,bytes)"
+"1034_cloneDeterministic(address,bytes32)" -> "1034_cloneDeterministic(address,bytes32,uint256)"
+}subgraph cluster_solidity {
+label = "[Solidity]"
+"create2(uint256,uint256,uint256,uint256)" 
+"create(uint256,uint256,uint256)" 
+"mstore(uint256,uint256)" 
+"revert FailedDeployment()" 
+"revert InsufficientBalance(uint256,uint256)" 
+"keccak256(bytes)" 
+"code(address)" 
+"abi.encodePacked()" 
+"mload(uint256)" 
+"revert CloneArgumentsTooLong()" 
+"extcodecopy(uint256,uint256,uint256,uint256)" 
+"balance(address)" 
+"keccak256(uint256,uint256)" 
+"1034_predictDeterministicAddress(address,bytes32,address)" -> "mload(uint256)"
+"1034__cloneCodeWithImmutableArgs(address,bytes)" -> "abi.encodePacked()"
+"1034_fetchCloneArgs(address)" -> "mload(uint256)"
+"1034_clone(address,uint256)" -> "balance(address)"
+"1034_clone(address,uint256)" -> "mstore(uint256,uint256)"
+"1034_cloneDeterministic(address,bytes32,uint256)" -> "revert FailedDeployment()"
+"1034_cloneWithImmutableArgs(address,bytes,uint256)" -> "balance(address)"
+"1034_predictDeterministicAddress(address,bytes32,address)" -> "keccak256(uint256,uint256)"
+"1034_clone(address,uint256)" -> "revert InsufficientBalance(uint256,uint256)"
+"1034_cloneWithImmutableArgs(address,bytes,uint256)" -> "revert InsufficientBalance(uint256,uint256)"
+"1034_predictDeterministicAddress(address,bytes32,address)" -> "mstore(uint256,uint256)"
+"1034_cloneWithImmutableArgs(address,bytes,uint256)" -> "revert FailedDeployment()"
+"1034_predictDeterministicAddressWithImmutableArgs(address,bytes,bytes32,address)" -> "keccak256(bytes)"
+"1034_fetchCloneArgs(address)" -> "extcodecopy(uint256,uint256,uint256,uint256)"
+"1034_cloneWithImmutableArgs(address,bytes,uint256)" -> "mload(uint256)"
+"1034_cloneDeterministic(address,bytes32,uint256)" -> "mstore(uint256,uint256)"
+"1034_clone(address,uint256)" -> "create(uint256,uint256,uint256)"
+"1034_fetchCloneArgs(address)" -> "code(address)"
+"1034_cloneDeterministic(address,bytes32,uint256)" -> "revert InsufficientBalance(uint256,uint256)"
+"1034_cloneDeterministic(address,bytes32,uint256)" -> "create2(uint256,uint256,uint256,uint256)"
+"1034_cloneWithImmutableArgs(address,bytes,uint256)" -> "create(uint256,uint256,uint256)"
+"1034_cloneDeterministic(address,bytes32,uint256)" -> "balance(address)"
+"1034_clone(address,uint256)" -> "revert FailedDeployment()"
+"1034__cloneCodeWithImmutableArgs(address,bytes)" -> "revert CloneArgumentsTooLong()"
+}subgraph cluster_toplevel {
+label = "[Top Level]"
+}
+}

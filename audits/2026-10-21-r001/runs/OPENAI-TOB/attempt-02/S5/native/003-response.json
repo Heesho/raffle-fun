@@ -1,0 +1,2500 @@
+{
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "quote": "one autonomous NFT raffle",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L10",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "Underspecified: the interface does not define an operational criterion for raffle autonomy."
+    },
+    {
+      "id": "REQ-002",
+      "quote": "fixed-price USDC entries",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L10",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "Entry purchases use USDC at a fixed per-entry price."
+    },
+    {
+      "id": "REQ-003",
+      "quote": "one transferable ERC-721 ticket per purchase.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L10-L11",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Each successful purchase mints exactly one ERC-721 ticket."
+    },
+    {
+      "id": "REQ-004",
+      "quote": "Ticket IDs are sequential.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L12",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Successive purchases receive consecutive ticket IDs."
+    },
+    {
+      "id": "REQ-005",
+      "quote": "Each ticket stores one inclusive uint128 entry range",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L12",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Each ticket has one stored entry interval with inclusive uint128 endpoints."
+    },
+    {
+      "id": "REQ-006",
+      "quote": "remains a transferable bearer claim until its owner atomically burns it for redemption or refund.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L12-L13",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "Until redemption or refund burns a ticket, its claim follows its current owner through permitted transfers."
+    },
+    {
+      "id": "REQ-007",
+      "quote": "its owner atomically burns it for redemption or refund.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L13",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "Refunding a ticket atomically exchanges its owner's ticket burn for the refund payment."
+    },
+    {
+      "id": "REQ-008",
+      "quote": "The immutable quote token",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L13",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The configured quote-token address cannot change."
+    },
+    {
+      "id": "REQ-009",
+      "quote": "canonical six-decimal USDC",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L14",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "The quote token is the deployment's canonical USDC; this interface supplies no address establishing canonical identity."
+    },
+    {
+      "id": "REQ-010",
+      "quote": "six-decimal USDC",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L14",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "Quote-token amounts use six decimal places."
+    },
+    {
+      "id": "REQ-011",
+      "quote": "standard, non-rebasing, fee-free transfers.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L14",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "The quote token is assumed to provide standard ERC-20 transfer behavior."
+    },
+    {
+      "id": "REQ-012",
+      "quote": "non-rebasing",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L14",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "The quote token is assumed not to rebase balances."
+    },
+    {
+      "id": "REQ-013",
+      "quote": "fee-free transfers.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L14",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "Quote-token transfers are assumed to move the specified amount without transfer fees."
+    },
+    {
+      "id": "REQ-014",
+      "quote": "Supported prizes are honest,",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L14",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "Underspecified: prize-token honesty is assumed, but the interface does not define the behaviors constituting honesty."
+    },
+    {
+      "id": "REQ-015",
+      "quote": "standards-compliant ERC-721s.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L15",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "Supported prize contracts are assumed to comply with ERC-721."
+    },
+    {
+      "id": "REQ-016",
+      "quote": "The single authoritative raffle lifecycle and economic result.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L20, Status",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "Status is the authoritative representation of the raffle's lifecycle and economic outcome."
+    },
+    {
+      "id": "REQ-017",
+      "quote": "The clone is initialized",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L22, Status.AwaitingPrize",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "An AwaitingPrize clone has completed initialization."
+    },
+    {
+      "id": "REQ-018",
+      "quote": "waiting for the factory to escrow the configured prize.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L22, Status.AwaitingPrize",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "AwaitingPrize represents a clone awaiting factory escrow of its configured prize."
+    },
+    {
+      "id": "REQ-019",
+      "quote": "The prize is escrowed",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L24, Status.Active",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "An Active raffle has its configured prize escrowed."
+    },
+    {
+      "id": "REQ-020",
+      "quote": "entry sales or post-sale draw initiation are available.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L24, Status.Active",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "Active permits entry sales subject to the documented sale conditions."
+    },
+    {
+      "id": "REQ-021",
+      "quote": "post-sale draw initiation are available.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L24, Status.Active",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "Active permits post-sale draw initiation subject to the documented request conditions."
+    },
+    {
+      "id": "REQ-022",
+      "quote": "A Chainlink VRF request was accepted",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L26, Status.Drawing",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "Drawing represents an accepted Chainlink VRF request."
+    },
+    {
+      "id": "REQ-023",
+      "quote": "its callback window is open.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L26, Status.Drawing",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "Drawing denotes an open callback window for the accepted request."
+    },
+    {
+      "id": "REQ-024",
+      "quote": "The reserve was met",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L28, Status.NftWon",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "NftWon is an outcome for which the reserve-entry threshold was met."
+    },
+    {
+      "id": "REQ-025",
+      "quote": "the winning ticket may redeem the prize NFT.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L28, Status.NftWon",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "In NftWon, the winning ticket carries the right to redeem the prize NFT."
+    },
+    {
+      "id": "REQ-026",
+      "quote": "The reserve was missed",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L30, Status.CashWon",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "CashWon is an outcome for which the reserve-entry threshold was not met."
+    },
+    {
+      "id": "REQ-027",
+      "quote": "the winning ticket may redeem its cash allocation.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L30, Status.CashWon",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "In CashWon, the winning ticket carries the right to redeem its cash allocation."
+    },
+    {
+      "id": "REQ-028",
+      "quote": "Full ticket refunds are enabled",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L32, Status.Refunding",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "Refunding enables full ticket refunds."
+    },
+    {
+      "id": "REQ-029",
+      "quote": "the sponsor may recover the prize NFT.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L32, Status.Refunding",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "Refunding permits recovery of the prize NFT for the sponsor."
+    },
+    {
+      "id": "REQ-030",
+      "quote": "Prize depositor",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L37, RaffleInitParams.sponsor",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "The configured sponsor identifies the prize depositor."
+    },
+    {
+      "id": "REQ-031",
+      "quote": "Immutable recipient of sponsor quote proceeds and any returned prize.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L38, RaffleInitParams.sponsorRecipient",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The configured sponsorRecipient cannot change during the raffle."
+    },
+    {
+      "id": "REQ-032",
+      "quote": "Immutable recipient of protocol fees.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L39, RaffleInitParams.protocolTreasury",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The configured protocol-fee recipient cannot change during the raffle."
+    },
+    {
+      "id": "REQ-033",
+      "quote": "Token ID of the prize escrowed by this raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L41, RaffleInitParams.prizeTokenId",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The configured prizeTokenId identifies the token escrowed as this raffle's prize."
+    },
+    {
+      "id": "REQ-034",
+      "quote": "One-based canonical factory identifier for this raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L42, RaffleInitParams.raffleId",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "raffleId is this raffle's one-based identifier assigned by the canonical factory."
+    },
+    {
+      "id": "REQ-035",
+      "quote": "Global raw entry-count threshold selecting the NFT outcome when met or exceeded.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L43, RaffleInitParams.reserveEntries",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "A resolved raffle selects the NFT outcome when the global raw entry count is at least reserveEntries."
+    },
+    {
+      "id": "REQ-036",
+      "quote": "Unix timestamp, in seconds, at which entry sales end exclusively.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L44, RaffleInitParams.endTime",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "Sales require a block timestamp strictly below the configured Unix-seconds endTime."
+    },
+    {
+      "id": "REQ-037",
+      "quote": "Emitted when the factory deposits the configured prize and activates the raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L58, PrizeDeposited",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "Factory deposit and activation of the configured prize emits PrizeDeposited."
+    },
+    {
+      "id": "REQ-038",
+      "quote": "ERC-721 contract of the deposited prize.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L59, PrizeDeposited.prizeToken",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "PrizeDeposited.prizeToken identifies the deposited prize's ERC-721 contract."
+    },
+    {
+      "id": "REQ-039",
+      "quote": "Token ID of the deposited prize.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L60, PrizeDeposited.prizeTokenId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "PrizeDeposited.prizeTokenId equals the deposited prize's token ID."
+    },
+    {
+      "id": "REQ-040",
+      "quote": "Address that deposited the prize through the factory.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L61, PrizeDeposited.sponsor",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "PrizeDeposited.sponsor identifies the address depositing the prize through the factory."
+    },
+    {
+      "id": "REQ-041",
+      "quote": "Emitted when a buyer pays for entries and one range ticket is minted.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L64, TicketPurchased",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "A completed entry purchase and range-ticket mint emits TicketPurchased."
+    },
+    {
+      "id": "REQ-042",
+      "quote": "Address that paid the six-decimal quote-token amount.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L65, TicketPurchased.buyer",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "TicketPurchased.buyer identifies the address that paid for the entries."
+    },
+    {
+      "id": "REQ-043",
+      "quote": "Address that received the newly minted ticket.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L66, TicketPurchased.recipient",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "TicketPurchased.recipient equals the newly minted ticket's recipient."
+    },
+    {
+      "id": "REQ-044",
+      "quote": "Sequential ticket ID assigned to the purchase.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L67, TicketPurchased.ticketId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "TicketPurchased.ticketId equals the sequential ID assigned to that purchase."
+    },
+    {
+      "id": "REQ-045",
+      "quote": "First global raffle entry represented by the ticket, inclusive.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L68, TicketPurchased.firstEntry",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "TicketPurchased.firstEntry equals the ticket's inclusive first global entry."
+    },
+    {
+      "id": "REQ-046",
+      "quote": "Last global raffle entry represented by the ticket, inclusive.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L69, TicketPurchased.lastEntry",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "TicketPurchased.lastEntry equals the ticket's inclusive last global entry."
+    },
+    {
+      "id": "REQ-047",
+      "quote": "Number of entries represented by the ticket.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L70, TicketPurchased.entryCount",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "TicketPurchased.entryCount equals the number of entries in the ticket's inclusive range."
+    },
+    {
+      "id": "REQ-048",
+      "quote": "Raw six-decimal quote-token units paid, equal to `entryCount * ENTRY_PRICE`.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L71, TicketPurchased.grossAmount",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "TicketPurchased.grossAmount equals the actual payment of entryCount multiplied by ENTRY_PRICE."
+    },
+    {
+      "id": "REQ-049",
+      "quote": "Emitted when the raffle pays for and records its one Chainlink VRF request.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L82, DrawRequested",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "Paying for and recording the raffle's VRF request emits DrawRequested."
+    },
+    {
+      "id": "REQ-050",
+      "quote": "its one Chainlink VRF request.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L82",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "A raffle records at most one accepted Chainlink VRF request."
+    },
+    {
+      "id": "REQ-051",
+      "quote": "Wrapper-assigned request identifier.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L83, DrawRequested.requestId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "DrawRequested.requestId equals the identifier assigned by the wrapper."
+    },
+    {
+      "id": "REQ-052",
+      "quote": "Address that initiated and funded the request.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L84, DrawRequested.requester",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "DrawRequested.requester identifies the address that initiated the request."
+    },
+    {
+      "id": "REQ-053",
+      "quote": "Address that initiated and funded the request.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L84, DrawRequested.requester",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "DrawRequested.requester identifies the address that funded the request."
+    },
+    {
+      "id": "REQ-054",
+      "quote": "Native-token wei actually paid to the wrapper for the request.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L85, DrawRequested.fee",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "DrawRequested.fee equals the actual native-token wei paid to the wrapper."
+    },
+    {
+      "id": "REQ-055",
+      "quote": "Native-token wei returned to the requester after paying the actual fee.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L86, DrawRequested.excessReturned",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "DrawRequested.excessReturned equals the native-token wei refunded after payment of the actual fee."
+    },
+    {
+      "id": "REQ-056",
+      "quote": "Unix timestamp, in seconds, when the request was accepted.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L87, DrawRequested.drawRequestedAt",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "DrawRequested.drawRequestedAt equals the request-acceptance Unix timestamp in seconds."
+    },
+    {
+      "id": "REQ-057",
+      "quote": "Exclusive Unix-timestamp deadline for accepting the authenticated callback.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L88, DrawRequested.callbackDeadline",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "DrawRequested.callbackDeadline equals the exclusive deadline used to accept an authenticated callback."
+    },
+    {
+      "id": "REQ-058",
+      "quote": "Emitted when an authenticated, ABI-decodable callback cannot resolve the raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L98, VrfCallbackIgnored",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "An authenticated, ABI-decodable callback that cannot resolve the raffle emits VrfCallbackIgnored."
+    },
+    {
+      "id": "REQ-059",
+      "quote": "Request ID supplied by the wrapper callback.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L99, VrfCallbackIgnored.receivedRequestId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "VrfCallbackIgnored.receivedRequestId equals the callback-supplied request ID."
+    },
+    {
+      "id": "REQ-060",
+      "quote": "Request ID currently recorded by the raffle",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L100, VrfCallbackIgnored.expectedRequestId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "After request persistence, VrfCallbackIgnored.expectedRequestId equals the raffle's recorded request ID."
+    },
+    {
+      "id": "REQ-061",
+      "quote": "zero before request persistence.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L100, VrfCallbackIgnored.expectedRequestId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "Before request persistence, VrfCallbackIgnored.expectedRequestId is zero."
+    },
+    {
+      "id": "REQ-062",
+      "quote": "Current raffle status when the callback is ignored.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L101, VrfCallbackIgnored.status",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "VrfCallbackIgnored.status equals the raffle's status when the callback is ignored."
+    },
+    {
+      "id": "REQ-063",
+      "quote": "Emitted when an authenticated callback selects the winning entry and final result.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L104, RaffleResolved",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "An authenticated callback selecting the winning entry and final result emits RaffleResolved."
+    },
+    {
+      "id": "REQ-064",
+      "quote": "Request ID that produced the accepted randomness.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L105, RaffleResolved.requestId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "RaffleResolved.requestId identifies the request producing the accepted randomness."
+    },
+    {
+      "id": "REQ-065",
+      "quote": "Selected one-based global entry number in `[1,totalEntries]`.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L106, RaffleResolved.winningEntry",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "RaffleResolved.winningEntry equals the selected global entry and lies between 1 and totalEntries inclusive."
+    },
+    {
+      "id": "REQ-066",
+      "quote": "Final `NftWon` or `CashWon` result.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L107, RaffleResolved.result",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "RaffleResolved.result equals the final outcome, either NftWon or CashWon."
+    },
+    {
+      "id": "REQ-067",
+      "quote": "Emitted when the raffle enters the full-refund branch.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L110, RefundsEnabled",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "Transition into the full-refund branch emits RefundsEnabled."
+    },
+    {
+      "id": "REQ-068",
+      "quote": "Address that enabled refunds.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L111, RefundsEnabled.finalizer",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "RefundsEnabled.finalizer identifies the caller enabling refunds."
+    },
+    {
+      "id": "REQ-069",
+      "quote": "Raw six-decimal quote-token units initially available for ticket refunds.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L112, RefundsEnabled.remainingRefundLiability",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "RefundsEnabled.remainingRefundLiability equals the initial ticket-refund liability in raw quote-token units."
+    },
+    {
+      "id": "REQ-070",
+      "quote": "Emitted when the winning ticket is proven and all terminal quote-token liabilities are allocated.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L115, WinningTicketSettled",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "Proving the winning ticket and allocating all terminal quote-token liabilities emits WinningTicketSettled."
+    },
+    {
+      "id": "REQ-071",
+      "quote": "Ticket proven to contain the selected winning entry.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L116, WinningTicketSettled.ticketId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "WinningTicketSettled.ticketId identifies the ticket whose range contains the selected winning entry."
+    },
+    {
+      "id": "REQ-072",
+      "quote": "Address that performed permissionless settlement.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L117, WinningTicketSettled.settler",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "WinningTicketSettled.settler identifies the caller performing settlement."
+    },
+    {
+      "id": "REQ-073",
+      "quote": "Final `NftWon` or `CashWon` result.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L118, WinningTicketSettled.result",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "WinningTicketSettled.result equals the final NftWon or CashWon outcome."
+    },
+    {
+      "id": "REQ-074",
+      "quote": "Raw six-decimal quote-token units allocated to the cash winner",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L119, WinningTicketSettled.cashAmount",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "For CashWon, WinningTicketSettled.cashAmount equals the cash-winner allocation in raw quote-token units."
+    },
+    {
+      "id": "REQ-075",
+      "quote": "zero for `NftWon`.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L119, WinningTicketSettled.cashAmount",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "WinningTicketSettled.cashAmount is zero for NftWon."
+    },
+    {
+      "id": "REQ-076",
+      "quote": "Raw six-decimal quote-token units allocated to the treasury",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L120, WinningTicketSettled.protocolFee",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "WinningTicketSettled.protocolFee equals the treasury allocation in raw quote-token units."
+    },
+    {
+      "id": "REQ-077",
+      "quote": "rounded down from gross sales.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L120, WinningTicketSettled.protocolFee",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "Protocol-fee allocation rounds down from gross sales; the interface does not specify the fee rate."
+    },
+    {
+      "id": "REQ-078",
+      "quote": "Raw six-decimal quote-token units allocated to the sponsor recipient as the remainder.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L121, WinningTicketSettled.sponsorAmount",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "WinningTicketSettled.sponsorAmount equals the remaining raw quote units allocated to the sponsor recipient."
+    },
+    {
+      "id": "REQ-079",
+      "quote": "Emitted when the winning ticket owner burns the ticket and receives the corresponding prize.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L131, WinningTicketRedeemed",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "Successful owner redemption that burns the winning ticket and delivers its prize emits WinningTicketRedeemed."
+    },
+    {
+      "id": "REQ-080",
+      "quote": "Burned winning ticket ID.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L132, WinningTicketRedeemed.ticketId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "WinningTicketRedeemed.ticketId identifies the winning ticket burned by redemption."
+    },
+    {
+      "id": "REQ-081",
+      "quote": "Ticket owner that received the prize at redemption time.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L133, WinningTicketRedeemed.winner",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "WinningTicketRedeemed.winner equals the ticket owner receiving the prize at redemption."
+    },
+    {
+      "id": "REQ-082",
+      "quote": "Final `NftWon` or `CashWon` result.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L134, WinningTicketRedeemed.result",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "WinningTicketRedeemed.result equals the final NftWon or CashWon outcome."
+    },
+    {
+      "id": "REQ-083",
+      "quote": "Raw six-decimal quote-token units paid for `CashWon`",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L135, WinningTicketRedeemed.cashAmount",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "For CashWon, WinningTicketRedeemed.cashAmount equals the raw quote-token units actually paid."
+    },
+    {
+      "id": "REQ-084",
+      "quote": "zero for `NftWon`.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L135, WinningTicketRedeemed.cashAmount",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "WinningTicketRedeemed.cashAmount is zero for NftWon."
+    },
+    {
+      "id": "REQ-085",
+      "quote": "ERC-721 prize contract for `NftWon`",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L136, WinningTicketRedeemed.prizeToken",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "For NftWon, WinningTicketRedeemed.prizeToken identifies the delivered ERC-721 prize contract."
+    },
+    {
+      "id": "REQ-086",
+      "quote": "the zero address for `CashWon`.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L136, WinningTicketRedeemed.prizeToken",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "WinningTicketRedeemed.prizeToken is the zero address for CashWon."
+    },
+    {
+      "id": "REQ-087",
+      "quote": "ERC-721 prize token ID for `NftWon`",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L137, WinningTicketRedeemed.prizeTokenId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "For NftWon, WinningTicketRedeemed.prizeTokenId equals the delivered prize's token ID."
+    },
+    {
+      "id": "REQ-088",
+      "quote": "zero for `CashWon`.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L137, WinningTicketRedeemed.prizeTokenId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "WinningTicketRedeemed.prizeTokenId is zero for CashWon."
+    },
+    {
+      "id": "REQ-089",
+      "quote": "Emitted when an owner burns one or more tickets for a full quote-token refund.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L147, TicketsRefunded",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "An owner's successful ticket-batch burn and full quote-token refund emits TicketsRefunded."
+    },
+    {
+      "id": "REQ-090",
+      "quote": "Ticket owner that burned the tickets and received the refund.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L148, TicketsRefunded.owner",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "TicketsRefunded.owner identifies the ticket owner whose tickets were burned and who received the refund."
+    },
+    {
+      "id": "REQ-091",
+      "quote": "Number of tickets burned in this transaction.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L149, TicketsRefunded.ticketQuantity",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "TicketsRefunded.ticketQuantity equals the number of tickets burned in that transaction."
+    },
+    {
+      "id": "REQ-092",
+      "quote": "Aggregate number of entries represented by the burned tickets.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L150, TicketsRefunded.entryQuantity",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "TicketsRefunded.entryQuantity equals the sum of entry counts represented by the burned tickets."
+    },
+    {
+      "id": "REQ-093",
+      "quote": "Raw six-decimal quote-token units refunded, equal to `entryQuantity * ENTRY_PRICE`.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L151, TicketsRefunded.amount",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "TicketsRefunded.amount equals the actual refund of entryQuantity multiplied by ENTRY_PRICE."
+    },
+    {
+      "id": "REQ-094",
+      "quote": "Raw six-decimal quote-token units still claimable after this refund.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L152, TicketsRefunded.remainingRefundLiability",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "TicketsRefunded.remainingRefundLiability equals the outstanding raw quote-token refund liability after this refund."
+    },
+    {
+      "id": "REQ-095",
+      "quote": "Emitted when the complete current sponsor balance is released to its immutable recipient.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L161, SponsorProceedsReleased",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "Release of the complete current sponsor balance to its immutable recipient emits SponsorProceedsReleased."
+    },
+    {
+      "id": "REQ-096",
+      "quote": "Address that triggered the permissionless release.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L162, SponsorProceedsReleased.caller",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "SponsorProceedsReleased.caller equals the address triggering the release."
+    },
+    {
+      "id": "REQ-097",
+      "quote": "permissionless release.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L162, SponsorProceedsReleased",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "Anyone can trigger sponsor-proceeds release when its other conditions are satisfied."
+    },
+    {
+      "id": "REQ-098",
+      "quote": "Immutable sponsor recipient that received the payment.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L163, SponsorProceedsReleased.recipient",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "SponsorProceedsReleased.recipient equals the immutable sponsor recipient receiving the payment."
+    },
+    {
+      "id": "REQ-099",
+      "quote": "Raw six-decimal quote-token units paid.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L164, SponsorProceedsReleased.amount",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "SponsorProceedsReleased.amount equals the raw quote-token units actually paid."
+    },
+    {
+      "id": "REQ-100",
+      "quote": "Emitted when the complete current protocol-fee balance is released to the immutable treasury.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L167, ProtocolFeesReleased",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "Release of the complete current protocol-fee balance to the immutable treasury emits ProtocolFeesReleased."
+    },
+    {
+      "id": "REQ-101",
+      "quote": "Address that triggered the permissionless release.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L168, ProtocolFeesReleased.caller",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "ProtocolFeesReleased.caller equals the address triggering the release."
+    },
+    {
+      "id": "REQ-102",
+      "quote": "permissionless release.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L168, ProtocolFeesReleased",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "Anyone can trigger protocol-fee release when its other conditions are satisfied."
+    },
+    {
+      "id": "REQ-103",
+      "quote": "Immutable protocol treasury that received the payment.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L169, ProtocolFeesReleased.treasury",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "ProtocolFeesReleased.treasury equals the immutable protocol treasury receiving the payment."
+    },
+    {
+      "id": "REQ-104",
+      "quote": "Raw six-decimal quote-token units paid.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L170, ProtocolFeesReleased.amount",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "ProtocolFeesReleased.amount equals the raw quote-token units actually paid."
+    },
+    {
+      "id": "REQ-105",
+      "quote": "Emitted when the escrowed prize is returned after a cash result or refund transition.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L173, SponsorPrizeReleased",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "Returning the escrowed prize after CashWon emits SponsorPrizeReleased."
+    },
+    {
+      "id": "REQ-106",
+      "quote": "Emitted when the escrowed prize is returned after a cash result or refund transition.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L173, SponsorPrizeReleased",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "Returning the escrowed prize after transition to Refunding emits SponsorPrizeReleased."
+    },
+    {
+      "id": "REQ-107",
+      "quote": "Address that triggered the permissionless release.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L174, SponsorPrizeReleased.caller",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "SponsorPrizeReleased.caller equals the address triggering the prize release."
+    },
+    {
+      "id": "REQ-108",
+      "quote": "permissionless release.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L174, SponsorPrizeReleased",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "Anyone can trigger sponsor-prize release when its other conditions are satisfied."
+    },
+    {
+      "id": "REQ-109",
+      "quote": "Immutable sponsor recipient that received the prize.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L175, SponsorPrizeReleased.recipient",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "SponsorPrizeReleased.recipient equals the immutable sponsor recipient receiving the prize."
+    },
+    {
+      "id": "REQ-110",
+      "quote": "ERC-721 contract of the returned prize.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L176, SponsorPrizeReleased.prizeToken",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "SponsorPrizeReleased.prizeToken identifies the returned prize's ERC-721 contract."
+    },
+    {
+      "id": "REQ-111",
+      "quote": "Token ID of the returned prize.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L177, SponsorPrizeReleased.prizeTokenId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "SponsorPrizeReleased.prizeTokenId equals the returned prize's token ID."
+    },
+    {
+      "id": "REQ-112",
+      "quote": "Raised when a caller other than the immutable factory attempts clone initialization.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L184, OnlyFactory",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Clone initialization by a caller other than the immutable factory raises OnlyFactory."
+    },
+    {
+      "id": "REQ-113",
+      "quote": "initialization is attempted more than once",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L187, AlreadyInitialized",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Repeated initialization raises AlreadyInitialized."
+    },
+    {
+      "id": "REQ-114",
+      "quote": "on the locked implementation.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L187, AlreadyInitialized",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Attempting initialization on the locked implementation raises AlreadyInitialized."
+    },
+    {
+      "id": "REQ-115",
+      "quote": "Raised when a required address is the zero address.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L190, ZeroAddress",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "A zero required address raises ZeroAddress; the interface does not exhaustively enumerate which addresses are required."
+    },
+    {
+      "id": "REQ-116",
+      "quote": "Raised when an operation is unavailable in the current lifecycle state.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L193, InvalidStatus",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "An operation unavailable in the current lifecycle state raises InvalidStatus, subject to specifically documented errors."
+    },
+    {
+      "id": "REQ-117",
+      "quote": "Current raffle status.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L194, InvalidStatus.actual",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "InvalidStatus.actual equals the current raffle status."
+    },
+    {
+      "id": "REQ-118",
+      "quote": "Raised when an ERC-721 receiver callback does not exactly match the configured factory prize deposit.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L197, UnexpectedPrize",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "A receiver callback inconsistent with the configured factory prize deposit raises UnexpectedPrize."
+    },
+    {
+      "id": "REQ-119",
+      "quote": "ERC-721 contract that invoked the receiver callback.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L198, UnexpectedPrize.token",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "UnexpectedPrize.token identifies the contract invoking the ERC-721 receiver callback."
+    },
+    {
+      "id": "REQ-120",
+      "quote": "Token ID supplied by the callback.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L199, UnexpectedPrize.tokenId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "UnexpectedPrize.tokenId equals the callback-supplied token ID."
+    },
+    {
+      "id": "REQ-121",
+      "quote": "Address identified as the previous token owner.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L200, UnexpectedPrize.from",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "UnexpectedPrize.from equals the previous-owner address supplied by the callback."
+    },
+    {
+      "id": "REQ-122",
+      "quote": "Address identified as the transfer operator.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L201, UnexpectedPrize.operator",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "UnexpectedPrize.operator equals the transfer-operator address supplied by the callback."
+    },
+    {
+      "id": "REQ-123",
+      "quote": "Raised when an entry purchase is submitted at or after the exclusive sale end.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L204, SaleEnded",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "An entry purchase submitted at or after endTime raises SaleEnded."
+    },
+    {
+      "id": "REQ-124",
+      "quote": "Exclusive sale-end Unix timestamp, in seconds.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L205, SaleEnded.endTime",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "SaleEnded.endTime equals the exclusive sale-end timestamp in Unix seconds."
+    },
+    {
+      "id": "REQ-125",
+      "quote": "Current block Unix timestamp, in seconds.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L206, SaleEnded.currentTime",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "SaleEnded.currentTime equals the current block timestamp."
+    },
+    {
+      "id": "REQ-126",
+      "quote": "Raised when an entry ticket would be minted to the zero address.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L209, InvalidRecipient",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Attempting to mint an entry ticket to the zero address raises InvalidRecipient."
+    },
+    {
+      "id": "REQ-127",
+      "quote": "Raised when a purchase requests no entries.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L212, ZeroEntryCount",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "A purchase requesting zero entries raises ZeroEntryCount."
+    },
+    {
+      "id": "REQ-128",
+      "quote": "Raised when a purchase would exceed the `uint128` global entry-number representation.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L215, TotalEntriesOverflow",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "A purchase causing the global sold-entry count to exceed uint128 raises TotalEntriesOverflow."
+    },
+    {
+      "id": "REQ-129",
+      "quote": "Current global sold-entry count.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L216, TotalEntriesOverflow.totalEntries",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "TotalEntriesOverflow.totalEntries equals the sold-entry count before the attempted purchase."
+    },
+    {
+      "id": "REQ-130",
+      "quote": "Prospective entry count requested by the purchase.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L217, TotalEntriesOverflow.requestedEntries",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "TotalEntriesOverflow.requestedEntries equals the attempted purchase's requested entry count."
+    },
+    {
+      "id": "REQ-131",
+      "quote": "a refund batch is empty",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L220, InvalidTicketBatchSize",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "An empty refund batch raises InvalidTicketBatchSize."
+    },
+    {
+      "id": "REQ-132",
+      "quote": "exceeds the bounded ticket limit.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L220, InvalidTicketBatchSize",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "A refund batch exceeding the ticket limit raises InvalidTicketBatchSize."
+    },
+    {
+      "id": "REQ-133",
+      "quote": "Number of supplied ticket IDs.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L221, InvalidTicketBatchSize.quantity",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "InvalidTicketBatchSize.quantity equals the length of the supplied ticket-ID batch."
+    },
+    {
+      "id": "REQ-134",
+      "quote": "Maximum ticket IDs accepted per refund transaction.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L222, InvalidTicketBatchSize.maximum",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "InvalidTicketBatchSize.maximum equals the maximum accepted refund-batch length."
+    },
+    {
+      "id": "REQ-135",
+      "quote": "Raised when a quote-token claim targets a known protocol destination that could strand the claim.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L225, InvalidQuoteDestination",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Such destinations must raise InvalidQuoteDestination, but the interface defines neither their set nor the stranding criterion."
+    },
+    {
+      "id": "REQ-136",
+      "quote": "Rejected payout recipient.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L226, InvalidQuoteDestination.destination",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "InvalidQuoteDestination.destination equals the rejected quote-token payout recipient."
+    },
+    {
+      "id": "REQ-137",
+      "quote": "Raised when a draw request is submitted before the sale end.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L229, RaffleNotEnded",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "A draw request before endTime raises RaffleNotEnded."
+    },
+    {
+      "id": "REQ-138",
+      "quote": "Exclusive sale-end Unix timestamp, in seconds.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L230, RaffleNotEnded.endTime",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "RaffleNotEnded.endTime equals the exclusive sale-end timestamp in Unix seconds."
+    },
+    {
+      "id": "REQ-139",
+      "quote": "Current block Unix timestamp, in seconds.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L231, RaffleNotEnded.currentTime",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "RaffleNotEnded.currentTime equals the current block timestamp."
+    },
+    {
+      "id": "REQ-140",
+      "quote": "Raised when a draw request is submitted at or after the exclusive request deadline.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L234, DrawRequestWindowExpired",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "A draw request at or after drawRequestDeadline raises DrawRequestWindowExpired."
+    },
+    {
+      "id": "REQ-141",
+      "quote": "Exclusive draw-request Unix-timestamp deadline, in seconds.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L235, DrawRequestWindowExpired.deadline",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "DrawRequestWindowExpired.deadline equals the exclusive draw-request deadline in Unix seconds."
+    },
+    {
+      "id": "REQ-142",
+      "quote": "Current block Unix timestamp, in seconds.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L236, DrawRequestWindowExpired.currentTime",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "DrawRequestWindowExpired.currentTime equals the current block timestamp."
+    },
+    {
+      "id": "REQ-143",
+      "quote": "Raised when draw initiation is attempted for a raffle with zero sold entries.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L239, NoEntriesSold",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Draw initiation with zero sold entries raises NoEntriesSold."
+    },
+    {
+      "id": "REQ-144",
+      "quote": "Raised when refunds are requested before the applicable liveness deadline.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L242, RefundsNotAvailable",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Requesting refunds before the deadline applicable to that lifecycle branch raises RefundsNotAvailable."
+    },
+    {
+      "id": "REQ-145",
+      "quote": "Unix timestamp, in seconds, at which refunds become available.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L243, RefundsNotAvailable.deadline",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "RefundsNotAvailable.deadline equals the applicable refund-availability timestamp in Unix seconds."
+    },
+    {
+      "id": "REQ-146",
+      "quote": "Current block Unix timestamp, in seconds.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L244, RefundsNotAvailable.currentTime",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "RefundsNotAvailable.currentTime equals the current block timestamp."
+    },
+    {
+      "id": "REQ-147",
+      "quote": "Raised when supplied native value cannot cover the quoted or actual Chainlink request fee.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L247, InsufficientVrfFee",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Supplied native value below the quoted Chainlink request fee raises InsufficientVrfFee."
+    },
+    {
+      "id": "REQ-148",
+      "quote": "Raised when supplied native value cannot cover the quoted or actual Chainlink request fee.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L247, InsufficientVrfFee",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Supplied native value below the actual Chainlink request fee raises InsufficientVrfFee."
+    },
+    {
+      "id": "REQ-149",
+      "quote": "Native-token wei required for the request.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L248, InsufficientVrfFee.requiredFee",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "InsufficientVrfFee.requiredFee equals the native-token fee required at the failing check."
+    },
+    {
+      "id": "REQ-150",
+      "quote": "Native-token wei supplied by the caller.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L249, InsufficientVrfFee.suppliedValue",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "InsufficientVrfFee.suppliedValue equals the native-token wei supplied by the caller."
+    },
+    {
+      "id": "REQ-151",
+      "quote": "Raised when excess native value cannot be returned to the draw requester.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L252, NativeRefundFailed",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Failure to return excess native value to the draw requester raises NativeRefundFailed."
+    },
+    {
+      "id": "REQ-152",
+      "quote": "Draw requester that was due the refund.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L253, NativeRefundFailed.recipient",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "NativeRefundFailed.recipient identifies the draw requester owed the excess-value refund."
+    },
+    {
+      "id": "REQ-153",
+      "quote": "Native-token wei that could not be returned.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L254, NativeRefundFailed.amount",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "NativeRefundFailed.amount equals the native-token wei whose return failed."
+    },
+    {
+      "id": "REQ-154",
+      "quote": "Raised when no current cash-winner proceeds remain claimable.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L257, NoWinnerProceeds",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Attempting to claim nonexistent current cash-winner proceeds raises NoWinnerProceeds."
+    },
+    {
+      "id": "REQ-155",
+      "quote": "Raised when no current sponsor proceeds remain claimable.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L260, NoSponsorProceeds",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Attempting to release nonexistent current sponsor proceeds raises NoSponsorProceeds."
+    },
+    {
+      "id": "REQ-156",
+      "quote": "Raised when no current protocol fees remain claimable.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L263, NoProtocolFees",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Attempting to release nonexistent current protocol fees raises NoProtocolFees."
+    },
+    {
+      "id": "REQ-157",
+      "quote": "Raised when initialization or a ticket transfer targets known protocol plumbing.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L266, UnsafeProtocolDestination",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Initialization targeting protocol plumbing raises UnsafeProtocolDestination; the interface does not enumerate those destinations."
+    },
+    {
+      "id": "REQ-158",
+      "quote": "a ticket transfer targets known protocol plumbing.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L266, UnsafeProtocolDestination",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "A ticket transfer targeting protocol plumbing raises UnsafeProtocolDestination; the interface does not enumerate those destinations."
+    },
+    {
+      "id": "REQ-159",
+      "quote": "Rejected address.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L267, UnsafeProtocolDestination.destination",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "UnsafeProtocolDestination.destination equals the rejected destination address."
+    },
+    {
+      "id": "REQ-160",
+      "quote": "Raised when the caller is not the current owner of the supplied ticket.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L270, NotTicketOwner",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "A nonowner attempting an owner-only ticket operation raises NotTicketOwner."
+    },
+    {
+      "id": "REQ-161",
+      "quote": "Ticket whose ownership was checked.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L271, NotTicketOwner.ticketId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "NotTicketOwner.ticketId equals the ticket ID subjected to the ownership check."
+    },
+    {
+      "id": "REQ-162",
+      "quote": "Address attempting the owner-only operation.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L272, NotTicketOwner.caller",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "NotTicketOwner.caller equals the address attempting the owner-only operation."
+    },
+    {
+      "id": "REQ-163",
+      "quote": "Current ticket owner.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L273, NotTicketOwner.owner",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "NotTicketOwner.owner equals the ticket's current owner."
+    },
+    {
+      "id": "REQ-164",
+      "quote": "Raised when the supplied ticket range does not contain the selected winning entry.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L276, TicketDoesNotContainWinningEntry",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "A supplied ticket range excluding the selected winning entry raises TicketDoesNotContainWinningEntry."
+    },
+    {
+      "id": "REQ-165",
+      "quote": "Supplied ticket ID.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L277, TicketDoesNotContainWinningEntry.ticketId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "TicketDoesNotContainWinningEntry.ticketId equals the supplied ticket ID."
+    },
+    {
+      "id": "REQ-166",
+      "quote": "Selected one-based global winning entry.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L278, TicketDoesNotContainWinningEntry.winningEntry",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "TicketDoesNotContainWinningEntry.winningEntry equals the selected one-based global winning entry."
+    },
+    {
+      "id": "REQ-167",
+      "quote": "Raised when terminal liabilities have already been allocated.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L281, SettlementAlreadyComplete",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Attempting to allocate terminal liabilities again raises SettlementAlreadyComplete."
+    },
+    {
+      "id": "REQ-168",
+      "quote": "Raised when redemption supplies a ticket other than the recorded winning ticket.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L284, WinningTicketMismatch",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Redemption using a ticket different from the recorded winning ticket raises WinningTicketMismatch."
+    },
+    {
+      "id": "REQ-169",
+      "quote": "Ticket ID supplied for redemption.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L285, WinningTicketMismatch.suppliedTicketId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "WinningTicketMismatch.suppliedTicketId equals the ticket ID submitted for redemption."
+    },
+    {
+      "id": "REQ-170",
+      "quote": "Previously settled winning ticket ID.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L286, WinningTicketMismatch.winningTicketId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "WinningTicketMismatch.winningTicketId equals the winning ticket ID recorded by settlement."
+    },
+    {
+      "id": "REQ-171",
+      "quote": "Raised when the winning ticket has already been burned and redeemed.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L289, WinningTicketAlreadyRedeemed",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Attempting redemption after the winning ticket has already been burned and redeemed raises WinningTicketAlreadyRedeemed."
+    },
+    {
+      "id": "REQ-172",
+      "quote": "Raised when the sponsor prize cannot be returned in the current result state.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L292, SponsorPrizeUnavailable",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Attempting sponsor-prize return in an unavailable result state raises SponsorPrizeUnavailable."
+    },
+    {
+      "id": "REQ-173",
+      "quote": "Current raffle status.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L293, SponsorPrizeUnavailable.status",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "SponsorPrizeUnavailable.status equals the current raffle status."
+    },
+    {
+      "id": "REQ-174",
+      "quote": "Raised when the escrowed prize has already been released.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L296, PrizeAlreadyClaimed",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Attempting another release of an already released escrowed prize raises PrizeAlreadyClaimed."
+    },
+    {
+      "id": "REQ-175",
+      "quote": "Raised when the prize token does not report the expected owner after transfer.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L299, PrizeDeliveryVerificationFailed",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "After prize transfer, failure of the token's ownership report to match the intended owner raises PrizeDeliveryVerificationFailed."
+    },
+    {
+      "id": "REQ-176",
+      "quote": "Address that should own the prize after delivery.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L300, PrizeDeliveryVerificationFailed.recipient",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "PrizeDeliveryVerificationFailed.recipient equals the intended post-delivery prize owner."
+    },
+    {
+      "id": "REQ-177",
+      "quote": "Initializes a fresh fixed-target clone",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L305, initialize",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The initialized clone has a fixed implementation target."
+    },
+    {
+      "id": "REQ-178",
+      "quote": "its immutable-per-raffle configuration.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L305, initialize",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "initialize installs clone-specific configuration that cannot subsequently change for that raffle."
+    },
+    {
+      "id": "REQ-179",
+      "quote": "Callable exactly once",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L306, initialize",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "A fresh clone can complete initialize once and cannot complete it again."
+    },
+    {
+      "id": "REQ-180",
+      "quote": "only by the immutable canonical factory.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L306, initialize",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "Only the immutable canonical factory can successfully initialize a clone."
+    },
+    {
+      "id": "REQ-181",
+      "quote": "Prize escrow activates the raffle later.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L306, initialize",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "Initialization precedes activation, which occurs upon prize escrow."
+    },
+    {
+      "id": "REQ-182",
+      "quote": "Buys any positive number of entries",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L310, buyEntries",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "buyEntries supports positive entry counts within the documented representation and purchase constraints."
+    },
+    {
+      "id": "REQ-183",
+      "quote": "mints one sequential ticket containing their inclusive range.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L310, buyEntries",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The ticket minted for a purchase represents exactly the inclusive range of entries bought in that purchase."
+    },
+    {
+      "id": "REQ-184",
+      "quote": "Address that receives the newly minted ERC-721 range ticket.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L311, buyEntries.recipient",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "buyEntries mints the new range ticket to its recipient argument."
+    },
+    {
+      "id": "REQ-185",
+      "quote": "Sequential ID of the newly minted ticket.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L313, buyEntries return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "buyEntries returns the sequential ID of the ticket it minted."
+    },
+    {
+      "id": "REQ-186",
+      "quote": "Pays the current native Chainlink fee",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L316, requestDraw",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "requestDraw pays the current Chainlink request fee in native tokens."
+    },
+    {
+      "id": "REQ-187",
+      "quote": "requests the raffle's one random word.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L316, requestDraw",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "requestDraw requests exactly one random word."
+    },
+    {
+      "id": "REQ-188",
+      "quote": "Callable by anyone",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L317, requestDraw",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "Any caller can initiate the draw when the other documented conditions hold."
+    },
+    {
+      "id": "REQ-189",
+      "quote": "only in `[endTime,drawRequestDeadline())`",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L317, requestDraw",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "Successful draw initiation requires endTime <= block.timestamp < drawRequestDeadline()."
+    },
+    {
+      "id": "REQ-190",
+      "quote": "after at least one entry is sold.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L317, requestDraw",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "Draw initiation requires at least one sold entry."
+    },
+    {
+      "id": "REQ-191",
+      "quote": "Any native value above the wrapper's actual fee is returned to the caller atomically.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L317-L318, requestDraw",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "The request atomically refunds its caller all supplied native value exceeding the wrapper's actual fee."
+    },
+    {
+      "id": "REQ-192",
+      "quote": "Wrapper-assigned request identifier recorded by the raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L319, requestDraw return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "requestDraw returns the wrapper-assigned request ID persisted by the raffle."
+    },
+    {
+      "id": "REQ-193",
+      "quote": "Enables full refunds after the sold-raffle request deadline",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L322, enableRefunds",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "A sold raffle without an accepted request can enter full refunds once its exclusive request window has ended."
+    },
+    {
+      "id": "REQ-194",
+      "quote": "or an accepted request's callback deadline.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L322, enableRefunds",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "An unresolved accepted request can enter full refunds once its exclusive callback window has ended."
+    },
+    {
+      "id": "REQ-195",
+      "quote": "Also closes an empty raffle immediately for the sponsor",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L323, enableRefunds",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "The sponsor can close an empty raffle without waiting for sale end."
+    },
+    {
+      "id": "REQ-196",
+      "quote": "after sale end for anyone.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L323, enableRefunds",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "Anyone can close an empty raffle once the sale has ended."
+    },
+    {
+      "id": "REQ-197",
+      "quote": "allocates winner, sponsor, and protocol liabilities.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L326, settleWinningTicket",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "Winning-ticket settlement allocates the winner's terminal liability."
+    },
+    {
+      "id": "REQ-198",
+      "quote": "allocates winner, sponsor, and protocol liabilities.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L326, settleWinningTicket",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "Winning-ticket settlement allocates the sponsor's terminal liability."
+    },
+    {
+      "id": "REQ-199",
+      "quote": "allocates winner, sponsor, and protocol liabilities.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L326, settleWinningTicket",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "Winning-ticket settlement allocates the protocol's terminal liability."
+    },
+    {
+      "id": "REQ-200",
+      "quote": "Anyone may execute",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L327, settleWinningTicket",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "Settlement is callable by anyone, subject to its documented nonauthorization conditions."
+    },
+    {
+      "id": "REQ-201",
+      "quote": "ownership is not read",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L327, settleWinningTicket",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Winning-ticket settlement does not read ticket ownership."
+    },
+    {
+      "id": "REQ-202",
+      "quote": "the ticket remains transferable",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L327, settleWinningTicket",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "Settlement leaves the winning ticket transferable."
+    },
+    {
+      "id": "REQ-203",
+      "quote": "no external asset transfer occurs.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L327-L328, settleWinningTicket",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "settleWinningTicket performs no external asset transfer."
+    },
+    {
+      "id": "REQ-204",
+      "quote": "The cash-winner allocation is rounded down",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L328, settleWinningTicket",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "The cash-winner allocation rounds down to raw quote-token units; its underlying rate is unspecified here."
+    },
+    {
+      "id": "REQ-205",
+      "quote": "the sponsor receives the remaining raw units.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L328, settleWinningTicket",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "Settlement allocates to the sponsor the raw quote-token units remaining after the other terminal allocations."
+    },
+    {
+      "id": "REQ-206",
+      "quote": "Ticket whose stored inclusive range must contain `winningEntry`.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L329, settleWinningTicket.ticketId",
+      "kind": "invariant",
+      "force": "mandatory",
+      "checkable": "The supplied ticket's stored range satisfies firstEntry <= winningEntry <= lastEntry."
+    },
+    {
+      "id": "REQ-207",
+      "quote": "Raw six-decimal quote-token units allocated to the winner",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L330, settleWinningTicket return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "For a cash result, settleWinningTicket returns the winner's allocation in raw quote-token units."
+    },
+    {
+      "id": "REQ-208",
+      "quote": "zero for an NFT result.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L330, settleWinningTicket return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "settleWinningTicket returns zero for an NFT result."
+    },
+    {
+      "id": "REQ-209",
+      "quote": "Lets the current winning-ticket owner",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L333, redeemWinningTicket",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "Redemption authority belongs to the current winning-ticket owner."
+    },
+    {
+      "id": "REQ-210",
+      "quote": "atomically burn the ticket and receive the NFT or cash prize.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L333, redeemWinningTicket",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "Redemption atomically burns the winning ticket and delivers the prize corresponding to the final outcome to its owner."
+    },
+    {
+      "id": "REQ-211",
+      "quote": "If necessary, this first settles the supplied winning ticket so the owner can complete both steps in one transaction.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L334-L335, redeemWinningTicket",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "If settlement is incomplete, redemption first settles the supplied winning ticket within the same transaction."
+    },
+    {
+      "id": "REQ-212",
+      "quote": "Any failed delivery reverts the burn",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L335, redeemWinningTicket",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Failed prize delivery rolls back the winning-ticket burn."
+    },
+    {
+      "id": "REQ-213",
+      "quote": "every redemption state change.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L335, redeemWinningTicket",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "Failed prize delivery rolls back every state change made by the redemption transaction."
+    },
+    {
+      "id": "REQ-214",
+      "quote": "Raw six-decimal quote-token units paid for `CashWon`",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L337, redeemWinningTicket return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "For CashWon, redeemWinningTicket returns the raw quote-token units actually paid."
+    },
+    {
+      "id": "REQ-215",
+      "quote": "zero for `NftWon`.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L337, redeemWinningTicket return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "redeemWinningTicket returns zero for NftWon."
+    },
+    {
+      "id": "REQ-216",
+      "quote": "Burns an owner-selected batch of tickets",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L340, refundTickets",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "A successful refund burns the batch of tickets selected by their owner."
+    },
+    {
+      "id": "REQ-217",
+      "quote": "returns their full entry purchase value.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L340, refundTickets",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "A successful ticket-batch refund pays the full purchase value of the represented entries."
+    },
+    {
+      "id": "REQ-218",
+      "quote": "Accepts one to 100 tickets.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L341, refundTickets",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The accepted refund-batch size is from 1 through 100 tickets inclusive."
+    },
+    {
+      "id": "REQ-219",
+      "quote": "Duplicate, nonexistent, or foreign-owned IDs revert the entire batch.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L341, refundTickets",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "A duplicate ticket ID causes the entire refund batch to revert."
+    },
+    {
+      "id": "REQ-220",
+      "quote": "Duplicate, nonexistent, or foreign-owned IDs revert the entire batch.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L341, refundTickets",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "A nonexistent ticket ID causes the entire refund batch to revert."
+    },
+    {
+      "id": "REQ-221",
+      "quote": "foreign-owned IDs revert the entire batch.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L341, refundTickets",
+      "kind": "error-handling",
+      "force": "descriptive",
+      "checkable": "A ticket ID owned by someone other than the caller causes the entire refund batch to revert."
+    },
+    {
+      "id": "REQ-222",
+      "quote": "Ticket IDs owned by the caller and submitted for refund.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L342, refundTickets.ticketIds",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "The caller must own every ticket submitted for refund."
+    },
+    {
+      "id": "REQ-223",
+      "quote": "Raw six-decimal quote-token units paid, equal to represented entries times `ENTRY_PRICE`.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L343, refundTickets return",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "refundTickets returns the actual payment, equal to the batch's represented entries multiplied by ENTRY_PRICE."
+    },
+    {
+      "id": "REQ-224",
+      "quote": "Releases the complete current sponsor-proceeds balance",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L346, releaseSponsorProceeds",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "A successful releaseSponsorProceeds releases the entire current sponsor-proceeds balance."
+    },
+    {
+      "id": "REQ-225",
+      "quote": "to the immutable sponsor recipient.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L346, releaseSponsorProceeds",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "releaseSponsorProceeds pays the immutable sponsor recipient."
+    },
+    {
+      "id": "REQ-226",
+      "quote": "Raw six-decimal quote-token units paid in this release.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L347, releaseSponsorProceeds return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "releaseSponsorProceeds returns the raw quote-token units actually paid in that release."
+    },
+    {
+      "id": "REQ-227",
+      "quote": "Releases the complete current protocol-fee balance",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L350, releaseProtocolFees",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "A successful releaseProtocolFees releases the entire current protocol-fee balance."
+    },
+    {
+      "id": "REQ-228",
+      "quote": "to the immutable treasury.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L350, releaseProtocolFees",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "releaseProtocolFees pays the immutable protocol treasury."
+    },
+    {
+      "id": "REQ-229",
+      "quote": "Raw six-decimal quote-token units paid in this release.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L351, releaseProtocolFees return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "releaseProtocolFees returns the raw quote-token units actually paid in that release."
+    },
+    {
+      "id": "REQ-230",
+      "quote": "Returns the escrowed prize to the immutable sponsor recipient",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L354, releaseSponsorPrize",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "releaseSponsorPrize delivers the escrowed prize to the immutable sponsor recipient."
+    },
+    {
+      "id": "REQ-231",
+      "quote": "after `CashWon` or `Refunding`.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L354, releaseSponsorPrize",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "CashWon permits sponsor-prize release, subject to the other documented release conditions."
+    },
+    {
+      "id": "REQ-232",
+      "quote": "after `CashWon` or `Refunding`.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L354, releaseSponsorPrize",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "Refunding permits sponsor-prize release, subject to the other documented release conditions."
+    },
+    {
+      "id": "REQ-233",
+      "quote": "Returns the wrapper's current native direct-funding price for the configured callback.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L359, getVrfRequestPrice",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "getVrfRequestPrice returns the wrapper's current native-token quote for the configured callback."
+    },
+    {
+      "id": "REQ-234",
+      "quote": "the value may change before request inclusion.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L360, getVrfRequestPrice return",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "The returned price is a current quote rather than a guaranteed fee locked until request inclusion."
+    },
+    {
+      "id": "REQ-235",
+      "quote": "Estimates the native direct-funding price at a caller-selected gas price.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L363, estimateVrfRequestPrice",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "estimateVrfRequestPrice computes its estimate using the gas price selected by the caller."
+    },
+    {
+      "id": "REQ-236",
+      "quote": "Prospective transaction gas price in wei per gas.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L364, estimateVrfRequestPrice.requestGasPriceWei",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "requestGasPriceWei is interpreted as transaction gas price in wei per gas."
+    },
+    {
+      "id": "REQ-237",
+      "quote": "Estimated native-token wei for the configured callback and one random word.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L365, estimateVrfRequestPrice return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "The returned native-token wei estimate uses the raffle's configured callback parameters."
+    },
+    {
+      "id": "REQ-238",
+      "quote": "one random word.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L365, estimateVrfRequestPrice return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "The price estimate is for a request containing exactly one random word."
+    },
+    {
+      "id": "REQ-239",
+      "quote": "Returns the inclusive global entry range represented by a ticket ID.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L368, ticketRange",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "ticketRange returns the represented inclusive global interval for the supplied ticket ID."
+    },
+    {
+      "id": "REQ-240",
+      "quote": "Returns zeros for an ID that has never been minted",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L369, ticketRange",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "ticketRange returns firstEntry = 0 and lastEntry = 0 for an ID that has never been minted."
+    },
+    {
+      "id": "REQ-241",
+      "quote": "ranges remain historical after ticket burns.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L369, ticketRange",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Burning a ticket preserves the entry range returned by ticketRange for that ticket."
+    },
+    {
+      "id": "REQ-242",
+      "quote": "First represented one-based global entry, inclusive.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L371, ticketRange.firstEntry",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "For a minted ID, ticketRange.firstEntry is the inclusive first represented entry in the one-based global numbering."
+    },
+    {
+      "id": "REQ-243",
+      "quote": "Last represented one-based global entry, inclusive.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L372, ticketRange.lastEntry",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "For a minted ID, ticketRange.lastEntry is the inclusive last represented entry in the one-based global numbering."
+    },
+    {
+      "id": "REQ-244",
+      "quote": "Returns the exclusive deadline for initiating the draw.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L375, drawRequestDeadline",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "drawRequestDeadline returns the timestamp at and after which draw initiation is disallowed."
+    },
+    {
+      "id": "REQ-245",
+      "quote": "Unix timestamp, in seconds, equal to `endTime + 2 days`.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L376, drawRequestDeadline return",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "drawRequestDeadline() equals endTime + 2 days in Unix seconds."
+    },
+    {
+      "id": "REQ-246",
+      "quote": "Returns the exclusive deadline for accepting the authenticated callback.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L379, callbackDeadline",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "An authenticated callback is not accepted at or after the deadline returned by callbackDeadline."
+    },
+    {
+      "id": "REQ-247",
+      "quote": "Unix timestamp, in seconds, equal to `drawRequestedAt + 2 days`",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L380, callbackDeadline return",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "After a request, callbackDeadline() equals drawRequestedAt + 2 days in Unix seconds."
+    },
+    {
+      "id": "REQ-248",
+      "quote": "zero before a request.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L380, callbackDeadline return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "callbackDeadline() is zero before a request."
+    },
+    {
+      "id": "REQ-249",
+      "quote": "Returns all currently outstanding quote-token liabilities tracked by the raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L383, accountedQuoteBalance",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "accountedQuoteBalance equals the total currently outstanding quote-token liabilities tracked by the raffle."
+    },
+    {
+      "id": "REQ-250",
+      "quote": "Raw six-decimal quote-token units across the unsettled pot, refunds, and allocated claims.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L384, accountedQuoteBalance return",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "The accounted balance sums the unsettled pot, remaining refund liability, and outstanding allocated claims in raw quote-token units."
+    },
+    {
+      "id": "REQ-251",
+      "quote": "Returns lifetime gross sales derived from the global sold-entry count.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L387, grossSales",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "grossSales reports lifetime sales, derived from the lifetime global sold-entry count."
+    },
+    {
+      "id": "REQ-252",
+      "quote": "No redundant gross-sales value is stored.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L388, grossSales",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The raffle does not maintain a redundant stored gross-sales amount."
+    },
+    {
+      "id": "REQ-253",
+      "quote": "Raw six-decimal quote-token units equal to `totalEntries * ENTRY_PRICE`.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L389, grossSales return",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "grossSales() equals totalEntries multiplied by ENTRY_PRICE in raw quote-token units."
+    },
+    {
+      "id": "REQ-254",
+      "quote": "Returns the fixed raw six-decimal quote-token price of one entry.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L394, ENTRY_PRICE",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "ENTRY_PRICE() reports the fixed per-entry price used for quote-token accounting."
+    },
+    {
+      "id": "REQ-255",
+      "quote": "One entry price, exactly 1,000,000 raw units.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L395, ENTRY_PRICE return",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "ENTRY_PRICE() equals exactly 1,000,000 raw quote-token units."
+    },
+    {
+      "id": "REQ-256",
+      "quote": "Returns the fixed Chainlink callback execution limit.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L398, callbackGasLimit",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The callback execution limit reported by callbackGasLimit is fixed."
+    },
+    {
+      "id": "REQ-257",
+      "quote": "Callback gas units requested from the wrapper.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L399, callbackGasLimit return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "callbackGasLimit() equals the callback gas units requested from the wrapper."
+    },
+    {
+      "id": "REQ-258",
+      "quote": "Returns the fixed Chainlink confirmation count.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L402, requestConfirmations",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The Chainlink confirmation count reported by requestConfirmations is fixed."
+    },
+    {
+      "id": "REQ-259",
+      "quote": "Blocks requested before callback fulfillment.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L403, requestConfirmations return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "requestConfirmations() equals the number of confirmation blocks requested before callback fulfillment."
+    },
+    {
+      "id": "REQ-260",
+      "quote": "Returns the immutable factory authorized to initialize this implementation's clones.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L406, factory",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "factory() returns the immutable factory address authorized to initialize the implementation's clones."
+    },
+    {
+      "id": "REQ-261",
+      "quote": "Canonical factory address.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L407, factory return",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "The factory getter identifies the canonical deployment factory; this interface does not specify its address."
+    },
+    {
+      "id": "REQ-262",
+      "quote": "Returns the prize depositor and pre-end empty-raffle refund authority.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L410, sponsor",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "sponsor() returns the prize depositor's address."
+    },
+    {
+      "id": "REQ-263",
+      "quote": "pre-end empty-raffle refund authority.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L410, sponsor",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "Before sale end, authority to enable refunds for an empty raffle belongs to the sponsor."
+    },
+    {
+      "id": "REQ-264",
+      "quote": "Immutable-per-raffle sponsor address.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L411, sponsor return",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The sponsor address returned for an initialized raffle cannot change."
+    },
+    {
+      "id": "REQ-265",
+      "quote": "Returns the immutable recipient of sponsor quote proceeds and returned prizes.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L414, sponsorRecipient",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "sponsorRecipient() returns the immutable recipient configured for sponsor quote proceeds."
+    },
+    {
+      "id": "REQ-266",
+      "quote": "Returns the immutable recipient of sponsor quote proceeds and returned prizes.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L414, sponsorRecipient",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "sponsorRecipient() returns the immutable recipient configured for returned prizes."
+    },
+    {
+      "id": "REQ-267",
+      "quote": "Returns the immutable recipient of this raffle's protocol fees.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L418, protocolTreasury",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "protocolTreasury() returns the immutable recipient configured for this raffle's protocol fees."
+    },
+    {
+      "id": "REQ-268",
+      "quote": "Returns the immutable canonical six-decimal USDC contract.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L422, quoteToken",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "quoteToken() returns the immutable quote-token contract used by the raffle."
+    },
+    {
+      "id": "REQ-269",
+      "quote": "Canonical USDC contract trusted by this factory deployment.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L423, quoteToken return",
+      "kind": "trust-boundary",
+      "force": "descriptive",
+      "checkable": "The factory deployment treats the returned canonical USDC contract as trusted."
+    },
+    {
+      "id": "REQ-270",
+      "quote": "Returns the immutable Chainlink VRF v2.5 native direct-funding wrapper.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L426, vrfWrapper",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "vrfWrapper() returns the raffle's Chainlink VRF v2.5 native direct-funding wrapper."
+    },
+    {
+      "id": "REQ-271",
+      "quote": "immutable Chainlink VRF v2.5 native direct-funding wrapper.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L426, vrfWrapper",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The configured VRF wrapper address cannot change."
+    },
+    {
+      "id": "REQ-272",
+      "quote": "Returns the configured ERC-721 prize contract.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L430, prizeToken",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "prizeToken() returns the configured ERC-721 prize contract."
+    },
+    {
+      "id": "REQ-273",
+      "quote": "Returns the configured ERC-721 prize token ID.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L434, prizeTokenId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "prizeTokenId() returns the configured ERC-721 prize's token ID."
+    },
+    {
+      "id": "REQ-274",
+      "quote": "Returns this raffle's one-based canonical factory identifier.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L438, raffleId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "raffleId() returns this raffle's one-based canonical factory identifier."
+    },
+    {
+      "id": "REQ-275",
+      "quote": "Returns the global entry threshold that selects the NFT outcome when met or exceeded.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L442, reserveEntries",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "reserveEntries() returns the global sold-entry threshold used to select the NFT outcome."
+    },
+    {
+      "id": "REQ-276",
+      "quote": "Returns the exclusive sale-end timestamp.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L446, endTime",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "endTime() returns the exclusive timestamp used to end entry sales."
+    },
+    {
+      "id": "REQ-277",
+      "quote": "Unix timestamp, in seconds.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L447, endTime return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "endTime() expresses its timestamp in Unix seconds."
+    },
+    {
+      "id": "REQ-278",
+      "quote": "Returns the lifetime global number of entries sold.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L450, totalEntries",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "totalEntries() reports cumulative lifetime entries sold, without subtracting burned or refunded entries."
+    },
+    {
+      "id": "REQ-279",
+      "quote": "also the last assigned global entry number.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L451, totalEntries return",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The sold-entry count equals the last assigned global entry number."
+    },
+    {
+      "id": "REQ-280",
+      "quote": "Returns the lifetime number of range tickets minted.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L454, ticketCount",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "ticketCount() reports cumulative lifetime range-ticket mints, without subtracting burned tickets."
+    },
+    {
+      "id": "REQ-281",
+      "quote": "also the latest assigned ticket ID.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L455, ticketCount return",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The lifetime ticket count equals the latest assigned ticket ID."
+    },
+    {
+      "id": "REQ-282",
+      "quote": "Returns the current unallocated sale pot.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L458, unsettledPot",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "unsettledPot() returns the currently unallocated sales proceeds."
+    },
+    {
+      "id": "REQ-283",
+      "quote": "Raw six-decimal quote-token units collected before settlement or refund activation.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L459, unsettledPot return",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "Before settlement or refund activation, unsettledPot accounts for collected sales in raw quote-token units."
+    },
+    {
+      "id": "REQ-284",
+      "quote": "Returns the current aggregate full-refund liability.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L462, remainingRefundLiability",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "remainingRefundLiability() returns the current aggregate liability for full ticket refunds."
+    },
+    {
+      "id": "REQ-285",
+      "quote": "Raw six-decimal quote-token units still claimable by unrefunded tickets.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L463, remainingRefundLiability return",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "remainingRefundLiability equals the raw quote-token units still claimable by tickets not yet refunded."
+    },
+    {
+      "id": "REQ-286",
+      "quote": "Returns the address that burned and redeemed the winning ticket.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L466, winnerRecipient",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "After redemption, winnerRecipient() identifies the owner that burned and redeemed the winning ticket."
+    },
+    {
+      "id": "REQ-287",
+      "quote": "the zero address before redemption.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L467, winnerRecipient return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "winnerRecipient() is the zero address before redemption."
+    },
+    {
+      "id": "REQ-288",
+      "quote": "Returns the current cash-winner liability.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L470, winnerProceeds",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "winnerProceeds() equals the current cash amount claimable by the winning ticket."
+    },
+    {
+      "id": "REQ-289",
+      "quote": "zero otherwise.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L471, winnerProceeds return",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "winnerProceeds() is zero when no cash-winner amount is claimable."
+    },
+    {
+      "id": "REQ-290",
+      "quote": "Raw six-decimal quote-token units claimable by the immutable sponsor recipient.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L474-L475, sponsorProceeds",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "sponsorProceeds() equals the current raw quote-token liability claimable by the immutable sponsor recipient."
+    },
+    {
+      "id": "REQ-291",
+      "quote": "Raw six-decimal quote-token units claimable by the immutable treasury.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L478-L479, protocolFees",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "protocolFees() equals the current raw quote-token liability claimable by the immutable treasury."
+    },
+    {
+      "id": "REQ-292",
+      "quote": "Returns the accepted Chainlink request ID.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L482, vrfRequestId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "After request persistence, vrfRequestId() returns the wrapper-assigned ID of the accepted Chainlink request."
+    },
+    {
+      "id": "REQ-293",
+      "quote": "zero before request persistence.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L483, vrfRequestId return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "vrfRequestId() is zero before request persistence."
+    },
+    {
+      "id": "REQ-294",
+      "quote": "Returns when the accepted draw request was recorded.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L486, drawRequestedAt",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "drawRequestedAt() returns the Unix-seconds timestamp when the accepted request was recorded."
+    },
+    {
+      "id": "REQ-295",
+      "quote": "zero before request persistence.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L487, drawRequestedAt return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "drawRequestedAt() is zero before request persistence."
+    },
+    {
+      "id": "REQ-296",
+      "quote": "Returns when an authenticated callback resolved the raffle.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L490, resolvedAt",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "After resolution, resolvedAt() returns the Unix-seconds timestamp of resolution by an authenticated callback."
+    },
+    {
+      "id": "REQ-297",
+      "quote": "zero before resolution.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L491, resolvedAt return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "resolvedAt() is zero before resolution."
+    },
+    {
+      "id": "REQ-298",
+      "quote": "Returns the selected one-based global winning entry.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L494, winningEntry",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "After resolution, winningEntry() returns the selected one-based global winning entry."
+    },
+    {
+      "id": "REQ-299",
+      "quote": "Entry in `[1,totalEntries]`",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L495, winningEntry return",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "After resolution, winningEntry() lies between 1 and totalEntries inclusive."
+    },
+    {
+      "id": "REQ-300",
+      "quote": "zero before resolution.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L495, winningEntry return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "winningEntry() is zero before resolution."
+    },
+    {
+      "id": "REQ-301",
+      "quote": "Returns the ticket proven to contain the winning entry.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L498, winningTicketId",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "After settlement, winningTicketId() returns the ID of the ticket proven to contain the winning entry."
+    },
+    {
+      "id": "REQ-302",
+      "quote": "zero before settlement.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L499, winningTicketId return",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "winningTicketId() is zero before settlement."
+    },
+    {
+      "id": "REQ-303",
+      "quote": "Returns the current lifecycle and economic result.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L502, status",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "status() returns the current authoritative Status value."
+    },
+    {
+      "id": "REQ-304",
+      "quote": "Returns whether terminal winner, sponsor, and protocol liabilities have been allocated.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L506, settlementComplete",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "settlementComplete() reflects completion of allocation of all terminal liabilities."
+    },
+    {
+      "id": "REQ-305",
+      "quote": "True after winning-ticket settlement.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L507, settlementComplete return",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "settlementComplete() is true after successful winning-ticket settlement."
+    },
+    {
+      "id": "REQ-306",
+      "quote": "Returns whether the winning ticket has been burned and its NFT or cash prize delivered.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L510, winnerRedeemed",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "winnerRedeemed() reflects completed redemption, requiring both the winning-ticket burn and delivery of its corresponding prize."
+    },
+    {
+      "id": "REQ-307",
+      "quote": "True after successful winner redemption.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L511, winnerRedeemed return",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "winnerRedeemed() is true after successful winner redemption."
+    },
+    {
+      "id": "REQ-308",
+      "quote": "Returns whether the prize has been delivered to the winner or returned to the sponsor recipient.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L514, prizeClaimed",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "prizeClaimed() reflects whether the escrowed prize has been successfully released through either supported delivery path."
+    },
+    {
+      "id": "REQ-309",
+      "quote": "True after successful prize release.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L515, prizeClaimed return",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "prizeClaimed() is true after successful prize release."
+    },
+    {
+      "id": "REQ-310",
+      "quote": "Returns whether this implementation or clone has completed its one-time initialization step.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L518, initialized",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "initialized() reports completion of the implementation's or clone's one-time initialization step."
+    },
+    {
+      "id": "REQ-311",
+      "quote": "True for the locked implementation",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L519, initialized return",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "initialized() returns true on the locked implementation."
+    },
+    {
+      "id": "REQ-312",
+      "quote": "every initialized clone.",
+      "location": "target/packages/contracts/src/interfaces/IRaffle.sol:L519, initialized return",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "initialized() returns true on every initialized clone."
+    }
+  ]
+}

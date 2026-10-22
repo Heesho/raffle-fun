@@ -1,0 +1,89 @@
+{
+  "stage_id": "S1-FUNCTION-08",
+  "accepted_local_selection": {
+    "model": "gpt-daybreak-blue-latest",
+    "reasoning_effort": "ultra",
+    "cyber_access_program": "daybreak_blue",
+    "fallback": false
+  },
+  "provider_returned_model": "unknown",
+  "function": "Raffle._settleWinningTicket",
+  "file": "target/packages/contracts/src/Raffle.sol",
+  "lines": "L533-L558",
+  "analysisFile": ".audit-work/stages/01-audit-context/functions/08-Raffle._settleWinningTicket.md",
+  "invariants": [
+    {
+      "claim": "Successful settlement is one-time, records the proven ticket, and clears the unallocated pot.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L534-L555"
+    },
+    {
+      "claim": "The supplied range must inclusively contain winningEntry; terminal winningEntry is in 1..totalEntries and purchase ranges are sequential, positive, and disjoint.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L218-L233, L518-L523, L538, L579-L584"
+    },
+    {
+      "claim": "NftWon allocates protocolFees + sponsorProceeds == prior unsettledPot; CashWon allocates winnerProceeds + sponsorProceeds + protocolFees == prior unsettledPot.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L539-L555; target/packages/contracts/src/libraries/RaffleConstants.sol:L11-L18"
+    },
+    {
+      "claim": "Reachable grossPot is positive and at most (2^128-1)*1,000,000, so both rate products fit uint256 and the sponsor remainders are nonnegative.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L218-L233, L241-L253, L509-L523; target/packages/contracts/src/libraries/RaffleConstants.sol:L11-L21"
+    },
+    {
+      "claim": "Settlement changes only accounting/proof storage and emits an event; it does not transfer assets, read ownership, or change status.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L528-L558"
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "A terminal status is paired with a previously stored, bounded winningEntry.",
+      "establishedBy": "Raffle.fulfillRandomWords stores winningEntry before setting NftWon or CashWon at target/packages/contracts/src/Raffle.sol:L518-L523; no other status assignment creates those values at L165, L205, L252, L299, or L428."
+    },
+    {
+      "claim": "The historical range ledger covers 1..totalEntries without gaps or overlap, and a never-minted ID has zero endpoints that cannot contain a terminal winningEntry.",
+      "establishedBy": "Positive overflow-bounded purchases assign [oldTotal+1, oldTotal+entryCount] at target/packages/contracts/src/Raffle.sol:L218-L233; ticketRange reads the mapping at L451-L455; callback selection is at L518-L523."
+    },
+    {
+      "claim": "unsettledPot equals recorded gross sales on every reachable terminal-result path.",
+      "establishedBy": "buyEntries advances entries and pot together at target/packages/contracts/src/Raffle.sol:L223-L233; requestDraw requires entries and leaves Active at L241-L253; refunds move the pot and select ineligible Refunding at L296-L300."
+    },
+    {
+      "claim": "The recorded pot is backed one-for-one by quote-token custody.",
+      "establishedBy": "The transfer precedes the pot increment at target/packages/contracts/src/Raffle.sol:L223-L233, under the explicit canonical fee-free, non-rebasing quote-token trust model at target/packages/contracts/src/interfaces/IRaffle.sol:L12-L15; settlement performs no balance query."
+    },
+    {
+      "claim": "mulDiv returns floor allocations and cannot reject the reachable operands; the two rates together do not exceed the denominator.",
+      "establishedBy": "Fixed constants are at target/packages/contracts/src/libraries/RaffleConstants.sol:L11-L18; full-precision floor mulDiv and its direct low-product path are at target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:L199-L220."
+    }
+  ],
+  "calls": [
+    {
+      "callee": "Raffle._requireWinningTicket",
+      "kind": "internal",
+      "propagates": "Establishes only firstEntry <= winningEntry <= lastEntry, reverting otherwise; it does not establish ownership or live ERC-721 existence (target/packages/contracts/src/Raffle.sol:L579-L584)."
+    },
+    {
+      "callee": "Raffle.ticketRange",
+      "kind": "internal",
+      "propagates": "Returns the two stored mapping endpoints without validation; unwritten IDs return zeros (target/packages/contracts/src/Raffle.sol:L451-L455; target/packages/contracts/src/interfaces/IRaffle.sol:L368-L373)."
+    },
+    {
+      "callee": "Math.mulDiv",
+      "kind": "external-source-available",
+      "propagates": "Computes floor x*y/denominator with full precision and rejects zero denominator or an overflowing result; fixed constants and reachable bounds select a non-reverting result (target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol:L199-L277; target/packages/contracts/src/libraries/RaffleConstants.sol:L11-L18)."
+    }
+  ],
+  "callers": [
+    "Raffle.settleWinningTicket: unrestricted nonReentrant wrapper returning cashAmount (target/packages/contracts/src/Raffle.sol:L304-L306).",
+    "Raffle.redeemWinningTicket: calls only when not settled, then checks current ownership and burns/delivers; any later revert rolls back settlement in the same transaction (target/packages/contracts/src/Raffle.sol:L309-L345)."
+  ],
+  "sharedState": [
+    "status: terminal value written by fulfillRandomWords and read here; unchanged by settlement (target/packages/contracts/src/Raffle.sol:L509-L523, L535-L536).",
+    "winningEntry/_ticketRanges: written by callback/purchases and read through the range proof (target/packages/contracts/src/Raffle.sol:L226-L233, L451-L455, L518-L520, L579-L584).",
+    "unsettledPot: increased by purchases, moved by refunds or this terminal allocation, and included in accountedQuoteBalance (target/packages/contracts/src/Raffle.sol:L223-L233, L296-L299, L539-L555, L468-L470).",
+    "settlementComplete/winningTicketId: written only here and consumed by redemption's settle-or-match branch (target/packages/contracts/src/Raffle.sol:L314-L318, L551-L552).",
+    "winnerProceeds: assigned on CashWon, consumed by cash redemption, and included in accounting (target/packages/contracts/src/Raffle.sol:L545-L549, L339-L342, L468-L470).",
+    "sponsorProceeds: assigned here, cleared by releaseSponsorProceeds, and included in accounting (target/packages/contracts/src/Raffle.sol:L554, L375-L381, L468-L470).",
+    "protocolFees: assigned here, cleared by releaseProtocolFees, and included in accounting (target/packages/contracts/src/Raffle.sol:L555, L385-L391, L468-L470)."
+  ],
+  "openQuestions": []
+}

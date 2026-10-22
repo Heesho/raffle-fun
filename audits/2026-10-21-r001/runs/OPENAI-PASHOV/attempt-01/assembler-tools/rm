@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+from pathlib import Path
+import sys, shutil, subprocess
+root = Path(__file__).resolve().parents[1]
+for arg in sys.argv[1:]:
+    if arg.startswith('-'):
+        continue
+    p = Path(arg).resolve()
+    if p.is_dir() and p.parent == root / 'assembler-tmp':
+        shutil.copytree(p, root / 'native-assembler-intermediates' / p.name)
+sys.exit(subprocess.run(['/bin/rm', *sys.argv[1:]]).returncode)

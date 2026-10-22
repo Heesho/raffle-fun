@@ -1,0 +1,7 @@
+LEAD | contract: Raffle | function: _isProtocolDestination | bug_class: precomputed-clone-destination-bypass | group_key: Raffle | _isProtocolDestination | precomputed-clone-destination-bypass
+code_smells: `_isProtocolDestination` checks `destination.code.length != 0` and `canonicalFactory.isRaffle(destination)`, which are both false for the address of a future clone from `Clones.clone` before `createRaffle` deploys that clone, while `releaseSponsorPrize` omits `_isProtocolDestination` and `_transferQuote` checks it again at payout time.
+description: A caller can pass the address of a future clone before `createRaffle` deploys it, so `_transferQuote` later reverts for that recipient. We did not find a path where this locks tokens of another user, because `settleWinningTicket` and `refundTickets` isolate each claim.
+
+LEAD | contract: Raffle | function: getVrfRequestPrice | bug_class: zero-gasprice-quote-mismatch | group_key: Raffle | getVrfRequestPrice | zero-gasprice-quote-mismatch
+code_smells: `getVrfRequestPrice` calls `i_vrfV2PlusWrapper.calculateRequestPriceNative`, which uses `tx.gasprice == 0` in a view call, whereas `requestDraw` calls `getVrfRequestPrice` on-chain with `tx.gasprice > 0` and reverts with `InsufficientVrfFee` if `msg.value` matches the quote from the view call.
+description: An integrator that reads `getVrfRequestPrice` with a zero gas price sends too little value to `requestDraw`, so the call reverts. We did not confirm an on-chain exploit, because callers can use `estimateVrfRequestPrice` instead.

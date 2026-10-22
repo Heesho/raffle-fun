@@ -1,0 +1,94 @@
+{
+  "schema": "raffle-fun.daybreak-tob-semantic-mapping-correction.v1",
+  "recordedUtc": "2026-10-22T00:01:45Z",
+  "cell": "DAYBREAK-TOB",
+  "targetCommit": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "status": "APPEND_ONLY_CORRECTION",
+  "originalPackagePreserved": {
+    "adjudicationSha256": "79eebbf13affeedbfc0ee00100f7df2686ec0732f707a40d6d1181ea33a7651b",
+    "completionReceiptSha256": "db0cc0de07f46980d1883cbe5a5d59cd90a4c9eac9f456960eb77ece9fedbed1",
+    "integrityManifestSha256": "e802b5053f85cdda4c39246024b0f7220028f34841f3bd35c999784ae00bf581",
+    "sealSha256": "88d6fe572781c0272d2b7e7dc7edc7bd220058fadbaec2fe68a75941ba3be6bf",
+    "bytesOverwritten": false
+  },
+  "priorSourceReconciliationLineage": {
+    "receiptVerification": {
+      "path": "reconciliation/finalization/DAYBREAK-TOB-03-RECEIPT-VERIFICATION.json",
+      "sha256": "b171848a1b39ba7e6438d2c47468097fb93c5bbe2bee3b6e56e35c4219fc8c15"
+    },
+    "targetBindingCorrection": {
+      "path": "reconciliation/finalization/DAYBREAK-TOB-03-TARGET-BINDING-CORRECTION.json",
+      "sha256": "6e619bcb52c0811ae879c214949eeb0ebee696e8ebdef2a8b86cde1252dd9f62"
+    },
+    "reconciliationSeal": {
+      "path": "reconciliation/finalization/DAYBREAK-TOB-03-RECONCILIATION-SEAL.json",
+      "sha256": "5381c17f14f45e817ff0d0a4745039274b453a5873c1fc643b28261c32e25a8e"
+    },
+    "preservedFacts": [
+      "The initial wrong-root lookup remains retained and the corrected target check matched 43 of 43 source files.",
+      "All prior source-stage finding IDs, leads, requirement IDs and reconciled attributions remain preserved except for the explicit edge correction below.",
+      "The older watcher-observed source-seal bytes remain unavailable and no cause is inferred."
+    ],
+    "supersedesStatusOnly": [
+      "S6_pending",
+      "no_whole_cell_completion"
+    ]
+  },
+  "mappingCorrection": {
+    "removeEdge": {
+      "nativeItem": "DAYBREAK-F-03",
+      "reconciledEntry": "OBS-004",
+      "reason": "Clone-destination isolation is distinct from recipient acceptance and bearer-capability semantics."
+    },
+    "variantEdges": [
+      {
+        "nativeItem": "DAYBREAK-F-03",
+        "variant": "source-first future same-factory clone",
+        "reconciledEntries": [
+          "RF-002",
+          "CONFIG-001"
+        ]
+      },
+      {
+        "nativeItem": "DAYBREAK-F-03",
+        "variant": "S6-03 cross-factory clone",
+        "reconciledEntries": [
+          "RF-002"
+        ]
+      }
+    ],
+    "obs004Edges": [
+      "DAYBREAK-F-02",
+      "UL-07"
+    ],
+    "outOfScopeAttributionClarification": {
+      "items": [
+        "DAYBREAK-OOS-01",
+        "UL-05"
+      ],
+      "reconciledEntry": "EVIDENCE-001",
+      "meaning": "Attribution bucket for an external evidence boundary only; not a finding, vulnerability, or in-scope frontend claim."
+    }
+  },
+  "schemaClarifications": {
+    "freezeVerifiedInputs": {
+      "effectiveName": "verifiedFilesPerRoot",
+      "value": 435
+    },
+    "newProviderWorkRequired": {
+      "effectiveName": "newModelProviderRerunRequired",
+      "value": false
+    },
+    "externalDeploymentEvidenceStillRequired": true,
+    "firstPassUnchanged": {
+      "effectiveName": "firstPassReportUnchangedAcrossObservedReceipts",
+      "value": true
+    }
+  },
+  "semanticDisposition": {
+    "laneCriticalRatingPreservedAsDissent": true,
+    "unconditionalCriticalAdopted": false,
+    "newProductionRoots": 0,
+    "globalAuditCompletionIssued": false
+  }
+}

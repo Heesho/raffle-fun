@@ -1,0 +1,16 @@
+{
+  "divergences": [
+    {
+      "requirementId": "REQ-03-3",
+      "severity": "medium",
+      "title": "Deployment tooling verification of the target chain's official USDC address is absent from the repository"
+    }
+  ],
+  "documentProblems": [
+    "IRaffleFactory.sol:L8-L9 (\"onchain construction checks only code presence and six-decimal metadata\") and RaffleFactory.sol:L59 (\"The quote token must report exactly six decimals; the wrapper and quote token must contain deployed code\") omit that RaffleFactory.constructor deploys new Raffle(quoteToken_, vrfWrapper_) (RaffleFactory.sol:L89), whose inherited VRFV2PlusWrapperConsumerBase constructor (Raffle.sol:L157, VRFV2PlusWrapperConsumerBase.sol:L45) executes an external call to vrfV2PlusWrapper.link().",
+    "IRaffle.sol omits external/public functions and custom errors exposed on Raffle: error DirectNativeTransfer() (Raffle.sol:L147, reverted by receive() at L171-L173) and the inherited VRFV2PlusWrapperConsumerBase surface (rawFulfillRandomWords(uint256, uint256[]), error OnlyVRFWrapperCanFulfill(address, address), i_vrfV2PlusWrapper(), getBalance(), and getLinkToken() in VRFV2PlusWrapperConsumerBase.sol:L32, L35, L101-L117).",
+    "IRaffleFactory.sol:L89, RaffleFactory.sol:L152, and Raffle.sol:L587 describe UnsafeProtocolDestination and _isProtocolDestination as screening configured tokens, ticket owners, and payout recipients, omitting that Raffle.initialize (Raffle.sol:L187-L192) also screens params.sponsor (msg.sender of createRaffle) and re-screens params.protocolTreasury against params.prizeToken, the new clone address, and canonicalFactory.isRaffle(protocolTreasury).",
+    "DESIGN.md:L2 (\"Never move assets between raffle clones\") and Raffle.sol:L587-L589 (\"Code-less addresses are not queried in the registry\") do not document that a precomputed future CREATE clone address has code.length == 0 during an earlier raffle's initialization and passes recipient screening, after which later clone registration causes USDC claims to revert with InvalidQuoteDestination (Raffle.sol:L565) while releaseSponsorPrize (Raffle.sol:L395-L407) transfers the prize NFT into the second clone via raw transferFrom without re-checking _isProtocolDestination."
+  ],
+  "reportFile": "spec-compliance/REPORT.md"
+}

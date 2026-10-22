@@ -1,0 +1,10 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {AgentReview} from '/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/packages/core/src/agent.ts';
+import {validateRefs} from '/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/packages/core/src/intake.ts';
+const context=JSON.parse(readFileSync('context.json','utf8'));
+const report=JSON.parse(readFileSync('report.native.original.json','utf8'));
+const files=['work/evidence/accounting_review/review.raw.json','work/evidence/lifecycle_review/review.raw.json'];
+const result=files.map(path=>{const bytes=readFileSync(path);const r=AgentReview.parse(JSON.parse(bytes.toString()));if(r.snapshotHash!==context.snapshotHash||r.contextHash!==context.contextHash)throw Error('Mismatch '+path);for(const o of r.review.observations)validateRefs(report.snapshot,o.source);return {path,sha256:createHash('sha256').update(bytes).digest('hex'),nativeSchemaPassed:true,nativeSourceReferencesPassed:true,snapshotHash:r.snapshotHash,contextHash:r.contextHash,observations:r.review.observations.length,imported:false};});
+const output={stage:'specialist-schema-validation',at:new Date().toISOString(),validation:'Pinned Gebal AgentReview.parse and validateRefs; no provider call or assessed-code execution; not imported into native store',result};
+writeFileSync('evidence/specialist-native-validation.json',JSON.stringify(output,null,2));console.log(JSON.stringify(output,null,2));

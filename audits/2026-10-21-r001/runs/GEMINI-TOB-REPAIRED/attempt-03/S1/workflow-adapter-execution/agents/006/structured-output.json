@@ -1,0 +1,121 @@
+{
+  "analysisFile": "audit-context/functions/05-requestDraw.md",
+  "assumptions": [
+    {
+      "claim": "The call is not a nested re-entry into a nonReentrant function on the Raffle clone.",
+      "establishedBy": "Raffle.sol:L240 (nonReentrant modifier) and ReentrancyGuard.sol:L69-L73,L88-L100"
+    },
+    {
+      "claim": "The raffle is in Status.Active on entry (and therefore is an initialized clone holding the escrowed prize, since the shared implementation sets status = Status.Refunding in constructor).",
+      "establishedBy": "Raffle.sol:L241 (_requireStatus(Status.Active)) and Raffle.sol:L571-L573,L165,L428"
+    },
+    {
+      "claim": "The current block timestamp is within the post-sale draw request window [endTime, uint256(endTime) + 2 days) and endTime >= 1.",
+      "establishedBy": "Raffle.sol:L242,L244-L247,L458-L460 and RaffleFactory.sol:L100"
+    },
+    {
+      "claim": "At least one entry was sold before sale end (totalEntries > 0).",
+      "establishedBy": "Raffle.sol:L243 (if (totalEntries == 0) revert NoEntriesSold())"
+    },
+    {
+      "claim": "msg.value covers both the pre-quoted VRF fee (quotedFee) and the actual VRF fee (paidPrice) paid to i_vrfV2PlusWrapper.",
+      "establishedBy": "Raffle.sol:L249-L250 and Raffle.sol:L258"
+    },
+    {
+      "claim": "block.timestamp fits within uint64 without high-bit truncation when cast via drawRequestedAt = uint64(block.timestamp) at Raffle.sol:L253.",
+      "establishedBy": "nothing found (Raffle.sol:L244-L247 bounds block.timestamp < uint256(endTime) + 2 days where endTime is uint64, which can exceed type(uint64).max by up to 2 days if endTime > type(uint64).max - 2 days; relies on EVM chain clock remaining <= type(uint64).max)"
+    },
+    {
+      "claim": "i_vrfV2PlusWrapper implements calculateRequestPriceNative and requestRandomWordsInNative without reverting for callbackGasLimit = 300_000, requestConfirmations = 30, and numWords = 1, accepts requestPrice wei matching calculateRequestPriceNative, and returns the requestId it will later pass to rawFulfillRandomWords.",
+      "establishedBy": "nothing found (RaffleFactory.sol:L67,L183-L185 and Raffle.sol:L157,L610-L613 and VRFV2PlusWrapperConsumerBase.sol:L45 check non-zero address, non-empty code, and link() at deployment; runtime wrapper behavior is external)"
+    },
+    {
+      "claim": "When excess = msg.value - paidPrice > 0, msg.sender accepts native ETH via an empty-calldata call without reverting or exhausting gas.",
+      "establishedBy": "Raffle.sol:L266-L269 (if (!success) revert NativeRefundFailed(msg.sender, excess))"
+    }
+  ],
+  "callers": [
+    "External permissionless caller during [endTime, drawRequestDeadline()) while Status.Active and totalEntries > 0 (Raffle.sol:L240)"
+  ],
+  "calls": [
+    {
+      "callee": "ReentrancyGuard.nonReentrant (_nonReentrantBefore / _nonReentrantAfter)",
+      "kind": "internal",
+      "propagates": "Reverts with ReentrancyGuardReentrantCall if REENTRANCY_GUARD_STORAGE == ENTERED (2), sets the slot to ENTERED (2) before the body, and resets it to NOT_ENTERED (1) after exit (ReentrancyGuard.sol:L69-L73,L88-L106); does not block rawFulfillRandomWords, onERC721Received, or ERC721 transfers."
+    },
+    {
+      "callee": "Raffle._requireStatus",
+      "kind": "internal",
+      "propagates": "Reverts with InvalidStatus(status) unless status == Status.Active (Raffle.sol:L571-L573)."
+    },
+    {
+      "callee": "Raffle.drawRequestDeadline",
+      "kind": "internal",
+      "propagates": "Returns uint256(endTime) + RaffleConstants.DRAW_REQUEST_TIMEOUT (endTime + 2 days) without uint256 overflow because endTime is uint64 (Raffle.sol:L458-L460, RaffleConstants.sol:L33)."
+    },
+    {
+      "callee": "Raffle.getVrfRequestPrice",
+      "kind": "internal",
+      "propagates": "Calls i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit, 1) via STATICCALL with callbackGasLimit = 300_000 and returns quotedFee (Raffle.sol:L436-L438,L47)."
+    },
+    {
+      "callee": "VRFV2PlusClient._argsToBytes",
+      "kind": "internal",
+      "propagates": "ABI-encodes ExtraArgsV1({ nativePayment: true }) with the 4-byte selector EXTRA_ARGS_V1_TAG (VRFV2PlusClient.sol:L7,L22-L26)."
+    },
+    {
+      "callee": "VRFV2PlusWrapperConsumerBase.requestRandomnessPayInNative",
+      "kind": "internal",
+      "propagates": "Queries requestPrice = i_vrfV2PlusWrapper.calculateRequestPriceNative(_callbackGasLimit, _numWords) and calls i_vrfV2PlusWrapper.requestRandomWordsInNative{value: requestPrice}(_callbackGasLimit, _requestConfirmations, _numWords, extraArgs), returning (requestId, requestPrice) without checking requestPrice <= msg.value (VRFV2PlusWrapperConsumerBase.sol:L76-L89)."
+    },
+    {
+      "callee": "IVRFV2PlusWrapper.calculateRequestPriceNative / IVRFV2PlusWrapper.requestRandomWordsInNative",
+      "kind": "external-black-box",
+      "propagates": "External calls to immutable i_vrfV2PlusWrapper (Raffle.sol:L437, VRFV2PlusWrapperConsumerBase.sol:L82,L84-L86); caller relies on wrapper returning a valid fee and requestId, while guarding against any synchronous callback to rawFulfillRandomWords via _requestInFlight = true (Raffle.sol:L254,L511) and re-checking paidPrice <= msg.value (Raffle.sol:L258)."
+    },
+    {
+      "callee": "msg.sender.call{value: excess}(\"\") (inline assembly call)",
+      "kind": "external-black-box",
+      "propagates": "Transfers excess = msg.value - paidPrice wei to msg.sender with empty calldata, zero return-data copy, and gas() when excess != 0 after state updates are complete and while nonReentrant is active, reverting with NativeRefundFailed(msg.sender, excess) if success == false (Raffle.sol:L262-L270)."
+    },
+    {
+      "callee": "Raffle.callbackDeadline",
+      "kind": "internal",
+      "propagates": "Returns uint256(drawRequestedAt) + RaffleConstants.DRAW_CALLBACK_TIMEOUT (drawRequestedAt + 2 days) when drawRequestedAt != 0, and 0 when drawRequestedAt == 0 (Raffle.sol:L463-L465, RaffleConstants.sol:L36)."
+    }
+  ],
+  "file": "packages/contracts/src/Raffle.sol",
+  "function": "requestDraw",
+  "invariants": [
+    {
+      "claim": "requestDraw can succeed only when status == Status.Active, totalEntries >= 1, and endTime <= block.timestamp < uint256(endTime) + 2 days.",
+      "evidence": "Raffle.sol:L241-L247,L458-L460,L571-L573"
+    },
+    {
+      "claim": "Any synchronous callback to rawFulfillRandomWords during requestRandomnessPayInNative observes _requestInFlight == true and is ignored without resolving the raffle before vrfRequestId is written.",
+      "evidence": "Raffle.sol:L254-L260,L510-L516"
+    },
+    {
+      "claim": "Both quotedFee and actual paidPrice are bounded by msg.value (quotedFee <= msg.value and paidPrice <= msg.value), preventing underflow in excess = msg.value - paidPrice and preventing pre-existing contract ETH from subsidizing a draw request.",
+      "evidence": "Raffle.sol:L249-L250,L257-L258,L262"
+    },
+    {
+      "claim": "On successful completion, status is transitioned out of Status.Active to Status.Drawing, drawRequestedAt == uint64(block.timestamp), vrfRequestId == requestId, _requestInFlight == false, and 100% of msg.value is distributed between i_vrfV2PlusWrapper (paidPrice) and msg.sender (excess).",
+      "evidence": "Raffle.sol:L252-L270 and VRFV2PlusWrapperConsumerBase.sol:L82-L88"
+    }
+  ],
+  "lines": "L240-L273",
+  "openQuestions": [
+    "unclear; need to inspect the deployed target-chain i_vrfV2PlusWrapper contract and VRF coordinator configuration to verify that VRF_CALLBACK_GAS_LIMIT = 300_000 (RaffleConstants.sol:L39) and VRF_REQUEST_CONFIRMATIONS = 30 (RaffleConstants.sol:L42) are within the wrapper's permitted gas and confirmation bounds."
+  ],
+  "sharedState": [
+    "status (Raffle.sol:L124,L165,L205,L215,L241,L252,L279,L289,L299,L311,L350,L396,L422,L428,L511,L521,L535,L572)",
+    "endTime (Raffle.sol:L82,L204,L216,L242,L281,L459)",
+    "totalEntries (Raffle.sol:L85,L219,L226,L227,L230,L243,L280,L474,L518,L521)",
+    "drawRequestedAt (Raffle.sol:L111,L253,L272,L464)",
+    "_requestInFlight (Raffle.sol:L142,L254,L260,L511)",
+    "vrfRequestId (Raffle.sol:L109,L259,L511,L514)",
+    "i_vrfV2PlusWrapper (VRFV2PlusWrapperConsumerBase.sol:L35,L46,L82,L84,L102; Raffle.sol:L437,L442,L447,L600)",
+    "REENTRANCY_GUARD_STORAGE (ReentrancyGuard.sol:L36-L37,L59,L69-L73,L88-L118)"
+  ]
+}

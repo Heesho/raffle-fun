@@ -1,0 +1,706 @@
+{
+  "schema": "audit-pre-validation-capture/v1",
+  "captured_at": "2026-10-21T21:46:09.172661+00:00",
+  "stage": "S1",
+  "not_a_completion_claim": true,
+  "native_typed_call_status": "completed",
+  "calls": 14,
+  "purpose": "Bind native exact-body outputs and replay lineage before coordinator method-completeness review. Earlier failed attempts remain unchanged.",
+  "files": {
+    "artifacts/audit-context/DOSSIER.md": {
+      "sha256": "8b35303d847f6a496a414c3c4e9f9c081145b25e78ea7bbcee52241e38c5f9c8",
+      "bytes": 53904,
+      "origin": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S1/work/audit-context/DOSSIER.md"
+    },
+    "artifacts/audit-context/functions/03-_settleWinningTicket.md": {
+      "sha256": "45c9661e86b1a37d89476b63080f4b22bf5828a944ca77949e7372c5b87ed1b2",
+      "bytes": 19890,
+      "origin": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S1/work/audit-context/functions/03-_settleWinningTicket.md"
+    },
+    "artifacts/audit-context/functions/08-refundTickets.md": {
+      "sha256": "e599e1725452e99b0ba05ba7adec2a628693748caedb4b0ed61aa73e10232da7",
+      "bytes": 20695,
+      "origin": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S1/work/audit-context/functions/08-refundTickets.md"
+    },
+    "artifacts/audit-context/functions/04-redeemWinningTicket.md": {
+      "sha256": "fe8220aeb660ba2dd93d2eaa25ef1fe4bd03c8e44e8f90b90fe1577454ab2498",
+      "bytes": 29894,
+      "origin": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S1/work/audit-context/functions/04-redeemWinningTicket.md"
+    },
+    "artifacts/audit-context/functions/10-initialize.md": {
+      "sha256": "ea5348ad3c25b9c74919a786465dfd14f87bff84f1fdb8aacc45698fc7a8070f",
+      "bytes": 24462,
+      "origin": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S1/work/audit-context/functions/10-initialize.md"
+    },
+    "artifacts/audit-context/functions/09-_validateCreateParams.md": {
+      "sha256": "5c6dd550f3683daaa45b05b62cc2f4812f80562b57795ef467dfe0252acb2168",
+      "bytes": 16663,
+      "origin": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S1/work/audit-context/functions/09-_validateCreateParams.md"
+    },
+    "artifacts/audit-context/functions/12-_isProtocolDestination.md": {
+      "sha256": "7c0fd2c9406b6aedf249af7f6e6d654f8ab284b93bf9587b6a4b07413f63b96b",
+      "bytes": 15450,
+      "origin": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S1/work/audit-context/functions/12-_isProtocolDestination.md"
+    },
+    "artifacts/audit-context/functions/06-fulfillRandomWords.md": {
+      "sha256": "cc309a1fb4c077dd6e365c4367b7845a82feebbaf7d410ac692a2c95e66e6009",
+      "bytes": 15215,
+      "origin": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S1/work/audit-context/functions/06-fulfillRandomWords.md"
+    },
+    "artifacts/audit-context/functions/11-onERC721Received.md": {
+      "sha256": "b63b763a246a49bccc74ef9837a3c02c48e96e88710a6ea61bca66ad164c2974",
+      "bytes": 11703,
+      "origin": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S1/work/audit-context/functions/11-onERC721Received.md"
+    },
+    "artifacts/audit-context/functions/02-buyEntries.md": {
+      "sha256": "32a9bf2810cdf1a64f7f804a2c259a2984f6bfb94f9c7099323c976cfdb3a19e",
+      "bytes": 22406,
+      "origin": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S1/work/audit-context/functions/02-buyEntries.md"
+    },
+    "artifacts/audit-context/functions/05-requestDraw.md": {
+      "sha256": "7ee0db930a526635fd65f0b4b7fe3138dc7e74e63fb9eb3579746bdb1e6e4c2f",
+      "bytes": 27582,
+      "origin": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S1/work/audit-context/functions/05-requestDraw.md"
+    },
+    "artifacts/audit-context/functions/01-createRaffle.md": {
+      "sha256": "21521ac9c8bd62b7b46cd5cc8d05d3fd1592e75e97e0fddc02812f24640c7c79",
+      "bytes": 27238,
+      "origin": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S1/work/audit-context/functions/01-createRaffle.md"
+    },
+    "artifacts/audit-context/functions/07-enableRefunds.md": {
+      "sha256": "0637501ca665cdc7a192c7862591b4526120913542089bb8902b9324c095c2f3",
+      "bytes": 16679,
+      "origin": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S1/work/audit-context/functions/07-enableRefunds.md"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/upstream-workflow.js": {
+      "sha256": "71cd025216e2589fee1e1a0ffe215fb7bbeaf22751dc7417ca6ce74497e6d0b3",
+      "bytes": 12229,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/transformed-workflow.js": {
+      "sha256": "d4ae3fdf26a5735246cd9085881368535842f895e48e7dbd4e19fc2c6336180f",
+      "bytes": 12222,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/journal.jsonl": {
+      "sha256": "eaa3fd3b509806fb1cfb0d5ed865ed266f092ee37615a06b3d8bbfed6d1ce7b3",
+      "bytes": 29367,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/launch.json": {
+      "sha256": "854e0ed7532c11b6ea222d4f4ab2b63808e4f5518e78a19fe2de480bc1beeba3",
+      "bytes": 2482,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/workflow-result.json": {
+      "sha256": "c8ff4773da07db954aee9ece72b71f397c90fed71106768c3d6e3b250baf6dac",
+      "bytes": 29980,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/012/stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/012/structured-output.json": {
+      "sha256": "f21876fc1f4d0ff32542e936c3e5d56432cfcfa5b5fbf35c62ee09a510776b10",
+      "bytes": 3633,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/012/prompt.txt": {
+      "sha256": "97c252841b8889778193297e1a04a0cced9f6caa17395c8f005cc039df7599c9",
+      "bytes": 17120,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/012/native.log": {
+      "sha256": "9624c063c4ce67f6e79b5ed2000c0e550dc48e72fb01238adb01b1e15ea21564",
+      "bytes": 34137,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/012/stdout.ndjson": {
+      "sha256": "348c3b51574f98aad86af186d3f2b6a27c8efa208ea874437767b3833d8e4c80",
+      "bytes": 35537,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/012/cache-reuse-receipt.json": {
+      "sha256": "6b14aee91052b39407d54a0888b264b904b09a8e0f5a93f8d0085b047a3cdded",
+      "bytes": 3096,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/012/schema.json": {
+      "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+      "bytes": 2512,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/012/named-agent-original.md": {
+      "sha256": "d450f462b63dac6858015340a2e047293851d7e3c671725792d9770dca107d29",
+      "bytes": 4372,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/012/invocation.json": {
+      "sha256": "a3f0040b9c6b07fc1d30e6f35f83dc991bbb1bccb422465b980373c16dcfc71d",
+      "bytes": 31324,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/013/stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/013/structured-output.json": {
+      "sha256": "ea654536e104916231b4d27faf17a1cec9a61190b7e45a112dd2e1e648abbb1a",
+      "bytes": 5420,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/013/prompt.txt": {
+      "sha256": "9b4863bce255023c335f847dbef777ff346f840ee640dd7d127067d7d2b3101d",
+      "bytes": 17141,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/013/native.log": {
+      "sha256": "3fdb1c6ce05d3b3a4d03749eb6864d934d899567aea782f253a38da38cbf6ed1",
+      "bytes": 34316,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/013/stdout.ndjson": {
+      "sha256": "8e818705625fbd65462e3ca47c58c1130ac2d16c34d76477646d5cad092f52ba",
+      "bytes": 43607,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/013/cache-reuse-receipt.json": {
+      "sha256": "be79d065324f00be20cc1330ceecfb79921e2b533b1469bf85820b2680e5476b",
+      "bytes": 3108,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/013/schema.json": {
+      "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+      "bytes": 2512,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/013/named-agent-original.md": {
+      "sha256": "d450f462b63dac6858015340a2e047293851d7e3c671725792d9770dca107d29",
+      "bytes": 4372,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/013/invocation.json": {
+      "sha256": "01c538d76b3fe5060dd02ce59a1e961c359a766cdb009e52d0f7d93dea0e0017",
+      "bytes": 31370,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/014/stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/014/structured-output.json": {
+      "sha256": "facec2f90c1392896017efc5dd7346a12c63bfa14f340c3f8cf99bcad6144636",
+      "bytes": 14733,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/014/prompt.txt": {
+      "sha256": "5d30a8f3d7a8463c545247c796b8a2fa173c5ad87045aaa2c7231f6244e28ea8",
+      "bytes": 90900,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/014/native.log": {
+      "sha256": "77fa4609e9587eaaecda42a016a66350a747523e18a30b3d8a234c802c49160a",
+      "bytes": 36109,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/014/stdout.ndjson": {
+      "sha256": "b3a9b55db59a04714810af919eca2c5f528380dc1fbefaa1e10b2d166fc6dbb9",
+      "bytes": 75549,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/014/schema.json": {
+      "sha256": "f9ece7477ddaee487434bafa7138ccedefaa9550bc7063990d5889bd98058ede",
+      "bytes": 1164,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/014/invocation.json": {
+      "sha256": "d32677a469f2d2d714a6aa8985c1285700158324ef27501c479691c3ceb61cee",
+      "bytes": 100462,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/007/stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/007/structured-output.json": {
+      "sha256": "c7a96064bff250e685991575f198e115c572bdc64a318119e20e9b95d114aca1",
+      "bytes": 4442,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/007/prompt.txt": {
+      "sha256": "dc8fa349c3ff47f1be78f1eef9ed7da55f072d80954e5d7242739603789b6027",
+      "bytes": 17170,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/007/native.log": {
+      "sha256": "816f487002bf473091ca725867cbd2e416ebd1b101fc3cc182939394986972b5",
+      "bytes": 33758,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/007/stdout.ndjson": {
+      "sha256": "f4386b30b7bba37706f77bef100ca77d84409bf50f46c383deb30e7050b41d1e",
+      "bytes": 34248,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/007/cache-reuse-receipt.json": {
+      "sha256": "e0cdb669d578a8df9480abe86c8912005a37546723dccfd2b5605dc2ab7f4ef4",
+      "bytes": 3100,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/007/schema.json": {
+      "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+      "bytes": 2512,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/007/named-agent-original.md": {
+      "sha256": "d450f462b63dac6858015340a2e047293851d7e3c671725792d9770dca107d29",
+      "bytes": 4372,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/007/invocation.json": {
+      "sha256": "0e449a24a983d0667f6ca48f630dab4f09dfbceebc538256d2afeabfb88b6777",
+      "bytes": 31382,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/009/stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/009/structured-output.json": {
+      "sha256": "dfd6f5af10a633addf8f633986513c0856a16ac25cd7c1eb1ae948f210eca188",
+      "bytes": 6984,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/009/prompt.txt": {
+      "sha256": "3e32c0a5e990ccedc5d2bdd20f21ffdbead7733f7c6a9f81dc0f2084cebd5a82",
+      "bytes": 17125,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/009/native.log": {
+      "sha256": "8231eaefe7c7d6d1b0fb097fc7227fcacfbce23990d30f778545f82464e11ad1",
+      "bytes": 37014,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/009/stdout.ndjson": {
+      "sha256": "9a68400e6d9a2ca575f4772bca3d9bd0eaa126cbe95a05d0b4dc2023f69bd32d",
+      "bytes": 53606,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/009/cache-reuse-receipt.json": {
+      "sha256": "4928dfa89b4c03fa3061d45b9bdde3f154efaf07d620e52914ec9c17bd6f35a8",
+      "bytes": 3090,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/009/schema.json": {
+      "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+      "bytes": 2512,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/009/named-agent-original.md": {
+      "sha256": "d450f462b63dac6858015340a2e047293851d7e3c671725792d9770dca107d29",
+      "bytes": 4372,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/009/invocation.json": {
+      "sha256": "5e1a5d56051bbb7ec4f5c89ced350c7036d9ca611f5ba44a0068576f8ad33726",
+      "bytes": 31317,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/008/stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/008/structured-output.json": {
+      "sha256": "072e03bc905b8d4726e30226da358454b407f6a4e79f33da08b2c0740e4613d2",
+      "bytes": 5599,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/008/prompt.txt": {
+      "sha256": "00253bbc630a6743e2206643e60ae99070a5f53ec82609daa3a49a42e24c92e2",
+      "bytes": 17106,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/008/native.log": {
+      "sha256": "20d39711eba6455b48fda399c507f49400e94ca83707ec1496d4c05f7e7e7056",
+      "bytes": 34763,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/008/stdout.ndjson": {
+      "sha256": "d9581c20a8c12798d9fd568ad3a771ac31ac4c8905fb5a451175d7df8c498779",
+      "bytes": 38339,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/008/cache-reuse-receipt.json": {
+      "sha256": "2a3e1f57680b4237b77ec1409d1dc6600811db641e61fcef7942d19aa29b3f7c",
+      "bytes": 3090,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/008/schema.json": {
+      "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+      "bytes": 2512,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/008/named-agent-original.md": {
+      "sha256": "d450f462b63dac6858015340a2e047293851d7e3c671725792d9770dca107d29",
+      "bytes": 4372,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/008/invocation.json": {
+      "sha256": "1b2ce95c5050775bdb54248610f95f8406a1d2e649143849eda44b73a058bea4",
+      "bytes": 31298,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/001/stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/001/structured-output.json": {
+      "sha256": "27525eeea070e7c39f09344dfe04d26f3d94c1d497fb34e5a73dde5a06bdfbb4",
+      "bytes": 19365,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/001/prompt.txt": {
+      "sha256": "ffeaa60b9684c0d1d0e2fbdf0d8b24b636ef4a2d03f382625b6908904b56e0c8",
+      "bytes": 3249,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/001/native.log": {
+      "sha256": "9ffdb3b31e152213da9d8586424374be68d3f6ed57416cbb68c65d1947bd4601",
+      "bytes": 34234,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/001/stdout.ndjson": {
+      "sha256": "246913f3b8467aa081c0647ef83cc564d7b5f51b5445411088f1620c22ab4376",
+      "bytes": 88942,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/001/cache-reuse-receipt.json": {
+      "sha256": "25cec1a389405dc17dbe308352b837f838889cf6f38e276560d51a2a92725e8d",
+      "bytes": 2700,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/001/schema.json": {
+      "sha256": "9b15177312c930ffdf9cc31311220e455e29aeb49d75e3841efd6b656091ed22",
+      "bytes": 2639,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/001/invocation.json": {
+      "sha256": "a9359c530c608082416399fb3dd71e63a8d13c1fd0d93f1a73f1c59fc838a1d8",
+      "bytes": 16209,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/006/stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/006/structured-output.json": {
+      "sha256": "b00eb9556b82b91f2f5b70c3e0697fdd304ba4e4f8027a2454546293cd628dfb",
+      "bytes": 8369,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/006/prompt.txt": {
+      "sha256": "766285ca210be4e7e20dde377a4dc2fab52f44a401d24bcdef62193d013727ae",
+      "bytes": 17146,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/006/native.log": {
+      "sha256": "1140c96fdcbb63d9f5d0f262138eae0f197768ae0488d41d73f41fc770e8210b",
+      "bytes": 36489,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/006/stdout.ndjson": {
+      "sha256": "3208a6d1474fe3b64e22e6e4d093a6dc1e7be9c6dd0de2750428d5356a7ff95d",
+      "bytes": 51639,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/006/cache-reuse-receipt.json": {
+      "sha256": "220cef4a6af362bbdd49c6fb2c57474c669bdd14be798a53d5e5bb234f10079a",
+      "bytes": 3086,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/006/schema.json": {
+      "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+      "bytes": 2512,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/006/named-agent-original.md": {
+      "sha256": "d450f462b63dac6858015340a2e047293851d7e3c671725792d9770dca107d29",
+      "bytes": 4372,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/006/invocation.json": {
+      "sha256": "8edeed73a0879a2c1ecf7de2835b043070c1a3962f58293df144918e07cceea5",
+      "bytes": 31332,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/011/stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/011/structured-output.json": {
+      "sha256": "f8324833b90401dd6caea8038fca98423027824ff0a5890e929e5f921e70a61e",
+      "bytes": 6663,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/011/prompt.txt": {
+      "sha256": "aa9a994b183c92445e72f34447073be25e12da2a7bd059bac2bf6c10d4402217",
+      "bytes": 17837,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/011/native.log": {
+      "sha256": "7d82fd02b72428d49d9478609f702add4d6176cfb82877eb21057a8d6c059d2c",
+      "bytes": 34220,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/011/stdout.ndjson": {
+      "sha256": "0c51c7f6c6ad5a6a8c1df976820266b26a7b804d4aa8f211dbe55bda72e9e5c6",
+      "bytes": 47334,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/011/schema.json": {
+      "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+      "bytes": 2512,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/011/named-agent-original.md": {
+      "sha256": "d450f462b63dac6858015340a2e047293851d7e3c671725792d9770dca107d29",
+      "bytes": 4372,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/011/invocation.json": {
+      "sha256": "7f1a1073263b610c3b7a377b1a33cddfee4c5ca9f259987039ef2d25c00d4974",
+      "bytes": 30179,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/010/stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/010/structured-output.json": {
+      "sha256": "0595bd12dab555dfc2b93e0a9d26d444cf1648de2024803666b8feb997ebebb1",
+      "bytes": 4814,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/010/prompt.txt": {
+      "sha256": "8dc9e48df1eb60772780e27bd20870dfe4bde69e033ab6f1ebf70d5a09015a91",
+      "bytes": 17852,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/010/native.log": {
+      "sha256": "08b586442abf4c456a9a49437067cbfac431a7366e96deb391b2edb768a20b59",
+      "bytes": 38077,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/010/stdout.ndjson": {
+      "sha256": "6816af565a836f02bc586a45fe2eea8bb8faad410872efc61672c14773e6263f",
+      "bytes": 32619,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/010/schema.json": {
+      "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+      "bytes": 2512,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/010/named-agent-original.md": {
+      "sha256": "d450f462b63dac6858015340a2e047293851d7e3c671725792d9770dca107d29",
+      "bytes": 4372,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/010/invocation.json": {
+      "sha256": "345a350ea0d8297717cc926c864c9664a8252eedad9a05332e8214451d966534",
+      "bytes": 30216,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/003/stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/003/structured-output.json": {
+      "sha256": "2427bab30246752ffa8b35b2d2ad2cedad670206c23501e8e2681a65d76f6f99",
+      "bytes": 7310,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/003/prompt.txt": {
+      "sha256": "29f27d74b808635e1107a3beabef2bd77e5661d135ac528fca6b3d28bc48fbf0",
+      "bytes": 17132,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/003/native.log": {
+      "sha256": "5dbe087c5ccee9c02ee02e8da30896a02e34807647072b6cb84f92769c1fb250",
+      "bytes": 37088,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/003/stdout.ndjson": {
+      "sha256": "67af89008d83e654a34ee6b33c59c1fbb77d9c14a0c6d342ab158d92c65c37d1",
+      "bytes": 53083,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/003/cache-reuse-receipt.json": {
+      "sha256": "52337f1b2305b96d740882a6fea942bdeb524349c50e704048c23a72200004c8",
+      "bytes": 3084,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/003/schema.json": {
+      "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+      "bytes": 2512,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/003/named-agent-original.md": {
+      "sha256": "d450f462b63dac6858015340a2e047293851d7e3c671725792d9770dca107d29",
+      "bytes": 4372,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/003/invocation.json": {
+      "sha256": "a954374a4ae6797fc089c60f9d8f3c25c6891ae153503413a7d541a5527f999e",
+      "bytes": 31314,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/004/stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/004/structured-output.json": {
+      "sha256": "5209691c166e2a8716b501b5d6b16b6e6fc7cf5cb1638ee1a72df9f2361f0b51",
+      "bytes": 6109,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/004/prompt.txt": {
+      "sha256": "fd9395b95a3d4ef081c94bc102f624df9017df6397224ca703ca5f440675f6ed",
+      "bytes": 17129,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/004/native.log": {
+      "sha256": "83249090309a4ea7c0319aed733bf21c48a6089492192b730bfd5d78dd18c49f",
+      "bytes": 35011,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/004/stdout.ndjson": {
+      "sha256": "0eea9733fb623bdc002ce268a44a1085356d7dc932c453fabc2ef867b454839d",
+      "bytes": 42340,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/004/cache-reuse-receipt.json": {
+      "sha256": "bb81bb730aef4d1827516873f439b9ce70ddcd392575f954f626f50d7052cdef",
+      "bytes": 3104,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/004/schema.json": {
+      "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+      "bytes": 2512,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/004/named-agent-original.md": {
+      "sha256": "d450f462b63dac6858015340a2e047293851d7e3c671725792d9770dca107d29",
+      "bytes": 4372,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/004/invocation.json": {
+      "sha256": "76cfa2d8d75efd4555aed3b877385ad53f82cd5486cae62d9b0a069b56ccde20",
+      "bytes": 31351,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/005/stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/005/structured-output.json": {
+      "sha256": "3d1731657fd39e9d15bae513e57fb9af826ad320023e96310e5317f9f57c54eb",
+      "bytes": 10366,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/005/prompt.txt": {
+      "sha256": "bc2d12e63ccac53910ad1ef187266b4f388835aa55574445efaf8d836ab9ec1e",
+      "bytes": 17147,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/005/native.log": {
+      "sha256": "4a2a99f51735b2cb2d68874da4576f2e9275dcc8ba049059b80eea4ed1e26726",
+      "bytes": 37441,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/005/stdout.ndjson": {
+      "sha256": "3280b54a6dc08894c65957b5484ddc944f76f9cc343762433f518cdb9962bf86",
+      "bytes": 61600,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/005/cache-reuse-receipt.json": {
+      "sha256": "a0904d0721416a4781f515388a06efe67ec9e4f4da933711cca0eca6a523efb8",
+      "bytes": 3102,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/005/schema.json": {
+      "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+      "bytes": 2512,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/005/named-agent-original.md": {
+      "sha256": "d450f462b63dac6858015340a2e047293851d7e3c671725792d9770dca107d29",
+      "bytes": 4372,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/005/invocation.json": {
+      "sha256": "79962b2834e918eab8a68f16c4fb68bae9176484d95e5e3fa23716e1239d7386",
+      "bytes": 31366,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/002/stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/002/structured-output.json": {
+      "sha256": "834fb5996cf19ac0adc69ad26a89dbf7e48f883f75c7b17e598eb18394ffa854",
+      "bytes": 8430,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/002/prompt.txt": {
+      "sha256": "99441151b02b20bc37d2e917ffea5debcb8453d5ccf09bdb2cd5d9ef8b68be25",
+      "bytes": 17165,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/002/native.log": {
+      "sha256": "f2b24fade1da92817d4b86ecbeb3b74349ffcba15ad1e9473e3783ff873ddcd1",
+      "bytes": 35978,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/002/stdout.ndjson": {
+      "sha256": "fd3141f590a487365cad49397f674fd596b8d56d1bac007a541846920dfaecb1",
+      "bytes": 56619,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/002/cache-reuse-receipt.json": {
+      "sha256": "a525a2fa323e24508e89acb9f346fa441a9e94f54f6722b55db7aeb711835275",
+      "bytes": 3088,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/002/schema.json": {
+      "sha256": "3bd0126ca86a98a00a1a0a1724f42a54239ac5284b38bb429ade419fd8f5d9b2",
+      "bytes": 2512,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/002/named-agent-original.md": {
+      "sha256": "d450f462b63dac6858015340a2e047293851d7e3c671725792d9770dca107d29",
+      "bytes": 4372,
+      "binding": "audit-root-relative"
+    },
+    "runs/GEMINI-TOB-REPAIRED/attempt-04/S1/workflow-replay-execution/agents/002/invocation.json": {
+      "sha256": "c00c6354cd3c8d330087de9bf29fde92fdd799a7487b3e9e36e426c582021075",
+      "bytes": 31354,
+      "binding": "audit-root-relative"
+    }
+  }
+}

@@ -1,0 +1,334 @@
+[
+  {
+    "slot": "TOOL-FMT",
+    "timeout": 60,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "forge",
+      "fmt",
+      "--check"
+    ]
+  },
+  {
+    "slot": "TOOL-LINT",
+    "timeout": 90,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "pnpm",
+      "exec",
+      "solhint",
+      "src/**/*.sol",
+      "test/**/*.sol"
+    ]
+  },
+  {
+    "slot": "TOOL-CI-FUZZ",
+    "timeout": 180,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "env",
+      "FOUNDRY_PROFILE=ci",
+      "forge",
+      "test",
+      "--match-path",
+      "test/foundry/fuzz/**",
+      "-vv"
+    ]
+  },
+  {
+    "slot": "TOOL-CI-INVARIANT",
+    "timeout": 300,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "env",
+      "FOUNDRY_PROFILE=ci",
+      "forge",
+      "test",
+      "--match-path",
+      "test/foundry/invariant/**",
+      "-vv"
+    ]
+  },
+  {
+    "slot": "TOOL-STRICT-INVARIANT",
+    "timeout": 300,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "env",
+      "FOUNDRY_PROFILE=audit_strict",
+      "forge",
+      "test",
+      "--match-path",
+      "test/foundry/invariant/**",
+      "-vv"
+    ]
+  },
+  {
+    "slot": "TOOL-RELEASE",
+    "timeout": 600,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "env",
+      "FOUNDRY_PROFILE=audit_release",
+      "forge",
+      "test",
+      "-vv"
+    ]
+  },
+  {
+    "slot": "TOOL-SIZES-DEFAULT",
+    "timeout": 120,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "forge",
+      "build",
+      "--sizes"
+    ]
+  },
+  {
+    "slot": "TOOL-BUILD-CI",
+    "timeout": 180,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "env",
+      "FOUNDRY_PROFILE=ci",
+      "forge",
+      "build",
+      "--sizes"
+    ]
+  },
+  {
+    "slot": "TOOL-BUILD-AUDIT",
+    "timeout": 180,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "env",
+      "FOUNDRY_PROFILE=audit",
+      "forge",
+      "build",
+      "--sizes"
+    ]
+  },
+  {
+    "slot": "TOOL-BUILD-STRICT",
+    "timeout": 180,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "env",
+      "FOUNDRY_PROFILE=audit_strict",
+      "forge",
+      "build",
+      "--sizes"
+    ]
+  },
+  {
+    "slot": "TOOL-BUILD-RELEASE",
+    "timeout": 180,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "env",
+      "FOUNDRY_PROFILE=audit_release",
+      "forge",
+      "build",
+      "--sizes"
+    ]
+  },
+  {
+    "slot": "TOOL-BUILD-COVERAGE",
+    "timeout": 180,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "env",
+      "FOUNDRY_PROFILE=coverage",
+      "forge",
+      "build",
+      "--sizes"
+    ]
+  },
+  {
+    "slot": "TOOL-BUILD-COMPARISON",
+    "timeout": 240,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "env",
+      "FOUNDRY_PROFILE=comparison",
+      "forge",
+      "build",
+      "--sizes"
+    ]
+  },
+  {
+    "slot": "TOOL-COVERAGE",
+    "timeout": 240,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "forge",
+      "coverage",
+      "--report",
+      "lcov",
+      "--no-match-coverage",
+      "^(script/|src/mocks/|test/)"
+    ]
+  },
+  {
+    "slot": "TOOL-COVERAGE-GATE",
+    "timeout": 60,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "node",
+      "scripts/check-coverage.mjs"
+    ]
+  },
+  {
+    "slot": "TOOL-GAS",
+    "timeout": 120,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "forge",
+      "snapshot",
+      "--check",
+      "-j",
+      "1",
+      "--no-match-test",
+      "^(testFuzz|invariant)"
+    ]
+  },
+  {
+    "slot": "TOOL-HARDHAT-DEFAULT",
+    "timeout": 180,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "pnpm",
+      "exec",
+      "hardhat",
+      "compile"
+    ]
+  },
+  {
+    "slot": "TOOL-HARDHAT-PRODUCTION",
+    "timeout": 180,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "pnpm",
+      "exec",
+      "hardhat",
+      "compile",
+      "--build-profile",
+      "production"
+    ]
+  },
+  {
+    "slot": "TOOL-HARDHAT-TEST",
+    "timeout": 180,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "pnpm",
+      "exec",
+      "hardhat",
+      "test",
+      "nodejs"
+    ]
+  },
+  {
+    "slot": "TOOL-CONTRACT-TYPECHECK",
+    "timeout": 120,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation/packages/contracts",
+    "command": [
+      "pnpm",
+      "exec",
+      "tsc",
+      "--noEmit"
+    ]
+  },
+  {
+    "slot": "TOOL-SDK-SYNC",
+    "timeout": 120,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation",
+    "command": [
+      "pnpm",
+      "--filter",
+      "@raffle-fun/sdk",
+      "sync"
+    ]
+  },
+  {
+    "slot": "TOOL-SDK-TYPECHECK",
+    "timeout": 120,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation",
+    "command": [
+      "pnpm",
+      "--filter",
+      "@raffle-fun/sdk",
+      "typecheck"
+    ]
+  },
+  {
+    "slot": "TOOL-WEB-TEST",
+    "timeout": 120,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation",
+    "command": [
+      "pnpm",
+      "--filter",
+      "@raffle-fun/web",
+      "test"
+    ]
+  },
+  {
+    "slot": "TOOL-WEB-TYPECHECK",
+    "timeout": 120,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation",
+    "command": [
+      "pnpm",
+      "--filter",
+      "@raffle-fun/web",
+      "typecheck"
+    ]
+  },
+  {
+    "slot": "TOOL-SUBGRAPH-BUILD",
+    "timeout": 180,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation",
+    "command": [
+      "pnpm",
+      "subgraph:codegen"
+    ]
+  },
+  {
+    "slot": "TOOL-SUBGRAPH-COMPILE",
+    "timeout": 180,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation",
+    "command": [
+      "pnpm",
+      "subgraph:build"
+    ]
+  },
+  {
+    "slot": "TOOL-SUBGRAPH-TEST",
+    "timeout": 180,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation",
+    "command": [
+      "pnpm",
+      "subgraph:test"
+    ]
+  },
+  {
+    "slot": "TOOL-DEPENDENCY-AUDIT",
+    "timeout": 120,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation",
+    "command": [
+      "pnpm",
+      "audit",
+      "--json"
+    ]
+  },
+  {
+    "slot": "TOOL-DEPENDENCY-SIGNATURES",
+    "timeout": 120,
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/validation",
+    "command": [
+      "pnpm",
+      "audit",
+      "signatures"
+    ]
+  }
+]

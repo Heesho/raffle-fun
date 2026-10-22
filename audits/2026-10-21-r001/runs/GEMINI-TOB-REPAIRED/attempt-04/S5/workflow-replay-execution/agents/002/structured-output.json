@@ -1,0 +1,204 @@
+{
+  "requirements": [
+    {
+      "checkable": "RaffleFactory stores its configuration (quoteToken, vrfWrapper, protocolTreasury, raffleImplementation, and VRF constants) in immutable or constant variables with no mutating functions.",
+      "force": "descriptive",
+      "id": "REQ-01",
+      "kind": "invariant",
+      "location": "# Clean design specification, L2",
+      "quote": "Ethereum NFT raffle; immutable factory"
+    },
+    {
+      "checkable": "RaffleFactory deploys each raffle via ERC-1167 minimal proxy cloning (Clones.clone) targeting an immutable Raffle implementation contract whose own state is locked in its constructor.",
+      "force": "descriptive",
+      "id": "REQ-02",
+      "kind": "invariant",
+      "location": "# Clean design specification, L2",
+      "quote": "ERC-1167 clones with immutable implementation."
+    },
+    {
+      "checkable": "ENTRY_PRICE is 1,000,000 raw units, RaffleFactory enforces quoteToken.decimals() == 6 on deployment, and buyEntries transfers entryCount * 1,000,000 quoteToken units from the buyer.",
+      "force": "descriptive",
+      "id": "REQ-03",
+      "kind": "economic",
+      "location": "# Clean design specification, L2",
+      "quote": "One entry costs 1,000,000 units of canonical six-decimal USDC."
+    },
+    {
+      "checkable": "Each buyEntries call mints one sequential ERC-721 ticket storing the contiguous inclusive entry range [totalEntries_before + 1, totalEntries_before + entryCount], and tickets are transferable via standard ERC-721 transfers.",
+      "force": "descriptive",
+      "id": "REQ-04",
+      "kind": "invariant",
+      "location": "# Clean design specification, L2",
+      "quote": "One purchase mints a transferable ERC721 ticket representing a contiguous inclusive range."
+    },
+    {
+      "checkable": "createRaffle atomically clones, initializes, transfers the single configured ERC-721 prize into the clone, and verifies clone ownership and Active status in the same transaction, while onERC721Received rejects any other ERC-721 deposit.",
+      "force": "descriptive",
+      "id": "REQ-05",
+      "kind": "ordering",
+      "location": "# Clean design specification, L2",
+      "quote": "Exactly one ERC721 prize is escrowed atomically at creation."
+    },
+    {
+      "checkable": "When totalEntries >= reserveEntries, the raffle resolves to Status.NftWon, allows the winning ticket owner to redeem the escrowed NFT, allocates 5% (500/10,000) of unsettledPot to protocolFees, and allocates the remaining 95% to sponsorProceeds.",
+      "force": "descriptive",
+      "id": "REQ-06",
+      "kind": "economic",
+      "location": "# Clean design specification, L2",
+      "quote": "Reserve met awards NFT and 95% sponsor / 5% treasury."
+    },
+    {
+      "checkable": "When totalEntries < reserveEntries, the raffle resolves to Status.CashWon and settlement allocates 80% (8,000/10,000) of unsettledPot to winnerProceeds, 5% (500/10,000) to protocolFees, and the remaining 15% to sponsorProceeds (while allowing the sponsor to recover the NFT prize).",
+      "force": "descriptive",
+      "id": "REQ-07",
+      "kind": "economic",
+      "location": "# Clean design specification, L2",
+      "quote": "Reserve missed awards 80% gross to winner, 15% sponsor, 5% treasury."
+    },
+    {
+      "checkable": "In Status.Refunding, refundTickets pays 100% of ENTRY_PRICE per entry represented by burned tickets and releaseSponsorPrize returns the escrowed ERC-721 prize to sponsorRecipient.",
+      "force": "descriptive",
+      "id": "REQ-08",
+      "kind": "economic",
+      "location": "# Clean design specification, L2",
+      "quote": "Refund outcome pays 100% per entry and returns prize."
+    },
+    {
+      "checkable": "protocolFee is computed once on the aggregate unsettledPot using floor division Math.mulDiv(grossPot, PROTOCOL_FEE_BPS, BPS).",
+      "force": "descriptive",
+      "id": "REQ-09",
+      "kind": "formula",
+      "location": "# Clean design specification, L2",
+      "quote": "Rounding is floor on aggregate protocol fee"
+    },
+    {
+      "checkable": "In _settleWinningTicket, sponsorAmount is computed by subtracting protocolFee (and cashAmount in CashWon) from grossPot so that winnerProceeds + sponsorProceeds + protocolFees equals the entire unsettledPot with zero unallocated remainder.",
+      "force": "mandatory",
+      "id": "REQ-10",
+      "kind": "invariant",
+      "location": "# Clean design specification, L2",
+      "quote": "remainder must be allocated without loss."
+    },
+    {
+      "checkable": "Neither RaffleFactory nor Raffle defines an administrator/owner role, any post-initialization configuration setter, pause/rescue privilege, or any upgrade mechanism.",
+      "force": "mandatory",
+      "id": "REQ-11",
+      "kind": "access-control",
+      "location": "# Clean design specification, L2",
+      "quote": "No administrator, mutable configuration or upgrade."
+    },
+    {
+      "checkable": "requestDraw reverts when block.timestamp < endTime and when block.timestamp >= endTime + 2 days, permitting VRF draw requests only within [endTime, endTime + 2 days).",
+      "force": "descriptive",
+      "id": "REQ-12",
+      "kind": "state-machine",
+      "location": "# Clean design specification, L2",
+      "quote": "Request window [sale end, end+2days)"
+    },
+    {
+      "checkable": "fulfillRandomWords ignores callbacks when block.timestamp >= drawRequestedAt + 2 days and only resolves the raffle when block.timestamp < drawRequestedAt + 2 days.",
+      "force": "descriptive",
+      "id": "REQ-13",
+      "kind": "state-machine",
+      "location": "# Clean design specification, L2",
+      "quote": "callback accepted strictly before request timestamp+2days."
+    },
+    {
+      "checkable": "enableRefunds transitions the raffle to Status.Refunding only once the applicable deadline (endTime, drawRequestDeadline, or callbackDeadline) has been reached.",
+      "force": "descriptive",
+      "id": "REQ-14",
+      "kind": "state-machine",
+      "location": "# Clean design specification, L2",
+      "quote": "Refunds open at deadline."
+    },
+    {
+      "checkable": "fulfillRandomWords only records winningEntry, resolvedAt, and status (NftWon or CashWon) and emits an event, performing no ticket search, liability settlement, external call, or asset transfer.",
+      "force": "descriptive",
+      "id": "REQ-15",
+      "kind": "state-machine",
+      "location": "# Clean design specification, L2",
+      "quote": "Callback records result only."
+    },
+    {
+      "checkable": "settleWinningTicket is callable by any address without caller-ownership checks and only updates contract storage variables without transferring ERC-20 or ERC-721 assets.",
+      "force": "descriptive",
+      "id": "REQ-16",
+      "kind": "state-machine",
+      "location": "# Clean design specification, L2",
+      "quote": "Settlement is permissionless, storage-only"
+    },
+    {
+      "checkable": "redeemWinningTicket verifies msg.sender == ownerOf(ticketId) and reverts with NotTicketOwner if called by any address other than the current ticket owner.",
+      "force": "descriptive",
+      "id": "REQ-17",
+      "kind": "access-control",
+      "location": "# Clean design specification, L2",
+      "quote": "redemption requires current ticket owner"
+    },
+    {
+      "checkable": "redeemWinningTicket atomically burns the winning ERC-721 ticket (_burn(ticketId)) and sets winnerRedeemed = true in the same transaction that delivers the prize or cash payout.",
+      "force": "descriptive",
+      "id": "REQ-18",
+      "kind": "state-machine",
+      "location": "# Clean design specification, L2",
+      "quote": "burns claim atomically"
+    },
+    {
+      "checkable": "If NFT transfer, post-transfer ownerOf verification, or quoteToken transfer fails during redeemWinningTicket, the entire redemption transaction reverts, undoing the ticket burn and all state changes.",
+      "force": "mandatory",
+      "id": "REQ-19",
+      "kind": "error-handling",
+      "location": "# Clean design specification, L2",
+      "quote": "must revert all effects on delivery failure."
+    },
+    {
+      "checkable": "After settlement allocates sponsorProceeds and protocolFees, releaseSponsorProceeds and releaseProtocolFees can each be called independently in any order without requiring the other party or the winner to claim first.",
+      "force": "descriptive",
+      "id": "REQ-20",
+      "kind": "ordering",
+      "location": "# Clean design specification, L2",
+      "quote": "Sponsor and treasury can claim independently after settlement."
+    },
+    {
+      "checkable": "Raffle clones reject any ticket mint/transfer, quoteToken payout, prizeToken configuration, or recipient configuration targeting another registered raffle clone (isRaffle[destination]).",
+      "force": "mandatory",
+      "id": "REQ-21",
+      "kind": "invariant",
+      "location": "# Clean design specification, L2",
+      "quote": "Never move assets between raffle clones."
+    },
+    {
+      "checkable": "quoteToken and vrfWrapper are configured once as immutable contract references validated for deployed code (and 6 decimals for quoteToken) in the RaffleFactory constructor.",
+      "force": "descriptive",
+      "id": "REQ-22",
+      "kind": "trust-boundary",
+      "location": "# Clean design specification, L2",
+      "quote": "Quote token and Chainlink wrapper are trusted canonical dependencies"
+    },
+    {
+      "checkable": "External interactions involving arbitrary prizeToken contracts and ticket recipients are guarded by nonReentrant modifiers, strict onERC721Received validation, post-transfer ownerOf verification, and storage-only callback/settlement isolated from pull claims.",
+      "force": "descriptive",
+      "id": "REQ-23",
+      "kind": "trust-boundary",
+      "location": "# Clean design specification, L2",
+      "quote": "arbitrary prize contracts and ticket recipients are untrusted."
+    },
+    {
+      "checkable": "Too vague/off-chain to verify from smart contract code alone insofar as it describes frontend discovery architecture; on-chain contracts expose view getters and events without accepting off-chain discovery inputs.",
+      "force": "descriptive",
+      "id": "REQ-24",
+      "kind": "trust-boundary",
+      "location": "# Clean design specification, L2",
+      "quote": "Frontend discovery is advisory"
+    },
+    {
+      "checkable": "On-chain state-changing functions read live chain state (status, block.timestamp, ownerOf, totalEntries, live VRF fee) during execution; insofar as this requires off-chain clients/frontends to reread chain state before submitting transactions, it cannot be verified from contract code alone.",
+      "force": "mandatory",
+      "id": "REQ-25",
+      "kind": "ordering",
+      "location": "# Clean design specification, L2",
+      "quote": "transaction decisions must reread current chain state."
+    }
+  ]
+}

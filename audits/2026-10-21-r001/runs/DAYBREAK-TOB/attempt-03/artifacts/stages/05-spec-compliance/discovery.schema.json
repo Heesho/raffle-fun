@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["documents", "codePaths", "language"],
+  "additionalProperties": false,
+  "properties": {
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "describes", "kind", "unreadable"],
+        "additionalProperties": false,
+        "properties": {
+          "path": {"type": "string"},
+          "describes": {"type": "string"},
+          "kind": {"type": "string", "enum": ["whitepaper", "design-doc", "readme", "inline-docs", "transcript", "other"]},
+          "unreadable": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "codePaths": {"type": "array", "items": {"type": "string"}},
+    "language": {"type": "string"}
+  }
+}

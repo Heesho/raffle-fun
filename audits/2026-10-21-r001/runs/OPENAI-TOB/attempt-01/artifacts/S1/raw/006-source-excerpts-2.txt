@@ -1,0 +1,190 @@
+   436	    function getVrfRequestPrice() public view override returns (uint256 fee) {
+   437	        fee = i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit, 1);
+   438	    }
+   439	
+   440	    /// @inheritdoc IRaffle
+   441	    function estimateVrfRequestPrice(uint256 requestGasPriceWei) public view override returns (uint256 fee) {
+   442	        fee = i_vrfV2PlusWrapper.estimateRequestPriceNative(callbackGasLimit, 1, requestGasPriceWei);
+   443	    }
+   444	
+   445	    /// @inheritdoc IRaffle
+   446	    function vrfWrapper() public view override returns (IVRFV2PlusWrapper wrapper) {
+   447	        wrapper = i_vrfV2PlusWrapper;
+   448	    }
+   449	
+   450	    /// @inheritdoc IRaffle
+   451	    function ticketRange(uint256 ticketId) public view override returns (uint128 firstEntry, uint128 lastEntry) {
+   452	        TicketRange storage range = _ticketRanges[ticketId];
+   453	        firstEntry = range.firstEntry;
+   454	        lastEntry = range.lastEntry;
+   455	    }
+   456	
+   558	    }
+   559	
+   560	    /// @dev Transfers one complete current USDC claim through SafeERC20 after rejecting known protocol sinks. The
+   561	    ///      canonical USDC trust model assumes standard, non-rebasing, fee-free transfer semantics.
+   562	    /// @param to Immutable or owner-derived recipient of the claim.
+   563	    /// @param amount Raw six-decimal USDC units transferred.
+   564	    function _transferQuote(address to, uint256 amount) private {
+   565	        if (_isProtocolDestination(to, address(prizeToken))) revert InvalidQuoteDestination(to);
+   566	        quoteToken.safeTransfer(to, amount);
+   567	    }
+   568	
+   569	    // Private view and pure helpers
+   570	
+   571	    /// @dev Reverts unless the raffle is in the expected lifecycle state.
+   572	    /// @param expected Status required by the calling operation.
+   573	    function _requireStatus(Status expected) private view {
+   574	        if (status != expected) revert InvalidStatus(status);
+   575	    }
+   576	
+   577	    /// @dev Reverts unless the supplied ticket's stored inclusive range contains the selected winning entry.
+   578	    /// @param ticketId Candidate winning ticket ID.
+   579	    function _requireWinningTicket(uint256 ticketId) private view {
+   580	        (uint128 firstEntry, uint128 lastEntry) = ticketRange(ticketId);
+   581	        uint128 selectedEntry = winningEntry;
+   582	        if (selectedEntry < firstEntry || selectedEntry > lastEntry) {
+   583	            revert TicketDoesNotContainWinningEntry(ticketId, selectedEntry);
+   584	        }
+   585	    }
+   586	
+   587	    /// @dev Identifies same-factory protocol plumbing that cannot safely own a ticket or receive a payout.
+   588	    ///      Initialization supplies the prospective prize token because clone storage is not populated yet; runtime
+   589	    ///      checks pass the stored prize token. Code-less addresses are not queried in the registry.
+   590	    /// @param destination Address being screened.
+   140	     *
+   141	     * IMPORTANT: Any overrides to this function that add ownership of tokens not tracked by the
+   142	     * core ERC-721 logic MUST be matched with the use of {_increaseBalance} to keep balances
+   143	     * consistent with ownership. The invariant to preserve is that for any address `a` the value returned by
+   144	     * `balanceOf(a)` must be equal to the number of tokens such that `_ownerOf(tokenId)` is `a`.
+   145	     */
+   146	    function _ownerOf(uint256 tokenId) internal view virtual returns (address) {
+   147	        return _owners[tokenId];
+   148	    }
+   149	
+   150	    /**
+   151	     * @dev Returns the approved address for `tokenId`. Returns 0 if `tokenId` is not minted.
+   152	     */
+   153	    function _getApproved(uint256 tokenId) internal view virtual returns (address) {
+   210	     * `auth` is either the owner of the token, or approved to operate on the token (by the owner).
+   211	     *
+   212	     * Emits a {Transfer} event.
+   213	     *
+   214	     * NOTE: If overriding this function in a way that tracks balances, see also {_increaseBalance}.
+   215	     */
+   216	    function _update(address to, uint256 tokenId, address auth) internal virtual returns (address) {
+   217	        address from = _ownerOf(tokenId);
+   218	
+   219	        // Perform (optional) operator check
+   220	        if (auth != address(0)) {
+   221	            _checkAuthorized(from, auth, tokenId);
+   222	        }
+   223	
+   224	        // Execute the update
+   225	        if (from != address(0)) {
+   226	            // Clear approval. No need to re-authorize or emit the Approval event
+   227	            _approve(address(0), tokenId, address(0), false);
+   228	
+   229	            unchecked {
+   230	                _balances[from] -= 1;
+   231	            }
+   232	        }
+   233	
+   234	        if (to != address(0)) {
+   235	            unchecked {
+   236	                _balances[to] += 1;
+   237	            }
+   238	        }
+   239	
+   240	        _owners[tokenId] = to;
+   241	
+   242	        emit Transfer(from, to, tokenId);
+   243	
+   244	        return from;
+   245	    }
+   290	    }
+   291	
+   292	    /**
+   293	     * @dev Destroys `tokenId`.
+   294	     * The approval is cleared when the token is burned.
+   295	     * This is an internal function that does not check if the sender is authorized to operate on the token.
+   296	     *
+   297	     * Requirements:
+   298	     *
+   299	     * - `tokenId` must exist.
+   300	     *
+   301	     * Emits a {Transfer} event.
+   302	     */
+   303	    function _burn(uint256 tokenId) internal {
+   304	        address previousOwner = _update(address(0), tokenId, address(0));
+   305	        if (previousOwner == address(0)) {
+   306	            revert ERC721NonexistentToken(tokenId);
+   307	        }
+   308	    }
+   309	
+   310	    /**
+   311	     * @dev Transfers `tokenId` from `from` to `to`.
+   312	     *  As opposed to {transferFrom}, this imposes no restrictions on msg.sender.
+     1	// SPDX-License-Identifier: MIT
+     2	pragma solidity 0.8.36;
+     3	
+     4	import { IVRFV2PlusWrapper } from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol";
+     5	import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+     6	import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+     7	
+     8	/// @title raffle.fun Raffle Interface
+     9	/// @author heesho
+    10	/// @notice Defines one autonomous NFT raffle using fixed-price USDC entries and one transferable ERC-721 ticket per
+    11	///         purchase.
+    12	/// @dev Ticket IDs are sequential. Each ticket stores one inclusive uint128 entry range and remains a transferable
+    13	///      bearer claim until its owner atomically burns it for redemption or refund. The immutable quote token is trusted
+    14	///      canonical six-decimal USDC with standard, non-rebasing, fee-free transfers. Supported prizes are honest,
+    15	///      standards-compliant ERC-721s.
+    16	/// @custom:version 1.0.0
+    17	interface IRaffle {
+    18	    // Types
+    19	
+    20	    /// @notice The single authoritative raffle lifecycle and economic result.
+    21	    enum Status {
+    22	        /// @notice The clone is initialized and waiting for the factory to escrow the configured prize.
+    23	        AwaitingPrize,
+    24	        /// @notice The prize is escrowed and entry sales or post-sale draw initiation are available.
+    25	        Active,
+    26	        /// @notice A Chainlink VRF request was accepted and its callback window is open.
+    27	        Drawing,
+    28	        /// @notice The reserve was met and the winning ticket may redeem the prize NFT.
+    29	        NftWon,
+    30	        /// @notice The reserve was missed and the winning ticket may redeem its cash allocation.
+    31	        CashWon,
+    32	        /// @notice Full ticket refunds are enabled and the sponsor may recover the prize NFT.
+    33	        Refunding
+    34	    }
+    35	
+112:    /// @param remainingRefundLiability Raw six-decimal quote-token units initially available for ticket refunds.
+113:    event RefundsEnabled(address indexed finalizer, uint256 remainingRefundLiability);
+152:    /// @param remainingRefundLiability Raw six-decimal quote-token units still claimable after this refund.
+153:    event TicketsRefunded(
+158:        uint256 remainingRefundLiability
+344:    function refundTickets(uint256[] calldata ticketIds) external returns (uint256 amount);
+464:    function remainingRefundLiability() external view returns (uint256 amount);
+    25	     * @dev Returns the value of tokens in existence.
+    26	     */
+    27	    function totalSupply() external view returns (uint256);
+    28	
+    29	    /**
+    30	     * @dev Returns the value of tokens owned by `account`.
+    31	     */
+    32	    function balanceOf(address account) external view returns (uint256);
+    33	
+    34	    /**
+    35	     * @dev Moves a `value` amount of tokens from the caller's account to `to`.
+    36	     *
+    37	     * Returns a boolean value indicating whether the operation succeeded.
+    38	     *
+    39	     * Emits a {Transfer} event.
+    40	     */
+    41	    function transfer(address to, uint256 value) external returns (bool);
+    42	
+    43	    /**
+    44	     * @dev Returns the remaining number of tokens that `spender` will be
+    45	     * allowed to spend on behalf of `owner` through {transferFrom}. This is

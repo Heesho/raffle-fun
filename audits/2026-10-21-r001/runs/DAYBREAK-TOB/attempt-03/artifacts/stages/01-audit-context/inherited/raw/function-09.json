@@ -1,0 +1,60 @@
+{
+  "stage_id": "S1-FUNCTION-09",
+  "accepted_local_selection": {
+    "model": "gpt-daybreak-blue-latest",
+    "reasoning_effort": "ultra",
+    "access_program": "daybreak_blue",
+    "fallback": false
+  },
+  "provider_returned_model": "unknown",
+  "function": "Raffle.onERC721Received",
+  "file": "target/packages/contracts/src/Raffle.sol",
+  "lines": "L416-L431",
+  "analysisFile": ".audit-work/stages/01-audit-context/functions/09-Raffle.onERC721Received.md",
+  "invariants": [
+    {
+      "claim": "A normal return is possible only when the entry status is AwaitingPrize and the callback caller, token ID, from, and operator equal the configured prize token, prize token ID, sponsor, and factory.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L421-L426"
+    },
+    {
+      "claim": "On normal return, status is Active, PrizeDeposited has been emitted, and the returned value is the IERC721Receiver acceptance selector.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L428-L430"
+    },
+    {
+      "claim": "A mismatching callback reverts before the receiver performs its status write or event emission.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L421-L429"
+    },
+    {
+      "claim": "The callback data bytes do not influence acceptance because the parameter is unnamed and unread.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L416-L430"
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "The clone's factory, sponsor, prize-token address, prize-token ID, and AwaitingPrize state correspond to the canonical creation being processed.",
+      "establishedBy": "RaffleFactory deploys the implementation and initializes the fresh clone with sponsor/prize fields at target/packages/contracts/src/RaffleFactory.sol:L89-L121; Raffle records the immutable factory and clone configuration at target/packages/contracts/src/Raffle.sol:L155-L162 and L176-L205."
+    },
+    {
+      "claim": "The configured prize contract gives operator and from their ERC-721 meanings, transfers the configured NFT to the clone before acceptance completes, honors the selector, and preserves custody.",
+      "establishedBy": "The OpenZeppelin reference path has transfer-before-callback and selector enforcement at target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L114-L135 and token/ERC721/utils/ERC721Utils.sol:L25-L48; for the actual sponsor-selected external token, nothing found beyond the standards-compliance trust statement at target/packages/contracts/src/interfaces/IRaffle.sol:L12-L15."
+    },
+    {
+      "claim": "The factory's post-transfer ownerOf response is a truthful representation of ownership.",
+      "establishedBy": "nothing found for the concrete external token; the factory queries and trusts ownerOf before comparing it at target/packages/contracts/src/RaffleFactory.sol:L127-L134."
+    }
+  ],
+  "calls": [],
+  "callers": [
+    "Canonical path: RaffleFactory.createRaffle -> configured IERC721.safeTransferFrom -> Raffle.onERC721Received (target/packages/contracts/src/RaffleFactory.sol:L97-L134).",
+    "Direct external callback attempts are ABI-reachable, but only the configured prize-token address with all matching fields and AwaitingPrize state returns normally (target/packages/contracts/src/Raffle.sol:L416-L430).",
+    "OpenZeppelin reference dispatch transfers first, then calls the receiver with _msgSender(), from, tokenId, and data and enforces the selector (target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L127-L135; token/ERC721/utils/ERC721Utils.sol:L25-L48)."
+  ],
+  "sharedState": [
+    "status: initialized to AwaitingPrize by initialize, changed to Active here, and consumed by requestDraw/refund/result paths (target/packages/contracts/src/Raffle.sol:L205, L421-L428, L240-L300, L509-L523).",
+    "sponsor, prizeToken, and prizeTokenId: written once by initialize and read by the callback gate (target/packages/contracts/src/Raffle.sol:L197-L205, L421-L425).",
+    "factory: implementation immutable set during factory deployment and read by the operator gate (target/packages/contracts/src/RaffleFactory.sol:L89-L91; target/packages/contracts/src/Raffle.sol:L155-L162, L423)."
+  ],
+  "openQuestions": [
+    "unclear; need to inspect each concrete configured prize-token implementation to establish transfer ordering, callback-field fidelity, selector enforcement, and ownerOf custody semantics; target/ contains no sponsor-selected token implementation."
+  ]
+}

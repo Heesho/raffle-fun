@@ -1,0 +1,82 @@
+sh: locale: not found
+2026-10-21 18:31:09.135 UTC [36] WARNING:  no usable system locales were found
+initdb: warning: enabling "trust" authentication for local connections
+initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+psql:/docker-entrypoint-initdb.d/002_additive_columns.sql:21: NOTICE:  column "prev_id" of relation "step_results" already exists, skipping
+psql:/docker-entrypoint-initdb.d/002_additive_columns.sql:21: NOTICE:  column "prev_table" of relation "step_results" already exists, skipping
+psql:/docker-entrypoint-initdb.d/002_additive_columns.sql:21: NOTICE:  column "repeat_run" of relation "step_results" already exists, skipping
+psql:/docker-entrypoint-initdb.d/002_additive_columns.sql:29: NOTICE:  column "prev_id" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/002_additive_columns.sql:29: NOTICE:  column "prev_table" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/002_additive_columns.sql:29: NOTICE:  column "repeat_run" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/002_additive_columns.sql:29: NOTICE:  column "status" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/002_additive_columns.sql:29: NOTICE:  column "error" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/002_additive_columns.sql:29: NOTICE:  column "stub" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/005_remove_step_stub_columns.sql:7: NOTICE:  column "stub" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:19: NOTICE:  column "dedupe_run_id" of relation "vulnerabilities" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:19: NOTICE:  column "dedupe_model" of relation "vulnerabilities" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:19: NOTICE:  column "dedupe_is_canonical" of relation "vulnerabilities" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:19: NOTICE:  column "dedupe_canonical_id" of relation "vulnerabilities" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:19: NOTICE:  column "dedupe_cluster_id" of relation "vulnerabilities" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:19: NOTICE:  column "dedupe_reason" of relation "vulnerabilities" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:19: NOTICE:  column "bounty_rank_response" of relation "vulnerabilities" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:19: NOTICE:  column "bounty_rank" of relation "vulnerabilities" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:19: NOTICE:  column "bounty_rank_impact_level" of relation "vulnerabilities" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:19: NOTICE:  column "bounty_rank_minimum_reward" of relation "vulnerabilities" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:19: NOTICE:  column "bounty_rank_maximum_reward" of relation "vulnerabilities" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:19: NOTICE:  column "bounty_rank_reasoning" of relation "vulnerabilities" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:19: NOTICE:  column "rank_root_bug" of relation "vulnerabilities" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:19: NOTICE:  column "bounty_rank_missing_from_prompt" of relation "vulnerabilities" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:19: NOTICE:  column "bounty_rank_total_issues" of relation "vulnerabilities" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:19: NOTICE:  column "bounty_rank_run_id" of relation "vulnerabilities" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:19: NOTICE:  column "bounty_rank_model" of relation "vulnerabilities" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:19: NOTICE:  column "bounty_rank_ts" of relation "vulnerabilities" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:22: NOTICE:  relation "vulnerabilities_dedupe_idx" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:25: NOTICE:  relation "vulnerabilities_bounty_rank_idx" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:39: NOTICE:  relation "vulnerability_enrichments" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:42: NOTICE:  relation "vulnerability_enrichments_scan_idx" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:45: NOTICE:  relation "vulnerability_enrichments_vulnerability_idx" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:83: NOTICE:  relation "post_process_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:86: NOTICE:  relation "post_process_metadata_scan_idx" already exists, skipping
+psql:/docker-entrypoint-initdb.d/008_post_processing.sql:89: NOTICE:  relation "post_process_metadata_vulnerability_idx" already exists, skipping
+psql:/docker-entrypoint-initdb.d/010_mirror_post_processing_to_step_metadata.sql:16: NOTICE:  column "kind" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/010_mirror_post_processing_to_step_metadata.sql:16: NOTICE:  column "post_process_metadata_id" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/010_mirror_post_processing_to_step_metadata.sql:16: NOTICE:  column "post_script_id" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/010_mirror_post_processing_to_step_metadata.sql:16: NOTICE:  column "post_script_name" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/010_mirror_post_processing_to_step_metadata.sql:16: NOTICE:  column "vulnerability_id" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/010_mirror_post_processing_to_step_metadata.sql:16: NOTICE:  column "target_vulnerability_ids" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/010_mirror_post_processing_to_step_metadata.sql:16: NOTICE:  column "batch_index" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/010_mirror_post_processing_to_step_metadata.sql:16: NOTICE:  column "output_json" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/010_mirror_post_processing_to_step_metadata.sql:16: NOTICE:  column "model" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/010_mirror_post_processing_to_step_metadata.sql:16: NOTICE:  column "harness" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/010_mirror_post_processing_to_step_metadata.sql:16: NOTICE:  column "thinking_effort" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/010_mirror_post_processing_to_step_metadata.sql:16: NOTICE:  column "model_provider" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/010_mirror_post_processing_to_step_metadata.sql:16: NOTICE:  column "subagent_count" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/010_mirror_post_processing_to_step_metadata.sql:20: NOTICE:  column "model_provider" of relation "post_process_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/010_mirror_post_processing_to_step_metadata.sql:20: NOTICE:  column "subagent_count" of relation "post_process_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/010_mirror_post_processing_to_step_metadata.sql:42: NOTICE:  relation "step_metadata_kind_scan_idx" already exists, skipping
+psql:/docker-entrypoint-initdb.d/010_mirror_post_processing_to_step_metadata.sql:46: NOTICE:  relation "step_metadata_post_process_metadata_unique" already exists, skipping
+psql:/docker-entrypoint-initdb.d/011_metadata_phase.sql:4: NOTICE:  column "phase" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/011_metadata_phase.sql:7: NOTICE:  column "phase" of relation "post_process_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/012_codex_account_attribution.sql:4: NOTICE:  column "codex_source_home" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/012_codex_account_attribution.sql:4: NOTICE:  column "codex_account_id" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/012_codex_account_attribution.sql:4: NOTICE:  column "codex_account_email" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/012_codex_account_attribution.sql:9: NOTICE:  column "codex_source_home" of relation "post_process_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/012_codex_account_attribution.sql:9: NOTICE:  column "codex_account_id" of relation "post_process_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/012_codex_account_attribution.sql:9: NOTICE:  column "codex_account_email" of relation "post_process_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/015_model_provider_metadata.sql:3: NOTICE:  column "model_provider" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/015_model_provider_metadata.sql:3: NOTICE:  column "subagent_count" of relation "step_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/015_model_provider_metadata.sql:7: NOTICE:  column "model_provider" of relation "post_process_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/015_model_provider_metadata.sql:7: NOTICE:  column "subagent_count" of relation "post_process_metadata" already exists, skipping
+psql:/docker-entrypoint-initdb.d/016_scan_model_provider.sql:6: NOTICE:  column "model_provider" of relation "scans" already exists, skipping
+psql:/docker-entrypoint-initdb.d/019_restore_legacy_compat_columns.sql:5: NOTICE:  column "reasoning_effort" of relation "scans" already exists, skipping
+psql:/docker-entrypoint-initdb.d/022_scan_management.sql:7: NOTICE:  constraint "scans_job_limit_positive" of relation "scans" does not exist, skipping
+psql:/docker-entrypoint-initdb.d/031_supplemental_post_script_runs.sql:33: NOTICE:  column "model" of relation "supplemental_post_script_runs" already exists, skipping
+psql:/docker-entrypoint-initdb.d/031_supplemental_post_script_runs.sql:33: NOTICE:  column "model_provider" of relation "supplemental_post_script_runs" already exists, skipping
+psql:/docker-entrypoint-initdb.d/031_supplemental_post_script_runs.sql:33: NOTICE:  column "harness" of relation "supplemental_post_script_runs" already exists, skipping
+psql:/docker-entrypoint-initdb.d/031_supplemental_post_script_runs.sql:33: NOTICE:  column "thinking_effort" of relation "supplemental_post_script_runs" already exists, skipping
+2026-10-21 18:31:10.638 UTC [1] LOG:  starting PostgreSQL 16.4 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 13.2.1_git20240309) 13.2.1 20240309, 64-bit
+2026-10-21 18:31:10.639 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2026-10-21 18:31:10.639 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+2026-10-21 18:31:10.642 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-10-21 18:31:10.648 UTC [136] LOG:  database system was shut down at 2026-10-21 18:31:10 UTC
+2026-10-21 18:31:10.651 UTC [1] LOG:  database system is ready to accept connections

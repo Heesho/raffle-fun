@@ -1,0 +1,8 @@
+label=06-evidence-manifest-final
+started_at_utc=2026-10-21T23:26:06Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target
+command=/bin/zsh -c evidence=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow\;\ printf\ \"hashed-artifacts\\n\"\;\ find\ \"\$evidence/diagrams\"\ \"\$evidence/properties\"\ \"\$evidence/tests\"\ -type\ f\ -print0\ \|\ sort\ -z\ \|\ xargs\ -0\ shasum\ -a\ 256\;\ printf\ \"counts\\n\"\;\ for\ d\ in\ tool-output\ diagrams\ properties\ tests\ logs\;\ do\ count=\$\(find\ \"\$evidence/\$d\"\ -type\ f\ \|\ wc\ -l\ \|\ tr\ -d\ \"\ \"\)\;\ bytes=\$\(find\ \"\$evidence/\$d\"\ -type\ f\ -exec\ stat\ -f\ \"%z\"\ \{\}\ \\\;\ \|\ awk\ \"\{s+=\\\$1\}\ END\{print\ s+0\}\"\)\;\ printf\ \"%s\ files=%s\ bytes=%s\\n\"\ \"\$d\"\ \"\$count\"\ \"\$bytes\"\;\ done 
+finished_at_utc=2026-10-21T23:26:07Z
+exit_code=0
+stdout=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tool-output/06-evidence-manifest-final.stdout
+stderr=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tool-output/06-evidence-manifest-final.stderr

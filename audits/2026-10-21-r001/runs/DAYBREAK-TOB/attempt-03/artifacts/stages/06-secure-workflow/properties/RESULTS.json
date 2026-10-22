@@ -1,0 +1,41 @@
+{
+  "stage": "S6",
+  "workflow": "Trail of Bits secure-workflow-guide",
+  "frozen_target_sha": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "route": {
+    "requested_model": "gpt-daybreak-blue-latest",
+    "cyber_access_program": "daybreak_blue",
+    "reasoning_effort": "ultra",
+    "fallback": "disabled",
+    "multi_agent": "disabled",
+    "provider_identity": "unknown"
+  },
+  "tools": {
+    "slither": "0.11.6",
+    "forge": "1.7.1 (4072e48705af9d93e3c0f6e29e93b5e9a40caed8)",
+    "solidity": "0.8.36",
+    "echidna": "2.3.3",
+    "graphviz_dot": "2.43.0",
+    "docker_client_server": "29.8.2"
+  },
+  "findings": [
+    {"id": "S6-01", "severity": "High", "title": "An adversarial prize contract can fake escrow and delivery"},
+    {"id": "S6-02", "severity": "Medium", "title": "Prize delivery skips contract-recipient acceptance"},
+    {"id": "S6-03", "severity": "Low", "title": "Destination isolation is scoped to one factory"},
+    {"id": "S6-04", "severity": "Low", "title": "Prize callback can create pre-publication ticket state"},
+    {"id": "S6-05", "severity": "Informational/conditional", "title": "Quote accounting requires canonical fee-free token identity"}
+  ],
+  "campaigns": {
+    "slither": {"contracts": 36, "detectors": 102, "results": 14, "high_impact": 0, "medium_impact": 0, "low_impact": 11, "informational": 3, "command_exit": 255},
+    "slither_check_erc721": {"status": "pass", "command_exit": 0},
+    "foundry_unit_fuzz": {"tests_passed": 21, "tests_failed": 0, "fuzz_runs_per_property": 10000, "seed": "0x53365f46494e414c5f46555a5a5f53454544", "command_exit": 0},
+    "foundry_invariant": {"properties_passed": 3, "properties_failed": 0, "runs_per_property": 256, "depth": 128, "calls_per_property": 32768, "total_calls": 98304, "reverts": 0, "seed": "0x53365f46494e414c5f494e56415249414e54", "command_exit": 0},
+    "foundry_negative_properties": {"expected_counterexamples": 2, "properties_failed_as_expected": 2, "seed": "0x53365f4b4e4f574e5f56494f4c4154494f4e", "command_exit": 1},
+    "echidna": {"properties_passed": 4, "properties_failed": 0, "total_calls": 20007, "sequence_length": 64, "seed": 1396142931, "unique_instructions": 8879, "unique_codehashes": 8, "corpus_size": 8, "command_exit": 0}
+  },
+  "production_coverage": {
+    "src/Raffle.sol": {"lines": "215/247", "line_percent": 87.04, "statements_percent": 83.22, "branches_percent": 34.48, "functions_percent": 87.10},
+    "src/RaffleFactory.sol": {"lines": "48/61", "line_percent": 78.69, "statements_percent": 81.48, "branches_percent": 16.67, "functions_percent": 100.00}
+  },
+  "immutable_original_files_verification": {"files_checked": 43, "failures": 0}
+}

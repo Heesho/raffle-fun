@@ -1,0 +1,125 @@
+{
+  "type": "object",
+  "required": [
+    "requirementId",
+    "analysisFile",
+    "verdict",
+    "confidence",
+    "evidence",
+    "searched",
+    "reasoning",
+    "documentProblem"
+  ],
+  "properties": {
+    "requirementId": {
+      "type": "string"
+    },
+    "analysisFile": {
+      "type": "string",
+      "description": "path the analysis was actually written to"
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "implemented",
+        "partial",
+        "contradicted",
+        "absent",
+        "stronger-than-spec",
+        "undecidable"
+      ],
+      "description": "undecidable when the requirement is too vague to check against code \u2014 that is a finding about the document"
+    },
+    "confidence": {
+      "type": "string",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "description": "how sure you are of the verdict, not how severe it is"
+    },
+    "evidence": {
+      "anyOf": [
+        {
+          "type": "array",
+          "description": "The code that implements, contradicts, or partially covers the requirement.",
+          "items": {
+            "type": "object",
+            "required": [
+              "file",
+              "lines",
+              "quote",
+              "role"
+            ],
+            "properties": {
+              "file": {
+                "type": "string"
+              },
+              "lines": {
+                "type": "string",
+                "description": "e.g. L108 or L89-L135"
+              },
+              "quote": {
+                "type": "string"
+              },
+              "role": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "description": "what this line does for the requirement"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "searched": {
+      "type": "array",
+      "description": "Where you looked, and what you found. An absent verdict rests entirely on this: a reader must be able to tell a real absence from a search that stopped early.",
+      "items": {
+        "type": "object",
+        "required": [
+          "where",
+          "result"
+        ],
+        "properties": {
+          "where": {
+            "type": "string",
+            "description": "pattern, symbol, or file searched"
+          },
+          "result": {
+            "type": "string",
+            "description": "e.g. \"3 hits, all in tests\" or \"0 hits\""
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "reasoning": {
+      "type": "string",
+      "description": "why this verdict and not the adjacent one"
+    },
+    "documentProblem": {
+      "anyOf": [
+        {
+          "type": "string",
+          "description": "Set if the requirement itself is ambiguous, self-contradictory, or contradicts another document."
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false
+}

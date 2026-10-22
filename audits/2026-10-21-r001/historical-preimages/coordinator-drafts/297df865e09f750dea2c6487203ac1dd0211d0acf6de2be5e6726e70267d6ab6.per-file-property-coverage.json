@@ -1,0 +1,198 @@
+{
+  "schema": "raffle-audit-coverage/v1",
+  "target": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "files": [
+    {
+      "path": "packages/contracts/src/Raffle.sol",
+      "source_review": "All production functions, inherited entry points and relevant used dependency paths reviewed",
+      "instrumented": {
+        "lines": [
+          246,
+          247
+        ],
+        "functions": [
+          31,
+          31
+        ],
+        "branches": [
+          52,
+          58
+        ]
+      }
+    },
+    {
+      "path": "packages/contracts/src/RaffleFactory.sol",
+      "source_review": "Constructor, create, parameter validation, code check and registry/getter surfaces reviewed",
+      "instrumented": {
+        "lines": [
+          61,
+          61
+        ],
+        "functions": [
+          4,
+          4
+        ],
+        "branches": [
+          17,
+          18
+        ]
+      }
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IRaffle.sol",
+      "source_review": "All types/events/errors/functions/getters reconciled; honest-prize specification conflict retained",
+      "instrumented": null
+    },
+    {
+      "path": "packages/contracts/src/interfaces/IRaffleFactory.sol",
+      "source_review": "All types/events/errors/functions/getters reconciled; canonical identity is deployment responsibility",
+      "instrumented": null
+    },
+    {
+      "path": "packages/contracts/src/libraries/RaffleConstants.sol",
+      "source_review": "All constants reconciled with economic/deadline/batch/gas units",
+      "instrumented": null
+    }
+  ],
+  "properties": [
+    {
+      "id": "P01",
+      "property": "Quote custody and solvency",
+      "evidence_summary": "Foundry exact-solvency invariant; Echidna sales/liabilities; Medusa; Halmos terminal drains",
+      "limits": "Exact-transfer quote mocks; no live USDC blacklist/pause proof"
+    },
+    {
+      "id": "P02",
+      "property": "Per-beneficiary 80/15/5, 95/5 and full refunds",
+      "evidence_summary": "Foundry independent literal-rate fuzz/invariant; Halmos literal expected balances",
+      "limits": "Echidna aggregate conservation does not assert individual beneficiary rates; rounding outside small Halmos domain relies on fuzz/source"
+    },
+    {
+      "id": "P03",
+      "property": "Range partition, ticket sequence and unique winner proof",
+      "evidence_summary": "Foundry 3 range/sequence/winner invariants; Echidna ranges/winner; source proof",
+      "limits": "Halmos two tickets/two owners only; arbitrary callback words and modulo distribution not universally proved"
+    },
+    {
+      "id": "P04",
+      "property": "Current-owner authorization and atomic rollback",
+      "evidence_summary": "Deterministic unauthorized/operator/transfer tests; two original Halmos authorization checks; terminal Halmos wrong-owner checks",
+      "limits": "Stateful handler selects actual owners, so owner-check deletion survives that suite; Python model lacks rollback"
+    },
+    {
+      "id": "P05",
+      "property": "Initialization and factory-clone consistency",
+      "evidence_summary": "Factory unit/security and local Hardhat integration; complete source entrypoint pass",
+      "limits": "Canonical external token/wrapper identity remains deployment assumption; no live deployment in scope"
+    },
+    {
+      "id": "P06",
+      "property": "Lifecycle/deadline boundaries and refund liveness",
+      "evidence_summary": "Foundry boundary regressions and deadline invariant; Echidna monotonic/deadline properties",
+      "limits": "Valid-action prefilters exclude forbidden request boundary, allowing inclusive-deadline mutant to survive invariants"
+    },
+    {
+      "id": "P07",
+      "property": "NFT custody and successful delivery",
+      "evidence_summary": "Foundry malicious callback/token tests; Echidna custody; Halmos honest OZ terminal delivery; sealed post-pass reproductions",
+      "limits": "Arbitrary prize implementation may self-attest dishonestly or later pause; untrusted-prize and honest-ERC721 specifications conflict"
+    },
+    {
+      "id": "P08",
+      "property": "Economic payout versus prize delivery",
+      "evidence_summary": "Sealed independent source findings; Daybreak Simao post-seal tests; reconciliation RF-001",
+      "limits": "Successful sponsor payout does not guarantee eventual winner delivery; product trust decision unresolved"
+    },
+    {
+      "id": "P09",
+      "property": "Sponsor prize destination",
+      "evidence_summary": "Factory sink validation source/unit controls; isolated honest-OZ RecipientValidation test",
+      "limits": "Predicted future clone is not registered at validation time; conditional Low stranding confirmed"
+    },
+    {
+      "id": "P10",
+      "property": "VRF authority, callback ordering and gas",
+      "evidence_summary": "Inherited wrapper auth source pass; mock callback/security/fee tests; gas checks",
+      "limits": "No RPC live wrapper billing/configuration/finality verification; callback modulo-bias and chain reorg are not formal proofs"
+    },
+    {
+      "id": "P11",
+      "property": "Transfer, reentrancy and rollback",
+      "evidence_summary": "OZ/guard/SafeERC20 reachable-path review; deterministic malicious receiver/quote/prize controls",
+      "limits": "Exact-transfer quote assumption; arbitrary ERC721 honesty cannot be inferred from ERC165 or ownerOf"
+    },
+    {
+      "id": "P12",
+      "property": "Gas-bounded batching and callback work",
+      "evidence_summary": "Maximum100-refund local controls667412gas;61gas-baseline tests; O(1) callback source pass",
+      "limits": "Local gas observations are not universal chain inclusion guarantees"
+    },
+    {
+      "id": "P13",
+      "property": "Handler reachability and nonvacuity",
+      "evidence_summary": "Four-mutant experiment; all4 killed unit/fuzz/security; fee killed extended invariant",
+      "limits": "All4 survive short invariants; purchase-disabled mutant survives strict invariants due to caught reverts"
+    },
+    {
+      "id": "P14",
+      "property": "SDK/frontend/indexer consistency",
+      "evidence_summary": "16SDK,25web,8subgraph tests; codegen/build/typechecks; canonical ABI125/26entry match",
+      "limits": "Canonical top-level ABI order differs; no full deployed-wallet/browser/chain flow"
+    },
+    {
+      "id": "P15",
+      "property": "Reference mathematics/model fidelity",
+      "evidence_summary": "Independent rate formulas and balance deltas;11Python model tests; rollback diagnostic",
+      "limits": "Python tests are not Solidity differential verification; rejected lazy redemption mutates Python state"
+    },
+    {
+      "id": "P16",
+      "property": "Dependency and supply chain",
+      "evidence_summary": "Actual31-file Solidity closure review;69distinctGHSA reachability review;1286registry signatures",
+      "limits": "era-contracts unpublished packument exception; no signature attestation verdict for that Git dependency"
+    }
+  ],
+  "evidence": {
+    "foundry": "runs/TOOL-RELEASE-EXTENDED/attempt-01/campaign-statistics-final.json",
+    "echidna": "ECHIDNA-EXTENDED-RESULTS.json",
+    "halmos": "runs/TOOL-HALMOS-CONTINUATION/CLOSURE.json",
+    "mutation": "runs/TOOL-MUTATION-QUALITY/SUMMARY.md",
+    "source": "runs/SUP-S1/attempt-01/COVERAGE.md",
+    "scanner": "reconciliation/scanner-triage.json",
+    "dependency": "reconciliation/DEPENDENCY-REVIEW.md",
+    "recipient": "runs/TOOL-RECIPIENT-VALIDATION/attempt-01/stdout.txt",
+    "simao": "runs/DAYBREAK-SIMAO/attempt-03/POST-SEAL-PROOF.md",
+    "public_fork": "PUBLIC-FORK-VALIDATION.md"
+  },
+  "interpretation": "Source review, instrumented execution counters and bounded proof claims are separate. Missing executable denominator is not 100 percent coverage. No findings count derived from agreement.",
+  "generic_area_applicability": {
+    "custom_signature_permit_domains": "NOT_APPLICABLE in production scope",
+    "upgrade_admin_transitions": "No mutable upgrade/admin surface; constructor and clone initialization reviewed",
+    "AMM_lending_flash_liquidity": "NOT_APPLICABLE as protocol mechanisms",
+    "cross_chain_messaging": "NOT_APPLICABLE",
+    "price_oracle_freshness": "No direct price feed; trusted wrapper fee pricing/fallback and live configuration remain external, while VRF authentication/binding/deadlines are applicable",
+    "shares_interest_rewards": "NOT_APPLICABLE; entry and pending-liability accounting applicable"
+  },
+  "public_dependency_forks": {
+    "workflow_status": "COMPLETE",
+    "status": "COMPLETE",
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "mainnet_block": 26242794,
+    "mainnet_block_hash": "0x8fdbd950a706924ce62a5904c1b6b575b51f27f72ec968cb83ccd24c6a2dd7ac",
+    "sepolia_block": 11964220,
+    "sepolia_block_hash": "0xc9cd9fb1482946d20622e8ea7749f3d06b6f83f2484f079d4a93de82f906585e",
+    "duration_seconds": 7.305324291810393,
+    "remote_operations": "Read-only JSON-RPC; local fork state writes only",
+    "production_broadcast": false,
+    "source": "Frozen maintained EthereumFork.t.sol without alteration",
+    "stdout_sha256": "df0cb8dbed4ba2033e59268bd7714c157bd30cc6f1722bd7c8e5639d8a45fb9f",
+    "limitations": [
+      "Mock ERC721 prize and cheatcode funded quote balances",
+      "No genuine offchain VRF proof/fulfillment",
+      "No supplied live Raffle/Factory instance or deployment-bytecode identity",
+      "Current/future issuer and wrapper administration, failures and pricing not universally verified"
+    ]
+  }
+}

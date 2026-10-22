@@ -1,0 +1,128 @@
+{
+  "id": "011",
+  "prompt": "Analyze _update in target/packages/contracts/src/Raffle.sol (repo root target). It was selected because: L497-L502: universal ticket mint/transfer/burn hook screens ownership destinations before inherited authorization and shared ERC721 writes.\n\nSystem context established so far:\n{\"language\":\"Solidity 0.8.36\",\"actors\":[{\"name\":\"Public callers, buyers and permissionless lifecycle/claim executors\",\"trust\":\"untrusted\"},{\"name\":\"Sponsors and sponsor-selected recipients\",\"trust\":\"untrusted\"},{\"name\":\"Ticket owners, approved operators and ticket receiver contracts\",\"trust\":\"untrusted\"},{\"name\":\"Arbitrary sponsor-selected prize ERC721 contracts\",\"trust\":\"untrusted\"},{\"name\":\"Deployment initiator choosing canonical dependencies and treasury\",\"trust\":\"trusted\"},{\"name\":\"Canonical immutable factory and registered fixed-implementation clones\",\"trust\":\"trusted\"},{\"name\":\"Canonical six-decimal USDC contract under the stated transfer-semantic assumption\",\"trust\":\"trusted\"},{\"name\":\"Canonical Chainlink VRF wrapper and authenticated randomness service\",\"trust\":\"trusted\"},{\"name\":\"Protocol treasury as a payout recipient without administrative powers\",\"trust\":\"untrusted\"},{\"name\":\"Chain execution environment supplying timestamp, transaction ordering and atomic rollback\",\"trust\":\"trusted\"},{\"name\":\"Off-chain discovery/indexers and callers deciding which raffle/prize to use\",\"trust\":\"untrusted\"}],\"entrypoints\":[{\"name\":\"constructor\",\"file\":\"target/packages/contracts/src/RaffleFactory.sol\",\"reachableBy\":\"Deployment initiator supplies permanent quote token, wrapper and treasury; deployment validates code/decimals and deploys the locked implementation (L65-L92).\"},{\"name\":\"constructor\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"reachableBy\":\"Canonical factory deployment invokes it for its implementation; independent deployments are possible but are not canonical registered clones (L155-L166).\"},{\"name\":\"createRaffle\",\"file\":\"target/packages/contracts/src/RaffleFactory.sol\",\"reachableBy\":\"Any sponsor calls with configuration and prize-transfer approval; nonReentrant and atomically escrows through an arbitrary prize contract (L97-L148).\"},{\"name\":\"initialize\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"reachableBy\":\"External ABI is callable by anyone, but only the immutable factory may succeed and only before initialization (L176-L206).\"},{\"name\":\"buyEntries\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"reachableBy\":\"Any payer with quote-token allowance; chooses recipient and positive entry count while Active and before sale end (L209-L237).\"},{\"name\":\"requestDraw\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"reachableBy\":\"Anyone funding the native wrapper fee after sale end and strictly before end+2 days, with at least one sold entry (L240-L273).\"},{\"name\":\"enableRefunds\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"reachableBy\":\"Anyone after the applicable timeout; for zero-entry Active raffles the sponsor may call before sale end, and anyone may call at/after sale end (L276-L301).\"},{\"name\":\"settleWinningTicket\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"reachableBy\":\"Anyone supplies a range ticket containing the winning entry after NftWon/CashWon; no ownership requirement and no asset transfer (L304-L306, L533-L558).\"},{\"name\":\"redeemWinningTicket\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"reachableBy\":\"Only the current winning-ticket owner may successfully redeem; may first settle and burns atomically with delivery (L309-L346).\"},{\"name\":\"refundTickets\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"reachableBy\":\"Current ticket owners submit 1-100 owned tickets in Refunding; approvals alone do not authorize claiming (L349-L372).\"},{\"name\":\"releaseSponsorProceeds\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"reachableBy\":\"Anyone triggers payment of a nonzero allocated sponsor balance to the fixed sponsorRecipient (L375-L382).\"},{\"name\":\"releaseProtocolFees\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"reachableBy\":\"Anyone triggers payment of a nonzero allocated protocol balance to the fixed protocolTreasury (L385-L392).\"},{\"name\":\"releaseSponsorPrize\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"reachableBy\":\"Anyone triggers the one-time prize return to sponsorRecipient in CashWon or Refunding (L395-L407).\"},{\"name\":\"onERC721Received\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"reachableBy\":\"External caller must be configured prizeToken with exact token ID, sponsor/from and factory/operator while AwaitingPrize; this callback activates sales (L416-L431).\"},{\"name\":\"rawFulfillRandomWords\",\"file\":\"target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol\",\"reachableBy\":\"Callable on every raffle via inherited ABI; only immutable wrapper may pass authentication and reach fulfillRandomWords (L101-L107).\"},{\"name\":\"receive\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"reachableBy\":\"Any direct native transfer with empty calldata reaches an unconditional revert (L170-L173); requestDraw is the payable normal path.\"},{\"name\":\"approve\",\"file\":\"target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol\",\"reachableBy\":\"Ticket owner or approved-for-all operator delegates transfer permission for one ticket (L93-L95, L383-L401).\"},{\"name\":\"setApprovalForAll\",\"file\":\"target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol\",\"reachableBy\":\"Any ticket holder establishes/revokes an operator for its own holdings (L105-L107, L409-L418).\"},{\"name\":\"transferFrom\",\"file\":\"target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol\",\"reachableBy\":\"Owner, per-ticket approved address or approved-for-all operator may transfer a ticket; destination screening is applied by Raffle._update in every lifecycle state (L115-L125; Raffle L497-L502).\"},{\"name\":\"safeTransferFrom(address,address,uint256)\",\"file\":\"target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol\",\"reachableBy\":\"Same transfer authorization as transferFrom, followed by contract receiver acceptance through the four-argument overload (L128-L136).\"},{\"name\":\"safeTransferFrom(address,address,uint256,bytes)\",\"file\":\"target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol\",\"reachableBy\":\"Same transfer authorization, with caller-supplied receiver data passed to untrusted contract recipient (L133-L136).\"},{\"name\":\"Raffle view/pure and generated getters\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"reachableBy\":\"Any caller reads configuration, accounting, historical ranges, result, deadlines, name/symbol, wrapper and VRF fee estimates; functions L436-L486 and public declarations L44-L136.\"},{\"name\":\"RaffleFactory generated getters\",\"file\":\"target/packages/contracts/src/RaffleFactory.sol\",\"reachableBy\":\"Any caller reads immutable dependencies/configuration and canonical registry/count (L25-L54).\"},{\"name\":\"ERC721 view functions\",\"file\":\"target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol\",\"reachableBy\":\"Anyone reads supportsInterface, balanceOf, ownerOf, getApproved, isApprovedForAll and tokenURI, subject to address/token-existence checks (L45-L111).\"},{\"name\":\"Chainlink consumer view functions\",\"file\":\"target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol\",\"reachableBy\":\"Anyone reads i_vrfV2PlusWrapper, native getBalance and getLinkToken (L35, L109-L117).\"}],\"state\":[{\"name\":\"quoteToken\",\"file\":\"target/packages/contracts/src/RaffleFactory.sol\",\"writtenBy\":[\"RaffleFactory.constructor\"]},{\"name\":\"vrfWrapper\",\"file\":\"target/packages/contracts/src/RaffleFactory.sol\",\"writtenBy\":[\"RaffleFactory.constructor\"]},{\"name\":\"protocolTreasury\",\"file\":\"target/packages/contracts/src/RaffleFactory.sol\",\"writtenBy\":[\"RaffleFactory.constructor\"]},{\"name\":\"raffleImplementation\",\"file\":\"target/packages/contracts/src/RaffleFactory.sol\",\"writtenBy\":[\"RaffleFactory.constructor\"]},{\"name\":\"raffleCount\",\"file\":\"target/packages/contracts/src/RaffleFactory.sol\",\"writtenBy\":[\"RaffleFactory.createRaffle\"]},{\"name\":\"raffleById\",\"file\":\"target/packages/contracts/src/RaffleFactory.sol\",\"writtenBy\":[\"RaffleFactory.createRaffle\"]},{\"name\":\"idByRaffle\",\"file\":\"target/packages/contracts/src/RaffleFactory.sol\",\"writtenBy\":[\"RaffleFactory.createRaffle\"]},{\"name\":\"isRaffle\",\"file\":\"target/packages/contracts/src/RaffleFactory.sol\",\"writtenBy\":[\"RaffleFactory.createRaffle\"]},{\"name\":\"factory\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.constructor (implementation bytecode immutables shared by clones)\"]},{\"name\":\"quoteToken\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.constructor (implementation bytecode immutables shared by clones)\"]},{\"name\":\"sponsor\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.initialize\"]},{\"name\":\"sponsorRecipient\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.initialize\"]},{\"name\":\"protocolTreasury\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.initialize\"]},{\"name\":\"prizeToken\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.initialize\"]},{\"name\":\"prizeTokenId\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.initialize\"]},{\"name\":\"raffleId\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.initialize\"]},{\"name\":\"reserveEntries\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.initialize\"]},{\"name\":\"endTime\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.initialize\"]},{\"name\":\"initialized\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.constructor (implementation storage)\",\"Raffle.initialize (clone storage)\"]},{\"name\":\"totalEntries\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.buyEntries\"]},{\"name\":\"ticketCount\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.buyEntries\"]},{\"name\":\"_ticketRanges\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.buyEntries\"]},{\"name\":\"unsettledPot\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.buyEntries\",\"Raffle.enableRefunds\",\"Raffle._settleWinningTicket\"]},{\"name\":\"remainingRefundLiability\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.enableRefunds\",\"Raffle.refundTickets\"]},{\"name\":\"winnerRecipient\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.redeemWinningTicket\"]},{\"name\":\"winnerRedeemed\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.redeemWinningTicket\"]},{\"name\":\"winnerProceeds\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle._settleWinningTicket\",\"Raffle.redeemWinningTicket\"]},{\"name\":\"sponsorProceeds\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle._settleWinningTicket\",\"Raffle.releaseSponsorProceeds\"]},{\"name\":\"protocolFees\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle._settleWinningTicket\",\"Raffle.releaseProtocolFees\"]},{\"name\":\"vrfRequestId\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.requestDraw\"]},{\"name\":\"drawRequestedAt\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.requestDraw\"]},{\"name\":\"_requestInFlight\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.requestDraw\"]},{\"name\":\"resolvedAt\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.fulfillRandomWords\"]},{\"name\":\"winningEntry\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.fulfillRandomWords\"]},{\"name\":\"winningTicketId\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle._settleWinningTicket\"]},{\"name\":\"settlementComplete\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle._settleWinningTicket\"]},{\"name\":\"status\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.constructor\",\"Raffle.initialize\",\"Raffle.onERC721Received\",\"Raffle.requestDraw\",\"Raffle.fulfillRandomWords\",\"Raffle.enableRefunds\"]},{\"name\":\"prizeClaimed\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Raffle.redeemWinningTicket\",\"Raffle.releaseSponsorPrize\"]},{\"name\":\"ERC721._owners\",\"file\":\"target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol\",\"writtenBy\":[\"ERC721._update reached through Raffle._update from buyEntries, inherited transfers, refundTickets and redeemWinningTicket\"]},{\"name\":\"ERC721._balances\",\"file\":\"target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol\",\"writtenBy\":[\"ERC721._update reached through Raffle._update from buyEntries, inherited transfers, refundTickets and redeemWinningTicket\"]},{\"name\":\"ERC721._tokenApprovals\",\"file\":\"target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol\",\"writtenBy\":[\"ERC721._approve reached by approve and ownership updates\"]},{\"name\":\"ERC721._operatorApprovals\",\"file\":\"target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol\",\"writtenBy\":[\"ERC721._setApprovalForAll reached by setApprovalForAll\"]},{\"name\":\"ERC721._name\",\"file\":\"target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol\",\"writtenBy\":[\"ERC721.constructor on implementation; public raffle metadata overrides use fixed strings\"]},{\"name\":\"ERC721._symbol\",\"file\":\"target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol\",\"writtenBy\":[\"ERC721.constructor on implementation; public raffle metadata overrides use fixed strings\"]},{\"name\":\"i_linkToken\",\"file\":\"target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol\",\"writtenBy\":[\"VRFV2PlusWrapperConsumerBase.constructor (implementation bytecode immutables shared by clones)\"]},{\"name\":\"i_vrfV2PlusWrapper\",\"file\":\"target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol\",\"writtenBy\":[\"VRFV2PlusWrapperConsumerBase.constructor (implementation bytecode immutables shared by clones)\"]},{\"name\":\"REENTRANCY_GUARD_STORAGE slot value per factory/raffle instance\",\"file\":\"target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol\",\"writtenBy\":[\"ReentrancyGuard.constructor on deployed factory/implementation\",\"_nonReentrantBefore\",\"_nonReentrantAfter\"]},{\"name\":\"Escrowed prize ownership and quote/native balances (external ledger state)\",\"file\":\"target/packages/contracts/src/Raffle.sol\",\"writtenBy\":[\"Factory.createRaffle prize transfer\",\"buyEntries quote transfer\",\"requestDraw native payment and refund\",\"redeemWinningTicket\",\"refundTickets\",\"releaseSponsorProceeds\",\"releaseProtocolFees\",\"releaseSponsorPrize\",\"unsolicited external token/native transfers outside internal accounting\"]}]}\n\nWrite the full prose analysis to audit/S1/audit-context/functions/10-_update.md\nusing the Write tool. That file is the deliverable and it should be thorough. Then return only the structured\nrecord — it is a compact index, not a summary of the prose.\n\nFollow every call this function makes. When the callee's source is available, read it, and record in\n'propagates' what the caller depends on the callee to establish. If a precondition the caller relies on is\nonly established inside a callee, or only on some of the callee's paths, that belongs in 'assumptions' with\n'establishedBy' naming exactly where. If nothing establishes it, say \"nothing found\". When source is not\navailable, treat the callee as adversarial and record what is assumed about it.\n\nCite line numbers for every claim. Where you cannot, do not assert it — put it in openQuestions as\n\"unclear; need to inspect X\". Length is not a goal: a short record with cited claims beats a long one with\npadded ones.\n\nThis is context building, not vulnerability hunting. Describe structure, invariants, and\nassumptions. Do not name vulnerabilities, propose fixes, write exploits, or assign severity. An unenforced\nassumption is recorded as an unenforced assumption, not as a bug.",
+  "options": {
+    "agentType": "audit-context-building:function-analyzer",
+    "schema": {
+      "type": "object",
+      "required": [
+        "function",
+        "file",
+        "analysisFile",
+        "invariants",
+        "assumptions",
+        "calls",
+        "openQuestions"
+      ],
+      "properties": {
+        "function": {
+          "type": "string"
+        },
+        "file": {
+          "type": "string"
+        },
+        "lines": {
+          "type": "string",
+          "description": "e.g. L40-L88"
+        },
+        "analysisFile": {
+          "type": "string",
+          "description": "path the full prose analysis was written to"
+        },
+        "invariants": {
+          "type": "array",
+          "description": "What must hold. Each cites a line.",
+          "items": {
+            "type": "object",
+            "required": [
+              "claim",
+              "evidence"
+            ],
+            "properties": {
+              "claim": {
+                "type": "string"
+              },
+              "evidence": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "description": "What this function takes on faith, including anything a callee is relied on to enforce.",
+          "items": {
+            "type": "object",
+            "required": [
+              "claim",
+              "establishedBy"
+            ],
+            "properties": {
+              "claim": {
+                "type": "string"
+              },
+              "establishedBy": {
+                "type": "string",
+                "description": "the function or line that establishes it, or \"nothing found\" if unestablished"
+              }
+            }
+          }
+        },
+        "calls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "callee",
+              "kind",
+              "propagates"
+            ],
+            "properties": {
+              "callee": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "internal",
+                  "external-source-available",
+                  "external-black-box"
+                ]
+              },
+              "propagates": {
+                "type": "string",
+                "description": "what the callee establishes or assumes that the caller then depends on"
+              }
+            }
+          }
+        },
+        "callers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sharedState": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "openQuestions": {
+          "type": "array",
+          "description": "Unresolved items, phrased as \"unclear; need to inspect X\". Empty is a valid answer.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "label": "_update",
+    "phase": "Analyze"
+  },
+  "accepted_model": "gpt-6-astra",
+  "accepted_effort": "ultra",
+  "provider_returned_model": "unknown",
+  "provider_returned_effort": "unknown",
+  "fallback_enabled": false
+}

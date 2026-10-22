@@ -1,0 +1,573 @@
+{
+  "method": "exact-pinned-ToB-JS-body-on-disclosed-native-agy-host-adapter",
+  "endedUtc": "2026-10-21T21:30:54.654Z",
+  "workflowResult": {
+    "root": "packages/contracts",
+    "report": "spec-compliance/REPORT.md",
+    "documents": [
+      "DESIGN.md",
+      "packages/contracts/src/interfaces/IRaffle.sol",
+      "packages/contracts/src/interfaces/IRaffleFactory.sol",
+      "packages/contracts/src/Raffle.sol",
+      "packages/contracts/src/RaffleFactory.sol",
+      "packages/contracts/src/libraries/RaffleConstants.sol"
+    ],
+    "requirementsExtracted": 219,
+    "requirementsChecked": 10,
+    "checksFailed": [],
+    "holds": [
+      "REQ-10",
+      "REQ-11",
+      "REQ-19",
+      "REQ-21",
+      "REQ-25",
+      "REQ-68",
+      "REQ-15-4",
+      "REQ-16-4",
+      "REQ-17-4"
+    ],
+    "divergences": [
+      {
+        "requirementId": "REQ-03-3",
+        "severity": "medium",
+        "title": "Mandatory deployment-tooling verification of official target-chain USDC quote-token address is absent from repository scope"
+      }
+    ],
+    "refuted": [],
+    "unverified": [],
+    "undocumentedBehavior": [
+      {
+        "file": "packages/contracts/src/Raffle.sol",
+        "lines": "329-337, 375-407, 564-567, 593-605",
+        "reachableBy": "Any caller of releaseSponsorPrize(), releaseSponsorProceeds(), releaseProtocolFees(), refundTickets(), or the winning ticket owner calling redeemWinningTicket()",
+        "what": "Dynamic _isProtocolDestination screening is re-enforced at claim time on all USDC payouts via _transferQuote (Raffle.sol:L564-L567, called at L342, L369, L380, L390), but is omitted on ERC-721 prize releases in redeemWinningTicket (Raffle.sol:L329-L337) and releaseSponsorPrize (Raffle.sol:L395-L407), which also use raw IERC721.transferFrom (Raffle.sol:L334, L404) instead of safeTransferFrom. Because RaffleFactory.createRaffle deploys clones with Clones.clone (CREATE, RaffleFactory.sol:L106) and _isProtocolDestination only queries canonicalFactory.isRaffle(destination) when destination.code.length != 0 (Raffle.sol:L602-L604), a precomputed future clone address passes creation-time screening as sponsorRecipient, protocolTreasury, or ticket recipient before that clone is deployed. Once that later clone is created (RaffleFactory.sol:L125), USDC claims to it revert with InvalidQuoteDestination (permanently locking those USDC liabilities in the earlier raffle), whereas releaseSponsorPrize transfers the earlier raffle's prize NFT via raw transferFrom directly into the later raffle clone (bypassing onERC721Received at Raffle.sol:L416-L431 and permanently stranding the NFT inside the second clone). Raw transferFrom also delivers prize NFTs to contract recipients without invoking IERC721Receiver.onERC721Received.",
+        "whyItMatters": "A reader of the documentation alone—which states \"Never move assets between raffle clones\" (DESIGN.md:L2), \"redemption requires current ticket owner, burns claim atomically, and must revert all effects on delivery failure\" (DESIGN.md:L2), and \"Identifies same-factory protocol plumbing that cannot safely own a ticket or receive a payout. Initialization supplies the prospective prize token because clone storage is not populated yet; runtime checks pass the stored prize token. Code-less addresses are not queried in the registry\" (Raffle.sol:L587-L589)—would believe that protocol destination screening prevents moving assets between raffle clones and that valid recipients screened at initialization remain payable, not that a precomputed future clone address passes initialization only to have its USDC claims permanently locked while releaseSponsorPrize moves the prize NFT directly into the other raffle clone via raw transferFrom."
+      },
+      {
+        "file": "packages/contracts/src/Raffle.sol",
+        "lines": "187-195, 593-605",
+        "reachableBy": "Any caller of RaffleFactory.createRaffle(CreateRaffleParams) (which invokes Raffle.initialize at RaffleFactory.sol:L109-L121)",
+        "what": "In addition to RaffleFactory._validateCreateParams screening params.prizeToken and params.sponsorRecipient (RaffleFactory.sol:L157-L169), Raffle.initialize also screens params.sponsor (msg.sender of createRaffle) and params.protocolTreasury against _isProtocolDestination(..., params.prizeToken) (Raffle.sol:L187-L192, L593-L605). Consequently: (1) createRaffle reverts with IRaffle.UnsafeProtocolDestination(msg.sender) if msg.sender equals params.prizeToken (e.g., an ERC-721 contract sponsoring a raffle of its own token with a separate sponsorRecipient) or is a registered raffle clone, even though sponsor never receives payouts or returned prizes; and (2) createRaffle reverts with IRaffle.UnsafeProtocolDestination(protocolTreasury) if params.prizeToken == protocolTreasury, or if protocolTreasury was configured at factory deployment to a precomputed CREATE address of a future clone (which permanently bricks createRaffle once that clone is reached or registered).",
+        "whyItMatters": "A reader of the documentation alone—which states that _validateCreateParams \"Validates the sponsor-selected token, recipient, reserve, and supported ERC-721 interface before cloning\" (RaffleFactory.sol:L152), that UnsafeProtocolDestination is \"Raised when a configured token or recipient is known protocol plumbing\" (IRaffleFactory.sol:L89) or \"when initialization or a ticket transfer targets known protocol plumbing\" (IRaffle.sol:L266), and that _isProtocolDestination \"Identifies same-factory protocol plumbing that cannot safely own a ticket or receive a payout\" (Raffle.sol:L587)—would not know that msg.sender (sponsor) cannot be the prizeToken contract even when sponsorRecipient is a distinct valid address, or that protocolTreasury is re-screened against params.prizeToken, the new clone address, and canonicalFactory.isRaffle(protocolTreasury) during every createRaffle call."
+      },
+      {
+        "file": "packages/contracts/src/Raffle.sol",
+        "lines": "28, 155-158",
+        "reachableBy": "Deployer of RaffleFactory / Raffle, Chainlink VRF wrapper calling rawFulfillRandomWords, and any external caller of inherited VRFV2PlusWrapperConsumerBase getters",
+        "what": "Raffle inherits Chainlink's VRFV2PlusWrapperConsumerBase (Raffle.sol:L28, L157), whose constructor executes i_linkToken = LinkTokenInterface(vrfV2PlusWrapper.link()) during RaffleFactory construction (RaffleFactory.sol:L89, VRFV2PlusWrapperConsumerBase.sol:L45), making an external call to vrfWrapper_.link() and reverting deployment if vrfWrapper_ does not implement link() returns (address). Inheritance of VRFV2PlusWrapperConsumerBase also exposes four external/public functions on Raffle that are absent from IRaffle.sol: rawFulfillRandomWords(uint256, uint256[]) (VRFV2PlusWrapperConsumerBase.sol:L101-L107, which checks msg.sender == address(i_vrfV2PlusWrapper) and reverts with OnlyVRFWrapperCanFulfill before calling fulfillRandomWords), i_vrfV2PlusWrapper() (L35), getBalance() (L110-L112), and getLinkToken() (L115-L117).",
+        "whyItMatters": "A reader of the documentation alone—which states in IRaffleFactory.sol:L8-L9 that \"onchain construction checks only code presence and six-decimal metadata\" and in RaffleFactory.sol:L59 that \"The quote token must report exactly six decimals; the wrapper and quote token must contain deployed code\"—would believe RaffleFactory construction only checks vrfWrapper_.code.length != 0 without calling vrfWrapper_.link(), and a reader of IRaffle.sol alone would not see the external rawFulfillRandomWords entrypoint, its OnlyVRFWrapperCanFulfill error, or the getLinkToken(), getBalance(), and i_vrfV2PlusWrapper() getters exposed on every Raffle clone."
+      }
+    ],
+    "documentProblems": [
+      "IRaffleFactory.sol:L8-L9 states that 'onchain construction checks only code presence and six-decimal metadata', whereas RaffleFactory.constructor (RaffleFactory.sol:L68, L80-L83, L89-L90) and Raffle.constructor (Raffle.sol:L157 -> VRFV2PlusWrapperConsumerBase.sol:L45) also validate protocolTreasury_ against zero and protocol plumbing addresses and invoke vrfWrapper_.link() during construction.",
+      "IRaffleFactory.sol:L89, IRaffle.sol:L266, RaffleFactory.sol:L152, and Raffle.sol:L587-L589 describe _isProtocolDestination and UnsafeProtocolDestination as screening tokens, ticket owners, and payout recipients against known protocol plumbing, omitting that Raffle.initialize (Raffle.sol:L187-L192) also screens params.sponsor (which receives neither tickets nor payouts) and params.protocolTreasury against params.prizeToken and registered clones.",
+      "DESIGN.md:L2 states 'Reserve missed awards 80% gross to winner, 15% sponsor, 5% treasury. ... Rounding is floor on aggregate protocol fee; remainder must be allocated without loss' without specifying the rounding direction of the 80% cash-winner allocation before computing the sponsor remainder, whereas IRaffle.sol:L328, Raffle.sol:L529-L530, and RaffleConstants.sol:L7-L8 specify that both the 5% protocol fee and 80% cash-winner allocation round down via Math.mulDiv and the sponsor receives the remainder."
+    ],
+    "notChecked": [
+      "REQ-27-3",
+      "REQ-31-2",
+      "REQ-05-5",
+      "REQ-06-5",
+      "REQ-07-5",
+      "REQ-08-6",
+      "REQ-01",
+      "REQ-02",
+      "REQ-03",
+      "REQ-04",
+      "REQ-05",
+      "REQ-06",
+      "REQ-07",
+      "REQ-08",
+      "REQ-09",
+      "REQ-12",
+      "REQ-13",
+      "REQ-14",
+      "REQ-15",
+      "REQ-16",
+      "REQ-17",
+      "REQ-18",
+      "REQ-20",
+      "REQ-22",
+      "REQ-23",
+      "REQ-24",
+      "REQ-01-2",
+      "REQ-02-2",
+      "REQ-03-2",
+      "REQ-04-2",
+      "REQ-05-2",
+      "REQ-06-2",
+      "REQ-07-2",
+      "REQ-08-2",
+      "REQ-09-2",
+      "REQ-10-2",
+      "REQ-11-2",
+      "REQ-12-2",
+      "REQ-13-2",
+      "REQ-14-2",
+      "REQ-15-2",
+      "REQ-16-2",
+      "REQ-17-2",
+      "REQ-18-2",
+      "REQ-19-2",
+      "REQ-20-2",
+      "REQ-21-2",
+      "REQ-22-2",
+      "REQ-23-2",
+      "REQ-24-2",
+      "REQ-25-2",
+      "REQ-26",
+      "REQ-27",
+      "REQ-28",
+      "REQ-29",
+      "REQ-30",
+      "REQ-31",
+      "REQ-32",
+      "REQ-33",
+      "REQ-34",
+      "REQ-35",
+      "REQ-36",
+      "REQ-37",
+      "REQ-38",
+      "REQ-39",
+      "REQ-40",
+      "REQ-41",
+      "REQ-42",
+      "REQ-43",
+      "REQ-44",
+      "REQ-45",
+      "REQ-46",
+      "REQ-47",
+      "REQ-48",
+      "REQ-49",
+      "REQ-50",
+      "REQ-51",
+      "REQ-52",
+      "REQ-53",
+      "REQ-54",
+      "REQ-55",
+      "REQ-56",
+      "REQ-57",
+      "REQ-58",
+      "REQ-59",
+      "REQ-60",
+      "REQ-61",
+      "REQ-62",
+      "REQ-63",
+      "REQ-64",
+      "REQ-65",
+      "REQ-66",
+      "REQ-67",
+      "REQ-69",
+      "REQ-70",
+      "REQ-71",
+      "REQ-72",
+      "REQ-73",
+      "REQ-74",
+      "REQ-75",
+      "REQ-76",
+      "REQ-77",
+      "REQ-78",
+      "REQ-79",
+      "REQ-80",
+      "REQ-81",
+      "REQ-82",
+      "REQ-83",
+      "REQ-84",
+      "REQ-85",
+      "REQ-86",
+      "REQ-87",
+      "REQ-88",
+      "REQ-89",
+      "REQ-90",
+      "REQ-91",
+      "REQ-92",
+      "REQ-93",
+      "REQ-94",
+      "REQ-95",
+      "REQ-01-3",
+      "REQ-02-3",
+      "REQ-04-3",
+      "REQ-05-3",
+      "REQ-06-3",
+      "REQ-07-3",
+      "REQ-08-3",
+      "REQ-09-3",
+      "REQ-10-3",
+      "REQ-11-3",
+      "REQ-12-3",
+      "REQ-13-3",
+      "REQ-14-3",
+      "REQ-15-3",
+      "REQ-16-3",
+      "REQ-17-3",
+      "REQ-18-3",
+      "REQ-19-3",
+      "REQ-20-3",
+      "REQ-21-3",
+      "REQ-22-3",
+      "REQ-23-3",
+      "REQ-24-3",
+      "REQ-25-3",
+      "REQ-26-2",
+      "REQ-27-2",
+      "REQ-01-4",
+      "REQ-02-4",
+      "REQ-03-4",
+      "REQ-04-4",
+      "REQ-05-4",
+      "REQ-06-4",
+      "REQ-07-4",
+      "REQ-08-4",
+      "REQ-09-4",
+      "REQ-10-4",
+      "REQ-11-4",
+      "REQ-12-4",
+      "REQ-13-4",
+      "REQ-14-4",
+      "REQ-18-4",
+      "REQ-19-4",
+      "REQ-20-4",
+      "REQ-21-4",
+      "REQ-22-4",
+      "REQ-23-4",
+      "REQ-24-4",
+      "REQ-25-4",
+      "REQ-26-3",
+      "REQ-28-2",
+      "REQ-29-2",
+      "REQ-30-2",
+      "REQ-32-2",
+      "REQ-33-2",
+      "REQ-34-2",
+      "REQ-35-2",
+      "REQ-36-2",
+      "REQ-37-2",
+      "REQ-38-2",
+      "REQ-39-2",
+      "REQ-40-2",
+      "REQ-01-5",
+      "REQ-02-5",
+      "REQ-03-5",
+      "REQ-04-5",
+      "REQ-08-5",
+      "REQ-09-5",
+      "REQ-10-5",
+      "REQ-11-5",
+      "REQ-12-5",
+      "REQ-13-5",
+      "REQ-14-5",
+      "REQ-15-5",
+      "REQ-16-5",
+      "REQ-17-5",
+      "REQ-01-6",
+      "REQ-02-6",
+      "REQ-03-6",
+      "REQ-04-6",
+      "REQ-05-6",
+      "REQ-06-6",
+      "REQ-07-6",
+      "REQ-09-6",
+      "REQ-10-6",
+      "REQ-11-6",
+      "REQ-12-6",
+      "REQ-13-6",
+      "REQ-14-6",
+      "REQ-15-6"
+    ],
+    "unreadableDocuments": []
+  },
+  "error": null,
+  "calls": [
+    {
+      "id": "001",
+      "status": "succeeded",
+      "conversationId": "46e9f8bd-f004-4897-b09b-8b2ce660445d",
+      "error": null,
+      "usage": {
+        "input_tokens": 66689,
+        "output_tokens": 24002,
+        "thinking_tokens": 20442,
+        "cache_read_tokens": 269000,
+        "total_tokens": 90691
+      }
+    },
+    {
+      "id": "002",
+      "status": "succeeded",
+      "conversationId": "3a81fb43-bdb8-401e-b77b-c50ce6e9c3c8",
+      "error": null,
+      "usage": {
+        "input_tokens": 57252,
+        "output_tokens": 22262,
+        "thinking_tokens": 18142,
+        "cache_read_tokens": 118999,
+        "total_tokens": 79514
+      }
+    },
+    {
+      "id": "003",
+      "status": "succeeded",
+      "conversationId": "52f939a7-f1ce-4467-b627-7190edd10aa6",
+      "error": null,
+      "usage": {
+        "input_tokens": 19493,
+        "output_tokens": 18264,
+        "thinking_tokens": 6788,
+        "cache_read_tokens": 8093,
+        "total_tokens": 37757
+      }
+    },
+    {
+      "id": "004",
+      "status": "succeeded",
+      "conversationId": "a050943b-7733-4898-ad2e-90e877d15619",
+      "error": null,
+      "usage": {
+        "input_tokens": 41696,
+        "output_tokens": 16362,
+        "thinking_tokens": 10746,
+        "cache_read_tokens": 56069,
+        "total_tokens": 58058
+      }
+    },
+    {
+      "id": "005",
+      "status": "succeeded",
+      "conversationId": "a59beca6-8a41-42b1-a884-26dc1c6ca45d",
+      "error": null,
+      "usage": {
+        "input_tokens": 41503,
+        "output_tokens": 14871,
+        "thinking_tokens": 8990,
+        "cache_read_tokens": 63540,
+        "total_tokens": 56374
+      }
+    },
+    {
+      "id": "006",
+      "status": "succeeded",
+      "conversationId": "69213a6f-5432-4c75-b8c8-4c0e597c4d0e",
+      "error": null,
+      "usage": {
+        "input_tokens": 63849,
+        "output_tokens": 16855,
+        "thinking_tokens": 11832,
+        "cache_read_tokens": 202616,
+        "total_tokens": 80704
+      }
+    },
+    {
+      "id": "007",
+      "status": "succeeded",
+      "conversationId": "31b852d8-952c-489c-a9e7-d1e54a1122ca",
+      "error": null,
+      "usage": {
+        "input_tokens": 42754,
+        "output_tokens": 10303,
+        "thinking_tokens": 6683,
+        "cache_read_tokens": 55014,
+        "total_tokens": 53057
+      }
+    },
+    {
+      "id": "008",
+      "status": "succeeded",
+      "conversationId": "a86934d7-fd9b-474a-95aa-c2c0edb91f2b",
+      "error": null,
+      "usage": {
+        "input_tokens": 68598,
+        "output_tokens": 40275,
+        "thinking_tokens": 35980,
+        "cache_read_tokens": 130175,
+        "total_tokens": 108873
+      }
+    },
+    {
+      "id": "009",
+      "status": "succeeded",
+      "conversationId": "90e47d5b-5ca5-47e9-ace6-707caacc29ae",
+      "error": null,
+      "usage": {
+        "input_tokens": 69372,
+        "output_tokens": 12597,
+        "thinking_tokens": 6282,
+        "cache_read_tokens": 200342,
+        "total_tokens": 81969
+      }
+    },
+    {
+      "id": "010",
+      "status": "succeeded",
+      "conversationId": "e104ae43-81f8-4395-9f30-c6d1b791cde8",
+      "error": null,
+      "usage": {
+        "input_tokens": 75147,
+        "output_tokens": 15766,
+        "thinking_tokens": 6228,
+        "cache_read_tokens": 206695,
+        "total_tokens": 90913
+      }
+    },
+    {
+      "id": "011",
+      "status": "failed",
+      "conversationId": null,
+      "error": "Error: Native terminal error: The stream was interrupted. Please continue the task you were working on.",
+      "usage": null
+    },
+    {
+      "id": "012",
+      "status": "failed",
+      "conversationId": null,
+      "error": "Error: Native terminal error: API error (attempt 1): request failed: Post \"https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse\": read tcp [2601:600:9000:45f2:38ae:83bd:fd08:e56a]:50794->[2001:4860:4846:400::]:443: read: operation timed out",
+      "usage": null
+    },
+    {
+      "id": "013",
+      "status": "succeeded",
+      "conversationId": "5602b821-9ec2-4efc-b8bd-14df1ba398e1",
+      "error": null,
+      "usage": {
+        "input_tokens": 78624,
+        "output_tokens": 27620,
+        "thinking_tokens": 16612,
+        "cache_read_tokens": 249657,
+        "total_tokens": 106244
+      }
+    },
+    {
+      "id": "014",
+      "status": "succeeded",
+      "conversationId": "e24676ea-51f1-4d7e-9269-d81307d44189",
+      "error": null,
+      "usage": {
+        "input_tokens": 71884,
+        "output_tokens": 12541,
+        "thinking_tokens": 5180,
+        "cache_read_tokens": 393742,
+        "total_tokens": 84425
+      }
+    },
+    {
+      "id": "015",
+      "status": "succeeded",
+      "conversationId": "57ee32ac-1c7f-4156-b562-d80655f36f72",
+      "error": null,
+      "usage": {
+        "input_tokens": 56882,
+        "output_tokens": 14052,
+        "thinking_tokens": 8429,
+        "cache_read_tokens": 136442,
+        "total_tokens": 70934
+      }
+    },
+    {
+      "id": "016",
+      "status": "succeeded",
+      "conversationId": "ae483ec2-a92a-4095-a82d-b47441e5eb44",
+      "error": null,
+      "usage": {
+        "input_tokens": 70827,
+        "output_tokens": 12561,
+        "thinking_tokens": 6148,
+        "cache_read_tokens": 300831,
+        "total_tokens": 83388
+      }
+    },
+    {
+      "id": "017",
+      "status": "succeeded",
+      "conversationId": "77a2a7a5-0e35-480f-91ac-b9d6ec3e1295",
+      "error": null,
+      "usage": {
+        "input_tokens": 51757,
+        "output_tokens": 9815,
+        "thinking_tokens": 5366,
+        "cache_read_tokens": 94110,
+        "total_tokens": 61572
+      }
+    },
+    {
+      "id": "018",
+      "status": "succeeded",
+      "conversationId": "3d60c3d6-397e-404f-b389-f6c0d694afd5",
+      "error": null,
+      "usage": {
+        "input_tokens": 60255,
+        "output_tokens": 9756,
+        "thinking_tokens": 3665,
+        "cache_read_tokens": 256018,
+        "total_tokens": 70011
+      }
+    },
+    {
+      "id": "019",
+      "status": "succeeded",
+      "conversationId": "ad23a221-dcfe-46aa-8eb8-2a2d3237d2f6",
+      "error": null,
+      "usage": {
+        "input_tokens": 73296,
+        "output_tokens": 13490,
+        "thinking_tokens": 5826,
+        "cache_read_tokens": 276176,
+        "total_tokens": 86786
+      }
+    },
+    {
+      "id": "020",
+      "status": "succeeded",
+      "conversationId": "7b27ce61-4ce8-411f-9430-5006e849e4cb",
+      "error": null,
+      "usage": {
+        "input_tokens": 89160,
+        "output_tokens": 32976,
+        "thinking_tokens": 24986,
+        "cache_read_tokens": 233501,
+        "total_tokens": 122136
+      }
+    },
+    {
+      "id": "021",
+      "status": "succeeded",
+      "conversationId": "59ae49f9-882e-4aa1-8778-6d827fceb987",
+      "error": null,
+      "usage": {
+        "input_tokens": 47759,
+        "output_tokens": 6452,
+        "thinking_tokens": 4175,
+        "cache_read_tokens": 89847,
+        "total_tokens": 54211
+      }
+    },
+    {
+      "id": "022",
+      "status": "succeeded",
+      "conversationId": "5df8520a-31a5-4c5c-88cb-eb9dda2d9cf3",
+      "error": null,
+      "usage": {
+        "input_tokens": 48056,
+        "output_tokens": 9502,
+        "thinking_tokens": 6886,
+        "cache_read_tokens": 116430,
+        "total_tokens": 57558
+      }
+    },
+    {
+      "id": "023",
+      "status": "succeeded",
+      "conversationId": "1e4a25d1-1a18-440c-b187-37f563f41050",
+      "error": null,
+      "usage": {
+        "input_tokens": 169533,
+        "output_tokens": 18360,
+        "thinking_tokens": 6944,
+        "cache_read_tokens": 223949,
+        "total_tokens": 187893
+      }
+    }
+  ],
+  "uniqueConversations": 21,
+  "status": "completed-with-agent-failures",
+  "assessedSourceExecutedByHost": false,
+  "reviewImportPerformed": false
+}

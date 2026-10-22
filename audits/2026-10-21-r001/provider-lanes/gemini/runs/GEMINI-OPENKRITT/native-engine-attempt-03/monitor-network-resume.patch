@@ -1,0 +1,41 @@
+--- monitor_export-before-network-resume.py
++++ monitor_export.py
+@@ -25,7 +25,7 @@
+  scan=rows('public.scans','id=1')[0];assert scan['status']=='completed'
+  data={'scan':scan,'steps':rows('workflows.step_metadata','scan_id=1'),'post_processing':rows('workflows.post_process_metadata','scan_id=1'),'step_results':rows('workflows.step_results','scan_id=1'),'findings':rows('workflows.vulnerabilities','scan_id=1'),'enrichments':rows('workflows.vulnerability_enrichments','scan_id=1'),'workflow':rows('public.llm_workflows','id='+str(scan['workflow_id'])),'step_definitions':rows('public.steps','id in (1,2,3)'),'post_scripts':rows('public.post_scripts','id in (3,4,5,6)'),'rankers':rows('public.severity_rankers','id=1')}
+  write(O/'native-results.json',data)
+- expected=json.loads((M/'source-manifest.json').read_text());calls=[];issues=[]
++ expected=json.loads((M/'source-manifest.json').read_text());calls=[];issues=[];historical_network_failures=[]
+  for call in sorted((M/'host-calls').iterdir()):
+   if not call.is_dir():continue
+   dest=O/'host-call-evidence'/call.name;dest.mkdir(parents=True,exist_ok=True)
+@@ -41,14 +41,27 @@
+   delegated=sorted({x['tool_name'] for x in tools if any(w in x['tool_name'].lower() for w in ['research','agent','delegate','model'])})
+   receipt={k:v for k,v in result.items() if k not in ['payload','source_after','tool_event_summary']};receipt.update(source_after_matches=after==expected,launch_sha256=sha(call/'launch.json'),tools=tools,delegated_tool_names=delegated,native_allows_tools=launch['allow_tools_requested_by_engine'])
+   calls.append(receipt)
+-  if not result.get('ok') or not receipt['source_after_matches'] or result.get('init_model')!=MODEL:issues.append({'call':call.name,'issue':'route/source/transport integrity'})
++  if not receipt['source_after_matches'] or result.get('init_model')!=MODEL:issues.append({'call':call.name,'issue':'route/source integrity'})
++  if not result.get('ok'):
++   terminal={}
++   for raw in (call/'stdout.ndjson').read_text().splitlines():
++    try:event=json.loads(raw)
++    except:continue
++    if event.get('event')=='result':terminal=event.get('result',{})
++   error=terminal.get('error','')
++   if 'operation timed out' in error or 'stream was interrupted' in error:historical_network_failures.append({'call':call.name,'error':error,'preserved_failed_attempt':True})
++   else:issues.append({'call':call.name,'issue':'unresolved transport failure','error':error})
+   if delegated:issues.append({'call':call.name,'issue':'unverified delegated model invocation','tools':delegated})
+   if not launch['allow_tools_requested_by_engine'] and any(t['tool_name']!='finish' for t in tools):issues.append({'call':call.name,'issue':'native no-tool request violated','tools':sorted({t['tool_name'] for t in tools})})
+  write(O/'CLI-CALL-RECEIPTS.json',calls)
+  mismatch=[s['id'] for s in data['steps'] if s.get('model') and (s['model']!=MODEL or s.get('thinking_effort')!='high' or s.get('harness')!='gemini-cli')]
+  if mismatch:issues.append({'issue':'native tuple mismatch','metadata':mismatch})
++ logical=lambda j:(j.get('kind','step'),j.get('step_id'),j.get('prev_id') or 0,j.get('prev_table'),j.get('repeat_run') or 1)
++ completed={logical(j) for j in data['steps'] if j['status']=='completed'}
++ unresolved=[j['id'] for j in data['steps'] if j['status']=='failed' and logical(j) not in completed]
++ if unresolved:issues.append({'issue':'unresolved native failed logical jobs','metadata':unresolved})
+  findings=data['findings'];counts=collections.Counter((s['kind'],s['status']) for s in data['steps'])
+- completion={'completed_utc':now(),'native_status':'completed','target_commit':COMMIT,'method':'actual pinned OpenKritt Python engine, native PostgreSQL queue/workflow/ranker/postprocessors; disclosed official agy file-spool adapter','requested_model':MODEL,'requested_effort':'high','provider_internal_identity':'not independently returned','calls':len(calls),'stage_counts':{str(k):v for k,v in counts.items()},'finding_records':len(findings),'canonical_findings':sum(bool(x.get('dedupe_is_canonical')) for x in findings),'qualification_issues':issues,'qualifies_route_and_source':not issues,'no_claim_of_independent_finding_validation':True}
++ completion={'completed_utc':now(),'native_status':'completed','target_commit':COMMIT,'method':'actual pinned OpenKritt Python engine, native PostgreSQL queue/workflow/ranker/postprocessors; disclosed official agy file-spool adapter','requested_model':MODEL,'requested_effort':'high','provider_internal_identity':'not independently returned','calls':len(calls),'historical_network_failures':historical_network_failures,'native_resume_disclosure':'One native pending transition after network interruptions; failed attempts preserved and successful logical jobs retained. No provider safety rejection retried.','stage_counts':{str(k):v for k,v in counts.items()},'finding_records':len(findings),'canonical_findings':sum(bool(x.get('dedupe_is_canonical')) for x in findings),'qualification_issues':issues,'qualifies_route_and_source':not issues,'no_claim_of_independent_finding_validation':True}
+  write(O/'COMPLETION-RECEIPT.json',completion)
+  lines=['# Gemini native OpenKritt first pass','',f'Target: `{COMMIT}`. Upstream OpenKritt: `43e1d19a00ce50bd93253d1c6c3a48cfffbcc4c3`.','', 'This is the actual native Python engine and PostgreSQL workflow, using a disclosed local file-spool adapter to the official macOS Antigravity CLI. Every direct call requests `gemini-4-argon-high`, effort `high`, and a fresh source workspace. Internal provider checkpoint identity is not independently returned. The adapter does not replace native queue, workflow, ranking or postprocessing decisions.','', 'This export preserves native findings without operator synthesis or independent security validation. Claim counts are output records, not votes or established defects.','', '## Execution','', '```json',json.dumps(completion,indent=2),'```','','| Native job | Kind | Step | Status | Model | Effort |','|---|---|---|---|---|---|']
+  for s in data['steps']:lines.append('| '+' | '.join(str(s.get(k) or '').replace('|','/') for k in ['id','kind','step_id','status','model','thinking_effort'])+' |')

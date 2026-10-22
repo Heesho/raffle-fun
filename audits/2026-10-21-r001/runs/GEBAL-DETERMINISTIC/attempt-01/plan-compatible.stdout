@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": "bf43cc8e-e96c-4566-8ec0-e12f03abb4fc",
+  "createdAt": "2026-10-21T08:27:40.226Z",
+  "snapshotId": "8750990e-148c-4f1b-9877-53c3fa432794",
+  "snapshotHash": "4ccea2a55fbb3cf6320126f9ffb175c3029d2b94e09b3d1ff4592e1cbc8bd4de",
+  "scopeId": "1d1531fa-03a3-4f50-bc90-4a010674d503",
+  "diagnosis": {
+    "kind": "foundry",
+    "supported": true,
+    "compiler": "0.8.36",
+    "evm": "cancun",
+    "settings": {
+      "src": "packages/contracts/src",
+      "test": "packages/contracts/test/foundry",
+      "script": "script",
+      "out": "out",
+      "libs": [
+        "packages/contracts/lib",
+        "packages/contracts/node_modules"
+      ],
+      "solc_version": "0.8.36",
+      "evm_version": "cancun",
+      "optimizer": true,
+      "optimizer_runs": 200,
+      "via_ir": false,
+      "fuzz": {
+        "runs": 1000,
+        "seed": "0x524146464c45"
+      },
+      "invariant": {
+        "runs": 256,
+        "depth": 64,
+        "fail_on_revert": false
+      },
+      "gas_reports": [
+        "Raffle",
+        "RaffleFactory"
+      ],
+      "projectPath": "packages/contracts",
+      "remappings": [
+        "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+        "@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+        "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+        "@openzeppelin/contracts/=packages/contracts/node_modules/@openzeppelin/contracts/",
+        "forge-std/=packages/contracts/lib/forge-std/src/"
+      ]
+    },
+    "issues": [],
+    "notes": [
+      "Exact file remappings were resolved from uniquely matching authorized library paths and are included in the approved plan.",
+      "Only profile.default is selected; other profiles, RPC endpoints and formatting configuration are not loaded.",
+      "Controller overrides output/cache/script paths, denies FFI/filesystem/RPC and dependency downloads, and disables automatic remappings.",
+      "Configured fuzz/invariant campaigns are replaced by the disclosed fixed seed and bounded campaign. Tests requiring denied capabilities cannot be validated.",
+      "Source-only intake does not establish compiler, test, property or security coverage."
+    ]
+  },
+  "tasks": [
+    "intake",
+    "foundry-build",
+    "foundry-test",
+    "slither"
+  ],
+  "limits": {
+    "seconds": 900,
+    "memoryMb": 2048,
+    "cpus": 2,
+    "pids": 128,
+    "diskMb": 512,
+    "maxOutputBytes": 8388608,
+    "tokens": 0,
+    "maxTasks": 4
+  },
+  "image": "sha256:470f595a2226b79d436bd27ab38e789667f847234c8034beee470b086839bfd1",
+  "provider": null,
+  "egress": [],
+  "methodology": "native-review-v1",
+  "adapterVersion": "0.2.0",
+  "hash": "03ca1dd525e13e7c64f89ef4fb483e150a65dd366c90ffd8edcfcc7f066008b9"
+}
+Inspect this plan, then approve its exact hash: gebal approve bf43cc8e-e96c-4566-8ec0-e12f03abb4fc --hash 03ca1dd525e13e7c64f89ef4fb483e150a65dd366c90ffd8edcfcc7f066008b9 --actor YOUR_NAME --reason "Reviewed scope, execution limits and egress"

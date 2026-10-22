@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["requirementId", "analysisFile", "analysisMarkdown", "verdict", "confidence", "evidence", "searched", "reasoning", "documentProblem", "filesReviewed"],
+  "properties": {
+    "requirementId": {"type": "string"},
+    "analysisFile": {"type": "string"},
+    "analysisMarkdown": {"type": "string"},
+    "verdict": {"type": "string", "enum": ["implemented", "partial", "contradicted", "absent", "stronger-than-spec", "undecidable"]},
+    "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+    "evidence": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["file", "lines", "quote", "role"], "properties": {"file": {"type": "string"}, "lines": {"type": "string"}, "quote": {"type": "string"}, "role": {"type": "string"}}}},
+    "searched": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["where", "result"], "properties": {"where": {"type": "string"}, "result": {"type": "string"}}}},
+    "reasoning": {"type": "string"},
+    "documentProblem": {"type": "string"},
+    "filesReviewed": {"type": "array", "items": {"type": "string"}}
+  }
+}

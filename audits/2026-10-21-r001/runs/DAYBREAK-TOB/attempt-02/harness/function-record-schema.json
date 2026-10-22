@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["function", "file", "lines", "analysisFile", "analysisMarkdown", "invariants", "assumptions", "calls", "callers", "sharedState", "openQuestions", "filesReviewed"],
+  "properties": {
+    "function": {"type": "string"},
+    "file": {"type": "string"},
+    "lines": {"type": "string"},
+    "analysisFile": {"type": "string"},
+    "analysisMarkdown": {"type": "string"},
+    "invariants": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["claim", "evidence"], "properties": {"claim": {"type": "string"}, "evidence": {"type": "string"}}}},
+    "assumptions": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["claim", "establishedBy"], "properties": {"claim": {"type": "string"}, "establishedBy": {"type": "string"}}}},
+    "calls": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["callee", "kind", "propagates"], "properties": {"callee": {"type": "string"}, "kind": {"type": "string", "enum": ["internal", "external-source-available", "external-black-box"]}, "propagates": {"type": "string"}}}},
+    "callers": {"type": "array", "items": {"type": "string"}},
+    "sharedState": {"type": "array", "items": {"type": "string"}},
+    "openQuestions": {"type": "array", "items": {"type": "string"}},
+    "filesReviewed": {"type": "array", "items": {"type": "string"}}
+  }
+}

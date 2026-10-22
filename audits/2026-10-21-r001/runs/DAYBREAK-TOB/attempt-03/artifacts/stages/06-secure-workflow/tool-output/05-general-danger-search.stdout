@@ -1,0 +1,178 @@
+src/Raffle.sol:224:        quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount);
+src/Raffle.sol:266:            assembly ("memory-safe") {
+src/Raffle.sol:334:            prizeToken.transferFrom(address(this), winner, deliveredPrizeTokenId);
+src/Raffle.sol:404:        prizeToken.transferFrom(address(this), recipient, prizeTokenId);
+src/Raffle.sol:410:    /// @dev Unrelated NFTs forced here with unsafe `transferFrom` remain outside protocol accounting and cannot be
+src/Raffle.sol:492:    ///      before their ownership could make a claim unreachable. Burns pass the zero address and remain permitted.
+node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:14: * after `transfer` or `transferFrom`, or code on a spender contract after `approve`, in a single transaction.
+node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:22:     *   bytes4(keccak256('transferFromAndCall(address,address,uint256)')) ^
+node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:23:     *   bytes4(keccak256('transferFromAndCall(address,address,uint256,bytes)')) ^
+node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:55:    function transferFromAndCall(address from, address to, uint256 value) external returns (bool);
+node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol:66:    function transferFromAndCall(address from, address to, uint256 value, bytes calldata data) external returns (bool);
+node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol:156:     * @dev Indicates an array length mismatch between ids and values in a safeBatchTransferFrom operation.
+src/interfaces/IRaffleFactory.sol:86:    /// @param maximumDuration Maximum permitted sale duration in seconds.
+src/RaffleFactory.sol:128:        prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId);
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:6:import {Create2} from "../utils/Create2.sol";
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:16: * The library includes functions to deploy a proxy using either `create` (traditional deployment) or `create2`
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:51:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:67:     * This function uses the create2 opcode and a `salt` to deterministically deploy
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:98:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:104:            instance := create2(value, 0x09, 0x37, salt)
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:119:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:176:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:189:     * This function uses the create2 opcode and a `salt` to deterministically deploy the clone. Using the same
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:223:        return Create2.deploy(value, salt, bytecode);
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:236:        return Create2.computeAddress(salt, keccak256(bytecode), deployer);
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:263:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:272:     * An assembly variant of this function requires copying the `args` array, which can be efficiently done using
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:274:     * abi.encodePacked is more expensive but also more portable and easier to review.
+node_modules/@openzeppelin/contracts/proxy/Clones.sol:285:            abi.encodePacked(
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:11: * This library helps with reading and writing to such slots without the need for inline assembly.
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:67:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:76:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:85:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:94:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:103:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:112:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:121:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:130:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:139:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/Create2.sol:2:// OpenZeppelin Contracts (last updated v5.5.0) (utils/Create2.sol)
+node_modules/@openzeppelin/contracts/utils/Create2.sol:10: * @dev Helper to make usage of the `CREATE2` EVM opcode easier and safer.
+node_modules/@openzeppelin/contracts/utils/Create2.sol:11: * `CREATE2` can be used to compute in advance the address where a smart
+node_modules/@openzeppelin/contracts/utils/Create2.sol:18:library Create2 {
+node_modules/@openzeppelin/contracts/utils/Create2.sol:22:    error Create2EmptyBytecode();
+node_modules/@openzeppelin/contracts/utils/Create2.sol:25:     * @dev Deploys a contract using `CREATE2`. The address where the contract
+node_modules/@openzeppelin/contracts/utils/Create2.sol:43:            revert Create2EmptyBytecode();
+node_modules/@openzeppelin/contracts/utils/Create2.sol:45:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/Create2.sol:46:            addr := create2(amount, add(bytecode, 0x20), mload(bytecode), salt)
+node_modules/@openzeppelin/contracts/utils/Create2.sol:70:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:20:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:43:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:52:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:66:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:73:    /// @dev Performs a Solidity function call using a low level `delegatecall` and ignoring the return data.
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:74:    function delegatecallNoReturn(address target, bytes memory data) internal returns (bool success) {
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:75:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:76:            success := delegatecall(gas(), target, add(data, 0x20), mload(data), 0x00, 0x00)
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:80:    /// @dev Performs a Solidity function call using a low level `delegatecall` and returns the first 64 bytes of the result
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:85:    function delegatecallReturn64Bytes(
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:89:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:90:            success := delegatecall(gas(), target, add(data, 0x20), mload(data), 0x00, 0x40)
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:98:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:105:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:115:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol:123:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:115:    function transferFrom(address from, address to, uint256 tokenId) public virtual {
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:128:    function safeTransferFrom(address from, address to, uint256 tokenId) public {
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:129:        safeTransferFrom(from, to, tokenId, "");
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:133:    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public virtual {
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:134:        transferFrom(from, to, tokenId);
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:200:        unchecked {
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:229:            unchecked {
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:235:            unchecked {
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:312:     *  As opposed to {transferFrom}, this imposes no restrictions on msg.sender.
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:339:     * This internal function is like {safeTransferFrom} in the sense that it invokes
+node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:341:     * implement alternative mechanisms to perform token transfer, such as signature-based.
+node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:55:    function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external;
+node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:73:    function safeTransferFrom(address from, address to, uint256 tokenId) external;
+node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:79:     * or else they may be permanently lost. Usage of {safeTransferFrom} prevents loss, though the caller must
+node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:91:    function transferFrom(address from, address to, uint256 tokenId) external;
+node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol:110:     * Operators can call {transferFrom} or {safeTransferFrom} for any token owned by the caller.
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:59:        unchecked {
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:93:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:123:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:167:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:178:     * `abi.encodePacked`.
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:180:     * NOTE: this could be done in assembly with a single loop that expands starting at the FMP, but that would be
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:181:     * significantly less readable. It might be worth benchmarking the savings of the full-assembly approach.
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:194:            assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:197:            unchecked {
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:211:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:324:     * assembly block as such would prevent some optimizations.
+node_modules/@openzeppelin/contracts/utils/Bytes.sol:328:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol:45:     * allowed to spend on behalf of `owner` through {transferFrom}. This is
+node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol:48:     * This value changes when {approve} or {transferFrom} are called.
+node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol:78:    function transferFrom(address from, address to, uint256 value) external returns (bool);
+node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol:13:     * @dev Whenever an {IERC721} `tokenId` token is transferred to this contract via {IERC721-safeTransferFrom}
+node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol:43:                    assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/Strings.sol:43:        unchecked {
+node_modules/@openzeppelin/contracts/utils/Strings.sol:47:            assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/Strings.sol:52:                assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/Strings.sol:73:        unchecked {
+node_modules/@openzeppelin/contracts/utils/Strings.sol:113:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/Strings.sol:132:        unchecked {
+node_modules/@openzeppelin/contracts/utils/Strings.sol:183:        return _tryParseUintUncheckedBounds(input, 0, bytes(input).length);
+node_modules/@openzeppelin/contracts/utils/Strings.sol:198:        return _tryParseUintUncheckedBounds(input, begin, end);
+node_modules/@openzeppelin/contracts/utils/Strings.sol:205:    function _tryParseUintUncheckedBounds(
+node_modules/@openzeppelin/contracts/utils/Strings.sol:254:        return _tryParseIntUncheckedBounds(input, 0, bytes(input).length);
+node_modules/@openzeppelin/contracts/utils/Strings.sol:271:        return _tryParseIntUncheckedBounds(input, begin, end);
+node_modules/@openzeppelin/contracts/utils/Strings.sol:278:    function _tryParseIntUncheckedBounds(
+node_modules/@openzeppelin/contracts/utils/Strings.sol:331:        return _tryParseHexUintUncheckedBounds(input, 0, bytes(input).length);
+node_modules/@openzeppelin/contracts/utils/Strings.sol:346:        return _tryParseHexUintUncheckedBounds(input, begin, end);
+node_modules/@openzeppelin/contracts/utils/Strings.sol:353:    function _tryParseHexUintUncheckedBounds(
+node_modules/@openzeppelin/contracts/utils/Strings.sol:369:            unchecked {
+node_modules/@openzeppelin/contracts/utils/Strings.sol:371:                // This guarantees that adding a value < 16 will not cause an overflow, hence the unchecked.
+node_modules/@openzeppelin/contracts/utils/Strings.sol:426:            (bool s, uint256 v) = _tryParseHexUintUncheckedBounds(input, begin, end);
+node_modules/@openzeppelin/contracts/utils/Strings.sol:441:        unchecked {
+node_modules/@openzeppelin/contracts/utils/Strings.sol:468:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/Strings.sol:499:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/Strings.sol:511:     * assembly block as such would prevent some optimizations.
+node_modules/@openzeppelin/contracts/utils/Strings.sol:515:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/Strings.sol:524:     * assembly block as such would prevent some optimizations.
+node_modules/@openzeppelin/contracts/utils/Strings.sol:528:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/Panic.sol:51:        assembly ("memory-safe") {
+node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:101:  function rawFulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) external {
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:43:    function safeTransferFrom(IERC20 token, address from, address to, uint256 value) internal {
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:44:        if (!_safeTransferFrom(token, from, to, value, true)) {
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:57:     * @dev Variant of {safeTransferFrom} that returns a bool instead of reverting if the operation is not successful.
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:59:    function trySafeTransferFrom(IERC20 token, address from, address to, uint256 value) internal returns (bool) {
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:60:        return _safeTransferFrom(token, from, to, value, false);
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:87:        unchecked {
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:128:     * @dev Performs an {ERC1363} transferFromAndCall, with a fallback to the simple {ERC20} transferFrom if the target
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:134:    function transferFromAndCallRelaxed(
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:142:            safeTransferFrom(token, from, to, value);
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:143:        } else if (!token.transferFromAndCall(from, to, value, data)) {
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:179:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:203:     * @dev Imitates a Solidity `token.transferFrom(from, to, value)` call, relaxing the requirement on the return
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:212:    function _safeTransferFrom(
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:219:        bytes4 selector = IERC20.transferFrom.selector;
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:221:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:258:        assembly ("memory-safe") {
+node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol:30:  function transferFrom(address from, address to, uint256 value) external returns (bool success);
+node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol:20:        unchecked {
+node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol:56:        unchecked {
+node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:16: * Using this library instead of the unchecked operations eliminates an entire
+node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol:1158:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:26:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:41:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:52:        unchecked {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:63:        unchecked {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:74:        unchecked {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:76:            assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:90:        unchecked {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:92:            assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:103:        unchecked {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:105:            assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:144:        unchecked {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:171:        unchecked {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:194:        unchecked {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:207:        unchecked {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:213:                // The surrounding unchecked block does not change this fact.
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:214:                // See https://docs.soliditylang.org/en/latest/control-structures.html#checked-or-unchecked-arithmetic.
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:229:            assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:242:            assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:290:        unchecked {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:318:        unchecked {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:375:        unchecked {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:413:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:461:        result = abi.encodePacked(b.length, e.length, mLen, b, e, m);
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:463:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:482:            assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:500:        unchecked {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:609:        unchecked {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:655:        assembly ("memory-safe") {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:665:        unchecked {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:677:        unchecked {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:714:        unchecked {
+node_modules/@openzeppelin/contracts/utils/math/Math.sol:744:        unchecked {

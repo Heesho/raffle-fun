@@ -1,0 +1,5 @@
+# Document and code discovery
+
+Started at target/DESIGN.md, the clean authoritative design specification. The only additional project-authored behavior specifications in the supplied target inventory are semantic NatSpec comments in all five Solidity source files. Interfaces define the public lifecycle and API; implementation comments add deployment, callback, transfer, and accounting semantics; RaffleConstants documents fixed economics and bounds. The implementation paths include all five files, including both interfaces.
+
+No other project documentation or nontext specification appeared in the supplied target tree. Build configuration, dependency manifests, package locks, and third-party dependency sources were excluded from the document inventory. No unreadable specification was encountered. This discovery is intentionally shallow and makes no compliance verdict. The initial nonexistent target/src lookup was corrected to target/packages/contracts/src and retained in 001-first-errors.txt.

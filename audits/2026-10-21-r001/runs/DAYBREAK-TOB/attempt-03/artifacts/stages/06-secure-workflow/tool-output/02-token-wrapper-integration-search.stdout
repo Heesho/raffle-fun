@@ -1,0 +1,104 @@
+ERC20/quote interactions
+src/Raffle.sol:7:import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+src/Raffle.sol:8:import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+src/Raffle.sol:29:    using SafeERC20 for IERC20;
+src/Raffle.sol:58:    IERC20 public immutable override quoteToken;
+src/Raffle.sol:162:        quoteToken = IERC20(quoteToken_);
+src/Raffle.sol:224:        quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount);
+src/Raffle.sol:334:            prizeToken.transferFrom(address(this), winner, deliveredPrizeTokenId);
+src/Raffle.sol:404:        prizeToken.transferFrom(address(this), recipient, prizeTokenId);
+src/Raffle.sol:410:    /// @dev Unrelated NFTs forced here with unsafe `transferFrom` remain outside protocol accounting and cannot be
+src/Raffle.sol:560:    /// @dev Transfers one complete current USDC claim through SafeERC20 after rejecting known protocol sinks. The
+src/Raffle.sol:566:        quoteToken.safeTransfer(to, amount);
+src/RaffleFactory.sol:5:import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+src/RaffleFactory.sol:59:    /// @dev The quote token must report exactly six decimals; the wrapper and quote token must contain deployed code.
+src/RaffleFactory.sol:71:        try IERC20Metadata(quoteToken_).decimals() returns (uint8 decimals_) {
+src/RaffleFactory.sol:72:            quoteDecimals = decimals_;
+src/RaffleFactory.sol:128:        prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId);
+src/interfaces/IRaffle.sol:5:import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+src/interfaces/IRaffle.sol:424:    function quoteToken() external view returns (IERC20 token);
+ERC721/prize interactions
+src/Raffle.sol:9:import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+src/Raffle.sol:10:import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+src/Raffle.sol:11:import { IERC721Receiver } from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+src/Raffle.sol:28:contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusWrapperConsumerBase {
+src/Raffle.sol:70:    IERC721 public override prizeToken;
+src/Raffle.sol:156:        ERC721("", "")
+src/Raffle.sol:200:        prizeToken = IERC721(params.prizeToken);
+src/Raffle.sol:224:        quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount);
+src/Raffle.sol:320:        address winner = ownerOf(ticketId);
+src/Raffle.sol:334:            prizeToken.transferFrom(address(this), winner, deliveredPrizeTokenId);
+src/Raffle.sol:335:            if (prizeToken.ownerOf(deliveredPrizeTokenId) != winner) {
+src/Raffle.sol:359:            address owner = ownerOf(ticketId);
+src/Raffle.sol:404:        prizeToken.transferFrom(address(this), recipient, prizeTokenId);
+src/Raffle.sol:405:        if (prizeToken.ownerOf(prizeTokenId) != recipient) revert PrizeDeliveryVerificationFailed(recipient);
+src/Raffle.sol:410:    /// @dev Unrelated NFTs forced here with unsafe `transferFrom` remain outside protocol accounting and cannot be
+src/Raffle.sol:416:    function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata)
+src/Raffle.sol:430:        selector = IERC721Receiver.onERC721Received.selector;
+src/interfaces/IRaffle.sol:6:import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+src/interfaces/IRaffle.sol:432:    function prizeToken() external view returns (IERC721 token);
+src/RaffleFactory.sol:6:import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+src/RaffleFactory.sol:127:        IERC721 prize = IERC721(params.prizeToken);
+src/RaffleFactory.sol:128:        prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId);
+src/RaffleFactory.sol:129:        if (prize.ownerOf(params.prizeTokenId) != raffle) {
+src/RaffleFactory.sol:172:        try IERC165(params.prizeToken).supportsInterface(type(IERC721).interfaceId) returns (bool supported) {
+VRF/wrapper interactions
+src/Raffle.sol:4:import { VRFV2PlusWrapperConsumerBase } from "@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol";
+src/Raffle.sol:5:import { IVRFV2PlusWrapper } from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol";
+src/Raffle.sol:6:import { VRFV2PlusClient } from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
+src/Raffle.sol:28:contract Raffle is IRaffle, ERC721, ReentrancyGuard, IERC721Receiver, VRFV2PlusWrapperConsumerBase {
+src/Raffle.sol:47:    uint32 public constant override callbackGasLimit = RaffleConstants.VRF_CALLBACK_GAS_LIMIT;
+src/Raffle.sol:50:    uint16 public constant override requestConfirmations = RaffleConstants.VRF_REQUEST_CONFIRMATIONS;
+src/Raffle.sol:109:    uint256 public override vrfRequestId;
+src/Raffle.sol:141:    /// @dev True only while the wrapper request call is executing, so a synchronous callback cannot resolve early.
+src/Raffle.sol:154:    /// @param vrfWrapper_ Chainlink VRF v2.5 native direct-funding wrapper fixed for the implementation and all clones.
+src/Raffle.sol:155:    constructor(address quoteToken_, address vrfWrapper_)
+src/Raffle.sol:157:        VRFV2PlusWrapperConsumerBase(_validatedVrfWrapper(vrfWrapper_))
+src/Raffle.sol:255:        bytes memory extraArgs = VRFV2PlusClient._argsToBytes(VRFV2PlusClient.ExtraArgsV1({ nativePayment: true }));
+src/Raffle.sol:257:        (requestId, paidPrice) = requestRandomnessPayInNative(callbackGasLimit, requestConfirmations, 1, extraArgs);
+src/Raffle.sol:259:        vrfRequestId = requestId;
+src/Raffle.sol:437:        fee = i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit, 1);
+src/Raffle.sol:442:        fee = i_vrfV2PlusWrapper.estimateRequestPriceNative(callbackGasLimit, 1, requestGasPriceWei);
+src/Raffle.sol:446:    function vrfWrapper() public view override returns (IVRFV2PlusWrapper wrapper) {
+src/Raffle.sol:447:        wrapper = i_vrfV2PlusWrapper;
+src/Raffle.sol:509:    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+src/Raffle.sol:511:            _requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1
+src/Raffle.sol:514:            emit VrfCallbackIgnored(requestId, vrfRequestId, status);
+src/Raffle.sol:600:            || destination == address(i_vrfV2PlusWrapper) || destination == prizeToken_
+src/Raffle.sol:607:    /// @dev Validates the wrapper before passing it to the inherited constructor initializer.
+src/Raffle.sol:608:    /// @param wrapper Prospective Chainlink wrapper address.
+src/Raffle.sol:609:    /// @return validatedWrapper The same nonzero wrapper address.
+src/Raffle.sol:610:    function _validatedVrfWrapper(address wrapper) private pure returns (address validatedWrapper) {
+src/Raffle.sol:611:        if (wrapper == address(0)) revert ZeroAddress();
+src/Raffle.sol:612:        validatedWrapper = wrapper;
+src/interfaces/IRaffleFactory.sol:112:    /// @notice Returns the immutable Chainlink VRF v2.5 native direct-funding wrapper used by every raffle.
+src/interfaces/IRaffleFactory.sol:113:    /// @return wrapperAddress Wrapper contract address.
+src/interfaces/IRaffleFactory.sol:114:    function vrfWrapper() external view returns (address wrapperAddress);
+src/interfaces/IRaffleFactory.sol:121:    /// @return gasLimit Callback gas units requested from the wrapper.
+src/interfaces/IRaffle.sol:4:import { IVRFV2PlusWrapper } from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol";
+src/interfaces/IRaffle.sol:26:        /// @notice A Chainlink VRF request was accepted and its callback window is open.
+src/interfaces/IRaffle.sol:82:    /// @notice Emitted when the raffle pays for and records its one Chainlink VRF request.
+src/interfaces/IRaffle.sol:85:    /// @param fee Native-token wei actually paid to the wrapper for the request.
+src/interfaces/IRaffle.sol:99:    /// @param receivedRequestId Request ID supplied by the wrapper callback.
+src/interfaces/IRaffle.sol:318:    ///      value above the wrapper's actual fee is returned to the caller atomically.
+src/interfaces/IRaffle.sol:359:    /// @notice Returns the wrapper's current native direct-funding price for the configured callback.
+src/interfaces/IRaffle.sol:360:    /// @return fee Native-token wei currently quoted by the wrapper; the value may change before request inclusion.
+src/interfaces/IRaffle.sol:399:    /// @return gasLimit Callback gas units requested from the wrapper.
+src/interfaces/IRaffle.sol:426:    /// @notice Returns the immutable Chainlink VRF v2.5 native direct-funding wrapper.
+src/interfaces/IRaffle.sol:427:    /// @return wrapper Wrapper contract.
+src/interfaces/IRaffle.sol:428:    function vrfWrapper() external view returns (IVRFV2PlusWrapper wrapper);
+src/interfaces/IRaffle.sol:484:    function vrfRequestId() external view returns (uint256 requestId);
+src/RaffleFactory.sol:25:    uint32 public constant override callbackGasLimit = RaffleConstants.VRF_CALLBACK_GAS_LIMIT;
+src/RaffleFactory.sol:28:    uint16 public constant override requestConfirmations = RaffleConstants.VRF_REQUEST_CONFIRMATIONS;
+src/RaffleFactory.sol:36:    address public immutable override vrfWrapper;
+src/RaffleFactory.sol:59:    /// @dev The quote token must report exactly six decimals; the wrapper and quote token must contain deployed code.
+src/RaffleFactory.sol:63:    /// @param vrfWrapper_ Official Chainlink VRF v2.5 native direct-funding wrapper for the target chain.
+src/RaffleFactory.sol:65:    constructor(address quoteToken_, address vrfWrapper_, address protocolTreasury_) {
+src/RaffleFactory.sol:67:        _requireContract(vrfWrapper_);
+src/RaffleFactory.sol:80:        if (protocolTreasury_ == address(this) || protocolTreasury_ == quoteToken_ || protocolTreasury_ == vrfWrapper_)
+src/RaffleFactory.sol:86:        vrfWrapper = vrfWrapper_;
+src/RaffleFactory.sol:89:        address implementation = address(new Raffle(quoteToken_, vrfWrapper_));
+src/RaffleFactory.sol:158:            params.prizeToken == address(this) || params.prizeToken == quoteToken || params.prizeToken == vrfWrapper
+src/RaffleFactory.sol:165:                || params.sponsorRecipient == vrfWrapper || params.sponsorRecipient == params.prizeToken
+src/libraries/RaffleConstants.sol:39:    uint32 internal constant VRF_CALLBACK_GAS_LIMIT = 300_000;
+src/libraries/RaffleConstants.sol:42:    uint16 internal constant VRF_REQUEST_CONFIRMATIONS = 30;

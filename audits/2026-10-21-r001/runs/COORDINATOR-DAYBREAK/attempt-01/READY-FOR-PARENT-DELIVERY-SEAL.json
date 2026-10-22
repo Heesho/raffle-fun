@@ -1,0 +1,69 @@
+{
+  "schema": "raffle-audit-ready-for-parent-delivery-seal/v1",
+  "created_at": "2026-10-22T01:16:18.763027+00:00",
+  "status": "READY_AFTER_COORDINATOR_AND_WRAPPER_EXIT",
+  "target_commit": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "completion_receipt": {
+    "path": "runs/COORDINATOR-DAYBREAK/attempt-01/completion-receipt.json",
+    "sha256": "47b39f2aa5a5e84efd419faeecf9286ac57310c33d4ecde4eed68f47da9aef9b"
+  },
+  "pre_exit_verification": {
+    "path": "runs/COORDINATOR-DAYBREAK/attempt-01/PRE-EXIT-READ-ONLY-VERIFICATION.json",
+    "sha256": "bae5ef4094a8c79894c6d09753e0af3a1a38567c2a8e09e25bbb0ad4d517ff87"
+  },
+  "final_report": {
+    "path": "FINAL-AUDIT-REPORT.md",
+    "sha256": "c28a122b672970358a22ad7ead20be8580ac2cb303b3d3c334d373cd9e73b97b"
+  },
+  "matrix": {
+    "path": "matrix.json",
+    "sha256": "a40b13e32c77830afbb8a2db62b09b5e6a37b798862d3506b9e22801ee478feb",
+    "rows": 23,
+    "terminal_or_allowed_provider_rejection_rows": 23,
+    "pending_eligible_rows": 0
+  },
+  "final_reconciliation_seal": {
+    "path": "reconciliation/FINAL-RECONCILIATION-SEAL.json",
+    "sha256": "c5e388d04b64d71c22ada44b36c6f8e7b27a0bf37052cd6039845a9d5dd33186"
+  },
+  "post_completion_read_only_checks": {
+    "strict_command": "python3 verify-delivery.py --require-terminal",
+    "verified_at": "2026-10-22T01:16:13.762927+00:00",
+    "exit_code": 0,
+    "ok": true,
+    "issues": [],
+    "unfinished_eligible_cells": [],
+    "freeze_command": "python3 verify-freeze.py",
+    "freeze_exit_code": 0,
+    "freeze_ok": true,
+    "freeze_errors": []
+  },
+  "quiescence": {
+    "exclusive_reconciliation_watcher_stopped": true,
+    "claude_openkritt_controller_stopped": true,
+    "daybreak_tob_controller_stopped": true,
+    "other_audit_owned_background_writers_observed": false,
+    "idle_awake_supervisor_stopped": true,
+    "coordinator_process_bound_wake_lease_exits_with_coordinator": true,
+    "live_coordinator_pid": 71117,
+    "live_wrapper_pid": 71072
+  },
+  "global_delivery_artifacts_before_exit": {
+    "FINAL-VERIFICATION.json": "ABSENT_AS_REQUIRED",
+    "DELIVERY-MANIFEST.json": "ABSENT_AS_REQUIRED",
+    "DELIVERY-SEAL.json": "ABSENT_AS_REQUIRED"
+  },
+  "parent_instruction": {
+    "authorized_action": "After PID 71117 and wrapper PID 71072 have exited, run python3 seal-delivery.py --seal from the audit root.",
+    "parent_may_seal_after_coordinator_and_wrapper_exit": true,
+    "seal_while_coordinator_or_wrapper_is_live": false,
+    "modify_or_weaken_verification": false,
+    "retry_rejected_provider_lanes": false,
+    "expected_outputs": [
+      "FINAL-VERIFICATION.json",
+      "DELIVERY-MANIFEST.json",
+      "DELIVERY-SEAL.json"
+    ]
+  },
+  "interpretation": "This handoff proves coordinator readiness and binds the completion receipt. It is not itself the whole-package delivery seal and does not authorize any production, publication, deployment, signing, broadcast, messaging or purchase action."
+}

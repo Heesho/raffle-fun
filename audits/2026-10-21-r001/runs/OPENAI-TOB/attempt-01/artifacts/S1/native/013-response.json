@@ -1,0 +1,45 @@
+{
+  "function": "onERC721Received",
+  "file": "target/packages/contracts/src/Raffle.sol",
+  "lines": "L416-L431",
+  "analysisFile": "audit/S1/audit-context/functions/12-onERC721Received.md",
+  "invariants": [
+    {
+      "claim": "Successful acceptance requires AwaitingPrize, configured prize caller and ID, sponsor/from and factory/operator.",
+      "evidence": "Raffle.sol L421-L426"
+    },
+    {
+      "claim": "Success writes Active, emits PrizeDeposited and returns the receiver selector; the body makes no runtime calls.",
+      "evidence": "Raffle.sol L428-L431"
+    },
+    {
+      "claim": "All mismatch paths revert before the only storage write and event.",
+      "evidence": "Raffle.sol L421-L429"
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "Stored callback identities were initialized by the canonical factory.",
+      "establishedBy": "Raffle.sol L161, L176-L205; RaffleFactory.sol L109-L121"
+    },
+    {
+      "claim": "Matching callback arguments correspond to genuine ERC-721 ownership transfer.",
+      "establishedBy": "nothing found; Raffle.sol L421-L430 checks identities only. IRaffle.sol L14-L15 documents honest ERC-721s; RaffleFactory.sol L128-L131 later checks token-reported ownership."
+    },
+    {
+      "claim": "The arbitrary prize contract truthfully supplies operator/from and reports ownership.",
+      "establishedBy": "nothing found; Raffle.sol L422-L423 compares caller-supplied values; RaffleFactory.sol L129 trusts ownerOf output."
+    }
+  ],
+  "calls": [],
+  "callers": [
+    "Sponsor-selected prize contract during RaffleFactory.createRaffle safeTransferFrom (RaffleFactory.sol L127-L134; IERC721Receiver.sol L13-L20); arbitrary external calls must pass Raffle.sol L421-L426."
+  ],
+  "sharedState": [
+    "sponsor, prizeToken, prizeTokenId set in initialize (Raffle.sol L197-L205); factory immutable set at L161.",
+    "status: initialize L205, receiver L428, requestDraw L252, enableRefunds L299, fulfillRandomWords L521; implementation constructor L165."
+  ],
+  "openQuestions": [
+    "unclear; need to inspect the concrete sponsor-selected prize contract to establish faithful transfer/callback and ownership-reporting semantics (IRaffle.sol L14-L15; RaffleFactory.sol L127-L131)."
+  ]
+}

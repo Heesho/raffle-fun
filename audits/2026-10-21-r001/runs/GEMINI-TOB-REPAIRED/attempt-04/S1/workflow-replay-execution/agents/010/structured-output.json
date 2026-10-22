@@ -1,0 +1,80 @@
+{
+  "analysisFile": "audit-context/functions/09-_validateCreateParams.md",
+  "assumptions": [
+    {
+      "claim": "Immutable protocol addresses (quoteToken, vrfWrapper, raffleImplementation) are initialized and non-zero before _validateCreateParams reads them at L158-L159 and L164-L166.",
+      "establishedBy": "RaffleFactory.constructor (packages/contracts/src/RaffleFactory.sol:L66-L91)"
+    },
+    {
+      "claim": "params.endTime is strictly greater than block.timestamp and within MAX_SALE_DURATION (not checked by _validateCreateParams).",
+      "establishedBy": "RaffleFactory.createRaffle (packages/contracts/src/RaffleFactory.sol:L99-L104)"
+    },
+    {
+      "claim": "params.sponsorRecipient is not the address of the newly created Raffle clone itself (which is not yet deployed or registered in isRaffle when _validateCreateParams runs at L98/L166) and params.prizeToken is not protocolTreasury.",
+      "establishedBy": "Raffle.initialize via Raffle._isProtocolDestination (packages/contracts/src/Raffle.sol:L190-L195, L598-L605)"
+    },
+    {
+      "claim": "params.prizeToken is a standards-compliant, non-malicious ERC-721 contract beyond having non-empty bytecode (L155, L184) and returning true from IERC165.supportsInterface(type(IERC721).interfaceId) (L172-L177).",
+      "establishedBy": "nothing found"
+    },
+    {
+      "claim": "params.sponsorRecipient is not an undeployed address that will later be deployed and registered as a Raffle clone by this RaffleFactory (which would cause isRaffle[sponsorRecipient] to become true at RaffleFactory.sol:L125 and make Raffle._isProtocolDestination return true during Raffle._transferQuote at Raffle.sol:L565, L602-L603).",
+      "establishedBy": "nothing found"
+    },
+    {
+      "claim": "params.reserveEntries requires no upper bound below type(uint128).max (only params.reserveEntries != 0 is checked at L178).",
+      "establishedBy": "nothing found"
+    }
+  ],
+  "callers": [
+    "RaffleFactory.createRaffle (packages/contracts/src/RaffleFactory.sol:L98)"
+  ],
+  "calls": [
+    {
+      "callee": "RaffleFactory._requireContract (packages/contracts/src/RaffleFactory.sol:L183-L185)",
+      "kind": "internal",
+      "propagates": "Reverts with NotContract(params.prizeToken) if params.prizeToken.code.length == 0 (L184); on return, establishes params.prizeToken.code.length > 0 and params.prizeToken != address(0) (L155, L184)."
+    },
+    {
+      "callee": "IERC165(params.prizeToken).supportsInterface (packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol:L24)",
+      "kind": "external-black-box",
+      "propagates": "Called via STATICCALL (due to view modifier at L154) with type(IERC721).interfaceId (0x80ac58cd) and no explicit gas cap (L172); reverts with UnsupportedPrizeToken(params.prizeToken) if the call reverts (L174-L176) or returns false (L177), or reverts in ABI decoding if return data is malformed; establishes only that params.prizeToken returned true for 0x80ac58cd, not full ERC-721 behavioral compliance."
+    }
+  ],
+  "file": "packages/contracts/src/RaffleFactory.sol",
+  "function": "_validateCreateParams",
+  "invariants": [
+    {
+      "claim": "On normal return, params.prizeToken has non-empty deployed bytecode (params.prizeToken.code.length > 0) and is non-zero.",
+      "evidence": "packages/contracts/src/RaffleFactory.sol:L155, L183-L185"
+    },
+    {
+      "claim": "On normal return, params.sponsorRecipient is not address(0).",
+      "evidence": "packages/contracts/src/RaffleFactory.sol:L156"
+    },
+    {
+      "claim": "On normal return, params.prizeToken is not address(this), quoteToken, vrfWrapper, raffleImplementation, or any address currently mapped to true in isRaffle.",
+      "evidence": "packages/contracts/src/RaffleFactory.sol:L157-L162"
+    },
+    {
+      "claim": "On normal return, params.sponsorRecipient is not address(this), quoteToken, vrfWrapper, params.prizeToken, raffleImplementation, or any address currently mapped to true in isRaffle.",
+      "evidence": "packages/contracts/src/RaffleFactory.sol:L163-L169"
+    },
+    {
+      "claim": "On normal return, IERC165(params.prizeToken).supportsInterface(type(IERC721).interfaceId) succeeded via STATICCALL and returned true.",
+      "evidence": "packages/contracts/src/RaffleFactory.sol:L171-L177"
+    },
+    {
+      "claim": "On normal return, params.reserveEntries >= 1.",
+      "evidence": "packages/contracts/src/RaffleFactory.sol:L178"
+    }
+  ],
+  "lines": "L154-L179",
+  "openQuestions": [],
+  "sharedState": [
+    "quoteToken (packages/contracts/src/RaffleFactory.sol:L33)",
+    "vrfWrapper (packages/contracts/src/RaffleFactory.sol:L36)",
+    "raffleImplementation (packages/contracts/src/RaffleFactory.sol:L42)",
+    "isRaffle (packages/contracts/src/RaffleFactory.sol:L54)"
+  ]
+}

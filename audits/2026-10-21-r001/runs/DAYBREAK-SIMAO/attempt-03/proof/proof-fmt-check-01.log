@@ -1,0 +1,706 @@
+Diff in test/foundry/DaybreakSimaoProof.t.sol:
+67  67   |     }
+68  68   | }
+69  69   | 
+70       |-contract MockVrfWrapper is IVRFV2PlusWrapper {
+71       |-    uint256 public override lastRequestId;
+72       |-    mapping(uint256 requestId => address consumer) public consumerByRequest;
+    70   |+    contract MockVrfWrapper is IVRFV2PlusWrapper {
+    71   |+        uint256 public override lastRequestId;
+    72   |+        mapping(uint256 requestId => address consumer) public consumerByRequest;
+73  73   | 
+74       |-    function calculateRequestPrice(uint32, uint32) external pure override returns (uint256) {
+75       |-        return 0;
+76       |-    }
+    74   |+        function calculateRequestPrice(uint32, uint32) external pure override returns (uint256) {
+    75   |+            return 0;
+    76   |+        }
+77  77   | 
+78       |-    function calculateRequestPriceNative(uint32, uint32) external pure override returns (uint256) {
+79       |-        return 0;
+80       |-    }
+    78   |+        function calculateRequestPriceNative(uint32, uint32) external pure override returns (uint256) {
+    79   |+            return 0;
+    80   |+        }
+81  81   | 
+82       |-    function estimateRequestPrice(uint32, uint32, uint256) external pure override returns (uint256) {
+83       |-        return 0;
+84       |-    }
+    82   |+        function estimateRequestPrice(uint32, uint32, uint256) external pure override returns (uint256) {
+    83   |+            return 0;
+    84   |+        }
+85  85   | 
+86       |-    function estimateRequestPriceNative(uint32, uint32, uint256) external pure override returns (uint256) {
+87       |-        return 0;
+88       |-    }
+    86   |+        function estimateRequestPriceNative(uint32, uint32, uint256) external pure override returns (uint256) {
+    87   |+            return 0;
+    88   |+        }
+89  89   | 
+90       |-    function requestRandomWordsInNative(uint32, uint16, uint32, bytes calldata)
+91       |-        external
+92       |-        payable
+93       |-        override
+94       |-        returns (uint256 requestId)
+95       |-    {
+96       |-        requestId = ++lastRequestId;
+97       |-        consumerByRequest[requestId] = msg.sender;
+98       |-    }
+    90   |+        function requestRandomWordsInNative(uint32, uint16, uint32, bytes calldata)
+    91   |+            external
+    92   |+            payable
+    93   |+            override
+    94   |+            returns (uint256 requestId)
+    95   |+        {
+    96   |+            requestId = ++lastRequestId;
+    97   |+            consumerByRequest[requestId] = msg.sender;
+    98   |+        }
+99  99   | 
+100      |-    function link() external view override returns (address) {
+101      |-        return address(this);
+102      |-    }
+    100  |+        function link() external view override returns (address) {
+    101  |+            return address(this);
+    102  |+        }
+103 103  | 
+104      |-    function linkNativeFeed() external view override returns (address) {
+105      |-        return address(this);
+106      |-    }
+    104  |+        function linkNativeFeed() external view override returns (address) {
+    105  |+            return address(this);
+    106  |+        }
+107 107  | 
+108      |-    function fulfill(uint256 requestId, uint256 randomWord) external {
+109      |-        address consumer = consumerByRequest[requestId];
+110      |-        require(consumer != address(0), "UNKNOWN_REQUEST");
+111      |-        uint256[] memory words = new uint256[](1);
+112      |-        words[0] = randomWord;
+113      |-        IRawVrfConsumer(consumer).rawFulfillRandomWords(requestId, words);
+    108  |+        function fulfill(uint256 requestId, uint256 randomWord) external {
+    109  |+            address consumer = consumerByRequest[requestId];
+    110  |+            require(consumer != address(0), "UNKNOWN_REQUEST");
+    111  |+            uint256[] memory words = new uint256[](1);
+    112  |+            words[0] = randomWord;
+    113  |+            IRawVrfConsumer(consumer).rawFulfillRandomWords(requestId, words);
+    114  |+        }
+114 115  |     }
+115      |-}
+116 116  | 
+117      |-contract SwitchablePrize is IERC721 {
+118      |-    address public immutable controller;
+119      |-    mapping(uint256 tokenId => address owner) private _ownerOf;
+120      |-    mapping(address owner => uint256 balance) private _balanceOf;
+121      |-    mapping(uint256 tokenId => address approved) private _tokenApproval;
+122      |-    mapping(address owner => mapping(address operator => bool approved)) private _operatorApproval;
+123      |-    mapping(address sender => bool blocked) public blockedFrom;
+    117  |+        contract SwitchablePrize is IERC721 {
+    118  |+            address public immutable controller;
+    119  |+            mapping(uint256 tokenId => address owner) private _ownerOf;
+    120  |+            mapping(address owner => uint256 balance) private _balanceOf;
+    121  |+            mapping(uint256 tokenId => address approved) private _tokenApproval;
+    122  |+            mapping(address owner => mapping(address operator => bool approved)) private _operatorApproval;
+    123  |+            mapping(address sender => bool blocked) public blockedFrom;
+124 124  | 
+125      |-    constructor(address controller_) {
+126      |-        controller = controller_;
+127      |-    }
+    125  |+            constructor(address controller_) {
+    126  |+                controller = controller_;
+    127  |+            }
+128 128  | 
+129      |-    function supportsInterface(bytes4 interfaceId) external pure override returns (bool) {
+130      |-        return interfaceId == type(IERC165).interfaceId || interfaceId == type(IERC721).interfaceId;
+131      |-    }
+    129  |+            function supportsInterface(bytes4 interfaceId) external pure override returns (bool) {
+    130  |+                return interfaceId == type(IERC165).interfaceId || interfaceId == type(IERC721).interfaceId;
+    131  |+            }
+132 132  | 
+133      |-    function mint(address to, uint256 tokenId) external {
+134      |-        require(msg.sender == controller, "ONLY_CONTROLLER");
+135      |-        require(to != address(0) && _ownerOf[tokenId] == address(0), "INVALID_MINT");
+136      |-        _ownerOf[tokenId] = to;
+137      |-        ++_balanceOf[to];
+138      |-        emit Transfer(address(0), to, tokenId);
+139      |-    }
+    133  |+            function mint(address to, uint256 tokenId) external {
+    134  |+                require(msg.sender == controller, "ONLY_CONTROLLER");
+    135  |+                require(to != address(0) && _ownerOf[tokenId] == address(0), "INVALID_MINT");
+    136  |+                _ownerOf[tokenId] = to;
+    137  |+                ++_balanceOf[to];
+    138  |+                emit Transfer(address(0), to, tokenId);
+    139  |+            }
+140 140  | 
+141      |-    function setBlockedFrom(address from, bool blocked) external {
+142      |-        require(msg.sender == controller, "ONLY_CONTROLLER");
+143      |-        blockedFrom[from] = blocked;
+144      |-    }
+    141  |+            function setBlockedFrom(address from, bool blocked) external {
+    142  |+                require(msg.sender == controller, "ONLY_CONTROLLER");
+    143  |+                blockedFrom[from] = blocked;
+    144  |+            }
+145 145  | 
+146      |-    function balanceOf(address owner) external view override returns (uint256) {
+147      |-        require(owner != address(0), "ZERO_OWNER");
+148      |-        return _balanceOf[owner];
+149      |-    }
+    146  |+            function balanceOf(address owner) external view override returns (uint256) {
+    147  |+                require(owner != address(0), "ZERO_OWNER");
+    148  |+                return _balanceOf[owner];
+    149  |+            }
+150 150  | 
+151      |-    function ownerOf(uint256 tokenId) public view override returns (address owner) {
+152      |-        owner = _ownerOf[tokenId];
+153      |-        require(owner != address(0), "NOT_MINTED");
+154      |-    }
+    151  |+            function ownerOf(uint256 tokenId) public view override returns (address owner) {
+    152  |+                owner = _ownerOf[tokenId];
+    153  |+                require(owner != address(0), "NOT_MINTED");
+    154  |+            }
+155 155  | 
+156      |-    function approve(address to, uint256 tokenId) external override {
+157      |-        address owner = ownerOf(tokenId);
+158      |-        require(msg.sender == owner || _operatorApproval[owner][msg.sender], "NOT_AUTHORIZED");
+159      |-        _tokenApproval[tokenId] = to;
+160      |-        emit Approval(owner, to, tokenId);
+161      |-    }
+    156  |+            function approve(address to, uint256 tokenId) external override {
+    157  |+                address owner = ownerOf(tokenId);
+    158  |+                require(msg.sender == owner || _operatorApproval[owner][msg.sender], "NOT_AUTHORIZED");
+    159  |+                _tokenApproval[tokenId] = to;
+    160  |+                emit Approval(owner, to, tokenId);
+    161  |+            }
+162 162  | 
+163      |-    function getApproved(uint256 tokenId) external view override returns (address) {
+164      |-        ownerOf(tokenId);
+165      |-        return _tokenApproval[tokenId];
+166      |-    }
+    163  |+            function getApproved(uint256 tokenId) external view override returns (address) {
+    164  |+                ownerOf(tokenId);
+    165  |+                return _tokenApproval[tokenId];
+    166  |+            }
+167 167  | 
+168      |-    function setApprovalForAll(address operator, bool approved) external override {
+169      |-        _operatorApproval[msg.sender][operator] = approved;
+170      |-        emit ApprovalForAll(msg.sender, operator, approved);
+171      |-    }
+    168  |+            function setApprovalForAll(address operator, bool approved) external override {
+    169  |+                _operatorApproval[msg.sender][operator] = approved;
+    170  |+                emit ApprovalForAll(msg.sender, operator, approved);
+    171  |+            }
+172 172  | 
+173      |-    function isApprovedForAll(address owner, address operator) external view override returns (bool) {
+174      |-        return _operatorApproval[owner][operator];
+175      |-    }
+    173  |+            function isApprovedForAll(address owner, address operator) external view override returns (bool) {
+    174  |+                return _operatorApproval[owner][operator];
+    175  |+            }
+176 176  | 
+177      |-    function transferFrom(address from, address to, uint256 tokenId) public override {
+178      |-        require(!blockedFrom[from], "BLOCKED_FROM");
+179      |-        address owner = ownerOf(tokenId);
+180      |-        require(owner == from && to != address(0), "INVALID_TRANSFER");
+181      |-        require(
+182      |-            msg.sender == owner || _tokenApproval[tokenId] == msg.sender || _operatorApproval[owner][msg.sender],
+183      |-            "NOT_AUTHORIZED"
+184      |-        );
+185      |-        delete _tokenApproval[tokenId];
+186      |-        --_balanceOf[from];
+187      |-        ++_balanceOf[to];
+188      |-        _ownerOf[tokenId] = to;
+189      |-        emit Transfer(from, to, tokenId);
+190      |-    }
+    177  |+            function transferFrom(address from, address to, uint256 tokenId) public override {
+    178  |+                require(!blockedFrom[from], "BLOCKED_FROM");
+    179  |+                address owner = ownerOf(tokenId);
+    180  |+                require(owner == from && to != address(0), "INVALID_TRANSFER");
+    181  |+                require(
+    182  |+                    msg.sender == owner || _tokenApproval[tokenId] == msg.sender
+    183  |+                        || _operatorApproval[owner][msg.sender],
+    184  |+                    "NOT_AUTHORIZED"
+    185  |+                );
+    186  |+                delete _tokenApproval[tokenId];
+    187  |+                --_balanceOf[from];
+    188  |+                ++_balanceOf[to];
+    189  |+                _ownerOf[tokenId] = to;
+    190  |+                emit Transfer(from, to, tokenId);
+    191  |+            }
+191 192  | 
+192      |-    function safeTransferFrom(address from, address to, uint256 tokenId) external override {
+193      |-        safeTransferFrom(from, to, tokenId, "");
+194      |-    }
+    193  |+            function safeTransferFrom(address from, address to, uint256 tokenId) external override {
+    194  |+                safeTransferFrom(from, to, tokenId, "");
+    195  |+            }
+195 196  | 
+196      |-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public override {
+197      |-        transferFrom(from, to, tokenId);
+198      |-        if (to.code.length != 0) {
+199      |-            bytes4 selector = IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, data);
+200      |-            require(selector == IERC721Receiver.onERC721Received.selector, "UNSAFE_RECIPIENT");
+    197  |+            function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public override {
+    198  |+                transferFrom(from, to, tokenId);
+    199  |+                if (to.code.length != 0) {
+    200  |+                    bytes4 selector = IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, data);
+    201  |+                    require(selector == IERC721Receiver.onERC721Received.selector, "UNSAFE_RECIPIENT");
+    202  |+                }
+    203  |+            }
+201 204  |         }
+202      |-    }
+203      |-}
+204 205  | 
+205      |-contract CounterfeitPrize is IERC721 {
+206      |-    mapping(uint256 tokenId => address reportedOwner) private _reportedOwner;
+    206  |+        contract CounterfeitPrize is IERC721 {
+    207  |+            mapping(uint256 tokenId => address reportedOwner) private _reportedOwner;
+207 208  | 
+208      |-    function supportsInterface(bytes4 interfaceId) external pure override returns (bool) {
+209      |-        return interfaceId == type(IERC165).interfaceId || interfaceId == type(IERC721).interfaceId;
+210      |-    }
+    209  |+            function supportsInterface(bytes4 interfaceId) external pure override returns (bool) {
+    210  |+                return interfaceId == type(IERC165).interfaceId || interfaceId == type(IERC721).interfaceId;
+    211  |+            }
+211 212  | 
+212      |-    function balanceOf(address owner) external pure override returns (uint256) {
+213      |-        require(owner != address(0), "ZERO_OWNER");
+214      |-        return 0;
+215      |-    }
+    213  |+            function balanceOf(address owner) external pure override returns (uint256) {
+    214  |+                require(owner != address(0), "ZERO_OWNER");
+    215  |+                return 0;
+    216  |+            }
+    217  |+
+    218  |+            function ownerOf(uint256 tokenId) external view override returns (address owner) {
+    219  |+                owner = _reportedOwner[tokenId];
+    220  |+                require(owner != address(0), "NO_REPORT");
+    221  |+            }
+216 222  | 
+217      |-    function ownerOf(uint256 tokenId) external view override returns (address owner) {
+218      |-        owner = _reportedOwner[tokenId];
+219      |-        require(owner != address(0), "NO_REPORT");
+220      |-    }
+    223  |+            function approve(address, uint256) external pure override { }
+221 224  | 
+222      |-    function approve(address, uint256) external pure override { }
+    225  |+            function getApproved(uint256) external pure override returns (address) {
+    226  |+                return address(0);
+    227  |+            }
+223 228  | 
+224      |-    function getApproved(uint256) external pure override returns (address) {
+225      |-        return address(0);
+226      |-    }
+    229  |+            function setApprovalForAll(address, bool) external pure override { }
+227 230  | 
+228      |-    function setApprovalForAll(address, bool) external pure override { }
+    231  |+            function isApprovedForAll(address, address) external pure override returns (bool) {
+    232  |+                return false;
+    233  |+            }
+229 234  | 
+230      |-    function isApprovedForAll(address, address) external pure override returns (bool) {
+231      |-        return false;
+232      |-    }
+    235  |+            function transferFrom(address, address to, uint256 tokenId) public override {
+    236  |+                _reportedOwner[tokenId] = to;
+    237  |+                emit Transfer(address(0), to, tokenId);
+    238  |+            }
+233 239  | 
+234      |-    function transferFrom(address, address to, uint256 tokenId) public override {
+235      |-        _reportedOwner[tokenId] = to;
+236      |-        emit Transfer(address(0), to, tokenId);
+237      |-    }
+    240  |+            function safeTransferFrom(address from, address to, uint256 tokenId) external override {
+    241  |+                safeTransferFrom(from, to, tokenId, "");
+    242  |+            }
+238 243  | 
+239      |-    function safeTransferFrom(address from, address to, uint256 tokenId) external override {
+240      |-        safeTransferFrom(from, to, tokenId, "");
+241      |-    }
+    244  |+            function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public override {
+    245  |+                _reportedOwner[tokenId] = to;
+    246  |+                if (to.code.length != 0) {
+    247  |+                    bytes4 selector = IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, data);
+    248  |+                    require(selector == IERC721Receiver.onERC721Received.selector, "UNSAFE_RECIPIENT");
+    249  |+                }
+    250  |+                emit Transfer(from, to, tokenId);
+    251  |+            }
+242 252  | 
+243      |-    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory data) public override {
+244      |-        _reportedOwner[tokenId] = to;
+245      |-        if (to.code.length != 0) {
+246      |-            bytes4 selector = IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, data);
+247      |-            require(selector == IERC721Receiver.onERC721Received.selector, "UNSAFE_RECIPIENT");
+    253  |+            function enforceableSupply() external pure returns (uint256) {
+    254  |+                return 0;
+    255  |+            }
+248 256  |         }
+249      |-        emit Transfer(from, to, tokenId);
+250      |-    }
+251 257  | 
+252      |-    function enforceableSupply() external pure returns (uint256) {
+253      |-        return 0;
+254      |-    }
+255      |-}
+256      |-
+257      |-contract TicketVault is IERC721Receiver {
+258      |-    uint256 public receiverCalls;
+259      |-    address public lastTokenContract;
+260      |-    uint256 public lastTokenId;
+    258  |+        contract TicketVault is IERC721Receiver {
+    259  |+            uint256 public receiverCalls;
+    260  |+            address public lastTokenContract;
+    261  |+            uint256 public lastTokenId;
+261 262  | 
+262      |-    function onERC721Received(address, address, uint256 tokenId, bytes calldata)
+263      |-        external
+264      |-        override
+265      |-        returns (bytes4)
+266      |-    {
+267      |-        ++receiverCalls;
+268      |-        lastTokenContract = msg.sender;
+269      |-        lastTokenId = tokenId;
+270      |-        return IERC721Receiver.onERC721Received.selector;
+271      |-    }
+    263  |+            function onERC721Received(address, address, uint256 tokenId, bytes calldata)
+    264  |+                external
+    265  |+                override
+    266  |+                returns (bytes4)
+    267  |+            {
+    268  |+                ++receiverCalls;
+    269  |+                lastTokenContract = msg.sender;
+    270  |+                lastTokenId = tokenId;
+    271  |+                return IERC721Receiver.onERC721Received.selector;
+    272  |+            }
+272 273  | 
+273      |-    function redeem(address raffle, uint256 ticketId) external {
+274      |-        IRaffle(raffle).redeemWinningTicket(ticketId);
+275      |-    }
+276      |-}
+    274  |+            function redeem(address raffle, uint256 ticketId) external {
+    275  |+                IRaffle(raffle).redeemWinningTicket(ticketId);
+    276  |+            }
+    277  |+        }
+277 278  | 
+278      |-contract DaybreakSimaoProofTest {
+279      |-    Vm private constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
+    279  |+        contract DaybreakSimaoProofTest {
+    280  |+            Vm private constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
+280 281  | 
+281      |-    address private constant SPONSOR = address(0x5100);
+282      |-    address private constant ALICE = address(0xA11CE);
+283      |-    address private constant BOB = address(0xB0B);
+284      |-    address private constant CAROL = address(0xCA401);
+285      |-    address private constant TREASURY = address(0x7EA5);
+    282  |+            address private constant SPONSOR = address(0x5100);
+    283  |+            address private constant ALICE = address(0xA11CE);
+    284  |+            address private constant BOB = address(0xB0B);
+    285  |+            address private constant CAROL = address(0xCA401);
+    286  |+            address private constant TREASURY = address(0x7EA5);
+286 287  | 
+287      |-    uint256 private constant ONE_USDC = 1_000_000;
+288      |-    uint256 private constant PRIZE_ID = 7;
+    288  |+            uint256 private constant ONE_USDC = 1_000_000;
+    289  |+            uint256 private constant PRIZE_ID = 7;
+289 290  | 
+290      |-    function test_counterfeitPrizeSelfAttestationActivatesAndPaysOut() external {
+291      |-        (MockUsdc usdc, MockVrfWrapper wrapper, RaffleFactory factory) = _newProtocol();
+292      |-        CounterfeitPrize prize = new CounterfeitPrize();
+    291  |+            function test_counterfeitPrizeSelfAttestationActivatesAndPaysOut() external {
+    292  |+                (MockUsdc usdc, MockVrfWrapper wrapper, RaffleFactory factory) = _newProtocol();
+    293  |+                CounterfeitPrize prize = new CounterfeitPrize();
+293 294  | 
+294      |-        vm.prank(SPONSOR);
+295      |-        address raffleAddress = factory.createRaffle(
+296      |-            IRaffleFactory.CreateRaffleParams({
+297      |-                sponsorRecipient: SPONSOR,
+298      |-                prizeToken: address(prize),
+299      |-                prizeTokenId: PRIZE_ID,
+300      |-                reserveEntries: 1,
+301      |-                endTime: uint64(block.timestamp + 100)
+302      |-            })
+303      |-        );
+304      |-        Raffle raffle = Raffle(payable(raffleAddress));
+    295  |+                vm.prank(SPONSOR);
+    296  |+                address raffleAddress = factory.createRaffle(
+    297  |+                    IRaffleFactory.CreateRaffleParams({
+    298  |+                        sponsorRecipient: SPONSOR,
+    299  |+                        prizeToken: address(prize),
+    300  |+                        prizeTokenId: PRIZE_ID,
+    301  |+                        reserveEntries: 1,
+    302  |+                        endTime: uint64(block.timestamp + 100)
+    303  |+                    })
+    304  |+                );
+    305  |+                Raffle raffle = Raffle(payable(raffleAddress));
+305 306  | 
+306      |-        _assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Active), "counterfeit did not activate");
+307      |-        _assertEq(prize.balanceOf(raffleAddress), 0, "counterfeit unexpectedly has enforceable balance");
+308      |-        _fundAndBuy(usdc, raffle, ALICE, 10, ALICE);
+309      |-        _resolveNft(raffle, wrapper);
+    307  |+                _assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Active), "counterfeit did not activate");
+    308  |+                _assertEq(prize.balanceOf(raffleAddress), 0, "counterfeit unexpectedly has enforceable balance");
+    309  |+                _fundAndBuy(usdc, raffle, ALICE, 10, ALICE);
+    310  |+                _resolveNft(raffle, wrapper);
+310 311  | 
+311      |-        vm.prank(ALICE);
+312      |-        raffle.redeemWinningTicket(1);
+313      |-        raffle.releaseSponsorProceeds();
+314      |-        raffle.releaseProtocolFees();
+    312  |+                vm.prank(ALICE);
+    313  |+                raffle.redeemWinningTicket(1);
+    314  |+                raffle.releaseSponsorProceeds();
+    315  |+                raffle.releaseProtocolFees();
+315 316  | 
+316      |-        _assert(raffle.winnerRedeemed(), "winner not marked redeemed");
+317      |-        _assert(raffle.prizeClaimed(), "phantom prize not marked claimed");
+318      |-        _assertEq(prize.enforceableSupply(), 0, "counterfeit created enforceable supply");
+319      |-        _assertEq(prize.balanceOf(ALICE), 0, "winner received an enforceable token");
+320      |-        _assertEq(usdc.balanceOf(SPONSOR), 9_500_000, "sponsor payout mismatch");
+321      |-        _assertEq(usdc.balanceOf(TREASURY), 500_000, "treasury payout mismatch");
+322      |-        _assertEq(usdc.balanceOf(raffleAddress), 0, "raffle retained buyer funds");
+323      |-    }
+    317  |+                _assert(raffle.winnerRedeemed(), "winner not marked redeemed");
+    318  |+                _assert(raffle.prizeClaimed(), "phantom prize not marked claimed");
+    319  |+                _assertEq(prize.enforceableSupply(), 0, "counterfeit created enforceable supply");
+    320  |+                _assertEq(prize.balanceOf(ALICE), 0, "winner received an enforceable token");
+    321  |+                _assertEq(usdc.balanceOf(SPONSOR), 9_500_000, "sponsor payout mismatch");
+    322  |+                _assertEq(usdc.balanceOf(TREASURY), 500_000, "treasury payout mismatch");
+    323  |+                _assertEq(usdc.balanceOf(raffleAddress), 0, "raffle retained buyer funds");
+    324  |+            }
+324 325  | 
+325      |-    function test_revocablePrizeDrainsClaimsWhileWinnerCannotRedeemOrRefund() external {
+326      |-        (MockUsdc usdc, MockVrfWrapper wrapper, RaffleFactory factory) = _newProtocol();
+327      |-        SwitchablePrize prize = new SwitchablePrize(SPONSOR);
+328      |-        Raffle raffle = _createSwitchable(factory, prize, 100);
+    326  |+            function test_revocablePrizeDrainsClaimsWhileWinnerCannotRedeemOrRefund() external {
+    327  |+                (MockUsdc usdc, MockVrfWrapper wrapper, RaffleFactory factory) = _newProtocol();
+    328  |+                SwitchablePrize prize = new SwitchablePrize(SPONSOR);
+    329  |+                Raffle raffle = _createSwitchable(factory, prize, 100);
+329 330  | 
+330      |-        _fundAndBuy(usdc, raffle, ALICE, 100, ALICE);
+331      |-        _resolveNft(raffle, wrapper);
+    331  |+                _fundAndBuy(usdc, raffle, ALICE, 100, ALICE);
+    332  |+                _resolveNft(raffle, wrapper);
+332 333  | 
+333      |-        vm.prank(SPONSOR);
+334      |-        prize.setBlockedFrom(address(raffle), true);
+    334  |+                vm.prank(SPONSOR);
+    335  |+                prize.setBlockedFrom(address(raffle), true);
+335 336  | 
+336      |-        raffle.settleWinningTicket(1);
+337      |-        _assertEq(raffle.sponsorProceeds(), 95_000_000, "sponsor claim mismatch");
+338      |-        _assertEq(raffle.protocolFees(), 5_000_000, "protocol claim mismatch");
+    337  |+                raffle.settleWinningTicket(1);
+    338  |+                _assertEq(raffle.sponsorProceeds(), 95_000_000, "sponsor claim mismatch");
+    339  |+                _assertEq(raffle.protocolFees(), 5_000_000, "protocol claim mismatch");
+339 340  | 
+340      |-        raffle.releaseSponsorProceeds();
+341      |-        raffle.releaseProtocolFees();
+    341  |+                raffle.releaseSponsorProceeds();
+    342  |+                raffle.releaseProtocolFees();
+342 343  | 
+343      |-        vm.prank(ALICE);
+344      |-        (bool redeemOk,) = address(raffle).call(abi.encodeCall(IRaffle.redeemWinningTicket, (1)));
+345      |-        _assert(!redeemOk, "blocked prize redemption unexpectedly succeeded");
+    344  |+                vm.prank(ALICE);
+    345  |+                (bool redeemOk,) = address(raffle).call(abi.encodeCall(IRaffle.redeemWinningTicket, (1)));
+    346  |+                _assert(!redeemOk, "blocked prize redemption unexpectedly succeeded");
+346 347  | 
+347      |-        (bool refundOk,) = address(raffle).call(abi.encodeWithSelector(IRaffle.enableRefunds.selector));
+348      |-        _assert(!refundOk, "terminal NftWon unexpectedly entered refunds");
+    348  |+                (bool refundOk,) = address(raffle).call(abi.encodeWithSelector(IRaffle.enableRefunds.selector));
+    349  |+                _assert(!refundOk, "terminal NftWon unexpectedly entered refunds");
+349 350  | 
+350      |-        _assertEq(usdc.balanceOf(SPONSOR), 95_000_000, "sponsor did not extract 95 percent");
+351      |-        _assertEq(usdc.balanceOf(TREASURY), 5_000_000, "treasury did not extract 5 percent");
+352      |-        _assertEq(usdc.balanceOf(address(raffle)), 0, "raffle still backs the winner");
+353      |-        _assertEq(raffle.accountedQuoteBalance(), 0, "accounting still records buyer backing");
+354      |-        _assertEq(raffle.ownerOf(1), ALICE, "failed redemption did not restore ticket");
+355      |-        _assert(!raffle.winnerRedeemed(), "failed redemption persisted completion");
+356      |-        _assertEq(uint256(raffle.status()), uint256(IRaffle.Status.NftWon), "raffle left terminal NftWon");
+357      |-    }
+    351  |+                _assertEq(usdc.balanceOf(SPONSOR), 95_000_000, "sponsor did not extract 95 percent");
+    352  |+                _assertEq(usdc.balanceOf(TREASURY), 5_000_000, "treasury did not extract 5 percent");
+    353  |+                _assertEq(usdc.balanceOf(address(raffle)), 0, "raffle still backs the winner");
+    354  |+                _assertEq(raffle.accountedQuoteBalance(), 0, "accounting still records buyer backing");
+    355  |+                _assertEq(raffle.ownerOf(1), ALICE, "failed redemption did not restore ticket");
+    356  |+                _assert(!raffle.winnerRedeemed(), "failed redemption persisted completion");
+    357  |+                _assertEq(uint256(raffle.status()), uint256(IRaffle.Status.NftWon), "raffle left terminal NftWon");
+    358  |+            }
+358 359  | 
+359      |-    function test_ticketTransfersDuringDrawingAndAfterResolution() external {
+360      |-        (MockUsdc usdc, MockVrfWrapper wrapper, RaffleFactory factory) = _newProtocol();
+361      |-        SwitchablePrize prize = new SwitchablePrize(SPONSOR);
+362      |-        Raffle raffle = _createSwitchable(factory, prize, 1);
+    360  |+            function test_ticketTransfersDuringDrawingAndAfterResolution() external {
+    361  |+                (MockUsdc usdc, MockVrfWrapper wrapper, RaffleFactory factory) = _newProtocol();
+    362  |+                SwitchablePrize prize = new SwitchablePrize(SPONSOR);
+    363  |+                Raffle raffle = _createSwitchable(factory, prize, 1);
+363 364  | 
+364      |-        _fundAndBuy(usdc, raffle, ALICE, 1, ALICE);
+365      |-        vm.warp(raffle.endTime());
+366      |-        uint256 requestId = raffle.requestDraw();
+367      |-        _assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Drawing), "not drawing");
+    365  |+                _fundAndBuy(usdc, raffle, ALICE, 1, ALICE);
+    366  |+                vm.warp(raffle.endTime());
+    367  |+                uint256 requestId = raffle.requestDraw();
+    368  |+                _assertEq(uint256(raffle.status()), uint256(IRaffle.Status.Drawing), "not drawing");
+368 369  | 
+369      |-        vm.prank(ALICE);
+370      |-        raffle.transferFrom(ALICE, BOB, 1);
+371      |-        _assertEq(raffle.ownerOf(1), BOB, "drawing transfer blocked");
+    370  |+                vm.prank(ALICE);
+    371  |+                raffle.transferFrom(ALICE, BOB, 1);
+    372  |+                _assertEq(raffle.ownerOf(1), BOB, "drawing transfer blocked");
+372 373  | 
+373      |-        wrapper.fulfill(requestId, 0);
+374      |-        _assertEq(uint256(raffle.status()), uint256(IRaffle.Status.NftWon), "not resolved");
+    374  |+                wrapper.fulfill(requestId, 0);
+    375  |+                _assertEq(uint256(raffle.status()), uint256(IRaffle.Status.NftWon), "not resolved");
+375 376  | 
+376      |-        vm.prank(BOB);
+377      |-        raffle.transferFrom(BOB, CAROL, 1);
+378      |-        _assertEq(raffle.ownerOf(1), CAROL, "post-resolution transfer blocked");
+379      |-    }
+    377  |+                vm.prank(BOB);
+    378  |+                raffle.transferFrom(BOB, CAROL, 1);
+    379  |+                _assertEq(raffle.ownerOf(1), CAROL, "post-resolution transfer blocked");
+    380  |+            }
+380 381  | 
+381      |-    function test_contractWinnerReceivesPrizeWithoutAcknowledgement() external {
+382      |-        (MockUsdc usdc, MockVrfWrapper wrapper, RaffleFactory factory) = _newProtocol();
+383      |-        SwitchablePrize prize = new SwitchablePrize(SPONSOR);
+384      |-        Raffle raffle = _createSwitchable(factory, prize, 1);
+385      |-        TicketVault vault = new TicketVault();
+    382  |+            function test_contractWinnerReceivesPrizeWithoutAcknowledgement() external {
+    383  |+                (MockUsdc usdc, MockVrfWrapper wrapper, RaffleFactory factory) = _newProtocol();
+    384  |+                SwitchablePrize prize = new SwitchablePrize(SPONSOR);
+    385  |+                Raffle raffle = _createSwitchable(factory, prize, 1);
+    386  |+                TicketVault vault = new TicketVault();
+386 387  | 
+387      |-        _fundAndBuy(usdc, raffle, ALICE, 1, address(vault));
+388      |-        _assertEq(vault.receiverCalls(), 1, "ticket receipt hook missing");
+389      |-        _assertEq(vault.lastTokenContract(), address(raffle), "wrong receipt token");
+390      |-        _resolveNft(raffle, wrapper);
+    388  |+                _fundAndBuy(usdc, raffle, ALICE, 1, address(vault));
+    389  |+                _assertEq(vault.receiverCalls(), 1, "ticket receipt hook missing");
+    390  |+                _assertEq(vault.lastTokenContract(), address(raffle), "wrong receipt token");
+    391  |+                _resolveNft(raffle, wrapper);
+391 392  | 
+392      |-        vault.redeem(address(raffle), 1);
+    393  |+                vault.redeem(address(raffle), 1);
+393 394  | 
+394      |-        _assertEq(prize.ownerOf(PRIZE_ID), address(vault), "nominal prize ownership missing");
+395      |-        _assertEq(vault.receiverCalls(), 1, "prize unexpectedly invoked receiver hook");
+396      |-        _assertEq(vault.lastTokenContract(), address(raffle), "prize replaced recorded ticket receipt");
+397      |-        _assert(raffle.winnerRedeemed(), "contract winner redemption not finalized");
+398      |-    }
+    395  |+                _assertEq(prize.ownerOf(PRIZE_ID), address(vault), "nominal prize ownership missing");
+    396  |+                _assertEq(vault.receiverCalls(), 1, "prize unexpectedly invoked receiver hook");
+    397  |+                _assertEq(vault.lastTokenContract(), address(raffle), "prize replaced recorded ticket receipt");
+    398  |+                _assert(raffle.winnerRedeemed(), "contract winner redemption not finalized");
+    399  |+            }
+399 400  | 
+400      |-    function _newProtocol() private returns (MockUsdc usdc, MockVrfWrapper wrapper, RaffleFactory factory) {
+401      |-        usdc = new MockUsdc();
+402      |-        wrapper = new MockVrfWrapper();
+403      |-        factory = new RaffleFactory(address(usdc), address(wrapper), TREASURY);
+404      |-    }
+    401  |+            function _newProtocol() private returns (MockUsdc usdc, MockVrfWrapper wrapper, RaffleFactory factory) {
+    402  |+                usdc = new MockUsdc();
+    403  |+                wrapper = new MockVrfWrapper();
+    404  |+                factory = new RaffleFactory(address(usdc), address(wrapper), TREASURY);
+    405  |+            }
+405 406  | 
+406      |-    function _createSwitchable(RaffleFactory factory, SwitchablePrize prize, uint128 reserveEntries)
+407      |-        private
+408      |-        returns (Raffle raffle)
+409      |-    {
+410      |-        vm.prank(SPONSOR);
+411      |-        prize.mint(SPONSOR, PRIZE_ID);
+412      |-        vm.prank(SPONSOR);
+413      |-        prize.approve(address(factory), PRIZE_ID);
+414      |-        vm.prank(SPONSOR);
+415      |-        address raffleAddress = factory.createRaffle(
+416      |-            IRaffleFactory.CreateRaffleParams({
+417      |-                sponsorRecipient: SPONSOR,
+418      |-                prizeToken: address(prize),
+419      |-                prizeTokenId: PRIZE_ID,
+420      |-                reserveEntries: reserveEntries,
+421      |-                endTime: uint64(block.timestamp + 100)
+422      |-            })
+423      |-        );
+424      |-        raffle = Raffle(payable(raffleAddress));
+425      |-    }
+    407  |+            function _createSwitchable(RaffleFactory factory, SwitchablePrize prize, uint128 reserveEntries)
+    408  |+                private
+    409  |+                returns (Raffle raffle)
+    410  |+            {
+    411  |+                vm.prank(SPONSOR);
+    412  |+                prize.mint(SPONSOR, PRIZE_ID);
+    413  |+                vm.prank(SPONSOR);
+    414  |+                prize.approve(address(factory), PRIZE_ID);
+    415  |+                vm.prank(SPONSOR);
+    416  |+                address raffleAddress = factory.createRaffle(
+    417  |+                    IRaffleFactory.CreateRaffleParams({
+    418  |+                        sponsorRecipient: SPONSOR,
+    419  |+                        prizeToken: address(prize),
+    420  |+                        prizeTokenId: PRIZE_ID,
+    421  |+                        reserveEntries: reserveEntries,
+    422  |+                        endTime: uint64(block.timestamp + 100)
+    423  |+                    })
+    424  |+                );
+    425  |+                raffle = Raffle(payable(raffleAddress));
+    426  |+            }
+426 427  | 
+427      |-    function _fundAndBuy(MockUsdc usdc, Raffle raffle, address payer, uint128 entries, address recipient) private {
+428      |-        uint256 amount = uint256(entries) * ONE_USDC;
+429      |-        usdc.mint(payer, amount);
+430      |-        vm.prank(payer);
+431      |-        usdc.approve(address(raffle), amount);
+432      |-        vm.prank(payer);
+433      |-        raffle.buyEntries(recipient, entries);
+434      |-    }
+    428  |+            function _fundAndBuy(MockUsdc usdc, Raffle raffle, address payer, uint128 entries, address recipient)
+    429  |+                private
+    430  |+            {
+    431  |+                uint256 amount = uint256(entries) * ONE_USDC;
+    432  |+                usdc.mint(payer, amount);
+    433  |+                vm.prank(payer);
+    434  |+                usdc.approve(address(raffle), amount);
+    435  |+                vm.prank(payer);
+    436  |+                raffle.buyEntries(recipient, entries);
+    437  |+            }
+435 438  | 
+436      |-    function _resolveNft(Raffle raffle, MockVrfWrapper wrapper) private {
+437      |-        vm.warp(raffle.endTime());
+438      |-        uint256 requestId = raffle.requestDraw();
+439      |-        wrapper.fulfill(requestId, 0);
+440      |-        _assertEq(uint256(raffle.status()), uint256(IRaffle.Status.NftWon), "not NftWon");
+441      |-    }
+    439  |+            function _resolveNft(Raffle raffle, MockVrfWrapper wrapper) private {
+    440  |+                vm.warp(raffle.endTime());
+    441  |+                uint256 requestId = raffle.requestDraw();
+    442  |+                wrapper.fulfill(requestId, 0);
+    443  |+                _assertEq(uint256(raffle.status()), uint256(IRaffle.Status.NftWon), "not NftWon");
+    444  |+            }
+442 445  | 
+443      |-    function _assert(bool condition, string memory message) private pure {
+444      |-        require(condition, message);
+445      |-    }
+    446  |+            function _assert(bool condition, string memory message) private pure {
+    447  |+                require(condition, message);
+    448  |+            }
+446 449  | 
+447      |-    function _assertEq(uint256 actual, uint256 expected, string memory message) private pure {
+448      |-        require(actual == expected, message);
+449      |-    }
+    450  |+            function _assertEq(uint256 actual, uint256 expected, string memory message) private pure {
+    451  |+                require(actual == expected, message);
+    452  |+            }
+450 453  | 
+451      |-    function _assertEq(address actual, address expected, string memory message) private pure {
+452      |-        require(actual == expected, message);
+453      |-    }
+454      |-}
+    454  |+            function _assertEq(address actual, address expected, string memory message) private pure {
+    455  |+                require(actual == expected, message);
+    456  |+            }
+    457  |+        }

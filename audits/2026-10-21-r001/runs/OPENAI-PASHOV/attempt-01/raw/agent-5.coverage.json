@@ -1,0 +1,2458 @@
+{
+  "agent": "agent-5",
+  "specialty": "invariant",
+  "target_sha_supplied_by_runner": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "local_selection": {
+    "model": "gpt-6-astra",
+    "reasoning_effort": "ultra",
+    "source": "Explicit parent task selection",
+    "fallback_used": false
+  },
+  "provider_model": "unknown",
+  "memory": {
+    "session_memory_enabled": false,
+    "cross_run_memory_enabled": false
+  },
+  "independent": true,
+  "additional_agents_spawned": 0,
+  "resources_read": [
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/audit-artifacts/raw/agent-5.prompt.txt",
+      "sha256": "eb4bee15d79d89d6765aa48c1d60b339647b9ab48babe7457145df91ac0b28b2",
+      "read": "entire prompt"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/.audit-9aXxui/agent-5-bundle.md",
+      "sha256": "899631ce4bb944aeb97a6d09af2f02668e026f7dc7a857203499ce3687cacdb5",
+      "read": "all 7440 lines; initially truncated segments recovered through full and overlapping reads"
+    }
+  ],
+  "files_reviewed": [
+    {
+      "path": "target/packages/contracts/src/RaffleFactory.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/src/RaffleFactory.sol",
+      "sha256": "d0e62b34faa42513fd968f915262728fe66a15c4b9af13a3c66f496704142ace",
+      "embedded_payload_sha256": "d0e62b34faa42513fd968f915262728fe66a15c4b9af13a3c66f496704142ace",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 186,
+      "scope": "production",
+      "reviewed": true,
+      "review_depth": "Complete source read; lifecycle and invariant tracing",
+      "functions_reviewed": [
+        {
+          "name": "constructor",
+          "line": 65
+        },
+        {
+          "name": "createRaffle",
+          "line": 97
+        },
+        {
+          "name": "_validateCreateParams",
+          "line": 154
+        },
+        {
+          "name": "_requireContract",
+          "line": 183
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/src/Raffle.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/src/Raffle.sol",
+      "sha256": "6e4c977922c3e39fafaa8c4c4fb74a971f1817eca9b6552eb8a540969f968617",
+      "embedded_payload_sha256": "6e4c977922c3e39fafaa8c4c4fb74a971f1817eca9b6552eb8a540969f968617",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 614,
+      "scope": "production",
+      "reviewed": true,
+      "review_depth": "Complete source read; lifecycle and invariant tracing",
+      "functions_reviewed": [
+        {
+          "name": "constructor",
+          "line": 155
+        },
+        {
+          "name": "receive",
+          "line": 171
+        },
+        {
+          "name": "initialize",
+          "line": 176
+        },
+        {
+          "name": "buyEntries",
+          "line": 209
+        },
+        {
+          "name": "requestDraw",
+          "line": 240
+        },
+        {
+          "name": "enableRefunds",
+          "line": 276
+        },
+        {
+          "name": "settleWinningTicket",
+          "line": 304
+        },
+        {
+          "name": "redeemWinningTicket",
+          "line": 309
+        },
+        {
+          "name": "refundTickets",
+          "line": 349
+        },
+        {
+          "name": "releaseSponsorProceeds",
+          "line": 375
+        },
+        {
+          "name": "releaseProtocolFees",
+          "line": 385
+        },
+        {
+          "name": "releaseSponsorPrize",
+          "line": 395
+        },
+        {
+          "name": "onERC721Received",
+          "line": 416
+        },
+        {
+          "name": "getVrfRequestPrice",
+          "line": 436
+        },
+        {
+          "name": "estimateVrfRequestPrice",
+          "line": 441
+        },
+        {
+          "name": "vrfWrapper",
+          "line": 446
+        },
+        {
+          "name": "ticketRange",
+          "line": 451
+        },
+        {
+          "name": "drawRequestDeadline",
+          "line": 458
+        },
+        {
+          "name": "callbackDeadline",
+          "line": 463
+        },
+        {
+          "name": "accountedQuoteBalance",
+          "line": 468
+        },
+        {
+          "name": "grossSales",
+          "line": 473
+        },
+        {
+          "name": "name",
+          "line": 479
+        },
+        {
+          "name": "symbol",
+          "line": 485
+        },
+        {
+          "name": "_update",
+          "line": 497
+        },
+        {
+          "name": "fulfillRandomWords",
+          "line": 509
+        },
+        {
+          "name": "_settleWinningTicket",
+          "line": 533
+        },
+        {
+          "name": "_transferQuote",
+          "line": 564
+        },
+        {
+          "name": "_requireStatus",
+          "line": 573
+        },
+        {
+          "name": "_requireWinningTicket",
+          "line": 579
+        },
+        {
+          "name": "_isProtocolDestination",
+          "line": 593
+        },
+        {
+          "name": "_validatedVrfWrapper",
+          "line": 610
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/src/libraries/RaffleConstants.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/src/libraries/RaffleConstants.sol",
+      "sha256": "0893f1a70ac03ad557e0b4c8bdf6a2f73d317f8417d1b4a3c1a571b893ed54b6",
+      "embedded_payload_sha256": "0893f1a70ac03ad557e0b4c8bdf6a2f73d317f8417d1b4a3c1a571b893ed54b6",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 43,
+      "scope": "production",
+      "reviewed": true,
+      "review_depth": "Complete source read; lifecycle and invariant tracing",
+      "functions_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/src/interfaces/IRaffle.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/src/interfaces/IRaffle.sol",
+      "sha256": "a43ede9e8802d636a566fb225ed65bdf70f06d17f4734a1632a0a9f84aa5b2dd",
+      "embedded_payload_sha256": "a43ede9e8802d636a566fb225ed65bdf70f06d17f4734a1632a0a9f84aa5b2dd",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 521,
+      "scope": "production",
+      "reviewed": true,
+      "review_depth": "Complete source read; lifecycle and invariant tracing",
+      "functions_reviewed": [
+        {
+          "name": "initialize",
+          "line": 308
+        },
+        {
+          "name": "buyEntries",
+          "line": 314
+        },
+        {
+          "name": "requestDraw",
+          "line": 320
+        },
+        {
+          "name": "enableRefunds",
+          "line": 324
+        },
+        {
+          "name": "settleWinningTicket",
+          "line": 331
+        },
+        {
+          "name": "redeemWinningTicket",
+          "line": 338
+        },
+        {
+          "name": "refundTickets",
+          "line": 344
+        },
+        {
+          "name": "releaseSponsorProceeds",
+          "line": 348
+        },
+        {
+          "name": "releaseProtocolFees",
+          "line": 352
+        },
+        {
+          "name": "releaseSponsorPrize",
+          "line": 355
+        },
+        {
+          "name": "getVrfRequestPrice",
+          "line": 361
+        },
+        {
+          "name": "estimateVrfRequestPrice",
+          "line": 366
+        },
+        {
+          "name": "ticketRange",
+          "line": 373
+        },
+        {
+          "name": "drawRequestDeadline",
+          "line": 377
+        },
+        {
+          "name": "callbackDeadline",
+          "line": 381
+        },
+        {
+          "name": "accountedQuoteBalance",
+          "line": 385
+        },
+        {
+          "name": "grossSales",
+          "line": 390
+        },
+        {
+          "name": "ENTRY_PRICE",
+          "line": 396
+        },
+        {
+          "name": "callbackGasLimit",
+          "line": 400
+        },
+        {
+          "name": "requestConfirmations",
+          "line": 404
+        },
+        {
+          "name": "factory",
+          "line": 408
+        },
+        {
+          "name": "sponsor",
+          "line": 412
+        },
+        {
+          "name": "sponsorRecipient",
+          "line": 416
+        },
+        {
+          "name": "protocolTreasury",
+          "line": 420
+        },
+        {
+          "name": "quoteToken",
+          "line": 424
+        },
+        {
+          "name": "vrfWrapper",
+          "line": 428
+        },
+        {
+          "name": "prizeToken",
+          "line": 432
+        },
+        {
+          "name": "prizeTokenId",
+          "line": 436
+        },
+        {
+          "name": "raffleId",
+          "line": 440
+        },
+        {
+          "name": "reserveEntries",
+          "line": 444
+        },
+        {
+          "name": "endTime",
+          "line": 448
+        },
+        {
+          "name": "totalEntries",
+          "line": 452
+        },
+        {
+          "name": "ticketCount",
+          "line": 456
+        },
+        {
+          "name": "unsettledPot",
+          "line": 460
+        },
+        {
+          "name": "remainingRefundLiability",
+          "line": 464
+        },
+        {
+          "name": "winnerRecipient",
+          "line": 468
+        },
+        {
+          "name": "winnerProceeds",
+          "line": 472
+        },
+        {
+          "name": "sponsorProceeds",
+          "line": 476
+        },
+        {
+          "name": "protocolFees",
+          "line": 480
+        },
+        {
+          "name": "vrfRequestId",
+          "line": 484
+        },
+        {
+          "name": "drawRequestedAt",
+          "line": 488
+        },
+        {
+          "name": "resolvedAt",
+          "line": 492
+        },
+        {
+          "name": "winningEntry",
+          "line": 496
+        },
+        {
+          "name": "winningTicketId",
+          "line": 500
+        },
+        {
+          "name": "status",
+          "line": 504
+        },
+        {
+          "name": "settlementComplete",
+          "line": 508
+        },
+        {
+          "name": "winnerRedeemed",
+          "line": 512
+        },
+        {
+          "name": "prizeClaimed",
+          "line": 516
+        },
+        {
+          "name": "initialized",
+          "line": 520
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/src/interfaces/IRaffleFactory.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/src/interfaces/IRaffleFactory.sol",
+      "sha256": "747d238e4c7dc5b517f91c796dec87d9ddbfec9c626d1ff21467c60d780d03cf",
+      "embedded_payload_sha256": "747d238e4c7dc5b517f91c796dec87d9ddbfec9c626d1ff21467c60d780d03cf",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 150,
+      "scope": "production",
+      "reviewed": true,
+      "review_depth": "Complete source read; lifecycle and invariant tracing",
+      "functions_reviewed": [
+        {
+          "name": "createRaffle",
+          "line": 104
+        },
+        {
+          "name": "quoteToken",
+          "line": 110
+        },
+        {
+          "name": "vrfWrapper",
+          "line": 114
+        },
+        {
+          "name": "protocolTreasury",
+          "line": 118
+        },
+        {
+          "name": "callbackGasLimit",
+          "line": 122
+        },
+        {
+          "name": "requestConfirmations",
+          "line": 126
+        },
+        {
+          "name": "raffleImplementation",
+          "line": 130
+        },
+        {
+          "name": "raffleCount",
+          "line": 134
+        },
+        {
+          "name": "isRaffle",
+          "line": 139
+        },
+        {
+          "name": "raffleById",
+          "line": 144
+        },
+        {
+          "name": "idByRaffle",
+          "line": 149
+        }
+      ]
+    },
+    {
+      "path": "target/DESIGN.md",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/DESIGN.md",
+      "sha256": "25b4248a342c3be6a48380cb692bbd8087801baee8ed85c4e5d584d1bb9cbba1",
+      "embedded_payload_sha256": "25b4248a342c3be6a48380cb692bbd8087801baee8ed85c4e5d584d1bb9cbba1",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 4,
+      "scope": "design",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol",
+      "sha256": "f81ec96e909daa2cd27536274a30d916b26d5fc91261bed8d7a6a3e157f3825c",
+      "embedded_payload_sha256": "f81ec96e909daa2cd27536274a30d916b26d5fc91261bed8d7a6a3e157f3825c",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 31,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "allowance",
+          "line": 6
+        },
+        {
+          "name": "approve",
+          "line": 7
+        },
+        {
+          "name": "balanceOf",
+          "line": 9
+        },
+        {
+          "name": "decimals",
+          "line": 13
+        },
+        {
+          "name": "decreaseApproval",
+          "line": 15
+        },
+        {
+          "name": "increaseApproval",
+          "line": 17
+        },
+        {
+          "name": "name",
+          "line": 19
+        },
+        {
+          "name": "symbol",
+          "line": 21
+        },
+        {
+          "name": "totalSupply",
+          "line": 23
+        },
+        {
+          "name": "transfer",
+          "line": 25
+        },
+        {
+          "name": "transferAndCall",
+          "line": 27
+        },
+        {
+          "name": "transferFrom",
+          "line": 29
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+      "sha256": "8cf045f295b8c6035d14012a9bc2e8ab2b5ce24749a199ca0190519c4bf2dcc0",
+      "embedded_payload_sha256": "8cf045f295b8c6035d14012a9bc2e8ab2b5ce24749a199ca0190519c4bf2dcc0",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 118,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "constructor",
+          "line": 40
+        },
+        {
+          "name": "requestRandomness",
+          "line": 62
+        },
+        {
+          "name": "requestRandomnessPayInNative",
+          "line": 76
+        },
+        {
+          "name": "fulfillRandomWords",
+          "line": 99
+        },
+        {
+          "name": "rawFulfillRandomWords",
+          "line": 100
+        },
+        {
+          "name": "getBalance",
+          "line": 110
+        },
+        {
+          "name": "getLinkToken",
+          "line": 115
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+      "sha256": "a48aaaeaed60e65f04f6c8772e5673dda663dcfa7913fdadd14b412300b9d5f1",
+      "embedded_payload_sha256": "a48aaaeaed60e65f04f6c8772e5673dda663dcfa7913fdadd14b412300b9d5f1",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 83,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "lastRequestId",
+          "line": 9
+        },
+        {
+          "name": "calculateRequestPrice",
+          "line": 21
+        },
+        {
+          "name": "calculateRequestPriceNative",
+          "line": 33
+        },
+        {
+          "name": "estimateRequestPrice",
+          "line": 45
+        },
+        {
+          "name": "estimateRequestPriceNative",
+          "line": 61
+        },
+        {
+          "name": "requestRandomWordsInNative",
+          "line": 74
+        },
+        {
+          "name": "link",
+          "line": 80
+        },
+        {
+          "name": "linkNativeFeed",
+          "line": 82
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+      "sha256": "f3b89bb466c2a79b10c1816d342fbfbec49fe82695cba92bd46e7d31af698011",
+      "embedded_payload_sha256": "f3b89bb466c2a79b10c1816d342fbfbec49fe82695cba92bd46e7d31af698011",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 27,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "_argsToBytes",
+          "line": 21
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol",
+      "sha256": "9c3a75a925a6dac9e88b03cddc58d42fe3131b0aaaad84408521f3f7af2f991b",
+      "embedded_payload_sha256": "9c3a75a925a6dac9e88b03cddc58d42fe3131b0aaaad84408521f3f7af2f991b",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 86,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "transferAndCall",
+          "line": 35
+        },
+        {
+          "name": "transferAndCall",
+          "line": 45
+        },
+        {
+          "name": "transferFromAndCall",
+          "line": 55
+        },
+        {
+          "name": "transferFromAndCall",
+          "line": 66
+        },
+        {
+          "name": "approveAndCall",
+          "line": 75
+        },
+        {
+          "name": "approveAndCall",
+          "line": 85
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol",
+      "sha256": "dfb3f56fa928a7c6cae41a7ce2c86b9210fa18d33fa26389099d66a0fa790368",
+      "embedded_payload_sha256": "dfb3f56fa928a7c6cae41a7ce2c86b9210fa18d33fa26389099d66a0fa790368",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 6,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol",
+      "sha256": "0158e2d3e0e28bedd99eec13dcf1a8aa3a70a5b7e4bb2ad709609c95fcc740d1",
+      "embedded_payload_sha256": "0158e2d3e0e28bedd99eec13dcf1a8aa3a70a5b7e4bb2ad709609c95fcc740d1",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 6,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol",
+      "sha256": "fa7068f56bc180571a6095be6eaef06d51dbe81e30cb128397d993c9599ecc30",
+      "embedded_payload_sha256": "fa7068f56bc180571a6095be6eaef06d51dbe81e30cb128397d993c9599ecc30",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 162,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+      "sha256": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+      "embedded_payload_sha256": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 294,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "clone",
+          "line": 32
+        },
+        {
+          "name": "clone",
+          "line": 47
+        },
+        {
+          "name": "cloneDeterministic",
+          "line": 75
+        },
+        {
+          "name": "cloneDeterministic",
+          "line": 90
+        },
+        {
+          "name": "predictDeterministicAddress",
+          "line": 114
+        },
+        {
+          "name": "predictDeterministicAddress",
+          "line": 134
+        },
+        {
+          "name": "cloneWithImmutableArgs",
+          "line": 152
+        },
+        {
+          "name": "cloneWithImmutableArgs",
+          "line": 167
+        },
+        {
+          "name": "cloneDeterministicWithImmutableArgs",
+          "line": 197
+        },
+        {
+          "name": "cloneDeterministicWithImmutableArgs",
+          "line": 216
+        },
+        {
+          "name": "predictDeterministicAddressWithImmutableArgs",
+          "line": 229
+        },
+        {
+          "name": "predictDeterministicAddressWithImmutableArgs",
+          "line": 242
+        },
+        {
+          "name": "fetchCloneArgs",
+          "line": 261
+        },
+        {
+          "name": "_cloneCodeWithImmutableArgs",
+          "line": 279
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+      "sha256": "01b6f5c4fa45fd38822b286ecef6daf983d27306dd6362496fa71b3e4600b72c",
+      "embedded_payload_sha256": "01b6f5c4fa45fd38822b286ecef6daf983d27306dd6362496fa71b3e4600b72c",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 79,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "totalSupply",
+          "line": 27
+        },
+        {
+          "name": "balanceOf",
+          "line": 32
+        },
+        {
+          "name": "transfer",
+          "line": 41
+        },
+        {
+          "name": "allowance",
+          "line": 50
+        },
+        {
+          "name": "approve",
+          "line": 67
+        },
+        {
+          "name": "transferFrom",
+          "line": 78
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
+      "sha256": "0b7132f17d14d1d84b41b0bb429be62dafdff00fd3470f68724d8018eb07f57a",
+      "embedded_payload_sha256": "0b7132f17d14d1d84b41b0bb429be62dafdff00fd3470f68724d8018eb07f57a",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 26,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "name",
+          "line": 15
+        },
+        {
+          "name": "symbol",
+          "line": 20
+        },
+        {
+          "name": "decimals",
+          "line": 25
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+      "sha256": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+      "embedded_payload_sha256": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 280,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "safeTransfer",
+          "line": 33
+        },
+        {
+          "name": "safeTransferFrom",
+          "line": 43
+        },
+        {
+          "name": "trySafeTransfer",
+          "line": 52
+        },
+        {
+          "name": "trySafeTransferFrom",
+          "line": 59
+        },
+        {
+          "name": "safeIncreaseAllowance",
+          "line": 72
+        },
+        {
+          "name": "safeDecreaseAllowance",
+          "line": 86
+        },
+        {
+          "name": "forceApprove",
+          "line": 105
+        },
+        {
+          "name": "transferAndCallRelaxed",
+          "line": 119
+        },
+        {
+          "name": "transferFromAndCallRelaxed",
+          "line": 134
+        },
+        {
+          "name": "approveAndCallRelaxed",
+          "line": 159
+        },
+        {
+          "name": "_safeTransfer",
+          "line": 176
+        },
+        {
+          "name": "_safeTransferFrom",
+          "line": 212
+        },
+        {
+          "name": "_safeApprove",
+          "line": 255
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
+      "sha256": "ef8e2398c78851bd2ec12bc48d923058c557889d5a3d5ee4919c17ff0fb3517e",
+      "embedded_payload_sha256": "ef8e2398c78851bd2ec12bc48d923058c557889d5a3d5ee4919c17ff0fb3517e",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 433,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "constructor",
+          "line": 39
+        },
+        {
+          "name": "supportsInterface",
+          "line": 45
+        },
+        {
+          "name": "balanceOf",
+          "line": 53
+        },
+        {
+          "name": "ownerOf",
+          "line": 61
+        },
+        {
+          "name": "name",
+          "line": 66
+        },
+        {
+          "name": "symbol",
+          "line": 71
+        },
+        {
+          "name": "tokenURI",
+          "line": 76
+        },
+        {
+          "name": "_baseURI",
+          "line": 88
+        },
+        {
+          "name": "approve",
+          "line": 93
+        },
+        {
+          "name": "getApproved",
+          "line": 98
+        },
+        {
+          "name": "setApprovalForAll",
+          "line": 105
+        },
+        {
+          "name": "isApprovedForAll",
+          "line": 110
+        },
+        {
+          "name": "transferFrom",
+          "line": 115
+        },
+        {
+          "name": "safeTransferFrom",
+          "line": 128
+        },
+        {
+          "name": "safeTransferFrom",
+          "line": 133
+        },
+        {
+          "name": "_ownerOf",
+          "line": 146
+        },
+        {
+          "name": "_getApproved",
+          "line": 153
+        },
+        {
+          "name": "_isAuthorized",
+          "line": 164
+        },
+        {
+          "name": "_checkAuthorized",
+          "line": 179
+        },
+        {
+          "name": "_increaseBalance",
+          "line": 199
+        },
+        {
+          "name": "_update",
+          "line": 216
+        },
+        {
+          "name": "_mint",
+          "line": 259
+        },
+        {
+          "name": "_safeMint",
+          "line": 279
+        },
+        {
+          "name": "_safeMint",
+          "line": 287
+        },
+        {
+          "name": "_burn",
+          "line": 303
+        },
+        {
+          "name": "_transfer",
+          "line": 321
+        },
+        {
+          "name": "_safeTransfer",
+          "line": 352
+        },
+        {
+          "name": "_safeTransfer",
+          "line": 360
+        },
+        {
+          "name": "_approve",
+          "line": 375
+        },
+        {
+          "name": "_approve",
+          "line": 383
+        },
+        {
+          "name": "_setApprovalForAll",
+          "line": 409
+        },
+        {
+          "name": "_requireOwned",
+          "line": 426
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+      "sha256": "ff0eb9902bf0ac099205615fac90eacf34fae637571b05aab3ea35dea53d5f17",
+      "embedded_payload_sha256": "ff0eb9902bf0ac099205615fac90eacf34fae637571b05aab3ea35dea53d5f17",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 135,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "balanceOf",
+          "line": 30
+        },
+        {
+          "name": "ownerOf",
+          "line": 39
+        },
+        {
+          "name": "safeTransferFrom",
+          "line": 55
+        },
+        {
+          "name": "safeTransferFrom",
+          "line": 73
+        },
+        {
+          "name": "transferFrom",
+          "line": 91
+        },
+        {
+          "name": "approve",
+          "line": 106
+        },
+        {
+          "name": "setApprovalForAll",
+          "line": 118
+        },
+        {
+          "name": "getApproved",
+          "line": 127
+        },
+        {
+          "name": "isApprovedForAll",
+          "line": 134
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+      "sha256": "eafee3ffdc7cb2fba4bf6bd16fb28f8e5b4679742e81c2ad42a1b1df5c179feb",
+      "embedded_payload_sha256": "eafee3ffdc7cb2fba4bf6bd16fb28f8e5b4679742e81c2ad42a1b1df5c179feb",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 28,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "onERC721Received",
+          "line": 22
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol",
+      "sha256": "33223782ea652dca413702ce92f9f59d91d758a035065b24bbedb7dc60c63a78",
+      "embedded_payload_sha256": "33223782ea652dca413702ce92f9f59d91d758a035065b24bbedb7dc60c63a78",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 27,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "name",
+          "line": 16
+        },
+        {
+          "name": "symbol",
+          "line": 21
+        },
+        {
+          "name": "tokenURI",
+          "line": 26
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol",
+      "sha256": "b48e95db8c85866c1d88af8e82f346e0d22d24b5aac5b936079d958c72e13b9f",
+      "embedded_payload_sha256": "b48e95db8c85866c1d88af8e82f346e0d22d24b5aac5b936079d958c72e13b9f",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 50,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "checkOnERC721Received",
+          "line": 25
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol",
+      "sha256": "3ce9120a27934c75a074cb785d3a88868069ef6529dbe4dc6b845af0836f3c70",
+      "embedded_payload_sha256": "3ce9120a27934c75a074cb785d3a88868069ef6529dbe4dc6b845af0836f3c70",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 332,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "indexOf",
+          "line": 19
+        },
+        {
+          "name": "indexOf",
+          "line": 30
+        },
+        {
+          "name": "lastIndexOf",
+          "line": 47
+        },
+        {
+          "name": "lastIndexOf",
+          "line": 58
+        },
+        {
+          "name": "slice",
+          "line": 76
+        },
+        {
+          "name": "slice",
+          "line": 86
+        },
+        {
+          "name": "splice",
+          "line": 106
+        },
+        {
+          "name": "splice",
+          "line": 117
+        },
+        {
+          "name": "replace",
+          "line": 139
+        },
+        {
+          "name": "replace",
+          "line": 154
+        },
+        {
+          "name": "concat",
+          "line": 183
+        },
+        {
+          "name": "toNibbles",
+          "line": 210
+        },
+        {
+          "name": "equal",
+          "line": 250
+        },
+        {
+          "name": "reverseBytes32",
+          "line": 258
+        },
+        {
+          "name": "reverseBytes16",
+          "line": 275
+        },
+        {
+          "name": "reverseBytes8",
+          "line": 289
+        },
+        {
+          "name": "reverseBytes4",
+          "line": 296
+        },
+        {
+          "name": "reverseBytes2",
+          "line": 302
+        },
+        {
+          "name": "clz",
+          "line": 310
+        },
+        {
+          "name": "_unsafeReadBytesOffset",
+          "line": 326
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol",
+      "sha256": "847fda5460fee70f56f4200f59b82ae622bb03c79c77e67af010e31b7e2cc5b6",
+      "embedded_payload_sha256": "847fda5460fee70f56f4200f59b82ae622bb03c79c77e67af010e31b7e2cc5b6",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 28,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "_msgSender",
+          "line": 17
+        },
+        {
+          "name": "_msgData",
+          "line": 20
+        },
+        {
+          "name": "_contextSuffixLength",
+          "line": 24
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol",
+      "sha256": "9623aa59745a23a72f313adc5adbf583968bf366a7cbf3fc43c1148d7d2c3c86",
+      "embedded_payload_sha256": "9623aa59745a23a72f313adc5adbf583968bf366a7cbf3fc43c1148d7d2c3c86",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 91,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "deploy",
+          "line": 38
+        },
+        {
+          "name": "computeAddress",
+          "line": 61
+        },
+        {
+          "name": "computeAddress",
+          "line": 69
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol",
+      "sha256": "0704b9d6c032cca8512a3bc3f30f49f86f1f03102d2896a3d23e794b82efea66",
+      "embedded_payload_sha256": "0704b9d6c032cca8512a3bc3f30f49f86f1f03102d2896a3d23e794b82efea66",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 34,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": []
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol",
+      "sha256": "e128cbe9c6c406d5a42c26e4079c0a95b369ce552f2d0c3dfd2fcb836c5708f2",
+      "embedded_payload_sha256": "e128cbe9c6c406d5a42c26e4079c0a95b369ce552f2d0c3dfd2fcb836c5708f2",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 127,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "callNoReturn",
+          "line": 14
+        },
+        {
+          "name": "callNoReturn",
+          "line": 19
+        },
+        {
+          "name": "callReturn64Bytes",
+          "line": 30
+        },
+        {
+          "name": "callReturn64Bytes",
+          "line": 38
+        },
+        {
+          "name": "staticcallNoReturn",
+          "line": 51
+        },
+        {
+          "name": "staticcallReturn64Bytes",
+          "line": 62
+        },
+        {
+          "name": "delegatecallNoReturn",
+          "line": 74
+        },
+        {
+          "name": "delegatecallReturn64Bytes",
+          "line": 85
+        },
+        {
+          "name": "returnDataSize",
+          "line": 97
+        },
+        {
+          "name": "returnData",
+          "line": 104
+        },
+        {
+          "name": "bubbleRevert",
+          "line": 114
+        },
+        {
+          "name": "bubbleRevert",
+          "line": 121
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol",
+      "sha256": "270fc8401c1a13fae6a7a4a2dd6e381b95d658896701e51f0d3e2688acab3dec",
+      "embedded_payload_sha256": "270fc8401c1a13fae6a7a4a2dd6e381b95d658896701e51f0d3e2688acab3dec",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 57,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "panic",
+          "line": 50
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+      "sha256": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8",
+      "embedded_payload_sha256": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 119,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "constructor",
+          "line": 57
+        },
+        {
+          "name": "_nonReentrantBeforeView",
+          "line": 87
+        },
+        {
+          "name": "_nonReentrantBefore",
+          "line": 93
+        },
+        {
+          "name": "_nonReentrantAfter",
+          "line": 101
+        },
+        {
+          "name": "_reentrancyGuardEntered",
+          "line": 112
+        },
+        {
+          "name": "_reentrancyGuardStorageSlot",
+          "line": 115
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+      "sha256": "75704538dcb223239280c6726d9a31cf769a7816718517c997fc7d63bdb70778",
+      "embedded_payload_sha256": "75704538dcb223239280c6726d9a31cf769a7816718517c997fc7d63bdb70778",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 143,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "getAddressSlot",
+          "line": 66
+        },
+        {
+          "name": "getBooleanSlot",
+          "line": 75
+        },
+        {
+          "name": "getBytes32Slot",
+          "line": 84
+        },
+        {
+          "name": "getUint256Slot",
+          "line": 93
+        },
+        {
+          "name": "getInt256Slot",
+          "line": 102
+        },
+        {
+          "name": "getStringSlot",
+          "line": 111
+        },
+        {
+          "name": "getStringSlot",
+          "line": 120
+        },
+        {
+          "name": "getBytesSlot",
+          "line": 129
+        },
+        {
+          "name": "getBytesSlot",
+          "line": 138
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol",
+      "sha256": "e318709bbe73a7831d64c1351e8bdc43780b245f25191234e361e6ab9b98c67b",
+      "embedded_payload_sha256": "e318709bbe73a7831d64c1351e8bdc43780b245f25191234e361e6ab9b98c67b",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 532,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "toString",
+          "line": 42
+        },
+        {
+          "name": "toStringSigned",
+          "line": 65
+        },
+        {
+          "name": "toHexString",
+          "line": 72
+        },
+        {
+          "name": "toHexString",
+          "line": 81
+        },
+        {
+          "name": "toHexString",
+          "line": 100
+        },
+        {
+          "name": "toChecksumHexString",
+          "line": 108
+        },
+        {
+          "name": "toHexString",
+          "line": 131
+        },
+        {
+          "name": "equal",
+          "line": 148
+        },
+        {
+          "name": "parseUint",
+          "line": 159
+        },
+        {
+          "name": "parseUint",
+          "line": 171
+        },
+        {
+          "name": "tryParseUint",
+          "line": 182
+        },
+        {
+          "name": "tryParseUint",
+          "line": 192
+        },
+        {
+          "name": "_tryParseUintUncheckedBounds",
+          "line": 205
+        },
+        {
+          "name": "parseInt",
+          "line": 229
+        },
+        {
+          "name": "parseInt",
+          "line": 241
+        },
+        {
+          "name": "tryParseInt",
+          "line": 253
+        },
+        {
+          "name": "tryParseInt",
+          "line": 265
+        },
+        {
+          "name": "_tryParseIntUncheckedBounds",
+          "line": 278
+        },
+        {
+          "name": "parseHexUint",
+          "line": 307
+        },
+        {
+          "name": "parseHexUint",
+          "line": 319
+        },
+        {
+          "name": "tryParseHexUint",
+          "line": 330
+        },
+        {
+          "name": "tryParseHexUint",
+          "line": 340
+        },
+        {
+          "name": "_tryParseHexUintUncheckedBounds",
+          "line": 353
+        },
+        {
+          "name": "parseAddress",
+          "line": 384
+        },
+        {
+          "name": "parseAddress",
+          "line": 395
+        },
+        {
+          "name": "tryParseAddress",
+          "line": 405
+        },
+        {
+          "name": "tryParseAddress",
+          "line": 413
+        },
+        {
+          "name": "_tryParseChr",
+          "line": 432
+        },
+        {
+          "name": "escapeJSON",
+          "line": 461
+        },
+        {
+          "name": "_unsafeReadBytesOffset",
+          "line": 513
+        },
+        {
+          "name": "_unsafeWriteBytesOffset",
+          "line": 526
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
+      "sha256": "61a2b12c96857aaa35f48aeda67a4281637a42494c0b3795be0ae976aa7b3793",
+      "embedded_payload_sha256": "61a2b12c96857aaa35f48aeda67a4281637a42494c0b3795be0ae976aa7b3793",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 25,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "supportsInterface",
+          "line": 22
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
+      "sha256": "9055c2994b37dea1a41b7b7926dcb510f05dbe2540b0aafc5fbee9558fffd0ca",
+      "embedded_payload_sha256": "9055c2994b37dea1a41b7b7926dcb510f05dbe2540b0aafc5fbee9558fffd0ca",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 25,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "supportsInterface",
+          "line": 24
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol",
+      "sha256": "bdfdbe133991c0c78042957ff5cd97167926fcaf6d15664f3835a076cb066457",
+      "embedded_payload_sha256": "bdfdbe133991c0c78042957ff5cd97167926fcaf6d15664f3835a076cb066457",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 763,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "add512",
+          "line": 25
+        },
+        {
+          "name": "mul512",
+          "line": 37
+        },
+        {
+          "name": "tryAdd",
+          "line": 51
+        },
+        {
+          "name": "trySub",
+          "line": 62
+        },
+        {
+          "name": "tryMul",
+          "line": 73
+        },
+        {
+          "name": "tryDiv",
+          "line": 89
+        },
+        {
+          "name": "tryMod",
+          "line": 102
+        },
+        {
+          "name": "saturatingAdd",
+          "line": 115
+        },
+        {
+          "name": "saturatingSub",
+          "line": 123
+        },
+        {
+          "name": "saturatingMul",
+          "line": 131
+        },
+        {
+          "name": "ternary",
+          "line": 143
+        },
+        {
+          "name": "max",
+          "line": 155
+        },
+        {
+          "name": "min",
+          "line": 162
+        },
+        {
+          "name": "average",
+          "line": 170
+        },
+        {
+          "name": "ceilDiv",
+          "line": 183
+        },
+        {
+          "name": "mulDiv",
+          "line": 206
+        },
+        {
+          "name": "mulDiv",
+          "line": 282
+        },
+        {
+          "name": "mulShr",
+          "line": 289
+        },
+        {
+          "name": "mulShr",
+          "line": 302
+        },
+        {
+          "name": "invMod",
+          "line": 317
+        },
+        {
+          "name": "invModPrime",
+          "line": 374
+        },
+        {
+          "name": "modExp",
+          "line": 393
+        },
+        {
+          "name": "tryModExp",
+          "line": 411
+        },
+        {
+          "name": "modExp",
+          "line": 440
+        },
+        {
+          "name": "tryModExp",
+          "line": 451
+        },
+        {
+          "name": "_zeroBytes",
+          "line": 478
+        },
+        {
+          "name": "sqrt",
+          "line": 499
+        },
+        {
+          "name": "sqrt",
+          "line": 608
+        },
+        {
+          "name": "log2",
+          "line": 619
+        },
+        {
+          "name": "log2",
+          "line": 664
+        },
+        {
+          "name": "log10",
+          "line": 675
+        },
+        {
+          "name": "log10",
+          "line": 713
+        },
+        {
+          "name": "log256",
+          "line": 726
+        },
+        {
+          "name": "log256",
+          "line": 743
+        },
+        {
+          "name": "unsignedRoundsUp",
+          "line": 753
+        },
+        {
+          "name": "clz",
+          "line": 760
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol",
+      "sha256": "5779bc848bde39f1ad7bc02b4f708a0040888e0083b1a33f119cd94639350134",
+      "embedded_payload_sha256": "5779bc848bde39f1ad7bc02b4f708a0040888e0083b1a33f119cd94639350134",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 1162,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "toUint248",
+          "line": 50
+        },
+        {
+          "name": "toUint240",
+          "line": 67
+        },
+        {
+          "name": "toUint232",
+          "line": 84
+        },
+        {
+          "name": "toUint224",
+          "line": 101
+        },
+        {
+          "name": "toUint216",
+          "line": 118
+        },
+        {
+          "name": "toUint208",
+          "line": 135
+        },
+        {
+          "name": "toUint200",
+          "line": 152
+        },
+        {
+          "name": "toUint192",
+          "line": 169
+        },
+        {
+          "name": "toUint184",
+          "line": 186
+        },
+        {
+          "name": "toUint176",
+          "line": 203
+        },
+        {
+          "name": "toUint168",
+          "line": 220
+        },
+        {
+          "name": "toUint160",
+          "line": 237
+        },
+        {
+          "name": "toUint152",
+          "line": 254
+        },
+        {
+          "name": "toUint144",
+          "line": 271
+        },
+        {
+          "name": "toUint136",
+          "line": 288
+        },
+        {
+          "name": "toUint128",
+          "line": 305
+        },
+        {
+          "name": "toUint120",
+          "line": 322
+        },
+        {
+          "name": "toUint112",
+          "line": 339
+        },
+        {
+          "name": "toUint104",
+          "line": 356
+        },
+        {
+          "name": "toUint96",
+          "line": 373
+        },
+        {
+          "name": "toUint88",
+          "line": 390
+        },
+        {
+          "name": "toUint80",
+          "line": 407
+        },
+        {
+          "name": "toUint72",
+          "line": 424
+        },
+        {
+          "name": "toUint64",
+          "line": 441
+        },
+        {
+          "name": "toUint56",
+          "line": 458
+        },
+        {
+          "name": "toUint48",
+          "line": 475
+        },
+        {
+          "name": "toUint40",
+          "line": 492
+        },
+        {
+          "name": "toUint32",
+          "line": 509
+        },
+        {
+          "name": "toUint24",
+          "line": 526
+        },
+        {
+          "name": "toUint16",
+          "line": 543
+        },
+        {
+          "name": "toUint8",
+          "line": 560
+        },
+        {
+          "name": "toUint256",
+          "line": 574
+        },
+        {
+          "name": "toInt248",
+          "line": 592
+        },
+        {
+          "name": "toInt240",
+          "line": 610
+        },
+        {
+          "name": "toInt232",
+          "line": 628
+        },
+        {
+          "name": "toInt224",
+          "line": 646
+        },
+        {
+          "name": "toInt216",
+          "line": 664
+        },
+        {
+          "name": "toInt208",
+          "line": 682
+        },
+        {
+          "name": "toInt200",
+          "line": 700
+        },
+        {
+          "name": "toInt192",
+          "line": 718
+        },
+        {
+          "name": "toInt184",
+          "line": 736
+        },
+        {
+          "name": "toInt176",
+          "line": 754
+        },
+        {
+          "name": "toInt168",
+          "line": 772
+        },
+        {
+          "name": "toInt160",
+          "line": 790
+        },
+        {
+          "name": "toInt152",
+          "line": 808
+        },
+        {
+          "name": "toInt144",
+          "line": 826
+        },
+        {
+          "name": "toInt136",
+          "line": 844
+        },
+        {
+          "name": "toInt128",
+          "line": 862
+        },
+        {
+          "name": "toInt120",
+          "line": 880
+        },
+        {
+          "name": "toInt112",
+          "line": 898
+        },
+        {
+          "name": "toInt104",
+          "line": 916
+        },
+        {
+          "name": "toInt96",
+          "line": 934
+        },
+        {
+          "name": "toInt88",
+          "line": 952
+        },
+        {
+          "name": "toInt80",
+          "line": 970
+        },
+        {
+          "name": "toInt72",
+          "line": 988
+        },
+        {
+          "name": "toInt64",
+          "line": 1006
+        },
+        {
+          "name": "toInt56",
+          "line": 1024
+        },
+        {
+          "name": "toInt48",
+          "line": 1042
+        },
+        {
+          "name": "toInt40",
+          "line": 1060
+        },
+        {
+          "name": "toInt32",
+          "line": 1078
+        },
+        {
+          "name": "toInt24",
+          "line": 1096
+        },
+        {
+          "name": "toInt16",
+          "line": 1114
+        },
+        {
+          "name": "toInt8",
+          "line": 1132
+        },
+        {
+          "name": "toInt256",
+          "line": 1146
+        },
+        {
+          "name": "toUint",
+          "line": 1157
+        }
+      ]
+    },
+    {
+      "path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+      "absolute_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/target/packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol",
+      "sha256": "1ed50b1056af886752f0fb48a0165d381e69bb4a4b18b893b066dc144a7e08d7",
+      "embedded_payload_sha256": "1ed50b1056af886752f0fb48a0165d381e69bb4a4b18b893b066dc144a7e08d7",
+      "embedded_matches_file_ignoring_terminal_newlines": true,
+      "lines": 68,
+      "scope": "dependency context",
+      "reviewed": true,
+      "review_depth": "Complete bundled context read; reachable behavior traced",
+      "functions_reviewed": [
+        {
+          "name": "ternary",
+          "line": 19
+        },
+        {
+          "name": "max",
+          "line": 31
+        },
+        {
+          "name": "min",
+          "line": 38
+        },
+        {
+          "name": "average",
+          "line": 46
+        },
+        {
+          "name": "abs",
+          "line": 55
+        }
+      ]
+    }
+  ],
+  "properties_reviewed": [
+    {
+      "id": "factory-configuration",
+      "property": "Factory construction fixes token, wrapper, treasury, and implementation; source exposes no setters.",
+      "functions": [
+        "RaffleFactory.constructor",
+        "Raffle.constructor"
+      ],
+      "result": "holds under canonical dependency assumptions"
+    },
+    {
+      "id": "atomic-creation",
+      "property": "Each successful registration corresponds to one initialized active clone and the configured reported prize owner.",
+      "functions": [
+        "createRaffle",
+        "initialize",
+        "onERC721Received"
+      ],
+      "result": "holds for honest prize semantics; malicious ownership reports remain external trust"
+    },
+    {
+      "id": "initialization",
+      "property": "Only the immutable factory can initialize once; implementation storage is locked.",
+      "functions": [
+        "Raffle.constructor",
+        "initialize"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "quote-conservation",
+      "property": "Accounted quote equals unspent entry receipts; direct donations are excluded from liabilities.",
+      "functions": [
+        "buyEntries",
+        "enableRefunds",
+        "_settleWinningTicket",
+        "refundTickets",
+        "releaseSponsorProceeds",
+        "releaseProtocolFees",
+        "redeemWinningTicket",
+        "accountedQuoteBalance"
+      ],
+      "result": "holds under standard USDC transfers"
+    },
+    {
+      "id": "range-partition",
+      "property": "Tickets form contiguous disjoint ranges that cover [1,totalEntries].",
+      "functions": [
+        "buyEntries",
+        "ticketRange"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "ticket-capacity",
+      "property": "ticketCount <= totalEntries <= uint128.max; each purchase adds at least one entry.",
+      "functions": [
+        "buyEntries"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "arithmetic-bounds",
+      "property": "grossSales <= uint128.max * 1000000 and percentage allocations remain within uint256.",
+      "functions": [
+        "buyEntries",
+        "grossSales",
+        "_settleWinningTicket",
+        "refundTickets"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "winner-membership",
+      "property": "An accepted VRF word selects one entry covered by exactly one historical range.",
+      "functions": [
+        "fulfillRandomWords",
+        "_requireWinningTicket",
+        "ticketRange"
+      ],
+      "result": "holds; modulo bias is negligible at the uint128 cap"
+    },
+    {
+      "id": "callback-authentication",
+      "property": "Only the immutable wrapper can reach the random-word handler.",
+      "functions": [
+        "rawFulfillRandomWords",
+        "fulfillRandomWords"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "callback-state",
+      "property": "Only the recorded request before its deadline resolves a Drawing raffle; duplicate, late, in-flight, and wrong-length callbacks do not resolve.",
+      "functions": [
+        "requestDraw",
+        "fulfillRandomWords"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "exclusive-deadlines",
+      "property": "Buying, draw initiation, and full-refund availability use consistent exclusive boundaries.",
+      "functions": [
+        "buyEntries",
+        "requestDraw",
+        "enableRefunds",
+        "drawRequestDeadline",
+        "callbackDeadline"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "terminal-monotonicity",
+      "property": "NftWon, CashWon, and Refunding cannot return to Active or Drawing.",
+      "functions": [
+        "initialize",
+        "onERC721Received",
+        "requestDraw",
+        "fulfillRandomWords",
+        "enableRefunds"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "settlement-once",
+      "property": "Settlement consumes unsettledPot once without ownership reads or asset transfers.",
+      "functions": [
+        "settleWinningTicket",
+        "_settleWinningTicket"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "economic-allocation",
+      "property": "NFT payout is 95/5 and cash payout is 80/15/5; allocations sum to the sale pot.",
+      "functions": [
+        "_settleWinningTicket"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "redemption-ownership",
+      "property": "Only the current winning-ticket owner receives the prize; approvals alone do not permit redemption.",
+      "functions": [
+        "redeemWinningTicket",
+        "ownerOf",
+        "_burn"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "burn-atomicity",
+      "property": "A failed redemption or refund transfer restores the burn, balances, liabilities, and claim flags.",
+      "functions": [
+        "redeemWinningTicket",
+        "refundTickets",
+        "_transferQuote",
+        "SafeERC20.safeTransfer"
+      ],
+      "result": "holds by transaction reversion"
+    },
+    {
+      "id": "refund-conservation",
+      "property": "Each surviving owner may burn each ticket once for its full represented entry value.",
+      "functions": [
+        "enableRefunds",
+        "refundTickets",
+        "ownerOf",
+        "_burn"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "batch-safety",
+      "property": "Refund batches require 1..100 tickets and duplicates, foreign tickets, or nonexistent IDs revert.",
+      "functions": [
+        "refundTickets"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "independent-release",
+      "property": "Sponsor, treasury, and winner releases cannot consume each other's quote allocations.",
+      "functions": [
+        "releaseSponsorProceeds",
+        "releaseProtocolFees",
+        "redeemWinningTicket"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "prize-exclusivity",
+      "property": "One prizeClaimed flag gates the winner NFT branch and sponsor return branches.",
+      "functions": [
+        "redeemWinningTicket",
+        "releaseSponsorPrize"
+      ],
+      "result": "holds under honest prize semantics"
+    },
+    {
+      "id": "ticket-transfer-coupling",
+      "property": "Inherited ticket transfers change ownership but preserve entry ranges, totalEntries, and liabilities.",
+      "functions": [
+        "_update",
+        "transferFrom",
+        "safeTransferFrom",
+        "approve",
+        "setApprovalForAll"
+      ],
+      "result": "holds"
+    },
+    {
+      "id": "reentrancy-isolation",
+      "property": "Each money-mutating public path uses the same clone-local guard; burn precedes prize calls.",
+      "functions": [
+        "buyEntries",
+        "requestDraw",
+        "enableRefunds",
+        "settleWinningTicket",
+        "redeemWinningTicket",
+        "refundTickets",
+        "releaseSponsorProceeds",
+        "releaseProtocolFees",
+        "releaseSponsorPrize",
+        "ReentrancyGuard.nonReentrant"
+      ],
+      "result": "holds for traced caller-controlled callbacks"
+    },
+    {
+      "id": "native-fee-conservation",
+      "property": "Draw requester funds the actual fee and receives only its own excess; rejected refunds revert the request.",
+      "functions": [
+        "requestDraw",
+        "requestRandomnessPayInNative",
+        "receive"
+      ],
+      "result": "holds; forced donations remain outside claims"
+    },
+    {
+      "id": "destination-filter",
+      "property": "Ticket writes and quote releases reject current same-factory protocol sinks.",
+      "functions": [
+        "_isProtocolDestination",
+        "_update",
+        "_transferQuote",
+        "_validateCreateParams"
+      ],
+      "result": "holds for current registry; future-address and foreign-factory self-harm paths excluded"
+    },
+    {
+      "id": "view-write-consistency",
+      "property": "Generated getters, grossSales, deadlines, ticket ranges, and liabilities match the state mutations.",
+      "functions": [
+        "ticketRange",
+        "grossSales",
+        "drawRequestDeadline",
+        "callbackDeadline",
+        "accountedQuoteBalance",
+        "name",
+        "symbol",
+        "getVrfRequestPrice",
+        "estimateVrfRequestPrice",
+        "vrfWrapper"
+      ],
+      "result": "holds under their documented temporal scope"
+    },
+    {
+      "id": "untrusted-prize-delivery",
+      "property": "Sponsor payment does not depend on successful winner NFT delivery.",
+      "functions": [
+        "_settleWinningTicket",
+        "releaseSponsorProceeds",
+        "redeemWinningTicket"
+      ],
+      "result": "LEAD: explicit design/source trust-boundary mismatch; no concrete bundled prize refusal path"
+    }
+  ],
+  "validation": {
+    "model": "Independent Python translation; no EVM execution",
+    "cases": 1005,
+    "assertions_passed": 309796,
+    "properties": [
+      "Paid entries equal the unsettled pot before resolution",
+      "Ticket ranges partition every sold entry exactly once",
+      "Ticket count cannot exceed the uint128 entry count",
+      "Every random word selects one valid ticket range",
+      "NFT and cash allocations conserve the complete sale pot",
+      "All six payout orders preserve remaining liabilities",
+      "Arbitrary refund order consumes each entry value exactly once",
+      "Request and callback deadline boundaries do not overlap refunds"
+    ],
+    "limitations": [
+      "No malicious external contract execution",
+      "No deployed wrapper or token integration",
+      "No compiler, gas, or bytecode verification"
+    ]
+  },
+  "completion": {
+    "status": "complete",
+    "bundle_lines": 7440,
+    "complete_bundle_read": true,
+    "production_files_reviewed": 5,
+    "design_reviewed": true,
+    "dependency_files_reviewed": 31,
+    "confirmed_findings": 0,
+    "leads": 1,
+    "gaps": [
+      "No EVM execution, compiler build, or gas verification.",
+      "No deployed token, wrapper, or prize context supplied.",
+      "Untrusted-prize refusal path remains a LEAD because no concrete prize implementation is bundled."
+    ]
+  },
+  "boundaries": {
+    "target_modified": false,
+    "history_read": false,
+    "existing_tests_read": false,
+    "scanner_outputs_read": false,
+    "peer_reports_read": false,
+    "network_sources_read": false
+  },
+  "artifacts": [
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/audit-artifacts/raw/agent-5.md",
+      "sha256": "8f1ec39ecfdb6a2402c992d75dad16bd9d0c1256f035f4b1e52917d9f5d697b2"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/audit-artifacts/proofs/agent-5/invariants.py",
+      "sha256": "cd60da4e40129b4b558e0dcf9df6ecda7f85ca4512a3eff988ce55a295be03c3"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-PASHOV/audit-artifacts/proofs/agent-5/model-results.json",
+      "sha256": "80dfa54e26295ef8c18b7c366ba6a46316110d3ade26a0b8c0c7a75792b6cedc"
+    }
+  ]
+}

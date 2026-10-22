@@ -1,0 +1,111 @@
+{
+  "stage_id": "S1-FUNCTION-12",
+  "accepted_local_selection": {
+    "model": "gpt-daybreak-blue-latest",
+    "reasoning_effort": "ultra",
+    "access_program": "daybreak_blue",
+    "fallback": false
+  },
+  "provider_returned_model": "unknown",
+  "function": {
+    "name": "VRFV2PlusWrapperConsumerBase.rawFulfillRandomWords",
+    "signature": "rawFulfillRandomWords(uint256,uint256[])",
+    "file": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+    "lines": "L101-L107",
+    "prose_path": ".audit-work/stages/01-audit-context/functions/12-VRFV2PlusWrapperConsumerBase.rawFulfillRandomWords.md"
+  },
+  "invariants": [
+    {
+      "statement": "Only msg.sender equal to the immutable configured wrapper reaches the virtual callback hook.",
+      "evidence": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:L102-L106"
+    },
+    {
+      "statement": "Raffle resolves only when not in-flight, Drawing, request ID matches, exactly one word is supplied, and time is strictly before the callback deadline.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L509-L523"
+    },
+    {
+      "statement": "An accepted callback stores a one-based winning entry in [1,totalEntries] and changes status to NftWon or CashWon.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L518-L523; nonzero total established at target/packages/contracts/src/Raffle.sol:L240-L254"
+    },
+    {
+      "statement": "After the first accepted callback, duplicate callbacks are ignored because status is no longer Drawing.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L511-L523"
+    },
+    {
+      "statement": "Callbacks at or after the deadline are ignored, while the Drawing refund branch is eligible at the same boundary.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L289-L300, L511-L515"
+    }
+  ],
+  "assumptions": [
+    {
+      "statement": "The immutable wrapper address identifies the intended canonical VRF wrapper.",
+      "established_by": "Deployment tooling selection plus nonzero/code-presence checks; canonical identity is established by nothing in target code.",
+      "evidence": "target/packages/contracts/src/RaffleFactory.sol:L58-L67, L181-L185; target/packages/contracts/src/Raffle.sol:L607-L613"
+    },
+    {
+      "statement": "The wrapper binds returned randomness and request IDs to the earlier paid request.",
+      "established_by": "nothing found; wrapper implementation is absent, while Raffle only checks the stored ID and one-word shape.",
+      "evidence": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol:L68-L81; target/packages/contracts/src/Raffle.sol:L509-L518"
+    },
+    {
+      "statement": "ABI calldata is decodable before the gateway body runs.",
+      "established_by": "Solidity external decoding; Raffle source explicitly documents the malformed-calldata path.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L504-L506"
+    }
+  ],
+  "callees": [
+    {
+      "name": "Raffle.fulfillRandomWords",
+      "kind": "internal-source-available",
+      "dependency": "Establishes current-request, lifecycle, word-count, and deadline acceptance; ignored paths emit without storage writes, accepted path records the terminal result.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L509-L524"
+    },
+    {
+      "name": "Raffle.callbackDeadline",
+      "kind": "internal-source-available",
+      "dependency": "Derives the exclusive callback bound from drawRequestedAt and the fixed two-day timeout.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L463-L465; target/packages/contracts/src/libraries/RaffleConstants.sol:L35-L36"
+    }
+  ],
+  "callers_and_paths": [
+    {
+      "caller": "Any external address",
+      "path": "Non-wrapper caller reverts before dispatch.",
+      "evidence": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:L101-L105"
+    },
+    {
+      "caller": "Configured wrapper",
+      "path": "Dispatches to Raffle; callback is either ignored or resolves according to the downstream five-part guard.",
+      "evidence": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:L102-L106; target/packages/contracts/src/Raffle.sol:L509-L523"
+    },
+    {
+      "caller": "Configured wrapper during requestRandomWordsInNative",
+      "path": "Authentication passes but _requestInFlight forces the ignore path until the request returns, the ID is stored, and the flag is cleared.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L252-L260, L510-L515"
+    },
+    {
+      "caller": "Configured wrapper targeting locked implementation",
+      "path": "Implementation status is Refunding, so the Raffle override emits the ignored event and returns.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L151-L165, L509-L515"
+    }
+  ],
+  "state": {
+    "reads": [
+      "i_vrfV2PlusWrapper (target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:L34-L46, L102-L103)",
+      "_requestInFlight, status, vrfRequestId, drawRequestedAt/callbackDeadline, totalEntries, reserveEntries (target/packages/contracts/src/Raffle.sol:L509-L521)"
+    ],
+    "writes": [
+      "No direct base storage writes",
+      "Accepted Raffle dispatch writes winningEntry, resolvedAt, and status (target/packages/contracts/src/Raffle.sol:L518-L521)"
+    ],
+    "events": [
+      "VrfCallbackIgnored on authenticated rejected dispatches (target/packages/contracts/src/Raffle.sol:L513-L515)",
+      "RaffleResolved on accepted dispatches (target/packages/contracts/src/Raffle.sol:L518-L523)"
+    ]
+  },
+  "open_questions": [
+    "Wrapper implementation behavior for request binding, word generation, scheduling, retry, and gas forwarding is not visible in target.",
+    "Actual deployed wrapper identity and runtime code are outside target.",
+    "Wrapper upgradeability and authority behind calls from the wrapper address are not represented by the supplied interface."
+  ]
+}

@@ -1,0 +1,2506 @@
+{
+  "passed": 79,
+  "failed": 0,
+  "skipped": 0,
+  "suites": {
+    "/source/packages/contracts/test/foundry/fuzz/RaffleFuzz.t.sol:RaffleFuzzTest": {
+      "testFuzzCashSplitAlwaysConservesEightyFifteenFive(uint64)": {
+        "status": "Success",
+        "kind": {
+          "Fuzz": {
+            "first_case": {
+              "calldata": "0x1f31926c0000000000000000000000000000000000000000000000000000000000000000",
+              "gas": 1088066,
+              "stipend": 21192
+            },
+            "runs": 256,
+            "mean_gas": 1066792,
+            "median_gas": 1066594
+          }
+        }
+      },
+      "testFuzzNoRequestTimeoutPaysFullWeightedRange(uint64)": {
+        "status": "Success",
+        "kind": {
+          "Fuzz": {
+            "first_case": {
+              "calldata": "0x0a8ac1ca0000000000000000000000000000000000000000000000000000000000000000",
+              "gas": 657419,
+              "stipend": 21192
+            },
+            "runs": 256,
+            "mean_gas": 636145,
+            "median_gas": 635947
+          }
+        }
+      },
+      "testFuzzOnlyContainingReceiptCanSettle(uint32,uint32,uint256)": {
+        "status": "Success",
+        "kind": {
+          "Fuzz": {
+            "first_case": {
+              "calldata": "0x89cce4d700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001c952ef0000000000000000000000000000000000000000000003ff736a7acc5b793fec",
+              "gas": 1153505,
+              "stipend": 21616
+            },
+            "runs": 256,
+            "mean_gas": 1131272,
+            "median_gas": 1131128
+          }
+        }
+      },
+      "testFuzzPostSettlementBearerCanRedeemNft(uint64)": {
+        "status": "Success",
+        "kind": {
+          "Fuzz": {
+            "first_case": {
+              "calldata": "0xb57a79680000000000000000000000000000000000000000000000000000000000000000",
+              "gas": 1070761,
+              "stipend": 21192
+            },
+            "runs": 256,
+            "mean_gas": 1049487,
+            "median_gas": 1049289
+          }
+        }
+      },
+      "testFuzzPurchaseCreatesOneSequentialTicketWithExactRange(uint128)": {
+        "status": "Success",
+        "kind": {
+          "Fuzz": {
+            "first_case": {
+              "calldata": "0xe4ca8084000000000000000000000000000000000000000000000000000000000000000c",
+              "gas": 701133,
+              "stipend": 21204
+            },
+            "runs": 256,
+            "mean_gas": 680032,
+            "median_gas": 679929
+          }
+        }
+      },
+      "testFuzzRefundPaysWeightedRangeExactlyOnce(uint64)": {
+        "status": "Success",
+        "kind": {
+          "Fuzz": {
+            "first_case": {
+              "calldata": "0x683c42770000000000000000000000000000000000000000000000000000000000000000",
+              "gas": 935834,
+              "stipend": 21192
+            },
+            "runs": 256,
+            "mean_gas": 914560,
+            "median_gas": 914362
+          }
+        }
+      },
+      "testFuzzReserveEqualityIsNftAndOneBelowIsCash(uint32)": {
+        "status": "Success",
+        "kind": {
+          "Fuzz": {
+            "first_case": {
+              "calldata": "0x4c58c2960000000000000000000000000000000000000000000000000000000000000000",
+              "gas": 1832075,
+              "stipend": 21192
+            },
+            "runs": 256,
+            "mean_gas": 1810776,
+            "median_gas": 1810603
+          }
+        }
+      },
+      "testFuzzSeparatePurchasesPartitionEntriesWithoutGaps(uint128,uint128)": {
+        "status": "Success",
+        "kind": {
+          "Fuzz": {
+            "first_case": {
+              "calldata": "0x8995dd1c000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000001050e44f9d3148b759c952ef",
+              "gas": 745156,
+              "stipend": 21476
+            },
+            "runs": 256,
+            "mean_gas": 723423,
+            "median_gas": 722996
+          }
+        }
+      },
+      "testFuzzWinningEntryAlwaysUsesInclusiveSoldRange(uint96,uint256)": {
+        "status": "Success",
+        "kind": {
+          "Fuzz": {
+            "first_case": {
+              "calldata": "0xc6001f6f000000000000000000000000000000000000000000000000000000000000000c0000000000000001a2a7e09388630938cb08e6781050e44f9d3148b759c952ef",
+              "gas": 1000185,
+              "stipend": 21620
+            },
+            "runs": 256,
+            "mean_gas": 978726,
+            "median_gas": 978565
+          }
+        }
+      }
+    },
+    "/source/packages/contracts/test/foundry/invariant/RaffleInvariant.t.sol:RaffleInvariantTest": {
+      "invariantBranchEconomicsRemainEightyFifteenFiveNinetyFiveFiveOrFullRefund()": {
+        "status": "Success",
+        "kind": {
+          "Invariant": {
+            "runs": 64,
+            "calls": 2048,
+            "reverts": 0,
+            "metrics": {
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.redeemRefund": {
+                "calls": 120,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToLastDrawRequestSecond": {
+                "calls": 122,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseWinnerClaim": {
+                "calls": 120,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToDrawRequestDeadline": {
+                "calls": 114,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.transferBeforeOrAfterEnd": {
+                "calls": 136,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.requestDraw": {
+                "calls": 111,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseProceeds": {
+                "calls": 119,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpFarPastEnd": {
+                "calls": 135,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToEnd": {
+                "calls": 115,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.fulfill": {
+                "calls": 125,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.donate": {
+                "calls": 119,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.buy": {
+                "calls": 116,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.settleCandidateWinner": {
+                "calls": 136,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.wrongCallback": {
+                "calls": 111,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToCallbackDeadline": {
+                "calls": 104,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseSponsorPrize": {
+                "calls": 125,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.enableRefunds": {
+                "calls": 120,
+                "reverts": 0,
+                "discards": 0
+              }
+            },
+            "failed_corpus_replays": 0
+          }
+        }
+      },
+      "invariantDrawAndCallbackDeadlinesAreHardAndOrdered()": {
+        "status": "Success",
+        "kind": {
+          "Invariant": {
+            "runs": 64,
+            "calls": 2048,
+            "reverts": 0,
+            "metrics": {
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.fulfill": {
+                "calls": 125,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpFarPastEnd": {
+                "calls": 135,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.requestDraw": {
+                "calls": 111,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.wrongCallback": {
+                "calls": 111,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.settleCandidateWinner": {
+                "calls": 135,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseSponsorPrize": {
+                "calls": 124,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToDrawRequestDeadline": {
+                "calls": 114,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.transferBeforeOrAfterEnd": {
+                "calls": 136,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseProceeds": {
+                "calls": 119,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.buy": {
+                "calls": 116,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToLastDrawRequestSecond": {
+                "calls": 122,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.donate": {
+                "calls": 120,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.redeemRefund": {
+                "calls": 119,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToEnd": {
+                "calls": 116,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToCallbackDeadline": {
+                "calls": 104,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.enableRefunds": {
+                "calls": 119,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseWinnerClaim": {
+                "calls": 122,
+                "reverts": 0,
+                "discards": 0
+              }
+            },
+            "failed_corpus_replays": 0
+          }
+        }
+      },
+      "invariantPrizeCustodyMatchesClaimMarker()": {
+        "status": "Success",
+        "kind": {
+          "Invariant": {
+            "runs": 64,
+            "calls": 2048,
+            "reverts": 0,
+            "metrics": {
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToLastDrawRequestSecond": {
+                "calls": 122,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.transferBeforeOrAfterEnd": {
+                "calls": 136,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseSponsorPrize": {
+                "calls": 125,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.requestDraw": {
+                "calls": 111,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToEnd": {
+                "calls": 115,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.enableRefunds": {
+                "calls": 120,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.buy": {
+                "calls": 116,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToCallbackDeadline": {
+                "calls": 104,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.wrongCallback": {
+                "calls": 111,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseWinnerClaim": {
+                "calls": 120,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToDrawRequestDeadline": {
+                "calls": 114,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.redeemRefund": {
+                "calls": 120,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.settleCandidateWinner": {
+                "calls": 136,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseProceeds": {
+                "calls": 119,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.fulfill": {
+                "calls": 125,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.donate": {
+                "calls": 119,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpFarPastEnd": {
+                "calls": 135,
+                "reverts": 0,
+                "discards": 0
+              }
+            },
+            "failed_corpus_replays": 0
+          }
+        }
+      },
+      "invariantQuoteAccountingIsExactAndSolvent()": {
+        "status": "Success",
+        "kind": {
+          "Invariant": {
+            "runs": 64,
+            "calls": 2048,
+            "reverts": 0,
+            "metrics": {
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.settleCandidateWinner": {
+                "calls": 136,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseSponsorPrize": {
+                "calls": 125,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseProceeds": {
+                "calls": 119,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.redeemRefund": {
+                "calls": 120,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.requestDraw": {
+                "calls": 111,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.buy": {
+                "calls": 116,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.wrongCallback": {
+                "calls": 111,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToDrawRequestDeadline": {
+                "calls": 114,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToLastDrawRequestSecond": {
+                "calls": 122,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.fulfill": {
+                "calls": 125,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.donate": {
+                "calls": 119,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseWinnerClaim": {
+                "calls": 120,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.enableRefunds": {
+                "calls": 120,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpFarPastEnd": {
+                "calls": 135,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToEnd": {
+                "calls": 115,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.transferBeforeOrAfterEnd": {
+                "calls": 136,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToCallbackDeadline": {
+                "calls": 104,
+                "reverts": 0,
+                "discards": 0
+              }
+            },
+            "failed_corpus_replays": 0
+          }
+        }
+      },
+      "invariantRangesPartitionEverySoldEntryExactlyOnce()": {
+        "status": "Success",
+        "kind": {
+          "Invariant": {
+            "runs": 64,
+            "calls": 2048,
+            "reverts": 0,
+            "metrics": {
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.wrongCallback": {
+                "calls": 111,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.enableRefunds": {
+                "calls": 120,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToCallbackDeadline": {
+                "calls": 104,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseSponsorPrize": {
+                "calls": 125,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseWinnerClaim": {
+                "calls": 120,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToEnd": {
+                "calls": 115,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.donate": {
+                "calls": 119,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToLastDrawRequestSecond": {
+                "calls": 122,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseProceeds": {
+                "calls": 119,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.buy": {
+                "calls": 116,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.fulfill": {
+                "calls": 125,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.redeemRefund": {
+                "calls": 120,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.requestDraw": {
+                "calls": 111,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToDrawRequestDeadline": {
+                "calls": 114,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.transferBeforeOrAfterEnd": {
+                "calls": 136,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.settleCandidateWinner": {
+                "calls": 136,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpFarPastEnd": {
+                "calls": 135,
+                "reverts": 0,
+                "discards": 0
+              }
+            },
+            "failed_corpus_replays": 0
+          }
+        }
+      },
+      "invariantSettlementAndRedemptionMarkersMatchTicketState()": {
+        "status": "Success",
+        "kind": {
+          "Invariant": {
+            "runs": 64,
+            "calls": 2048,
+            "reverts": 0,
+            "metrics": {
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.buy": {
+                "calls": 117,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.requestDraw": {
+                "calls": 109,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseSponsorPrize": {
+                "calls": 123,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.donate": {
+                "calls": 114,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToLastDrawRequestSecond": {
+                "calls": 125,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.fulfill": {
+                "calls": 125,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToEnd": {
+                "calls": 111,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpFarPastEnd": {
+                "calls": 136,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseProceeds": {
+                "calls": 121,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToCallbackDeadline": {
+                "calls": 105,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.settleCandidateWinner": {
+                "calls": 135,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToDrawRequestDeadline": {
+                "calls": 115,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.transferBeforeOrAfterEnd": {
+                "calls": 140,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.enableRefunds": {
+                "calls": 117,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.wrongCallback": {
+                "calls": 114,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseWinnerClaim": {
+                "calls": 122,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.redeemRefund": {
+                "calls": 119,
+                "reverts": 0,
+                "discards": 0
+              }
+            },
+            "failed_corpus_replays": 0
+          }
+        }
+      },
+      "invariantStatusAndTerminalTransitionsAreMonotonic()": {
+        "status": "Success",
+        "kind": {
+          "Invariant": {
+            "runs": 64,
+            "calls": 2048,
+            "reverts": 0,
+            "metrics": {
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.redeemRefund": {
+                "calls": 120,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseWinnerClaim": {
+                "calls": 120,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.donate": {
+                "calls": 119,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToCallbackDeadline": {
+                "calls": 104,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToEnd": {
+                "calls": 115,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpFarPastEnd": {
+                "calls": 135,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.requestDraw": {
+                "calls": 111,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseProceeds": {
+                "calls": 119,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.fulfill": {
+                "calls": 125,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.transferBeforeOrAfterEnd": {
+                "calls": 136,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToDrawRequestDeadline": {
+                "calls": 114,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.wrongCallback": {
+                "calls": 111,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToLastDrawRequestSecond": {
+                "calls": 122,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.settleCandidateWinner": {
+                "calls": 136,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.buy": {
+                "calls": 116,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseSponsorPrize": {
+                "calls": 125,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.enableRefunds": {
+                "calls": 120,
+                "reverts": 0,
+                "discards": 0
+              }
+            },
+            "failed_corpus_replays": 0
+          }
+        }
+      },
+      "invariantTicketIdsAreSequential()": {
+        "status": "Success",
+        "kind": {
+          "Invariant": {
+            "runs": 64,
+            "calls": 2048,
+            "reverts": 0,
+            "metrics": {
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.fulfill": {
+                "calls": 125,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToCallbackDeadline": {
+                "calls": 104,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.buy": {
+                "calls": 116,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.transferBeforeOrAfterEnd": {
+                "calls": 136,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.enableRefunds": {
+                "calls": 120,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.wrongCallback": {
+                "calls": 111,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.redeemRefund": {
+                "calls": 120,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseSponsorPrize": {
+                "calls": 125,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.requestDraw": {
+                "calls": 111,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToEnd": {
+                "calls": 115,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToLastDrawRequestSecond": {
+                "calls": 122,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseProceeds": {
+                "calls": 119,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.donate": {
+                "calls": 119,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpFarPastEnd": {
+                "calls": 135,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseWinnerClaim": {
+                "calls": 120,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.settleCandidateWinner": {
+                "calls": 136,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToDrawRequestDeadline": {
+                "calls": 114,
+                "reverts": 0,
+                "discards": 0
+              }
+            },
+            "failed_corpus_replays": 0
+          }
+        }
+      },
+      "invariantWinningEntryHasExactlyOneReceiptProof()": {
+        "status": "Success",
+        "kind": {
+          "Invariant": {
+            "runs": 64,
+            "calls": 2048,
+            "reverts": 0,
+            "metrics": {
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.transferBeforeOrAfterEnd": {
+                "calls": 140,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToEnd": {
+                "calls": 111,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.buy": {
+                "calls": 117,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.donate": {
+                "calls": 114,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseProceeds": {
+                "calls": 121,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseSponsorPrize": {
+                "calls": 123,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.wrongCallback": {
+                "calls": 114,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.requestDraw": {
+                "calls": 109,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.settleCandidateWinner": {
+                "calls": 135,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseWinnerClaim": {
+                "calls": 122,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpFarPastEnd": {
+                "calls": 136,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToLastDrawRequestSecond": {
+                "calls": 125,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.enableRefunds": {
+                "calls": 117,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToDrawRequestDeadline": {
+                "calls": 115,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToCallbackDeadline": {
+                "calls": 105,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.redeemRefund": {
+                "calls": 119,
+                "reverts": 0,
+                "discards": 0
+              },
+              "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.fulfill": {
+                "calls": 125,
+                "reverts": 0,
+                "discards": 0
+              }
+            },
+            "failed_corpus_replays": 0
+          }
+        }
+      }
+    },
+    "/source/packages/contracts/test/foundry/security/RaffleSecurity.t.sol:RaffleSecurityTest": {
+      "testCallbackMakesNoQuoteOrPrizeExternalTransfers()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1793481
+          }
+        }
+      },
+      "testFactoryReentrancyDuringPrizeEscrowIsBlockedAtomically()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1878172
+          }
+        }
+      },
+      "testFalseReturningOutboundTransferRestoresClaimAndAccounting()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 5850085
+          }
+        }
+      },
+      "testFalseReturningQuoteCannotCreateReceipt()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 4895430
+          }
+        }
+      },
+      "testFalseReturningWinnerTransferRestoresTicketAndLazySettlement()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 5958088
+          }
+        }
+      },
+      "testPrizeCannotReenterDuringSponsorSafeTransfer()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 2528322
+          }
+        }
+      },
+      "testPrizeCannotReenterDuringWinnerTransfer()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 2498224
+          }
+        }
+      },
+      "testProtocolDestinationsCannotReceiveReceiptsOrPayouts()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1142152
+          }
+        }
+      },
+      "testReentrantQuoteTokenCannotNestInboundPurchase()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 5463005
+          }
+        }
+      },
+      "testReentrantQuoteTokenCannotNestWinnerWithdrawal()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 5850208
+          }
+        }
+      },
+      "testReentrantReceiptReceiverCannotNestPurchase()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 966361
+          }
+        }
+      }
+    },
+    "/source/packages/contracts/test/foundry/security/VrfAdversarial.t.sol:VrfAdversarialTest": {
+      "testAuthenticatedValidCallbackAtDeadlineIsIgnoredBeforeRefunds()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 792791
+          }
+        }
+      },
+      "testFeeReadAndRequestFailuresRollBackToActiveThenRefundAtDeadline()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 729308
+          }
+        }
+      },
+      "testMalformedAndWrongCallbacksAreIgnoredUntilOneValidWordArrives()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 794252
+          }
+        }
+      },
+      "testNonPersistedRequestStillHasBoundedFullRefundRecovery()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 738711
+          }
+        }
+      },
+      "testOfficialHelperCannotUseForcedNativeToSubsidizeQuoteDrift()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 802495
+          }
+        }
+      },
+      "testOfficialHelperRefundsAgainstActualLowerPrice()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 811616
+          }
+        }
+      },
+      "testQuotedFeeCanChangeWithoutConsumingRequest()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 839058
+          }
+        }
+      },
+      "testRepeatedRequestIdsRemainRaffleScoped()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1430642
+          }
+        }
+      },
+      "testSynchronousWrongDuplicateAndValidCallbacksCannotResolveInFlightRequest()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 850215
+          }
+        }
+      },
+      "testWrapperRequestReentryIsRejected()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 776830
+          }
+        }
+      },
+      "testZeroRequestIdDoesNotMatchUntilRequestReturns()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 775422
+          }
+        }
+      }
+    },
+    "/source/packages/contracts/test/foundry/unit/Raffle.t.sol:RaffleTest": {
+      "testAcceptedDrawCannotRefundBeforeCallbackDeadlineAndValidNftOutcomeNeverRefunds()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1779383
+          }
+        }
+      },
+      "testBothCallbackBranchesStayBelowGasBudget()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1787656
+          }
+        }
+      },
+      "testCallbackDeadlineIsHardAtEqualityRegardlessOfOrdering()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 2643532
+          }
+        }
+      },
+      "testCallbackGasDoesNotScaleWithReceiptCount()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 7828655
+          }
+        }
+      },
+      "testCallbackStoresInclusiveWinningEntryAndSelectsReserveBoundary()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1800458
+          }
+        }
+      },
+      "testCashSettlementLeavesBearerClaimAndOwnerRedeemsOnce()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1940230
+          }
+        }
+      },
+      "testCashSponsorPrizeRecoveryIsPermissionlessToFixedRecipient()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1365759
+          }
+        }
+      },
+      "testCloneInitializationRejectsRegisteredRaffleSponsorAndTreasury()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 564638
+          }
+        }
+      },
+      "testCloneInitializationRejectsZeroAndProtocolDestinations()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 216024
+          }
+        }
+      },
+      "testDonationsAndForcedNativeDoNotAlterQuoteAccounting()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 666555
+          }
+        }
+      },
+      "testDrawForwardsExactDynamicFeeAndRefundsExcess()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1884583
+          }
+        }
+      },
+      "testDrawUsesFixedThirtyConfirmationsAndOneWord()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 938284
+          }
+        }
+      },
+      "testEmptyRaffleUsesRefundingWithoutClosedState()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 897956
+          }
+        }
+      },
+      "testFactoryAcceptsExactMaximumSaleDuration()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 431037
+          }
+        }
+      },
+      "testFactoryAtomicallyEscrowsAndCapturesFixedConfiguration()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 448324
+          }
+        }
+      },
+      "testFactoryConstructorAndCreationValidation()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1502699
+          }
+        }
+      },
+      "testFactoryCreatesCanonicalClonesWithIsolatedRangeState()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1016132
+          }
+        }
+      },
+      "testFactoryRejectsPrizesThatDoNotEscrowAndActivateExactly()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 3653278
+          }
+        }
+      },
+      "testFutureCanonicalCloneCanBrickOnlyItsOwnWinnerRedemption()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1490093
+          }
+        }
+      },
+      "testImplementationAndCloneInitializationAreLocked()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 263530
+          }
+        }
+      },
+      "testMetadataPriceEstimateAndDrawFailureBoundaries()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1684256
+          }
+        }
+      },
+      "testNftDeliveryFailureRollsBackLazySettlementAndBurn()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 2021307
+          }
+        }
+      },
+      "testNftSettlementIsPermissionlessAccountingOnlyAndProofIsExact()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1159542
+          }
+        }
+      },
+      "testNftWinningTicketRemainsTransferableUntilOwnerRedeems()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1037328
+          }
+        }
+      },
+      "testNonCompliantPrizeCannotPassPostDeliveryVerification()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 3794368
+          }
+        }
+      },
+      "testOwnerCanSettleAndRedeemAtomicallyButApprovedOperatorCannot()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1118642
+          }
+        }
+      },
+      "testPrizeDeliveryFailureBlocksOnlyWinnerPrizeAndNotSettlementOrCashClaims()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1993919
+          }
+        }
+      },
+      "testPurchaseAndRefundGasDoNotScaleWithEntriesInsideReceipt()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1638075
+          }
+        }
+      },
+      "testPurchaseMaximumRangeAndOverflowAreAtomic()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 652996
+          }
+        }
+      },
+      "testPurchaseMintsOneSequentialTicketForAnyEntryCount()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 743168
+          }
+        }
+      },
+      "testPurchaseValidationAndReceiverRollbackAreAtomic()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 743176
+          }
+        }
+      },
+      "testRefundBatchValidationAndMixedOwnershipAreAtomic()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1077194
+          }
+        }
+      },
+      "testRegisteredRaffleCannotReceiveTicketsAndSettlementCannotBeRedirected()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 2302890
+          }
+        }
+      },
+      "testSaleEndsButTicketsStayTransferableUntilBurned()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1173458
+          }
+        }
+      },
+      "testSoldRaffleHasHardRequestAndCallbackRefundDeadlines()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 2291067
+          }
+        }
+      },
+      "testSponsorRecipientIsFixedForProceedsAndReturnedPrize()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1045261
+          }
+        }
+      },
+      "testWeightedRefundBatchPaysExactRangesAndConsumesOnce()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 927041
+          }
+        }
+      },
+      "testWinnerRedeemsAndFixedProceedsReleaseIndependently()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 1035151
+          }
+        }
+      },
+      "testWrongDuplicateMalformedAndUnauthorizedCallbacksAreHarmless()": {
+        "status": "Success",
+        "kind": {
+          "Unit": {
+            "gas": 974131
+          }
+        }
+      }
+    }
+  },
+  "fuzz": [
+    {
+      "name": "testFuzzCashSplitAlwaysConservesEightyFifteenFive(uint64)",
+      "suite": "/source/packages/contracts/test/foundry/fuzz/RaffleFuzz.t.sol:RaffleFuzzTest",
+      "first_case": {
+        "calldata": "0x1f31926c0000000000000000000000000000000000000000000000000000000000000000",
+        "gas": 1088066,
+        "stipend": 21192
+      },
+      "runs": 256,
+      "mean_gas": 1066792,
+      "median_gas": 1066594
+    },
+    {
+      "name": "testFuzzNoRequestTimeoutPaysFullWeightedRange(uint64)",
+      "suite": "/source/packages/contracts/test/foundry/fuzz/RaffleFuzz.t.sol:RaffleFuzzTest",
+      "first_case": {
+        "calldata": "0x0a8ac1ca0000000000000000000000000000000000000000000000000000000000000000",
+        "gas": 657419,
+        "stipend": 21192
+      },
+      "runs": 256,
+      "mean_gas": 636145,
+      "median_gas": 635947
+    },
+    {
+      "name": "testFuzzOnlyContainingReceiptCanSettle(uint32,uint32,uint256)",
+      "suite": "/source/packages/contracts/test/foundry/fuzz/RaffleFuzz.t.sol:RaffleFuzzTest",
+      "first_case": {
+        "calldata": "0x89cce4d700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001c952ef0000000000000000000000000000000000000000000003ff736a7acc5b793fec",
+        "gas": 1153505,
+        "stipend": 21616
+      },
+      "runs": 256,
+      "mean_gas": 1131272,
+      "median_gas": 1131128
+    },
+    {
+      "name": "testFuzzPostSettlementBearerCanRedeemNft(uint64)",
+      "suite": "/source/packages/contracts/test/foundry/fuzz/RaffleFuzz.t.sol:RaffleFuzzTest",
+      "first_case": {
+        "calldata": "0xb57a79680000000000000000000000000000000000000000000000000000000000000000",
+        "gas": 1070761,
+        "stipend": 21192
+      },
+      "runs": 256,
+      "mean_gas": 1049487,
+      "median_gas": 1049289
+    },
+    {
+      "name": "testFuzzPurchaseCreatesOneSequentialTicketWithExactRange(uint128)",
+      "suite": "/source/packages/contracts/test/foundry/fuzz/RaffleFuzz.t.sol:RaffleFuzzTest",
+      "first_case": {
+        "calldata": "0xe4ca8084000000000000000000000000000000000000000000000000000000000000000c",
+        "gas": 701133,
+        "stipend": 21204
+      },
+      "runs": 256,
+      "mean_gas": 680032,
+      "median_gas": 679929
+    },
+    {
+      "name": "testFuzzRefundPaysWeightedRangeExactlyOnce(uint64)",
+      "suite": "/source/packages/contracts/test/foundry/fuzz/RaffleFuzz.t.sol:RaffleFuzzTest",
+      "first_case": {
+        "calldata": "0x683c42770000000000000000000000000000000000000000000000000000000000000000",
+        "gas": 935834,
+        "stipend": 21192
+      },
+      "runs": 256,
+      "mean_gas": 914560,
+      "median_gas": 914362
+    },
+    {
+      "name": "testFuzzReserveEqualityIsNftAndOneBelowIsCash(uint32)",
+      "suite": "/source/packages/contracts/test/foundry/fuzz/RaffleFuzz.t.sol:RaffleFuzzTest",
+      "first_case": {
+        "calldata": "0x4c58c2960000000000000000000000000000000000000000000000000000000000000000",
+        "gas": 1832075,
+        "stipend": 21192
+      },
+      "runs": 256,
+      "mean_gas": 1810776,
+      "median_gas": 1810603
+    },
+    {
+      "name": "testFuzzSeparatePurchasesPartitionEntriesWithoutGaps(uint128,uint128)",
+      "suite": "/source/packages/contracts/test/foundry/fuzz/RaffleFuzz.t.sol:RaffleFuzzTest",
+      "first_case": {
+        "calldata": "0x8995dd1c000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000001050e44f9d3148b759c952ef",
+        "gas": 745156,
+        "stipend": 21476
+      },
+      "runs": 256,
+      "mean_gas": 723423,
+      "median_gas": 722996
+    },
+    {
+      "name": "testFuzzWinningEntryAlwaysUsesInclusiveSoldRange(uint96,uint256)",
+      "suite": "/source/packages/contracts/test/foundry/fuzz/RaffleFuzz.t.sol:RaffleFuzzTest",
+      "first_case": {
+        "calldata": "0xc6001f6f000000000000000000000000000000000000000000000000000000000000000c0000000000000001a2a7e09388630938cb08e6781050e44f9d3148b759c952ef",
+        "gas": 1000185,
+        "stipend": 21620
+      },
+      "runs": 256,
+      "mean_gas": 978726,
+      "median_gas": 978565
+    }
+  ],
+  "invariants": [
+    {
+      "name": "invariantBranchEconomicsRemainEightyFifteenFiveNinetyFiveFiveOrFullRefund()",
+      "suite": "/source/packages/contracts/test/foundry/invariant/RaffleInvariant.t.sol:RaffleInvariantTest",
+      "runs": 64,
+      "calls": 2048,
+      "reverts": 0,
+      "metrics": {
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.redeemRefund": {
+          "calls": 120,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToLastDrawRequestSecond": {
+          "calls": 122,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseWinnerClaim": {
+          "calls": 120,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToDrawRequestDeadline": {
+          "calls": 114,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.transferBeforeOrAfterEnd": {
+          "calls": 136,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.requestDraw": {
+          "calls": 111,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseProceeds": {
+          "calls": 119,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpFarPastEnd": {
+          "calls": 135,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToEnd": {
+          "calls": 115,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.fulfill": {
+          "calls": 125,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.donate": {
+          "calls": 119,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.buy": {
+          "calls": 116,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.settleCandidateWinner": {
+          "calls": 136,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.wrongCallback": {
+          "calls": 111,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToCallbackDeadline": {
+          "calls": 104,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseSponsorPrize": {
+          "calls": 125,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.enableRefunds": {
+          "calls": 120,
+          "reverts": 0,
+          "discards": 0
+        }
+      },
+      "failed_corpus_replays": 0
+    },
+    {
+      "name": "invariantDrawAndCallbackDeadlinesAreHardAndOrdered()",
+      "suite": "/source/packages/contracts/test/foundry/invariant/RaffleInvariant.t.sol:RaffleInvariantTest",
+      "runs": 64,
+      "calls": 2048,
+      "reverts": 0,
+      "metrics": {
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.fulfill": {
+          "calls": 125,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpFarPastEnd": {
+          "calls": 135,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.requestDraw": {
+          "calls": 111,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.wrongCallback": {
+          "calls": 111,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.settleCandidateWinner": {
+          "calls": 135,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseSponsorPrize": {
+          "calls": 124,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToDrawRequestDeadline": {
+          "calls": 114,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.transferBeforeOrAfterEnd": {
+          "calls": 136,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseProceeds": {
+          "calls": 119,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.buy": {
+          "calls": 116,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToLastDrawRequestSecond": {
+          "calls": 122,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.donate": {
+          "calls": 120,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.redeemRefund": {
+          "calls": 119,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToEnd": {
+          "calls": 116,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToCallbackDeadline": {
+          "calls": 104,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.enableRefunds": {
+          "calls": 119,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseWinnerClaim": {
+          "calls": 122,
+          "reverts": 0,
+          "discards": 0
+        }
+      },
+      "failed_corpus_replays": 0
+    },
+    {
+      "name": "invariantPrizeCustodyMatchesClaimMarker()",
+      "suite": "/source/packages/contracts/test/foundry/invariant/RaffleInvariant.t.sol:RaffleInvariantTest",
+      "runs": 64,
+      "calls": 2048,
+      "reverts": 0,
+      "metrics": {
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToLastDrawRequestSecond": {
+          "calls": 122,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.transferBeforeOrAfterEnd": {
+          "calls": 136,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseSponsorPrize": {
+          "calls": 125,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.requestDraw": {
+          "calls": 111,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToEnd": {
+          "calls": 115,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.enableRefunds": {
+          "calls": 120,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.buy": {
+          "calls": 116,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToCallbackDeadline": {
+          "calls": 104,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.wrongCallback": {
+          "calls": 111,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseWinnerClaim": {
+          "calls": 120,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToDrawRequestDeadline": {
+          "calls": 114,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.redeemRefund": {
+          "calls": 120,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.settleCandidateWinner": {
+          "calls": 136,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseProceeds": {
+          "calls": 119,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.fulfill": {
+          "calls": 125,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.donate": {
+          "calls": 119,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpFarPastEnd": {
+          "calls": 135,
+          "reverts": 0,
+          "discards": 0
+        }
+      },
+      "failed_corpus_replays": 0
+    },
+    {
+      "name": "invariantQuoteAccountingIsExactAndSolvent()",
+      "suite": "/source/packages/contracts/test/foundry/invariant/RaffleInvariant.t.sol:RaffleInvariantTest",
+      "runs": 64,
+      "calls": 2048,
+      "reverts": 0,
+      "metrics": {
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.settleCandidateWinner": {
+          "calls": 136,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseSponsorPrize": {
+          "calls": 125,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseProceeds": {
+          "calls": 119,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.redeemRefund": {
+          "calls": 120,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.requestDraw": {
+          "calls": 111,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.buy": {
+          "calls": 116,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.wrongCallback": {
+          "calls": 111,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToDrawRequestDeadline": {
+          "calls": 114,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToLastDrawRequestSecond": {
+          "calls": 122,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.fulfill": {
+          "calls": 125,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.donate": {
+          "calls": 119,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseWinnerClaim": {
+          "calls": 120,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.enableRefunds": {
+          "calls": 120,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpFarPastEnd": {
+          "calls": 135,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToEnd": {
+          "calls": 115,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.transferBeforeOrAfterEnd": {
+          "calls": 136,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToCallbackDeadline": {
+          "calls": 104,
+          "reverts": 0,
+          "discards": 0
+        }
+      },
+      "failed_corpus_replays": 0
+    },
+    {
+      "name": "invariantRangesPartitionEverySoldEntryExactlyOnce()",
+      "suite": "/source/packages/contracts/test/foundry/invariant/RaffleInvariant.t.sol:RaffleInvariantTest",
+      "runs": 64,
+      "calls": 2048,
+      "reverts": 0,
+      "metrics": {
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.wrongCallback": {
+          "calls": 111,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.enableRefunds": {
+          "calls": 120,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToCallbackDeadline": {
+          "calls": 104,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseSponsorPrize": {
+          "calls": 125,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseWinnerClaim": {
+          "calls": 120,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToEnd": {
+          "calls": 115,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.donate": {
+          "calls": 119,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToLastDrawRequestSecond": {
+          "calls": 122,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseProceeds": {
+          "calls": 119,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.buy": {
+          "calls": 116,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.fulfill": {
+          "calls": 125,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.redeemRefund": {
+          "calls": 120,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.requestDraw": {
+          "calls": 111,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToDrawRequestDeadline": {
+          "calls": 114,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.transferBeforeOrAfterEnd": {
+          "calls": 136,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.settleCandidateWinner": {
+          "calls": 136,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpFarPastEnd": {
+          "calls": 135,
+          "reverts": 0,
+          "discards": 0
+        }
+      },
+      "failed_corpus_replays": 0
+    },
+    {
+      "name": "invariantSettlementAndRedemptionMarkersMatchTicketState()",
+      "suite": "/source/packages/contracts/test/foundry/invariant/RaffleInvariant.t.sol:RaffleInvariantTest",
+      "runs": 64,
+      "calls": 2048,
+      "reverts": 0,
+      "metrics": {
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.buy": {
+          "calls": 117,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.requestDraw": {
+          "calls": 109,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseSponsorPrize": {
+          "calls": 123,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.donate": {
+          "calls": 114,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToLastDrawRequestSecond": {
+          "calls": 125,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.fulfill": {
+          "calls": 125,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToEnd": {
+          "calls": 111,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpFarPastEnd": {
+          "calls": 136,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseProceeds": {
+          "calls": 121,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToCallbackDeadline": {
+          "calls": 105,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.settleCandidateWinner": {
+          "calls": 135,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToDrawRequestDeadline": {
+          "calls": 115,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.transferBeforeOrAfterEnd": {
+          "calls": 140,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.enableRefunds": {
+          "calls": 117,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.wrongCallback": {
+          "calls": 114,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseWinnerClaim": {
+          "calls": 122,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.redeemRefund": {
+          "calls": 119,
+          "reverts": 0,
+          "discards": 0
+        }
+      },
+      "failed_corpus_replays": 0
+    },
+    {
+      "name": "invariantStatusAndTerminalTransitionsAreMonotonic()",
+      "suite": "/source/packages/contracts/test/foundry/invariant/RaffleInvariant.t.sol:RaffleInvariantTest",
+      "runs": 64,
+      "calls": 2048,
+      "reverts": 0,
+      "metrics": {
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.redeemRefund": {
+          "calls": 120,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseWinnerClaim": {
+          "calls": 120,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.donate": {
+          "calls": 119,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToCallbackDeadline": {
+          "calls": 104,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToEnd": {
+          "calls": 115,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpFarPastEnd": {
+          "calls": 135,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.requestDraw": {
+          "calls": 111,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseProceeds": {
+          "calls": 119,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.fulfill": {
+          "calls": 125,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.transferBeforeOrAfterEnd": {
+          "calls": 136,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToDrawRequestDeadline": {
+          "calls": 114,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.wrongCallback": {
+          "calls": 111,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToLastDrawRequestSecond": {
+          "calls": 122,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.settleCandidateWinner": {
+          "calls": 136,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.buy": {
+          "calls": 116,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseSponsorPrize": {
+          "calls": 125,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.enableRefunds": {
+          "calls": 120,
+          "reverts": 0,
+          "discards": 0
+        }
+      },
+      "failed_corpus_replays": 0
+    },
+    {
+      "name": "invariantTicketIdsAreSequential()",
+      "suite": "/source/packages/contracts/test/foundry/invariant/RaffleInvariant.t.sol:RaffleInvariantTest",
+      "runs": 64,
+      "calls": 2048,
+      "reverts": 0,
+      "metrics": {
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.fulfill": {
+          "calls": 125,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToCallbackDeadline": {
+          "calls": 104,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.buy": {
+          "calls": 116,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.transferBeforeOrAfterEnd": {
+          "calls": 136,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.enableRefunds": {
+          "calls": 120,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.wrongCallback": {
+          "calls": 111,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.redeemRefund": {
+          "calls": 120,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseSponsorPrize": {
+          "calls": 125,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.requestDraw": {
+          "calls": 111,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToEnd": {
+          "calls": 115,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToLastDrawRequestSecond": {
+          "calls": 122,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseProceeds": {
+          "calls": 119,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.donate": {
+          "calls": 119,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpFarPastEnd": {
+          "calls": 135,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseWinnerClaim": {
+          "calls": 120,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.settleCandidateWinner": {
+          "calls": 136,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToDrawRequestDeadline": {
+          "calls": 114,
+          "reverts": 0,
+          "discards": 0
+        }
+      },
+      "failed_corpus_replays": 0
+    },
+    {
+      "name": "invariantWinningEntryHasExactlyOneReceiptProof()",
+      "suite": "/source/packages/contracts/test/foundry/invariant/RaffleInvariant.t.sol:RaffleInvariantTest",
+      "runs": 64,
+      "calls": 2048,
+      "reverts": 0,
+      "metrics": {
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.transferBeforeOrAfterEnd": {
+          "calls": 140,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToEnd": {
+          "calls": 111,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.buy": {
+          "calls": 117,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.donate": {
+          "calls": 114,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseProceeds": {
+          "calls": 121,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseSponsorPrize": {
+          "calls": 123,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.wrongCallback": {
+          "calls": 114,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.requestDraw": {
+          "calls": 109,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.settleCandidateWinner": {
+          "calls": 135,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.releaseWinnerClaim": {
+          "calls": 122,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpFarPastEnd": {
+          "calls": 136,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToLastDrawRequestSecond": {
+          "calls": 125,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.enableRefunds": {
+          "calls": 117,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToDrawRequestDeadline": {
+          "calls": 115,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.warpToCallbackDeadline": {
+          "calls": 105,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.redeemRefund": {
+          "calls": 119,
+          "reverts": 0,
+          "discards": 0
+        },
+        "/source/packages/contracts/test/foundry/invariant/RaffleHandler.sol:RaffleHandler.fulfill": {
+          "calls": 125,
+          "reverts": 0,
+          "discards": 0
+        }
+      },
+      "failed_corpus_replays": 0
+    }
+  ],
+  "seed": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "bounds": {
+    "fuzzRuns": 256,
+    "invariantRuns": 64,
+    "invariantDepth": 32
+  },
+  "limitations": [
+    "Bounded native Gebal profile.default override; not the repository default, CI, audit, audit_strict, audit_release, coverage or comparison campaigns.",
+    "Per-invariant calls may repeat sequences from a common seed; do not count as independent sequences.",
+    "Handler-internal no-ops and swallowed reverts are not established by outer zero-revert metrics."
+  ],
+  "fuzzTestCount": 9,
+  "invariantCount": 9,
+  "fuzzCases": 2304,
+  "invariantReportedCalls": 18432,
+  "invariantReportedReverts": 0,
+  "invariantDiscards": 0
+}

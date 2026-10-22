@@ -1,0 +1,134 @@
+{
+  "type": "object",
+  "required": [
+    "modules",
+    "entrypoints",
+    "actors",
+    "state",
+    "candidates"
+  ],
+  "properties": {
+    "modules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "path",
+          "role"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "entrypoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "file",
+          "reachableBy"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "reachableBy": {
+            "type": "string",
+            "description": "which actor can reach this, and how"
+          }
+        }
+      }
+    },
+    "actors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "trust"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "trust": {
+            "type": "string",
+            "enum": [
+              "untrusted",
+              "semi-trusted",
+              "trusted",
+              "unclear"
+            ]
+          }
+        }
+      }
+    },
+    "state": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "file",
+          "writtenBy"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "writtenBy": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "candidates": {
+      "type": "array",
+      "description": "Functions worth per-function depth, most important first.",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "file",
+          "why"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "why": {
+            "type": "string",
+            "description": "why this one needs depth, in one line"
+          }
+        }
+      }
+    },
+    "language": {
+      "type": "string",
+      "description": "primary language of the codebase"
+    }
+  }
+}

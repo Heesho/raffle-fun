@@ -1,0 +1,1048 @@
+{
+  "cell": "OPENAI-TOB",
+  "method": "Explicit six-stage Trail of Bits aggregate; not full catalog",
+  "started_at": "2026-10-21T07:48:03.570505+00:00",
+  "deadline_utc": "2026-10-21T08:17:09Z",
+  "target_sha_requested": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "target_sha_verification": "Snapshot content manifest captured; no source git history accessed",
+  "upstream_revision_requested": "82fe8226252622fa807643bdca1710901198553a",
+  "upstream_revision_observed": "82fe8226252622fa807643bdca1710901198553a",
+  "model": {
+    "accepted_local_selection": "gpt-6-astra",
+    "accepted_local_reasoning_effort": "ultra",
+    "selection_evidence": "User runner selection; every child dispatch explicitly requests identical values",
+    "provider_returned_model": "unknown",
+    "provider_returned_reasoning_effort": "unknown",
+    "fallback_enabled": false
+  },
+  "source_manifest": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/source-manifest.json",
+  "stages": [
+    {
+      "id": "S1",
+      "name": "audit-context-building",
+      "status": "INCOMPLETE",
+      "started_at": "2026-10-21T07:48:43Z",
+      "native_runtime": "Pinned audit-context.js executed via local primitive adapter",
+      "native_workflow": "audit/S1/native/workflow-original.js",
+      "exposure": "orientation/source only; no prior findings",
+      "limit": 12,
+      "adapted_workflow_status": "COMPLETE",
+      "native_host_status": "BLOCKED: upstream Workflow and literal Write tools unavailable",
+      "native_result": "audit/S1/native/result.json",
+      "seal": "audit/S1/SEAL.json",
+      "coverage": {
+        "functions_analyzed": 12,
+        "candidates": 40,
+        "functions_below_cut": 28,
+        "production_files": 5
+      }
+    },
+    {
+      "id": "S2",
+      "name": "entry-point-analyzer",
+      "status": "INCOMPLETE",
+      "stage": "S2",
+      "source_analysis": "COMPLETE",
+      "native_tool_step": "DEFERRED to S6 by source-only sealing order",
+      "model": "gpt-6-astra",
+      "effort": "ultra",
+      "provider_returned_model": "unknown",
+      "finished_at": "2026-10-21T08:06:09.121705+00:00",
+      "coverage": {
+        "production_files": 5,
+        "state_changing_signatures": 18,
+        "rejected_receive_paths": 1
+      },
+      "seal": "audit/S2/SEAL.json"
+    },
+    {
+      "id": "S3",
+      "name": "token-integration-analyzer",
+      "status": "INCOMPLETE",
+      "stage": "S3",
+      "source_analysis": "COMPLETE",
+      "native_tool_step": "DEFERRED to S6",
+      "model": "gpt-6-astra",
+      "effort": "ultra",
+      "provider_returned_model": "unknown",
+      "finished_at": "2026-10-21T08:08:07.954473+00:00",
+      "coverage": {
+        "production_files": 5,
+        "assessment_categories": 10,
+        "weird_token_patterns": 24,
+        "confirmed_findings": 0,
+        "conditional_leads": 2
+      },
+      "seal": "audit/S3/SEAL.json"
+    },
+    {
+      "id": "S4",
+      "name": "guidelines-advisor",
+      "status": "INCOMPLETE",
+      "exposure": "target source + own pinned skill/resources only; no prior conclusions",
+      "source_workflow": "COMPLETE five phases /11areas",
+      "native_tools": "deferred to S6",
+      "test_quality": "UNKNOWN excluded by source boundary",
+      "seal": "audit/S4/SEAL.json"
+    },
+    {
+      "id": "S5",
+      "name": "spec-to-code-compliance",
+      "status": "INCOMPLETE",
+      "stage": "S5",
+      "cutoff_at": "2026-10-21T08:15:38.031792+00:00",
+      "reason": "Fixed 30 minute budget; source-only stage stopped before S6 tool stages",
+      "completed_responses": [
+        "audit/S5/native/001-response.json",
+        "audit/S5/native/002-response.json"
+      ],
+      "pending_requests": [
+        "audit/S5/native/003-request.json",
+        "audit/S5/native/004-request.json",
+        "audit/S5/native/005-request.json",
+        "audit/S5/native/006-request.json",
+        "audit/S5/native/007-request.json"
+      ],
+      "native_phases": {
+        "discover": "COMPLETE",
+        "extract": "PARTIAL",
+        "align": "NOT RUN",
+        "verify": "NOT RUN",
+        "report": "NOT RUN"
+      },
+      "native_host": "BLOCKED; pinned logic ran through disclosed adapter",
+      "model": "gpt-6-astra",
+      "effort": "ultra",
+      "provider_returned_model": "unknown",
+      "provider_returned_effort": "unknown",
+      "fallback": false
+    },
+    {
+      "id": "S6",
+      "name": "building-secure-contracts/secure-workflow-guide",
+      "status": "INCOMPLETE",
+      "stage": "S6",
+      "source_analysis": "COMPLETE bounded manual pass",
+      "native_scan": "COMPLETE with14triaged results",
+      "erc721": "COMPLETE native command",
+      "diagrams": "GENERATED; full visual review INCOMPLETE",
+      "echidna": "BLOCKED compilation: solc unavailable",
+      "manticore": "BLOCKED unavailable executable",
+      "model": "gpt-6-astra",
+      "effort": "ultra",
+      "provider_returned_model": "unknown",
+      "provider_returned_effort": "unknown",
+      "recorded_at": "2026-10-21T08:18:22.981361+00:00"
+    }
+  ],
+  "resources_loaded": [
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/audit-context-building/skills/audit-context-building/SKILL.md",
+      "sha256": "33fa693dc6e166cfa4919e4373cb6578c009d296234c2ae7cb3cd4e79b443765",
+      "stage": "method-loading",
+      "bytes": 3991
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/entry-point-analyzer/skills/entry-point-analyzer/SKILL.md",
+      "sha256": "0d0e2956bdf9bf5be7efdfcefc754cabd2c1deb015731f3341f919eae2a0e3ca",
+      "stage": "method-loading",
+      "bytes": 9593
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/building-secure-contracts/skills/token-integration-analyzer/SKILL.md",
+      "sha256": "4b7f5cb3c52f9b45e2216963a49458e1f23f5a279a0296e702fd9d8df268b301",
+      "stage": "method-loading",
+      "bytes": 12720
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/building-secure-contracts/skills/guidelines-advisor/SKILL.md",
+      "sha256": "5bb8ba34d363c419e1769a59d0fcc7444a04dc6d9e59032cb93019befdc2e464",
+      "stage": "method-loading",
+      "bytes": 8752
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/spec-to-code-compliance/skills/spec-to-code-compliance/SKILL.md",
+      "sha256": "eb0d91b50a9c06f50baf8763d1e23566897b9fa3e7ffcf13134eee4e1ccaefe5",
+      "stage": "method-loading",
+      "bytes": 7547
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/building-secure-contracts/skills/secure-workflow-guide/SKILL.md",
+      "sha256": "7c0e7fb45f97c073ec9599cbe0b2acf44f31bbece38636bc5c3fcc9bc7703015",
+      "stage": "method-loading",
+      "bytes": 6745
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/audit-context-building/workflows/audit-context.js",
+      "sha256": "71cd025216e2589fee1e1a0ffe215fb7bbeaf22751dc7417ca6ce74497e6d0b3",
+      "stage": "method-loading",
+      "bytes": 12229
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/audit-context-building/agents/function-analyzer.md",
+      "sha256": "d450f462b63dac6858015340a2e047293851d7e3c671725792d9770dca107d29",
+      "stage": "method-loading",
+      "bytes": 4372
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/audit-context-building/skills/audit-context-building/resources/ANALYSIS_FORMAT.md",
+      "sha256": "029532945776fb0fcbc866f19cd6114fe4152cd3dea1c0f44b266ec13a2cc6e8",
+      "stage": "S1",
+      "bytes": 2613
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/audit-context-building/skills/audit-context-building/resources/FUNCTION_MICRO_ANALYSIS_EXAMPLE.md",
+      "sha256": "3351010d83b61bfb34a0359498f153817fdfa6528cead54536b06e035ff2399c",
+      "stage": "S1",
+      "bytes": 9056
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/audit-context-building/skills/audit-context-building/resources/DOMAIN_NOTES.md",
+      "sha256": "ca3090f7f8d18f7145b253b283f5d33c36b314cea231aae8466bf23f122e2ed1",
+      "stage": "S1",
+      "bytes": 5040
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/spec-to-code-compliance/workflows/spec-compliance.js",
+      "sha256": "782c17752a1b8f9e83e65120d59b7588548aba0441943ce5388163226f6d5238",
+      "stage": "S5-method",
+      "bytes": 29131
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/spec-to-code-compliance/agents/spec-compliance-checker.md",
+      "sha256": "20dbf4d9b8013e8c42691dab08bd4df1ac0250eb715f3a02b2270be78bc287c4",
+      "stage": "S5-method",
+      "bytes": 5854
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/entry-point-analyzer/skills/entry-point-analyzer/references/solidity.md",
+      "sha256": "831559ce437ce2b2e4c2070b4e4e0bb16e27092a4ff160832d2ee9309edde79b",
+      "stage": "S2",
+      "bytes": 5071,
+      "load_status": "staged exact copy; stage agent must read"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/building-secure-contracts/skills/token-integration-analyzer/resources/ASSESSMENT_CATEGORIES.md",
+      "sha256": "bf1313e59c960688cc73bda5b7a98579336a277c521b9b37937aa1cda3a122a7",
+      "stage": "S3",
+      "bytes": 12990,
+      "load_status": "staged exact copy; stage agent must read"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/building-secure-contracts/skills/token-integration-analyzer/resources/REPORT_TEMPLATES.md",
+      "sha256": "77dc2195901cbca8f0a04687e6ac51347520b6320cfe2ca7c39d9725ffae1177",
+      "stage": "S3",
+      "bytes": 3289,
+      "load_status": "staged exact copy; stage agent must read"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/building-secure-contracts/skills/guidelines-advisor/resources/ASSESSMENT_AREAS.md",
+      "sha256": "951352a5e7c3afa717ed62770ae1b7c152c4792480e3beebefc68f9c96d2a46c",
+      "stage": "S4",
+      "bytes": 7997,
+      "load_status": "staged exact copy; stage agent must read"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/building-secure-contracts/skills/guidelines-advisor/resources/DELIVERABLES.md",
+      "sha256": "5a9a6e14acb0be5dd8e15440227d5cf659931ec79cca346661f9ef22bc5f21c2",
+      "stage": "S4",
+      "bytes": 2338,
+      "load_status": "staged exact copy; stage agent must read"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/building-secure-contracts/skills/guidelines-advisor/resources/EXAMPLE_REPORT.md",
+      "sha256": "4c31c1718afaece6c7ba2c3519373167ca5d81f937fb4356c8d9b45d280833f0",
+      "stage": "S4",
+      "bytes": 8433,
+      "load_status": "staged exact copy; stage agent must read"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/spec-to-code-compliance/skills/spec-to-code-compliance/resources/ANALYSIS_FORMAT.md",
+      "sha256": "802674d5a0622fba7c32d1e480fd236f4bddcd2435841fcf48b17044d5d4d273",
+      "stage": "S5",
+      "bytes": 2855,
+      "load_status": "staged exact copy; stage agent must read"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/spec-to-code-compliance/skills/spec-to-code-compliance/resources/DIVERGENCE_RUBRIC.md",
+      "sha256": "c7192803ae5c489501788ae5be56a5dd36b3f0b64f88982bf41f69a4245303f1",
+      "stage": "S5",
+      "bytes": 3421,
+      "load_status": "staged exact copy; stage agent must read"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/spec-to-code-compliance/skills/spec-to-code-compliance/resources/DOMAIN_NOTES.md",
+      "sha256": "435459c75d21208ea73a6cda7dfc6910efc468a903f62e20f4837d5bd8b92c4a",
+      "stage": "S5",
+      "bytes": 5810,
+      "load_status": "staged exact copy; stage agent must read"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/spec-to-code-compliance/skills/spec-to-code-compliance/resources/WORKED_EXAMPLE.md",
+      "sha256": "7b9ff43b20ba83e1ce934bc9161b14ce58617b65a9ae9c4583026dbf0299e927",
+      "stage": "S5",
+      "bytes": 4238,
+      "load_status": "staged exact copy; stage agent must read"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/building-secure-contracts/skills/secure-workflow-guide/resources/EXAMPLE_REPORT.md",
+      "sha256": "c55fb9e549a38c9bebc9b23f5f16fb498bd20a8f867868232623a4bd721df340",
+      "stage": "S6",
+      "bytes": 7374,
+      "load_status": "staged exact copy; stage agent must read"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/building-secure-contracts/skills/secure-workflow-guide/resources/WORKFLOW_STEPS.md",
+      "sha256": "8b048011407a9a123a01ba4548b62a944f8cd5f271e4e0cdfe58b09583bd9291",
+      "stage": "S6",
+      "bytes": 3058,
+      "load_status": "staged exact copy; stage agent must read"
+    }
+  ],
+  "boundary": "Only target source; pinned upstream resources; cell and output artifacts. No reports/history/tests/scanner inputs.",
+  "host_adapter": {
+    "path": "audit/workflow-host.cjs",
+    "sha256": "1ffdf10a23f10b15edddc8661e2d8d7905a3b3485502a50b9ac3efc1c19bb44d",
+    "notes": "audit/HOST-ADAPTATION.md"
+  },
+  "recorded_at": "2026-10-21T08:18:22.981361+00:00",
+  "model_provenance": {
+    "recorded_at": "2026-10-21T07:53:03.868972+00:00",
+    "root": {
+      "accepted_local_model": "gpt-6-astra",
+      "accepted_local_reasoning_effort": "ultra",
+      "selection_evidence": "Explicit user statement about actual runner; root cannot access provider response metadata",
+      "provider_returned_model": "unknown",
+      "provider_returned_reasoning_effort": "unknown"
+    },
+    "child_policy": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "ultra",
+      "fork_turns": "none",
+      "fallback_enabled": false,
+      "acceptance_evidence": "Successful collaboration.spawn_agent call with explicit model and reasoning_effort arguments",
+      "provider_returned_model": "unknown",
+      "provider_returned_reasoning_effort": "unknown"
+    },
+    "identity_rule": "No provider identity inferred from prompt, configured model name, or model self-identification",
+    "dispatches": [
+      {
+        "task": "s1_orient",
+        "stage": "S1",
+        "request": "audit/S1/native/001-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s1_orient"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s1_f02",
+        "stage": "S1",
+        "request": "audit/S1/native/002-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s1_f02"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s1_f03",
+        "stage": "S1",
+        "request": "audit/S1/native/003-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s1_f03"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s1_f04",
+        "stage": "S1",
+        "request": "audit/S1/native/004-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s1_f04"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s1_f05",
+        "stage": "S1",
+        "request": "audit/S1/native/005-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s1_f05"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s1_f06",
+        "stage": "S1",
+        "request": "audit/S1/native/006-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s1_f06"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s1_f07",
+        "stage": "S1",
+        "request": "audit/S1/native/007-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s1_f07"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s1_f08",
+        "stage": "S1",
+        "request": "audit/S1/native/008-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s1_f08"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s1_f09",
+        "stage": "S1",
+        "request": "audit/S1/native/009-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s1_f09"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s1_f10",
+        "stage": "S1",
+        "request": "audit/S1/native/010-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s1_f10"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s1_f11",
+        "stage": "S1",
+        "request": "audit/S1/native/011-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s1_f11"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s1_f12",
+        "stage": "S1",
+        "request": "audit/S1/native/012-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s1_f12"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s1_f13",
+        "stage": "S1",
+        "request": "audit/S1/native/013-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s1_f13"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s1_synthesize",
+        "stage": "S1",
+        "request": "audit/S1/native/014-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s1_synthesize"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s4_guidelines",
+        "stage": "S4",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s4_guidelines"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s5_discover",
+        "stage": "S5",
+        "request": "audit/S5/native/001-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s5_discover"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s5_extract2",
+        "stage": "S5",
+        "request": "audit/S5/native/002-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s5_extract2"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s5_extract3",
+        "stage": "S5",
+        "request": "audit/S5/native/003-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s5_extract3"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s5_extract4",
+        "stage": "S5",
+        "request": "audit/S5/native/004-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s5_extract4"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s5_extract5",
+        "stage": "S5",
+        "request": "audit/S5/native/005-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s5_extract5"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s5_extract6",
+        "stage": "S5",
+        "request": "audit/S5/native/006-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s5_extract6"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      },
+      {
+        "task": "s5_extract7",
+        "stage": "S5",
+        "request": "audit/S5/native/007-request.json",
+        "model_argument": "gpt-6-astra",
+        "reasoning_effort_argument": "ultra",
+        "accepted_tool_response": {
+          "task_name": "/root/s5_extract7"
+        },
+        "provider_returned_model": "unknown",
+        "provider_returned_reasoning_effort": "unknown"
+      }
+    ],
+    "failed_child_dispatch": {
+      "tool": "collaboration.spawn_agent",
+      "exact_arguments": {
+        "task_name": "s4_dependency_spotcheck",
+        "message": "Within 20 seconds perform source-only spotcheck of target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol and ERC721Utils.sol, and reachable Math dependencies for S4. No tests/history/audit reports/stages. Save exact read paths/hash/bytes and concise observations to audit/S4/raw/dependency-spotcheck.json. We are running source-only guidelines stage; focus inherited transfer/mint/burn semantics, no native tooling. No source modifications. Return path only."
+      },
+      "model_argument": "omitted_inherited_parent",
+      "reasoning_effort_argument": "omitted_inherited_parent",
+      "fork_turns_argument": "omitted_default_all",
+      "requested_parent_model": "gpt-6-astra",
+      "requested_parent_reasoning_effort": "ultra",
+      "provider_model": "unknown",
+      "provider_reasoning_effort": "unknown",
+      "response": "collab spawn failed: Fatal error: failed to load model context for thread 01a15d81-10fc-7c23-9ac6-69f48ce4d96b: invalid thread-store request: no rollout found for thread id 01a15d81-10fc-7c23-9ac6-69f48ce4d96b\nNo fallback model used. Root agent continued source review.\n",
+      "fallback_used": false
+    }
+  },
+  "source_integrity": {
+    "checked_at": "2026-10-21T08:18:22.981361+00:00",
+    "target_files": 43,
+    "changed_target_files": [],
+    "changed_copied_source_or_config_files": []
+  },
+  "resource_manifest_files": [
+    {
+      "path": "audit/S1/raw/001-resources-correction-01.json",
+      "sha256": "6d64ffeb3cf70747f95e0bdcb65f0f444441d671aaf5c21a6ce83a809d897f7e"
+    },
+    {
+      "path": "audit/S1/raw/001-resources.json",
+      "sha256": "629fd6519e2d8e93c9e5c873987c82f4e6fab66f79c1e54f29f79ad54bc64f68"
+    },
+    {
+      "path": "audit/S1/raw/002-resources.json",
+      "sha256": "05d9c6fa04877bc6002fc3bd80352d93d94bfa1a1bc483ecb0374618360c1322"
+    },
+    {
+      "path": "audit/S1/raw/003-resources.json",
+      "sha256": "e8652f9bea63b8080cc9b06a7b5a2305f945f586b0d738d3dd157f29f3fd9d8b"
+    },
+    {
+      "path": "audit/S1/raw/004-resources.json",
+      "sha256": "a2e1f9989ed75809b7dfd65036d2a5bd2551ae1a6a02c8a2aed57c2ebb5e0f01"
+    },
+    {
+      "path": "audit/S1/raw/005-resources.json",
+      "sha256": "4b61f1908e8a5f63e8551074d1982402a8f0d3b45d8d839307f44023e42e3828"
+    },
+    {
+      "path": "audit/S1/raw/006-resources.json",
+      "sha256": "94e3b0a89aa9c8b692fa0a5ee2e87ba5f762f4830ee19b6e9344dc7d3e39a58f"
+    },
+    {
+      "path": "audit/S1/raw/007-resources.json",
+      "sha256": "18951f6dd112f81bd37fc4dbb7c9254aee75bfc21fed3ea8d4ace0ecccbe44f8"
+    },
+    {
+      "path": "audit/S1/raw/008-resources.json",
+      "sha256": "c7fad81c4db5d812c735ef722f0e490a9f0ed4dd94976f1d7a08e064fe4f79b1"
+    },
+    {
+      "path": "audit/S1/raw/009-resources.json",
+      "sha256": "bfa7455d35e9a491e0c89005bb1d3a51edb8be6d528001d74d52f0739ebe7493"
+    },
+    {
+      "path": "audit/S1/raw/010-resources.json",
+      "sha256": "d50a52bf8150b9d5d19282b19af716a3adf7d38468b532eb125740f4c9cd0ac2"
+    },
+    {
+      "path": "audit/S1/raw/011-resources.json",
+      "sha256": "fbd22ef892e92d5ebac091f1c8c0758c120302e16e31425d50776ccf75a189a3"
+    },
+    {
+      "path": "audit/S1/raw/012-resources.json",
+      "sha256": "4f4d3a936a8f2d7e496b96bbbb9a40b31964e7eed4c8a6715d55fd488164d96e"
+    },
+    {
+      "path": "audit/S1/raw/013-resources.json",
+      "sha256": "97bbd57f33487f9a23e4d0cc431bdb91b1fcbd20291a2242d68429899d00b61c"
+    },
+    {
+      "path": "audit/S1/raw/014-resources.json",
+      "sha256": "fcf0bbd4ce759f65a2dd8c20020d31eb23592b9b10f77ab50574eda18869fbe3"
+    },
+    {
+      "path": "audit/S2/raw/resources.json",
+      "sha256": "23fa36aeed5b0959e67886dd824d4b8b8f5c752f985a553c4983ed44722ccc1a"
+    },
+    {
+      "path": "audit/S3/raw/resources.json",
+      "sha256": "2319af21806ea1f8997842e6909ae9b9511acbc502f0a3f8a03606931d1d2880"
+    },
+    {
+      "path": "audit/S4/raw/001-resources.json",
+      "sha256": "5873a2a5f4831c9c83f17b240eafd0fd86538ef7cee271a64b17645657555d97"
+    },
+    {
+      "path": "audit/S5/raw/001-resources.json",
+      "sha256": "66a14b3b63bf5694b97c119cdfc9ad95edc58042295fb9099460c2783ceeb4e4"
+    },
+    {
+      "path": "audit/S5/raw/002-resources.json",
+      "sha256": "7b41680ba3190612e2a603c13e7540a30a570a7650bee1e0174696537fdabe74"
+    }
+  ],
+  "native_ordering": "S1 context barrier -> S2 source -> S3 source -> S4 independent source -> S5 partial native extraction -> seals -> S6 native tool sequence. S2/S3 tooling deferred to S6 and disclosed.",
+  "external_reconciliation": "NONE",
+  "native_tool_executions": [
+    {
+      "name": "00-version",
+      "command": [
+        "slither",
+        "--version"
+      ],
+      "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts",
+      "started_at": "2026-10-21T08:15:38.307960+00:00",
+      "timeout_seconds": 5,
+      "cache_overrides": {
+        "PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip",
+        "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg",
+        "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "finished_at": "2026-10-21T08:15:39.791721+00:00"
+    },
+    {
+      "name": "01-native-scan",
+      "command": [
+        "slither",
+        ".",
+        "--exclude-dependencies"
+      ],
+      "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts",
+      "started_at": "2026-10-21T08:15:39.851662+00:00",
+      "timeout_seconds": 12,
+      "cache_overrides": {
+        "PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip",
+        "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg",
+        "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 255,
+      "finished_at": "2026-10-21T08:15:44.905597+00:00"
+    },
+    {
+      "name": "02-erc721",
+      "command": [
+        "slither-check-erc",
+        ".",
+        "Raffle",
+        "--erc",
+        "erc721"
+      ],
+      "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts",
+      "started_at": "2026-10-21T08:15:45.192009+00:00",
+      "timeout_seconds": 8,
+      "cache_overrides": {
+        "PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip",
+        "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg",
+        "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "finished_at": "2026-10-21T08:15:49.357775+00:00"
+    },
+    {
+      "name": "03-inheritance",
+      "command": [
+        "slither",
+        ".",
+        "--print",
+        "inheritance-graph"
+      ],
+      "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts",
+      "started_at": "2026-10-21T08:15:49.527163+00:00",
+      "timeout_seconds": 8,
+      "cache_overrides": {
+        "PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip",
+        "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg",
+        "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "finished_at": "2026-10-21T08:15:56.253137+00:00"
+    },
+    {
+      "name": "04-functions",
+      "command": [
+        "slither",
+        ".",
+        "--print",
+        "function-summary"
+      ],
+      "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts",
+      "started_at": "2026-10-21T08:15:56.352622+00:00",
+      "timeout_seconds": 8,
+      "cache_overrides": {
+        "PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip",
+        "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg",
+        "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "finished_at": "2026-10-21T08:16:00.296095+00:00"
+    },
+    {
+      "name": "05-vars-auth",
+      "command": [
+        "slither",
+        ".",
+        "--print",
+        "vars-and-auth"
+      ],
+      "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts",
+      "started_at": "2026-10-21T08:16:00.350793+00:00",
+      "timeout_seconds": 8,
+      "cache_overrides": {
+        "PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip",
+        "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg",
+        "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "finished_at": "2026-10-21T08:16:03.749934+00:00"
+    },
+    {
+      "name": "06-echidna",
+      "command": [
+        "echidna",
+        "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/S6/harness/AllocationProperties.sol",
+        "--contract",
+        "AllocationProperties",
+        "--config",
+        "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/S6/harness/echidna.yaml"
+      ],
+      "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB",
+      "started_at": "2026-10-21T08:16:03.832460+00:00",
+      "timeout_seconds": 8,
+      "cache_overrides": {
+        "PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip",
+        "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg",
+        "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 1,
+      "finished_at": "2026-10-21T08:16:04.548057+00:00"
+    },
+    {
+      "name": "07-manticore-version",
+      "command": [
+        "manticore",
+        "--version"
+      ],
+      "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB",
+      "started_at": "2026-10-21T08:16:04.691659+00:00",
+      "timeout_seconds": 5,
+      "cache_overrides": {
+        "PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip",
+        "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg",
+        "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "status": "LAUNCH_ERROR",
+      "error": "FileNotFoundError(2, 'No such file or directory')",
+      "finished_at": "2026-10-21T08:16:04.694822+00:00"
+    },
+    {
+      "name": "08-deferred-entry-points",
+      "command": [
+        "slither",
+        ".",
+        "--print",
+        "entry-points"
+      ],
+      "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts",
+      "started_at": "2026-10-21T08:16:04.760675+00:00",
+      "timeout_seconds": 8,
+      "cache_overrides": {
+        "PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip",
+        "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg",
+        "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "finished_at": "2026-10-21T08:16:10.242221+00:00"
+    },
+    {
+      "name": "09-deferred-human-summary",
+      "command": [
+        "slither",
+        ".",
+        "--print",
+        "human-summary"
+      ],
+      "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts",
+      "started_at": "2026-10-21T08:16:10.312729+00:00",
+      "timeout_seconds": 8,
+      "cache_overrides": {
+        "PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip",
+        "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg",
+        "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "finished_at": "2026-10-21T08:16:14.384405+00:00"
+    },
+    {
+      "name": "10-deferred-contract-summary",
+      "command": [
+        "slither",
+        ".",
+        "--print",
+        "contract-summary"
+      ],
+      "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts",
+      "started_at": "2026-10-21T08:16:14.459331+00:00",
+      "timeout_seconds": 8,
+      "cache_overrides": {
+        "PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip",
+        "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg",
+        "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 0,
+      "finished_at": "2026-10-21T08:16:18.902670+00:00"
+    },
+    {
+      "name": "11-compat-force-foundry",
+      "command": [
+        "slither",
+        ".",
+        "--compile-force-framework",
+        "foundry",
+        "--exclude-dependencies"
+      ],
+      "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/tool-copy/contracts",
+      "started_at": "2026-10-21T08:16:18.971045+00:00",
+      "timeout_seconds": 8,
+      "cache_overrides": {
+        "PIP_CACHE_DIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/pip",
+        "XDG_CACHE_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/xdg",
+        "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache/npm",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 255,
+      "finished_at": "2026-10-21T08:16:22.692075+00:00"
+    }
+  ],
+  "completion_claim": "No full native six-stage completion claim. Explicit incomplete/blocked substeps retained.",
+  "preserved_artifact_root": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/OPENAI-TOB/attempt-01/artifacts",
+  "retained_cache_root": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB/audit/cache",
+  "resource_hashes": [
+    {
+      "path": "resources/plugins__audit-context-building__agents__function-analyzer.md",
+      "sha256": "d450f462b63dac6858015340a2e047293851d7e3c671725792d9770dca107d29"
+    },
+    {
+      "path": "resources/plugins__audit-context-building__skills__audit-context-building__SKILL.md",
+      "sha256": "33fa693dc6e166cfa4919e4373cb6578c009d296234c2ae7cb3cd4e79b443765"
+    },
+    {
+      "path": "resources/plugins__audit-context-building__skills__audit-context-building__resources__ANALYSIS_FORMAT.md",
+      "sha256": "029532945776fb0fcbc866f19cd6114fe4152cd3dea1c0f44b266ec13a2cc6e8"
+    },
+    {
+      "path": "resources/plugins__audit-context-building__skills__audit-context-building__resources__DOMAIN_NOTES.md",
+      "sha256": "ca3090f7f8d18f7145b253b283f5d33c36b314cea231aae8466bf23f122e2ed1"
+    },
+    {
+      "path": "resources/plugins__audit-context-building__skills__audit-context-building__resources__FUNCTION_MICRO_ANALYSIS_EXAMPLE.md",
+      "sha256": "3351010d83b61bfb34a0359498f153817fdfa6528cead54536b06e035ff2399c"
+    },
+    {
+      "path": "resources/plugins__audit-context-building__workflows__audit-context.js",
+      "sha256": "71cd025216e2589fee1e1a0ffe215fb7bbeaf22751dc7417ca6ce74497e6d0b3"
+    },
+    {
+      "path": "resources/plugins__building-secure-contracts__skills__guidelines-advisor__SKILL.md",
+      "sha256": "5bb8ba34d363c419e1769a59d0fcc7444a04dc6d9e59032cb93019befdc2e464"
+    },
+    {
+      "path": "resources/plugins__building-secure-contracts__skills__guidelines-advisor__resources__ASSESSMENT_AREAS.md",
+      "sha256": "951352a5e7c3afa717ed62770ae1b7c152c4792480e3beebefc68f9c96d2a46c"
+    },
+    {
+      "path": "resources/plugins__building-secure-contracts__skills__guidelines-advisor__resources__DELIVERABLES.md",
+      "sha256": "5a9a6e14acb0be5dd8e15440227d5cf659931ec79cca346661f9ef22bc5f21c2"
+    },
+    {
+      "path": "resources/plugins__building-secure-contracts__skills__guidelines-advisor__resources__EXAMPLE_REPORT.md",
+      "sha256": "4c31c1718afaece6c7ba2c3519373167ca5d81f937fb4356c8d9b45d280833f0"
+    },
+    {
+      "path": "resources/plugins__building-secure-contracts__skills__secure-workflow-guide__SKILL.md",
+      "sha256": "7c0e7fb45f97c073ec9599cbe0b2acf44f31bbece38636bc5c3fcc9bc7703015"
+    },
+    {
+      "path": "resources/plugins__building-secure-contracts__skills__secure-workflow-guide__resources__EXAMPLE_REPORT.md",
+      "sha256": "c55fb9e549a38c9bebc9b23f5f16fb498bd20a8f867868232623a4bd721df340"
+    },
+    {
+      "path": "resources/plugins__building-secure-contracts__skills__secure-workflow-guide__resources__WORKFLOW_STEPS.md",
+      "sha256": "8b048011407a9a123a01ba4548b62a944f8cd5f271e4e0cdfe58b09583bd9291"
+    },
+    {
+      "path": "resources/plugins__building-secure-contracts__skills__token-integration-analyzer__SKILL.md",
+      "sha256": "4b7f5cb3c52f9b45e2216963a49458e1f23f5a279a0296e702fd9d8df268b301"
+    },
+    {
+      "path": "resources/plugins__building-secure-contracts__skills__token-integration-analyzer__resources__ASSESSMENT_CATEGORIES.md",
+      "sha256": "bf1313e59c960688cc73bda5b7a98579336a277c521b9b37937aa1cda3a122a7"
+    },
+    {
+      "path": "resources/plugins__building-secure-contracts__skills__token-integration-analyzer__resources__REPORT_TEMPLATES.md",
+      "sha256": "77dc2195901cbca8f0a04687e6ac51347520b6320cfe2ca7c39d9725ffae1177"
+    },
+    {
+      "path": "resources/plugins__entry-point-analyzer__skills__entry-point-analyzer__SKILL.md",
+      "sha256": "0d0e2956bdf9bf5be7efdfcefc754cabd2c1deb015731f3341f919eae2a0e3ca"
+    },
+    {
+      "path": "resources/plugins__entry-point-analyzer__skills__entry-point-analyzer__references__solidity.md",
+      "sha256": "831559ce437ce2b2e4c2070b4e4e0bb16e27092a4ff160832d2ee9309edde79b"
+    },
+    {
+      "path": "resources/plugins__spec-to-code-compliance__agents__spec-compliance-checker.md",
+      "sha256": "20dbf4d9b8013e8c42691dab08bd4df1ac0250eb715f3a02b2270be78bc287c4"
+    },
+    {
+      "path": "resources/plugins__spec-to-code-compliance__skills__spec-to-code-compliance__SKILL.md",
+      "sha256": "eb0d91b50a9c06f50baf8763d1e23566897b9fa3e7ffcf13134eee4e1ccaefe5"
+    },
+    {
+      "path": "resources/plugins__spec-to-code-compliance__skills__spec-to-code-compliance__resources__ANALYSIS_FORMAT.md",
+      "sha256": "802674d5a0622fba7c32d1e480fd236f4bddcd2435841fcf48b17044d5d4d273"
+    },
+    {
+      "path": "resources/plugins__spec-to-code-compliance__skills__spec-to-code-compliance__resources__DIVERGENCE_RUBRIC.md",
+      "sha256": "c7192803ae5c489501788ae5be56a5dd36b3f0b64f88982bf41f69a4245303f1"
+    },
+    {
+      "path": "resources/plugins__spec-to-code-compliance__skills__spec-to-code-compliance__resources__DOMAIN_NOTES.md",
+      "sha256": "435459c75d21208ea73a6cda7dfc6910efc468a903f62e20f4837d5bd8b92c4a"
+    },
+    {
+      "path": "resources/plugins__spec-to-code-compliance__skills__spec-to-code-compliance__resources__WORKED_EXAMPLE.md",
+      "sha256": "7b9ff43b20ba83e1ce934bc9161b14ce58617b65a9ae9c4583026dbf0299e927"
+    },
+    {
+      "path": "resources/plugins__spec-to-code-compliance__workflows__spec-compliance.js",
+      "sha256": "782c17752a1b8f9e83e65120d59b7588548aba0441943ce5388163226f6d5238"
+    }
+  ],
+  "finished_at": "2026-10-21T08:18:43.941015+00:00"
+}

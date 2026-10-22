@@ -1,0 +1,80 @@
+{
+  "completed_at_utc": "2026-10-21T07:56:49.810274+00:00",
+  "runs": [
+    {
+      "name": "M1-fee-400-invariant-extended",
+      "command": [
+        "forge",
+        "test",
+        "--root",
+        "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/mutation-quality/M1-fee-400",
+        "--match-contract",
+        "RaffleInvariantTest",
+        "--no-match-path",
+        "**/fork/**"
+      ],
+      "environment": {
+        "FOUNDRY_INVARIANT_RUNS": "512",
+        "FOUNDRY_INVARIANT_DEPTH": "64"
+      },
+      "exit_code": 1,
+      "status": "failed",
+      "duration_seconds": 11.771
+    },
+    {
+      "name": "M4-purchase-always-reverts-strict",
+      "command": [
+        "forge",
+        "test",
+        "--root",
+        "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/mutation-quality/M4-purchase-always-reverts",
+        "--match-contract",
+        "RaffleInvariantTest",
+        "--no-match-path",
+        "**/fork/**"
+      ],
+      "environment": {
+        "FOUNDRY_PROFILE": "audit_strict",
+        "FOUNDRY_INVARIANT_RUNS": "16",
+        "FOUNDRY_INVARIANT_DEPTH": "64"
+      },
+      "exit_code": 0,
+      "status": "passed",
+      "duration_seconds": 1.086
+    },
+    {
+      "name": "base-guided-probe",
+      "command": [
+        "forge",
+        "test",
+        "--root",
+        "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/mutation-quality/base",
+        "--match-contract",
+        "ReachabilityProbeTest",
+        "--match-test",
+        "testGuidedCashSettlementUsesExistingEconomicInvariant"
+      ],
+      "environment": {},
+      "exit_code": 0,
+      "status": "passed",
+      "duration_seconds": 4.411
+    },
+    {
+      "name": "M1-fee-400-guided-probe",
+      "command": [
+        "forge",
+        "test",
+        "--root",
+        "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/mutation-quality/M1-fee-400",
+        "--match-contract",
+        "ReachabilityProbeTest",
+        "--match-test",
+        "testGuidedCashSettlementUsesExistingEconomicInvariant"
+      ],
+      "environment": {},
+      "exit_code": 1,
+      "status": "failed",
+      "duration_seconds": 3.619
+    }
+  ]
+}

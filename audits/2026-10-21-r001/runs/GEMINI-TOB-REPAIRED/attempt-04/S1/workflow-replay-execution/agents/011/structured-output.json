@@ -1,0 +1,93 @@
+{
+  "analysisFile": "audit-context/functions/10-initialize.md",
+  "assumptions": [
+    {
+      "claim": "initialized is false on entry for a newly deployed ERC-1167 clone and true on the shared Raffle implementation contract, and all other clone storage slots start at zero/false.",
+      "establishedBy": "Clones.clone (packages/contracts/src/RaffleFactory.sol:L106, packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:L32-L62) and Raffle.constructor (packages/contracts/src/Raffle.sol:L164)"
+    },
+    {
+      "claim": "params.prizeToken contains deployed bytecode, is not a protocol destination (factory, quoteToken, vrfWrapper, raffleImplementation, or an existing registered raffle), and reports ERC-165 support for IERC721.",
+      "establishedBy": "RaffleFactory.createRaffle -> RaffleFactory._validateCreateParams (packages/contracts/src/RaffleFactory.sol:L98, L154-L177, L183-L185) and Clones.clone ordering (packages/contracts/src/RaffleFactory.sol:L106)"
+    },
+    {
+      "claim": "params.prizeToken is a standards-compliant, non-malicious ERC-721 contract whose transferFrom and ownerOf behave according to EIP-721 at future redemption or release time.",
+      "establishedBy": "nothing found"
+    },
+    {
+      "claim": "params.prizeTokenId is owned by or approved for params.sponsor and is escrowed into the clone immediately after initialization so the clone transitions from Status.AwaitingPrize to Status.Active.",
+      "establishedBy": "RaffleFactory.createRaffle (packages/contracts/src/RaffleFactory.sol:L128-L134) and Raffle.onERC721Received (packages/contracts/src/Raffle.sol:L416-L431)"
+    },
+    {
+      "claim": "params.reserveEntries is strictly greater than zero so Status.CashWon remains reachable when totalEntries < reserveEntries.",
+      "establishedBy": "RaffleFactory.createRaffle -> RaffleFactory._validateCreateParams (packages/contracts/src/RaffleFactory.sol:L98, L178)"
+    },
+    {
+      "claim": "params.endTime is strictly greater than block.timestamp and at most block.timestamp + RaffleConstants.MAX_SALE_DURATION (30 days).",
+      "establishedBy": "RaffleFactory.createRaffle (packages/contracts/src/RaffleFactory.sol:L99-L104)"
+    },
+    {
+      "claim": "params.raffleId is a unique, sequential, one-based identifier consistent with RaffleFactory.raffleById and RaffleFactory.idByRaffle.",
+      "establishedBy": "RaffleFactory.createRaffle (packages/contracts/src/RaffleFactory.sol:L105, L117, L123-L124)"
+    },
+    {
+      "claim": "Neither params.sponsorRecipient nor params.protocolTreasury is an undeployed address (code.length == 0 at initialization time) that will later be deployed and registered as a Raffle clone in RaffleFactory.isRaffle before quote-token claims are released via _transferQuote.",
+      "establishedBy": "nothing found"
+    }
+  ],
+  "callers": [
+    "RaffleFactory.createRaffle (packages/contracts/src/RaffleFactory.sol:L109-L121)"
+  ],
+  "calls": [
+    {
+      "callee": "Raffle._isProtocolDestination",
+      "kind": "internal",
+      "propagates": "Returns true if destination equals address(this), factory, address(quoteToken), address(i_vrfV2PlusWrapper), prizeToken_, or canonicalFactory.raffleImplementation() (packages/contracts/src/Raffle.sol:L599-L601), or if destination.code.length != 0 and canonicalFactory.isRaffle(destination) is true (L602-L604). Does not query canonicalFactory.isRaffle when destination.code.length == 0 (L602), and catches destination == address(this) at L599 even though RaffleFactory.createRaffle has not yet set isRaffle[address(this)] = true at L125."
+    },
+    {
+      "callee": "IRaffleFactory.raffleImplementation",
+      "kind": "external-source-available",
+      "propagates": "Returns the immutable raffleImplementation address configured in RaffleFactory.constructor (packages/contracts/src/RaffleFactory.sol:L42, L91) when queried by _isProtocolDestination (packages/contracts/src/Raffle.sol:L601)."
+    },
+    {
+      "callee": "IRaffleFactory.isRaffle",
+      "kind": "external-source-available",
+      "propagates": "Returns true only for clone addresses already registered in RaffleFactory.createRaffle at packages/contracts/src/RaffleFactory.sol:L125 (packages/contracts/src/RaffleFactory.sol:L54, called from packages/contracts/src/Raffle.sol:L603 when destination.code.length != 0); returns false for the currently initializing clone and any future undeployed clone addresses."
+    }
+  ],
+  "file": "packages/contracts/src/Raffle.sol",
+  "function": "initialize",
+  "invariants": [
+    {
+      "claim": "initialize can succeed at most once per clone and only when called by the immutable factory address; it can never succeed on the shared implementation contract.",
+      "evidence": "packages/contracts/src/Raffle.sol:L164, L177-L179"
+    },
+    {
+      "claim": "Upon completion of initialize, sponsor, sponsorRecipient, protocolTreasury, and address(prizeToken) are all non-zero addresses.",
+      "evidence": "packages/contracts/src/Raffle.sol:L181-L186, L197-L200"
+    },
+    {
+      "claim": "Upon completion of initialize, none of sponsor, protocolTreasury, or sponsorRecipient equals address(this), factory, address(quoteToken), address(i_vrfV2PlusWrapper), address(prizeToken), IRaffleFactory(factory).raffleImplementation(), or any contract address where IRaffleFactory(factory).isRaffle(addr) was true at initialization time.",
+      "evidence": "packages/contracts/src/Raffle.sol:L187-L195, L598-L604"
+    },
+    {
+      "claim": "Upon completion of initialize, sponsor, sponsorRecipient, protocolTreasury, prizeToken, prizeTokenId, raffleId, reserveEntries, and endTime are set to the factory-supplied params and have no other writers in Raffle.sol, and status is Status.AwaitingPrize.",
+      "evidence": "packages/contracts/src/Raffle.sol:L197-L205"
+    }
+  ],
+  "lines": "L176-L206",
+  "openQuestions": [],
+  "sharedState": [
+    "initialized (packages/contracts/src/Raffle.sol:L136)",
+    "sponsor (packages/contracts/src/Raffle.sol:L61)",
+    "sponsorRecipient (packages/contracts/src/Raffle.sol:L64)",
+    "protocolTreasury (packages/contracts/src/Raffle.sol:L67)",
+    "prizeToken (packages/contracts/src/Raffle.sol:L70)",
+    "prizeTokenId (packages/contracts/src/Raffle.sol:L73)",
+    "raffleId (packages/contracts/src/Raffle.sol:L76)",
+    "reserveEntries (packages/contracts/src/Raffle.sol:L79)",
+    "endTime (packages/contracts/src/Raffle.sol:L82)",
+    "status (packages/contracts/src/Raffle.sol:L124)",
+    "RaffleFactory.raffleImplementation (packages/contracts/src/RaffleFactory.sol:L42)",
+    "RaffleFactory.isRaffle (packages/contracts/src/RaffleFactory.sol:L54)"
+  ]
+}

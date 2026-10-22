@@ -1,0 +1,187 @@
+COMMAND: ["forge", "test", "--root", "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/mutation-quality/M4-purchase-always-reverts", "--no-match-path", "**/fork/**", "--fuzz-runs", "128", "--no-match-contract", "RaffleInvariantTest"]
+ENV: FOUNDRY_INVARIANT_RUNS=64 FOUNDRY_INVARIANT_DEPTH=64 FOUNDRY_FUZZ_RUNS=128
+Compiling 4 files with Solc 0.8.36
+Solc 0.8.36 finished in 8.45s
+Compiler run successful with warnings:
+Warning (5740): Unreachable code.
+  --> node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:72:9:
+   |
+72 |         _nonReentrantAfter();
+   |         ^^^^^^^^^^^^^^^^^^^^
+
+Warning (5740): Unreachable code.
+   --> src/Raffle.sol:224:9:
+    |
+224 |         uint256 grossAmount = uint256(entryCount) * ENTRY_PRICE;
+    |         ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (5740): Unreachable code.
+   --> src/Raffle.sol:227:9:
+    |
+227 |         uint128 firstEntry = totalEntries + 1;
+    |         ^ (Relevant source part starts here and spans across multiple lines).
+
+Warning (5740): Unreachable code.
+   --> src/Raffle.sol:237:9:
+    |
+237 |         emit TicketPurchased(msg.sender, recipient, ticketId, firstEntry, lastEntry, entryCount, grossAmount);
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Ran 11 tests for test/foundry/security/VrfAdversarial.t.sol:VrfAdversarialTest
+[FAIL: ZeroEntryCount()] testAuthenticatedValidCallbackAtDeadlineIsIgnoredBeforeRefunds() (gas: 508767)
+[FAIL: ZeroEntryCount()] testFeeReadAndRequestFailuresRollBackToActiveThenRefundAtDeadline() (gas: 508811)
+[FAIL: ZeroEntryCount()] testMalformedAndWrongCallbacksAreIgnoredUntilOneValidWordArrives() (gas: 508831)
+[FAIL: ZeroEntryCount()] testNonPersistedRequestStillHasBoundedFullRefundRecovery() (gas: 508721)
+[FAIL: ZeroEntryCount()] testOfficialHelperCannotUseForcedNativeToSubsidizeQuoteDrift() (gas: 508787)
+[FAIL: ZeroEntryCount()] testOfficialHelperRefundsAgainstActualLowerPrice() (gas: 508722)
+[FAIL: ZeroEntryCount()] testQuotedFeeCanChangeWithoutConsumingRequest() (gas: 508744)
+[FAIL: ZeroEntryCount()] testRepeatedRequestIdsRemainRaffleScoped() (gas: 508743)
+[FAIL: ZeroEntryCount()] testSynchronousWrongDuplicateAndValidCallbacksCannotResolveInFlightRequest() (gas: 508723)
+[FAIL: ZeroEntryCount()] testWrapperRequestReentryIsRejected() (gas: 508766)
+[FAIL: ZeroEntryCount()] testZeroRequestIdDoesNotMatchUntilRequestReturns() (gas: 508788)
+Suite result: FAILED. 0 passed; 11 failed; 0 skipped; finished in 2.84ms (1.69ms CPU time)
+
+Ran 11 tests for test/foundry/security/RaffleSecurity.t.sol:RaffleSecurityTest
+[FAIL: ZeroEntryCount()] testCallbackMakesNoQuoteOrPrizeExternalTransfers() (gas: 509299)
+[PASS] testFactoryReentrancyDuringPrizeEscrowIsBlockedAtomically() (gas: 1878160)
+[FAIL: ZeroEntryCount()] testFalseReturningOutboundTransferRestoresClaimAndAccounting() (gas: 5188826)
+[PASS] testFalseReturningQuoteCannotCreateReceipt() (gas: 4732675)
+[FAIL: ZeroEntryCount()] testFalseReturningWinnerTransferRestoresTicketAndLazySettlement() (gas: 5188737)
+[FAIL: ZeroEntryCount()] testPrizeCannotReenterDuringSponsorSafeTransfer() (gas: 1826870)
+[FAIL: ZeroEntryCount()] testPrizeCannotReenterDuringWinnerTransfer() (gas: 1826848)
+[FAIL: Error != expected error: ZeroEntryCount() != UnsafeProtocolDestination(0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9)] testProtocolDestinationsCannotReceiveReceiptsOrPayouts() (gas: 510199)
+[FAIL: ZeroEntryCount()] testReentrantQuoteTokenCannotNestInboundPurchase() (gas: 5211673)
+[FAIL: ZeroEntryCount()] testReentrantQuoteTokenCannotNestWinnerWithdrawal() (gas: 5188782)
+[FAIL: ZeroEntryCount()] testReentrantReceiptReceiverCannotNestPurchase() (gas: 833372)
+Suite result: FAILED. 2 passed; 9 failed; 0 skipped; finished in 4.17ms (2.98ms CPU time)
+
+Ran 39 tests for test/foundry/unit/Raffle.t.sol:RaffleTest
+[FAIL: ZeroEntryCount()] testAcceptedDrawCannotRefundBeforeCallbackDeadlineAndValidNftOutcomeNeverRefunds() (gas: 509092)
+[FAIL: ZeroEntryCount()] testBothCallbackBranchesStayBelowGasBudget() (gas: 509027)
+[FAIL: ZeroEntryCount()] testCallbackDeadlineIsHardAtEqualityRegardlessOfOrdering() (gas: 509113)
+[FAIL: ZeroEntryCount()] testCallbackGasDoesNotScaleWithReceiptCount() (gas: 927525)
+[FAIL: ZeroEntryCount()] testCallbackStoresInclusiveWinningEntryAndSelectsReserveBoundary() (gas: 509070)
+[FAIL: ZeroEntryCount()] testCashSettlementLeavesBearerClaimAndOwnerRedeemsOnce() (gas: 509098)
+[FAIL: ZeroEntryCount()] testCashSponsorPrizeRecoveryIsPermissionlessToFixedRecipient() (gas: 925554)
+[PASS] testCloneInitializationRejectsRegisteredRaffleSponsorAndTreasury() (gas: 564626)
+[PASS] testCloneInitializationRejectsZeroAndProtocolDestinations() (gas: 216024)
+[FAIL: ZeroEntryCount()] testDonationsAndForcedNativeDoNotAlterQuoteAccounting() (gas: 509137)
+[FAIL: ZeroEntryCount()] testDrawForwardsExactDynamicFeeAndRefundsExcess() (gas: 509071)
+[FAIL: ZeroEntryCount()] testDrawUsesFixedThirtyConfirmationsAndOneWord() (gas: 509049)
+[PASS] testEmptyRaffleUsesRefundingWithoutClosedState() (gas: 897932)
+[PASS] testFactoryAcceptsExactMaximumSaleDuration() (gas: 431025)
+[PASS] testFactoryAtomicallyEscrowsAndCapturesFixedConfiguration() (gas: 448312)
+[PASS] testFactoryConstructorAndCreationValidation() (gas: 1501937)
+[FAIL: ZeroEntryCount()] testFactoryCreatesCanonicalClonesWithIsolatedRangeState() (gas: 904732)
+[PASS] testFactoryRejectsPrizesThatDoNotEscrowAndActivateExactly() (gas: 3653242)
+[FAIL: ZeroEntryCount()] testFutureCanonicalCloneCanBrickOnlyItsOwnWinnerRedemption() (gas: 509097)
+[PASS] testImplementationAndCloneInitializationAreLocked() (gas: 263518)
+[FAIL: ZeroEntryCount()] testMetadataPriceEstimateAndDrawFailureBoundaries() (gas: 974410)
+[FAIL: ZeroEntryCount()] testNftDeliveryFailureRollsBackLazySettlementAndBurn() (gas: 1436580)
+[FAIL: ZeroEntryCount()] testNftSettlementIsPermissionlessAccountingOnlyAndProofIsExact() (gas: 509076)
+[FAIL: ZeroEntryCount()] testNftWinningTicketRemainsTransferableUntilOwnerRedeems() (gas: 509075)
+[FAIL: ZeroEntryCount()] testNonCompliantPrizeCannotPassPostDeliveryVerification() (gas: 1436537)
+[FAIL: ZeroEntryCount()] testOwnerCanSettleAndRedeemAtomicallyButApprovedOperatorCannot() (gas: 509121)
+[FAIL: ZeroEntryCount()] testPrizeDeliveryFailureBlocksOnlyWinnerPrizeAndNotSettlementOrCashClaims() (gas: 1436559)
+[FAIL: ZeroEntryCount()] testPurchaseAndRefundGasDoNotScaleWithEntriesInsideReceipt() (gas: 940902)
+[FAIL: ZeroEntryCount()] testPurchaseMaximumRangeAndOverflowAreAtomic() (gas: 522604)
+[FAIL: ZeroEntryCount()] testPurchaseMintsOneSequentialTicketForAnyEntryCount() (gas: 509263)
+[PASS] testPurchaseValidationAndReceiverRollbackAreAtomic() (gas: 596153)
+[FAIL: ZeroEntryCount()] testRefundBatchValidationAndMixedOwnershipAreAtomic() (gas: 509076)
+[FAIL: ZeroEntryCount()] testRegisteredRaffleCannotReceiveTicketsAndSettlementCannotBeRedirected() (gas: 901460)
+[FAIL: ZeroEntryCount()] testSaleEndsButTicketsStayTransferableUntilBurned() (gas: 509054)
+[FAIL: ZeroEntryCount()] testSoldRaffleHasHardRequestAndCallbackRefundDeadlines() (gas: 509120)
+[FAIL: ZeroEntryCount()] testSponsorRecipientIsFixedForProceedsAndReturnedPrize() (gas: 513426)
+[FAIL: ZeroEntryCount()] testWeightedRefundBatchPaysExactRangesAndConsumesOnce() (gas: 509055)
+[FAIL: ZeroEntryCount()] testWinnerRedeemsAndFixedProceedsReleaseIndependently() (gas: 509142)
+[FAIL: ZeroEntryCount()] testWrongDuplicateMalformedAndUnauthorizedCallbacksAreHarmless() (gas: 509070)
+Suite result: FAILED. 9 passed; 30 failed; 0 skipped; finished in 30.11ms (11.21ms CPU time)
+
+Ran 9 tests for test/foundry/fuzz/RaffleFuzz.t.sol:RaffleFuzzTest
+[FAIL: ZeroEntryCount(); counterexample: calldata=0x1f31926c00000000000000000000000000000000000000000000000000ffd7c89de984ea args=[72013375703975146 [7.201e16]]] testFuzzCashSplitAlwaysConservesEightyFifteenFive(uint64) (runs: 0, μ: 0, ~: 0)
+[FAIL: ZeroEntryCount(); counterexample: calldata=0x0a8ac1ca00000000000000000000000000000000000000000000000000ffd7c89de984ea args=[72013375703975146 [7.201e16]]] testFuzzNoRequestTimeoutPaysFullWeightedRange(uint64) (runs: 0, μ: 0, ~: 0)
+[FAIL: ZeroEntryCount(); counterexample: calldata=0x89cce4d7000000000000000000000000000000000000000000000000000000000000002d0000000000000000000000000000000000000000000000000000000000004e200000000000000000000000000000000000000000000000000000000000003856 args=[45, 20000 [2e4], 14422 [1.442e4]]] testFuzzOnlyContainingReceiptCanSettle(uint32,uint32,uint256) (runs: 0, μ: 0, ~: 0)
+[FAIL: ZeroEntryCount(); counterexample: calldata=0xb57a796800000000000000000000000000000000000000000000000000ffd7c89de984ea args=[72013375703975146 [7.201e16]]] testFuzzPostSettlementBearerCanRedeemNft(uint64) (runs: 0, μ: 0, ~: 0)
+[FAIL: ZeroEntryCount(); counterexample: calldata=0xe4ca8084000000000000000000000000000000000000000000000000000000000000002d args=[45]] testFuzzPurchaseCreatesOneSequentialTicketWithExactRange(uint128) (runs: 0, μ: 0, ~: 0)
+[FAIL: ZeroEntryCount(); counterexample: calldata=0x683c42770000000000000000000000000000000000000000000000000000000000000014 args=[20]] testFuzzRefundPaysWeightedRangeExactlyOnce(uint64) (runs: 0, μ: 0, ~: 0)
+[FAIL: ZeroEntryCount(); counterexample: calldata=0x4c58c296000000000000000000000000000000000000000000000000000000000de984ea args=[233407722 [2.334e8]]] testFuzzReserveEqualityIsNftAndOneBelowIsCash(uint32) (runs: 0, μ: 0, ~: 0)
+[FAIL: ZeroEntryCount(); counterexample: calldata=0x8995dd1c000000000000000000000000000000000000000000000000000000000000002d0000000000000000000000000000000000000000000000000000000000004e20 args=[45, 20000 [2e4]]] testFuzzSeparatePurchasesPartitionEntriesWithoutGaps(uint128,uint128) (runs: 0, μ: 0, ~: 0)
+[FAIL: ZeroEntryCount(); counterexample: calldata=0xc6001f6f0000000000000000000000000000000000000000000d85a08bffd7c89de984ea0000000000000000000000000034af79566c91f7b6d536e659b2dd63845e7144 args=[16347071964282582588818666 [1.634e25], 1174924689405384153634324814097118273478750532 [1.174e45]]] testFuzzWinningEntryAlwaysUsesInclusiveSoldRange(uint96,uint256) (runs: 0, μ: 0, ~: 0)
+Suite result: FAILED. 0 passed; 9 failed; 0 skipped; finished in 29.98ms (159.72ms CPU time)
+
+Ran 4 test suites in 31.87ms (67.10ms CPU time): 11 tests passed, 59 failed, 0 skipped (70 total tests)
+
+Failing tests:
+Encountered 9 failing tests in test/foundry/fuzz/RaffleFuzz.t.sol:RaffleFuzzTest
+[FAIL: ZeroEntryCount(); counterexample: calldata=0x1f31926c00000000000000000000000000000000000000000000000000ffd7c89de984ea args=[72013375703975146 [7.201e16]]] testFuzzCashSplitAlwaysConservesEightyFifteenFive(uint64) (runs: 0, μ: 0, ~: 0)
+[FAIL: ZeroEntryCount(); counterexample: calldata=0x0a8ac1ca00000000000000000000000000000000000000000000000000ffd7c89de984ea args=[72013375703975146 [7.201e16]]] testFuzzNoRequestTimeoutPaysFullWeightedRange(uint64) (runs: 0, μ: 0, ~: 0)
+[FAIL: ZeroEntryCount(); counterexample: calldata=0x89cce4d7000000000000000000000000000000000000000000000000000000000000002d0000000000000000000000000000000000000000000000000000000000004e200000000000000000000000000000000000000000000000000000000000003856 args=[45, 20000 [2e4], 14422 [1.442e4]]] testFuzzOnlyContainingReceiptCanSettle(uint32,uint32,uint256) (runs: 0, μ: 0, ~: 0)
+[FAIL: ZeroEntryCount(); counterexample: calldata=0xb57a796800000000000000000000000000000000000000000000000000ffd7c89de984ea args=[72013375703975146 [7.201e16]]] testFuzzPostSettlementBearerCanRedeemNft(uint64) (runs: 0, μ: 0, ~: 0)
+[FAIL: ZeroEntryCount(); counterexample: calldata=0xe4ca8084000000000000000000000000000000000000000000000000000000000000002d args=[45]] testFuzzPurchaseCreatesOneSequentialTicketWithExactRange(uint128) (runs: 0, μ: 0, ~: 0)
+[FAIL: ZeroEntryCount(); counterexample: calldata=0x683c42770000000000000000000000000000000000000000000000000000000000000014 args=[20]] testFuzzRefundPaysWeightedRangeExactlyOnce(uint64) (runs: 0, μ: 0, ~: 0)
+[FAIL: ZeroEntryCount(); counterexample: calldata=0x4c58c296000000000000000000000000000000000000000000000000000000000de984ea args=[233407722 [2.334e8]]] testFuzzReserveEqualityIsNftAndOneBelowIsCash(uint32) (runs: 0, μ: 0, ~: 0)
+[FAIL: ZeroEntryCount(); counterexample: calldata=0x8995dd1c000000000000000000000000000000000000000000000000000000000000002d0000000000000000000000000000000000000000000000000000000000004e20 args=[45, 20000 [2e4]]] testFuzzSeparatePurchasesPartitionEntriesWithoutGaps(uint128,uint128) (runs: 0, μ: 0, ~: 0)
+[FAIL: ZeroEntryCount(); counterexample: calldata=0xc6001f6f0000000000000000000000000000000000000000000d85a08bffd7c89de984ea0000000000000000000000000034af79566c91f7b6d536e659b2dd63845e7144 args=[16347071964282582588818666 [1.634e25], 1174924689405384153634324814097118273478750532 [1.174e45]]] testFuzzWinningEntryAlwaysUsesInclusiveSoldRange(uint96,uint256) (runs: 0, μ: 0, ~: 0)
+
+Encountered 9 failing tests in test/foundry/security/RaffleSecurity.t.sol:RaffleSecurityTest
+[FAIL: ZeroEntryCount()] testCallbackMakesNoQuoteOrPrizeExternalTransfers() (gas: 509299)
+[FAIL: ZeroEntryCount()] testFalseReturningOutboundTransferRestoresClaimAndAccounting() (gas: 5188826)
+[FAIL: ZeroEntryCount()] testFalseReturningWinnerTransferRestoresTicketAndLazySettlement() (gas: 5188737)
+[FAIL: ZeroEntryCount()] testPrizeCannotReenterDuringSponsorSafeTransfer() (gas: 1826870)
+[FAIL: ZeroEntryCount()] testPrizeCannotReenterDuringWinnerTransfer() (gas: 1826848)
+[FAIL: Error != expected error: ZeroEntryCount() != UnsafeProtocolDestination(0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9)] testProtocolDestinationsCannotReceiveReceiptsOrPayouts() (gas: 510199)
+[FAIL: ZeroEntryCount()] testReentrantQuoteTokenCannotNestInboundPurchase() (gas: 5211673)
+[FAIL: ZeroEntryCount()] testReentrantQuoteTokenCannotNestWinnerWithdrawal() (gas: 5188782)
+[FAIL: ZeroEntryCount()] testReentrantReceiptReceiverCannotNestPurchase() (gas: 833372)
+
+Encountered 11 failing tests in test/foundry/security/VrfAdversarial.t.sol:VrfAdversarialTest
+[FAIL: ZeroEntryCount()] testAuthenticatedValidCallbackAtDeadlineIsIgnoredBeforeRefunds() (gas: 508767)
+[FAIL: ZeroEntryCount()] testFeeReadAndRequestFailuresRollBackToActiveThenRefundAtDeadline() (gas: 508811)
+[FAIL: ZeroEntryCount()] testMalformedAndWrongCallbacksAreIgnoredUntilOneValidWordArrives() (gas: 508831)
+[FAIL: ZeroEntryCount()] testNonPersistedRequestStillHasBoundedFullRefundRecovery() (gas: 508721)
+[FAIL: ZeroEntryCount()] testOfficialHelperCannotUseForcedNativeToSubsidizeQuoteDrift() (gas: 508787)
+[FAIL: ZeroEntryCount()] testOfficialHelperRefundsAgainstActualLowerPrice() (gas: 508722)
+[FAIL: ZeroEntryCount()] testQuotedFeeCanChangeWithoutConsumingRequest() (gas: 508744)
+[FAIL: ZeroEntryCount()] testRepeatedRequestIdsRemainRaffleScoped() (gas: 508743)
+[FAIL: ZeroEntryCount()] testSynchronousWrongDuplicateAndValidCallbacksCannotResolveInFlightRequest() (gas: 508723)
+[FAIL: ZeroEntryCount()] testWrapperRequestReentryIsRejected() (gas: 508766)
+[FAIL: ZeroEntryCount()] testZeroRequestIdDoesNotMatchUntilRequestReturns() (gas: 508788)
+
+Encountered 30 failing tests in test/foundry/unit/Raffle.t.sol:RaffleTest
+[FAIL: ZeroEntryCount()] testAcceptedDrawCannotRefundBeforeCallbackDeadlineAndValidNftOutcomeNeverRefunds() (gas: 509092)
+[FAIL: ZeroEntryCount()] testBothCallbackBranchesStayBelowGasBudget() (gas: 509027)
+[FAIL: ZeroEntryCount()] testCallbackDeadlineIsHardAtEqualityRegardlessOfOrdering() (gas: 509113)
+[FAIL: ZeroEntryCount()] testCallbackGasDoesNotScaleWithReceiptCount() (gas: 927525)
+[FAIL: ZeroEntryCount()] testCallbackStoresInclusiveWinningEntryAndSelectsReserveBoundary() (gas: 509070)
+[FAIL: ZeroEntryCount()] testCashSettlementLeavesBearerClaimAndOwnerRedeemsOnce() (gas: 509098)
+[FAIL: ZeroEntryCount()] testCashSponsorPrizeRecoveryIsPermissionlessToFixedRecipient() (gas: 925554)
+[FAIL: ZeroEntryCount()] testDonationsAndForcedNativeDoNotAlterQuoteAccounting() (gas: 509137)
+[FAIL: ZeroEntryCount()] testDrawForwardsExactDynamicFeeAndRefundsExcess() (gas: 509071)
+[FAIL: ZeroEntryCount()] testDrawUsesFixedThirtyConfirmationsAndOneWord() (gas: 509049)
+[FAIL: ZeroEntryCount()] testFactoryCreatesCanonicalClonesWithIsolatedRangeState() (gas: 904732)
+[FAIL: ZeroEntryCount()] testFutureCanonicalCloneCanBrickOnlyItsOwnWinnerRedemption() (gas: 509097)
+[FAIL: ZeroEntryCount()] testMetadataPriceEstimateAndDrawFailureBoundaries() (gas: 974410)
+[FAIL: ZeroEntryCount()] testNftDeliveryFailureRollsBackLazySettlementAndBurn() (gas: 1436580)
+[FAIL: ZeroEntryCount()] testNftSettlementIsPermissionlessAccountingOnlyAndProofIsExact() (gas: 509076)
+[FAIL: ZeroEntryCount()] testNftWinningTicketRemainsTransferableUntilOwnerRedeems() (gas: 509075)
+[FAIL: ZeroEntryCount()] testNonCompliantPrizeCannotPassPostDeliveryVerification() (gas: 1436537)
+[FAIL: ZeroEntryCount()] testOwnerCanSettleAndRedeemAtomicallyButApprovedOperatorCannot() (gas: 509121)
+[FAIL: ZeroEntryCount()] testPrizeDeliveryFailureBlocksOnlyWinnerPrizeAndNotSettlementOrCashClaims() (gas: 1436559)
+[FAIL: ZeroEntryCount()] testPurchaseAndRefundGasDoNotScaleWithEntriesInsideReceipt() (gas: 940902)
+[FAIL: ZeroEntryCount()] testPurchaseMaximumRangeAndOverflowAreAtomic() (gas: 522604)
+[FAIL: ZeroEntryCount()] testPurchaseMintsOneSequentialTicketForAnyEntryCount() (gas: 509263)
+[FAIL: ZeroEntryCount()] testRefundBatchValidationAndMixedOwnershipAreAtomic() (gas: 509076)
+[FAIL: ZeroEntryCount()] testRegisteredRaffleCannotReceiveTicketsAndSettlementCannotBeRedirected() (gas: 901460)
+[FAIL: ZeroEntryCount()] testSaleEndsButTicketsStayTransferableUntilBurned() (gas: 509054)
+[FAIL: ZeroEntryCount()] testSoldRaffleHasHardRequestAndCallbackRefundDeadlines() (gas: 509120)
+[FAIL: ZeroEntryCount()] testSponsorRecipientIsFixedForProceedsAndReturnedPrize() (gas: 513426)
+[FAIL: ZeroEntryCount()] testWeightedRefundBatchPaysExactRangesAndConsumesOnce() (gas: 509055)
+[FAIL: ZeroEntryCount()] testWinnerRedeemsAndFixedProceedsReleaseIndependently() (gas: 509142)
+[FAIL: ZeroEntryCount()] testWrongDuplicateMalformedAndUnauthorizedCallbacksAreHarmless() (gas: 509070)
+
+Encountered a total of 59 failing tests, 11 tests succeeded
+
+Tip: Run `forge test --rerun` to retry only the 59 failed tests
+
+Fuzz seed: 0x524146464c45 (use `--fuzz-seed` to reproduce)

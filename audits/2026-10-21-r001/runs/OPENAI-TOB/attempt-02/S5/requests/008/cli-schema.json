@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "required": [
+    "behaviors"
+  ],
+  "properties": {
+    "behaviors": {
+      "type": "array",
+      "description": "Externally reachable behavior the documentation does not describe. Empty is a valid answer.",
+      "items": {
+        "type": "object",
+        "required": [
+          "what",
+          "file",
+          "lines",
+          "whyItMatters",
+          "reachableBy"
+        ],
+        "properties": {
+          "what": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "lines": {
+            "type": "string"
+          },
+          "whyItMatters": {
+            "type": "string",
+            "description": "what a reader of the documentation alone would wrongly believe"
+          },
+          "reachableBy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "which actor can trigger it"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

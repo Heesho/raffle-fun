@@ -1,0 +1,356 @@
+The files belonging to this database system will be owned by user "postgres".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "en_US.utf8".
+The default database encoding has accordingly been set to "UTF8".
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+fixing permissions on existing directory /var/lib/postgresql/data ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default max_connections ... 100
+selecting default shared_buffers ... 128MB
+selecting default time zone ... UTC
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+
+
+Success. You can now start the database server using:
+
+    pg_ctl -D /var/lib/postgresql/data -l logfile start
+
+waiting for server to start....2026-10-21 18:31:09.730 UTC [42] LOG:  starting PostgreSQL 16.4 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 13.2.1_git20240309) 13.2.1 20240309, 64-bit
+2026-10-21 18:31:09.731 UTC [42] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-10-21 18:31:09.735 UTC [45] LOG:  database system was shut down at 2026-10-21 18:31:09 UTC
+2026-10-21 18:31:09.738 UTC [42] LOG:  database system is ready to accept connections
+ done
+server started
+CREATE DATABASE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/001_create_workflow_tables.sql
+CREATE SCHEMA
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+ALTER TABLE
+CREATE INDEX
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/002_additive_columns.sql
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+UPDATE 0
+ALTER TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/003_add_scan_extras.sql
+ALTER TABLE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/003_extra_field.sql
+ALTER TABLE
+ALTER TABLE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/004_thinking_effort.sql
+ALTER TABLE
+ALTER TABLE
+UPDATE 0
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/005_remove_step_stub_columns.sql
+ALTER TABLE
+UPDATE 0
+ALTER TABLE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/005_repo_kind.sql
+ALTER TABLE
+ALTER TABLE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/006_add_stub_explanation.sql
+ALTER TABLE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/006_consume_all_previous.sql
+ALTER TABLE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/007_make_scan_config_legacy.sql
+ALTER TABLE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/008_post_processing.sql
+ALTER TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/009_seed_post_scripts.sql
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/010_mirror_post_processing_to_step_metadata.sql
+ALTER TABLE
+ALTER TABLE
+UPDATE 0
+UPDATE 0
+UPDATE 0
+UPDATE 0
+ALTER TABLE
+ALTER TABLE
+CREATE INDEX
+CREATE INDEX
+INSERT 0 0
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/011_metadata_phase.sql
+ALTER TABLE
+ALTER TABLE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/012_codex_account_attribution.sql
+ALTER TABLE
+ALTER TABLE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/013_agent_skills.sql
+CREATE TABLE
+ALTER TABLE
+UPDATE 0
+ALTER TABLE
+CREATE INDEX
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/014_seed_agent_skills.sql
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/015_model_provider_metadata.sql
+ALTER TABLE
+ALTER TABLE
+UPDATE 0
+UPDATE 0
+ALTER TABLE
+ALTER TABLE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/016_scan_model_provider.sql
+ALTER TABLE
+UPDATE 0
+ALTER TABLE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/016_severity_rankers.sql
+CREATE TABLE
+ALTER TABLE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/017_model_catalogs.sql
+CREATE TABLE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/018_generations.sql
+CREATE TABLE
+CREATE INDEX
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/019_remove_post_script_finding_metadata.sql
+UPDATE 0
+UPDATE 0
+UPDATE 0
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/019_restore_legacy_compat_columns.sql
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/020_expand_thinking_efforts.sql
+ALTER TABLE
+ALTER TABLE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/021_refresh_default_triage_artifacts.sql
+UPDATE 1
+UPDATE 1
+DELETE 0
+UPDATE 0
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/022_scan_management.sql
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+UPDATE 0
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/023_scan_activity_sort.sql
+CREATE INDEX
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/024_seed_security_post_scripts.sql
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/025_scan_model_overrides.sql
+ALTER TABLE
+UPDATE 0
+ALTER TABLE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/026_refresh_patched_since_main.sql
+UPDATE 1
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/027_describe_report_creator_inputs.sql
+UPDATE 1
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/028_bound_step_routing.sql
+ALTER TABLE
+CREATE INDEX
+COMMENT
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/029_workflow_context_files.sql
+ALTER TABLE
+COMMENT
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/030_step_3_candidate_dedupe.sql
+ALTER TABLE
+COMMENT
+ALTER TABLE
+COMMENT
+CREATE INDEX
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/031_supplemental_post_script_runs.sql
+CREATE TABLE
+ALTER TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+ALTER TABLE
+ALTER TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+ALTER TABLE
+ALTER TABLE
+UPDATE 0
+CREATE INDEX
+COMMENT
+COMMENT
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/032_generations_xai_grok_build.sql
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/032_supplemental_post_script_retry_lineage.sql
+ALTER TABLE
+CREATE INDEX
+COMMENT
+
+
+/usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/033_generations_deepseek_codex.sql
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+
+
+waiting for server to shut down....2026-10-21 18:31:10.415 UTC [42] LOG:  received fast shutdown request
+2026-10-21 18:31:10.416 UTC [42] LOG:  aborting any active transactions
+2026-10-21 18:31:10.419 UTC [42] LOG:  background worker "logical replication launcher" (PID 48) exited with exit code 1
+2026-10-21 18:31:10.419 UTC [43] LOG:  shutting down
+2026-10-21 18:31:10.420 UTC [43] LOG:  checkpoint starting: shutdown immediate
+2026-10-21 18:31:10.517 UTC [43] LOG:  checkpoint complete: wrote 1003 buffers (6.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.058 s, sync=0.036 s, total=0.098 s; sync files=414, longest=0.008 s, average=0.001 s; distance=4926 kB, estimate=4926 kB; lsn=0/19BF5C8, redo lsn=0/19BF5C8
+2026-10-21 18:31:10.521 UTC [42] LOG:  database system is shut down
+ done
+server stopped
+
+PostgreSQL init process complete; ready for start up.
+

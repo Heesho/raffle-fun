@@ -1,0 +1,26 @@
+--- original/SupplementarySymbolic.t.sol
++++ linear-reference/SupplementarySymbolic.t.sol
+@@ -77,12 +77,12 @@
+         Raffle r=fresh(33);(uint256 ticket,address winner,)=resolve(r,a,b,pick);
+         assert(r.status()==IRaffle.Status.CashWon);
+         uint256 gross=(uint256(a)+uint256(b))*1_000_000;
+-        assert(r.winnerProceeds()==gross*80/100&&r.sponsorProceeds()==gross*15/100&&r.protocolFees()==gross*5/100);
++        assert(r.winnerProceeds()==gross*80/100&&r.sponsorProceeds()==gross*15/100&&r.protocolFees()==(uint256(a)+uint256(b))*50_000);
+         if(sponsorFirst){r.releaseSponsorProceeds();invariantBalance(r);}
+         vm.prank(winner);r.redeemWinningTicket(ticket);invariantBalance(r);
+         if(!sponsorFirst){r.releaseSponsorProceeds();invariantBalance(r);}
+         r.releaseProtocolFees();invariantBalance(r);r.releaseSponsorPrize();
+-        assert(q.balanceOf(SP)==gross*15/100&&q.balanceOf(TR)==gross*5/100);
++        assert(q.balanceOf(SP)==gross*15/100&&q.balanceOf(TR)==(uint256(a)+uint256(b))*50_000);
+         assert(q.balanceOf(A)+q.balanceOf(B)+q.balanceOf(SP)+q.balanceOf(TR)==2*FUNDS);
+         assert(r.accountedQuoteBalance()==0&&r.winnerRedeemed()&&prize.ownerOf(1)==SP);
+     }
+@@ -93,7 +93,7 @@
+         r.releaseProtocolFees();invariantBalance(r);r.releaseSponsorProceeds();invariantBalance(r);
+         vm.prank(winner);r.redeemWinningTicket(ticket);invariantBalance(r);
+         assert(prize.ownerOf(1)==winner&&r.winnerRedeemed()&&r.prizeClaimed());
+-        assert(q.balanceOf(SP)==gross*95/100&&q.balanceOf(TR)==gross*5/100&&r.accountedQuoteBalance()==0);
++        assert(q.balanceOf(SP)==(uint256(a)+uint256(b))*950_000&&q.balanceOf(TR)==(uint256(a)+uint256(b))*50_000&&r.accountedQuoteBalance()==0);
+         assert(q.balanceOf(A)+q.balanceOf(B)+q.balanceOf(SP)+q.balanceOf(TR)==2*FUNDS);
+     }
+     function check_aa_uninitialized_clone_denies_stranger(address caller) public {

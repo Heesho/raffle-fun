@@ -1,0 +1,20 @@
+{
+  "scenario": "Rejected nonowner lazy redemption in standalone Python model",
+  "raised": "not owner",
+  "before": {
+    "settlement_complete": false,
+    "unsettled": 1000000,
+    "sponsor_claim": 0,
+    "treasury_claim": 0,
+    "winner_cash": 0
+  },
+  "after": {
+    "settlement_complete": true,
+    "unsettled": 0,
+    "sponsor_claim": 150000,
+    "treasury_claim": 50000,
+    "winner_cash": 800000
+  },
+  "state_unchanged": false,
+  "not_a_solidity_execution": true
+}

@@ -1,0 +1,119 @@
+{
+  "function": "redeemWinningTicket",
+  "file": "target/packages/contracts/src/Raffle.sol",
+  "lines": "L309-L346",
+  "analysisFile": "audit/S1/audit-context/functions/04-redeemWinningTicket.md",
+  "invariants": [
+    {
+      "claim": "Successful redemption requires an unconsumed winner, a winning terminal result, the winning ticket ID and caller equal to its current live owner.",
+      "evidence": "Raffle.sol L310-L321; L538, L551-L552; ERC721.sol L426-L431"
+    },
+    {
+      "claim": "Recipient, redeemed flag and ticket burn precede either mutable external asset call.",
+      "evidence": "Raffle.sol L323-L334, L339-L342; ERC721.sol L303-L308, L216-L244"
+    },
+    {
+      "claim": "NFT success requires prizeClaimed set and a post-transfer ownership report equal to winner; cash success consumes the entire positive winnerProceeds before transfer.",
+      "evidence": "Raffle.sol L329-L342"
+    },
+    {
+      "claim": "Optional settlement preserves gross allocation conservation and binds the ID without selecting a recipient or sending assets.",
+      "evidence": "Raffle.sol L533-L558; RaffleConstants.sol L12-L21"
+    },
+    {
+      "claim": "NFT branch returns zero cash; cash branch returns the consumed amount and zero NFT event fields.",
+      "evidence": "Raffle.sol L309, L327-L345"
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "Winning range represents an existing current owner at redemption.",
+      "establishedBy": "Range membership: Raffle.sol L538, L579-L585; existence separately established by L320 and ERC721.sol L426-L431. ticketRange alone merely returns stored bounds at Raffle.sol L451-L455."
+    },
+    {
+      "claim": "Burn is authorized even though its internal helper skips sender authorization.",
+      "establishedBy": "Raffle.sol L320-L321 supplies authorization before ERC721.sol L303-L308 calls _update with zero auth; ERC721.sol L220-L222 skips the auth branch."
+    },
+    {
+      "claim": "The prize contract reports real ownership after transfer.",
+      "establishedBy": "nothing found; Raffle.sol L334-L336 trusts the same configured external contract for both operations; IRaffle.sol L14-L15 states the supported-prize honesty assumption."
+    },
+    {
+      "claim": "The quote token transfers the exact amount without fees or rebasing and is canonical USDC.",
+      "establishedBy": "nothing found as a runtime delivery/identity proof; explicit trust model at IRaffle.sol L12-L15 and Raffle.sol L560-L561; Factory L58-L77 checks metadata and assigns identity verification to deployment tooling."
+    },
+    {
+      "claim": "ERC721 owner balances agree with ownership before unchecked burn decrement.",
+      "establishedBy": "Shared ERC721.sol _update accounting L216-L244 and mint checks L259-L267; no independent balance assertion at burn."
+    }
+  ],
+  "calls": [
+    {
+      "callee": "nonReentrant / guard storage helpers",
+      "kind": "internal",
+      "propagates": "Rejects ENTERED, sets ENTERED before body and NOT_ENTERED after; zero initial clone storage is accepted. ReentrancyGuard.sol L69-L117; StorageSlot.sol L93-L97."
+    },
+    {
+      "callee": "_settleWinningTicket -> _requireWinningTicket -> ticketRange",
+      "kind": "internal",
+      "propagates": "Validates winning status/range, allocates gross liabilities and binds ID once; never establishes live ownership or recipient. Raffle.sol L533-L558, L579-L585, L451-L455."
+    },
+    {
+      "callee": "Math.mulDiv -> mul512 / ternary -> SafeCast.toUint / Panic.panic",
+      "kind": "internal",
+      "propagates": "Floor multiplication/division; zero denominator or excessive quotient rejects. Canonical bounded gross uses the low-product branch. Math.sol L37-L46, L143-L150, L206-L277; SafeCast.sol L1157-L1161; Panic.sol L50-L56; Raffle.sol L219-L233."
+    },
+    {
+      "callee": "ownerOf -> _requireOwned -> _ownerOf",
+      "kind": "internal",
+      "propagates": "Reads local ticket owner and rejects nonexistent/burned IDs; no prize call. ERC721.sol L61-L63, L146-L148, L426-L431."
+    },
+    {
+      "callee": "_burn -> Raffle._update -> ERC721._update -> _approve",
+      "kind": "internal",
+      "propagates": "Burn skips destination screening and auth checks, clears per-ticket approval and ownership, decrements owner balance and emits Transfer; caller must authorize first. Raffle.sol L321, L497-L502; ERC721.sol L216-L244, L303-L308, L383-L399."
+    },
+    {
+      "callee": "prizeToken.transferFrom(this,winner,id)",
+      "kind": "external-black-box",
+      "propagates": "Zero-value mutable call may reject, reenter unguarded interfaces or implement arbitrary behavior; claim state is consumed before it. Raffle.sol L323-L334; IERC721.sol L91."
+    },
+    {
+      "callee": "prizeToken.ownerOf(id)",
+      "kind": "external-black-box",
+      "propagates": "Read-only query must decode to winner or redemption fails; truthful ownership is not independently established. Raffle.sol L335-L336; IERC721.sol L39."
+    },
+    {
+      "callee": "_transferQuote -> _isProtocolDestination",
+      "kind": "internal",
+      "propagates": "Rejects known protocol destinations before token call; registry queried only for code-bearing addresses not already classified. Raffle.sol L564-L567, L593-L605."
+    },
+    {
+      "callee": "Factory.raffleImplementation / Factory.isRaffle",
+      "kind": "external-source-available",
+      "propagates": "Immutable implementation and registration mapping support same-factory destination screening. Factory.sol L42, L54, L89-L91, L123-L125; Raffle.sol L601-L603."
+    },
+    {
+      "callee": "SafeERC20.safeTransfer -> _safeTransfer",
+      "kind": "internal",
+      "propagates": "Bubbles revert; accepts successful first return word 1 or empty return from code-bearing token, otherwise rejects. Does not measure balances. SafeERC20.sol L33-L37, L176-L200."
+    },
+    {
+      "callee": "quoteToken.transfer(winner,cashAmount)",
+      "kind": "external-black-box",
+      "propagates": "Receives zero native value and full winner allocation after zeroing liability; exact accounting depends on canonical-token trust assumption. Raffle.sol L339-L342, L560-L566; SafeERC20.sol L176-L196."
+    }
+  ],
+  "callers": [
+    "External arbitrary caller; current owner must pass Raffle.sol L321; approvals alone do not authorize this entrypoint (L309-L321)."
+  ],
+  "sharedState": [
+    "Winner/result/ranges and settlement allocation: Raffle.sol L209-L237, L304-L306, L509-L558.",
+    "Winner recipient/redeemed flag/proceeds, prizeClaimed and ERC721 ownership: Raffle.sol L323-L342, L395-L407; ERC721.sol L216-L244.",
+    "Sponsor/protocol separate releases and total accounted liabilities: Raffle.sol L375-L392, L468-L470."
+  ],
+  "openQuestions": [
+    "unclear; need to inspect the configured prize implementation to establish truthful transfer and ownership-report semantics; paired external calls alone do not establish them (Raffle.sol L334-L336; IRaffle.sol L14-L15).",
+    "unclear; need to inspect deployment dependency selection and canonical quote implementation to establish identity and exact-value transfers (Factory.sol L58-L77; Raffle.sol L560-L566). Live-chain verification is outside this context task."
+  ]
+}

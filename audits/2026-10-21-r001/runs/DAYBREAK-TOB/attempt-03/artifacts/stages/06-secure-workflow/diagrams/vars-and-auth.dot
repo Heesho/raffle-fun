@@ -1,0 +1,34 @@
+digraph StateWriters {
+  graph [rankdir=LR, bgcolor="white", label="State writers and effective authorization (Slither vars-and-auth + source review)", labelloc=t, fontsize=19, fontname="Helvetica"];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=9];
+  edge [fontname="Helvetica", fontsize=8, color="#5d6d7e"];
+
+  factory [fillcolor="#ffe0b2", label="Factory only\ninitialize"];
+  publicflow [fillcolor="#fff4cc", label="Permissionless / lifecycle-gated\nbuyEntries, requestDraw, enableRefunds,\nsettleWinningTicket, release functions"];
+  owner [fillcolor="#d5f5e3", label="Current ticket owner\nredeemWinningTicket, refundTickets"];
+  wrapper [fillcolor="#ffe0b2", label="Configured wrapper\nrawFulfillRandomWords -> fulfillRandomWords"];
+  prize [fillcolor="#ffe0b2", label="Exact prize callback\nonERC721Received"];
+  erc721auth [fillcolor="#d5f5e3", label="ERC-721 owner / approved operator\napprove + transfer paths"];
+
+  config [fillcolor="#eef4ff", label="Clone configuration\ninitialized, sponsor, sponsorRecipient, treasury,\nprizeToken/id, raffleId, reserveEntries, endTime"];
+  lifecycle [fillcolor="#eef4ff", label="Lifecycle/draw\nstatus, drawRequestedAt, _requestInFlight,\nvrfRequestId, resolvedAt, winningEntry"];
+  sales [fillcolor="#eef4ff", label="Ticket sales ledger\ntotalEntries, ticketCount, _ticketRanges, unsettledPot"];
+  liabilities [fillcolor="#eef4ff", label="Liability buckets\nunsettledPot, remainingRefundLiability,\nwinnerProceeds, sponsorProceeds, protocolFees"];
+  redemption [fillcolor="#eef4ff", label="Settlement/redemption flags\nsettlementComplete, winningTicketId, winnerRecipient,\nwinnerRedeemed, prizeClaimed"];
+  ledger [fillcolor="#eef4ff", label="Inherited ERC-721 ledger\n_owners, _balances, approvals"];
+  registry [fillcolor="#eef4ff", label="Factory immutable config + registry\nraffleCount, raffleById, idByRaffle, isRaffle"];
+
+  factory -> config [label="one-time + factory check"];
+  publicflow -> lifecycle [label="request/refund transitions"];
+  publicflow -> sales [label="buy; time/status + payment"];
+  publicflow -> liabilities [label="settle/refund/release"];
+  publicflow -> redemption [label="settle/release"];
+  owner -> liabilities [label="refund/redeem"];
+  owner -> redemption [label="redeem"];
+  owner -> ledger [label="burn"];
+  wrapper -> lifecycle [label="caller + request/status/time/shape"];
+  prize -> lifecycle [label="AwaitingPrize + exact tuple"];
+  erc721auth -> ledger [label="authorization in ERC721._update"];
+  publicflow -> ledger [label="safe mint"];
+  factory -> registry [label="factory constructor/create flow"];
+}

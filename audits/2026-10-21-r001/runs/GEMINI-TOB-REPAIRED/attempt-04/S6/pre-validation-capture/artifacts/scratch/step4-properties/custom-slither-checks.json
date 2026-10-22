@@ -1,0 +1,459 @@
+{
+  "checks": [
+    {
+      "id": "CHECK-1",
+      "name": "reentrancy-guard-coverage",
+      "results": [
+        {
+          "contract": "Raffle",
+          "function": "rawFulfillRandomWords(uint256,uint256[])",
+          "modifiers": [],
+          "state_vars_written": [
+            "resolvedAt",
+            "status",
+            "winningEntry"
+          ],
+          "status": "PASS (documented custom guard)"
+        },
+        {
+          "contract": "Raffle",
+          "function": "approve(address,uint256)",
+          "modifiers": [],
+          "state_vars_written": [
+            "_tokenApprovals"
+          ],
+          "status": "PASS (documented custom guard)"
+        },
+        {
+          "contract": "Raffle",
+          "function": "setApprovalForAll(address,bool)",
+          "modifiers": [],
+          "state_vars_written": [
+            "_operatorApprovals"
+          ],
+          "status": "PASS (documented custom guard)"
+        },
+        {
+          "contract": "Raffle",
+          "function": "transferFrom(address,address,uint256)",
+          "modifiers": [],
+          "state_vars_written": [
+            "_tokenApprovals",
+            "_balances",
+            "_owners"
+          ],
+          "status": "PASS (documented custom guard)"
+        },
+        {
+          "contract": "Raffle",
+          "function": "safeTransferFrom(address,address,uint256)",
+          "modifiers": [],
+          "state_vars_written": [
+            "_tokenApprovals",
+            "_balances",
+            "_owners"
+          ],
+          "status": "PASS (documented custom guard)"
+        },
+        {
+          "contract": "Raffle",
+          "function": "safeTransferFrom(address,address,uint256,bytes)",
+          "modifiers": [],
+          "state_vars_written": [
+            "_tokenApprovals",
+            "_balances",
+            "_owners"
+          ],
+          "status": "PASS (documented custom guard)"
+        },
+        {
+          "contract": "Raffle",
+          "function": "initialize(IRaffle.RaffleInitParams)",
+          "modifiers": [],
+          "state_vars_written": [
+            "initialized",
+            "sponsorRecipient",
+            "reserveEntries",
+            "status",
+            "prizeTokenId",
+            "protocolTreasury",
+            "sponsor",
+            "endTime",
+            "raffleId",
+            "prizeToken"
+          ],
+          "status": "PASS (documented custom guard)"
+        },
+        {
+          "contract": "Raffle",
+          "function": "buyEntries(address,uint128)",
+          "modifiers": [
+            "nonReentrant"
+          ],
+          "state_vars_written": [
+            "unsettledPot",
+            "_tokenApprovals",
+            "totalEntries",
+            "_owners",
+            "_ticketRanges",
+            "ticketCount",
+            "_balances"
+          ],
+          "status": "PASS (nonReentrant)"
+        },
+        {
+          "contract": "Raffle",
+          "function": "requestDraw()",
+          "modifiers": [
+            "nonReentrant"
+          ],
+          "state_vars_written": [
+            "status",
+            "drawRequestedAt",
+            "vrfRequestId",
+            "_requestInFlight"
+          ],
+          "status": "PASS (nonReentrant)"
+        },
+        {
+          "contract": "Raffle",
+          "function": "enableRefunds()",
+          "modifiers": [
+            "nonReentrant"
+          ],
+          "state_vars_written": [
+            "unsettledPot",
+            "status",
+            "remainingRefundLiability"
+          ],
+          "status": "PASS (nonReentrant)"
+        },
+        {
+          "contract": "Raffle",
+          "function": "settleWinningTicket(uint256)",
+          "modifiers": [
+            "nonReentrant"
+          ],
+          "state_vars_written": [
+            "unsettledPot",
+            "protocolFees",
+            "winnerProceeds",
+            "settlementComplete",
+            "sponsorProceeds",
+            "winningTicketId"
+          ],
+          "status": "PASS (nonReentrant)"
+        },
+        {
+          "contract": "Raffle",
+          "function": "redeemWinningTicket(uint256)",
+          "modifiers": [
+            "nonReentrant"
+          ],
+          "state_vars_written": [
+            "unsettledPot",
+            "_tokenApprovals",
+            "protocolFees",
+            "winnerRedeemed",
+            "_owners",
+            "winnerProceeds",
+            "winningTicketId",
+            "prizeClaimed",
+            "_balances",
+            "settlementComplete",
+            "sponsorProceeds",
+            "winnerRecipient"
+          ],
+          "status": "PASS (nonReentrant)"
+        },
+        {
+          "contract": "Raffle",
+          "function": "refundTickets(uint256[])",
+          "modifiers": [
+            "nonReentrant"
+          ],
+          "state_vars_written": [
+            "_tokenApprovals",
+            "_balances",
+            "_owners",
+            "remainingRefundLiability"
+          ],
+          "status": "PASS (nonReentrant)"
+        },
+        {
+          "contract": "Raffle",
+          "function": "releaseSponsorProceeds()",
+          "modifiers": [
+            "nonReentrant"
+          ],
+          "state_vars_written": [
+            "sponsorProceeds"
+          ],
+          "status": "PASS (nonReentrant)"
+        },
+        {
+          "contract": "Raffle",
+          "function": "releaseProtocolFees()",
+          "modifiers": [
+            "nonReentrant"
+          ],
+          "state_vars_written": [
+            "protocolFees"
+          ],
+          "status": "PASS (nonReentrant)"
+        },
+        {
+          "contract": "Raffle",
+          "function": "releaseSponsorPrize()",
+          "modifiers": [
+            "nonReentrant"
+          ],
+          "state_vars_written": [
+            "prizeClaimed"
+          ],
+          "status": "PASS (nonReentrant)"
+        },
+        {
+          "contract": "Raffle",
+          "function": "onERC721Received(address,address,uint256,bytes)",
+          "modifiers": [],
+          "state_vars_written": [
+            "status"
+          ],
+          "status": "PASS (documented custom guard)"
+        },
+        {
+          "contract": "RaffleFactory",
+          "function": "createRaffle(IRaffleFactory.CreateRaffleParams)",
+          "modifiers": [
+            "nonReentrant"
+          ],
+          "state_vars_written": [
+            "idByRaffle",
+            "raffleById",
+            "raffleCount",
+            "isRaffle"
+          ],
+          "status": "PASS (nonReentrant)"
+        }
+      ]
+    },
+    {
+      "id": "CHECK-2",
+      "name": "protocol-destination-guard",
+      "results": [
+        {
+          "function": "Raffle._update(address,uint256,address)",
+          "calls_isProtocolDestination": false
+        },
+        {
+          "function": "Raffle.initialize(IRaffle.RaffleInitParams)",
+          "calls_isProtocolDestination": true
+        },
+        {
+          "function": "Raffle.buyEntries(address,uint128)",
+          "calls_isProtocolDestination": false
+        },
+        {
+          "function": "Raffle._update(address,uint256,address)",
+          "calls_isProtocolDestination": true
+        },
+        {
+          "function": "Raffle._transferQuote(address,uint256)",
+          "calls_isProtocolDestination": true
+        }
+      ]
+    },
+    {
+      "id": "CHECK-3",
+      "name": "status-machine-guards",
+      "results": [
+        {
+          "function": "rawFulfillRandomWords(uint256,uint256[])",
+          "reads_status": true,
+          "calls_requireStatus": false,
+          "checks_status": true
+        },
+        {
+          "function": "approve(address,uint256)",
+          "reads_status": false,
+          "calls_requireStatus": false,
+          "checks_status": false
+        },
+        {
+          "function": "setApprovalForAll(address,bool)",
+          "reads_status": false,
+          "calls_requireStatus": false,
+          "checks_status": false
+        },
+        {
+          "function": "transferFrom(address,address,uint256)",
+          "reads_status": false,
+          "calls_requireStatus": false,
+          "checks_status": false
+        },
+        {
+          "function": "safeTransferFrom(address,address,uint256)",
+          "reads_status": false,
+          "calls_requireStatus": false,
+          "checks_status": false
+        },
+        {
+          "function": "safeTransferFrom(address,address,uint256,bytes)",
+          "reads_status": false,
+          "calls_requireStatus": false,
+          "checks_status": false
+        },
+        {
+          "function": "receive()",
+          "reads_status": false,
+          "calls_requireStatus": false,
+          "checks_status": false
+        },
+        {
+          "function": "initialize(IRaffle.RaffleInitParams)",
+          "reads_status": false,
+          "calls_requireStatus": false,
+          "checks_status": false
+        },
+        {
+          "function": "buyEntries(address,uint128)",
+          "reads_status": true,
+          "calls_requireStatus": true,
+          "checks_status": true
+        },
+        {
+          "function": "requestDraw()",
+          "reads_status": true,
+          "calls_requireStatus": true,
+          "checks_status": true
+        },
+        {
+          "function": "enableRefunds()",
+          "reads_status": true,
+          "calls_requireStatus": false,
+          "checks_status": true
+        },
+        {
+          "function": "settleWinningTicket(uint256)",
+          "reads_status": true,
+          "calls_requireStatus": false,
+          "checks_status": true
+        },
+        {
+          "function": "redeemWinningTicket(uint256)",
+          "reads_status": true,
+          "calls_requireStatus": false,
+          "checks_status": true
+        },
+        {
+          "function": "refundTickets(uint256[])",
+          "reads_status": true,
+          "calls_requireStatus": true,
+          "checks_status": true
+        },
+        {
+          "function": "releaseSponsorProceeds()",
+          "reads_status": false,
+          "calls_requireStatus": false,
+          "checks_status": false
+        },
+        {
+          "function": "releaseProtocolFees()",
+          "reads_status": false,
+          "calls_requireStatus": false,
+          "checks_status": false
+        },
+        {
+          "function": "releaseSponsorPrize()",
+          "reads_status": true,
+          "calls_requireStatus": false,
+          "checks_status": true
+        },
+        {
+          "function": "onERC721Received(address,address,uint256,bytes)",
+          "reads_status": true,
+          "calls_requireStatus": false,
+          "checks_status": true
+        }
+      ]
+    },
+    {
+      "id": "CHECK-4",
+      "name": "clone-storage-initialization-safety",
+      "constructor_written": [
+        "_name",
+        "_symbol",
+        "factory",
+        "i_linkToken",
+        "i_vrfV2PlusWrapper",
+        "initialized",
+        "quoteToken",
+        "status"
+      ],
+      "initialize_written": [
+        "endTime",
+        "initialized",
+        "prizeToken",
+        "prizeTokenId",
+        "protocolTreasury",
+        "raffleId",
+        "reserveEntries",
+        "sponsor",
+        "sponsorRecipient",
+        "status"
+      ],
+      "immutables": [
+        "factory",
+        "i_linkToken",
+        "i_vrfV2PlusWrapper",
+        "quoteToken"
+      ],
+      "constants": [
+        "ENTRY_PRICE",
+        "callbackGasLimit",
+        "requestConfirmations"
+      ]
+    },
+    {
+      "id": "CHECK-5",
+      "name": "accounting-writers-verification",
+      "results": {
+        "totalEntries": [
+          "buyEntries(address,uint128)"
+        ],
+        "unsettledPot": [
+          "_settleWinningTicket(uint256)",
+          "buyEntries(address,uint128)",
+          "enableRefunds()"
+        ],
+        "remainingRefundLiability": [
+          "enableRefunds()",
+          "refundTickets(uint256[])"
+        ],
+        "winnerProceeds": [
+          "_settleWinningTicket(uint256)",
+          "redeemWinningTicket(uint256)"
+        ],
+        "sponsorProceeds": [
+          "_settleWinningTicket(uint256)",
+          "releaseSponsorProceeds()"
+        ],
+        "protocolFees": [
+          "_settleWinningTicket(uint256)",
+          "releaseProtocolFees()"
+        ],
+        "settlementComplete": [
+          "_settleWinningTicket(uint256)"
+        ],
+        "winnerRedeemed": [
+          "redeemWinningTicket(uint256)"
+        ],
+        "prizeClaimed": [
+          "redeemWinningTicket(uint256)",
+          "releaseSponsorPrize()"
+        ]
+      }
+    }
+  ]
+}

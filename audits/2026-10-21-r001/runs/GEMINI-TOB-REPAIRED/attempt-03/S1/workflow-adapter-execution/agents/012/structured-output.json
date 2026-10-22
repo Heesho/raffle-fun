@@ -1,0 +1,47 @@
+{
+  "analysisFile": "audit-context/functions/11-onERC721Received.md",
+  "assumptions": [
+    {
+      "claim": "The Raffle clone has been initialized prior to onERC721Received so that prizeToken and sponsor are non-zero addresses and status is Status.AwaitingPrize (whereas the implementation contract is locked in Status.Refunding).",
+      "establishedBy": "Raffle.initialize (packages/contracts/src/Raffle.sol:L176-L206), Raffle.constructor (packages/contracts/src/Raffle.sol:L164-L165), and RaffleFactory.createRaffle (packages/contracts/src/RaffleFactory.sol:L106-L128)"
+    },
+    {
+      "claim": "Calling contract msg.sender (prizeToken) only invokes onERC721Received(factory, sponsor, prizeTokenId, ...) during a genuine transfer that vests ownership of prizeTokenId in the Raffle clone.",
+      "establishedBy": "RaffleFactory.createRaffle checks prize.ownerOf(params.prizeTokenId) == raffle and IRaffle(raffle).status() == IRaffle.Status.Active immediately after prize.safeTransferFrom (packages/contracts/src/RaffleFactory.sol:L128-L134) and checks IERC165.supportsInterface(type(IERC721).interfaceId) (packages/contracts/src/RaffleFactory.sol:L171-L177); ongoing standards-compliant ERC-721 custody behavior of the arbitrary prizeToken contract is established by nothing found"
+    },
+    {
+      "claim": "prizeToken.safeTransferFrom invokes IERC721Receiver.onERC721Received directly without requiring IERC165.supportsInterface(type(IERC721Receiver).interfaceId) to return true on the Raffle clone (ERC721.supportsInterface at packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L45-L50 does not include IERC721Receiver).",
+      "establishedBy": "nothing found"
+    }
+  ],
+  "callers": [
+    "RaffleFactory.createRaffle via IERC721(params.prizeToken).safeTransferFrom (packages/contracts/src/RaffleFactory.sol:L128) -> ERC721.safeTransferFrom (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L128-L136) -> ERC721Utils.checkOnERC721Received (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol:L33)",
+    "Any external caller or ERC-721 contract directly via the external entrypoint (packages/contracts/src/Raffle.sol:L416-L419)"
+  ],
+  "calls": [],
+  "file": "packages/contracts/src/Raffle.sol",
+  "function": "onERC721Received",
+  "invariants": [
+    {
+      "claim": "onERC721Received reverts with UnexpectedPrize unless status == Status.AwaitingPrize, msg.sender == address(prizeToken), tokenId == prizeTokenId, from == sponsor, and operator == factory.",
+      "evidence": "packages/contracts/src/Raffle.sol:L421-L426"
+    },
+    {
+      "claim": "On success, status transitions from Status.AwaitingPrize to Status.Active, PrizeDeposited(msg.sender, tokenId, from) is emitted, and IERC721Receiver.onERC721Received.selector (0x150b7a02) is returned.",
+      "evidence": "packages/contracts/src/Raffle.sol:L428-L430"
+    },
+    {
+      "claim": "onERC721Received can succeed at most once per Raffle clone because it transitions status to Status.Active and no function ever sets status back to Status.AwaitingPrize after one-time initialization.",
+      "evidence": "packages/contracts/src/Raffle.sol:L164-L165, L177, L205, L252, L299, L422, L428, L521"
+    }
+  ],
+  "lines": "L416-L431",
+  "openQuestions": [],
+  "sharedState": [
+    "status (packages/contracts/src/Raffle.sol:L124)",
+    "prizeToken (packages/contracts/src/Raffle.sol:L70)",
+    "prizeTokenId (packages/contracts/src/Raffle.sol:L73)",
+    "sponsor (packages/contracts/src/Raffle.sol:L61)",
+    "factory (packages/contracts/src/Raffle.sol:L55)"
+  ]
+}

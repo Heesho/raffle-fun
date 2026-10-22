@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "snapshotHash": "d0b726edfae0c24ed708c5c0f1908c40f4ab85da8d1708de38fe437a384dcc0a",
+  "contextHash": "c5b7124850800b51b1a5b5346ac3abe133da1f07d34f2d0764eab305fbb6947d",
+  "review": {
+    "observations": [
+      {
+        "title": "LEAD L-01: Untrusted-prize requirement exceeds the interface's honest-ERC721 assumption",
+        "description": "The clean requirements call arbitrary prize contracts untrusted, while IRaffle states that supported prizes are honest standards-compliant ERC721s. The factory checks self-reported ERC165 support, the receiver transition, and ownerOf after escrow; those checks cannot establish future transfer behavior. In a reserve-met result, settlement can allocate the full pot to sponsor and treasury independently of NFT delivery. If an admitted prize subsequently refuses transfer, redemption reverts atomically but NftWon has no refund transition. This is a concrete conditional liveness/trust-boundary path, not a demonstrated exploit or a finding against an honest compliant prize: no particular hostile prize implementation is present in the pinned context. Keep as a lead until the intended prize trust boundary and an applicable concrete prize behavior are established. Defensive obligation: state the supported prize trust assumptions explicitly and assess whether the intended winner exit must survive permanent prize-delivery failure.",
+        "severity": "informational",
+        "confidence": "high",
+        "source": [
+          {
+            "path": "packages/contracts/src/interfaces/IRaffle.sol",
+            "start": 12,
+            "end": 15
+          },
+          {
+            "path": "packages/contracts/src/RaffleFactory.sol",
+            "start": 127,
+            "end": 134
+          },
+          {
+            "path": "packages/contracts/src/RaffleFactory.sol",
+            "start": 171,
+            "end": 177
+          },
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 279,
+            "end": 294
+          },
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 329,
+            "end": 342
+          },
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 375,
+            "end": 391
+          },
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 533,
+            "end": 555
+          }
+        ],
+        "assumptions": [
+          "DESIGN.md is authoritative for the requirement that arbitrary prize contracts are untrusted; interface comments are evidence of a narrower implementation assumption, not permission to narrow the audit.",
+          "The conditional delivery failure requires prize behavior not instantiated by a prize implementation in this context. No claim of an executed or confirmed loss path is made.",
+          "Canonical USDC and the configured Chainlink wrapper behave according to the stated trusted dependency model."
+        ]
+      }
+    ],
+    "gaps": [
+      "Source-only review: no compilation, tests, fuzzing, invariant execution, gas measurements, static analyzer execution, symbolic execution or formal proof was performed. Manual property coverage is not measured executable coverage.",
+      "Native diagnosis is unsupported because foundry.toml profile.default contains gas_reports. Compiler metadata is 0.8.36 / Cancun; runtime compatibility and deployed bytecode remain unverified.",
+      "Existing tests are excluded by explicit sourceOnly=true, existingTests=false scope. Docker daemon is unavailable and no pinned local tool image was verified, so the separately conditional test-inclusive plan is blocked and no host-tool fallback is authorized.",
+      "All five production files including IRaffle.sol and IRaffleFactory.sol were reviewed in full from this exact context. Dependencies were snapshotted in full; manual semantic review focused on reachable ERC721 ownership/mint/burn, SafeERC20 transfer, clone creation, reentrancy storage, Math.mulDiv and VRF base/authentication. Remaining library utility text was not exhaustively audited.",
+      "Root pnpm-lock.yaml is fully pinned; only the relevant contracts importer and Chainlink/OpenZeppelin resolution entries were semantically inspected. Package declarations identify @chainlink/contracts 1.5.0 and @openzeppelin/contracts 5.6.1. No registry provenance or deployed canonical address was verified.",
+      "L-02 (unconfirmed integration lead): destination checks recognize the current factory and its already registered clones, not every other-factory or not-yet-created clone. Raffle.sol 593-604 and RaffleFactory.sol 154-168 need a precise interpretation of never move assets between raffle clones. No unauthorized victim-loss path is established; deliberate selection or transfer to an unreachable address is not promoted to a vulnerability.",
+      "USDC administrative freeze/blacklisting and a permanently non-cooperating prize can obstruct their respective transfers; transaction atomicity preserves recorded claims on revert but cannot guarantee delivery by a third-party asset contract.",
+      "NFT payout uses transferFrom plus ownerOf verification, not a receiver hook. This avoids a receiver veto but relies on the owner-selected or immutable recipient being capable of managing the received NFT; no unsupported claim that every contract recipient can recover it is made.",
+      "No frontend, deployed contract state, production credentials, historical report, scanner result, prior test source, memory or peer conclusion was used for this original pass. Target SHA is operator-supplied and exact selected bytes are bound by the native snapshot; source git history was not inspected.",
+      "Local model selection is gpt-6-astra with ultra effort as provided by the active runner instruction; provider-returned model and effort fields are unknown. No provider adapter or fallback was used. External usage, cost and provider identity are not independently verified by Gebal."
+    ]
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "recorded_utc": "2026-10-22T00:24:06.939054+00:00",
+  "finding_id": "RF-002",
+  "old_statement_preserved": "Only the same-factory empty-refund honest-NFT path was executed in recipient-validation; foreign-factory and quote-lock variants remain source-established, separately scoped.",
+  "current_statement": "The initial root recipient-validation campaign executed only the same-factory empty-refund honest-NFT path. Later sealed Claude S6 executes the future-clone quote-release rejection; later sealed Daybreak S6 executes owner-selected ticket delivery to an existing other-factory clone. These distinct local domains do not prove general theft or all foreign-factory recipient variants.",
+  "new_proof_references": [
+    {
+      "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-TOB/S6/attempt-02/generated-capture/harness-props/props/foundry/RaffleScenarios.t.sol",
+      "start_line": 471,
+      "end_line": 484,
+      "kind": "executed local mock quote-lock scenario",
+      "detail": "test_F4b configures future same-factory sponsor recipient, deploys that clone, executes paid sales/draw/winner redemption, observes InvalidQuoteDestination on sponsor release with9.5USDC liability retained, then releases treasury fees.",
+      "sha256": "e3f0c8500fa7f320446e4ea01ba4b47d5a51b30b207f52c34fd66a3708d080d3"
+    },
+    {
+      "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/provider-lanes/claude/runs/CLAUDE-TOB/S6/attempt-02/preserved/evidence/04-properties/33-forge-test-all-final.stdout.txt",
+      "start_line": 43,
+      "end_line": 44,
+      "kind": "sealed execution log",
+      "detail": "F4 honest NFT arrival and F4b quote-lock both PASS; matching meta exit_code0.",
+      "sha256": "a5babbce57652036cb70fa1a9288afbaae993545c0f578f7026ee53c39a3decc"
+    },
+    {
+      "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tests/sources/S6SecureWorkflow.t.sol",
+      "start_line": 518,
+      "end_line": 526,
+      "kind": "executed existing other-factory ticket destination scenario",
+      "detail": "Ticket owner transfers to an already deployed other-factory clone. Assertions establish arrival and absence from the local factory registry; inability of that clone to originate owner-only redemption follows the reviewed source, not an impersonated-call experiment.",
+      "sha256": "de09f41794709e3315aee5a21d13b53b3903ae0d9cf1e9ea5fa342c8a9a8f263"
+    },
+    {
+      "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tool-output/04-foundry-unit-fuzz-final-v2.stdout",
+      "start_line": 12,
+      "end_line": 12,
+      "kind": "sealed execution log",
+      "detail": "test_Evidence_CrossFactoryRaffleDestinationIsAcceptedAndStrandsTicket PASS; matching meta exit_code0.",
+      "sha256": "da6c3954daa005fd5c0fca4a05c54fd0c47a840f14441441c54b4394f105c6ad"
+    }
+  ],
+  "variant_capabilities_and_results": [
+    {
+      "variant": "future same-factory sponsor-prize return",
+      "selector": "sponsor chooses future recipient before deployment",
+      "execution": "honest ERC721 prize reaches subsequently deployed clone; independent root test completes receiving clone and leaves unrelated token stranded",
+      "scope": "sponsor-selected own prize loss"
+    },
+    {
+      "variant": "future same-factory quote recipient",
+      "selector": "sponsor chooses future recipient before deployment",
+      "execution": "once recipient is registered, sponsor quote release reverts atomically; liability remains and unrelated protocol fee releases",
+      "scope": "immutable own-recipient liveness failure; no loss of buyer refund liability"
+    },
+    {
+      "variant": "existing other-factory ticket sink",
+      "selector": "ticket owner or authorized sender chooses an existing other-factory clone",
+      "execution": "unsafe ticket transfer is accepted because local registry omits recipient; actual clone lacks a general ticket redemption/transfer-out call path",
+      "scope": "self-selected bearer claim loss; requires no future nonce timing"
+    }
+  ],
+  "no_new_campaign_or_source_edit": true,
+  "severity_unchanged": "Low; self-selected recipient loss",
+  "source_attribution_count_unchanged": 739,
+  "earlier_seals_unchanged": true
+}

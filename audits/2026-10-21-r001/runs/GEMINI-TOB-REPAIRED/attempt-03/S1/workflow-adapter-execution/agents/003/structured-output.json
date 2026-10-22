@@ -1,0 +1,81 @@
+{
+  "analysisFile": "audit-context/functions/02-buyEntries.md",
+  "assumptions": [
+    {
+      "claim": "quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount) increases quoteToken.balanceOf(address(this)) by the exact grossAmount without fee-on-transfer deduction, rebasing, or untrusted callback hooks.",
+      "establishedBy": "nothing found (RaffleFactory.sol:L66, L70-L78 only checks deployed code presence and decimals() == 6; exact transfer semantics rely on the trusted quoteToken_ constructor argument)"
+    },
+    {
+      "claim": "ticketCount < type(uint128).max prior to ++ticketCount so the uint128 increment does not overflow and ticketId == uint256(ticketCount).",
+      "establishedBy": "packages/contracts/src/Raffle.sol:L218-L221, L230-L231 (each call requires entryCount >= 1 and entryCount <= type(uint128).max - totalEntries, maintaining ticketCount <= totalEntries <= type(uint128).max - 1 prior to increment)"
+    },
+    {
+      "claim": "A future Raffle clone address that has not yet been deployed via Clones.clone (and thus currently has code.length == 0 and isRaffle == false) is not supplied as recipient before its creation.",
+      "establishedBy": "nothing found (packages/contracts/src/Raffle.sol:L602-L604 only queries canonicalFactory.isRaffle(destination) when destination.code.length != 0, and RaffleFactory.sol:L125 sets isRaffle only during createRaffle)"
+    },
+    {
+      "claim": "Re-entry from IERC721Receiver(recipient).onERC721Received into non-guarded ERC721 functions (transferFrom, safeTransferFrom, approve, setApprovalForAll) during _safeMint does not violate Raffle accounting because all Raffle storage writes complete before _safeMint.",
+      "establishedBy": "packages/contracts/src/Raffle.sol:L230-L235 and packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L236, L240, L288-L289"
+    }
+  ],
+  "callers": [
+    "External entrypoint reachable by any caller during Status.Active before endTime (packages/contracts/src/Raffle.sol:L209); no internal callers."
+  ],
+  "calls": [
+    {
+      "callee": "ReentrancyGuard.nonReentrant (_nonReentrantBefore / _nonReentrantAfter)",
+      "kind": "external-source-available",
+      "propagates": "Reverts if REENTRANCY_GUARD_STORAGE == ENTERED (2) and sets the slot to ENTERED (2) for the duration of buyEntries before resetting to NOT_ENTERED (1), blocking re-entry into any nonReentrant function on the same Raffle clone (ReentrancyGuard.sol:L69-L73, L88-L114). Does not block inherited ERC721 transfer/approval functions (ERC721.sol:L93-L136)."
+    },
+    {
+      "callee": "Raffle._requireStatus",
+      "kind": "internal",
+      "propagates": "Establishes status == Status.Active on all non-reverting paths (packages/contracts/src/Raffle.sol:L573-L575)."
+    },
+    {
+      "callee": "SafeERC20.safeTransferFrom -> IERC20(quoteToken).transferFrom",
+      "kind": "external-source-available",
+      "propagates": "Calls quoteToken.transferFrom(msg.sender, address(this), grossAmount) and reverts unless the call succeeds and either returns true (1) or returns empty data on a contract with extcodesize > 0 (SafeERC20.sol:L43-L47, L212-L244). Does not verify the recipient balance delta."
+    },
+    {
+      "callee": "ERC721._safeMint -> ERC721._mint -> Raffle._update -> Raffle._isProtocolDestination -> ERC721._update -> ERC721Utils.checkOnERC721Received",
+      "kind": "external-source-available",
+      "propagates": "Verifies recipient != address(0) and _owners[ticketId] == address(0) (ERC721.sol:L260-L266); rejects recipient if _isProtocolDestination(recipient, address(prizeToken)) is true (Raffle.sol:L498-L500, L593-L605, querying canonicalFactory.raffleImplementation() at L601 and canonicalFactory.isRaffle(recipient) at L603 only when recipient.code.length != 0 at L602); increments _balances[recipient] and writes _owners[ticketId] = recipient (ERC721.sol:L236, L240); and only when recipient.code.length > 0 calls untrusted IERC721Receiver(recipient).onERC721Received(msg.sender, address(0), ticketId, \"\") requiring the ERC721Receiver selector (ERC721Utils.sol:L32-L48)."
+    }
+  ],
+  "file": "packages/contracts/src/Raffle.sol",
+  "function": "buyEntries",
+  "invariants": [
+    {
+      "claim": "Entry purchases only succeed when status == Status.Active and block.timestamp < endTime, making buyEntries strictly mutually exclusive with requestDraw (which requires block.timestamp >= endTime at L242).",
+      "evidence": "packages/contracts/src/Raffle.sol:L215-L216, L573-L575"
+    },
+    {
+      "claim": "Every minted ticket represents a non-empty, 1-based inclusive range [firstEntry, lastEntry] with 1 <= firstEntry <= lastEntry <= totalEntries <= type(uint128).max and lastEntry - firstEntry + 1 == entryCount.",
+      "evidence": "packages/contracts/src/Raffle.sol:L218-L221, L226-L227, L230, L232"
+    },
+    {
+      "claim": "Minted ticketIds are sequential 1-based integers 1..ticketCount whose stored _ticketRanges partition [1, totalEntries] into contiguous, disjoint intervals without gaps or overlaps.",
+      "evidence": "packages/contracts/src/Raffle.sol:L226-L232"
+    },
+    {
+      "claim": "While status == Status.Active, unsettledPot == uint256(totalEntries) * ENTRY_PRICE == grossSales().",
+      "evidence": "packages/contracts/src/Raffle.sol:L223, L227, L230, L233, L473-L475"
+    },
+    {
+      "claim": "All Raffle storage writes (totalEntries, ticketCount, _ticketRanges[ticketId], unsettledPot) and ERC-721 ownership writes (_balances[recipient], _owners[ticketId]) occur before the untrusted IERC721Receiver(recipient).onERC721Received callback in _safeMint.",
+      "evidence": "packages/contracts/src/Raffle.sol:L230-L235; packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L236, L240, L288-L289"
+    }
+  ],
+  "lines": "L209-L237",
+  "openQuestions": [],
+  "sharedState": [
+    "status (packages/contracts/src/Raffle.sol:L124) — read via _requireStatus at L215; written by constructor (L165), initialize (L205), onERC721Received (L428), requestDraw (L252), enableRefunds (L299), fulfillRandomWords (L521)",
+    "endTime (packages/contracts/src/Raffle.sol:L82) — read at L216; written by initialize (L204); read by requestDraw (L242), enableRefunds (L281), drawRequestDeadline (L459)",
+    "totalEntries (packages/contracts/src/Raffle.sol:L85) — read and written at L219, L226-L227, L230; read by requestDraw (L243), enableRefunds (L280), grossSales (L474), fulfillRandomWords (L518, L521)",
+    "ticketCount (packages/contracts/src/Raffle.sol:L88) — read and written at L228, L231",
+    "_ticketRanges (packages/contracts/src/Raffle.sol:L139) — written at L232; read by ticketRange (L452-L454) via refundTickets (L362) and _requireWinningTicket (L580)",
+    "unsettledPot (packages/contracts/src/Raffle.sol:L91) — incremented at L233; read and zeroed by enableRefunds (L296-L297) and _settleWinningTicket (L539, L553); read by accountedQuoteBalance (L469)",
+    "ERC721._owners and ERC721._balances (packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol:L28-L30) — written via _safeMint at Raffle.sol:L235; read and mutated by redeemWinningTicket (L320, L325), refundTickets (L359, L364), and ERC721 transfer operations (ERC721.sol:L115-L136)"
+  ]
+}

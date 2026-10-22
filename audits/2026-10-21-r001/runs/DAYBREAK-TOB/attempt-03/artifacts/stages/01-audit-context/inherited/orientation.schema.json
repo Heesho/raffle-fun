@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["stage_id", "accepted_local_selection", "provider_returned_model", "modules", "entrypoints", "actors", "state", "candidates", "language", "files_covered"],
+  "properties": {
+    "stage_id": {"const": "S1-ORIENT"},
+    "accepted_local_selection": {"const": {"model": "gpt-daybreak-blue-latest", "reasoning_effort": "ultra", "access_program": "daybreak_blue", "fallback": false}},
+    "provider_returned_model": {"type": "string"},
+    "language": {"type": "string"},
+    "modules": {"type": "array", "items": {"type": "object", "required": ["name", "path", "role"], "properties": {"name": {"type": "string"}, "path": {"type": "string"}, "role": {"type": "string"}}}},
+    "entrypoints": {"type": "array", "items": {"type": "object", "required": ["name", "file", "reachableBy"], "properties": {"name": {"type": "string"}, "file": {"type": "string"}, "reachableBy": {"type": "string"}}}},
+    "actors": {"type": "array", "items": {"type": "object", "required": ["name", "trust"], "properties": {"name": {"type": "string"}, "trust": {"enum": ["untrusted", "semi-trusted", "trusted", "unclear"]}}}},
+    "state": {"type": "array", "items": {"type": "object", "required": ["name", "file", "writtenBy"], "properties": {"name": {"type": "string"}, "file": {"type": "string"}, "writtenBy": {"type": "array", "items": {"type": "string"}}}}},
+    "candidates": {"type": "array", "maxItems": 40, "items": {"type": "object", "required": ["name", "file", "why"], "properties": {"name": {"type": "string"}, "file": {"type": "string"}, "why": {"type": "string"}}}},
+    "files_covered": {"type": "array", "items": {"type": "string"}}
+  }
+}

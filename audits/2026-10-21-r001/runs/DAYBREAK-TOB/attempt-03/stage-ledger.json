@@ -1,0 +1,364 @@
+{
+  "schema_version": 1,
+  "cell": "DAYBREAK-TOB",
+  "attempt": "attempt-03",
+  "lineage": "continuation-of-same-cell",
+  "generated_at": "2026-10-21T23:43:39Z",
+  "target_commit": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "method": {
+    "name": "Trail of Bits six-skill aggregate",
+    "upstream": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits",
+    "commit": "82fe8226252622fa807643bdca1710901198553a",
+    "full_catalog": false,
+    "native_order": [
+      "audit-context-building",
+      "entry-point-analyzer",
+      "token-integration-analyzer",
+      "guidelines-advisor",
+      "spec-to-code-compliance",
+      "secure-workflow-guide"
+    ]
+  },
+  "required_route": {
+    "runner": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/bin/codex",
+    "runner_version": "0.163.0-alpha.10.2",
+    "model": "gpt-daybreak-blue-latest",
+    "cyber_access_program": "daybreak_blue",
+    "model_reasoning_effort": "ultra",
+    "multi_agent": false,
+    "fallback": false,
+    "provider_returned_identity": "unknown"
+  },
+  "scope": {
+    "production_files": 5,
+    "reachable_dependency_files": 31,
+    "design": "target/DESIGN.md",
+    "dependency_hashes": "target/dependency-hashes.json",
+    "attempt_02": "preserved-untouched-not-read",
+    "cross_cell_reconciliation": false,
+    "historical_tests_or_audits": false
+  },
+  "stages": [
+    {
+      "order": 1,
+      "id": "S1",
+      "skill": "audit-context-building",
+      "skill_path": "plugins/audit-context-building/skills/audit-context-building/SKILL.md",
+      "skill_sha256": "33fa693dc6e166cfa4919e4373cb6578c009d296234c2ae7cb3cd4e79b443765",
+      "execution": "inherited-from-same-cell-attempt-01-and-byte-validated",
+      "rerun": false,
+      "status": "sealed",
+      "source_only": true,
+      "scanner_or_test_exposure": false,
+      "primary_output": "artifacts/stages/01-audit-context/inherited/DOSSIER.md",
+      "primary_output_sha256": "854e2abd2863adb63f553f1fd4ac1a5e3b81acae38d9bbb2d1733c8a0fb7e0af",
+      "native_function_records": 12,
+      "seal": "artifacts/stages/01-audit-context/SEAL.json",
+      "seal_sha256": "e6957a73277fbea4b5d2c308024eb07eafa89454ced6daf40df4f10fec18c803",
+      "route_evidence": [
+        "artifacts/stages/01-audit-context/inherited/raw/orient-attempt-03.events.jsonl",
+        "artifacts/stages/01-audit-context/inherited/raw/orientation-response.json",
+        "artifacts/stages/01-audit-context/inherited/raw/synthesis-response.json",
+        "artifacts/stages/01-audit-context/SEAL.json"
+      ],
+      "route": {
+        "model": "gpt-daybreak-blue-latest",
+        "cyber_access_program": "daybreak_blue",
+        "model_reasoning_effort": "ultra",
+        "multi_agent": false,
+        "fallback": false,
+        "provider_returned_identity": "unknown"
+      },
+      "adaptations_and_incidents": [
+        "Reused rather than restarted because the native dossier and all 12 records were already complete in the same cell.",
+        "Thirty-one common native files were byte-identical; the two additional copied prompt/schema resources matched their originals.",
+        "The earlier outer controller termination occurred after completion and did not invalidate or rewrite the evidence."
+      ]
+    },
+    {
+      "order": 2,
+      "id": "S2",
+      "skill": "entry-point-analyzer",
+      "skill_path": "plugins/entry-point-analyzer/skills/entry-point-analyzer/SKILL.md",
+      "skill_sha256": "0d0e2956bdf9bf5be7efdfcefc754cabd2c1deb015731f3341f919eae2a0e3ca",
+      "execution": "fresh-exact-route",
+      "status": "sealed",
+      "source_only": true,
+      "scanner_or_test_exposure": false,
+      "primary_output": "artifacts/stages/02-entry-point/REPORT.md",
+      "primary_output_sha256": "e63757982fbe049fa6ac482a7c205c00160dd84003b78b727adac0f90391cfd0",
+      "seal": "artifacts/stages/02-entry-point/SEAL.json",
+      "seal_sha256": "de24917fb06493ea261bd9a471ddcb72b20fedfcc8e1a035d12883d7f153f516",
+      "manifest": "artifacts/stages/02-entry-point/STAGE-MANIFEST.sha256",
+      "route_evidence": [
+        "artifacts/stages/02-entry-point/raw/attempt-02.command.json",
+        "artifacts/stages/02-entry-point/raw/attempt-02.events.jsonl",
+        "artifacts/stages/02-entry-point/raw/attempt-02.stderr.txt"
+      ],
+      "route": {
+        "model": "gpt-daybreak-blue-latest",
+        "cyber_access_program": "daybreak_blue",
+        "model_reasoning_effort": "ultra",
+        "multi_agent": false,
+        "fallback": false,
+        "provider_returned_identity": "unknown"
+      },
+      "results": {
+        "recurring_state_changing_entries": 19,
+        "public": 10,
+        "role_restricted": 6,
+        "contract_only": 3,
+        "deployment_time_entries": 5
+      },
+      "adaptations_and_incidents": [
+        "A first local empty-wait execution was preserved and replaced by a fresh exact-route run.",
+        "The stage-local completed_attempt label attempt-02 is not campaign attempt-02."
+      ]
+    },
+    {
+      "order": 3,
+      "id": "S3",
+      "skill": "token-integration-analyzer",
+      "skill_path": "plugins/building-secure-contracts/skills/token-integration-analyzer/SKILL.md",
+      "skill_sha256": "4b7f5cb3c52f9b45e2216963a49458e1f23f5a279a0296e702fd9d8df268b301",
+      "execution": "fresh-exact-route",
+      "status": "sealed",
+      "source_only": true,
+      "scanner_or_test_exposure": false,
+      "primary_output": "artifacts/stages/03-token-integration/REPORT.md",
+      "primary_output_sha256": "1f9e2cd0cc1e994b3f95771fede686bffb0fe8e027c98a70da06bac194d4189e",
+      "seal": "artifacts/stages/03-token-integration/SEAL.json",
+      "seal_sha256": "a5b53b1251469984c3ec9de9bbc3ce79cbd8eadd70b5eb3308077a756dfbac91",
+      "manifest": "artifacts/stages/03-token-integration/STAGE-MANIFEST.sha256",
+      "route_evidence": [
+        "artifacts/stages/03-token-integration/raw/command.json",
+        "artifacts/stages/03-token-integration/raw/events.jsonl",
+        "artifacts/stages/03-token-integration/raw/stderr.txt"
+      ],
+      "route": {
+        "model": "gpt-daybreak-blue-latest",
+        "cyber_access_program": "daybreak_blue",
+        "model_reasoning_effort": "ultra",
+        "multi_agent": false,
+        "fallback": false,
+        "provider_returned_identity": "unknown"
+      },
+      "coverage": "ticket ERC-721, quote ERC-20, arbitrary prize ERC-721, wrapper integration, and all 24 weird-token patterns",
+      "adaptations_and_incidents": []
+    },
+    {
+      "order": 4,
+      "id": "S4",
+      "skill": "guidelines-advisor",
+      "skill_path": "plugins/building-secure-contracts/skills/guidelines-advisor/SKILL.md",
+      "skill_sha256": "5bb8ba34d363c419e1769a59d0fcc7444a04dc6d9e59032cb93019befdc2e464",
+      "execution": "fresh-exact-route",
+      "status": "sealed",
+      "source_only": true,
+      "scanner_or_test_exposure": false,
+      "compiler_only_build": true,
+      "primary_output": "artifacts/stages/04-guidelines/REPORT.md",
+      "primary_output_sha256": "19b82b8743d9971337152299561b1b28e2d9426472fcb6f67494f07ff927d227",
+      "seal": "artifacts/stages/04-guidelines/SEAL.json",
+      "seal_sha256": "c154879ec5a56d565b5477470bd67491d18490da5524d296dfdb61f89d7f274c",
+      "manifest": "artifacts/stages/04-guidelines/STAGE-MANIFEST.sha256",
+      "route_evidence": [
+        "artifacts/stages/04-guidelines/raw/command.json",
+        "artifacts/stages/04-guidelines/raw/events.jsonl",
+        "artifacts/stages/04-guidelines/raw/stderr.txt"
+      ],
+      "route": {
+        "model": "gpt-daybreak-blue-latest",
+        "cyber_access_program": "daybreak_blue",
+        "model_reasoning_effort": "ultra",
+        "multi_agent": false,
+        "fallback": false,
+        "provider_returned_identity": "unknown"
+      },
+      "adaptations_and_incidents": [
+        "The native compilation check used an isolated Forge output/cache and did not expose pre-existing tests or scanners."
+      ]
+    },
+    {
+      "order": 5,
+      "id": "S5",
+      "skill": "spec-to-code-compliance",
+      "skill_path": "plugins/spec-to-code-compliance/skills/spec-to-code-compliance/SKILL.md",
+      "skill_sha256": "eb0d91b50a9c06f50baf8763d1e23566897b9fa3e7ffcf13134eee4e1ccaefe5",
+      "execution": "fresh-exact-route-per-requirement-and-refuter",
+      "status": "sealed",
+      "source_only": true,
+      "scanner_or_test_exposure": false,
+      "primary_output": "artifacts/stages/05-spec-compliance/REPORT.md",
+      "primary_output_sha256": "e2cdee01bc21252af38f022c23588b07bdfe1b2712cca64208872166afc74e72",
+      "seal": "artifacts/stages/05-spec-compliance/SEAL.json",
+      "seal_sha256": "750757807b9ae46806c0790ea937a691c353c22159ef8157da463f99223a0da7",
+      "manifest": "artifacts/stages/05-spec-compliance/MANIFEST.sha256",
+      "manifest_sha256": "0822174165933e7c47d9fe3053ac766526ae351a356564bc8d9067ade4336278",
+      "route_evidence": [
+        "artifacts/stages/05-spec-compliance/raw/command.json",
+        "artifacts/stages/05-spec-compliance/raw/extract.events.jsonl",
+        "artifacts/stages/05-spec-compliance/raw/discovery-attempt-02.events.jsonl",
+        "artifacts/stages/05-spec-compliance/raw/undocumented.events.jsonl",
+        "artifacts/stages/05-spec-compliance/raw/report.events.jsonl",
+        "artifacts/stages/05-spec-compliance/records-index.json",
+        "artifacts/stages/05-spec-compliance/refutations-index.json"
+      ],
+      "route": {
+        "model": "gpt-daybreak-blue-latest",
+        "cyber_access_program": "daybreak_blue",
+        "model_reasoning_effort": "ultra",
+        "multi_agent": false,
+        "fallback": false,
+        "provider_returned_identity": "unknown"
+      },
+      "results": {
+        "requirements": 56,
+        "records": 56,
+        "analyses": 56,
+        "initially_nonimplemented": 11,
+        "refutations": 22,
+        "surviving_divergences": 7,
+        "dropped_candidates": 4,
+        "undocumented_consequential_behaviors": 11
+      },
+      "adaptations_and_incidents": [
+        "Processed all 56 requirements rather than the native default cap of 30 while preserving Extract, Align, Verify, reverse sweep, schemas, and two independent refuters per candidate.",
+        "A strict-schema discovery failure and local launch/path/xargs issues were preserved and repaired.",
+        "REQ-51 and REQ-56 launch errors occurred before provider dispatch and were repaired without retrying a provider rejection.",
+        "No OpenAI cybersecurity-risk rejection occurred."
+      ]
+    },
+    {
+      "order": 6,
+      "id": "S6",
+      "skill": "secure-workflow-guide",
+      "skill_path": "plugins/building-secure-contracts/skills/secure-workflow-guide/SKILL.md",
+      "skill_sha256": "7c0e7fb45f97c073ec9599cbe0b2acf44f31bbece38636bc5c3fcc9bc7703015",
+      "execution": "fresh-exact-route-in-isolated-copy",
+      "status": "sealed",
+      "source_only": false,
+      "scanner_or_test_exposure": true,
+      "exposure_started_after_first_pass_seal": true,
+      "primary_output": "artifacts/stages/06-secure-workflow/REPORT.md",
+      "primary_output_sha256": "3a4bc298016c621b17945828a2dacf3bf87c72079720aaca54fa31d0c3549d4e",
+      "seal": "artifacts/stages/06-secure-workflow/SEAL.json",
+      "seal_sha256": "fd043fd27bb990280b3b4079baba2f9f28f5a6cb0ca384205f668f5d99bfd496",
+      "manifest": "artifacts/stages/06-secure-workflow/STAGE-MANIFEST.sha256",
+      "manifest_sha256": "f7b510e132e53099848fc379e780e2fade7577f4a920c7c3bd35787a3a8f4084",
+      "route_evidence": [
+        "artifacts/stages/06-secure-workflow/raw/command.json",
+        "artifacts/stages/06-secure-workflow/raw/route-evidence.json",
+        "artifacts/stages/06-secure-workflow/raw/events.jsonl",
+        "artifacts/stages/06-secure-workflow/raw/stderr.txt"
+      ],
+      "route": {
+        "model": "gpt-daybreak-blue-latest",
+        "cyber_access_program": "daybreak_blue",
+        "model_reasoning_effort": "ultra",
+        "multi_agent": false,
+        "fallback": false,
+        "provider_returned_identity": "unknown"
+      },
+      "results": {
+        "slither_results": 14,
+        "erc721_checker": "pass",
+        "required_printers": 3,
+        "rendered_diagram_formats": ["DOT", "PNG", "PDF"],
+        "foundry_unit_fuzz": "21 passed, 0 unexpected failures; two fuzz properties at 10000 cases each",
+        "intentional_negative_properties": "2 failed as expected",
+        "foundry_invariants": "3 passed; 256 runs x 128 calls; 98304 calls; 0 reverts",
+        "echidna": "4 passed; 20007 calls; seed 1396142931; corpus 8",
+        "isolated_original_files": "43 checked, 0 mismatches"
+      },
+      "adaptations_and_incidents": [
+        "Used the authorized Docker daemon for Graphviz and Echidna because host tools were absent.",
+        "Preserved Slither finding exit 255, failed Graphviz invocation attempts, initial Foundry harness failures, invariant-controller mismatch, and Docker entrypoint mismatch before successful repairs.",
+        "Generated project-specific Foundry and Echidna properties after slither-prop reported Foundry unsupported and semantic inapplicability.",
+        "No production source was edited and no OpenAI cybersecurity-risk rejection occurred."
+      ]
+    }
+  ],
+  "gates_and_syntheses": {
+    "source_first_pass": {
+      "status": "sealed-immutable-before-scanner-or-test-exposure",
+      "sealed_at": "2026-10-21T22:52:38Z",
+      "report": "FIRST-PASS.md",
+      "report_sha256": "981bea8dd6fe0e96328c38cf8375f93bc8bdf272476b4defcbeca71fdfdd9bc6",
+      "seal": "SEAL.json",
+      "seal_sha256": "c7d730eb6687f33fbc6e10bc43671ad1975813a03e05d37cbb2d85b6ca2ba82b",
+      "source_only": true,
+      "test_or_scanner_exposure_before_seal": false,
+      "cross_cell_exposure_before_seal": false,
+      "route": {
+        "model": "gpt-daybreak-blue-latest",
+        "cyber_access_program": "daybreak_blue",
+        "model_reasoning_effort": "ultra",
+        "multi_agent": false,
+        "fallback": false,
+        "provider_returned_identity": "unknown"
+      }
+    },
+    "final_synthesis": {
+      "status": "complete",
+      "started_at": "2026-10-21T23:33:07Z",
+      "completed_at": "2026-10-21T23:42:55Z",
+      "report": "REPORT.md",
+      "report_sha256": "32ad9d271ef4d3ecb7f4b093b22d0beed2162305e29a5d746e5f907038e90360",
+      "prompt": "prompts/FINAL-six-stage-synthesis.md",
+      "prompt_sha256": "eb7064e552ce75ef8881869165d9cce557a2335661875361d1162da4b0f19cc0",
+      "command": "artifacts/final-aggregate/raw/command.json",
+      "command_sha256": "3b5eeacdf061953c86dbaf4ed795d6078e2466fbac98d8def3aba1540f6342a3",
+      "events": "artifacts/final-aggregate/raw/events.jsonl",
+      "events_sha256": "b6f995898e67d541f96065a5023b080eafc4406e562d8e9ad11b8cda92fb5755",
+      "runner_exit_code": 0,
+      "provider_rejection": false,
+      "route": {
+        "model": "gpt-daybreak-blue-latest",
+        "cyber_access_program": "daybreak_blue",
+        "model_reasoning_effort": "ultra",
+        "multi_agent": false,
+        "fallback": false,
+        "provider_returned_identity": "unknown"
+      }
+    }
+  },
+  "freeze_checks": [
+    {
+      "checkpoint": "after-S5",
+      "path": "artifacts/logs/freeze-after-s5.json",
+      "ok": true,
+      "verified_files_per_root": 435,
+      "production_files": 5,
+      "dependency_files": 31
+    },
+    {
+      "checkpoint": "before-S6",
+      "path": "artifacts/logs/freeze-before-s6.json",
+      "ok": true,
+      "verified_files_per_root": 435,
+      "production_files": 5,
+      "dependency_files": 31
+    },
+    {
+      "checkpoint": "after-S6",
+      "path": "artifacts/logs/freeze-after-s6.json",
+      "ok": true,
+      "verified_files_per_root": 435,
+      "production_files": 5,
+      "dependency_files": 31
+    },
+    {
+      "checkpoint": "final",
+      "path": "artifacts/logs/freeze-final.json",
+      "ok": true,
+      "verified_files_per_root": 435,
+      "production_files": 5,
+      "dependency_files": 31
+    }
+  ],
+  "production_changes": false,
+  "production_remediation": false,
+  "live_transactions": false,
+  "publishing": false
+}

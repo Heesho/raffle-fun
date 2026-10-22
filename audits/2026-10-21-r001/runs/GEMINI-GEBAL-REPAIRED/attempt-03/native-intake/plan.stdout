@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "id": "49e9955a-de6e-4622-b1b0-a2215e5896ff",
+  "createdAt": "2026-10-21T18:17:36.431Z",
+  "snapshotId": "6ec5a4db-4b86-4518-b518-ed2f8063f967",
+  "snapshotHash": "520205ade6130391972086d8fe8a24a6d6e60c1ecfdaf795110d78d8d0375fdb",
+  "scopeId": "138b2961-b77c-4043-b111-0ce39ffffa35",
+  "diagnosis": {
+    "kind": "foundry",
+    "supported": false,
+    "compiler": "0.8.36",
+    "evm": "cancun",
+    "settings": {
+      "src": "packages/contracts/src",
+      "test": "packages/contracts/test/foundry",
+      "script": "script",
+      "out": "out",
+      "libs": [
+        "packages/contracts/lib",
+        "packages/contracts/node_modules"
+      ],
+      "solc_version": "0.8.36",
+      "evm_version": "cancun",
+      "optimizer": true,
+      "optimizer_runs": 200,
+      "via_ir": false,
+      "fuzz": {
+        "runs": 1000,
+        "seed": "0x524146464c45"
+      },
+      "invariant": {
+        "runs": 256,
+        "depth": 64,
+        "fail_on_revert": false
+      },
+      "gas_reports": [
+        "Raffle",
+        "RaffleFactory"
+      ],
+      "projectPath": "packages/contracts",
+      "remappings": [
+        "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol",
+        "@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol",
+        "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol=packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol",
+        "@openzeppelin/contracts/=packages/contracts/node_modules/@openzeppelin/contracts/",
+        "forge-std/=packages/contracts/lib/forge-std/src/"
+      ]
+    },
+    "issues": [
+      "Unsupported configuration key: gas_reports"
+    ],
+    "notes": [
+      "Exact file remappings were resolved from uniquely matching authorized library paths and are included in the approved plan.",
+      "Only profile.default is selected; other profiles, RPC endpoints and formatting configuration are not loaded.",
+      "Controller overrides output/cache/script paths, denies FFI/filesystem/RPC and dependency downloads, and disables automatic remappings.",
+      "Configured fuzz/invariant campaigns are replaced by the disclosed fixed seed and bounded campaign. Tests requiring denied capabilities cannot be validated.",
+      "Source-only intake does not establish compiler, test, property or security coverage."
+    ]
+  },
+  "tasks": [
+    "intake"
+  ],
+  "limits": {
+    "seconds": 300,
+    "memoryMb": 2048,
+    "cpus": 2,
+    "pids": 128,
+    "diskMb": 512,
+    "maxOutputBytes": 8388608,
+    "tokens": 0,
+    "maxTasks": 1
+  },
+  "image": null,
+  "provider": null,
+  "egress": [],
+  "methodology": "native-review-v1",
+  "adapterVersion": "0.2.0",
+  "hash": "568e8bb776c9aa1da0a6208a597fb99dbd04ee1c063e1dc88070e392c7f079be"
+}
+Inspect this plan, then approve its exact hash: gebal approve 49e9955a-de6e-4622-b1b0-a2215e5896ff --hash 568e8bb776c9aa1da0a6208a597fb99dbd04ee1c063e1dc88070e392c7f079be --actor YOUR_NAME --reason "Reviewed scope, execution limits and egress"

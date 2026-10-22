@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "snapshotHash": "50f9efb6b671450adc50c493c35692429d5dc4b5ded6d7b123a79df21361cc0e",
+  "contextHash": "2df5cb1e4b5b8f0f3c0663ef5fb41a1a3a2d12ed2304560034c3a691cfa80142",
+  "review": {
+    "observations": [
+      {
+        "title": "A future raffle address can pass immutable recipient validation and later strand sponsor assets",
+        "description": "Sponsor-recipient validation uses the current registry during creation and initialization. A recipient with no code can later become another same-factory clone: the helper skips registry lookup for code-less destinations, while the factory deploys clones using CREATE and registers them. In CashWon or Refunding, releaseSponsorPrize transfers the configured NFT to the immutable sponsorRecipient without rechecking its current protocol-destination status. For a compliant prize this allows the original raffle NFT to move into a later canonical clone, violating clone isolation and leaving an unrelated prize outside the receiving clone's configured claims with no rescue path. The original raffle then records the prize as claimed. Sponsor quote proceeds have a related exit failure because _transferQuote does recheck the now-registered recipient and always reverts; the recipient cannot be changed. The condition requires an initially accepted address later occupied by a canonical clone and affects that configured sponsor's own assets, not arbitrary balances of unrelated raffles. Defensive property: validate current destination isolation on every asset delivery and define a reachable claim path when an immutable recipient later becomes disallowed. Source-only reasoning; no exploit or execution evidence.",
+        "severity": "medium",
+        "confidence": "high",
+        "source": [
+          {
+            "path": "packages/contracts/src/RaffleFactory.sol",
+            "start": 105,
+            "end": 125
+          },
+          {
+            "path": "packages/contracts/src/RaffleFactory.sol",
+            "start": 154,
+            "end": 169
+          },
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 187,
+            "end": 205
+          },
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 375,
+            "end": 411
+          },
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 564,
+            "end": 566
+          },
+          {
+            "path": "packages/contracts/src/Raffle.sol",
+            "start": 593,
+            "end": 604
+          },
+          {
+            "path": "packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+            "start": 32,
+            "end": 62
+          },
+          {
+            "path": "packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+            "start": 75,
+            "end": 91
+          }
+        ],
+        "assumptions": [
+          "The requirement that assets never move between raffle clones includes canonical clones of the same factory.",
+          "The sponsor selects an initially code-less recipient address that is later occupied by another canonical factory clone before the affected sponsor assets are released.",
+          "The prize follows ordinary ERC721 transferFrom semantics and reports ownership truthfully; no malicious quote token or prize implementation is required.",
+          "The destination clone has a different configured prize and cannot recover the unrelated NFT through its normal prize-release function.",
+          "Severity reflects recipient-dependent loss of the configured sponsor assets; no theft of unrelated clone balances is claimed."
+        ]
+      }
+    ],
+    "gaps": [
+      "Source-only independent supplementary review, not a Gebal native specialist stage. No assessed code, compiler, test, prover, analyzer, generated exploit, transaction, browser, or project script was executed. Manual per-file/property coverage is recorded in RAW.md and is not measured verification coverage.",
+      "Only audit/context.json supplied project evidence. All five production files were reviewed; pertinent dependency behavior was inspected. Unused utility routines and the full lockfile graph were not audited.",
+      "Canonical quote-token and wrapper implementation/deployment identity, runtime configurations, administrative restrictions, callback gas sufficiency, and source-to-bytecode correspondence are absent or unverified. Exact-value quote transfers and the trusted canonical wrapper are assumptions required by the supplied specification.",
+      "The requirement treats arbitrary prizes as untrusted, while IRaffle.sol:10-15 restricts supported prizes to honest standards-compliant ERC721s. Arbitrary prizes can refuse future transfer or fabricate ownerOf reports. Detectable NFT delivery failure rolls back redemption, but there is no refund transition out of NftWon. Whether a terminal fallback is required remains unresolved because the specification expressly requires rollback on failed delivery without defining a fallback; this is recorded as a trust-model/liveness gap rather than an unconditional second defect.",
+      "A ticket owner must be able to act, and the configured recipient/token must permit delivery. Generic inaccessible recipient contracts, quote-token pauses or restrictions, and accidental unsolicited assets can prevent recovery; no universal external-dependency liveness guarantee is established.",
+      "Frontend discovery, current-state rereads before transactions, indexers, wallet behavior, and deployment tooling are not included in the supplied scope.",
+      "Operator-requested model is gpt-6-astra with ultra reasoning and fallback disabled; provider-returned identity, usage, and cost are unknown and are not independently attested by this review.",
+      "No peer output, historical finding, scanner result, or report was consulted. Candidate observations remain needs-review and are not human-accepted findings."
+    ]
+  }
+}

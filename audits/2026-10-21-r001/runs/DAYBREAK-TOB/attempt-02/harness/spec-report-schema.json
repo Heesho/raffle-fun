@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["reportFile", "reportMarkdown", "divergences", "documentProblems", "holds", "refuted", "notChecked", "unverified", "filesReviewed", "propertyCoverage"],
+  "properties": {
+    "reportFile": {"type": "string"},
+    "reportMarkdown": {"type": "string"},
+    "divergences": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["requirementId", "severity", "title", "classification"], "properties": {"requirementId": {"type": "string"}, "severity": {"type": "string", "enum": ["critical", "high", "medium", "low"]}, "title": {"type": "string"}, "classification": {"type": "string", "enum": ["confirmed-source-path", "lead", "documentation"]}}}},
+    "documentProblems": {"type": "array", "items": {"type": "string"}},
+    "holds": {"type": "array", "items": {"type": "string"}},
+    "refuted": {"type": "array", "items": {"type": "string"}},
+    "notChecked": {"type": "array", "items": {"type": "string"}},
+    "unverified": {"type": "array", "items": {"type": "string"}},
+    "filesReviewed": {"type": "array", "items": {"type": "string"}},
+    "propertyCoverage": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["requirementId", "status", "evidence"], "properties": {"requirementId": {"type": "string"}, "status": {"type": "string"}, "evidence": {"type": "array", "items": {"type": "string"}}}}
+  }
+}

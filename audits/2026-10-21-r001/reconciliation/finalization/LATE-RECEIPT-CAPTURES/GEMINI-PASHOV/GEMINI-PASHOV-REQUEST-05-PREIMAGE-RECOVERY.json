@@ -1,0 +1,48 @@
+{
+  "schema": "raffle-fun.superseded-package-preimage-recovery.v1",
+  "recordedUtc": "2026-10-22T00:11:00Z",
+  "cell": "GEMINI-PASHOV",
+  "request": 5,
+  "status": "EXACT_PREIMAGES_RECOVERED",
+  "targetCommit": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "reason": "Request 6 superseded request 5 after adding the governing adjudication reference to the completion receipt. This record preserves the exact request-5 bytes without changing the current request-6 package.",
+  "recovered": [
+    {
+      "kind": "completion-receipt",
+      "path": "historical-preimages/coordinator-drafts/7da051d58f1b0b46925cfefc0a9fd42d606f3962c323ddba89c3c8c5fd8c1c5e.completion-receipt.json",
+      "bytes": 6551,
+      "sha256": "7da051d58f1b0b46925cfefc0a9fd42d606f3962c323ddba89c3c8c5fd8c1c5e"
+    },
+    {
+      "kind": "integrity-manifest",
+      "path": "historical-preimages/coordinator-drafts/b890eaed2c3a541c811adcf3cfbf7e96be274244fd1b588d290f9d311a01339d.integrity-manifest.json",
+      "bytes": 28030,
+      "sha256": "b890eaed2c3a541c811adcf3cfbf7e96be274244fd1b588d290f9d311a01339d"
+    },
+    {
+      "kind": "seal",
+      "path": "historical-preimages/coordinator-drafts/b20488808bff940b7253d4c969c9c5d09322add6ad9c8737538128f65393d7b6.SEAL.json",
+      "bytes": 1350,
+      "sha256": "b20488808bff940b7253d4c969c9c5d09322add6ad9c8737538128f65393d7b6"
+    }
+  ],
+  "derivation": {
+    "receipt": "Delete the exact 201-byte top-level adjudication block, including its trailing comma and newline, from the current request-6 receipt.",
+    "manifest": "Use the current request-6 manifest with recordedUtc restored to 2026-10-21T23:53:13.779112+00:00 and its completion-receipt artifact restored to 6551 bytes and SHA-256 7da051d58f1b0b46925cfefc0a9fd42d606f3962c323ddba89c3c8c5fd8c1c5e; serialize with json.dumps(indent=2) plus newline.",
+    "seal": "Use the current request-6 seal with sealedUtc restored to 2026-10-21T23:53:13.779731+00:00, completionReceipt SHA-256 restored to 7da051d58f1b0b46925cfefc0a9fd42d606f3962c323ddba89c3c8c5fd8c1c5e, and integrityManifest SHA-256 restored to b890eaed2c3a541c811adcf3cfbf7e96be274244fd1b588d290f9d311a01339d; use the same serialization."
+  },
+  "independentContemporaneousEvidence": {
+    "events": "runs/COORDINATOR-DAYBREAK/attempt-01/events.jsonl",
+    "items": ["item_210", "item_211"],
+    "recordedArtifactCount": 65,
+    "recordedVerification": "65 verified, 0 failed"
+  },
+  "currentRequest6Preserved": {
+    "completionReceiptSha256": "71f7217e769720ad230d8eac6c3f8fedc906abc7c56029729f250a8942d95bf7",
+    "integrityManifestSha256": "10d690d922be488e5d64bb1f64b462254e519cd50af30cedd060f1991c44ade8",
+    "sealSha256": "0462347eae39b0cba0ffc41545fe85938e71bee4223a54df50e872bdfb6cbb48"
+  },
+  "nativeErrorsChanged": false,
+  "productionFilesChanged": false,
+  "globalAuditCompletionIssued": false
+}

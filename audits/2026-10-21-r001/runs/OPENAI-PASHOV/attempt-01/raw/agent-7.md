@@ -1,0 +1,7 @@
+LEAD | contract: Raffle | function: releaseSponsorProceeds | bug_class: prize-transferability-assumption | group_key: Raffle | releaseSponsorProceeds | prize-transferability-assumption
+file: target/packages/contracts/src/Raffle.sol:375
+code_smells: The sponsor receives proceeds before the winner receives the prize, and the contract provides no refund after `NftWon`.
+description: A sponsor can receive 95% before prize delivery; the supplied source does not prove a prize contract that later blocks delivery.
+path: `createRaffle` accepts a prize that reports ERC-721 support; `fulfillRandomWords` selects `NftWon`; `_settleWinningTicket` allocates 95% to the sponsor; `releaseSponsorProceeds` pays independently of `redeemWinningTicket`.
+partial_trace: With 100 sold entries and `reserveEntries = 100`, settlement allocates 95,000,000 USDC units to the sponsor and 5,000,000 to the treasury before prize delivery. If the prize rejects `transferFrom(raffle, winner, prizeTokenId)`, redemption reverts while prior sponsor and treasury payments remain final. `enableRefunds` rejects `NftWon`.
+unverified: No concrete prize implementation with a reachable post-escrow transfer block appears in the bundle. `IRaffle` describes honest, standards-compliant prizes, while `DESIGN.md` calls arbitrary prize contracts untrusted. The supplied code proves payout order but does not prove the external transfer-block step; this remains a lead.

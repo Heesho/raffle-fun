@@ -1,0 +1,108 @@
+{
+  "stage_id": "S1-FUNCTION-10",
+  "accepted_local_selection": {
+    "model": "gpt-daybreak-blue-latest",
+    "reasoning_effort": "ultra",
+    "cyber_access_program": "daybreak_blue",
+    "fallback": false
+  },
+  "provider_returned_model": "unknown",
+  "provider_identity": "unknown",
+  "target_sha": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "function": "Raffle.initialize",
+  "file": "target/packages/contracts/src/Raffle.sol",
+  "lines": "L176-L206",
+  "analysisFile": ".audit-work/stages/01-audit-context/functions/10-Raffle.initialize.md",
+  "invariants": [
+    {
+      "claim": "A successful initialization operates on storage whose initialized flag was false, is called by the immutable factory, and leaves initialized true, so that storage instance cannot pass the initializer gate again.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L176-L179; the implementation is separately locked at L164-L165."
+    },
+    {
+      "claim": "The implementation-baked factory identity is the RaffleFactory that deployed the implementation used by every clone.",
+      "evidence": "target/packages/contracts/src/RaffleFactory.sol:L89-L91; target/packages/contracts/src/Raffle.sol:L155-L162; target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:L10-L16."
+    },
+    {
+      "claim": "On success sponsor, sponsorRecipient, protocolTreasury, and prizeToken are nonzero.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L181-L186."
+    },
+    {
+      "claim": "On success sponsor, protocolTreasury, and sponsorRecipient are not classified as the current clone, factory, quote token, wrapper, prospective prize token, implementation, or a code-bearing registered same-factory raffle.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L187-L195, L593-L604."
+    },
+    {
+      "claim": "Successful initialization stores all eight clone-specific configuration fields exactly from params and sets status to AwaitingPrize.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L197-L205; target/packages/contracts/src/interfaces/IRaffle.sol:L20-L53."
+    },
+    {
+      "claim": "The fresh clone is not registered until initialization returns, but the destination classifier rejects the current clone directly through address(this).",
+      "evidence": "target/packages/contracts/src/RaffleFactory.sol:L109-L125; target/packages/contracts/src/Raffle.sol:L599-L604."
+    },
+    {
+      "claim": "Initialization creates configuration but no prize custody; activation requires a later callback matching the stored token, token ID, sponsor, and factory operator.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L176-L206, L416-L430; target/packages/contracts/src/RaffleFactory.sol:L127-L134."
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "The implementation address used by the clone contains the intended fixed Raffle code.",
+      "establishedBy": "RaffleFactory deploys the implementation and stores its address at target/packages/contracts/src/RaffleFactory.sol:L89-L91, then passes that immutable to Clones.clone at L105-L106; the generic library itself does not check target code (target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol:L23-L33)."
+    },
+    {
+      "claim": "prizeToken has code, does not equal the factory's listed protocol plumbing, and claims ERC-721 support; reserveEntries is nonzero.",
+      "establishedBy": "RaffleFactory._validateCreateParams at target/packages/contracts/src/RaffleFactory.sol:L154-L178, reached before cloning at L98."
+    },
+    {
+      "claim": "endTime is later than the creation timestamp and at most 30 days away.",
+      "establishedBy": "RaffleFactory.createRaffle at target/packages/contracts/src/RaffleFactory.sol:L99-L104 and MAX_SALE_DURATION at target/packages/contracts/src/libraries/RaffleConstants.sol:L29-L30."
+    },
+    {
+      "claim": "sponsor is the createRaffle caller, protocolTreasury is the factory's fixed treasury, and raffleId is the newly incremented identifier later used for registry writes.",
+      "establishedBy": "The sole source caller constructs the struct at target/packages/contracts/src/RaffleFactory.sol:L105-L120 and registers the same ID/address at L123-L125."
+    },
+    {
+      "claim": "Factory getter calls made by _isProtocolDestination return the fixed implementation and current same-factory registry state.",
+      "establishedBy": "Source-available public immutable/mapping declarations at target/packages/contracts/src/RaffleFactory.sol:L41-L54, with writes at L89-L91 and L123-L125."
+    },
+    {
+      "claim": "The configured quote token and VRF wrapper are the intended official external deployments.",
+      "establishedBy": "nothing found in target source; RaffleFactory checks deployed code and six quote-token decimals and explicitly assigns official-address verification to deployment tooling at target/packages/contracts/src/RaffleFactory.sol:L58-L78."
+    },
+    {
+      "claim": "The arbitrary sponsor-selected prize contract behaves as an honest standards-compliant ERC-721 throughout escrow and later delivery.",
+      "establishedBy": "nothing found that enforces behavior on every path; the factory checks code and a claimed ERC-721 interface response at target/packages/contracts/src/RaffleFactory.sol:L154-L177 and verifies ownership/status after escrow at L127-L134, while target/packages/contracts/src/interfaces/IRaffle.sol:L12-L15 states the honest-prize assumption."
+    }
+  ],
+  "calls": [
+    {
+      "callee": "Raffle._isProtocolDestination(address,address)",
+      "kind": "internal",
+      "propagates": "For each of sponsor, protocolTreasury, and sponsorRecipient, rejects the enumerated current-clone/same-factory plumbing set; it uses the prospective prize address because clone prize storage is not yet populated (target/packages/contracts/src/Raffle.sol:L187-L195, L587-L604)."
+    },
+    {
+      "callee": "RaffleFactory.raffleImplementation()",
+      "kind": "external-source-available",
+      "propagates": "Supplies the fixed implementation address to the destination classifier; the immutable is declared at target/packages/contracts/src/RaffleFactory.sol:L41-L42 and assigned at L89-L91."
+    },
+    {
+      "callee": "RaffleFactory.isRaffle(address)",
+      "kind": "external-source-available",
+      "propagates": "For an otherwise accepted code-bearing destination, supplies whether it is already registered by the same factory (target/packages/contracts/src/Raffle.sol:L602-L604; target/packages/contracts/src/RaffleFactory.sol:L53-L54, L123-L125)."
+    }
+  ],
+  "callers": [
+    "RaffleFactory.createRaffle is the only source call site: it clones raffleImplementation and calls initialize with a fixed mapping of caller, factory configuration, generated ID, and sponsor parameters (target/packages/contracts/src/RaffleFactory.sol:L97-L121).",
+    "Direct callers other than the immutable factory fail OnlyFactory on fresh clone storage; the implementation and initialized clones fail AlreadyInitialized first (target/packages/contracts/src/Raffle.sol:L164-L165, L176-L179)."
+  ],
+  "sharedState": [
+    "initialized: implementation constructor writes true; initialize reads false and writes true for clone storage (target/packages/contracts/src/Raffle.sol:L135-L136, L164-L165, L177-L179).",
+    "sponsor, sponsorRecipient, protocolTreasury, prizeToken, prizeTokenId, raffleId, reserveEntries, endTime: declared at target/packages/contracts/src/Raffle.sol:L60-L82 and written together at L197-L204.",
+    "status: initialize writes AwaitingPrize; prize receipt, draw request, refund activation, and fulfillment make later transitions (target/packages/contracts/src/Raffle.sol:L205, L428, L252, L299, L521).",
+    "factory, quoteToken, and i_vrfV2PlusWrapper immutables: read by initialization screening and fixed by implementation construction (target/packages/contracts/src/Raffle.sol:L54-L58, L155-L162, L593-L604; target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol:L34-L47).",
+    "Factory raffleImplementation and isRaffle registry: read through generated getters during screening; assigned at target/packages/contracts/src/RaffleFactory.sol:L89-L91 and L123-L125."
+  ],
+  "openQuestions": [
+    "unclear; need to inspect deployment records or live chain configuration outside target source to confirm that quoteToken and vrfWrapper are the intended official deployments; source documents this tooling responsibility at target/packages/contracts/src/RaffleFactory.sol:L58-L78.",
+    "unclear; need to inspect each dynamically selected prize-token implementation to determine behavior beyond the visible code-presence/interface-response checks and post-transfer ownership/status checks at target/packages/contracts/src/RaffleFactory.sol:L127-L134, L154-L177."
+  ]
+}

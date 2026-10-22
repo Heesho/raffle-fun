@@ -1,0 +1,150 @@
+usage: slither-check-erc project contractName
+
+Check the ERC 20 conformance
+
+positional arguments:
+  project               The codebase to be tested.
+  contract_name         The name of the contract. Specify the first case
+                        contract that follow the standard. Derived contracts
+                        will be checked.
+
+options:
+  -h, --help            show this help message and exit
+  --erc ERC             ERC to be tested, available ERC20,ERC223,ERC165,ERC721
+                        ,ERC1820,ERC777,ERC1155,ERC2612,ERC1363,ERC4524,ERC462
+                        6 (default ERC20)
+  --json JSON           Export the results as a JSON file ("--json -" to
+                        export to stdout)
+
+Compile options:
+  --compile-force-framework COMPILE_FORCE_FRAMEWORK
+                        Force the compile to a given framework (foundry,buidle
+                        r,hardhat,truffle,waffle,solc,embark,dapp,etherlime,et
+                        herscan,vyper,brownie,solc-
+                        json,sourcify,standard,archive)
+  --compile-libraries COMPILE_LIBRARIES
+                        Libraries used for linking. Format: --compile-
+                        libraries "(name1, 0x00),(name2, 0x02)"
+  --compile-autolink    Automatically link all found libraries with sequential
+                        addresses starting from 0xa070
+  --compile-remove-metadata
+                        Remove the metadata from the bytecodes
+  --compile-custom-build COMPILE_CUSTOM_BUILD
+                        Replace platform specific build command
+  --ignore-compile      Do not run compile of any platform
+  --skip-clean          Do not attempt to clean before compiling with a
+                        platform
+
+Solc options:
+  --solc SOLC           solc path
+  --solc-remaps SOLC_REMAPS
+                        Add remapping
+  --solc-args SOLC_ARGS
+                        Add custom solc arguments. Example: --solc-args "--
+                        allow-path /tmp --evm-version byzantium".
+  --solc-disable-warnings
+                        Disable solc warnings
+  --solc-working-dir SOLC_WORKING_DIR
+                        Change the default working directory
+  --solc-solcs-select SOLC_SOLCS_SELECT
+                        Specify different solc version to try (env config).
+                        Depends on solc-select
+  --solc-solcs-bin SOLC_SOLCS_BIN
+                        Specify different solc version to try (path config).
+                        Example: --solc-solcs-bin solc-0.4.24,solc-0.5.3
+  --solc-standard-json  Compile all specified targets in a single compilation
+                        using solc standard json
+  --solc-force-legacy-json
+                        Force the solc compiler to use the legacy json ast
+                        format over the compact json ast format
+
+Truffle options:
+  --truffle-ignore-compile
+                        Do not run truffle compile
+  --truffle-build-directory TRUFFLE_BUILD_DIRECTORY
+                        Use an alternative truffle build directory
+  --truffle-version TRUFFLE_VERSION
+                        Use a local Truffle version (with npx)
+  --truffle-overwrite-config
+                        Use a simplified version of truffle-config.js for
+                        compilation
+  --truffle-overwrite-version TRUFFLE_OVERWRITE_VERSION
+                        Overwrite solc version in truffle-config.js (only if
+                        --truffle-overwrite-config)
+
+Embark options:
+  --embark-ignore-compile
+                        Do not run embark build
+  --embark-overwrite-config
+                        Install @trailofbits/embark-contract-export and add it
+                        to embark.json
+
+Brownie options:
+  --brownie-ignore-compile
+                        Do not run brownie compile
+
+Dapp options:
+  --dapp-ignore-compile
+                        Do not run dapp build
+
+Etherlime options:
+  --etherlime-ignore-compile
+                        Do not run etherlime compile
+  --etherlime-compile-arguments
+                        Add arbitrary arguments to etherlime compile (note:
+                        [dir] is the the directory provided to crytic-compile)
+
+Etherscan options:
+  --etherscan-only-source-code
+                        Only compile if the source code is available.
+  --etherscan-only-bytecode
+                        Only looks for bytecode.
+  --etherscan-apikey ETHERSCAN_API_KEY
+                        Etherscan API key.
+  --avax-apikey AVAX_API_KEY
+                        Etherscan API key.
+  --etherscan-export-directory ETHERSCAN_EXPORT_DIR
+                        Directory in which to save the analyzed contracts.
+
+Waffle options:
+  --waffle-ignore-compile
+                        Do not run waffle compile
+  --waffle-config-file WAFFLE_CONFIG_FILE
+                        Provide a waffle config file
+
+NPX options:
+  --npx-disable         Do not use npx
+
+Buidler options:
+  --buidler-ignore-compile
+                        Do not run buidler compile
+  --buidler-cache-directory BUIDLER_CACHE_DIRECTORY
+                        Use an alternative buidler cache directory (default
+                        ./cache)
+  --buidler-skip-directory-name-fix
+                        Disable directory name fix (see
+                        https://github.com/crytic/crytic-compile/issues/116)
+
+Hardhat options:
+  --hardhat-ignore-compile
+                        Do not run hardhat compile
+  --hardhat-cache-directory HARDHAT_CACHE_DIRECTORY
+                        Use an alternative hardhat cache directory (default
+                        ./cache)
+  --hardhat-artifacts-directory HARDHAT_ARTIFACTS_DIRECTORY
+                        Use an alternative hardhat artifacts directory
+                        (default ./artifacts)
+
+Foundry options:
+  --foundry-ignore-compile
+                        Do not run foundry compile
+  --foundry-out-directory FOUNDRY_OUT_DIRECTORY
+                        Use an alternative out directory (default: out)
+  --foundry-build-info-directory FOUNDRY_BUILD_INFO_DIRECTORY
+                        Use an alternative build-info directory (useful with
+                        --ignore-compile)
+  --foundry-compile-all
+                        Don't skip compiling test and script
+  --foundry-deny FOUNDRY_DENY
+                        Forge diagnostic level to deny (never, warn, all).
+                        Auto-detected for Foundry 1.4+

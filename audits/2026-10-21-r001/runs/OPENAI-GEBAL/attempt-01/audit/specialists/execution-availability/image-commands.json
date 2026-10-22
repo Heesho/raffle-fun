@@ -1,0 +1,23 @@
+[
+  {
+    "name": "docker-images",
+    "argv": [
+      "/opt/homebrew/bin/docker",
+      "--host",
+      "unix:///Users/hishamel-husseini/.lima/gebal/sock/docker.sock",
+      "image",
+      "ls",
+      "--no-trunc",
+      "--digests",
+      "--filter",
+      "reference=gebal-tools:*",
+      "--format",
+      "{{json .}}"
+    ],
+    "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL",
+    "exit_code": 1,
+    "stdout_file": "docker-images.stdout.txt",
+    "stderr_file": "docker-images.stderr.txt",
+    "timeout_seconds": 15
+  }
+]

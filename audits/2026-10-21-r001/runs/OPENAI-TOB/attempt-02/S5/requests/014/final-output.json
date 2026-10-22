@@ -1,0 +1,6 @@
+{
+  "refuted": false,
+  "reasoning": "The document does not narrow the prohibition: \"Never move assets between raffle clones.\" Its statement \"Refund outcome pays 100% per entry and returns prize.\" supplies no exception for returned NFTs (target/DESIGN.md:L2). \"Source, not design prose, determines actual behavior.\" distinguishes actual behavior from specification; it does not waive the prohibition (target/DESIGN.md:L4). Initialization screens and stores the recipient (target/packages/contracts/src/Raffle.sol:L193-L198,L598-L604), but subsequent creation can register that address as another clone (target/packages/contracts/src/RaffleFactory.sol:L105-L125). Sponsor prize release then transfers without rechecking clone identity (target/packages/contracts/src/Raffle.sol:L395-L405). Runtime destination checks on ticket updates and quote payouts support retaining partial (target/packages/contracts/src/Raffle.sol:L497-L502,L564-L567). The complete document, relevant NatSpec qualifications, and cited source paths were reviewed. Analysis and search record written to audit/S5/spec-compliance/refutations/03-REQ-38-document.md.",
+  "correction": null,
+  "revisedVerdict": null
+}

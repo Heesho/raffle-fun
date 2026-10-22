@@ -1,0 +1,11 @@
+--- baseline/src/Raffle.sol
++++ M3-request-deadline-inclusive/src/Raffle.sol
+@@ -242,7 +242,7 @@
+         if (block.timestamp < endTime) revert RaffleNotEnded(endTime, block.timestamp);
+         if (totalEntries == 0) revert NoEntriesSold();
+         uint256 requestDeadline = drawRequestDeadline();
+-        if (block.timestamp >= requestDeadline) {
++        if (block.timestamp > requestDeadline) {
+             revert DrawRequestWindowExpired(requestDeadline, block.timestamp);
+         }
+ 

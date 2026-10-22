@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "snapshotHash": "d0b726edfae0c24ed708c5c0f1908c40f4ab85da8d1708de38fe437a384dcc0a",
+  "contextHash": "c5b7124850800b51b1a5b5346ac3abe133da1f07d34f2d0764eab305fbb6947d",
+  "review": {
+    "observations": [
+      {
+        "title": "Untrusted prize can become undeliverable after sales while the sponsor receives the NFT-result proceeds",
+        "description": "The stated requirements explicitly treat arbitrary prize contracts as untrusted, whereas IRaffle documents supported prizes as honest, standards-compliant ERC721s. Factory admission checks only code, ERC165 support, a callback, and the prize contract's own ownerOf report. Once admitted, no further property establishes the prize's continued deliverability. After reserve-met resolution, permissionless settlement allocates 95% of the quote pot to the sponsor without touching the prize, and releaseSponsorProceeds pays that claim independently of successful winner redemption. A sponsor-selected prize contract may therefore satisfy the initial checks and later consistently reject the raffle-to-winner transfer (or misreport ownership), leaving winner redemption reverting forever after the sponsor has received proceeds. enableRefunds accepts only Active or Drawing and supplies no recovery from NftWon. This is a concrete requirements/trust-model mismatch rather than a reentrancy or arithmetic defect: permanent delivery depends on honest prize behavior that the clean specification does not grant. If the intended scope is only honest transferable ERC721 contracts, this candidate should be rejected or reframed as a documented assumption; current source cannot provide the broader guarantee for arbitrary hostile contracts.",
+        "severity": "high",
+        "confidence": "medium",
+        "source": [
+          { "path": "packages/contracts/src/interfaces/IRaffle.sol", "start": 12, "end": 15 },
+          { "path": "packages/contracts/src/RaffleFactory.sol", "start": 127, "end": 134 },
+          { "path": "packages/contracts/src/RaffleFactory.sol", "start": 171, "end": 178 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 276, "end": 300 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 329, "end": 337 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 375, "end": 381 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 533, "end": 555 }
+        ],
+        "assumptions": [
+          "The clean context requirement that arbitrary prize contracts are untrusted includes hostile or subsequently non-transferable prize behavior, not solely reentrant callbacks from otherwise honest ERC721 implementations.",
+          "Participants purchase enough entries to meet the reserve and the authentic callback resolves the NFT branch.",
+          "The sponsor controls or selects a prize contract that passes creation checks but cannot subsequently deliver to the winner.",
+          "No off-chain screening establishes permanent honest ERC721 behavior; such screening is outside the supplied contract scope."
+        ]
+      },
+      {
+        "title": "Sponsor prize return can transfer an NFT into a later-created raffle clone",
+        "description": "Sponsor-recipient checks are performed when a raffle is created and initialized. A recipient address that is not yet deployed or registered passes those checks unless it matches a fixed prohibited address. The factory later creates clones with CREATE, so a sponsor can select the address of a future clone as raffle A's immutable sponsorRecipient and that address can subsequently become registered raffle B. Runtime quote payouts and ticket transfers screen current registry membership, but releaseSponsorPrize directly calls prizeToken.transferFrom to the previously selected recipient without repeating that screen. When A is CashWon or Refunding, its standard ERC721 prize can consequently move into B, bypassing B's restrictive receiver callback. B has no generic recovery function and its release methods operate only on B's configured prize, so A's distinct prize can become stranded. This violates the explicit no-assets-between-clones requirement even within one factory. The prerequisite is deliberate or mistaken future-clone recipient configuration; no general ability to redirect another sponsor's correctly configured claim is claimed. A defensive property is that every prize release checks the current destination classification, with the immutability/liveness consequence of invalid future destinations explicitly specified.",
+        "severity": "low",
+        "confidence": "high",
+        "source": [
+          { "path": "packages/contracts/src/RaffleFactory.sol", "start": 105, "end": 125 },
+          { "path": "packages/contracts/src/RaffleFactory.sol", "start": 163, "end": 168 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 193, "end": 199 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 395, "end": 406 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 421, "end": 425 },
+          { "path": "packages/contracts/src/Raffle.sol", "start": 593, "end": 604 }
+        ],
+        "assumptions": [
+          "Raffle A's sponsorRecipient is a future same-factory clone address that is code-less and unregistered at A initialization, and is distinct from A and all fixed prohibited addresses.",
+          "Raffle B is successfully created at that address before A's sponsor prize is released.",
+          "The prize follows ordinary ERC721 transferFrom semantics and A's prize is distinct from B's configured prize.",
+          "The no-assets-between-clones requirement applies to sponsor-selected recipients as well as ordinary payout paths."
+        ]
+      }
+    ],
+    "gaps": [
+      "Source-only review: no compiler, tests, static analyzer, gas measurement, prover, deployment query, live transaction, or generated executable artifact was run. Findings remain human-review candidates, not established exploit results.",
+      "Required accounting, authorization, lifecycle, trust, and bounded-exit assumptions were recorded before disposition in requirements-and-assumptions.md. Core arithmetic and claim behavior were traced under canonical non-rebasing, fee-free USDC semantics; actual dependency addresses and live token restrictions are not established by the context.",
+      "All five production files were read in full. Selected pinned dependency implementations were read for ERC721 ownership/burning/callback behavior, SafeERC20 delivery failure, reentrancy, clone construction, VRF authentication, and floor multiplication/division. This is not a complete independent audit of every dependency or lockfile entry.",
+      "The no-assets-between-clones requirement is broader than the implementation's explicitly same-factory destination registry. Behavior involving separate factory deployments is not fully specified; no separate cross-factory observation is asserted here.",
+      "Arbitrary non-cooperative recipients can strand their own tickets or prizes, and trusted canonical USDC may reject particular transfers. Source rollback preserves claims on reverting transfer paths but does not establish eventual delivery to permanently unusable immutable recipients.",
+      "Frontend transaction-state rereads, deployment verification, and external integration behavior are outside the supplied five production source files and were not assessed.",
+      "The selected-model requirement was gpt-6-astra with model_reasoning_effort ultra. Provider-returned identity, effective effort, usage, and cost are unavailable; no independent provider identity claim is made. No fallback or provider adapter was invoked by this specialist.",
+      "The first broad context read produced truncated output; no full-file coverage credit was taken from unseen portions. Production sources and relied-upon dependency sections were subsequently read through bounded context extraction. No root or peer findings were read before this response was sealed."
+    ]
+  }
+}

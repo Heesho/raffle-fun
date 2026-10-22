@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["behaviors", "filesReviewed"],
+  "properties": {
+    "behaviors": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["what", "file", "lines", "whyItMatters", "reachableBy"], "properties": {"what": {"type": "string"}, "file": {"type": "string"}, "lines": {"type": "string"}, "whyItMatters": {"type": "string"}, "reachableBy": {"type": "string"}}}},
+    "filesReviewed": {"type": "array", "items": {"type": "string"}}
+  }
+}

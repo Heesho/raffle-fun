@@ -1,0 +1,20 @@
+{
+  "model": "Independent Python translation; no EVM execution",
+  "cases": 1005,
+  "assertions_passed": 309796,
+  "properties": [
+    "Paid entries equal the unsettled pot before resolution",
+    "Ticket ranges partition every sold entry exactly once",
+    "Ticket count cannot exceed the uint128 entry count",
+    "Every random word selects one valid ticket range",
+    "NFT and cash allocations conserve the complete sale pot",
+    "All six payout orders preserve remaining liabilities",
+    "Arbitrary refund order consumes each entry value exactly once",
+    "Request and callback deadline boundaries do not overlap refunds"
+  ],
+  "limitations": [
+    "No malicious external contract execution",
+    "No deployed wrapper or token integration",
+    "No compiler, gas, or bytecode verification"
+  ]
+}

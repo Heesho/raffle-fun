@@ -1,0 +1,324 @@
+{
+  "requirements": [
+    {
+      "checkable": "Each raffle clone escrows a single ERC-721 prize token (prizeToken, prizeTokenId) upon deposit in onERC721Received and sells entries priced at ENTRY_PRICE in quoteToken, minting one transferable ERC-721 ticket per buyEntries call.",
+      "force": "descriptive",
+      "id": "REQ-01",
+      "kind": "invariant",
+      "location": "packages/contracts/src/Raffle.sol:L21",
+      "quote": "Escrows one NFT and sells fixed-price USDC entries through one transferable ERC-721 ticket per purchase."
+    },
+    {
+      "checkable": "buyEntries assigns sequential one-based ticketId values (uint256(ticketCount) + 1) and maps each ticketId in _ticketRanges to an inclusive TicketRange of uint128 firstEntry and uint128 lastEntry.",
+      "force": "descriptive",
+      "id": "REQ-02",
+      "kind": "invariant",
+      "location": "packages/contracts/src/Raffle.sol:L22",
+      "quote": "Ticket IDs are sequential and map to one inclusive `[firstEntry,lastEntry]` uint128 range."
+    },
+    {
+      "checkable": "buyEntries, fulfillRandomWords, and _settleWinningTicket execute in O(1) operations without looping over entry counts.",
+      "force": "descriptive",
+      "id": "REQ-03",
+      "kind": "invariant",
+      "location": "packages/contracts/src/Raffle.sol:L22-L23",
+      "quote": "Purchases, Chainlink callbacks, and winner proofs are O(1) in entry count."
+    },
+    {
+      "checkable": "Tickets remain transferable via ERC-721 transfers until burned in redeemWinningTicket or refundTickets, where payouts go to the current ownerOf(ticketId).",
+      "force": "descriptive",
+      "id": "REQ-04",
+      "kind": "state-machine",
+      "location": "packages/contracts/src/Raffle.sol:L23-L24",
+      "quote": "Tickets remain transferable bearer claims until their owners burn them for redemption or refund."
+    },
+    {
+      "checkable": "Raffle has no upgrade mechanism, no privileged admin role, and no arbitrary token, NFT, or native-currency rescue function.",
+      "force": "descriptive",
+      "id": "REQ-05",
+      "kind": "access-control",
+      "location": "packages/contracts/src/Raffle.sol:L24-L25",
+      "quote": "Each raffle is a fixed, non-upgradeable ERC-1167 clone with no administrator or rescue path."
+    },
+    {
+      "checkable": "settleWinningTicket is callable by any address and only updates storage liabilities (winnerProceeds, sponsorProceeds, protocolFees, unsettledPot, winningTicketId, settlementComplete) without transferring assets.",
+      "force": "descriptive",
+      "id": "REQ-06",
+      "kind": "state-machine",
+      "location": "packages/contracts/src/Raffle.sol:L25",
+      "quote": "Permissionless settlement only allocates liabilities;"
+    },
+    {
+      "checkable": "redeemWinningTicket requires msg.sender == ownerOf(ticketId) and atomically burns ticketId while transferring either the prize NFT or winnerProceeds in quoteToken to the winner.",
+      "force": "descriptive",
+      "id": "REQ-07",
+      "kind": "state-machine",
+      "location": "packages/contracts/src/Raffle.sol:L25-L26",
+      "quote": "the winning-ticket owner atomically burns the ticket while receiving the NFT or cash prize."
+    },
+    {
+      "checkable": "Burning a ticket in redeemWinningTicket or refundTickets does not delete _ticketRanges[ticketId], so ticketRange(ticketId) continues to return the stored (firstEntry, lastEntry) after burn.",
+      "force": "descriptive",
+      "id": "REQ-08",
+      "kind": "invariant",
+      "location": "packages/contracts/src/Raffle.sol:L138",
+      "quote": "Historical ticket ranges remain stored after burns so indexers and callers can reconstruct entry coverage."
+    },
+    {
+      "checkable": "_requestInFlight is true only during the external requestRandomnessPayInNative call in requestDraw and false at all other times, causing fulfillRandomWords to ignore any synchronous callback before vrfRequestId is stored.",
+      "force": "descriptive",
+      "id": "REQ-09",
+      "kind": "ordering",
+      "location": "packages/contracts/src/Raffle.sol:L141",
+      "quote": "True only while the wrapper request call is executing, so a synchronous callback cannot resolve early."
+    },
+    {
+      "checkable": "The Raffle constructor sets initialized = true and status = Status.Refunding on the implementation contract, preventing initialize or active lifecycle operations on the implementation.",
+      "force": "descriptive",
+      "id": "REQ-10",
+      "kind": "state-machine",
+      "location": "packages/contracts/src/Raffle.sol:L151-L166",
+      "quote": "Deploys and locks the implementation shared by one factory's minimal-proxy raffles."
+    },
+    {
+      "checkable": "The Raffle constructor validates non-zero msg.sender, quoteToken_, and vrfWrapper_ addresses and stores factory, quoteToken, and i_vrfV2PlusWrapper in immutable variables shared by all ERC-1167 clones.",
+      "force": "descriptive",
+      "id": "REQ-11",
+      "kind": "invariant",
+      "location": "packages/contracts/src/Raffle.sol:L152-L162",
+      "quote": "Constructor state belongs to the implementation. Clones share these immutables but hold isolated storage."
+    },
+    {
+      "checkable": "receive() unconditionally reverts with DirectNativeTransfer(), and requestDraw() is the only payable entrypoint on Raffle.",
+      "force": "descriptive",
+      "id": "REQ-12",
+      "kind": "error-handling",
+      "location": "packages/contracts/src/Raffle.sol:L170-L173",
+      "quote": "Rejects direct native-token transfers that are not attached to `requestDraw`."
+    },
+    {
+      "checkable": "onERC721Received reverts with UnexpectedPrize unless status == Status.AwaitingPrize, msg.sender == address(prizeToken), tokenId == prizeTokenId, from == sponsor, and operator == factory, and upon success sets status = Status.Active and returns IERC721Receiver.onERC721Received.selector.",
+      "force": "descriptive",
+      "id": "REQ-13",
+      "kind": "access-control",
+      "location": "packages/contracts/src/Raffle.sol:L409-L431",
+      "quote": "Accepts only the exact configured prize deposited by the factory for the sponsor."
+    },
+    {
+      "checkable": "Raffle only ever transfers prizeToken with prizeTokenId in redeemWinningTicket and releaseSponsorPrize, providing no function to recover any other NFT transferred to the contract via transferFrom.",
+      "force": "descriptive",
+      "id": "REQ-14",
+      "kind": "invariant",
+      "location": "packages/contracts/src/Raffle.sol:L410-L411",
+      "quote": "Unrelated NFTs forced here with unsafe `transferFrom` remain outside protocol accounting and cannot be rescued."
+    },
+    {
+      "checkable": "onERC721Received reverts with UnexpectedPrize(msg.sender, tokenId, from, operator) if operator != factory.",
+      "force": "mandatory",
+      "id": "REQ-15",
+      "kind": "access-control",
+      "location": "packages/contracts/src/Raffle.sol:L412-L425",
+      "quote": "ERC-721 transfer operator, which must be the canonical factory."
+    },
+    {
+      "checkable": "onERC721Received reverts with UnexpectedPrize(msg.sender, tokenId, from, operator) if from != sponsor.",
+      "force": "mandatory",
+      "id": "REQ-16",
+      "kind": "access-control",
+      "location": "packages/contracts/src/Raffle.sol:L413-L425",
+      "quote": "Previous owner, which must be the configured sponsor."
+    },
+    {
+      "checkable": "onERC721Received reverts with UnexpectedPrize(msg.sender, tokenId, from, operator) if tokenId != prizeTokenId.",
+      "force": "mandatory",
+      "id": "REQ-17",
+      "kind": "error-handling",
+      "location": "packages/contracts/src/Raffle.sol:L414-L425",
+      "quote": "Transferred token ID, which must match the configured prize."
+    },
+    {
+      "checkable": "name() returns the string literal \"raffle.fun Ticket\".",
+      "force": "descriptive",
+      "id": "REQ-18",
+      "kind": "invariant",
+      "location": "packages/contracts/src/Raffle.sol:L477-L481",
+      "quote": "Exact ERC-721 collection name, `raffle.fun Ticket`."
+    },
+    {
+      "checkable": "symbol() returns the string literal \"RAFFLE\".",
+      "force": "descriptive",
+      "id": "REQ-19",
+      "kind": "invariant",
+      "location": "packages/contracts/src/Raffle.sol:L483-L487",
+      "quote": "Exact ERC-721 collection symbol, `RAFFLE`."
+    },
+    {
+      "checkable": "_update does not check or restrict the raffle status when minting, transferring, or burning tickets.",
+      "force": "descriptive",
+      "id": "REQ-20",
+      "kind": "state-machine",
+      "location": "packages/contracts/src/Raffle.sol:L491-L502",
+      "quote": "Tickets remain transferable bearer claims in every lifecycle state."
+    },
+    {
+      "checkable": "_update checks _isProtocolDestination(to, address(prizeToken)) for every non-zero recipient address to and reverts with UnsafeProtocolDestination(to) before calling super._update.",
+      "force": "descriptive",
+      "id": "REQ-21",
+      "kind": "error-handling",
+      "location": "packages/contracts/src/Raffle.sol:L491-L500",
+      "quote": "Known protocol sinks are rejected before their ownership could make a claim unreachable."
+    },
+    {
+      "checkable": "_update bypasses _isProtocolDestination when to == address(0) so ticket burns succeed in redeemWinningTicket and refundTickets.",
+      "force": "descriptive",
+      "id": "REQ-22",
+      "kind": "state-machine",
+      "location": "packages/contracts/src/Raffle.sol:L492-L502",
+      "quote": "Burns pass the zero address and remain permitted."
+    },
+    {
+      "checkable": "fulfillRandomWords computes winningEntry = uint128((randomWords[0] % uint256(totalEntries)) + 1), sets resolvedAt = uint64(block.timestamp), and sets status to Status.NftWon if totalEntries >= reserveEntries or Status.CashWon otherwise.",
+      "force": "descriptive",
+      "id": "REQ-23",
+      "kind": "formula",
+      "location": "packages/contracts/src/Raffle.sol:L504-L524",
+      "quote": "Authenticated randomness selects only an entry."
+    },
+    {
+      "checkable": "fulfillRandomWords performs no loops, no ticket range lookups, no external calls to users or contracts, and no ERC-20 or ERC-721 transfers.",
+      "force": "descriptive",
+      "id": "REQ-24",
+      "kind": "invariant",
+      "location": "packages/contracts/src/Raffle.sol:L504-L524",
+      "quote": "No ticket search, loop, user call, or token transfer occurs."
+    },
+    {
+      "checkable": "fulfillRandomWords emits VrfCallbackIgnored(requestId, vrfRequestId, status) and returns without reverting or mutating state whenever _requestInFlight is true, status != Status.Drawing, requestId != vrfRequestId, randomWords.length != 1, or block.timestamp >= callbackDeadline().",
+      "force": "descriptive",
+      "id": "REQ-25",
+      "kind": "error-handling",
+      "location": "packages/contracts/src/Raffle.sol:L505-L516",
+      "quote": "In-flight, late, wrong-request, duplicate, and ABI-decodable wrong-length callbacks are ignored for liveness;"
+    },
+    {
+      "checkable": "rawFulfillRandomWords in VRFV2PlusWrapperConsumerBase ABI-decodes (uint256, uint256[]) calldata in the external dispatcher before invoking fulfillRandomWords, reverting on malformed ABI encoding.",
+      "force": "descriptive",
+      "id": "REQ-26",
+      "kind": "error-handling",
+      "location": "packages/contracts/src/Raffle.sol:L506",
+      "quote": "malformed ABI calldata reverts during Solidity decoding before this handler runs."
+    },
+    {
+      "checkable": "fulfillRandomWords requires randomWords.length == 1 to resolve the raffle and ignores callbacks where randomWords.length != 1.",
+      "force": "mandatory",
+      "id": "REQ-27",
+      "kind": "error-handling",
+      "location": "packages/contracts/src/Raffle.sol:L508-L516",
+      "quote": "Callback words; exactly one word is required for resolution."
+    },
+    {
+      "checkable": "_settleWinningTicket reverts if settlementComplete is true or status is neither NftWon nor CashWon, verifies _requireWinningTicket(ticketId), sets settlementComplete = true and unsettledPot = 0, and assigns winningTicketId, winnerProceeds, sponsorProceeds, and protocolFees without calling ownerOf or transferring any token.",
+      "force": "descriptive",
+      "id": "REQ-28",
+      "kind": "state-machine",
+      "location": "packages/contracts/src/Raffle.sol:L528-L558",
+      "quote": "Validates the winning range once and allocates all terminal quote-token liabilities without transferring an asset or reading ticket ownership."
+    },
+    {
+      "checkable": "_settleWinningTicket computes protocolFee = Math.mulDiv(grossPot, RaffleConstants.PROTOCOL_FEE_BPS, RaffleConstants.BPS) and (for CashWon) cashAmount = Math.mulDiv(grossPot, RaffleConstants.CASH_WINNER_BPS, RaffleConstants.BPS), both rounding down via integer floor division.",
+      "force": "descriptive",
+      "id": "REQ-29",
+      "kind": "formula",
+      "location": "packages/contracts/src/Raffle.sol:L529-L549",
+      "quote": "Both percentage allocations round down;"
+    },
+    {
+      "checkable": "_settleWinningTicket sets sponsorAmount = grossPot - protocolFee for NftWon and sponsorAmount = grossPot - protocolFee - cashAmount for CashWon, assigning the exact remainder to sponsorProceeds.",
+      "force": "descriptive",
+      "id": "REQ-30",
+      "kind": "formula",
+      "location": "packages/contracts/src/Raffle.sol:L529-L555",
+      "quote": "sponsor proceeds are the remainder."
+    },
+    {
+      "checkable": "_settleWinningTicket calls _requireWinningTicket(ticketId), which reverts with TicketDoesNotContainWinningEntry(ticketId, selectedEntry) unless firstEntry <= winningEntry <= lastEntry.",
+      "force": "mandatory",
+      "id": "REQ-31",
+      "kind": "error-handling",
+      "location": "packages/contracts/src/Raffle.sol:L531-L538",
+      "quote": "Ticket whose inclusive range must contain the selected winning entry."
+    },
+    {
+      "checkable": "_settleWinningTicket returns cashAmount equal to winnerProceeds for Status.CashWon and 0 for Status.NftWon.",
+      "force": "descriptive",
+      "id": "REQ-32",
+      "kind": "formula",
+      "location": "packages/contracts/src/Raffle.sol:L532-L558",
+      "quote": "Raw six-decimal quote-token units allocated to the cash winner, or zero for `NftWon`."
+    },
+    {
+      "checkable": "_transferQuote reverts with InvalidQuoteDestination(to) if _isProtocolDestination(to, address(prizeToken)) is true, and otherwise transfers amount of quoteToken to to via SafeERC20.safeTransfer.",
+      "force": "descriptive",
+      "id": "REQ-33",
+      "kind": "error-handling",
+      "location": "packages/contracts/src/Raffle.sol:L560-L567",
+      "quote": "Transfers one complete current USDC claim through SafeERC20 after rejecting known protocol sinks."
+    },
+    {
+      "checkable": "Trust-boundary assumption that quoteToken is standard, non-rebasing, fee-free six-decimal USDC; Raffle accounts for quoteToken in nominal ENTRY_PRICE multiples without measuring balance deltas.",
+      "force": "descriptive",
+      "id": "REQ-34",
+      "kind": "trust-boundary",
+      "location": "packages/contracts/src/Raffle.sol:L560-L561",
+      "quote": "The canonical USDC trust model assumes standard, non-rebasing, fee-free transfer semantics."
+    },
+    {
+      "checkable": "_requireStatus(expected) reverts with InvalidStatus(status) when status != expected.",
+      "force": "descriptive",
+      "id": "REQ-35",
+      "kind": "error-handling",
+      "location": "packages/contracts/src/Raffle.sol:L571-L575",
+      "quote": "Reverts unless the raffle is in the expected lifecycle state."
+    },
+    {
+      "checkable": "_requireWinningTicket(ticketId) reverts with TicketDoesNotContainWinningEntry(ticketId, selectedEntry) when winningEntry < firstEntry or winningEntry > lastEntry for ticketRange(ticketId).",
+      "force": "descriptive",
+      "id": "REQ-36",
+      "kind": "error-handling",
+      "location": "packages/contracts/src/Raffle.sol:L577-L585",
+      "quote": "Reverts unless the supplied ticket's stored inclusive range contains the selected winning entry."
+    },
+    {
+      "checkable": "_isProtocolDestination(destination, prizeToken_) returns true iff destination is address(this), factory, address(quoteToken), address(i_vrfV2PlusWrapper), prizeToken_, IRaffleFactory(factory).raffleImplementation(), or an address with code where IRaffleFactory(factory).isRaffle(destination) is true.",
+      "force": "descriptive",
+      "id": "REQ-37",
+      "kind": "invariant",
+      "location": "packages/contracts/src/Raffle.sol:L587-L605",
+      "quote": "Identifies same-factory protocol plumbing that cannot safely own a ticket or receive a payout."
+    },
+    {
+      "checkable": "initialize passes params.prizeToken to _isProtocolDestination before prizeToken is stored, whereas _update and _transferQuote pass address(prizeToken) from storage.",
+      "force": "descriptive",
+      "id": "REQ-38",
+      "kind": "ordering",
+      "location": "packages/contracts/src/Raffle.sol:L588-L589",
+      "quote": "Initialization supplies the prospective prize token because clone storage is not populated yet; runtime checks pass the stored prize token."
+    },
+    {
+      "checkable": "_isProtocolDestination only calls canonicalFactory.isRaffle(destination) when !unsafeDestination && destination.code.length != 0.",
+      "force": "descriptive",
+      "id": "REQ-39",
+      "kind": "invariant",
+      "location": "packages/contracts/src/Raffle.sol:L589-L604",
+      "quote": "Code-less addresses are not queried in the registry."
+    },
+    {
+      "checkable": "_validatedVrfWrapper(wrapper) reverts with ZeroAddress() if wrapper == address(0) and returns wrapper before VRFV2PlusWrapperConsumerBase constructor initialization executes.",
+      "force": "descriptive",
+      "id": "REQ-40",
+      "kind": "error-handling",
+      "location": "packages/contracts/src/Raffle.sol:L607-L613",
+      "quote": "Validates the wrapper before passing it to the inherited constructor initializer."
+    }
+  ]
+}

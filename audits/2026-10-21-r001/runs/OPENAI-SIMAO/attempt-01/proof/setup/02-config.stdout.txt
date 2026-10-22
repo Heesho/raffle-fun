@@ -1,0 +1,107 @@
+TOP LEVEL:
+foundry.toml
+hardhat.config.ts
+node_modules
+package.json
+remappings.txt
+src
+FILE foundry.toml
+[profile.default]
+src = "src"
+test = "test/foundry"
+script = "script"
+out = "out"
+libs = ["lib", "node_modules"]
+solc_version = "0.8.36"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 200
+via_ir = false
+fuzz = { runs = 1_000, seed = "0x524146464c45" }
+invariant = { runs = 256, depth = 64, fail_on_revert = false }
+gas_reports = ["Raffle", "RaffleFactory"]
+
+[profile.ci]
+fuzz = { runs = 10_000 }
+invariant = { runs = 1_000, depth = 256, fail_on_revert = false }
+
+[profile.audit]
+fuzz = { runs = 100_000, seed = "0x41554449545f46555a5a" }
+invariant = { runs = 1_000, depth = 256, fail_on_revert = false }
+
+[profile.audit_strict]
+fuzz = { runs = 10_000, seed = "0x41554449545f535452494354" }
+invariant = { runs = 1_000, depth = 256, fail_on_revert = true }
+
+[profile.audit_release]
+fuzz = { runs = 100_000, seed = "0x52454c454153455f43414d504149474e" }
+invariant = { runs = 5_000, depth = 512, fail_on_revert = true, timeout = 3_600 }
+
+[profile.coverage]
+via_ir = false
+optimizer = false
+
+[profile.comparison]
+via_ir = true
+optimizer = true
+optimizer_runs = 1_000
+
+[fmt]
+line_length = 120
+tab_width = 4
+bracket_spacing = true
+int_types = "long"
+quote_style = "double"
+number_underscore = "thousands"
+sort_imports = true
+
+FILE remappings.txt
+@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/
+forge-std/=lib/forge-std/src/
+
+FILE package.json
+{
+  "name": "@raffle-fun/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13 <23"
+  },
+  "scripts": {
+    "build": "hardhat compile && forge build",
+    "compile": "hardhat compile",
+    "test": "pnpm test:foundry && pnpm test:hardhat",
+    "test:foundry": "forge test",
+    "test:hardhat": "hardhat test nodejs",
+    "coverage": "forge coverage --report lcov --no-match-coverage '^(script/|src/mocks/|test/)' && node scripts/check-coverage.mjs",
+    "gas": "forge snapshot --check -j 1 --no-match-test '^(testFuzz|invariant)'",
+    "gas:update": "forge snapshot -j 1 --no-match-test '^(testFuzz|invariant)'",
+    "fmt": "forge fmt",
+    "fmt:check": "forge fmt --check",
+    "lint": "solhint 'src/**/*.sol' 'test/**/*.sol'",
+    "typecheck": "tsc --noEmit",
+    "slither": "slither . --config-file slither.config.json",
+    "deploy:sepolia": "hardhat ignition deploy ignition/modules/RaffleFun.ts --network sepolia",
+    "verify:sepolia": "hardhat ignition verify chain-11155111",
+    "deployment:write": "tsx scripts/write-deployment.ts"
+  },
+  "dependencies": {
+    "@chainlink/contracts": "1.5.0",
+    "@openzeppelin/contracts": "5.6.1"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ignition": "3.1.8",
+    "@nomicfoundation/hardhat-ignition-viem": "3.1.6",
+    "@nomicfoundation/hardhat-toolbox-viem": "5.0.7",
+    "@types/node": "26.1.2",
+    "dotenv": "17.4.2",
+    "hardhat": "3.11.1",
+    "solhint": "6.2.3",
+    "tsx": "4.23.1",
+    "typescript": "6.0.3",
+    "viem": "2.55.10",
+    "zod": "4.4.3"
+  }
+}
+

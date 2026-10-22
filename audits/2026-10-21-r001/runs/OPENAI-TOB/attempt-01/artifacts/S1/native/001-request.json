@@ -1,0 +1,147 @@
+{
+  "id": "001",
+  "prompt": "Map the codebase at target well enough to decide where depth is warranted. Cover the whole codebase.\n\nRead broadly and shallowly. Identify the modules and what each is for, the entrypoints reachable from outside\nand by whom, the actors and how much each is trusted, and the state that outlives a single call.\n\nThen rank the functions that warrant per-function analysis. Rank by how much of the system's correctness rests\non them: functions that validate untrusted input, enforce a bound or a permission, mutate shared state, or sit\non a path between an untrusted actor and that state. Skip getters, setters, and pass-throughs. Order the list\nmost important first. Return at most 40 candidates.\n\nThis is context building, not vulnerability hunting. Describe structure, invariants, and\nassumptions. Do not name vulnerabilities, propose fixes, write exploits, or assign severity. An unenforced\nassumption is recorded as an unenforced assumption, not as a bug.",
+  "options": {
+    "schema": {
+      "type": "object",
+      "required": [
+        "modules",
+        "entrypoints",
+        "actors",
+        "state",
+        "candidates"
+      ],
+      "properties": {
+        "modules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "path",
+              "role"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "entrypoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "file",
+              "reachableBy"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "file": {
+                "type": "string"
+              },
+              "reachableBy": {
+                "type": "string",
+                "description": "which actor can reach this, and how"
+              }
+            }
+          }
+        },
+        "actors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "trust"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "trust": {
+                "type": "string",
+                "enum": [
+                  "untrusted",
+                  "semi-trusted",
+                  "trusted",
+                  "unclear"
+                ]
+              }
+            }
+          }
+        },
+        "state": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "file",
+              "writtenBy"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "file": {
+                "type": "string"
+              },
+              "writtenBy": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "candidates": {
+          "type": "array",
+          "description": "Functions worth per-function depth, most important first.",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "file",
+              "why"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "file": {
+                "type": "string"
+              },
+              "why": {
+                "type": "string",
+                "description": "why this one needs depth, in one line"
+              }
+            }
+          }
+        },
+        "language": {
+          "type": "string",
+          "description": "primary language of the codebase"
+        }
+      }
+    },
+    "label": "orient",
+    "phase": "Orient"
+  },
+  "accepted_model": "gpt-6-astra",
+  "accepted_effort": "ultra",
+  "provider_returned_model": "unknown",
+  "provider_returned_effort": "unknown",
+  "fallback_enabled": false
+}

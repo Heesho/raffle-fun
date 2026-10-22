@@ -1,0 +1,981 @@
+{
+  "timestamp_utc": "2026-10-21T08:07:31.610480Z",
+  "phase": "tool-and-test-exposed reconciliation after independent first-pass seal",
+  "peer_findings_consulted": false,
+  "production_edits": false,
+  "scope": {
+    "slither_observations": 12,
+    "aderyn_issue_classes": 8,
+    "aderyn_high_classes": 2,
+    "aderyn_low_classes": 6,
+    "aderyn_high_instances": 3,
+    "aderyn_low_instances": 8,
+    "aderyn_total_instances": 11,
+    "aderyn_source_units": 5,
+    "aderyn_sloc": 710,
+    "total_triaged": 23
+  },
+  "disposition_counts": {
+    "informational_or_style": 8,
+    "false_positive": 7,
+    "protected_intended_behavior": 7,
+    "residual_limitation": 1
+  },
+  "confirmed_exploitable_security_vulnerabilities": 0,
+  "residual_limitations": 1,
+  "scanner_hashes": {
+    "slither-raw.json": "572516dea74ef309fe5c234d36746f9e2d7843ff2298d5b88de0c43cbfe01aa9",
+    "aderyn-raw.json": "c2e6a2a6e05989509d393381d9764604a28075c01f672948cf38e825d8220d79"
+  },
+  "frozen_source_sha256": {
+    "src/RaffleFactory.sol": "d0e62b34faa42513fd968f915262728fe66a15c4b9af13a3c66f496704142ace",
+    "src/Raffle.sol": "6e4c977922c3e39fafaa8c4c4fb74a971f1817eca9b6552eb8a540969f968617",
+    "src/libraries/RaffleConstants.sol": "0893f1a70ac03ad557e0b4c8bdf6a2f73d317f8417d1b4a3c1a571b893ed54b6",
+    "src/interfaces/IRaffle.sol": "a43ede9e8802d636a566fb225ed65bdf70f06d17f4734a1632a0a9f84aa5b2dd",
+    "src/interfaces/IRaffleFactory.sol": "747d238e4c7dc5b517f91c796dec87d9ddbfec9c626d1ff21467c60d780d03cf"
+  },
+  "tests": {
+    "runtime": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage",
+    "source": "frozen clean-context production files + copied existing tests/mocks and dependency sources",
+    "output": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log",
+    "log_sha256": "bfe2a9539fc59808b9d2cbf6bb0f2e8504eeb3ab6c95ce0752ed71f5916ca25f",
+    "exit_code": 0,
+    "passed_executions": 27,
+    "unique_test_names": 16,
+    "failed": 0,
+    "skipped": 0,
+    "inherited_repeat_executions": 11,
+    "new_proof_file": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/ScannerTriage.t.sol",
+    "new_proof_sha256": "e56ce81cb3860a7027c99e8c1f94477b76ac08d75c1955486335107594270c8e",
+    "measured_100_ticket_refund_gas": 667412,
+    "measurement_caveat": "Local mock setup and warmed state; not a production cold-state/block-gas certificate.",
+    "existing_forced_native_test_gap": "testDonationsAndForcedNativeDoNotAlterQuoteAccounting only attempts a direct transfer; the new proof uses constructor selfdestruct.",
+    "command_argv": [
+      "/Users/hishamel-husseini/.foundry/bin/forge",
+      "test",
+      "--match-test",
+      "testTriage|testDrawForwardsExactDynamicFeeAndRefundsExcess|testFactoryReentrancyDuringPrizeEscrowIsBlockedAtomically|testImplementationAndCloneInitializationAreLocked|testFactoryConstructorAndCreationValidation|testFactoryAcceptsExactMaximumSaleDuration|testRefundBatchValidationAndMixedOwnershipAreAtomic|testWeightedRefundBatchPaysExactRangesAndConsumesOnce|testCallbackDeadlineIsHardAtEqualityRegardlessOfOrdering|testSoldRaffleHasHardRequestAndCallbackRefundDeadlines|testEmptyRaffleUsesRefundingWithoutClosedState|testSaleEndsButTicketsStayTransferableUntilBurned|testOwnerCanSettleAndRedeemAtomicallyButApprovedOperatorCannot",
+      "-vv"
+    ],
+    "command_record_path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test-execution.json"
+  },
+  "observations": [
+    {
+      "scanner": "Slither",
+      "ordinal": 1,
+      "scanner_id": "85cca564fcada590e9af2d7e4001101f5886ff6ebb177b3e201053e15ea3f0dc",
+      "detector": "events-maths",
+      "scanner_severity": "Low",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            201
+          ],
+          "expression": "prizeTokenId = params.prizeTokenId"
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            203
+          ],
+          "expression": "reserveEntries = params.reserveEntries"
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            204
+          ],
+          "expression": "endTime = params.endTime"
+        }
+      ],
+      "disposition": "informational_or_style",
+      "triaged_severity": "none",
+      "property": "Initialization configuration remains observable and immutable.",
+      "exploit_preconditions": "An exploitable omission would require an authorized initialization outside atomic canonical factory creation, or a later silent setter; neither exists.",
+      "analysis": "The three individual flagged writes at Raffle.sol:201 (prizeTokenId), :203 (reserveEntries), and :204 (endTime) are emitted by the canonical factory RaffleCreated event at RaffleFactory.sol:136-147. initialize is factory-only and one-time (:177-179). The receiver also emits PrizeDeposited. No per-clone initialization event is needed for recoverability of these values. Indexers must consume the canonical factory event.",
+      "test_evidence": [
+        {
+          "name": "testImplementationAndCloneInitializationAreLocked",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 209,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/results/detectors/0"
+    },
+    {
+      "scanner": "Slither",
+      "ordinal": 2,
+      "scanner_id": "0d4426784e474fdf01ac9750cc03383ea24d113a142a5762740408106bb27f02",
+      "detector": "calls-loop",
+      "scanner_severity": "Low",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            599,
+            600,
+            601
+          ],
+          "expression": "unsafeDestination = destination == address(this) || destination == factory || destination == address(quoteToken) || destination == address(i_vrfV2PlusWrapper) || destination == prizeToken_ || destination == canonicalFactory.raffleImplementation()"
+        }
+      ],
+      "disposition": "false_positive",
+      "triaged_severity": "none",
+      "property": "No external factory call occurs for each refund burn.",
+      "exploit_preconditions": "The alleged path requires _isProtocolDestination to execute during a burn whose destination is zero.",
+      "analysis": "refundTickets:357-364 calls _burn; inherited ERC721._burn calls _update(address(0),...). Raffle._update:498 short-circuits because to==0, so the alleged factory.raffleImplementation call at :599-601 is unreachable inside that loop. One lookup occurs after the loop in _transferQuote. The 100-ticket proof expects exactly one factory implementation lookup in the whole refund and passes.",
+      "test_evidence": [
+        {
+          "name": "testTriageOneHundredRefundBurnsSkipFactoryCallsInsideLoop",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/ScannerTriage.t.sol",
+          "line": 61,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/results/detectors/1"
+    },
+    {
+      "scanner": "Slither",
+      "ordinal": 3,
+      "scanner_id": "283434d605d8192e35ddfe44b8809d5e3f914fac6a89dd6070d74ae86dd65b8c",
+      "detector": "calls-loop",
+      "scanner_severity": "Low",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            603
+          ],
+          "expression": "unsafeDestination = canonicalFactory.isRaffle(destination)"
+        }
+      ],
+      "disposition": "false_positive",
+      "triaged_severity": "none",
+      "property": "No registry callback occurs for each refund burn.",
+      "exploit_preconditions": "The alleged call stack requires to!=0 during ERC721._burn, contrary to the inherited implementation.",
+      "analysis": "The same _update:498 zero-address short circuit bypasses all of _isProtocolDestination, including isRaffle at :603. Additionally :602 only queries isRaffle for code-bearing destinations. The actual final payment is outside the loop. The loop contains local owner/range reads and burns, not the alleged registry external call.",
+      "test_evidence": [
+        {
+          "name": "testTriageOneHundredRefundBurnsSkipFactoryCallsInsideLoop",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/ScannerTriage.t.sol",
+          "line": 61,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/results/detectors/2"
+    },
+    {
+      "scanner": "Slither",
+      "ordinal": 4,
+      "scanner_id": "522085466e3ee47a4f921b04324ce7ffd4bf0398d4b869f0b73d0bc51b4ed9ae",
+      "detector": "reentrancy-benign",
+      "scanner_severity": "Low",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "lines": [
+            109,
+            110,
+            111,
+            112,
+            113,
+            114,
+            115,
+            116,
+            117,
+            118,
+            119,
+            120,
+            121
+          ],
+          "expression": "IRaffle(raffle).initialize(IRaffle.RaffleInitParams({sponsor:msg.sender,sponsorRecipient:params.sponsorRecipient,protocolTreasury:protocolTreasury,prizeToken:params.prizeToken,prizeTokenId:params.prizeTokenId,raffleId:raffleId,reserveEntries:params.reserveEntries,endTime:params.endTime}))"
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "lines": [
+            124
+          ],
+          "expression": "idByRaffle[raffle] = raffleId"
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "lines": [
+            123
+          ],
+          "expression": "raffleById[raffleId] = raffle"
+        }
+      ],
+      "disposition": "false_positive",
+      "triaged_severity": "none",
+      "property": "A fresh canonical clone cannot reenter factory creation and corrupt its registry.",
+      "exploit_preconditions": "Attack would require replacing the freshly created fixed implementation clone, defeating the factory nonReentrant guard, or a malicious factory getter performing mutation under STATICCALL.",
+      "analysis": "createRaffle:97 is guarded. :106 constructs a fixed-target clone; :109-121 invokes the known initialize code, which authenticates the factory and sets initialized before any registry view lookup. Its only external lookups are back to immutable canonical factory getters. Registration writes :123-125 then arbitrary NFT escrow occur under the same guard. An escrow reentry test is rejected and successful outer creation retains count1 and correct escrow.",
+      "test_evidence": [
+        {
+          "name": "testImplementationAndCloneInitializationAreLocked",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 209,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        },
+        {
+          "name": "testFactoryReentrancyDuringPrizeEscrowIsBlockedAtomically",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/security/RaffleSecurity.t.sol",
+          "line": 177,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/results/detectors/3"
+    },
+    {
+      "scanner": "Slither",
+      "ordinal": 5,
+      "scanner_id": "15f6492c5dc75b7a8b3384c97bbde3c3df0697a8be76cd7166af7a1c7921a86d",
+      "detector": "timestamp",
+      "scanner_severity": "Low",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            282
+          ],
+          "expression": "msg.sender != sponsor && block.timestamp < deadline"
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            287
+          ],
+          "expression": "block.timestamp < deadline"
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            291
+          ],
+          "expression": "block.timestamp < deadline"
+        }
+      ],
+      "disposition": "protected_intended_behavior",
+      "triaged_severity": "none",
+      "property": "Refunds open at the exact defined deadline and cannot coexist with a valid result.",
+      "exploit_preconditions": "A bypass would require timestamp authority beyond chain rules or a mismatch between request/callback expiration and refund gates; ordinary callers cannot supply block.timestamp.",
+      "analysis": "The three flagged comparisons have distinct intended roles: :282 allows only the sponsor to close an empty raffle before sale end; :287 opens sold-raffle refunds at end+2days; :291 opens Drawing refunds at requestedAt+2days. Requests/callbacks reject >= their deadlines, so equality gives refunds exclusively. Time determines liveness, not random selection.",
+      "test_evidence": [
+        {
+          "name": "testEmptyRaffleUsesRefundingWithoutClosedState",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 1131,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        },
+        {
+          "name": "testSoldRaffleHasHardRequestAndCallbackRefundDeadlines",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 970,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        },
+        {
+          "name": "testCallbackDeadlineIsHardAtEqualityRegardlessOfOrdering",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 1044,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/results/detectors/4"
+    },
+    {
+      "scanner": "Slither",
+      "ordinal": 6,
+      "scanner_id": "6935b73fa9a3ca75276626987a3497496d619b6a9be6b65f3ca6d41a04589a82",
+      "detector": "timestamp",
+      "scanner_severity": "Low",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "lines": [
+            100
+          ],
+          "expression": "params.endTime <= currentTime"
+        },
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "lines": [
+            102
+          ],
+          "expression": "saleDuration > RaffleConstants.MAX_SALE_DURATION"
+        }
+      ],
+      "disposition": "protected_intended_behavior",
+      "triaged_severity": "none",
+      "property": "Creation enforces a future end time and maximum prospective duration.",
+      "exploit_preconditions": "Only chain timestamp inclusion variance can shift a borderline transaction; there is no arbitrary timestamp argument supplied by a later attacker.",
+      "analysis": "RaffleFactory.sol:100 rejects endTime<=currentTime. :102 rejects sale duration>30days. These are intended domain checks, and equality at30days is valid. Timestamp inclusion can cause a near-boundary request to revert but does not bypass configuration validation or select a winner.",
+      "test_evidence": [
+        {
+          "name": "testFactoryConstructorAndCreationValidation",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 284,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        },
+        {
+          "name": "testFactoryAcceptsExactMaximumSaleDuration",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 353,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/results/detectors/5"
+    },
+    {
+      "scanner": "Slither",
+      "ordinal": 7,
+      "scanner_id": "97a32216e3dc959bdfc9c4b4b3eca8361b8faeb9d49b8a41fbbad25580152f0c",
+      "detector": "timestamp",
+      "scanner_severity": "Low",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            511,
+            512
+          ],
+          "expression": "_requestInFlight || status != Status.Drawing || requestId != vrfRequestId || randomWords.length != 1 || block.timestamp >= callbackDeadline()"
+        }
+      ],
+      "disposition": "protected_intended_behavior",
+      "triaged_severity": "none",
+      "property": "Late VRF callbacks cannot override full refunds.",
+      "exploit_preconditions": "An exploit would require accepting a callback at/after its deadline, or unauthenticated selection; neither source path permits it.",
+      "analysis": "Raffle.sol:511-512 authenticates phase/recorded ID through the wrapper entrypoint and rejects callback time>=deadline. enableRefunds uses the complementary <deadline rejection. Tests cover callback-first and refund-first order at exact equality; no winner is accepted at equality.",
+      "test_evidence": [
+        {
+          "name": "testCallbackDeadlineIsHardAtEqualityRegardlessOfOrdering",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 1044,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/results/detectors/6"
+    },
+    {
+      "scanner": "Slither",
+      "ordinal": 8,
+      "scanner_id": "98eca2436b1b4609e0358edd094e72a5335f964c847457825b856ce7c57279d9",
+      "detector": "timestamp",
+      "scanner_severity": "Low",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            216
+          ],
+          "expression": "block.timestamp >= endTime"
+        }
+      ],
+      "disposition": "protected_intended_behavior",
+      "triaged_severity": "none",
+      "property": "Entry supply closes before randomness can be requested.",
+      "exploit_preconditions": "Manipulating winner odds after sales would require buyEntries to accept now>=endTime or drawing to precede endTime.",
+      "analysis": "Raffle.sol:216 rejects buying at/after endTime. requestDraw:242 permits starting exactly at endTime; every transaction observes the same block timestamp. Ticket transfers remain intentional bearer-claim transfers and do not change totalEntries. No timestamp-derived entropy is used.",
+      "test_evidence": [
+        {
+          "name": "testSaleEndsButTicketsStayTransferableUntilBurned",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 472,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/results/detectors/7"
+    },
+    {
+      "scanner": "Slither",
+      "ordinal": 9,
+      "scanner_id": "9ec05bc52af3b2a2acfec4071c928886b71f16dd9fdcac1327abaf232c6fab66",
+      "detector": "timestamp",
+      "scanner_severity": "Low",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            464
+          ],
+          "expression": "drawRequestedAt != 0"
+        }
+      ],
+      "disposition": "false_positive",
+      "triaged_severity": "none",
+      "property": "The zero timestamp sentinel distinguishes no accepted request.",
+      "exploit_preconditions": "A relevant failure would need an accepted request at Unix time0. Canonical creation requires a future endTime and requestDraw cannot precede it, so no canonical request can occur at0.",
+      "analysis": "Raffle.sol:464 compares stored drawRequestedAt against0 to return0 before a request. It does not compare an attacker input to a current clock or use time for randomness. A recorded nonzero request yields uint256(timestamp)+2days without uint64 addition overflow.",
+      "test_evidence": [
+        {
+          "name": "testSoldRaffleHasHardRequestAndCallbackRefundDeadlines",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 970,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/results/detectors/8"
+    },
+    {
+      "scanner": "Slither",
+      "ordinal": 10,
+      "scanner_id": "a49e42ba370cd222e60f7ea7f472362e517dc63c043c81b71619433b54a284e8",
+      "detector": "timestamp",
+      "scanner_severity": "Low",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            242
+          ],
+          "expression": "block.timestamp < endTime"
+        },
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            245
+          ],
+          "expression": "block.timestamp >= requestDeadline"
+        }
+      ],
+      "disposition": "protected_intended_behavior",
+      "triaged_severity": "none",
+      "property": "Draw initiation has a finite exclusive request deadline.",
+      "exploit_preconditions": "Attack requires inconsistent sale/request/refund interval endpoints or offchain callers treating stale data as authority.",
+      "analysis": "The two flagged checks at :242 and :245 define endTime<=now<endTime+2days. At the latter equality a draw reverts and enableRefunds succeeds. At one second before the deadline, the accepted request gets its own two-day callback window. This is explicit liveness policy.",
+      "test_evidence": [
+        {
+          "name": "testSoldRaffleHasHardRequestAndCallbackRefundDeadlines",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 970,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/results/detectors/9"
+    },
+    {
+      "scanner": "Slither",
+      "ordinal": 11,
+      "scanner_id": "90beae518a97b87965cde210956021e3da4682c6032a1aac02176a4939bd3135",
+      "detector": "assembly",
+      "scanner_severity": "Informational",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            266,
+            267,
+            268
+          ],
+          "expression": ""
+        }
+      ],
+      "disposition": "informational_or_style",
+      "triaged_severity": "none",
+      "property": "Native surplus refund is bounded by caller contribution and fully checked.",
+      "exploit_preconditions": "An attacker can deploy a refund recipient that reverts or burns gas; the effect must remain confined to its own uncommitted request.",
+      "analysis": "The assembly at :266-268 calls the original msg.sender with excess=msg.value-paidPrice and empty calldata/output buffers. success is checked at :269, so failure reverts wrapper payment, request state, and all intermediate effects. Zero output-copy size avoids copying malicious returndata. nonReentrant protects economic paths; forced ETH is not included in excess.",
+      "test_evidence": [
+        {
+          "name": "testDrawForwardsExactDynamicFeeAndRefundsExcess",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 570,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        },
+        {
+          "name": "testTriageForcedEtherRemainsButNormalDrawDoesNotRetainSurplus",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/ScannerTriage.t.sol",
+          "line": 24,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        },
+        {
+          "name": "testTriageForcedEtherCannotSubsidizeUnderfundedCaller",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/ScannerTriage.t.sol",
+          "line": 47,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/results/detectors/10"
+    },
+    {
+      "scanner": "Slither",
+      "ordinal": 12,
+      "scanner_id": "206c18a5eed67d3b05f54d01e0c013972f82d79b708d56bf09f77e47282b3ac2",
+      "detector": "naming-convention",
+      "scanner_severity": "Informational",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/interfaces/IRaffle.sol",
+          "lines": [
+            396
+          ],
+          "expression": "ENTRY_PRICE"
+        }
+      ],
+      "disposition": "informational_or_style",
+      "triaged_severity": "none",
+      "property": "Constant getter ABI matches its implementation.",
+      "exploit_preconditions": "No exploit follows from this identifier casing; the scanner checks a naming convention.",
+      "analysis": "IRaffle.ENTRY_PRICE at :396 deliberately matches the public constant ENTRY_PRICE generated getter at Raffle.sol:44. Renaming only the interface would break API correspondence. Uppercase constant naming is not a security defect.",
+      "test_evidence": [],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/results/detectors/11"
+    },
+    {
+      "scanner": "Aderyn",
+      "ordinal": 1,
+      "scanner_id": "aderyn:contract-locks-ether:src/Raffle.sol:28:1898:6",
+      "detector": "contract-locks-ether",
+      "scanner_severity": "High",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            28
+          ],
+          "src": "1898:6",
+          "hint": null
+        }
+      ],
+      "disposition": "residual_limitation",
+      "triaged_severity": "informational",
+      "property": "Normal request funding is forwarded/refunded; forced native surplus is outside protocol accounting.",
+      "exploit_preconditions": "Someone must forcibly send ETH, such as a contract selfdestruct beneficiary transfer, or otherwise credit the clone outside receive(). There is no theft of another party's USDC or accepted fee payment.",
+      "analysis": "The normal payable request path forwards paidPrice through the inherited wrapper helper and refunds msg.value-paidPrice; receive():171-173 rejects direct deposits. The new proof injects1ETH using a constructor selfdestruct under Cancun, then completes an overfunded draw, winner redemption, and both fee claims. Exactly1ETH remains, while the requester paid only the wrapper fee and accountedQuoteBalance is0. Underpayment cannot spend forced ETH. There is no rescue method, so forced/unaccounted ETH is indeed unrecoverable. Downgrade the broad High alert to an informational residual limitation; ordinary draw payments are not locked.",
+      "test_evidence": [
+        {
+          "name": "testDrawForwardsExactDynamicFeeAndRefundsExcess",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 570,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        },
+        {
+          "name": "testTriageForcedEtherRemainsButNormalDrawDoesNotRetainSurplus",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/ScannerTriage.t.sol",
+          "line": 24,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        },
+        {
+          "name": "testTriageForcedEtherCannotSubsidizeUnderfundedCaller",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/ScannerTriage.t.sol",
+          "line": 47,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/high_issues/issues/0/instances/0"
+    },
+    {
+      "scanner": "Aderyn",
+      "ordinal": 2,
+      "scanner_id": "aderyn:reentrancy-state-change:src/RaffleFactory.sol:71:3249:192",
+      "detector": "reentrancy-state-change",
+      "scanner_severity": "High",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "lines": [
+            71
+          ],
+          "src": "3249:192",
+          "hint": "State is changed at: `quoteToken = quoteToken_`, `vrfWrapper = vrfWrapper_`, `protocolTreasury = protocolTreasury_`, `raffleImplementation = implementation`"
+        }
+      ],
+      "disposition": "false_positive",
+      "triaged_severity": "none",
+      "property": "Factory constructor validation cannot be used to execute its undeployed runtime.",
+      "exploit_preconditions": "A hostile decimals implementation would have to mutate a factory whose runtime code does not yet exist, and the Solidity view call also executes under STATICCALL.",
+      "analysis": "The flagged decimals() call at RaffleFactory.sol:71 occurs in construction before runtime code is installed. It is an IERC20Metadata view call, so static context also prohibits mutation in descendants. Writes to constructor-selected immutables at :85-91 are not vulnerable runtime CEI violations. The new probe token asserts msg.sender.code.length==0 and that a static call to raffleCount returns empty data, then deployment completes with count0. Reverting/wrong decimal validation separately reverts atomically. Canonical USDC identity remains a deployment trust assumption, not a reentrancy exploit.",
+      "test_evidence": [
+        {
+          "name": "testTriageDecimalsCallbackCannotExecuteFactoryRuntimeDuringConstruction",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/ScannerTriage.t.sol",
+          "line": 79,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        },
+        {
+          "name": "testFactoryConstructorAndCreationValidation",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 284,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/high_issues/issues/1/instances/0"
+    },
+    {
+      "scanner": "Aderyn",
+      "ordinal": 3,
+      "scanner_id": "aderyn:reentrancy-state-change:src/RaffleFactory.sol:109:5055:489",
+      "detector": "reentrancy-state-change",
+      "scanner_severity": "High",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/RaffleFactory.sol",
+          "lines": [
+            109
+          ],
+          "src": "5055:489",
+          "hint": "State is changed at: `raffleById[raffleId] = raffle`, `idByRaffle[raffle] = raffleId`, `isRaffle[raffle] = true`"
+        }
+      ],
+      "disposition": "false_positive",
+      "triaged_severity": "none",
+      "property": "Atomic factory registration after initialization cannot be reentered.",
+      "exploit_preconditions": "Requires malicious replacement of the fixed clone or bypass of factory nonReentrant; the attacker controls neither.",
+      "analysis": "The initializer target is the clone just created at :106, not a sponsor-supplied implementation. initialize is one-time factory-only and its protocol checks use static factory getters. createRaffle holds nonReentrant across initialization and all registry writes (:123-125), followed by untrusted prize escrow. Escrow reentrancy is dynamically blocked and initialization replay/unauthorized calls are tested.",
+      "test_evidence": [
+        {
+          "name": "testImplementationAndCloneInitializationAreLocked",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 209,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        },
+        {
+          "name": "testFactoryReentrancyDuringPrizeEscrowIsBlockedAtomically",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/security/RaffleSecurity.t.sol",
+          "line": 177,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/high_issues/issues/1/instances/1"
+    },
+    {
+      "scanner": "Aderyn",
+      "ordinal": 4,
+      "scanner_id": "aderyn:costly-loop:src/Raffle.sol:357:13959:434",
+      "detector": "costly-loop",
+      "scanner_severity": "Low",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            357
+          ],
+          "src": "13959:434",
+          "hint": null
+        }
+      ],
+      "disposition": "protected_intended_behavior",
+      "triaged_severity": "none",
+      "property": "Refund work is bounded by ticket count and each burned ownership record must be persisted.",
+      "exploit_preconditions": "A global denial would require an unbounded mandatory batch or per-entry iteration; callers choose1\u2013100 ticket IDs and can submit smaller batches.",
+      "analysis": "Raffle.sol:351-354 enforces the100-ticket cap; :357-364 burns one unique ownership record per ticket, which cannot safely be replaced by one local aggregate SSTORE. Only aggregateEntries accumulates locally; the refund liability is updated once after the loop. The new100-ticket proof passes and measures667412 gas for its refund segment, with exactly one factory lookup after burns. This is local warmed-state/mock evidence, not a chain-wide gas certification.",
+      "test_evidence": [
+        {
+          "name": "testTriageOneHundredRefundBurnsSkipFactoryCallsInsideLoop",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/ScannerTriage.t.sol",
+          "line": 61,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        },
+        {
+          "name": "testRefundBatchValidationAndMixedOwnershipAreAtomic",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 1102,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        },
+        {
+          "name": "testWeightedRefundBatchPaysExactRangesAndConsumesOnce",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 1076,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/low_issues/issues/0/instances/0"
+    },
+    {
+      "scanner": "Aderyn",
+      "ordinal": 5,
+      "scanner_id": "aderyn:large-numeric-literal:src/libraries/RaffleConstants.sol:12:610:6",
+      "detector": "large-numeric-literal",
+      "scanner_severity": "Low",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/libraries/RaffleConstants.sol",
+          "lines": [
+            12
+          ],
+          "src": "610:6",
+          "hint": null
+        }
+      ],
+      "disposition": "informational_or_style",
+      "triaged_severity": "none",
+      "property": "BPS denominator is exactly10000 and nonzero.",
+      "exploit_preconditions": "No attacker control; replacing10000 with1e4 changes presentation only.",
+      "analysis": "RaffleConstants.sol:12 uses readable grouped integer10_000 for the basis-point denominator. It is exactly the intended integer; the choice of notation has no runtime or arithmetic distinction.",
+      "test_evidence": [],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/low_issues/issues/1/instances/0"
+    },
+    {
+      "scanner": "Aderyn",
+      "ordinal": 6,
+      "scanner_id": "aderyn:large-numeric-literal:src/libraries/RaffleConstants.sol:21:1041:9",
+      "detector": "large-numeric-literal",
+      "scanner_severity": "Low",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/libraries/RaffleConstants.sol",
+          "lines": [
+            21
+          ],
+          "src": "1041:9",
+          "hint": null
+        }
+      ],
+      "disposition": "informational_or_style",
+      "triaged_severity": "none",
+      "property": "Every entry costs exactly1000000 canonical six-decimal quote units.",
+      "exploit_preconditions": "No attacker-controlled literal or rounding occurs at the declaration.",
+      "analysis": "RaffleConstants.sol:21 uses1_000_000, exactly equivalent to1e6. Purchase/refund multiplication uses uint256 and is bounded by uint128 totalEntries. A style suggestion is not loss of funds.",
+      "test_evidence": [
+        {
+          "name": "testWeightedRefundBatchPaysExactRangesAndConsumesOnce",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 1076,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/low_issues/issues/1/instances/1"
+    },
+    {
+      "scanner": "Aderyn",
+      "ordinal": 7,
+      "scanner_id": "aderyn:large-numeric-literal:src/libraries/RaffleConstants.sol:39:2009:7",
+      "detector": "large-numeric-literal",
+      "scanner_severity": "Low",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/libraries/RaffleConstants.sol",
+          "lines": [
+            39
+          ],
+          "src": "2009:7",
+          "hint": null
+        }
+      ],
+      "disposition": "informational_or_style",
+      "triaged_severity": "none",
+      "property": "Requested callback gas value remains300000.",
+      "exploit_preconditions": "The notation alone cannot change execution; actual network callback gas sufficiency is a separate deployment/runtime question.",
+      "analysis": "RaffleConstants.sol:39 uses300_000, numerically identical to3e5. This alert establishes no underfunded callback or excessive gas use. No live Chainlink configuration or production callback gas measurement is claimed by this triage.",
+      "test_evidence": [],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/low_issues/issues/1/instances/2"
+    },
+    {
+      "scanner": "Aderyn",
+      "ordinal": 8,
+      "scanner_id": "aderyn:require-revert-in-loop:src/Raffle.sol:357:14012:381",
+      "detector": "require-revert-in-loop",
+      "scanner_severity": "Low",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            357
+          ],
+          "src": "14012:381",
+          "hint": null
+        }
+      ],
+      "disposition": "protected_intended_behavior",
+      "triaged_severity": "none",
+      "property": "Refund batches are atomic and only current owners can burn/pay themselves.",
+      "exploit_preconditions": "A caller must submit its own malformed, duplicate, missing, or foreign-owned ID; an unrelated attacker cannot edit another transaction's calldata.",
+      "analysis": "The per-item current-owner check at Raffle.sol:359-360 and burn at:364 intentionally revert the complete batch when any ID fails. Forgiving failures would alter the documented all-or-nothing API and complicate correct liability allocation. The mixed-owner test proves the earlier valid ticket remains owned and full liability remains; the caller can resubmit valid IDs. The maximum100 cap bounds failure cost.",
+      "test_evidence": [
+        {
+          "name": "testRefundBatchValidationAndMixedOwnershipAreAtomic",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 1102,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        },
+        {
+          "name": "testWeightedRefundBatchPaysExactRangesAndConsumesOnce",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 1076,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/low_issues/issues/2/instances/0"
+    },
+    {
+      "scanner": "Aderyn",
+      "ordinal": 9,
+      "scanner_id": "aderyn:state-change-without-event:src/Raffle.sol:176:6374:10",
+      "detector": "state-change-without-event",
+      "scanner_severity": "Low",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            176
+          ],
+          "src": "6374:10",
+          "hint": null
+        }
+      ],
+      "disposition": "informational_or_style",
+      "triaged_severity": "none",
+      "property": "Initialization parameters are observable through the same atomic creation transaction.",
+      "exploit_preconditions": "Would need a successful standalone initialize or an unlogged later setter; source allows neither for canonical clones.",
+      "analysis": "Raffle.initialize emits no local event, but canonical Factory.RaffleCreated at:136-147 contains the fixed parameters and receiver activation emits PrizeDeposited. Factory-only one-time initialization and atomic factory creation make the configuration reconstructible. Treat as event-location preference, not an unobservable mutable configuration.",
+      "test_evidence": [
+        {
+          "name": "testImplementationAndCloneInitializationAreLocked",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 209,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/low_issues/issues/3/instances/0"
+    },
+    {
+      "scanner": "Aderyn",
+      "ordinal": 10,
+      "scanner_id": "aderyn:unchecked-return:src/Raffle.sol:315:12180:30",
+      "detector": "unchecked-return",
+      "scanner_severity": "Low",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            315
+          ],
+          "src": "12180:30",
+          "hint": null
+        }
+      ],
+      "disposition": "false_positive",
+      "triaged_severity": "none",
+      "property": "Lazy settlement still allocates and pays the correct winner amount.",
+      "exploit_preconditions": "An exploit would require the ignored numeric return to be the only record of cash liability or a success indicator; neither is true.",
+      "analysis": "_settleWinningTicket returns an informational cashAmount while writing winnerProceeds, sponsorProceeds, protocolFees, winningTicketId and settlementComplete. Failure reverts, never returns a false-success sentinel. redeemWinningTicket at:339 independently reads the stored winnerProceeds into its own cashAmount and clears/transfers it. NftWon rightly returns0. The owner-only settle-and-redeem test passes.",
+      "test_evidence": [
+        {
+          "name": "testOwnerCanSettleAndRedeemAtomicallyButApprovedOperatorCannot",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 803,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/low_issues/issues/4/instances/0"
+    },
+    {
+      "scanner": "Aderyn",
+      "ordinal": 11,
+      "scanner_id": "aderyn:uninitialized-local-variable:src/Raffle.sol:357:13972:5",
+      "detector": "uninitialized-local-variable",
+      "scanner_severity": "Low",
+      "source_locations": [
+        {
+          "path": "packages/contracts/src/Raffle.sol",
+          "lines": [
+            357
+          ],
+          "src": "13972:5",
+          "hint": null
+        }
+      ],
+      "disposition": "informational_or_style",
+      "triaged_severity": "none",
+      "property": "The refund loop starts at index0 deterministically.",
+      "exploit_preconditions": "Would require Solidity local uint256 default initialization not to be zero, contrary to language semantics.",
+      "analysis": "uint256 index in the for initializer at Raffle.sol:357 is automatically zero-initialized. Explicit zero assignment would be stylistic only. The100-ticket proof and exact weighted refunds exercise inclusion of the first ticket and completion of all iterations.",
+      "test_evidence": [
+        {
+          "name": "testTriageOneHundredRefundBurnsSkipFactoryCallsInsideLoop",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/ScannerTriage.t.sol",
+          "line": 61,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        },
+        {
+          "name": "testWeightedRefundBatchPaysExactRangesAndConsumesOnce",
+          "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/test/foundry/unit/Raffle.t.sol",
+          "line": 1076,
+          "execution": "PASS",
+          "log": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/scanner-triage/triage-tests.log"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "No unproven exploit precondition was accepted as fact; conclusion is limited to the frozen source and stated canonical dependencies.",
+      "raw_json_pointer": "/low_issues/issues/5/instances/0"
+    }
+  ]
+}

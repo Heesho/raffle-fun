@@ -1,0 +1,100 @@
+{
+  "function": "enableRefunds()",
+  "file": "target/packages/contracts/src/Raffle.sol",
+  "lines": "L276-L301",
+  "analysisFile": "audit-context/functions/08-enableRefunds.md",
+  "invariants": [
+    {
+      "claim": "A successful invocation can begin only from `Active` or `Drawing`; all other statuses revert before refund-accounting writes.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L279-L300"
+    },
+    {
+      "claim": "For an empty `Active` raffle, only the stored sponsor may proceed before `endTime`, while any caller may proceed at or after `endTime`.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L279-L285; sponsor provenance: target/packages/contracts/src/RaffleFactory.sol:L109-L120 and target/packages/contracts/src/interfaces/IRaffleFactory.sol:L30-L34"
+    },
+    {
+      "claim": "For a sold `Active` raffle, refunds begin exactly when the exclusive draw-request window ends; for `Drawing`, they begin exactly when callback acceptance ends.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L244-L247, L285-L291, L457-L465, L509-L516; target/packages/contracts/src/libraries/RaffleConstants.sol:L32-L36"
+    },
+    {
+      "claim": "Success atomically reclassifies the exact pre-call `unsettledPot`: the pot becomes zero, `remainingRefundLiability` becomes that snapshot, `status` becomes `Refunding`, and the event reports the same amount.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L296-L300; event definition at target/packages/contracts/src/interfaces/IRaffle.sol:L110-L113"
+    },
+    {
+      "claim": "On source-reachable `Active` or `Drawing` states, the prior refund liability is zero, so moving the unsettled bucket into the refund bucket preserves `accountedQuoteBalance`.",
+      "evidence": "Only refund-liability writes are target/packages/contracts/src/Raffle.sol:L298 and L368; refund consumption requires `Refunding` at L349-L350; status transitions are at L205, L252, L299, L428, and L521; the summed balance is defined at L467-L470."
+    },
+    {
+      "claim": "After success, another `enableRefunds` call cannot pass and an authenticated VRF callback cannot resolve the raffle because both require a different status path.",
+      "evidence": "target/packages/contracts/src/Raffle.sol:L279-L294 and L509-L516"
+    },
+    {
+      "claim": "The modifier chain admits no nested `nonReentrant` execution while the body runs and resets its namespaced slot after successful completion.",
+      "evidence": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:L35-L37, L50-L51, L69-L73, L88-L117; target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:L90-L97"
+    }
+  ],
+  "assumptions": [
+    {
+      "claim": "The reclassified `unsettledPot` is backed by an equal spendable quote-token balance; purchase accounting increases by the requested gross amount, while SafeERC20 validates call/return success but not the actual balance delta (target/packages/contracts/src/Raffle.sol:L223-L233; target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol:L43-L46, L212-L240).",
+      "establishedBy": "The canonical-USDC deployment and standard fee-free, non-rebasing token trust requirement in target/packages/contracts/src/interfaces/IRaffle.sol:L12-L15, target/packages/contracts/src/RaffleFactory.sol:L58-L77, target/packages/contracts/src/interfaces/IRaffleFactory.sol:L7-L9, and target/DESIGN.md:L2."
+    },
+    {
+      "claim": "`uint64(block.timestamp)` in `requestDraw` preserves the complete request timestamp used by `callbackDeadline` (target/packages/contracts/src/Raffle.sol:L252-L254, L462-L465).",
+      "establishedBy": "nothing found"
+    },
+    {
+      "claim": "The untrusted configured prize contract continues to recognize the raffle's custody when `Refunding` enables later sponsor-prize release; the factory verifies ownership only at creation (target/packages/contracts/src/RaffleFactory.sol:L127-L134; target/packages/contracts/src/interfaces/IRaffle.sol:L32-L33).",
+      "establishedBy": "nothing found"
+    }
+  ],
+  "calls": [
+    {
+      "callee": "ReentrancyGuard.nonReentrant modifier chain",
+      "kind": "internal",
+      "propagates": "Before the body, rejects exact `ENTERED` and writes `ENTERED`; after successful body completion, writes `NOT_ENTERED`. The chain uses only the namespaced storage slot and `StorageSlot.getUint256Slot`, with no external interaction (target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:L69-L117; target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol:L90-L97)."
+    },
+    {
+      "callee": "drawRequestDeadline()",
+      "kind": "internal",
+      "propagates": "Returns `uint256(endTime) + 2 days` on its only path, supplying the sold-Active refund boundary also used by `requestDraw` (target/packages/contracts/src/Raffle.sol:L244-L247, L285-L288, L457-L460; target/packages/contracts/src/libraries/RaffleConstants.sol:L32-L33)."
+    },
+    {
+      "callee": "callbackDeadline()",
+      "kind": "internal",
+      "propagates": "Returns zero before a recorded request and otherwise `uint256(drawRequestedAt) + 2 days`, supplying the Drawing refund boundary also used by callback acceptance (target/packages/contracts/src/Raffle.sol:L289-L291, L462-L465, L509-L516; target/packages/contracts/src/libraries/RaffleConstants.sol:L35-L36)."
+    }
+  ],
+  "callers": [
+    "Any EOA or contract can invoke the external `IRaffle.enableRefunds()` entry point; the body grants the sponsor only the pre-end empty-raffle path and makes the other eligible deadline paths permissionless (target/packages/contracts/src/interfaces/IRaffle.sol:L322-L324; target/packages/contracts/src/Raffle.sol:L279-L294)."
+  ],
+  "sharedState": [
+    "`status`: read for eligibility and written to `Refunding`; also written by initialization, prize deposit, draw initiation, and accepted fulfillment (target/packages/contracts/src/Raffle.sol:L176-L205, L252-L260, L279-L299, L416-L430, L509-L523).",
+    "`sponsor` and `endTime`: configured during initialization from factory-supplied parameters and read for the empty-Active path (target/packages/contracts/src/Raffle.sol:L197-L205, L280-L284; target/packages/contracts/src/RaffleFactory.sol:L109-L120).",
+    "`totalEntries`: read to select empty versus sold Active behavior and written only by purchases (target/packages/contracts/src/Raffle.sol:L219-L231, L279-L286).",
+    "`drawRequestedAt`: written with the Drawing transition, read by `callbackDeadline`, and indirectly consumed here (target/packages/contracts/src/Raffle.sol:L252-L260, L289-L291, L462-L465).",
+    "`unsettledPot`: increased by purchases, read and zeroed here, and alternatively zeroed by winning-ticket settlement (target/packages/contracts/src/Raffle.sol:L223-L233, L296-L297, L539-L555).",
+    "`remainingRefundLiability`: initialized here from the pot and decremented by ticket refunds (target/packages/contracts/src/Raffle.sol:L296-L299, L349-L370).",
+    "Namespaced ReentrancyGuard slot: shared by every `nonReentrant` raffle entry point (target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol:L35-L37, L69-L117).",
+    "Raffle-held quote-token balance: unchanged by this function but economically expected to back the newly classified liability; prior funding occurs through `buyEntries` (target/packages/contracts/src/Raffle.sol:L223-L233, L296-L300)."
+  ],
+  "openQuestions": [],
+  "filesReviewed": [
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/audit-context-building/skills/audit-context-building/SKILL.md",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/audit-context-building/skills/audit-context-building/resources/ANALYSIS_FORMAT.md",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/audit-context-building/skills/audit-context-building/resources/DOMAIN_NOTES.md",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/audit-context-building/skills/audit-context-building/resources/FUNCTION_MICRO_ANALYSIS_EXAMPLE.md",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/audit-context-building/workflows/audit-context.js",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/audit-context-building/agents/function-analyzer.md",
+    "target/DESIGN.md",
+    "target/packages/contracts/src/Raffle.sol",
+    "target/packages/contracts/src/RaffleFactory.sol",
+    "target/packages/contracts/src/libraries/RaffleConstants.sol",
+    "target/packages/contracts/src/interfaces/IRaffle.sol",
+    "target/packages/contracts/src/interfaces/IRaffleFactory.sol",
+    "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+    "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol",
+    "target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol",
+    "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+    "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol"
+  ]
+}

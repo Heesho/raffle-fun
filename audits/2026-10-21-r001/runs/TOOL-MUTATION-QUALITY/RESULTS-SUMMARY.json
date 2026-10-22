@@ -1,0 +1,157 @@
+{
+  "scope": "Separate test-exposed followup after SUP-A1 seal",
+  "baseline_unit_fuzz_security_passed": 70,
+  "baseline_invariants_passed": 9,
+  "mutants": [
+    {
+      "id": "M1-fee-400",
+      "production_diff": "M1-fee-400.diff",
+      "suite_results": {
+        "invariant": {
+          "classification": "surviving",
+          "exit_code": 0
+        },
+        "unit-fuzz-security": {
+          "classification": "killed",
+          "exit_code": 1
+        }
+      },
+      "overall_classification": "killed"
+    },
+    {
+      "id": "M2-owner-check-removed",
+      "production_diff": "M2-owner-check-removed.diff",
+      "suite_results": {
+        "invariant": {
+          "classification": "surviving",
+          "exit_code": 0
+        },
+        "unit-fuzz-security": {
+          "classification": "killed",
+          "exit_code": 1
+        }
+      },
+      "overall_classification": "killed"
+    },
+    {
+      "id": "M3-request-deadline-inclusive",
+      "production_diff": "M3-request-deadline-inclusive.diff",
+      "suite_results": {
+        "invariant": {
+          "classification": "surviving",
+          "exit_code": 0
+        },
+        "unit-fuzz-security": {
+          "classification": "killed",
+          "exit_code": 1
+        }
+      },
+      "overall_classification": "killed"
+    },
+    {
+      "id": "M4-purchase-always-reverts",
+      "production_diff": "M4-purchase-always-reverts.diff",
+      "suite_results": {
+        "invariant": {
+          "classification": "surviving",
+          "exit_code": 0
+        },
+        "unit-fuzz-security": {
+          "classification": "killed",
+          "exit_code": 1
+        }
+      },
+      "overall_classification": "killed"
+    }
+  ],
+  "valid_mutants": 4,
+  "overall_killed": 4,
+  "overall_surviving": 0,
+  "invalid_mutants": 0,
+  "timeouts": 0,
+  "short_invariant_survivors": 4,
+  "short_invariant_runs": 64,
+  "short_invariant_depth": 64,
+  "fuzz_runs": 128,
+  "extended_fee_mutant_killed_at_invariant_run": 120,
+  "strict_no_purchase_mutant_survived": true,
+  "historical_configuration_zero_match_definitions": 11,
+  "historical_results_read": false,
+  "additional_probe_results": [
+    {
+      "name": "M1-fee-400-invariant-extended",
+      "command": [
+        "forge",
+        "test",
+        "--root",
+        "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/mutation-quality/M1-fee-400",
+        "--match-contract",
+        "RaffleInvariantTest",
+        "--no-match-path",
+        "**/fork/**"
+      ],
+      "environment": {
+        "FOUNDRY_INVARIANT_RUNS": "512",
+        "FOUNDRY_INVARIANT_DEPTH": "64"
+      },
+      "exit_code": 1,
+      "status": "failed",
+      "duration_seconds": 11.771
+    },
+    {
+      "name": "M4-purchase-always-reverts-strict",
+      "command": [
+        "forge",
+        "test",
+        "--root",
+        "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/mutation-quality/M4-purchase-always-reverts",
+        "--match-contract",
+        "RaffleInvariantTest",
+        "--no-match-path",
+        "**/fork/**"
+      ],
+      "environment": {
+        "FOUNDRY_PROFILE": "audit_strict",
+        "FOUNDRY_INVARIANT_RUNS": "16",
+        "FOUNDRY_INVARIANT_DEPTH": "64"
+      },
+      "exit_code": 0,
+      "status": "passed",
+      "duration_seconds": 1.086
+    },
+    {
+      "name": "base-guided-probe",
+      "command": [
+        "forge",
+        "test",
+        "--root",
+        "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/mutation-quality/base",
+        "--match-contract",
+        "ReachabilityProbeTest",
+        "--match-test",
+        "testGuidedCashSettlementUsesExistingEconomicInvariant"
+      ],
+      "environment": {},
+      "exit_code": 0,
+      "status": "passed",
+      "duration_seconds": 4.411
+    },
+    {
+      "name": "M1-fee-400-guided-probe",
+      "command": [
+        "forge",
+        "test",
+        "--root",
+        "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/mutation-quality/M1-fee-400",
+        "--match-contract",
+        "ReachabilityProbeTest",
+        "--match-test",
+        "testGuidedCashSettlementUsesExistingEconomicInvariant"
+      ],
+      "environment": {},
+      "exit_code": 1,
+      "status": "failed",
+      "duration_seconds": 3.619
+    }
+  ]
+}

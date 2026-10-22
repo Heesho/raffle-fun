@@ -1,0 +1,518 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-21T08:21:00Z",
+  "cell": "DAYBREAK-GEBAL",
+  "attempt": 2,
+  "method": "Gebal native source-only own-model workflow",
+  "methodology": "native-review-v1",
+  "authorization": {
+    "kind": "user-authorized defensive smart-contract audit",
+    "approvalActor": "assistant:Codex",
+    "approvalReason": "User explicitly authorized local source-only audit of the nine selected project source/config/lock paths and the two exact dependency closure directories; no assessed code execution, egress, provider adapter, or additional paths.",
+    "ownerPersonallyInspectedPlanHashClaimed": false,
+    "liveTransactions": false,
+    "deployments": false,
+    "publishing": false,
+    "productionModification": false
+  },
+  "target": {
+    "operatorProvidedCommit": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+    "commitVerifiedThroughSourceGitHistory": false,
+    "commitVerificationNote": "The target SHA is operator-provided. Source git history was prohibited and was not inspected.",
+    "root": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL-attempt-02/target",
+    "immutable": true,
+    "finalHashCheckMatchesInitial": true,
+    "finalHashEvidence": "raw/11-final-target-hashes.txt"
+  },
+  "harness": {
+    "root": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal",
+    "historicalSuppliedRevision": "5c68ec0284dc642823abe81cbc0e02fcb080a69f",
+    "historicalRevisionStatus": "UNAVAILABLE_PER_OPERATOR: prior remote checkout failed; no retry or network checkout was performed in this cell",
+    "reviewedReplacementRevision": "9ad24645f92a3821ae4539db5f1be52b48ed379e",
+    "replacementRevisionVerifiedLocally": true,
+    "adapterVersion": "0.2.0",
+    "readOnlyReference": true,
+    "stateRoot": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL-attempt-02/gebal-state"
+  },
+  "runtime": {
+    "node": {
+      "version": "22.23.3",
+      "path": "/Users/hishamel-husseini/.npm/_npx/2643742ee1db1418/node_modules/node/bin/node",
+      "sha256": "68f4d07ca49e0500cc135c7e0a445093e228e42e126ac22306d045f0a8c2636b"
+    },
+    "pnpm": {
+      "version": "10.34.6",
+      "path": "/Users/hishamel-husseini/.npm/_npx/2643742ee1db1418/node_modules/pnpm/bin/pnpm.cjs",
+      "sha256": "b276da51dc8ca5b0d3ee3371695b50fc8b3244b281b091c63a3f082a88dadeb9"
+    },
+    "gebalInvocation": {
+      "kind": "direct exact Node 22 invocation of pinned tsx and Gebal TypeScript CLI",
+      "tsx": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/node_modules/tsx/dist/cli.mjs",
+      "entry": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/packages/cli/src/main.ts",
+      "explicitPathNodeFirst": true,
+      "networkOrCacheLookup": false
+    },
+    "codexCli": {
+      "version": "0.163.0-alpha.10.2",
+      "path": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex",
+      "sha256": "1afb28c01d7d49e892bd75f11076b10f1451e34e0ee308a95e5ab7f69f9c84fe",
+      "staleHomebrewShim": "/opt/homebrew/bin/codex",
+      "staleHomebrewShimStatus": "unusable ENOENT; not classified as a model failure"
+    }
+  },
+  "modelProvenance": {
+    "providerIdentityVerified": false,
+    "identityInferenceFromPromptOrSelfIdentification": false,
+    "controller": {
+      "acceptedLocalModelSelection": "gpt-daybreak-blue-latest",
+      "accessProgram": "daybreak_blue",
+      "reasoningEffort": "ultra",
+      "configurationInspected": true,
+      "configurationEvidence": "raw/00-controller-runner-command.txt",
+      "providerReturnedModel": "unknown",
+      "providerReturnedIdentity": "unknown"
+    },
+    "ownModelReviewer": {
+      "acceptedLocalModelSelection": "gpt-daybreak-blue-latest",
+      "accessProgram": "daybreak_blue",
+      "reasoningEffort": "ultra",
+      "fallbackDisabledBy": [
+        "exact -m selection",
+        "--ignore-user-config",
+        "no alternate provider/model invocation"
+      ],
+      "threadId": "01a15d7b-09de-7f33-a392-fb7058b8da09",
+      "providerReturnedModel": "unknown",
+      "providerReturnedIdentity": "unknown",
+      "usageReportedByCli": {
+        "inputTokens": 1638530,
+        "cachedInputTokens": 1537920,
+        "cacheWriteInputTokens": 0,
+        "outputTokens": 43150,
+        "reasoningOutputTokens": 29513
+      },
+      "rawEvents": "raw/05-specialist-events.jsonl",
+      "rawFinalResponse": "source-review/raw-response.md"
+    },
+    "additionalModelSpecialists": [],
+    "judgeStages": [],
+    "note": "This is provider-specific method execution using an operator-selected alias, not provider-verified identity. No internal collaboration agents were used because their interface could not explicitly preserve the required access program."
+  },
+  "instructionResourcesLoaded": [
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/START_HERE.md",
+      "sha256": "a4391cdbafbea7c963dd7881ce0251e96ca44a08124b830e5698e1f2a5c3cb36",
+      "read": "full"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/agents/REVIEW.md",
+      "sha256": "6be0a96e138fbc86a9d3c80fbab38840b5ced20eddd2ec6aef087db937bda117",
+      "read": "full"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/agents/response.schema.json",
+      "sha256": "91bbbc126a265d37789ab4e54a64fa0d3845d28e979faebbe8ac8e5d3d8ff240",
+      "read": "full"
+    },
+    {
+      "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/docs/monorepos.md",
+      "sha256": "8db50ddf24138c6c4924a94af44f6478bd42becb0bcbeece8579d668cc579544",
+      "read": "full"
+    }
+  ],
+  "requirementsResource": {
+    "path": "target/DESIGN.md",
+    "sha256": "25b4248a342c3be6a48380cb692bbd8087801baee8ed85c4e5d584d1bb9cbba1",
+    "read": "full",
+    "scopeRequirementsMatch": true,
+    "comparison": "byte-for-byte after removing only DESIGN.md's terminal newline"
+  },
+  "scope": {
+    "config": "scope.json",
+    "configSha256": "99c1b366f70c1047f1d1d99155f77a48d678482565257f48577fac59e2a54089",
+    "projectPath": "packages/contracts",
+    "paths": [
+      "packages/contracts/src/Raffle.sol",
+      "packages/contracts/src/RaffleFactory.sol",
+      "packages/contracts/src/interfaces/IRaffle.sol",
+      "packages/contracts/src/interfaces/IRaffleFactory.sol",
+      "packages/contracts/src/libraries/RaffleConstants.sol",
+      "packages/contracts/foundry.toml",
+      "packages/contracts/remappings.txt",
+      "packages/contracts/package.json",
+      "pnpm-lock.yaml"
+    ],
+    "dependencyPaths": [
+      "packages/contracts/node_modules/@openzeppelin/contracts",
+      "packages/contracts/node_modules/@chainlink/contracts"
+    ],
+    "exclusions": [],
+    "sourceOnly": true,
+    "existingTests": false,
+    "provider": null,
+    "image": null,
+    "assessedProjectExecution": false,
+    "explicitInterfacesIncluded": true
+  },
+  "nativeIds": {
+    "scopeId": "d3262363-13c9-4630-8139-5cd78fde3f54",
+    "snapshotId": "13613f49-31ad-422c-9990-7579e1a749aa",
+    "snapshotHash": "d83129631037ed19fefb66eadb36bdf7c5da94d44b08cbccd50ef569628c3727",
+    "planId": "e5be87b8-6477-4d7b-a78e-2909343f5cff",
+    "planHash": "29f0c63f816a56b4d8046e769414d2a51285c6608cfe0d44207004297a9f2c7a",
+    "approvalId": "3acd9c78-d8a7-409d-bdd1-c6ce75f1f5fb",
+    "runId": "35ab82ba-9e64-4934-bd96-e3969b01a965",
+    "intakeTaskId": "117b3a88-397f-4e01-b369-2077d87348ba",
+    "intakeEvidence": "5bd1d4153c342ad447c25b7b4560ff111b4349bfd8fce1e5b5cf04132c9724d6",
+    "contextHash": "e0b633c7b0f3d58e5e39b5bbe8ba1b3663cbdf47c1a4f163a465e5335277dd5b",
+    "contextFileSha256": "45378536a86a6d0025da4cde06d05d0ae52d30529034ff747a62c29d6806b3e8",
+    "reviewInvocationId": "d607fbb1-a424-477f-ba7f-036699667b9b",
+    "reviewEvidence": "865a3c18dc2685f97f62c2cd9ee8fbc5ca588ec10720941ec5fba5e9b6d389a2",
+    "findingIds": [
+      "3941f9e4-b09f-4ea1-b5cc-c3e0f01ecec5",
+      "713c1ebb-6f09-4ec1-8655-70cb391ee248"
+    ]
+  },
+  "authoritativeContext": {
+    "path": "native/context.json",
+    "copyUsedByReviewer": "source-review/context.json",
+    "copiesByteIdentical": true,
+    "sha256": "45378536a86a6d0025da4cde06d05d0ae52d30529034ff747a62c29d6806b3e8",
+    "snapshotHash": "d83129631037ed19fefb66eadb36bdf7c5da94d44b08cbccd50ef569628c3727",
+    "contextHash": "e0b633c7b0f3d58e5e39b5bbe8ba1b3663cbdf47c1a4f163a465e5335277dd5b",
+    "fileCount": 40,
+    "reviewInputIsolation": "Reviewer working directory contained only context.json, response.schema.json, REVIEWER-PROMPT.md, and its own generated outputs."
+  },
+  "snapshotResources": [
+    {"path":"packages/contracts/foundry.toml","sha256":"0fdce809ea1675dac422cff420a3402b2f28aabed0631595e43823033fa8ef50","bytes":1228,"lines":49,"reviewCoverage":"metadata-reviewed"},
+    {"path":"packages/contracts/node_modules/@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol","sha256":"f81ec96e909daa2cd27536274a30d916b26d5fc91261bed8d7a6a3e157f3825c","bytes":1164,"lines":32,"reviewCoverage":"reachable-context-only"},
+    {"path":"packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol","sha256":"a48aaaeaed60e65f04f6c8772e5673dda663dcfa7913fdadd14b412300b9d5f1","bytes":3363,"lines":84,"reviewCoverage":"call-surface-reviewed"},
+    {"path":"packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol","sha256":"f3b89bb466c2a79b10c1816d342fbfbec49fe82695cba92bd46e7d31af698011","bytes":650,"lines":28,"reviewCoverage":"dependency-reviewed"},
+    {"path":"packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol","sha256":"8cf045f295b8c6035d14012a9bc2e8ab2b5ce24749a199ca0190519c4bf2dcc0","bytes":5055,"lines":119,"reviewCoverage":"dependency-reviewed"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC6093.sol","sha256":"fa7068f56bc180571a6095be6eaef06d51dbe81e30cb128397d993c9599ecc30","bytes":6540,"lines":163,"reviewCoverage":"reachable-context-only"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1363.sol","sha256":"9c3a75a925a6dac9e88b03cddc58d42fe3131b0aaaad84408521f3f7af2f991b","bytes":4454,"lines":87,"reviewCoverage":"reachable-context-only"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC165.sol","sha256":"dfb3f56fa928a7c6cae41a7ce2c86b9210fa18d33fa26389099d66a0fa790368","bytes":193,"lines":7,"reviewCoverage":"reachable-context-only"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/interfaces/IERC20.sol","sha256":"0158e2d3e0e28bedd99eec13dcf1a8aa3a70a5b7e4bb2ad709609c95fcc740d1","bytes":182,"lines":7,"reviewCoverage":"reachable-context-only"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol","sha256":"06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6","bytes":14522,"lines":295,"reviewCoverage":"dependency-reviewed"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol","sha256":"0b7132f17d14d1d84b41b0bb429be62dafdff00fd3470f68724d8018eb07f57a","bytes":684,"lines":27,"reviewCoverage":"call-surface-reviewed"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol","sha256":"01b6f5c4fa45fd38822b286ecef6daf983d27306dd6362496fa71b3e4600b72c","bytes":2781,"lines":80,"reviewCoverage":"call-surface-reviewed"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol","sha256":"c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3","bytes":13314,"lines":281,"reviewCoverage":"dependency-reviewed"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol","sha256":"ef8e2398c78851bd2ec12bc48d923058c557889d5a3d5ee4919c17ff0fb3517e","bytes":16201,"lines":434,"reviewCoverage":"dependency-reviewed"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol","sha256":"33223782ea652dca413702ce92f9f59d91d758a035065b24bbedb7dc60c63a78","bytes":792,"lines":28,"reviewCoverage":"reachable-context-only"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol","sha256":"ff0eb9902bf0ac099205615fac90eacf34fae637571b05aab3ea35dea53d5f17","bytes":4929,"lines":136,"reviewCoverage":"call-surface-reviewed"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol","sha256":"eafee3ffdc7cb2fba4bf6bd16fb28f8e5b4679742e81c2ad42a1b1df5c179feb","bytes":997,"lines":29,"reviewCoverage":"call-surface-reviewed"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol","sha256":"b48e95db8c85866c1d88af8e82f346e0d22d24b5aac5b936079d958c72e13b9f","bytes":1923,"lines":51,"reviewCoverage":"dependency-reviewed"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/utils/Bytes.sol","sha256":"3ce9120a27934c75a074cb785d3a88868069ef6529dbe4dc6b845af0836f3c70","bytes":14737,"lines":333,"reviewCoverage":"reachable-context-only"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/utils/Context.sol","sha256":"847fda5460fee70f56f4200f59b82ae622bb03c79c77e67af010e31b7e2cc5b6","bytes":963,"lines":29,"reviewCoverage":"reachable-context-only"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/utils/Create2.sol","sha256":"9623aa59745a23a72f313adc5adbf583968bf366a7cbf3fc43c1148d7d2c3c86","bytes":4372,"lines":92,"reviewCoverage":"reachable-context-only"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/utils/Errors.sol","sha256":"0704b9d6c032cca8512a3bc3f30f49f86f1f03102d2896a3d23e794b82efea66","bytes":896,"lines":35,"reviewCoverage":"reachable-context-only"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol","sha256":"61a2b12c96857aaa35f48aeda67a4281637a42494c0b3795be0ae976aa7b3793","bytes":879,"lines":26,"reviewCoverage":"reachable-context-only"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol","sha256":"9055c2994b37dea1a41b7b7926dcb510f05dbe2540b0aafc5fbee9558fffd0ca","bytes":871,"lines":26,"reviewCoverage":"call-surface-reviewed"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/utils/LowLevelCall.sol","sha256":"e128cbe9c6c406d5a42c26e4079c0a95b369ce552f2d0c3dfd2fcb836c5708f2","bytes":5547,"lines":128,"reviewCoverage":"reachable-context-only"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol","sha256":"bdfdbe133991c0c78042957ff5cd97167926fcaf6d15664f3835a076cb066457","bytes":32664,"lines":764,"reviewCoverage":"dependency-reviewed"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol","sha256":"5779bc848bde39f1ad7bc02b4f708a0040888e0083b1a33f119cd94639350134","bytes":34940,"lines":1163,"reviewCoverage":"reachable-context-only"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol","sha256":"1ed50b1056af886752f0fb48a0165d381e69bb4a4b18b893b066dc144a7e08d7","bytes":2613,"lines":69,"reviewCoverage":"reachable-context-only"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/utils/Panic.sol","sha256":"270fc8401c1a13fae6a7a4a2dd6e381b95d658896701e51f0d3e2688acab3dec","bytes":1973,"lines":58,"reviewCoverage":"reachable-context-only"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol","sha256":"94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8","bytes":4766,"lines":120,"reviewCoverage":"dependency-reviewed"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol","sha256":"75704538dcb223239280c6726d9a31cf769a7816718517c997fc7d63bdb70778","bytes":4182,"lines":144,"reviewCoverage":"reachable-context-only"},
+    {"path":"packages/contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol","sha256":"e318709bbe73a7831d64c1351e8bdc43780b245f25191234e361e6ab9b98c67b","bytes":21538,"lines":533,"reviewCoverage":"reachable-context-only"},
+    {"path":"packages/contracts/package.json","sha256":"2f46b8f46ed3de275a3a6d097c86a888fece719151bdf4e171495dc12e6802ad","bytes":1583,"lines":45,"reviewCoverage":"metadata-reviewed"},
+    {"path":"packages/contracts/remappings.txt","sha256":"cbf6730be9c6b6daa1855953ba581d96f14e2dbc3bc95ca3bc2d92cfd231acaa","bytes":93,"lines":3,"reviewCoverage":"metadata-reviewed"},
+    {"path":"packages/contracts/src/interfaces/IRaffle.sol","sha256":"a43ede9e8802d636a566fb225ed65bdf70f06d17f4734a1632a0a9f84aa5b2dd","bytes":29703,"lines":522,"reviewCoverage":"production-full-lines-1-521"},
+    {"path":"packages/contracts/src/interfaces/IRaffleFactory.sol","sha256":"747d238e4c7dc5b517f91c796dec87d9ddbfec9c626d1ff21467c60d780d03cf","bytes":7875,"lines":151,"reviewCoverage":"production-full-lines-1-150"},
+    {"path":"packages/contracts/src/libraries/RaffleConstants.sol","sha256":"0893f1a70ac03ad557e0b4c8bdf6a2f73d317f8417d1b4a3c1a571b893ed54b6","bytes":2172,"lines":44,"reviewCoverage":"production-full-lines-1-43"},
+    {"path":"packages/contracts/src/Raffle.sol","sha256":"6e4c977922c3e39fafaa8c4c4fb74a971f1817eca9b6552eb8a540969f968617","bytes":26421,"lines":615,"reviewCoverage":"production-full-lines-1-614"},
+    {"path":"packages/contracts/src/RaffleFactory.sol","sha256":"d0e62b34faa42513fd968f915262728fe66a15c4b9af13a3c66f496704142ace","bytes":8286,"lines":187,"reviewCoverage":"production-full-lines-1-186"},
+    {"path":"pnpm-lock.yaml","sha256":"3c277879a07bda9a4bd9788b810a000b3cb58873fc84d515e4661e0a4ed422c4","bytes":423390,"lines":15674,"reviewCoverage":"dependency-lock-reviewed"}
+  ],
+  "targetPathsDiscoveredButNotLoadedOrSelected": [
+    "target/dependency-hashes.json",
+    "target/packages/contracts/hardhat.config.ts"
+  ],
+  "stages": [
+    {
+      "id": "S00-INSTRUCTIONS-RUNTIME",
+      "status": "COMPLETE",
+      "modelDriven": false,
+      "evidence": ["raw/00-preflight-runtime-docker.txt", "raw/00-controller-runner-command.txt"],
+      "result": "Required instructions/schema read in full; replacement harness revision and pinned runtimes verified; controller selection inspected."
+    },
+    {
+      "id": "S01-SCOPE",
+      "status": "COMPLETE",
+      "modelDriven": false,
+      "command": "gebal init --output /absolute/cell/scope.json, followed by controller-authored literal scope.json",
+      "exitCode": 0,
+      "result": "sourceOnly=true, existingTests=false, provider/image omitted, nine literal project paths, two exact dependency paths, clean DESIGN.md requirements."
+    },
+    {
+      "id": "S02-NATIVE-PLAN",
+      "status": "COMPLETE",
+      "modelDriven": false,
+      "command": "env PATH=<Node22-first> GEBAL_HOME=<cell>/gebal-state <Node22> <pinned-tsx> <gebal-main.ts> review <cell>/target --config <cell>/scope.json --authorized",
+      "exitCode": 0,
+      "evidence": ["raw/01-native-review-plan.txt"],
+      "result": "Plan e5be87b8-6477-4d7b-a78e-2909343f5cff / 29f0c63f... created with intake only, no provider, no egress, no image. Diagnosis supported=false due unsupported gas_reports key; source-only intake remained valid."
+    },
+    {
+      "id": "S03-DELEGATED-APPROVAL",
+      "status": "COMPLETE",
+      "modelDriven": false,
+      "command": "gebal approve e5be87b8-6477-4d7b-a78e-2909343f5cff --hash 29f0c63f816a56b4d8046e769414d2a51285c6608cfe0d44207004297a9f2c7a --actor assistant:Codex --reason <recorded-user-authorization>",
+      "exitCode": 0,
+      "evidence": ["raw/02-native-approve.txt"],
+      "result": "Exact plan approved honestly under delegated user authorization; no owner hash-inspection claim."
+    },
+    {
+      "id": "S04-NATIVE-INTAKE",
+      "status": "COMPLETE",
+      "modelDriven": false,
+      "command": "gebal run e5be87b8-6477-4d7b-a78e-2909343f5cff",
+      "exitCode": 0,
+      "evidence": ["raw/03-native-run.txt", "5bd1d4153c342ad447c25b7b4560ff111b4349bfd8fce1e5b5cf04132c9724d6"],
+      "result": "Run succeeded; intake recorded 40 authorized files. No semantic, test, or property coverage claimed by intake."
+    },
+    {
+      "id": "S05-COLD-CONTEXT",
+      "status": "COMPLETE",
+      "modelDriven": false,
+      "command": "gebal context 35ab82ba-9e64-4934-bd96-e3969b01a965 --output <cell>/native/context.json",
+      "exitCode": 0,
+      "evidence": ["raw/04-native-context-export.txt", "native/context.json"],
+      "result": "Authoritative cold context exported; snapshot/context hashes retained unchanged."
+    },
+    {
+      "id": "S06-OWN-MODEL-SOURCE-REVIEW",
+      "status": "COMPLETE",
+      "modelDriven": true,
+      "command": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex exec --ignore-user-config --ignore-rules --ephemeral --skip-git-repo-check -s workspace-write -C <cell>/source-review -m gpt-daybreak-blue-latest --cyber-access-program daybreak_blue -c model_reasoning_effort=\"ultra\" -c features.multi_agent=false --json -o <cell>/source-review/raw-response.md - < REVIEWER-PROMPT.md",
+      "exitCode": 0,
+      "selection": {"model":"gpt-daybreak-blue-latest","accessProgram":"daybreak_blue","reasoningEffort":"ultra","providerReturnedModel":"unknown"},
+      "evidence": ["raw/05-specialist-events.jsonl", "source-review/raw-response.md", "source-review/review.json", "source-review/FIRST-PASS.md"],
+      "result": "Two source-supported observations; one high and one low. Five gaps. All five production files explicitly covered."
+    },
+    {
+      "id": "S07-FIRST-PASS-SEAL",
+      "status": "COMPLETE",
+      "modelDriven": false,
+      "exitCode": 0,
+      "sealedAt": "2026-10-21T08:18:30Z",
+      "evidence": ["source-review/SEAL.json", "raw/06-seal-verification.txt"],
+      "result": "Original FIRST-PASS.md and review.json plus context/schema/prompt/raw outputs sealed before native import or external reconciliation. No sealed file was overwritten."
+    },
+    {
+      "id": "S08-NATIVE-IMPORT",
+      "status": "COMPLETE",
+      "modelDriven": false,
+      "command": "gebal import-review 35ab82ba-9e64-4934-bd96-e3969b01a965 --input <cell>/source-review/review.json --reviewer 'Codex / gpt-daybreak-blue-latest (operator-selected alias; daybreak_blue; ultra; provider-returned model unknown)'",
+      "exitCode": 0,
+      "evidence": ["raw/07-native-import-review.txt", "865a3c18dc2685f97f62c2cd9ee8fbc5ca588ec10720941ec5fba5e9b6d389a2"],
+      "result": "Schema, exact context binding, and source spans validated; two observations retained; disposition needs-review."
+    },
+    {
+      "id": "S09-NATIVE-FINDINGS-REPORTS",
+      "status": "COMPLETE",
+      "modelDriven": false,
+      "commands": [
+        "gebal findings 35ab82ba-9e64-4934-bd96-e3969b01a965",
+        "gebal report 35ab82ba-9e64-4934-bd96-e3969b01a965 --format md --output <cell>/native/report.md",
+        "gebal report 35ab82ba-9e64-4934-bd96-e3969b01a965 --format json --output <cell>/native/report.json"
+      ],
+      "exitCodes": [0,0,0],
+      "evidence": ["raw/08-native-findings.txt", "raw/09-native-report-md.txt", "raw/10-native-report-json.txt", "native/report.md", "native/report.json"],
+      "result": "Authoritative native Markdown and JSON reports exported."
+    },
+    {
+      "id": "S10-TEST-INCLUSIVE-DETERMINISTIC-PLAN",
+      "status": "BLOCKED",
+      "modelDriven": false,
+      "precondition": "Pinned existing local Docker tool image and functioning Docker daemon",
+      "preconditionResult": "Docker client 29.8.2 present; daemon socket /var/run/docker.sock absent; docker info exit 1.",
+      "evidence": ["raw/00-preflight-runtime-docker.txt"],
+      "planCreated": false,
+      "coldReviewImported": false,
+      "hostToolFallbackUsed": false,
+      "result": "Blocked before image enumeration or plan creation, exactly as the requested conditional workflow requires."
+    },
+    {
+      "id": "S11-COMPILER",
+      "status": "INCOMPLETE",
+      "modelDriven": false,
+      "result": "No compiler execution; source-only plan and unsupported gas_reports diagnosis."
+    },
+    {
+      "id": "S12-TESTS-FUZZ-INVARIANTS",
+      "status": "BLOCKED",
+      "modelDriven": false,
+      "result": "No existing tests, fuzzing, or invariants executed; Docker execution precondition unavailable."
+    },
+    {
+      "id": "S13-STATIC-ANALYZER-PROVER",
+      "status": "INCOMPLETE",
+      "modelDriven": false,
+      "result": "No scanner, static analyzer, symbolic execution, or prover stage exists in this source-only native plan."
+    },
+    {
+      "id": "S14-EXTERNAL-RECONCILIATION",
+      "status": "NOT_RUN",
+      "modelDriven": false,
+      "result": "No peers, historical reports, scanners, accepted-risk lists, memories, or external conclusions were read."
+    }
+  ],
+  "productionFileCoverage": [
+    {"path":"packages/contracts/src/Raffle.sol","span":"1-614","status":"reviewed","focus":"initialization, lifecycle, entry/ticket ledger, transfers, request/callback, settlement, claims, accounting, sink checks, reentrancy","observations":[1,2]},
+    {"path":"packages/contracts/src/RaffleFactory.sol","span":"1-186","status":"reviewed","focus":"immutables, implementation deployment, clone initialization/registration, prize validation/escrow, recipient filtering","observations":[1,2]},
+    {"path":"packages/contracts/src/interfaces/IRaffle.sol","span":"1-521","status":"reviewed","focus":"complete ABI, statuses, events/errors, claim/timing/accounting semantics, getters","observations":[]},
+    {"path":"packages/contracts/src/interfaces/IRaffleFactory.sol","span":"1-150","status":"reviewed","focus":"creation parameters, registry ABI, immutable getters, events/errors","observations":[]},
+    {"path":"packages/contracts/src/libraries/RaffleConstants.sol","span":"1-43","status":"reviewed","focus":"price, rates, deadlines, batch bound, maximum duration, VRF limits","observations":[]}
+  ],
+  "propertyCoverage": [
+    {"property":"initialization and clone/factory binding","status":"satisfied-by-source-reasoning"},
+    {"property":"authorization and callback origin","status":"satisfied-by-source-reasoning"},
+    {"property":"exact lifecycle/timestamp boundaries","status":"satisfied-with-source-extension"},
+    {"property":"prize custody and delivery atomicity","status":"violated-under-stated-untrusted-prize-model","observation":1},
+    {"property":"ticket ranges and total accounting","status":"satisfied-by-source-reasoning"},
+    {"property":"ticket transfer and ownership","status":"satisfied-qualified-by-observation-2"},
+    {"property":"winner selection","status":"satisfied-subject-to-vrf-assumption"},
+    {"property":"mint burn and double-claim prevention","status":"satisfied-by-source-reasoning"},
+    {"property":"USDC solvency ledger","status":"satisfied-under-canonical-USDC-assumption"},
+    {"property":"reserve-met arithmetic","status":"satisfied-by-source-reasoning"},
+    {"property":"reserve-missed arithmetic","status":"satisfied-by-source-reasoning"},
+    {"property":"refund arithmetic","status":"satisfied-by-source-reasoning"},
+    {"property":"sponsor and treasury independent claims","status":"satisfied-by-source-reasoning"},
+    {"property":"reentrancy and checks-effects-interactions","status":"satisfied-for-same-clone-state-qualified-by-observation-1"},
+    {"property":"randomness request callback and liveness","status":"satisfied-at-source-level-live-adequacy-unverified"},
+    {"property":"cross-clone asset isolation","status":"violated","observation":2},
+    {"property":"configuration immutability","status":"satisfied-subject-to-deployment-binding"},
+    {"property":"bounded exits for terminal/failure states","status":"partially-satisfied","observations":[1,2]},
+    {"property":"frontend discovery advisory only","status":"satisfied-by-source-reasoning"}
+  ],
+  "observations": [
+    {
+      "ordinal": 1,
+      "findingId": "3941f9e4-b09f-4ea1-b5cc-c3e0f01ecec5",
+      "title": "Self-reported ERC-721 state cannot enforce prize custody or delivery against an untrusted prize contract",
+      "severity": "high",
+      "confidence": "high",
+      "disposition": "needs-review"
+    },
+    {
+      "ordinal": 2,
+      "findingId": "713c1ebb-6f09-4ec1-8655-70cb391ee248",
+      "title": "Clone-isolation checks recognize only current clones of the same factory",
+      "severity": "low",
+      "confidence": "high",
+      "disposition": "needs-review"
+    }
+  ],
+  "seal": {
+    "path": "source-review/SEAL.json",
+    "sha256": "3fdd011f9fc31553a85beaba92a45c97024df9d5ba29bae0b761d5bf4f933361",
+    "firstPassSha256": "5e55669ca6587b2210d58e262b96c94c252065ec9a90052a327b6dfd1931c150",
+    "reviewSha256": "526fe32386c2743fc6b82ec7a4ba3b55aa642f5fdbda76559919b666e5e1f3e9",
+    "sealedBeforeImport": true,
+    "sealedBeforeExternalReconciliation": true,
+    "postSealOverwrite": false,
+    "corrections": []
+  },
+  "nativeReportArtifacts": {
+    "markdown": {"path":"native/report.md","sha256":"07eddcac9d45d7d5b5538dfeedcc86d8aac678e87ddc6e9d75267d6a75f53c13"},
+    "json": {"path":"native/report.json","sha256":"5ebb5999ede537ace29ff2fd6d1c52262caf391f884ca953c213efe6536bd1a3"}
+  },
+  "coverageLimitations": [
+    "Gebal intake establishes file capture only, not semantic, test, property, or security coverage.",
+    "The own-model property statuses are source reasoning, not measured or proved coverage.",
+    "No assessed project code, package scripts, compiler, tests, fuzzing, invariants, analyzer, prover, deployment, or transaction ran.",
+    "No deployment manifest or runtime bytecode was available; canonical dependency addresses and correct-chain binding remain assumptions.",
+    "The 300,000-gas callback limit and live wrapper fulfillment behavior were not measured.",
+    "External model identity, provider provenance, spend, and costs are not independently verified by Gebal."
+  ],
+  "commandRecords": [
+    {
+      "id": "C01",
+      "stageId": "S01-SCOPE",
+      "command": "env PATH=/Users/hishamel-husseini/.npm/_npx/2643742ee1db1418/node_modules/node/bin:/usr/bin:/bin:/usr/sbin:/sbin GEBAL_HOME=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL-attempt-02/gebal-state /Users/hishamel-husseini/.npm/_npx/2643742ee1db1418/node_modules/node/bin/node /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/node_modules/tsx/dist/cli.mjs /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/packages/cli/src/main.ts init --output /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL-attempt-02/scope.json",
+      "exitCode": 0,
+      "output": "Created /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL-attempt-02/scope.json; Node SQLite experimental warning followed.",
+      "outputEvidence": "controller tool transcript; scope.json retained"
+    },
+    {
+      "id": "C02",
+      "stageId": "S02-NATIVE-PLAN",
+      "command": "env PATH=/Users/hishamel-husseini/.npm/_npx/2643742ee1db1418/node_modules/node/bin:/usr/bin:/bin:/usr/sbin:/sbin GEBAL_HOME=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL-attempt-02/gebal-state /Users/hishamel-husseini/.npm/_npx/2643742ee1db1418/node_modules/node/bin/node /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/node_modules/tsx/dist/cli.mjs /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/packages/cli/src/main.ts review /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL-attempt-02/target --config /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL-attempt-02/scope.json --authorized",
+      "exitCode": 0,
+      "outputEvidence": "raw/01-native-review-plan.txt"
+    },
+    {
+      "id": "C03",
+      "stageId": "S03-DELEGATED-APPROVAL",
+      "command": "env PATH=/Users/hishamel-husseini/.npm/_npx/2643742ee1db1418/node_modules/node/bin:/usr/bin:/bin:/usr/sbin:/sbin GEBAL_HOME=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL-attempt-02/gebal-state /Users/hishamel-husseini/.npm/_npx/2643742ee1db1418/node_modules/node/bin/node /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/node_modules/tsx/dist/cli.mjs /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/packages/cli/src/main.ts approve e5be87b8-6477-4d7b-a78e-2909343f5cff --hash 29f0c63f816a56b4d8046e769414d2a51285c6608cfe0d44207004297a9f2c7a --actor assistant:Codex --reason 'User explicitly authorized local source-only audit of the nine selected project source/config/lock paths and the two exact dependency closure directories; no assessed code execution, egress, provider adapter, or additional paths.'",
+      "exitCode": 0,
+      "outputEvidence": "raw/02-native-approve.txt"
+    },
+    {
+      "id": "C04",
+      "stageId": "S04-NATIVE-INTAKE",
+      "command": "env PATH=/Users/hishamel-husseini/.npm/_npx/2643742ee1db1418/node_modules/node/bin:/usr/bin:/bin:/usr/sbin:/sbin GEBAL_HOME=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL-attempt-02/gebal-state /Users/hishamel-husseini/.npm/_npx/2643742ee1db1418/node_modules/node/bin/node /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/node_modules/tsx/dist/cli.mjs /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/packages/cli/src/main.ts run e5be87b8-6477-4d7b-a78e-2909343f5cff",
+      "exitCode": 0,
+      "outputEvidence": "raw/03-native-run.txt"
+    },
+    {
+      "id": "C05",
+      "stageId": "S05-COLD-CONTEXT",
+      "command": "env PATH=/Users/hishamel-husseini/.npm/_npx/2643742ee1db1418/node_modules/node/bin:/usr/bin:/bin:/usr/sbin:/sbin GEBAL_HOME=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL-attempt-02/gebal-state /Users/hishamel-husseini/.npm/_npx/2643742ee1db1418/node_modules/node/bin/node /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/node_modules/tsx/dist/cli.mjs /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/packages/cli/src/main.ts context 35ab82ba-9e64-4934-bd96-e3969b01a965 --output /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL-attempt-02/native/context.json",
+      "exitCode": 0,
+      "outputEvidence": "raw/04-native-context-export.txt"
+    },
+    {
+      "id": "C06",
+      "stageId": "S06-OWN-MODEL-SOURCE-REVIEW",
+      "command": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex exec --ignore-user-config --ignore-rules --ephemeral --skip-git-repo-check -s workspace-write -C /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL-attempt-02/source-review -m gpt-daybreak-blue-latest --cyber-access-program daybreak_blue -c model_reasoning_effort=\"ultra\" -c features.multi_agent=false --json -o /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL-attempt-02/source-review/raw-response.md - < REVIEWER-PROMPT.md",
+      "exitCode": 0,
+      "outputEvidence": "raw/05-specialist-events.jsonl"
+    },
+    {
+      "id": "C07",
+      "stageId": "S08-NATIVE-IMPORT",
+      "command": "env PATH=/Users/hishamel-husseini/.npm/_npx/2643742ee1db1418/node_modules/node/bin:/usr/bin:/bin:/usr/sbin:/sbin GEBAL_HOME=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL-attempt-02/gebal-state /Users/hishamel-husseini/.npm/_npx/2643742ee1db1418/node_modules/node/bin/node /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/node_modules/tsx/dist/cli.mjs /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/packages/cli/src/main.ts import-review 35ab82ba-9e64-4934-bd96-e3969b01a965 --input /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL-attempt-02/source-review/review.json --reviewer 'Codex / gpt-daybreak-blue-latest (operator-selected alias; daybreak_blue; ultra; provider-returned model unknown)'",
+      "exitCode": 0,
+      "outputEvidence": "raw/07-native-import-review.txt"
+    },
+    {
+      "id": "C08",
+      "stageId": "S09-NATIVE-FINDINGS-REPORTS",
+      "command": "gebal findings 35ab82ba-9e64-4934-bd96-e3969b01a965",
+      "exactRuntimePrefix": "env PATH=/Users/hishamel-husseini/.npm/_npx/2643742ee1db1418/node_modules/node/bin:/usr/bin:/bin:/usr/sbin:/sbin GEBAL_HOME=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL-attempt-02/gebal-state /Users/hishamel-husseini/.npm/_npx/2643742ee1db1418/node_modules/node/bin/node /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/node_modules/tsx/dist/cli.mjs /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/packages/cli/src/main.ts",
+      "exitCode": 0,
+      "outputEvidence": "raw/08-native-findings.txt"
+    },
+    {
+      "id": "C09",
+      "stageId": "S09-NATIVE-FINDINGS-REPORTS",
+      "command": "gebal report 35ab82ba-9e64-4934-bd96-e3969b01a965 --format md --output /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL-attempt-02/native/report.md",
+      "exactRuntimePrefix": "same as C08",
+      "exitCode": 0,
+      "outputEvidence": "raw/09-native-report-md.txt"
+    },
+    {
+      "id": "C10",
+      "stageId": "S09-NATIVE-FINDINGS-REPORTS",
+      "command": "gebal report 35ab82ba-9e64-4934-bd96-e3969b01a965 --format json --output /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-GEBAL-attempt-02/native/report.json",
+      "exactRuntimePrefix": "same as C08",
+      "exitCode": 0,
+      "outputEvidence": "raw/10-native-report-json.txt"
+    },
+    {
+      "id": "C11",
+      "stageId": "S10-TEST-INCLUSIVE-DETERMINISTIC-PLAN",
+      "command": "docker info",
+      "exitCode": 1,
+      "outputEvidence": "raw/00-preflight-runtime-docker.txt"
+    }
+  ],
+  "rawOutputPolicy": {
+    "preserved": true,
+    "directory": "raw",
+    "cleanupPerformed": false
+  }
+}

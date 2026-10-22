@@ -1,0 +1,92 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'"><title>Gebal assessment</title><style>body{background:#10151b;color:#e5e9f0;font:15px/1.65 ui-monospace,monospace;max-width:1000px;margin:48px auto;padding:24px}pre{white-space:pre-wrap;overflow-wrap:anywhere}h1{color:#c2e5ab}small{color:#9ba6b5}</style><h1>Gebal / assessment</h1><small>Source and evidence are escaped, inert text. Outcome: succeeded</small><pre># Gebal assessment
+
+Run: 6e0f00f1-7ef1-4377-bc04-0050d5e49b6b
+
+**Outcome: succeeded**
+
+An empty findings list is not a security certificate\. Completed checks establish only their stated coverage\.
+
+**Source-only run: no compiler, static analyzer or executable test coverage.**
+
+Snapshot: 520205ade6130391972086d8fe8a24a6d6e60c1ecfdaf795110d78d8d0375fdb
+
+## Incomplete checks
+
+All planned tasks completed. Coverage remains limited to the checks below.
+
+## Scope and requirements
+
+\# Clean design specification Ethereum NFT raffle; immutable factory, ERC-1167 clones with immutable implementation\. One entry costs 1,000,000 units of canonical six-decimal USDC\. One purchase mints a transferable ERC721 ticket representing a contiguous inclusive range\. Exactly one ERC721 prize is escrowed atomically at creation\. Reserve met awards NFT and 95% sponsor / 5% treasury\. Reserve missed awards 80% gross to winner, 15% sponsor, 5% treasury\. Refund outcome pays 100% per entry and returns prize\. Rounding is floor on aggregate protocol fee; remainder must be allocated without loss\. No administrator, mutable configuration or upgrade\. Request window \[sale end, end\+2days\); callback accepted strictly before request timestamp\+2days\. Refunds open at deadline\. Callback records result only\. Settlement is permissionless, storage-only; redemption requires current ticket owner, burns claim atomically, and must revert all effects on delivery failure\. Sponsor and treasury can claim independently after settlement\. Never move assets between raffle clones\. Quote token and Chainlink wrapper are trusted canonical dependencies; arbitrary prize contracts and ticket recipients are untrusted\. Frontend discovery is advisory; transaction decisions must reread current chain state\.  This specification was composed before scanner results and historical findings\. Source, not design prose, determines actual behavior\. No tests, audit history, accepted-risk lists or scanner results are provided\. 
+
+Authorized: packages/contracts/src, packages/contracts/foundry\.toml, packages/contracts/remappings\.txt, packages/contracts/package\.json
+
+Project path: packages/contracts
+
+Explicit dependency paths: packages/contracts/node\_modules
+
+Execution policy: Exact file remappings were resolved from uniquely matching authorized library paths and are included in the approved plan\. Only profile\.default is selected; other profiles, RPC endpoints and formatting configuration are not loaded\. Controller overrides output/cache/script paths, denies FFI/filesystem/RPC and dependency downloads, and disables automatic remappings\. Configured fuzz/invariant campaigns are replaced by the disclosed fixed seed and bounded campaign\. Tests requiring denied capabilities cannot be validated\. Source-only intake does not establish compiler, test, property or security coverage\.
+
+Excluded/absent: 
+
+## Check evidence
+
+- intake: succeeded. Recorded 39 authorized files\. Build configuration unsupported; see diagnosis\.
+  Evidence: 9eb4657d5639f9051306c93728682e0dcdc10805436eaa38e7f71bd41baf19a0
+
+## Findings requiring human review
+
+### Independent post-settlement sponsor payout in NftWon allows a malicious or transfer-restricted prizeToken to strand winner redemption after sponsor collects 95% of USDC proceeds
+
+Severity: medium; confidence: high; evidence: model; disposition: needs-review
+
+The clean design specification states both that &#39;arbitrary prize contracts and ticket recipients are untrusted&#39; and that &#39;Settlement is permissionless, storage-only; redemption requires current ticket owner, burns claim atomically, and must revert all effects on delivery failure\. Sponsor and treasury can claim independently after settlement\.&#39; In the implementation, RaffleFactory\.\_validateCreateParams and RaffleFactory\.createRaffle only verify that prizeToken has deployed code, is not a known protocol address, supports IERC721 via ERC-165, and transfers ownership of prizeTokenId to the clone at creation\. Once a raffle resolves to Status\.NftWon, \_settleWinningTicket allocates 95% of unsettledPot to sponsorProceeds and 5% to protocolFees without transferring or testing delivery of the prize NFT\. Because releaseSponsorProceeds does not require prizeClaimed or winnerRedeemed to be true, a sponsor who supplies an untrusted prizeToken \(or a prizeToken that becomes paused, blacklisted, or reverts on outbound transferFrom/ownerOf after initial escrow\) can settle and withdraw 95% of the canonical USDC proceeds while redeemWinningTicket permanently reverts for the winning ticket owner, with no fallback transition to Status\.Refunding\. \(Note: IRaffle\.sol lines 14-15 narrow the code&#39;s trust assumption in NatSpec to &#39;honest, standards-compliant ERC-721s&#39;, which diverges from the specification&#39;s untrusted prize contract assumption\.\) Defensive property for owner review: for any raffle resolved to Status\.NftWon under an untrusted prizeToken model, either sponsor proceeds release should be conditioned on successful prize delivery \(prizeClaimed == true\) or a bounded recovery/refund path should exist if prizeToken delivery fails\. Assumptions: The stated design requirement that arbitrary prize contracts are untrusted applies, rather than the narrower IRaffle NatSpec assumption that supported prizes are honest, standards-compliant ERC-721s\.; The configured prizeToken succeeds during initial safeTransferFrom escrow in createRaffle but subsequently reverts or fails to update ownerOf during outbound transferFrom in redeemWinningTicket \(due to malicious logic, pause, freeze, or transfer restrictions\)\.
+
+Source: packages/contracts/src/Raffle\.sol:329-337, packages/contracts/src/Raffle\.sol:375-382, packages/contracts/src/Raffle\.sol:533-558, packages/contracts/src/RaffleFactory\.sol:127-134, packages/contracts/src/RaffleFactory\.sol:154-179, packages/contracts/src/interfaces/IRaffle\.sol:12-15
+
+Artifacts: 029c1007bad47f2a11eddda6af603e7b1e3983510d8afa7e30b704bfc4f6a566
+
+### Pre-deployment CREATE addresses of future Raffle clones bypass \_isProtocolDestination screening until those clones are created
+
+Severity: low; confidence: high; evidence: model; disposition: needs-review
+
+RaffleFactory\.createRaffle deploys clones via Clones\.clone\(raffleImplementation\), which uses the CREATE opcode whose target address is deterministically derived from the factory address and nonce\. Raffle\.\_isProtocolDestination screens out known protocol plumbing and queries canonicalFactory\.isRaffle\(destination\) only when destination\.code\.length \!= 0\. Before a future raffle clone is deployed, its predicted CREATE address has code\.length == 0 and isRaffle == false, so it is accepted as protocolTreasury \(in RaffleFactory\.constructor\), as sponsorRecipient \(in RaffleFactory\.\_validateCreateParams and Raffle\.initialize\), or as a ticket recipient \(in Raffle\.\_update via buyEntries or transferFrom\)\. Once RaffleFactory later deploys a clone at that nonce-derived address and sets isRaffle\[raffle\] = true, \_isProtocolDestination returns true for that address, causing \_transferQuote to revert with InvalidQuoteDestination and stranding any quote-token claims or tickets assigned to that address\. Defensive property for owner review: no address that can ever become isRaffle\[addr\] == true should hold tickets or be configured as a payout recipient, or recipient screening should be invariant across the lifetime of the factory\. Assumptions: A caller or deployer intentionally or accidentally supplies a precomputed future CREATE address of RaffleFactory as protocolTreasury, sponsorRecipient, or a ticket recipient before that clone is created, and the factory subsequently reaches that nonce\.
+
+Source: packages/contracts/src/Raffle\.sol:497-502, packages/contracts/src/Raffle\.sol:564-567, packages/contracts/src/Raffle\.sol:593-605, packages/contracts/src/RaffleFactory\.sol:105-126, packages/contracts/node\_modules/@openzeppelin/contracts/proxy/Clones\.sol:47-62
+
+Artifacts: 029c1007bad47f2a11eddda6af603e7b1e3983510d8afa7e30b704bfc4f6a566
+
+### Prize NFT release in redeemWinningTicket and releaseSponsorPrize uses raw transferFrom without ERC-721 receiver checks
+
+Severity: informational; confidence: high; evidence: model; disposition: needs-review
+
+During raffle creation, RaffleFactory\.createRaffle escrows the prize using prize\.safeTransferFrom, and Raffle\.buyEntries mints tickets using \_safeMint\. However, when the prize NFT is released to the winner in Raffle\.redeemWinningTicket or returned to sponsorRecipient in Raffle\.releaseSponsorPrize, the contract calls prizeToken\.transferFrom\(address\(this\), recipient, prizeTokenId\) followed by an ownerOf check rather than safeTransferFrom\. While using transferFrom avoids onERC721Received callback reentrancy or revert griefing \(particularly during permissionless releaseSponsorPrize\), RaffleFactory\.\_validateCreateParams does not verify that a contract sponsorRecipient supports IERC721Receiver, and a winning ticket may have been transferred via ERC721\.transferFrom to a contract that does not implement IERC721Receiver or relies on onERC721Received hooks to record incoming NFTs\. Defensive property for owner review: any contract configured as sponsorRecipient or redeeming a winning ticket must be able to custody and transfer the prizeToken NFT without relying on an onERC721Received callback\. Assumptions: sponsorRecipient \(or a contract winner that acquired the winning ticket via transferFrom\) is a smart contract that can call redeemWinningTicket or receive the prize via releaseSponsorPrize but cannot manage ERC-721 tokens delivered without an onERC721Received callback\.
+
+Source: packages/contracts/src/Raffle\.sol:329-337, packages/contracts/src/Raffle\.sol:395-407, packages/contracts/src/RaffleFactory\.sol:154-170
+
+Artifacts: 029c1007bad47f2a11eddda6af603e7b1e3983510d8afa7e30b704bfc4f6a566
+
+
+## Coverage gaps
+
+- No semantic, test, or property coverage established by intake\.
+- External agent provenance, token usage and spend are unknown\.
+- Imported observations do not complete blocked local checks or establish any property\.
+- Source-only cold review of the 39 exported files in gebal-context/cold-context\.json; no compiler, test suite, fuzz/invariant campaign, static analyzer, or symbolic prover was executed\.
+- On-chain deployment parameters \(that quoteToken is the target chain&#39;s canonical six-decimal USDC and vrfWrapper is the official Chainlink VRF v2\.5 native direct-funding wrapper with active keyHash/feed configuration\) cannot be verified from source alone; RaffleFactory\.constructor verifies only deployed code presence, quoteToken\.decimals\(\) == 6, and vrfWrapper\.link\(\) non-reversion\.
+- The external implementation of the Chainlink VRF v2\.5 wrapper contract is outside the exported source tree \(only IVRFV2PlusWrapper, VRFV2PlusClient, VRFV2PlusWrapperConsumerBase, and LinkTokenInterface are in scope\); wrapper fee calculation, request ID uniqueness, and callback gas forwarding are assumed to conform to Chainlink VRF v2\.5 specifications\.
+- Canonical USDC blacklist semantics are external to the repository: if an immutable sponsorRecipient or protocolTreasury address is blacklisted by USDC after raffle creation, releaseSponsorProceeds or releaseProtocolFees for that raffle will revert until unblacklisted, although other parties&#39; claims remain unaffected due to pull-payment isolation\.
+
+## Provenance and cost
+
+Method: native-review-v1; adapter: 0.2.0
+
+Tool image: unavailable; compiler: 0\.8\.36; EVM: cancun
+
+Planned direct provider/model: none
+
+External reviewers: Antigravity CLI 1\.4\.4 / gemini-4-argon-high / explicit high effort; provider-internal identity not returned. External provenance, usage and spend are unverified.
+
+Recorded direct API tokens: 0; reserved: 0. Monetary cost: unknown. Local compute cost is not measured.
+
+The JSON report retains manifests, settings, decisions, invocations, source hashes, timelines and coverage records. Artifact IDs resolve through the local store or CLI evidence command.
+</pre></html>

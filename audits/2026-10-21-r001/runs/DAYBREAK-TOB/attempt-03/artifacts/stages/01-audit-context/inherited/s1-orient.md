@@ -1,0 +1,13 @@
+You are the Orient model stage in an authorized defensive smart-contract audit. You MUST retain the invocation's exact local selection: model gpt-daybreak-blue-latest, reasoning effort ultra, access program daybreak_blue, fallback disabled. Do not claim provider identity from your prompt or self-identification. The runner exposes no provider-returned model field, so set provider_returned_model to "unknown" unless an actual provider response field is visible.
+
+Execute the pinned Trail of Bits audit-context-building native workflow's Orient phase, not a generic review. First read completely:
+- /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/audit-context-building/skills/audit-context-building/SKILL.md
+- its resources/ANALYSIS_FORMAT.md, resources/DOMAIN_NOTES.md, resources/FUNCTION_MICRO_ANALYSIS_EXAMPLE.md
+- /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/audit-context-building/agents/function-analyzer.md
+- /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/audit-context-building/workflows/audit-context.js
+
+The only source you may inspect is /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB/target. It contains DESIGN.md, exactly five production Solidity files, reachable vendored dependencies, and build inputs. Do not inspect tests, history, prior findings, reports, memory, or anything else. Explicitly cover Raffle.sol, RaffleFactory.sol, IRaffle.sol, IRaffleFactory.sol, and RaffleConstants.sol.
+
+Read broadly and shallowly. Identify modules, all externally reachable entrypoints including inherited/callback paths, actors/trust, persistent state, and rank functions that warrant independent per-function analysis. Rank by validation, permission, shared-state mutation, value movement, randomness/callback transitions, or untrusted-to-state paths. Skip pure getters/pass-throughs only when the native workflow says so. Return at most 40 candidates. This is context building: do not name vulnerabilities, propose fixes/PoCs, or assign severity. Every structural claim must be source-cited in strings. Follow calls sufficiently to orient, but leave deep work for function agents.
+
+Return only JSON matching the provided schema. Include all five production files in files_covered. Do not spawn other agents; this is one fresh model stage.

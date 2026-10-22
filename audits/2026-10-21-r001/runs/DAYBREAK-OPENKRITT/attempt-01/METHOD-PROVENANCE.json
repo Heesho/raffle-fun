@@ -1,0 +1,197 @@
+{
+  "cell": "DAYBREAK-OPENKRITT",
+  "status": "BLOCKED",
+  "timestamp_utc": "2026-10-21T07:56:12.737568Z",
+  "upstream_root": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/openkritt",
+  "upstream_commit": "43e1d19a00ce50bd93253d1c6c3a48cfffbcc4c3",
+  "requested_model": "gpt-daybreak-blue-latest",
+  "requested_reasoning_effort": "ultra",
+  "requested_cyber_access_program": "daybreak_blue",
+  "provider_returned_model": null,
+  "provider_returned_access_program": null,
+  "native_scan_executed": false,
+  "native_runtime": {
+    "docker_required": true,
+    "postgresql_required": true,
+    "standalone_db_free_scan_supported": false,
+    "local_tool_free_generation_is_scan": false,
+    "data_root": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-OPENKRITT/attempt-01/runtime"
+  },
+  "method_selection": {
+    "selected_workflow": null,
+    "selected_skill_ids": null,
+    "actual_injected_skill_count": 0,
+    "selected_ranker": null,
+    "selected_post_scripts": null,
+    "reason": "No scan was created; available upstream resources inventoried without inventing an executed configuration."
+  },
+  "available_workflow_catalog": [
+    {
+      "name": "external-flow-analysis",
+      "depth_count": 3,
+      "template_step_count": 3,
+      "levels": [
+        {
+          "depth": 0,
+          "step_names": [
+            "Map external entrypoints"
+          ],
+          "multi_output": true,
+          "consume_all": false,
+          "last": false
+        },
+        {
+          "depth": 1,
+          "step_names": [
+            "Trace reachable flows"
+          ],
+          "multi_output": true,
+          "consume_all": false,
+          "last": false
+        },
+        {
+          "depth": 2,
+          "step_names": [
+            "Investigate flow vulnerabilities"
+          ],
+          "multi_output": true,
+          "consume_all": false,
+          "last": true
+        }
+      ]
+    },
+    {
+      "name": "Cosmos ABCI Panic Halt Review",
+      "depth_count": 2,
+      "template_step_count": 5,
+      "levels": [
+        {
+          "depth": 0,
+          "step_names": [
+            "Enumerate ABCI methods"
+          ],
+          "multi_output": true,
+          "consume_all": false,
+          "last": false
+        },
+        {
+          "depth": 1,
+          "step_names": [
+            "Investigate explicit panic calls",
+            "Investigate arithmetic panics",
+            "Investigate nil pointer panics",
+            "Investigate bounds and type panics"
+          ],
+          "multi_output": true,
+          "consume_all": false,
+          "last": true
+        }
+      ]
+    }
+  ],
+  "applicable_upstream_workflow_candidate": "external-flow-analysis",
+  "available_default_ranker": "Blockchain security triage",
+  "stage_counts": {
+    "workflow_jobs_planned": null,
+    "workflow_jobs_completed": 0,
+    "dedupe_jobs_completed": 0,
+    "ranker_jobs_completed": 0,
+    "post_script_jobs_completed": 0,
+    "note": "Three template depths in the applicable candidate; invocation count is data-dependent fanout, not a fixed three calls."
+  },
+  "fallback": {
+    "alternate_model_fallback_configured": false,
+    "same_model_json_recovery_present_in_native_code": true,
+    "retry_settings_for_diagnostic": {
+      "ENGINE_RETRY_COUNT": 0,
+      "ENGINE_CYBER_SAFETY_RETRY_COUNT": 0
+    }
+  },
+  "resource_sha256": {
+    "AGENTS.md": "deb7e4118af85a585925baaefe00cf9ef1736564d371663891787317319eb4db",
+    "CONTRIBUTING.md": "7f1a673c8af8670ce244c9f05c7095182048884a33e3afd866d1f1e62380e0d0",
+    "engine/requirements.txt": "47ae79173a2f5b0be65dab8fba54d74990007439026d8735f40c5c2b63211b6d",
+    "engine/Dockerfile": "fe582b9c9629ee45300e48e89d858ce1732666ac0a21cfa2f4fa93451a58e325",
+    "docker-compose.yml": "b20cc7706749d5f31270b28d6f063f1ec7f7153a4e82814ae3da75e4d3dea70f",
+    "engine/open_kritt_engine/__main__.py": "299ffe01832d034c29744a62188a7e4425053d6b68dadd95aaad43f917b793e4",
+    "engine/open_kritt_engine/worker.py": "2b3874c4e2635e9a9e5494c196ba546f7685ceede89abfa4c8b12d08b6fb9853",
+    "engine/open_kritt_engine/config.py": "98729be46f47cae20bdd0be177ab48000f8ab88e72a7f559f3a03465d8b4c3cb",
+    "engine/open_kritt_engine/db.py": "2dd0cc06f6dd98699c82608b6dc1a973ac7480193f30904030ee0ab8f7a600bc",
+    "engine/open_kritt_engine/harnesses.py": "acd27b279ab09cbae979a726e5ced5cd556993e97212f99669d2ca4929b63d44",
+    "engine/open_kritt_engine/models.py": "65b79f5ad19f0a5eb09d8de2e8c4e6107b7ab5f9984e133b0f84511a4289fac8",
+    "engine/open_kritt_engine/model_catalog.py": "ffe789fa8900fb9cf431492a74caa10236217c3e6b319ad4c0e8b96f155245af",
+    "engine/open_kritt_engine/prompting.py": "74d203df00075c650e02f73803c15013cc60b3f256f2ad0f48235dc4635bdcb7",
+    "engine/open_kritt_engine/workspace.py": "6b78069454db384624e33432a90c7df92fe8d7fcf168e964288db8c01f5728ec",
+    "engine/open_kritt_engine/post_processing.py": "7fb54f62b17feb1d63a1d53dae88fc4b5c956193cf4bbac64c33cd318387753f",
+    "engine/open_kritt_engine/queue.py": "42fcd284f6464b8f2c5b7fd2be756b406f24d8cbfe547f2978f1d4b1a3f99e34",
+    "engine/open_kritt_engine/schema.py": "a05e03418ccab29dc79e1c9e76d272c576fb88712158684bc448a535b0d54b48",
+    "backend/src/lib/defaultWorkflowSeeds.json": "7bc89df115364c90a9502016562fad39a56fb57f9e75b62ac5d40a05b175a39a",
+    "backend/src/lib/defaultWorkflows.js": "a4d97ae604e74378add990fcd1f764ffa891bf7736f8940cdc0e2da18b79bcad",
+    "backend/src/lib/defaultSeverityRankers.js": "e77101051bfd512280c5f6be30559f64f0dedeb47da3d222de24ce69415e4cfe",
+    "backend/src/lib/constants.js": "6297cbc44d0a5fdaa75dc01435e8758fa49d4041cc2caa650458f910810cb152",
+    "backend/src/lib/modelSelection.js": "69a37aaed69b0873601db7418ecd05ce356c930e315440908f0f752134325625",
+    "scripts/kritt-headless-lib.mjs": "c36af4f3d21bfc83b5ad167bf015cab375465a2625bf25cf79acd9ba4df56c08",
+    "docs-site/workflows/built-in-workflows.mdx": "1663ead323dddb5f740b03e92ebad7ff3bb6697deabeb898b90c1932bb90d278",
+    "docs-site/scans/model-and-harness.mdx": "2f290a2060cb07972967303eab6956bf4790488afa6dea00b4b134032814b8ca",
+    "database/init/001_create_workflow_tables.sql": "d48c7cc179bd08ae86328010a41a9fd499228aa75a1c60e926678195f93c71de",
+    "database/init/002_additive_columns.sql": "75c96217fe2d5dbc867fb8db68e9895425e232bb7be9c2e081510aa8bab60863",
+    "database/init/003_add_scan_extras.sql": "ec09c65a41fd9c8a7412a022dc94eef6c7372fdfb6f4edf747295f4bf3cb03f1",
+    "database/init/003_extra_field.sql": "1db1027e932d49f8954a11bf184d10da60effed5e927e7c9e4238126664b5f45",
+    "database/init/004_thinking_effort.sql": "de5a55ba6d006e6006b55774f82609d17c63f2e684ed331670996889ec97a44f",
+    "database/init/005_remove_step_stub_columns.sql": "4b5347d6304565c73dab0a6176a546cdb4652887ba8ea6c3a3de65e828340d3f",
+    "database/init/005_repo_kind.sql": "e5ab4d74bc034c2e2af441d28cd4cbaf78db19de8c08b1c1eef182b2aa9b7b42",
+    "database/init/006_add_stub_explanation.sql": "7380fdbf809ed7c38336186638a30b3cc6e2ffa927e9852f0e84141ebcdfc893",
+    "database/init/006_consume_all_previous.sql": "f0984691485e257d43e1bee303319e9368ea3eb1ee8b1e4f75cdb745ea8a64b4",
+    "database/init/007_make_scan_config_legacy.sql": "d992b712bc5146efc751c4623b7067e68e5e897208eae0aa50543337d9b0ac0a",
+    "database/init/008_post_processing.sql": "457e6519c4be29f0c943c0bb4a38ef26b3d375e52b6b41221dc85503e2c8db11",
+    "database/init/009_seed_post_scripts.sql": "81d34a6ceec58fd2bb2aa2a4bd9dbb0324f2d352777c10105c92df3bc308311d",
+    "database/init/010_mirror_post_processing_to_step_metadata.sql": "3e5d374b20e45d984d7aa291761dd97c99f206899deb0a9142ef35472f435dc7",
+    "database/init/011_metadata_phase.sql": "30ecf7e6604ca0c158237a53a479050dff82371c03cfe8ed4401879bcb10383a",
+    "database/init/012_codex_account_attribution.sql": "52d0f7ecb5e9c117631b6cf67a6d2341313cc5258a8870fb3b125cb45f4a6b22",
+    "database/init/013_agent_skills.sql": "26ece3bd9e05efbe54aa62bec2d695a854fc05ab96ccc9211de1fa1d07eb75a8",
+    "database/init/014_seed_agent_skills.sql": "e1497cd311a3e6ca7b32eab5121f5274dbdddafa97fe2b30d7015211a12e4afb",
+    "database/init/015_model_provider_metadata.sql": "bb82d542db76ee5f59721e5d71ac1176a4822a3583a6b6b30b7efe7ba979662c",
+    "database/init/016_scan_model_provider.sql": "20b202f2b05a4c0940a2e7810ba48b3562e0526789887a9bd4750d333ff3bf63",
+    "database/init/016_severity_rankers.sql": "67547737fd517ff15b6d63bd31457323de86371f5f7466b180713d75bb9fd978",
+    "database/init/017_model_catalogs.sql": "be82832896ce941b3559d3a324fa9fd4ec1d3dc29200bdef57b0c4816148acee",
+    "database/init/018_generations.sql": "6cbd03d819af0492a1c40b6bede7bafe654e49685a7230b0687bc5729caa95da",
+    "database/init/019_remove_post_script_finding_metadata.sql": "747fd6f8ac2d41d7742b37391e0f524016d26c50b914cd5a301edbcc269a91a7",
+    "database/init/019_restore_legacy_compat_columns.sql": "485d622d195911d44c1bc7fa3b7e99f19629ae27611e52b5ecfaee6aa7bbdb7d",
+    "database/init/020_expand_thinking_efforts.sql": "2d9f3f1af8d3231f3f4c148ca0f281c95ddadadb29565eaaeaefaf5e5e7ab8ea",
+    "database/init/021_refresh_default_triage_artifacts.sql": "f13fde436769f2f904d19cf45827cd8210902514b429b81e855b10d3fc9bb0cb",
+    "database/init/022_scan_management.sql": "e35caf5addf953f0eb7f5520433188bb6bdd2962678b1b6ee7497746545c32e0",
+    "database/init/023_scan_activity_sort.sql": "407cb32c0bd791a34facec5e27e22fa17899e11e3aa315b4b893314d66dbc334",
+    "database/init/024_seed_security_post_scripts.sql": "325f27f6531fb436c4b559f728ad8a1091c78956504e5255bf573f99bb1ecd6c",
+    "database/init/025_scan_model_overrides.sql": "e2d4f87243d638ee33a4e6cf82ba286be8b60f93fb0866ebfa65427e650141bd",
+    "database/init/026_refresh_patched_since_main.sql": "cefa72fd294d619c5d4a735ca96f03266a8d00a53e178cec92a55852371c7e7a",
+    "database/init/027_describe_report_creator_inputs.sql": "5a808edaded98ba0ebbf1e3a533ca501676ff89d6a579aee6ddad6617dfbe7f6",
+    "database/init/028_bound_step_routing.sql": "a0ed1959de8ef3913e44ec3599b4fec127a7c3a394cf4fd7f6f62facf0ef6562",
+    "database/init/029_workflow_context_files.sql": "56ca83c82e89b5b1a49cb5a825dfaa58cb52559b665a2cbb210ec0199a212489",
+    "database/init/030_step_3_candidate_dedupe.sql": "1af114b696003a6e5d1ecf05a48409f660cb2da13d40fc9957298004512a0644",
+    "database/init/031_supplemental_post_script_runs.sql": "de6993befdc35c4995682a2c5b1e029b0bdb298f23cc911c7975248ee0f6a2c1",
+    "database/init/032_generations_xai_grok_build.sql": "e1df537ddfc5b28dbf9ec013d09d6775cc904d0cb76e4888e38f917a106d7f49",
+    "database/init/032_supplemental_post_script_retry_lineage.sql": "0f783a838f23e2e2b47500cda7ab5aa1df1e1f97f16a0e2924029cd8356df77b",
+    "database/init/033_generations_deepseek_codex.sql": "d9242fd66b15e9aa4a19051bf417945cd65a24a5d38f33b79d6dcf49a07dd22a",
+    "backend/src/lib/modelProviders.js": "23d5f3212c1b92cb95c614ebedd055af69eb920851b10657edbb19a9f0d0051e",
+    "backend/src/lib/modelCatalog.js": "77a408f64b0d5eee748b8a20b7c96b1a8c7545c71e07683e6ddce624bc038b82",
+    "engine/open_kritt_engine/runner_resources.py": "9d92e667ad384f70ad861ccb6b80f9c605bd328e5e8f5eccb03aa50e21f5e389",
+    "engine/open_kritt_engine/codex_updater.py": "07759f8baf06d9d15bb579f12803bfe59e5c5e3aa1941faec9594d7e1f7faf9e"
+  },
+  "pinned_runner_dependencies": {
+    "docker_cli": "29.8.0",
+    "node": "24.15.0",
+    "python": "3.12.14",
+    "codex_npm": "0.145.0",
+    "jsonschema": "4.26.0",
+    "psycopg_binary": "3.3.5",
+    "pytest": "9.1.1"
+  },
+  "source_routing_assessment": {
+    "exact_model_string_passed": true,
+    "ultra_passed": true,
+    "backend_catalog_admission_verified": false,
+    "explicit_cyber_access_program_supported": false,
+    "bundled_cli_access_does_not_prove_native_runner_access": true,
+    "missing_api_key_is_not_itself_a_blocker": true
+  }
+}

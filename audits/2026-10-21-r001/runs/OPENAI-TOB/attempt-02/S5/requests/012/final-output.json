@@ -1,0 +1,44 @@
+{
+  "requirementId": "REQ-44",
+  "analysisFile": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/audit/S5/spec-compliance/requirements/04-REQ-44.md",
+  "verdict": "absent",
+  "confidence": "high",
+  "evidence": [
+    {
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "lines": "L249-L250",
+      "quote": "uint256 quotedFee = getVrfRequestPrice();\n        if (msg.value < quotedFee) revert InsufficientVrfFee(quotedFee, msg.value);",
+      "role": "Execution-time fee check; does not establish frontend refresh ordering."
+    },
+    {
+      "file": "target/packages/contracts/src/Raffle.sol",
+      "lines": "L436-L438",
+      "quote": "function getVrfRequestPrice() public view override returns (uint256 fee) {\n        fee = i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit, 1);\n    }",
+      "role": "Provides a chain query, but no frontend consumer was found."
+    }
+  ],
+  "searched": [
+    {
+      "where": "rg --files --hidden --no-ignore target, excluding .git and test directories; repeated with application-source extensions and node_modules excluded",
+      "result": "Project source comprises five Solidity files and hardhat.config.ts. Remaining files are specification, build/dependency files, and vendored Solidity. No frontend or transaction-submission script."
+    },
+    {
+      "where": "frontend|discovery|advisory|reread|re-read|refresh|refetch|cache|stale|indexer|subgraph in DESIGN.md and contracts/src",
+      "result": "Two matching lines: DESIGN.md:L2 and the historical-range comment at Raffle.sol:L138; no refresh implementation."
+    },
+    {
+      "where": "Hidden/ignored Solidity and JS/TS/UI source, including dependencies: frontend/refresh vocabulary and readContract|readContracts|writeContract|simulateContract|sendTransaction|eth_call|eth_sendTransaction|useReadContract|useWriteContract|publicClient|walletClient|blockTag|getLogs|queryFilter",
+      "result": "0 matching lines."
+    },
+    {
+      "where": "Callers of createRaffle, buyEntries, requestDraw, enableRefunds, settlement/redemption, refunds, and release functions",
+      "result": "Contract/interface declarations and internal settlement calls only; no frontend transaction caller."
+    },
+    {
+      "where": "Raffle/Factory helpers, read-API consumers, ERC721 ownership paths, ReentrancyGuard, Chainlink consumer, transfer and clone helpers",
+      "result": "Live execution-time checks and queries found and traced; no discovery-to-refresh-to-transaction-decision implementation."
+    }
+  ],
+  "reasoning": "The contextual requirement is \"Frontend discovery is advisory; transaction decisions must reread current chain state.\" (target/DESIGN.md:L2). The supplied target lacks the frontend decision/submission layer. Contract-side live checks do not establish that caller ordering. This is absence within the supplied source, not an observed stale-read path or a claim about an external frontend.",
+  "documentProblem": null
+}

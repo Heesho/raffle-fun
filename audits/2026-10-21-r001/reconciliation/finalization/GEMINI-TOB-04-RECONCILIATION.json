@@ -1,0 +1,2188 @@
+{
+  "reconciled_utc": "2026-10-21T21:58:00.889733+00:00",
+  "source_report": {
+    "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+    "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+    "sha256": "b814beec353650fdedec64a24effcd5630288ce0bc3c8666938a3a1dc01e97f1",
+    "seal": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/SEAL.json",
+    "seal_sha256": "a4ba3346bf6a438bb7f4d58850848dffba4578ffa64b929c64503bdb9daab643",
+    "seal_verified": true,
+    "all_bound_object_records_verified": 915,
+    "stage_record_counts": [
+      139,
+      75,
+      155,
+      185,
+      191,
+      170
+    ],
+    "distinct_captured_paths": 915,
+    "frozen_target": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+    "target_binding": "All 43 source/build/dependency inputs independently checked for each of six stage manifests and protected workspaces",
+    "source_only": false,
+    "completion_receipt": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/COMPLETION-RECEIPT.json",
+    "upstream_pin": "82fe8226252622fa807643bdca1710901198553a",
+    "qualification": "disclosed native workflow adapters and recovered same-conversation transport; original ERROR receipts remain failed",
+    "model_route": "official agy1.4.4 gemini-4-argon-high/high; internal provider identity unknown",
+    "coverage_limits": "S1 12 analyzed/9 not analyzed functions; S5 10/219 requirements,209 unchecked. S2/S3/S4/S6 sticky transport ERROR records preserved with separate coordinator method completion based on final same-UUID DONE. Optional on-chain/Manticore/slither-prop gaps remain.",
+    "stage_input_verifications": [
+      {
+        "stage": 1,
+        "manifest": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/S1/replay-manifest.json",
+        "sha256": "34245fe9d61f3519d6009c9de6211552e84650c3c89a49011ef7b0ef9032e425",
+        "frozen_inputs_verified": 43,
+        "current_protected_input_hashes_match": true
+      },
+      {
+        "stage": 2,
+        "manifest": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/S2/preparation.json",
+        "sha256": "080cb1e78602c6c0bac5995466435cf0c565a078e2cc5baa812e5c18db9315d2",
+        "frozen_inputs_verified": 43,
+        "current_protected_input_hashes_match": true
+      },
+      {
+        "stage": 3,
+        "manifest": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/S3/preparation.json",
+        "sha256": "5c031e29c72864b963fbd6b0eafdc2647d269d8ce5a8bd091372a2be7e76ffc3",
+        "frozen_inputs_verified": 43,
+        "current_protected_input_hashes_match": true
+      },
+      {
+        "stage": 4,
+        "manifest": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/S4/preparation.json",
+        "sha256": "af92302cb114c130feb449c799640424aaa21e9d426e934647f4cc8222cb236a",
+        "frozen_inputs_verified": 43,
+        "current_protected_input_hashes_match": true
+      },
+      {
+        "stage": 5,
+        "manifest": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/S5/replay-manifest.json",
+        "sha256": "ae664b496f516924aee55738540da34d42c88d44db150c093e65bfd06daede01",
+        "frozen_inputs_verified": 43,
+        "current_protected_input_hashes_match": true
+      },
+      {
+        "stage": 6,
+        "manifest": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/S6/preparation.json",
+        "sha256": "99785bb3104be6eb369a74423f6ffe268ad40d4dc3791c7caae0a157425458bc",
+        "frozen_inputs_verified": 43,
+        "current_protected_input_hashes_match": true
+      }
+    ]
+  },
+  "append_attributions": [
+    {
+      "target": "RF-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 1486,
+      "original_id": "TIA-01",
+      "original_section": null,
+      "original_title": "### [TIA-01] HIGH: Decoupled `NftWon` Storage Settlement (`settleWinningTicket`) and Untrusted `prizeToken` Delivery (`redeemWinningTicket`) Allows Malicious/Pausable Prize Token Sponsor to Claim 95% USDC Proceeds While Blocking Winner NFT Redemption",
+      "original_severity": "High",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Same conditional untrusted-prize admission/delivery/payment root. Logged actual paused-prize test now supplements previous evidence; this is not honest-ERC721 theft or quote-ledger insolvency."
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 1526,
+      "original_id": "TIA-02",
+      "original_section": null,
+      "original_title": "### [TIA-02] MEDIUM: Prize NFT Delivery in `redeemWinningTicket` and `releaseSponsorPrize` Uses Raw `IERC721.transferFrom` Instead of `safeTransferFrom`, Risking Locked NFTs in Non-`IERC721Receiver` Contract Recipients",
+      "original_severity": "Medium",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Raw NFT recipient-capability hazard remains conditional. Winner proof impersonates a contract without an originating call method, so it does not establish that recipient can practically redeem. No general EOA theft."
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 1526,
+      "original_id": "TIA-02",
+      "original_section": null,
+      "original_title": "### [TIA-02] MEDIUM: Prize NFT Delivery in `redeemWinningTicket` and `releaseSponsorPrize` Uses Raw `IERC721.transferFrom` Instead of `safeTransferFrom`, Risking Locked NFTs in Non-`IERC721Receiver` Contract Recipients",
+      "original_severity": "Medium",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Broader raw-transfer claim overlaps the narrow validated future-clone sponsor return. Native test does not reproduce that sequence; root honest-ERC721 reproduction remains controlling proof."
+    },
+    {
+      "target": "OBS-002",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 1555,
+      "original_id": "TIA-03",
+      "original_section": null,
+      "original_title": "### [TIA-03] MEDIUM: Immutable `sponsorRecipient` and `protocolTreasury` Have No Rotation or Fallback Recipient If Blocklisted by `quoteToken` (USDC), Permanently Freezing `sponsorProceeds` or `protocolFees`",
+      "original_severity": "Medium",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Fixed-recipient blacklist risk requires trusted quote issuer action. Preserve Medium versus High/Low/integration-risk disagreement; a standard ERC20 recipient has no receipt callback that can independently revert the transfer."
+    },
+    {
+      "target": "OBS-003",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 1575,
+      "original_id": "TIA-04",
+      "original_section": null,
+      "original_title": "### [TIA-04] MEDIUM: `buyEntries` Credits `unsettledPot` by Nominal `grossAmount` Without Before/After Balance Verification (`quoteToken` Fee-on-Transfer / Deflationary / Rebasing Incompatibility)",
+      "original_severity": "Medium",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Unsupported fee/rebase quote semantics. Native fee-token mock demonstrates deliberately violated trusted-USDC assumptions, not a canonical-token exploit."
+    },
+    {
+      "target": "OBS-005",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 1606,
+      "original_id": "TIA-05",
+      "original_section": null,
+      "original_title": "### [TIA-05] LOW: `RaffleFactory` Constructor Validates Only `quoteToken` Code Presence and `decimals() == 6`; Unsolicited Direct ERC-20 Transfers (`quoteToken` or `i_linkToken`) to `Raffle` Are Unrecoverable",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Unsolicited assets remain outside accounted liabilities and have no rescue; intentional custody limit, not an attacker draining legitimate claimants."
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 1606,
+      "original_id": "TIA-05",
+      "original_section": null,
+      "original_title": "### [TIA-05] LOW: `RaffleFactory` Constructor Validates Only `quoteToken` Code Presence and `decimals() == 6`; Unsolicited Direct ERC-20 Transfers (`quoteToken` or `i_linkToken`) to `Raffle` Are Unrecoverable",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "LINK-token address exclusion suggestion is another recipient-capability edge; no universal safe-recipient detector or separate attacker loss established."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 1626,
+      "original_id": "TIA-06",
+      "original_section": null,
+      "original_title": "### [TIA-06] LOW: `Raffle` ERC-721 Ticket Implementation Leaves `tokenURI(ticketId)` Empty (`\"\"`) and Inherits Redundant Unused `_name` and `_symbol` Storage Slots in Every Clone",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Empty tokenURI is a product/metadata choice; unused inherited storage slots alone establish no asset-loss vulnerability."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 1645,
+      "original_id": "TIA-07",
+      "original_section": null,
+      "original_title": "### [TIA-07] INFORMATIONAL: `refundTickets` Loops Over `_burn` -> `_update` (`calls-loop` Detector) and Arithmetic-Driving Events Lack Indexed Parameters (`events-maths` Detector)",
+      "original_severity": "Informational",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Refund-loop external-call concern short-circuits on burn. Claim that all custom events lack indexed parameters is contradicted by IRaffle events and IRaffleFactory.sol:41-51."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2225,
+      "original_id": "D-1",
+      "original_section": "S4 documentation gaps",
+      "original_title": "| D-1 | [`packages/contracts/src/libraries/RaffleConstants.sol:10-42`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S4/work/packages/contracts/src/libraries/RaffleConstants.sol#L10-L42) | `library RaffleConstants` and all 11 constants (`BPS`, `PROTOCOL_FEE_BPS`, `CASH_WINNER_BPS`, `ENTRY_PRICE`, `QUOTE_TOKEN_DECIMALS`, `MAX_REFUND_TICKET_BATCH_SIZE`, `MAX_SALE_DURATION`, `DRAW_REQUEST_TIMEOUT`, `DRAW_CALLBACK_TIMEOUT`, `VRF_CALLBACK_GAS_LIMIT`, `VRF_REQUEST_CONFIRMATIONS`) | Only the library header has `@title`/`@notice`; none of the 11 constants have `@notice` or `@dev` explaining units (e.g., basis points out of `10_000`, `1_000_000` in 6-decimal USDC base units, seconds vs blocks). | Low |",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Rejected factual premise: each constant has @notice; library declares units and rounding at lines6-8."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2226,
+      "original_id": "D-2",
+      "original_section": "S4 documentation gaps",
+      "original_title": "| D-2 | [`packages/contracts/src/Raffle.sol:69-77`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S4/work/packages/contracts/src/Raffle.sol#L69-L77) | `ENTRY_PRICE`, `callbackGasLimit`, `requestConfirmations` constants in `Raffle` | All other 31 public state variables in `Raffle.sol` (`lines 80-150`) include `/// @inheritdoc IRaffle`, whereas `ENTRY_PRICE` (`line 69`), `callbackGasLimit` (`line 72`), and `requestConfirmations` (`line 76`) omit `/// @inheritdoc IRaffle`. | Low |",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Rejected factual premise: Raffle.sol:43,46,49 already declare @inheritdoc for the three constants."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2227,
+      "original_id": "D-3",
+      "original_section": "S4 documentation gaps",
+      "original_title": "| D-3 | [`packages/contracts/src/Raffle.sol:1-614`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S4/work/packages/contracts/src/Raffle.sol#L1-L65) & [`packages/contracts/src/RaffleFactory.sol:1-36`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S4/work/packages/contracts/src/RaffleFactory.sol#L1-L36) | All 5 owned files | None of the 5 owned files include an `@author` or `@custom:security-contact` NatSpec tag at the contract/interface/library level. | Low |",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Partially rejected: @author exists in owned file headers. Missing security-contact suggestion is process advice only."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2228,
+      "original_id": "D-4",
+      "original_section": "S4 documentation gaps",
+      "original_title": "| D-4 | [`packages/contracts/src/Raffle.sol:478-487`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S4/work/packages/contracts/src/Raffle.sol#L478-L487) | `Raffle.name()` and `Raffle.symbol()` | Both functions have `@notice` but omit `@return` (or `@inheritdoc IERC721Metadata`). | Low |",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Rejected factual premise: name/symbol @return tags exist at Raffle.sol:478,484."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2229,
+      "original_id": "D-5",
+      "original_section": "S4 documentation gaps",
+      "original_title": "| D-5 | [`packages/contracts/src/Raffle.sol:65`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S4/work/packages/contracts/src/Raffle.sol#L65) & [`packages/contracts/src/interfaces/IRaffle.sol`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S4/work/packages/contracts/src/interfaces/IRaffle.sol) | Inherited `VRFV2PlusWrapperConsumerBase` ABI (`rawFulfillRandomWords`, `getBalance`, `getLinkToken`, `i_vrfV2PlusWrapper`) | `Raffle` inherits 4 public/external selectors from `VRFV2PlusWrapperConsumerBase` (`VRFV2PlusWrapperConsumerBase.sol:35, 101-120`), none of which are documented in `IRaffle.sol` or `DESIGN.md`. Specifically, `getBalance()` returns `address(this).balance` despite `VRFV2PlusWrapperConsumerBase`'s own NatSpec falsely stating *\"Return the current LINK balance of the contract\"* (`VRFV2PlusWrapperConsumerBase.sol:111`). | Low |",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Inherited wrapper ABI/NatSpec documentation observation, not a demonstrated security defect."
+    },
+    {
+      "target": "LEAD-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2230,
+      "original_id": "D-6",
+      "original_section": null,
+      "original_title": "| D-6 | [`DESIGN.md:100`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S4/work/DESIGN.md#L100) vs [`Raffle.sol:489-504`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S4/work/packages/contracts/src/Raffle.sol#L489-L504) | Ticket transferability during `Drawing` / after `RaffleResolved` | `DESIGN.md:100` states that *\"Valid ticket transfers naturally move future winner or refund claims to the current ERC-721 owner because redemption and refunds check `ownerOf(ticketId)` at claim time\"*, but does not warn integrators or users that tickets remain transferable *during* `Drawing` and *after* `RaffleResolved` (`NftWon`/`CashWon`), creating secondary-market front-running exposure if a ticket is listed on an NFT marketplace when VRF resolves. | Medium |",
+      "original_severity": "Medium",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Same marketplace-dependent stale-order lead; transferability is an explicit bearer-claim design. Requires market authorization, observable outcome and favorable ordering, not proved by transfer-after-resolution alone."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2290,
+      "original_id": "G-1",
+      "original_section": null,
+      "original_title": "| G-1 | [`Raffle.sol:593-605`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S4/work/packages/contracts/src/Raffle.sol#L593-L605) (`_isProtocolDestination`) | Calls `canonicalFactory.raffleImplementation()` via external `STATICCALL` up to 3 times in `initialize()` and once in every `buyEntries()`, ERC-721 transfer, and `_transferQuote()`. | Store `raffleImplementation = address(this)` as an `immutable` in `Raffle`'s constructor (`Raffle.sol:155-166`). Because the `Raffle` constructor runs when deploying the master implementation (`RaffleFactory.sol:89`), `address(this)` in `Raffle`'s constructor IS `raffleImplementation`! Comparing against an `immutable` replaces an external `STATICCALL` (`~271` gas each, called 3x in `initialize`) with a 3-gas `PUSH20` and eliminates an external call edge for static analyzers. | ~800 gas in `createRaffle`; ~260 gas per `buyEntries`, ticket transfer, and payout |",
+      "original_severity": "Gas optimization estimate, not security severity",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Preserved optimization proposal. No proposed implementation adopted; changing destination guards or wrapper invocation requires separate regression and deployment compatibility review."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2291,
+      "original_id": "G-2",
+      "original_section": null,
+      "original_title": "| G-2 | [`Raffle.sol:599-604`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S4/work/packages/contracts/src/Raffle.sol#L599-L604) (`_isProtocolDestination`) | Evaluates `destination == canonicalFactory.raffleImplementation()` *before* checking `if (destination.code.length == 0) return false;` (`line 602`). For EOA buyers/recipients (`destination.code.length == 0`), it still performs the external `STATICCALL` to `canonicalFactory.raffleImplementation()`. | Check `if (destination == address(this)) return true; if (destination.code.length == 0) return false;` first (since all protocol contracts\u2014`factory`, `quoteToken`, `vrfWrapper`, `prizeToken`, `raffleImplementation`, and other raffles\u2014have `code.length > 0`, except `address(this)` during `initialize` only if `clone` wasn't deployed yet, and EIP-1167 clones already have 45 bytes of runtime code before `initialize()` is called!). | Eliminates all external `STATICCALL`s to `factory` for EOA users |",
+      "original_severity": "Gas optimization estimate, not security severity",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Preserved optimization proposal. No proposed implementation adopted; changing destination guards or wrapper invocation requires separate regression and deployment compatibility review."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2292,
+      "original_id": "G-3",
+      "original_section": null,
+      "original_title": "| G-3 | [`Raffle.sol:244-257`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S4/work/packages/contracts/src/Raffle.sol#L244-L257) (`requestDraw`) | Calls `getVrfRequestPrice()` (`i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit, 1)`) at line 249, and then `requestRandomnessPayInNative` (`VRFV2PlusWrapperConsumerBase.sol:81`) calls `i_vrfV2PlusWrapper.calculateRequestPriceNative(_callbackGasLimit, _numWords)` a second time on line 81. | Removing the redundant pre-check in `requestDraw()` (or calling `i_vrfV2PlusWrapper` directly without `VRFV2PlusWrapperConsumerBase`'s duplicate call) avoids calling `calculateRequestPriceNative` twice per draw request. | ~2,500\u20135,000 gas per `requestDraw` |",
+      "original_severity": "Gas optimization estimate, not security severity",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Preserved optimization proposal. No proposed implementation adopted; changing destination guards or wrapper invocation requires separate regression and deployment compatibility review."
+    },
+    {
+      "target": "OBS-002",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2516,
+      "original_id": "Pitfall 1",
+      "original_section": "S4 common pitfalls",
+      "original_title": "#### Pitfall 1: Quote Token (USDC) Blacklist / Freeze Permanently Bricks `releaseSponsorProceeds` (`HIGH` / Design Risk)",
+      "original_severity": "High / Design Risk",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Same privileged USDC blacklist dependency; ordinary USDC transfers do not invoke a recipient hook. Preserve High disagreement."
+    },
+    {
+      "target": "LEAD-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2525,
+      "original_id": "Pitfall 2",
+      "original_section": "S4 common pitfalls",
+      "original_title": "#### Pitfall 2: Secondary-Market Front-Running of Ticket Transfers During `Drawing` and Post-Resolution (`MEDIUM`)",
+      "original_severity": "Medium",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Passing ordinary ticket-transfer test proves bearer ownership changes, not a live marketplace/VRF-mempool exploit."
+    },
+    {
+      "target": "OBS-008",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2535,
+      "original_id": "Pitfall 3",
+      "original_section": "S4 common pitfalls",
+      "original_title": "#### Pitfall 3: Inline Assembly Native Refund Forwards All Remaining Gas (`gas()`) (`LOW`)",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Caller-controlled excess refund can consume gas or revert its own transaction. No third-party persistent denial demonstrated; exact-price request avoids refund."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2552,
+      "original_id": "Pitfall 4",
+      "original_section": "S4 common pitfalls",
+      "original_title": "#### Pitfall 4: Slither `calls-loop` Report on `refundTickets` (`LOW` / Static-Analysis False Positive)",
+      "original_severity": "Low / false positive",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Native and source both reject calls-loop issue because burns short-circuit destination screening."
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2564,
+      "original_id": "Pitfall 5",
+      "original_section": "S4 common pitfalls",
+      "original_title": "#### Pitfall 5: ERC-721 Prize Delivery Uses `transferFrom` Instead of `safeTransferFrom` (Intentional Design Trade-Off)",
+      "original_severity": "Intentional design trade-off",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Preserve disagreement with TIA-02 Medium; raw transfer avoids receiver callback but requires an actually capable selected recipient."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2503,
+      "original_id": "Event Logging Gaps Identified item 1",
+      "original_section": "S4",
+      "original_title": "1. **Slither `events-maths` Finding on `Raffle.initialize` (`Raffle.sol:176-206`)**:",
+      "original_severity": "Unrated",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Factory RaffleCreated and prize event already bind the atomic creation. Clone-local additional event is optional telemetry."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2507,
+      "original_id": "Event Logging Gaps Identified item 2",
+      "original_section": "S4",
+      "original_title": "2. **Silent No-Op in `fulfillRandomWords` (`Raffle.sol:509-514`)**:",
+      "original_severity": "Unrated",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Rejected factual premise: Raffle.sol:514 emits VrfCallbackIgnored before returning. S6 MR-05 itself recognizes this."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2588,
+      "original_id": "Dependency Management item 1",
+      "original_section": "S4",
+      "original_title": "1. **`pnpm-lock.yaml` `blockExoticSubdeps: true` Breaks `pnpm install` and `pnpm run` (`HIGH`)**:",
+      "original_severity": "High; also Critical remediation priority",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Native scratch install failure preserved. Export omitted full root package/workspace configuration; this does not establish repository-wide pnpm failure. Treat as tooling reproducibility context and verify full deployment setup separately."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2600,
+      "original_id": "Dependency Management item 2",
+      "original_section": "S4",
+      "original_title": "2. **Missing `lib/forge-std` and Unpopulated `devDependencies` (`MEDIUM`)**:",
+      "original_severity": "Medium",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Repository tests, forge-std and other dev resources were intentionally excluded from the 43-file export; absent from this export does not mean absent from repository."
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2680,
+      "original_id": "Recommendation 1",
+      "original_section": "S4 prioritized recommendations",
+      "original_title": "#### 1. Restore the Missing Test Suite, Coverage Script, Slither Config, and Deployment Scripts in the Repository",
+      "original_severity": "Critical priority, not confirmed defect",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Missing tests/scripts/CI is unsupported as repository-wide finding because the cold context intentionally excluded them. Root executed existing repository suites; source workflow cannot infer their absence."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2687,
+      "original_id": "Recommendation 2",
+      "original_section": "S4 prioritized recommendations",
+      "original_title": "#### 2. Fix `pnpm-lock.yaml` `blockExoticSubdeps: true` Conflict with `@chainlink/contracts@1.5.0`",
+      "original_severity": "Priority heading only; not independent severity",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Preserve proposal and original priority; not a new root cause, accepted remedy, owner decision, or independently validated patch. Specific false telemetry/NatSpec premises are rejected above."
+    },
+    {
+      "target": "OBS-002",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2696,
+      "original_id": "Recommendation 3",
+      "original_section": "S4 prioritized recommendations",
+      "original_title": "#### 3. Prevent Permanent Lock of `sponsorProceeds` When `sponsorRecipient` is Blacklisted by USDC or Unpayable",
+      "original_severity": "Priority heading only; not independent severity",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Preserve proposal and original priority; not a new root cause, accepted remedy, owner decision, or independently validated patch. Specific false telemetry/NatSpec premises are rejected above."
+    },
+    {
+      "target": "LEAD-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2702,
+      "original_id": "Recommendation 4",
+      "original_section": "S4 prioritized recommendations",
+      "original_title": "#### 4. Protect Ticket Buyers & Sellers Against Post-Draw / Mempool Ticket Transfer Front-Running",
+      "original_severity": "Priority heading only; not independent severity",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Preserve proposal and original priority; not a new root cause, accepted remedy, owner decision, or independently validated patch. Specific false telemetry/NatSpec premises are rejected above."
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2712,
+      "original_id": "Recommendation 5",
+      "original_section": "S4 prioritized recommendations",
+      "original_title": "#### 5. Replace `VRFV2PlusWrapperConsumerBase` Inheritance with Direct `IVRFV2PlusWrapper` Integration",
+      "original_severity": "Priority heading only; not independent severity",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Preserve proposal and original priority; not a new root cause, accepted remedy, owner decision, or independently validated patch. Specific false telemetry/NatSpec premises are rejected above."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2717,
+      "original_id": "Recommendation 6",
+      "original_section": "S4 prioritized recommendations",
+      "original_title": "#### 6. Store `raffleImplementation = address(this)` as an `immutable` in `Raffle` and Short-Circuit EOA Checks in `_isProtocolDestination`",
+      "original_severity": "Priority heading only; not independent severity",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Preserve proposal and original priority; not a new root cause, accepted remedy, owner decision, or independently validated patch. Specific false telemetry/NatSpec premises are rejected above."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2721,
+      "original_id": "Recommendation 7",
+      "original_section": "S4 prioritized recommendations",
+      "original_title": "#### 7. Emit `RaffleInitialized` in `Raffle.initialize` and `FulfillmentIgnored` on Ignored VRF Callbacks",
+      "original_severity": "Priority heading only; not independent severity",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Preserve proposal and original priority; not a new root cause, accepted remedy, owner decision, or independently validated patch. Specific false telemetry/NatSpec premises are rejected above."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2729,
+      "original_id": "Recommendation 8",
+      "original_section": "S4 prioritized recommendations",
+      "original_title": "#### 8. Complete Missing NatSpec Tags in `RaffleConstants.sol` and `Raffle.sol`",
+      "original_severity": "Priority heading only; not independent severity",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Preserve proposal and original priority; not a new root cause, accepted remedy, owner decision, or independently validated patch. Specific false telemetry/NatSpec premises are rejected above."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2733,
+      "original_id": "Recommendation 9",
+      "original_section": "S4 prioritized recommendations",
+      "original_title": "#### 9. Pack `Raffle` Storage Variables (`reserveEntries` + `totalEntries`, `sponsor` + `endTime`)",
+      "original_severity": "Priority heading only; not independent severity",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Preserve proposal and original priority; not a new root cause, accepted remedy, owner decision, or independently validated patch. Specific false telemetry/NatSpec premises are rejected above."
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2783,
+      "original_id": "REQ-03-3",
+      "original_section": null,
+      "original_title": "### 1. [Medium] `REQ-03-3` \u2014 Deployment Tooling Verification of Official Target-Chain USDC Address Is Absent",
+      "original_severity": "Medium; native confidence high",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Deployment identity verification is a valid required deployment gate. No deployment scripts were supplied, so their absence from the repository is not established. Existing pinned public-fork request tests only partially close dependency compatibility, not live deployment binding."
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2820,
+      "original_id": "REQ-21",
+      "original_section": null,
+      "original_title": "| `REQ-21` | `\"Never move assets between raffle clones.\"` (`DESIGN.md:L2`) | `implemented` | `packages/contracts/src/Raffle.sol:L187-L195`, `L497-L502`, `L564-L567`, `L593-L605`; `packages/contracts/src/RaffleFactory.sol:L157-L169` | [`04-REQ-21.md`](requirements/04-REQ-21.md) |",
+      "original_severity": "Native implemented",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Preserve native holds verdict but reject universal no-cross-clone implication: same report reverse pass describes sponsor return to future clone; root reproduction validates strict own-recipient-loss case."
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2832,
+      "original_id": "Undocumented Behavior 1",
+      "original_section": "S5",
+      "original_title": "1. **Asymmetric Claim-Time Destination Screening and Raw `transferFrom` on ERC-721 Prize Releases (`packages/contracts/src/Raffle.sol:L329-L337, L375-L407, L564-L567, L593-L605`):**",
+      "original_severity": "Unrated",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Same future-clone sponsor NFT return. Preserve narrow preconditions and root honest-token reproduction."
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2832,
+      "original_id": "Undocumented Behavior 1",
+      "original_section": "S5",
+      "original_title": "1. **Asymmetric Claim-Time Destination Screening and Raw `transferFrom` on ERC-721 Prize Releases (`packages/contracts/src/Raffle.sol:L329-L337, L375-L407, L564-L567, L593-L605`):**",
+      "original_severity": "Unrated",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Raw transfer recipient capability and future-clone quote refusal overlap existing observations. Winner future clone cannot originate owner-only redemption."
+    },
+    {
+      "target": "CONFIG-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2832,
+      "original_id": "Undocumented Behavior 1",
+      "original_section": "S5",
+      "original_title": "1. **Asymmetric Claim-Time Destination Screening and Raw `transferFrom` on ERC-721 Prize Releases (`packages/contracts/src/Raffle.sol:L329-L337, L375-L407, L564-L567, L593-L605`):**",
+      "original_severity": "Unrated",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Correct treasury subclaim: later clone initialization rejects treasury==self before registration; it prevents that clone creation, not deployed clone becoming treasury and receiving payouts."
+    },
+    {
+      "target": "CONFIG-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2837,
+      "original_id": "Undocumented Behavior 2",
+      "original_section": "S5",
+      "original_title": "2. **Additional Initialization Screening of `sponsor` (`msg.sender`) and `protocolTreasury` During `createRaffle` (`packages/contracts/src/Raffle.sol:L187-L195, L593-L605`):**",
+      "original_severity": "Unrated",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Correctly notes future-treasury clone-address nonce collision. Sponsor==prize rejection is explicit initializer restriction, not unauthorized loss."
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2842,
+      "original_id": "Undocumented Behavior 3",
+      "original_section": "S5",
+      "original_title": "3. **Inherited `VRFV2PlusWrapperConsumerBase` Constructor External Call (`link()`) and Unlisted External ABI Surface (`packages/contracts/src/Raffle.sol:L28, L147, L155-L158, L171-L173`; `VRFV2PlusWrapperConsumerBase.sol:L32-L47, L101-L117`):**",
+      "original_severity": "Unrated",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Wrapper link() constructor requirement/extra ABI are integration compatibility facts; public-fork real wrapper request partially verifies specific pinned configurations only."
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2853,
+      "original_id": "Documentation Problem 1",
+      "original_section": "S5",
+      "original_title": "1. **`IRaffleFactory.sol:L8-L9` and `RaffleFactory.sol:L59` understate on-chain constructor validation of `vrfWrapper_`:** `IRaffleFactory.sol:L8-L9` states `\"onchain construction checks only code presence and six-decimal metadata\"`, and `RaffleFactory.sol:L59` states `\"The quote token must report exactly six decimals; the wrapper and quote token must contain deployed code.\"` In fact, `RaffleFactory.constructor` deploys `new Raffle(quoteToken_, vrfWrapper_)` (`RaffleFactory.sol:L89`), which invokes `VRFV2PlusWrapperConsumerBase(vrfWrapper_)` (`Raffle.sol:L157`) and performs an external call to `vrfV2PlusWrapper.link()` (`VRFV2PlusWrapperConsumerBase.sol:L45`).",
+      "original_severity": "Unrated",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Preserve native reverse-pass documentation observation with preceding root disposition and scope limitations; no owner acceptance."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2854,
+      "original_id": "Documentation Problem 2",
+      "original_section": "S5",
+      "original_title": "2. **`IRaffle.sol` omits external functions and errors present on `Raffle`:** `Raffle.sol:L147` defines `error DirectNativeTransfer()` (reverted by `receive()` at `Raffle.sol:L171-L173`), and `VRFV2PlusWrapperConsumerBase` (`Raffle.sol:L28`, `VRFV2PlusWrapperConsumerBase.sol:L32, L35, L101-L117`) exposes `rawFulfillRandomWords(uint256, uint256[])`, `error OnlyVRFWrapperCanFulfill(address, address)`, `i_vrfV2PlusWrapper()`, `getBalance()`, and `getLinkToken()`, none of which are declared or documented in `IRaffle.sol`.",
+      "original_severity": "Unrated",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Preserve native reverse-pass documentation observation with preceding root disposition and scope limitations; no owner acceptance."
+    },
+    {
+      "target": "CONFIG-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2855,
+      "original_id": "Documentation Problem 3",
+      "original_section": "S5",
+      "original_title": "3. **`IRaffleFactory.sol:L89`, `RaffleFactory.sol:L152`, and `Raffle.sol:L587` omit `sponsor` and `protocolTreasury` from documented `UnsafeProtocolDestination` screening:** The documentation states that `_isProtocolDestination` identifies `\"same-factory protocol plumbing that cannot safely own a ticket or receive a payout\"` (`Raffle.sol:L587`) and that `UnsafeProtocolDestination` is `\"Raised when a configured token or recipient is known protocol plumbing\"` (`IRaffleFactory.sol:L89`), omitting that `Raffle.initialize` (`Raffle.sol:L187-L192`) also rejects `params.sponsor` (`msg.sender` of `createRaffle`) and re-screens `params.protocolTreasury` against `params.prizeToken`, the new clone address, and `canonicalFactory.isRaffle(protocolTreasury)`.",
+      "original_severity": "Unrated",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Preserve native reverse-pass documentation observation with preceding root disposition and scope limitations; no owner acceptance."
+    },
+    {
+      "target": "RF-002",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2856,
+      "original_id": "Documentation Problem 4",
+      "original_section": "S5",
+      "original_title": "4. **`DESIGN.md:L2` (`\"Never move assets between raffle clones\"`) and `Raffle.sol:L587-L589` do not document the precomputed future clone edge case on `releaseSponsorPrize`:** `Raffle.sol:L589` notes `\"Code-less addresses are not queried in the registry\"` (`Raffle.sol:L602-L604`), but neither `DESIGN.md` nor `Raffle.sol` documents that a precomputed future `CREATE` clone address passes initialization screening while code-less and that `releaseSponsorPrize` (`Raffle.sol:L395-L407`) subsequently transfers the prize NFT via raw `transferFrom` without re-checking `_isProtocolDestination`.",
+      "original_severity": "Unrated",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Preserve native reverse-pass documentation observation with preceding root disposition and scope limitations; no owner acceptance."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2948,
+      "original_id": "SL-01",
+      "original_section": "S6",
+      "original_title": "| **SL-01** | `events-maths` | Low | Medium | [`src/Raffle.sol:176-206`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/Raffle.sol#L176-L206) (`Raffle.initialize`) | **Benign / Covered by Factory Event** (`RaffleFactory.createRaffle` atomically emits `RaffleCreated` and `onERC721Received` emits `PrizeDeposited`) |",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Native detector triage preserved: initializer event optional; burn path has no external call; trusted clone initialization and request-in-flight guard prevent claimed reentrancy; timestamp/assembly/dependency pragmas/naming are intentional or informational. Not a new production defect."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2949,
+      "original_id": "SL-02",
+      "original_section": "S6",
+      "original_title": "| **SL-02** | `calls-loop` | Low | Medium | [`src/Raffle.sol:587-601`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/Raffle.sol#L587-L601) (`_isProtocolDestination` -> `canonicalFactory.raffleImplementation()`) | **False Positive** (`_burn` calls `_update(address(0), ...)`, which short-circuits `if (to != address(0) && ...)` before calling `_isProtocolDestination`) |",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Native detector triage preserved: initializer event optional; burn path has no external call; trusted clone initialization and request-in-flight guard prevent claimed reentrancy; timestamp/assembly/dependency pragmas/naming are intentional or informational. Not a new production defect."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2950,
+      "original_id": "SL-03",
+      "original_section": "S6",
+      "original_title": "| **SL-03** | `calls-loop` | Low | Medium | [`src/Raffle.sol:587-601`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/Raffle.sol#L587-L601) (`_isProtocolDestination` -> `canonicalFactory.isRaffle(destination)`) | **False Positive** (same short-circuit in `_update` when `to == address(0)` during `_burn` in `refundTickets`) |",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Native detector triage preserved: initializer event optional; burn path has no external call; trusted clone initialization and request-in-flight guard prevent claimed reentrancy; timestamp/assembly/dependency pragmas/naming are intentional or informational. Not a new production defect."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2951,
+      "original_id": "SL-04",
+      "original_section": "S6",
+      "original_title": "| **SL-04** | `reentrancy-benign` | Low | Medium | [`src/RaffleFactory.sol:97-148`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/RaffleFactory.sol#L97-L148) (`RaffleFactory.createRaffle`) | **Intentional By Design** (`createRaffle` is `nonReentrant`, and `raffle` is an freshly cloned trusted `raffleImplementation`) |",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Native detector triage preserved: initializer event optional; burn path has no external call; trusted clone initialization and request-in-flight guard prevent claimed reentrancy; timestamp/assembly/dependency pragmas/naming are intentional or informational. Not a new production defect."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2952,
+      "original_id": "SL-05",
+      "original_section": "S6",
+      "original_title": "| **SL-05** | `reentrancy-benign` | Low | Medium | [`src/Raffle.sol:242-275`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/Raffle.sol#L242-L275) (`Raffle.requestDraw`) | **Intentional Defense-in-Depth** (`_requestInFlight = true` guards against synchronous callbacks during `requestRandomnessPayInNative`) |",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Native detector triage preserved: initializer event optional; burn path has no external call; trusted clone initialization and request-in-flight guard prevent claimed reentrancy; timestamp/assembly/dependency pragmas/naming are intentional or informational. Not a new production defect."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2953,
+      "original_id": "SL-06",
+      "original_section": "S6",
+      "original_title": "| **SL-06** | `timestamp` | Low | Medium | [`src/RaffleFactory.sol:97-148`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/RaffleFactory.sol#L97-L148) (`RaffleFactory.createRaffle`) | **Acceptable / Expected** (`endTime > block.timestamp` and `saleDuration <= 30 days`) |",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Native detector triage preserved: initializer event optional; burn path has no external call; trusted clone initialization and request-in-flight guard prevent claimed reentrancy; timestamp/assembly/dependency pragmas/naming are intentional or informational. Not a new production defect."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2954,
+      "original_id": "SL-07",
+      "original_section": "S6",
+      "original_title": "| **SL-07** | `timestamp` | Low | Medium | [`src/Raffle.sol:214-240`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/Raffle.sol#L214-L240) (`Raffle.buyEntries`) | **Acceptable / Expected** (`block.timestamp >= endTime` sale cutoff check) |",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Native detector triage preserved: initializer event optional; burn path has no external call; trusted clone initialization and request-in-flight guard prevent claimed reentrancy; timestamp/assembly/dependency pragmas/naming are intentional or informational. Not a new production defect."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2955,
+      "original_id": "SL-08",
+      "original_section": "S6",
+      "original_title": "| **SL-08** | `timestamp` | Low | Medium | [`src/Raffle.sol:242-275`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/Raffle.sol#L242-L275) (`Raffle.requestDraw`) | **Acceptable / Expected** (`[endTime, endTime + 2 days)` draw request window) |",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Native detector triage preserved: initializer event optional; burn path has no external call; trusted clone initialization and request-in-flight guard prevent claimed reentrancy; timestamp/assembly/dependency pragmas/naming are intentional or informational. Not a new production defect."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2956,
+      "original_id": "SL-09",
+      "original_section": "S6",
+      "original_title": "| **SL-09** | `timestamp` | Low | Medium | [`src/Raffle.sol:278-296`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/Raffle.sol#L278-L296) (`Raffle.enableRefunds`) | **Acceptable / Expected** (`2 days` timeout windows far exceed ~12s validator drift) |",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Native detector triage preserved: initializer event optional; burn path has no external call; trusted clone initialization and request-in-flight guard prevent claimed reentrancy; timestamp/assembly/dependency pragmas/naming are intentional or informational. Not a new production defect."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2957,
+      "original_id": "SL-10",
+      "original_section": "S6",
+      "original_title": "| **SL-10** | `timestamp` | Low | Medium | [`src/Raffle.sol:464-466`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/Raffle.sol#L464-L466) (`Raffle.callbackDeadline`) | **Acceptable / Expected** (`drawRequestedAt == 0 ? 0 : drawRequestedAt + 2 days`) |",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Native detector triage preserved: initializer event optional; burn path has no external call; trusted clone initialization and request-in-flight guard prevent claimed reentrancy; timestamp/assembly/dependency pragmas/naming are intentional or informational. Not a new production defect."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2958,
+      "original_id": "SL-11",
+      "original_section": "S6",
+      "original_title": "| **SL-11** | `timestamp` | Low | Medium | [`src/Raffle.sol:509-531`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/Raffle.sol#L509-L531) (`Raffle.fulfillRandomWords`) | **Acceptable / Expected** (`block.timestamp > callbackDeadline()` check on 2-day window) |",
+      "original_severity": "Low",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Native detector triage preserved: initializer event optional; burn path has no external call; trusted clone initialization and request-in-flight guard prevent claimed reentrancy; timestamp/assembly/dependency pragmas/naming are intentional or informational. Not a new production defect."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2959,
+      "original_id": "SL-12",
+      "original_section": "S6",
+      "original_title": "| **SL-12** | `assembly` | Informational | High | [`src/Raffle.sol:266-268`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/Raffle.sol#L266-L268) (`Raffle.requestDraw`) | **Intentional Security Hardening** (Returnbomb-safe native excess refund via `call(gas(), refundRecipient, excess, 0, 0, 0, 0)`) |",
+      "original_severity": "Informational",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Native detector triage preserved: initializer event optional; burn path has no external call; trusted clone initialization and request-in-flight guard prevent claimed reentrancy; timestamp/assembly/dependency pragmas/naming are intentional or informational. Not a new production defect."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2960,
+      "original_id": "SL-13",
+      "original_section": "S6",
+      "original_title": "| **SL-13** | `pragma` | Informational | High | `src/*.sol` (`0.8.36`) vs `node_modules/**/*.sol` | **Benign Dependency Variance** (All 5 owned files use exact locked `pragma solidity 0.8.36;`) |",
+      "original_severity": "Informational",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Native detector triage preserved: initializer event optional; burn path has no external call; trusted clone initialization and request-in-flight guard prevent claimed reentrancy; timestamp/assembly/dependency pragmas/naming are intentional or informational. Not a new production defect."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 2961,
+      "original_id": "SL-14",
+      "original_section": "S6",
+      "original_title": "| **SL-14** | `naming-convention` | Informational | High | [`src/interfaces/IRaffle.sol:431`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/interfaces/IRaffle.sol#L431) (`IRaffle.ENTRY_PRICE()`) | **Intentional Interface Getter** (Matches `uint256 public constant override ENTRY_PRICE` in `Raffle.sol:44`) |",
+      "original_severity": "Informational",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Native detector triage preserved: initializer event optional; burn path has no external call; trusted clone initialization and request-in-flight guard prevent claimed reentrancy; timestamp/assembly/dependency pragmas/naming are intentional or informational. Not a new production defect."
+    },
+    {
+      "target": "CLOSED-002",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 3241,
+      "original_id": "MR-01",
+      "original_section": "S6",
+      "original_title": "| **MR-01** | Front-Running / MEV | Low (Architectural) | [`src/Raffle.sol:214-240`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/Raffle.sol#L214-L240) | **Late-Sale Entry Sniping & Reserve-Threshold Visibility**: `totalEntries` and `reserveEntries` are transparent on-chain up to `endTime`. Late buyers can observe whether a raffle will clear `reserveEntries` (`NftWon` vs `CashWon`) and purchase large entry batches immediately before `endTime`, or a sponsor can self-buy remaining entries to cross `reserveEntries`. |",
+      "original_severity": "Low / architectural",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Late buying and sponsor self-buy before deadline are configured economics; no unearned entries or known future random outcome demonstrated."
+    },
+    {
+      "target": "LEAD-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 3242,
+      "original_id": "MR-02",
+      "original_section": "S6",
+      "original_title": "| **MR-02** | Front-Running / MEV | Low (Operational) | [`src/Raffle.sol:495-502`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/Raffle.sol#L495-L502) | **Secondary Market Ticket Transfers During `Drawing` or Post-Resolution**: `Raffle._update` allows ERC-721 ticket transfers across all statuses (`Active`, `Drawing`, `NftWon`, `CashWon`, `Refunding`) until burned. If a user leaves a secondary market sale order open into `Drawing`, an MEV searcher observing `rawFulfillRandomWords` in the mempool can snipe the winning ticket or dump a losing ticket into a stale bid. Furthermore, `settleWinningTicket` does not lock `winnerRecipient` until `redeemWinningTicket` burns the ticket. |",
+      "original_severity": "Low / operational",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Same conditional secondary-market lead; preserve Low versus Medium disagreement and missing real market/order/VRF visibility proof."
+    },
+    {
+      "target": "OBS-008",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 3243,
+      "original_id": "MR-03",
+      "original_section": "S6",
+      "original_title": "| **MR-03** | Front-Running / Ordering | Informational | [`src/Raffle.sol:242-302`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/Raffle.sol#L242-L302) | **Permissionless Keeper Race Conditions (`requestDraw`, `settleWinningTicket`, `enableRefunds`)**: Safe against front-running griefing; excess ETH in `requestDraw` is refunded to `msg.sender`, and `_requireWinningTicket` ensures only the true winning ticket ID can settle. |",
+      "original_severity": "Informational / safe",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Permissionless keeper ordering is locally guarded; no attacker ability to redirect another caller native refund established."
+    },
+    {
+      "target": "CLOSED-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 3244,
+      "original_id": "MR-04",
+      "original_section": "S6",
+      "original_title": "| **MR-04** | Cryptography / Randomness | Verified Safe | [`src/Raffle.sol:509-531`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/Raffle.sol#L509-L531) | **Chainlink VRF v2.5 Direct Funding & Modulo Bias Bound**: Uses `requestConfirmations = 30` (`RaffleConstants.VRF_REQUEST_CONFIRMATIONS`) and `randomWords[0] % uint256(totalEntries) + 1`. Because `totalEntries` is `uint128`, modulo bias is $< 2^{-128}$ (negligible). |",
+      "original_severity": "Verified Safe",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Modulo bias negligible within uint128 domain. Report confidence does not prove provider service behavior."
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 3245,
+      "original_id": "MR-05",
+      "original_section": "S6",
+      "original_title": "| **MR-05** | Cryptography / Randomness | Verified Safe | [`src/Raffle.sol:255-260, 511-516`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/Raffle.sol#L255-L260) | **Synchronous Callback & Late/Duplicate Callback Guard**: `_requestInFlight` blocks reentrant synchronous callbacks before `vrfRequestId` is stored; late or duplicate callbacks emit `VrfCallbackIgnored` and return cleanly without reverting. |",
+      "original_severity": "Verified Safe",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Local synchronous/late/duplicate callback guard supported by source; authentic live VRF delivery remains separate deployment/service evidence."
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 3246,
+      "original_id": "MR-06",
+      "original_section": "S6",
+      "original_title": "| **MR-06** | External / DeFi Integration | Low (Integration) | [`src/Raffle.sol:253-257`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/Raffle.sol#L253-L257) | **Dual `calculateRequestPriceNative` Evaluation in `requestDraw`**: `getVrfRequestPrice()` calls `calculateRequestPriceNative` once at line 253, and `VRFV2PlusWrapperConsumerBase.requestRandomnessPayInNative` calls it a second time before forwarding `{value: requestPrice}`. Safe for standard Chainlink wrappers where `calculateRequestPriceNative` is deterministic within a transaction. |",
+      "original_severity": "Low / integration",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Double wrapper quote calculation is compatibility/efficiency concern under trusted deterministic wrapper, not demonstrated steal."
+    },
+    {
+      "target": "EVIDENCE-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 3247,
+      "original_id": "MR-07",
+      "original_section": "S6",
+      "original_title": "| **MR-07** | External / DeFi Integration | Low (Integration) | `VRFV2PlusWrapperConsumerBase.sol:45` | **Wrapper `link()` Dependency at Construction**: Even though `Raffle` only uses native ETH payment for VRF, `VRFV2PlusWrapperConsumerBase`'s constructor calls `vrfWrapper.link()`, so the configured wrapper must implement `link()` at `RaffleFactory` deployment time. |",
+      "original_severity": "Low / integration",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Wrapper link() constructor dependency remains deployment compatibility requirement."
+    },
+    {
+      "target": "OBS-002",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 3248,
+      "original_id": "MR-08",
+      "original_section": "S6",
+      "original_title": "| **MR-08** | External / DeFi Integration | Low (Liveness) | [`src/Raffle.sol:334, 404, 566`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/Raffle.sol#L334) | **USDC Blacklisting Isolation & Non-Callback NFT Delivery**: Pull claims isolate USDC blacklisting per recipient; transferable ERC-721 tickets allow a blacklisted ticket holder to transfer their ticket to a non-blacklisted address before claiming; `prizeToken.transferFrom` + `ownerOf` check prevents `onERC721Received` griefing. |",
+      "original_severity": "Low / liveness",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "USDC fixed-claim isolation and ticket bearer capability are distinct. Same report rates blacklist risk differently from S3/S4."
+    },
+    {
+      "target": "OBS-004",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 3248,
+      "original_id": "MR-08",
+      "original_section": null,
+      "original_title": "| **MR-08** | External / DeFi Integration | Low (Liveness) | [`src/Raffle.sol:334, 404, 566`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/Raffle.sol#L334) | **USDC Blacklisting Isolation & Non-Callback NFT Delivery**: Pull claims isolate USDC blacklisting per recipient; transferable ERC-721 tickets allow a blacklisted ticket holder to transfer their ticket to a non-blacklisted address before claiming; `prizeToken.transferFrom` + `ownerOf` check prevents `onERC721Received` griefing. |",
+      "original_severity": "Low / liveness",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Preserve callback-avoidance benefit without treating ownerOf alone as proof of honest prize semantics or recipient ability."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 3249,
+      "original_id": "PRIV-01",
+      "original_section": null,
+      "original_title": "| **PRIV-01** | Privacy | Verified Safe | [`src/Raffle.sol:139-142`](file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/runtime/gemini-native-repairs/TOB/attempt-04/S6/work/packages/contracts/src/Raffle.sol#L139-L142) | **No On-Chain Secrets**: Only `_ticketRanges` (exposed via `ticketRange()`) and `_requestInFlight` (transient boolean) are `private`; no sensitive data is stored on-chain. |",
+      "original_severity": "Verified Safe",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "No on-chain secret claim preserved as review observation, not privacy proof about integrations."
+    },
+    {
+      "target": "ADVISORY-001",
+      "report_key": "GEMINI-TOB-REPAIRED/attempt-04",
+      "report_path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+      "report_line": 3260,
+      "original_id": "Check-2",
+      "original_section": null,
+      "original_title": "- [ ] **[Low \u2014 `Check-2` / `RaffleFactory._validateCreateParams`] Fail-Fast Sponsor Validation in `RaffleFactory`**: Add `params.sponsor` (`msg.sender`) validation directly in `RaffleFactory._validateCreateParams` (`src/RaffleFactory.sol:154-180`) alongside `sponsorRecipient` so an invalid sponsor address reverts before deploying the EIP-1167 clone rather than inside `Raffle.initialize` (`src/Raffle.sol:187`). (Effort: 30 minutes)",
+      "original_severity": "Low / hardening",
+      "original_status": "sealed native claim; original severity is not coordinator endorsement",
+      "proof_status": "source/tool-assisted native report; only specifically named executed evidence adopted",
+      "reconciled_reason": "Fail-fast sponsor screening is optional gas/usability advice. Initializer already checks it and failure reverts clone creation atomically."
+    }
+  ],
+  "explicit_named_original_ids": {
+    "TIA-01": 1003,
+    "TIA-02": 1004,
+    "TIA-03": 1005,
+    "TIA-04": 1006,
+    "TIA-05": 1007,
+    "TIA-06": 1008,
+    "TIA-07": 1009,
+    "D-1": 2225,
+    "D-2": 2226,
+    "D-3": 2227,
+    "D-4": 2228,
+    "D-5": 2229,
+    "D-6": 2230,
+    "G-1": 2290,
+    "G-2": 2291,
+    "G-3": 2292,
+    "MR-01": 2902,
+    "MR-08": 2902,
+    "MR-02": 2902,
+    "MR-06": 2902,
+    "SL-01": 2948,
+    "SL-02": 2949,
+    "SL-03": 2950,
+    "SL-04": 2951,
+    "SL-05": 2952,
+    "SL-06": 2953,
+    "SL-07": 2954,
+    "SL-08": 2955,
+    "SL-09": 2956,
+    "SL-10": 2957,
+    "SL-11": 2958,
+    "SL-12": 2959,
+    "SL-13": 2960,
+    "SL-14": 2961,
+    "MR-03": 3243,
+    "MR-04": 3244,
+    "MR-05": 3245,
+    "MR-07": 3247,
+    "PRIV-01": 3249,
+    "Check-2": 3260
+  },
+  "native_requirements_ledger": [
+    {
+      "id": "REQ-10",
+      "native_status": "holds",
+      "reconciled_qualification": "limited checked requirement; no whole-system proof"
+    },
+    {
+      "id": "REQ-11",
+      "native_status": "holds",
+      "reconciled_qualification": "limited checked requirement; no whole-system proof"
+    },
+    {
+      "id": "REQ-19",
+      "native_status": "holds",
+      "reconciled_qualification": "limited checked requirement; no whole-system proof"
+    },
+    {
+      "id": "REQ-21",
+      "native_status": "holds",
+      "reconciled_qualification": "REQ-21 universal verdict is disputed by RF-002"
+    },
+    {
+      "id": "REQ-25",
+      "native_status": "holds",
+      "reconciled_qualification": "limited checked requirement; no whole-system proof"
+    },
+    {
+      "id": "REQ-68",
+      "native_status": "holds",
+      "reconciled_qualification": "limited checked requirement; no whole-system proof"
+    },
+    {
+      "id": "REQ-15-4",
+      "native_status": "holds",
+      "reconciled_qualification": "limited checked requirement; no whole-system proof"
+    },
+    {
+      "id": "REQ-16-4",
+      "native_status": "holds",
+      "reconciled_qualification": "limited checked requirement; no whole-system proof"
+    },
+    {
+      "id": "REQ-17-4",
+      "native_status": "holds",
+      "reconciled_qualification": "limited checked requirement; no whole-system proof"
+    },
+    {
+      "id": "REQ-03-3",
+      "native_status": "divergence",
+      "original_severity": "medium",
+      "target": "EVIDENCE-001"
+    },
+    {
+      "id": "REQ-27-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-31-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-05-5",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-06-5",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-07-5",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-08-6",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-01",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-02",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-03",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-04",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-05",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-06",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-07",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-08",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-09",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-12",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-13",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-14",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-15",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-16",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-17",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-18",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-20",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-22",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-23",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-24",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-01-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-02-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-03-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-04-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-05-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-06-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-07-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-08-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-09-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-10-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-11-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-12-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-13-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-14-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-15-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-16-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-17-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-18-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-19-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-20-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-21-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-22-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-23-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-24-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-25-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-26",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-27",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-28",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-29",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-30",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-31",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-32",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-33",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-34",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-35",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-36",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-37",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-38",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-39",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-40",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-41",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-42",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-43",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-44",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-45",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-46",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-47",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-48",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-49",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-50",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-51",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-52",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-53",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-54",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-55",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-56",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-57",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-58",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-59",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-60",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-61",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-62",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-63",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-64",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-65",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-66",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-67",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-69",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-70",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-71",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-72",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-73",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-74",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-75",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-76",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-77",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-78",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-79",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-80",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-81",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-82",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-83",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-84",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-85",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-86",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-87",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-88",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-89",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-90",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-91",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-92",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-93",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-94",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-95",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-01-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-02-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-04-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-05-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-06-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-07-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-08-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-09-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-10-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-11-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-12-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-13-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-14-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-15-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-16-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-17-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-18-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-19-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-20-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-21-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-22-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-23-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-24-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-25-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-26-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-27-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-01-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-02-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-03-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-04-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-05-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-06-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-07-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-08-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-09-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-10-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-11-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-12-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-13-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-14-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-18-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-19-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-20-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-21-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-22-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-23-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-24-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-25-4",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-26-3",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-28-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-29-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-30-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-32-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-33-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-34-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-35-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-36-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-37-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-38-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-39-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-40-2",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-01-5",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-02-5",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-03-5",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-04-5",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-08-5",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-09-5",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-10-5",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-11-5",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-12-5",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-13-5",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-14-5",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-15-5",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-16-5",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-17-5",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-01-6",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-02-6",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-03-6",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-04-6",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-05-6",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-06-6",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-07-6",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-09-6",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-10-6",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-11-6",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-12-6",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-13-6",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-14-6",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    },
+    {
+      "id": "REQ-15-6",
+      "native_status": "not_checked",
+      "reconciled_status": "unreviewed by S5; not a negative finding"
+    }
+  ],
+  "requirement_count_correction": {
+    "raw_extracted": 219,
+    "raw_checked": 10,
+    "raw_not_checked": 209,
+    "native_report_claimed_not_checked": 196,
+    "raw_arrays_control": true
+  },
+  "new_assurance_issue": {
+    "id": "AQ-009",
+    "title": "Sealed model claims and test caller reachability require post-seal correction",
+    "category": "assurance_issue; not frozen production defect",
+    "status": "specific source refutations and proof limitation recorded",
+    "source_report": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/FIRST-PASS.md",
+    "problem": "Despite correct frozen inputs, S4 D-1/D-2/D-4 and part of D-3 assert absent NatSpec already present; callback-ignored event and S3 indexed-event claims contradict source. Missing tests/scripts/deployment tools infer repository absence from deliberately reduced context. S3 TIA-02 uses vm.prank on a contract with no claim-originating function. S5 report says196 unchecked versus raw219 extracted/10 checked/209 unchecked, and REQ-21 holds conflicts with its own future-clone description.",
+    "source_checks": [
+      {
+        "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/clean-context/packages/contracts/src/Raffle.sol",
+        "lines": "43-50,478-485,509-515"
+      },
+      {
+        "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/clean-context/packages/contracts/src/libraries/RaffleConstants.sol",
+        "lines": "4-42"
+      },
+      {
+        "path": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/clean-context/packages/contracts/src/interfaces/IRaffleFactory.sol",
+        "lines": "41-51"
+      },
+      {
+        "path": "/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/GEMINI-TOB-REPAIRED/attempt-04/S3/pre-validation-capture/artifacts/scratch/contracts-orig/test/foundry/TokenIntegrationProperties.t.sol",
+        "lines": "153-169,538-571"
+      }
+    ],
+    "required_reaudit": "Use exact frozen lines, distinguish scope absence from repository absence, execute contract-caller paths through actual externally callable methods, and derive coverage denominators from native raw arrays. Preserve corrected native claims instead of deleting or treating agreement as proof."
+  },
+  "production_root_count_change": 0,
+  "owner_acceptance": "not requested or inferred",
+  "independence": "Post-seal comparison; no new exploit research, executable rerun, production change or peer material supplied to cold reviewers."
+}

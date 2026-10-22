@@ -1,0 +1,156 @@
+{
+  "requirements": [
+    {
+      "id": "REQ-01",
+      "quote": "Quote-token amounts use raw six-decimal units.",
+      "location": "target/packages/contracts/src/libraries/RaffleConstants.sol:L7",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Quote-token amounts are expressed in raw units with 1,000,000 units per whole token."
+    },
+    {
+      "id": "REQ-02",
+      "quote": "Basis-point calculations round down through `Math.mulDiv`",
+      "location": "target/packages/contracts/src/libraries/RaffleConstants.sol:L7",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "Basis-point calculations use Math.mulDiv with rounding toward the lower integer."
+    },
+    {
+      "id": "REQ-03",
+      "quote": "the sponsor receives the remaining raw units after winner and protocol allocations.",
+      "location": "target/packages/contracts/src/libraries/RaffleConstants.sol:L8",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "After winner and protocol allocations, the sponsor receives all remaining raw units."
+    },
+    {
+      "id": "REQ-04",
+      "quote": "/// @notice Denominator used for every global protocol basis-point rate.\n    uint256 internal constant BPS = 10_000;",
+      "location": "target/packages/contracts/src/libraries/RaffleConstants.sol:L11-L12",
+      "kind": "formula",
+      "force": "descriptive",
+      "checkable": "Every global protocol basis-point rate uses a denominator of 10,000."
+    },
+    {
+      "id": "REQ-05",
+      "quote": "Global protocol fee rate: 500 basis points, or 5% of gross sales.",
+      "location": "target/packages/contracts/src/libraries/RaffleConstants.sol:L14",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "The global protocol fee is calculated at 500/10,000 of gross sales."
+    },
+    {
+      "id": "REQ-06",
+      "quote": "Cash-result winner rate: 8,000 basis points, or 80% of gross sales.",
+      "location": "target/packages/contracts/src/libraries/RaffleConstants.sol:L17",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "The cash-result winner allocation is calculated at 8,000/10,000 of gross sales."
+    },
+    {
+      "id": "REQ-07",
+      "quote": "Global entry price: exactly 1,000,000 raw six-decimal quote-token units, or one USDC.",
+      "location": "target/packages/contracts/src/libraries/RaffleConstants.sol:L20",
+      "kind": "economic",
+      "force": "descriptive",
+      "checkable": "Every v1 entry costs exactly 1,000,000 raw six-decimal quote-token units."
+    },
+    {
+      "id": "REQ-08",
+      "quote": "/// @notice Decimal precision required from the immutable quote token.\n    uint8 internal constant QUOTE_TOKEN_DECIMALS = 6;",
+      "location": "target/packages/contracts/src/libraries/RaffleConstants.sol:L23-L24",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The quote token has exactly six decimal places."
+    },
+    {
+      "id": "REQ-09",
+      "quote": "Decimal precision required from the immutable quote token.",
+      "location": "target/packages/contracts/src/libraries/RaffleConstants.sol:L23",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The quote token is immutable after deployment."
+    },
+    {
+      "id": "REQ-10",
+      "quote": "uint256 internal constant MAX_REFUND_TICKET_BATCH_SIZE = 100;",
+      "location": "target/packages/contracts/src/libraries/RaffleConstants.sol:L26-L27",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "A refund execution processes at most 100 tickets, with the bound measured in tickets."
+    },
+    {
+      "id": "REQ-11",
+      "quote": "each ticket may represent any uint128 entry count.",
+      "location": "target/packages/contracts/src/libraries/RaffleConstants.sol:L26",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "Each ticket can represent any uint128 entry count."
+    },
+    {
+      "id": "REQ-12",
+      "quote": "/// @notice Maximum prospective raffle sale duration, measured from creation to the exclusive sale end.\n    uint256 internal constant MAX_SALE_DURATION = 30 days;",
+      "location": "target/packages/contracts/src/libraries/RaffleConstants.sol:L29-L30",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The prospective interval from raffle creation to sale end cannot exceed 30 days."
+    },
+    {
+      "id": "REQ-13",
+      "quote": "Maximum prospective raffle sale duration, measured from creation to the exclusive sale end.",
+      "location": "target/packages/contracts/src/libraries/RaffleConstants.sol:L29",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "The sale-end timestamp is excluded from the period in which entries may be sold."
+    },
+    {
+      "id": "REQ-14",
+      "quote": "/// @notice Duration after sale end during which a sold raffle may initiate its draw, in seconds.\n    uint256 internal constant DRAW_REQUEST_TIMEOUT = 2 days;",
+      "location": "target/packages/contracts/src/libraries/RaffleConstants.sol:L32-L33",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "A sold raffle has a two-day draw-initiation window starting at sale end."
+    },
+    {
+      "id": "REQ-15",
+      "quote": "/// @notice Duration after an accepted request during which its authenticated callback may resolve, in seconds.\n    uint256 internal constant DRAW_CALLBACK_TIMEOUT = 2 days;",
+      "location": "target/packages/contracts/src/libraries/RaffleConstants.sol:L35-L36",
+      "kind": "state-machine",
+      "force": "descriptive",
+      "checkable": "An authenticated callback has a two-day resolution window starting at acceptance of its draw request."
+    },
+    {
+      "id": "REQ-16",
+      "quote": "Duration after an accepted request during which its authenticated callback may resolve, in seconds.",
+      "location": "target/packages/contracts/src/libraries/RaffleConstants.sol:L35",
+      "kind": "access-control",
+      "force": "descriptive",
+      "checkable": "Only authenticated callbacks are allowed to resolve an accepted draw request."
+    },
+    {
+      "id": "REQ-17",
+      "quote": "/// @notice Gas-unit limit requested for the single-word Chainlink callback.\n    uint32 internal constant VRF_CALLBACK_GAS_LIMIT = 300_000;",
+      "location": "target/packages/contracts/src/libraries/RaffleConstants.sol:L38-L39",
+      "kind": "other",
+      "force": "descriptive",
+      "checkable": "Requests specify a Chainlink callback gas limit of 300,000 gas units."
+    },
+    {
+      "id": "REQ-18",
+      "quote": "Gas-unit limit requested for the single-word Chainlink callback.",
+      "location": "target/packages/contracts/src/libraries/RaffleConstants.sol:L38",
+      "kind": "invariant",
+      "force": "descriptive",
+      "checkable": "The Chainlink VRF callback is configured to return a single word."
+    },
+    {
+      "id": "REQ-19",
+      "quote": "/// @notice Block confirmations requested from Chainlink before callback fulfillment.\n    uint16 internal constant VRF_REQUEST_CONFIRMATIONS = 30;",
+      "location": "target/packages/contracts/src/libraries/RaffleConstants.sol:L41-L42",
+      "kind": "ordering",
+      "force": "descriptive",
+      "checkable": "Chainlink requests specify 30 block confirmations before callback fulfillment."
+    }
+  ]
+}

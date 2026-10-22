@@ -1,0 +1,120 @@
+{
+  "schema_version": "1.0",
+  "audit_cell": "DAYBREAK-SIMAO",
+  "declared_target_sha": "9238b6ce8eb7f768c0dcd0cfcef26e1427a03155",
+  "target_git_verification": {
+    "status": "UNAVAILABLE",
+    "reason": "target/ is an extracted source tree without .git metadata",
+    "substitute": "per-file SHA-256 manifest"
+  },
+  "workflow": {
+    "name": "0xSimao",
+    "pin": "3f81e5803174182a7db07eca87849d2b3d571113",
+    "pin_verified": true,
+    "overall_status": "COMPLETE",
+    "native_lenses_completed": 12,
+    "native_lenses_required": 12,
+    "dedup_complete": true,
+    "completeness_gate": "8/8 unique (Contract,function) covered",
+    "judge_gates_completed": 4,
+    "report_formatted": true,
+    "proof_follow_up": "2/2 PASS",
+    "first_pass_sealed_before_proof_reconciliation": true
+  },
+  "runtime_selection": {
+    "accepted_local_model": "gpt-daybreak-blue-latest",
+    "accepted_local_reasoning_effort": "ultra",
+    "accepted_local_access_program": "daybreak_blue",
+    "fallback_enabled": false,
+    "provider_returned_provider": "unknown",
+    "provider_returned_model": "unknown",
+    "provider_returned_access_program": "unknown",
+    "evidence": [
+      {"path": "runner-selection.json", "sha256": "a0bd1a8a974e59d41c29b151501502caad820720f58fd4b542cb80d011eaa900"},
+      {"path": "command.json", "sha256": "8ef121f3d159c8502c4d5d712fea539fafe857f81fc381a3c42efdbd7347847d"},
+      {"path": "prompt.txt", "sha256": "fd20c6a96e997f49d6a141268e00cee754d108642a92510b5f5bedb535f00226"}
+    ],
+    "stage_context_note": "All model stages used independent fork_turns=none contexts that inherit the selected root runtime; each stage prompt repeated the exact model, effort, access program, and no-fallback constraint. No provider-returned identity fields were exposed."
+  },
+  "resources_loaded": {
+    "workflow_and_rules": [
+      {"path": "upstreams/0xsimao/SKILL.md", "sha256": "815e1bb9b494d2f4e1bec23b13862207dd4d59069cc56c04c5f80e7c2bf5b800"},
+      {"path": "upstreams/0xsimao/references/simao-method.md", "sha256": "66c056ef7066feb89148df1a68aae0843521d07a97d404f54c3e0fed7bc8ad5e"},
+      {"path": "upstreams/0xsimao/references/report-formatting.md", "sha256": "8d0bac5bb8dcaf1dcb384ca360c6c814760a544c24396a691ba402984534d422"},
+      {"path": "upstreams/0xsimao/references/severity-calibration.md", "sha256": "cae5e812cf472d6cd2751492bbbea9b36cc8a47bd0c16e181eca2c877b6a030c"},
+      {"path": "upstreams/0xsimao/references/attack-lenses/shared-rules.md", "sha256": "53a644d22165ba10408baba78aa752bda8cbe116a000316925d3b10cf6b59652"},
+      {"path": "upstreams/0xsimao/references/attack-lenses/accounting-desync.md", "sha256": "d7108aab2bddd45aef713a937cd34fba9fb4f573b6b3a454a084f6c6fe2492f9"},
+      {"path": "upstreams/0xsimao/references/attack-lenses/share-exchange-rate.md", "sha256": "054b5418be2abac94b7b7ac080019798d269c0351a00601a9d208cc7db40f61d"},
+      {"path": "upstreams/0xsimao/references/attack-lenses/temporal-cohort.md", "sha256": "7f0053c41f6f8feec48e201bf0b45aa794ad64df0baf117eec177d4529c5bdcb"},
+      {"path": "upstreams/0xsimao/references/attack-lenses/liquidation-solvency.md", "sha256": "3ea85297b0685da39e051975fda4b85a04ac42bba2e5bc5bc596b6768d5fb0bf"},
+      {"path": "upstreams/0xsimao/references/attack-lenses/cross-chain-state.md", "sha256": "5c307191bed41d6d537b28644e9a35af017a6d74682599b6f9aea700d3161905"},
+      {"path": "upstreams/0xsimao/references/attack-lenses/rounding-precision.md", "sha256": "624aed6584f37947879873e3d4859df578869b353f085801bebc2596b9e70abe"},
+      {"path": "upstreams/0xsimao/references/attack-lenses/ordering-mev.md", "sha256": "51b48622aaf8d43e07ac2aacd31734d8fbebf97e84a1ae54e8ccbe8a9a75f9e6"},
+      {"path": "upstreams/0xsimao/references/attack-lenses/dos-griefing.md", "sha256": "617bbb5a8786f93878c22a53bb6526ba1b6fa7e477c9ceb4ae1046749cdc9314"},
+      {"path": "upstreams/0xsimao/references/attack-lenses/access-trust.md", "sha256": "8825100002c181999e82986e136c99f786ad7aff12f18d9b07df67d69fa9724b"},
+      {"path": "upstreams/0xsimao/references/attack-lenses/integration-assumptions.md", "sha256": "4b175ac1921abd230cb0ea97be13c9b63ddf2736c6da81432280311240f2da91"},
+      {"path": "upstreams/0xsimao/references/attack-lenses/edge-states.md", "sha256": "27f61577a3af8bd8ab5f41d623fd177b5bf6f91b1bbd3a506b0251f5ef9547df"},
+      {"path": "upstreams/0xsimao/references/attack-lenses/flow-completeness.md", "sha256": "481bd7778ec3af4d6908af5406627246ec712b885c9e389987473e2e07a50e57"}
+    ],
+    "scope": [
+      {"path": "target/DESIGN.md", "sha256": "25b4248a342c3be6a48380cb692bbd8087801baee8ed85c4e5d584d1bb9cbba1", "coverage": "full"},
+      {"path": "target/packages/contracts/src/Raffle.sol", "sha256": "6e4c977922c3e39fafaa8c4c4fb74a971f1817eca9b6552eb8a540969f968617", "coverage": "full"},
+      {"path": "target/packages/contracts/src/RaffleFactory.sol", "sha256": "d0e62b34faa42513fd968f915262728fe66a15c4b9af13a3c66f496704142ace", "coverage": "full"},
+      {"path": "target/packages/contracts/src/libraries/RaffleConstants.sol", "sha256": "0893f1a70ac03ad557e0b4c8bdf6a2f73d317f8417d1b4a3c1a571b893ed54b6", "coverage": "full"},
+      {"path": "target/packages/contracts/src/interfaces/IRaffle.sol", "sha256": "a43ede9e8802d636a566fb225ed65bdf70f06d17f4734a1632a0a9f84aa5b2dd", "coverage": "full-explicit-interface"},
+      {"path": "target/packages/contracts/src/interfaces/IRaffleFactory.sol", "sha256": "747d238e4c7dc5b517f91c796dec87d9ddbfec9c626d1ff21467c60d780d03cf", "coverage": "full-explicit-interface"}
+    ],
+    "reachable_dependencies_consulted": [
+      {"path": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/VRFV2PlusWrapperConsumerBase.sol", "sha256": "8cf045f295b8c6035d14012a9bc2e8ab2b5ce24749a199ca0190519c4bf2dcc0"},
+      {"path": "target/packages/contracts/node_modules/@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFV2PlusWrapper.sol", "sha256": "a48aaaeaed60e65f04f6c8772e5673dda663dcfa7913fdadd14b412300b9d5f1"},
+      {"path": "target/packages/contracts/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol", "sha256": "94e409e8f6e3184236651a6cc2b1a6a3ea0f0a25eb85b71e524ad5791bb2fbc8"},
+      {"path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol", "sha256": "c2394cb2a327f234711da34884947f4aa0f6dd2791d1d6303a0c7acfaf81bca3"},
+      {"path": "target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol", "sha256": "06c768a2b794ea59dd6d6c1bfe33cf5098a4a8921aec14cf066576a2bffafce6"},
+      {"path": "target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol", "sha256": "ef8e2398c78851bd2ec12bc48d923058c557889d5a3d5ee4919c17ff0fb3517e"}
+    ],
+    "runner_troubleshooting_only": [
+      {"path": "runner-home/skills/.system/openai-docs/SKILL.md", "sha256": "aa6829e21df2223167c85d2e49b6337a7345c84c1033f1ec10182c7882b36d45"},
+      {"url": "https://learn.chatgpt.com/docs/config-file/config-reference?translationFallback=ja-JP", "sha256": "unknown", "reason": "remote page content was not persisted; used only to identify sqlite_home for the blocked secondary CLI preflight", "excluded_from_security_conclusions": true}
+    ]
+  },
+  "stages": [
+    {"id": "S00-BANNER", "status": "COMPLETE_WITH_SEQUENCE_DEVIATION", "coverage": "native banner emitted", "note": "Emitted after initial workflow discovery rather than before the first read; no analytical impact."},
+    {"id": "S01-WORKFLOW-LOAD", "status": "COMPLETE", "coverage": "SKILL.md and all 16 referenced method/rules/format/calibration/lens resources loaded fully", "resources": "resources_loaded.workflow_and_rules"},
+    {"id": "S02-SCOPE-LOAD", "status": "COMPLETE", "coverage": "DESIGN.md plus all five production files; both interfaces explicitly included", "resources": "resources_loaded.scope"},
+    {"id": "S03-DEPENDENCY-LOOKUP", "status": "COMPLETE", "coverage": "only reachable dependencies needed to resolve wrapper payment/callback, clone guard, ERC20 transfer, clone creation and ERC721 semantics", "resources": "resources_loaded.reachable_dependencies_consulted"},
+    {"id": "S04-MONEY-MAP", "status": "COMPLETE", "coverage": "assets, all aggregate writers, asymmetry table, 13 invariants, 7 lifecycles, cohorts, Last User Out", "output": {"path": "evidence/bundles-pre-cleanup/money-map.md", "sha256": "2a9bca3635ee7f6547d1ee663672373eb060bf07c4b7c43e05987d909cd8a512"}},
+    {"id": "S05-BUNDLE-BUILD", "status": "COMPLETE", "coverage": "12/12 native bundles, each source + money map + method + one lens + shared rules; copied before cleanup", "source_bundle": {"path": "evidence/bundles-pre-cleanup/source.md", "sha256": "372789349e2edf8963ecf683a075f126eb663d6406711bb70c145a57309da475"}, "bundle_hashes": ["8f9bf81aa436db104d40a0d9652231c7f401128cfe6c533c13e56a51dd36aed7","3512e11a3437dc5a53d395e93ecdb75aaa2132f6bb5a17a78e73ea65ab6e2ffb","73c561bbc2933cb1c1df1052df68e1a8d6977d688aba186ef0b1436316b0cc57","6c8d08e9b015ae85b15cc9253c6beac627838ba078e3cf8b35b12939490b839b","363496b9e33ebd89e43e3bd469b48d20d125dd7c40c8e00cb13c56e5ec662bbf","d0cb7d9eda54a0255c4ee55c02b633e320f4697ec17610576bfc96b0d1ef931f","40247a8d9a9787cd002fe1046424545f5b0841eda169ef3f9cbb9163c9c5c3fe","3da3ea9950c40ff78f833868a1fe485dff6a7f08d9ae35c3c5de2a71d346e2a6","f69b4733884e84da0d448ae376c5462d64c04f53fecb45ce13d446882f5e204f","59a006afe78aa7c5a44e52098c98afa19ab54ffe148a0f319febee5409a706c8","16b571d472aac362f5fae53a1e7dc823d43d0056996206f4865dc33c0a094d82","5557e73141f3ce51ec5b3a7086cbe36eada56ce3240ca16b057d75c990331269"]},
+    {"id": "S06-COMPILE", "status": "COMPLETE", "coverage": "36 files compiled with Solc 0.8.36; warnings only", "output": {"path": "native/forge-build.log", "sha256": "e696546536ff769a706d177d22232ec5f4faee5cb58925fa5f552b85d653fd88"}},
+    {"id": "S07-LENS-01-ACCOUNTING", "status": "COMPLETE", "fresh_context": true, "bundle_sha256": "8f9bf81aa436db104d40a0d9652231c7f401128cfe6c533c13e56a51dd36aed7", "response": {"path": "raw/lenses/lens-01-accounting.md", "sha256": "034453f2d327ee053d2c879b38fc4b9041e1ba712dd6115ffd63c81250a8a61d"}, "selection": "runtime_selection"},
+    {"id": "S08-LENS-02-SHARES", "status": "COMPLETE", "fresh_context": true, "bundle_sha256": "3512e11a3437dc5a53d395e93ecdb75aaa2132f6bb5a17a78e73ea65ab6e2ffb", "response": {"path": "raw/lenses/lens-02-shares.md", "sha256": "291a1477c07f6efb4930ec892d3c1384da7444275e38944b41e326439a863364"}, "selection": "runtime_selection"},
+    {"id": "S08A-LENS-02-ANCILLARY-MATH", "status": "COMPLETE", "fresh_context": true, "response": {"path": "raw/lenses/ancillary-lens-02-share-math-check.md", "sha256": "77d3b41d3be5abe78a789351f4db9939a736e6dc5c50ef07da8d0d1c13037e55"}, "selection": "runtime_selection"},
+    {"id": "S09-LENS-03-TEMPORAL", "status": "COMPLETE", "fresh_context": true, "bundle_sha256": "73c561bbc2933cb1c1df1052df68e1a8d6977d688aba186ef0b1436316b0cc57", "response": {"path": "raw/lenses/lens-03-temporal.md", "sha256": "e4df729f11df3cb47ba2c786d6449fb47a607663b310ce0cbb8bff7610c520f3"}, "selection": "runtime_selection"},
+    {"id": "S10-LENS-04-SOLVENCY", "status": "COMPLETE", "fresh_context": true, "bundle_sha256": "6c8d08e9b015ae85b15cc9253c6beac627838ba078e3cf8b35b12939490b839b", "response": {"path": "raw/lenses/lens-04-liquidation.md", "sha256": "d42cda5dc5b33d52d5a895e4220e6574bae33d58f62c8fef93a84e113473fe2b"}, "selection": "runtime_selection"},
+    {"id": "S11-LENS-05-CROSSCHAIN", "status": "COMPLETE", "fresh_context": true, "bundle_sha256": "363496b9e33ebd89e43e3bd469b48d20d125dd7c40c8e00cb13c56e5ec662bbf", "response": {"path": "raw/lenses/lens-05-crosschain.md", "sha256": "bb18cca8bb22c550c90f599ae2d4b93c1231175e4c63550cd1eb83eae7954685"}, "selection": "runtime_selection"},
+    {"id": "S12-LENS-06-ROUNDING", "status": "COMPLETE", "fresh_context": true, "bundle_sha256": "d0cb7d9eda54a0255c4ee55c02b633e320f4697ec17610576bfc96b0d1ef931f", "response": {"path": "raw/lenses/lens-06-rounding.md", "sha256": "9ebbaa5d361cc27156eb0c39fb058a8e9548f3f32d8058d633bf49c7b6d4f9f0"}, "selection": "runtime_selection"},
+    {"id": "S13-LENS-07-ORDERING", "status": "COMPLETE", "fresh_context": true, "bundle_sha256": "40247a8d9a9787cd002fe1046424545f5b0841eda169ef3f9cbb9163c9c5c3fe", "response": {"path": "raw/lenses/lens-07-ordering.md", "sha256": "9dd54207cabb93ef63e86880db1c0f3ab670d006327c20288e60d81230c9b4c6"}, "selection": "runtime_selection"},
+    {"id": "S14-LENS-08-DOS", "status": "COMPLETE", "fresh_context": true, "bundle_sha256": "3da3ea9950c40ff78f833868a1fe485dff6a7f08d9ae35c3c5de2a71d346e2a6", "response": {"path": "raw/lenses/lens-08-dos.md", "sha256": "e7f0e9e90d8995715cbe7e5229abc0feedec565dc2962bd85a3415ad0ea8cbed"}, "selection": "runtime_selection"},
+    {"id": "S15-LENS-09-ACCESS", "status": "COMPLETE", "fresh_context": true, "bundle_sha256": "f69b4733884e84da0d448ae376c5462d64c04f53fecb45ce13d446882f5e204f", "response": {"path": "raw/lenses/lens-09-access.md", "sha256": "53ab8386bb9514bd346faece360597b3f7baa8344734213fb101a66adcaba55e"}, "selection": "runtime_selection"},
+    {"id": "S16-LENS-10-INTEGRATION", "status": "COMPLETE", "fresh_context": true, "bundle_sha256": "59a006afe78aa7c5a44e52098c98afa19ab54ffe148a0f319febee5409a706c8", "response": {"path": "raw/lenses/lens-10-integration.md", "sha256": "ff051f8b08ed83dddc6f9fc0b72ae0103335cc07cace83ea4a4384eb5dce44da"}, "selection": "runtime_selection"},
+    {"id": "S17-LENS-11-EDGES", "status": "COMPLETE", "fresh_context": true, "bundle_sha256": "16b571d472aac362f5fae53a1e7dc823d43d0056996206f4865dc33c0a094d82", "response": {"path": "raw/lenses/lens-11-edges.md", "sha256": "8ab66841ee809f559687fc2a31d1adc7caadf695ab04a46d5d373d9288b057b8"}, "selection": "runtime_selection"},
+    {"id": "S18-LENS-12-FLOW", "status": "COMPLETE", "fresh_context": true, "bundle_sha256": "5557e73141f3ce51ec5b3a7086cbe36eada56ce3240ca16b057d75c990331269", "response": {"path": "raw/lenses/lens-12-flow.md", "sha256": "002ceea0defbdbf9f5e29d49fff8e3fcc1d90d10d1fcfe2539e77045ab47b3a0"}, "selection": "runtime_selection"},
+    {"id": "S19-DEDUP-COMPLETENESS", "status": "COMPLETE", "fresh_context": true, "coverage": "15 raw blocks; 9 deduped candidates; hard function isolation; mechanisms/mitigations preserved; 8/8 tuple completeness", "output": {"path": "raw/dedup/dedup-and-completeness.md", "sha256": "e7a6eac58c724a5f7ce7b39984440238fd435934666ea8d094b91cfcfb662748"}, "selection": "runtime_selection"},
+    {"id": "S19A-TURN6-MECHANICAL-INVENTORY", "status": "COMPLETE", "fresh_context": true, "output": {"path": "raw/dedup/children/mechanical_inventory.md", "sha256": "ecc5b4d3929a5bc739a4242e1d7b0cd6ba9230c39ed9de19667c035da1b131f1"}, "selection": "runtime_selection"},
+    {"id": "S20-JUDGE-GATE-1-CODE-PATH", "status": "COMPLETE", "coverage": "9/9 candidates"},
+    {"id": "S21-JUDGE-GATE-2-REACHABILITY", "status": "COMPLETE", "coverage": "9/9 candidates"},
+    {"id": "S22-JUDGE-GATE-3-DISTINCT-VICTIM", "status": "COMPLETE", "coverage": "9/9 candidates"},
+    {"id": "S23-JUDGE-GATE-4-REAL-IMPACT", "status": "COMPLETE", "coverage": "9/9 candidates", "combined_output": {"path": "raw/judges/all-four-gates.md", "sha256": "ef06dd7675f84da47af0c29f9184b85dc4e17541dd9ff7f34ea905c93c2c8da5"}, "selection": "runtime_selection"},
+    {"id": "S24-NATIVE-REPORT", "status": "COMPLETE", "coverage": "4 High, 2 Medium, 3 unverified leads; native Description/Mitigation/Fix review formatting", "output": {"path": "raw/report/native-report-draft.md", "sha256": "f58fa1251d324c88af3e731ce0e09d0d43145855b9dc89174576c759ad220eac"}, "selection": "runtime_selection"},
+    {"id": "S25-FIRST-PASS-SEAL", "status": "COMPLETE", "coverage": "original conclusions, per-file and per-property coverage, timestamp", "first_pass": {"path": "FIRST-PASS.md", "sha256": "e3f441a444e260b5ea28a9dc26d5e6a25696aaa6dd1e9ca84ab22c185567f64f"}, "seal": {"path": "SEAL.json", "sha256": "1277a293e1a15b91b0a044b5fa89d186bf8c6a88995711af4d9593153b63515a", "sealed_at_utc": "2026-10-21T08:19:40Z"}},
+    {"id": "S26-PROOF-UNTRUSTED-PRIZE", "status": "COMPLETE", "fresh_context": true, "coverage": "H-1 through H-4; genuine escrow/freeze path and fabricated custody self-attestation", "result": "2 passed, 0 failed, 0 skipped", "artifacts": {"directory": "output/raw/proofs/untrusted-prize", "test_sha256": "a66e46245a2da2637da953e1e10b884e9bcf04cf7f35606dcb12b9b294db1d24", "forge_log_sha256": "f402b753228f60675a536a488dafcf06f5c96fc03131e7c3ba2edff9cd691e00", "primary_trace_sha256": "64ac467af6742c3f7fd15c1e2d65686a73dc5e884ace6c6a6941b92fdf669ac9", "self_attestation_trace_sha256": "9271fc535f259f52eb29dc1a6b1ead272f43646863431daeffa6c33d691be2d1"}, "selection": "runtime_selection"},
+    {"id": "S27-POST-SEAL-RECONCILIATION", "status": "COMPLETE", "coverage": "proof corroborated H-1 through H-4; no sealed conclusion changed; precise unmet proof obligations recorded for all remaining candidates", "output": {"path": "corrections/POST-SEAL-001-proof-reconciliation.md", "sha256": "f8e67d18ad84be813cac9f296ba177b14c42c6805dc2a57869e8501e9395e98a"}},
+    {"id": "S28-SECONDARY-CLI-PREFLIGHT", "status": "BLOCKED_BEFORE_MODEL_DISPATCH", "coverage": "three attempts preserved; internal fresh contexts used instead", "reason": "nested app-server initialization returned Operation not permitted", "output": {"path": "raw/runner/secondary-cli-preflight.md", "sha256": "11a7b460bb6b91c55d394159952663cae330a378ea1515b01dcc561d10e183e9"}},
+    {"id": "S29-NATIVE-AUTO-CLEANUP", "status": "COMPLETE", "coverage": "transient .audit-simao-Kda9Bx removed only after all 14 source/money-map/bundle files were preserved byte-for-byte in evidence/bundles-pre-cleanup"}
+  ],
+  "coverage_summary": {
+    "files": {"production": "5/5", "interfaces": "2/2 explicit", "design": "1/1"},
+    "properties": ["quote conservation", "ticket range uniqueness", "one-shot lifecycle", "deadline complementarity", "VRF binding", "bearer ownership", "prize custody/delivery", "destination isolation", "reentrancy/rollback", "bounds/rounding", "Last User Out", "named integrations"],
+    "raw_candidates": {"findings": 10, "leads": 5, "deduped": 9, "accepted": 6, "unverified_or_rejected": 3},
+    "severity": {"high": 4, "medium": 2, "low": 0, "info": 0}
+  }
+}

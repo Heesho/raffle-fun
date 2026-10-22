@@ -1,0 +1,72 @@
+{
+  "stage_id": "T4.1-dedup",
+  "timestamp": "2026-10-21T08:06:30.718870+00:00",
+  "accepted_local_model": "gpt-6-astra",
+  "accepted_local_reasoning_effort": "ultra",
+  "provider_returned_model": "unknown",
+  "fallback_used": false,
+  "actor": "root orchestrator",
+  "evidence": "runner-declared root selection; no provider model field available",
+  "raw_records": [
+    {
+      "agent": 5,
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "releaseSponsorProceeds",
+      "bug_class": "untrusted-prize-payout",
+      "raw_group_key": "Raffle | releaseSponsorProceeds | untrusted-prize-payout",
+      "raw_report": "raw/agent-5.md"
+    },
+    {
+      "agent": 7,
+      "kind": "LEAD",
+      "contract": "Raffle",
+      "function": "releaseSponsorProceeds",
+      "bug_class": "prize-transferability-assumption",
+      "raw_group_key": "Raffle | releaseSponsorProceeds | prize-transferability-assumption",
+      "raw_report": "raw/agent-7.md"
+    }
+  ],
+  "canonicalization": [
+    {
+      "tuple": [
+        "Raffle",
+        "releaseSponsorProceeds"
+      ],
+      "raw_labels": [
+        "untrusted-prize-payout",
+        "prize-transferability-assumption"
+      ],
+      "canonical_label": "untrusted-prize-payout",
+      "reason": "one vote per label; shorter defect label wins; no memory vocabulary exists"
+    }
+  ],
+  "groups": [
+    {
+      "key": "raffle|releasesponsorproceeds|untrusted-prize-payout",
+      "kind": "LEAD",
+      "agents": [
+        5,
+        7
+      ],
+      "agents_count": 2,
+      "mechanisms": [
+        "Sponsor proceeds can be released before NFT delivery.",
+        "NftWon cannot transition to Refunding if a later external prize transfer fails."
+      ],
+      "distinct_raw_fixes": 0,
+      "fix_preservation": "not applicable to leads; neither raw response supplies a fix",
+      "function_isolation": "only one Contract,function tuple; no cross-function merging",
+      "wide_description": "both payout-before-delivery and missing terminal refund fallback retained",
+      "function_level_second_pass": "all mechanisms from both raw constituent bodies retained"
+    }
+  ],
+  "completeness": {
+    "unique_raw_contract_function": 1,
+    "covered_final_contract_function": 1,
+    "unique_raw_class_tuples": 2,
+    "canonical_groups": 1,
+    "silently_dropped": 0
+  },
+  "composite_chains": []
+}

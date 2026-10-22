@@ -1,0 +1,31 @@
+{
+  "stageId": "03-init-local-cache",
+  "command": [
+    "npx",
+    "--offline",
+    "--yes",
+    "--package=node@22.23.3",
+    "--package=pnpm@10.34.6",
+    "pnpm",
+    "--dir",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal",
+    "gebal",
+    "init",
+    "--output",
+    "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/scope-template.json"
+  ],
+  "cwd": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/toolchain",
+  "environmentOverrides": {
+    "GEBAL_HOME": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/gebal-state",
+    "TMPDIR": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/tmp",
+    "npm_config_logs_dir": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/logs/npm",
+    "npm_config_update_notifier": "false",
+    "npm_config_cache": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/npm-cache",
+    "npm_config_prefix": "/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/toolchain"
+  },
+  "startedAt": "2026-10-21T07:57:43.478381+00:00",
+  "finishedAt": "2026-10-21T07:57:46.289842+00:00",
+  "exitCode": 1,
+  "stdout": "\n> gebal@0.2.0 gebal /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal\n> tsx packages/cli/src/main.ts init --output /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/scope-template.json\n\n\u2009ELIFECYCLE\u2009 Command failed with exit code 1.\n",
+  "stderr": "node:net:1919\n      const error = new UVExceptionWithHostPort(rval, 'listen', address, port);\n                    ^\n\nError: listen EPERM: operation not permitted /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/tmp/tsx-501/8581.pipe\n    at Server.setupListenHandle [as _listen2] (node:net:1919:21)\n    at listenInCluster (node:net:1998:12)\n    at Server.listen (node:net:2120:5)\n    at file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/cli.mjs:53:32174\n    at new Promise (<anonymous>)\n    at createIpcServer (file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/cli.mjs:53:32152)\n    at async file:///Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/gebal/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/cli.mjs:55:542 {\n  code: 'EPERM',\n  errno: -1,\n  syscall: 'listen',\n  address: '/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-GEBAL/audit/tmp/tsx-501/8581.pipe',\n  port: -1\n}\n\nNode.js v22.23.3\n"
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["documents", "codePaths", "language", "requirements", "filesReviewed", "extractionNotes"],
+  "properties": {
+    "documents": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["path", "describes", "kind", "authority", "unreadable"], "properties": {"path": {"type": "string"}, "describes": {"type": "string"}, "kind": {"type": "string", "enum": ["whitepaper", "design-doc", "readme", "inline-docs", "transcript", "other"]}, "authority": {"type": "string"}, "unreadable": {"type": "string"}}}},
+    "codePaths": {"type": "array", "items": {"type": "string"}},
+    "language": {"type": "string"},
+    "requirements": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["id", "document", "quote", "location", "kind", "force", "checkable"], "properties": {"id": {"type": "string"}, "document": {"type": "string"}, "quote": {"type": "string"}, "location": {"type": "string"}, "kind": {"type": "string", "enum": ["invariant", "formula", "access-control", "state-machine", "error-handling", "ordering", "economic", "trust-boundary", "other"]}, "force": {"type": "string", "enum": ["mandatory", "recommended", "optional", "descriptive"]}, "checkable": {"type": "string"}}}},
+    "filesReviewed": {"type": "array", "items": {"type": "string"}},
+    "extractionNotes": {"type": "array", "items": {"type": "string"}}
+  }
+}

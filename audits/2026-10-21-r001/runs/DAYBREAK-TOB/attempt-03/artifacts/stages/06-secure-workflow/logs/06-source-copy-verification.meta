@@ -1,0 +1,8 @@
+label=06-source-copy-verification
+started_at_utc=2026-10-21T23:25:24Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target
+command=/bin/zsh -c set\ -e\;\ evidence=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow\;\ for\ f\ in\ S6TestBase.sol\ S6Mocks.sol\ S6SecureWorkflow.t.sol\ S6Invariant.t.sol\ S6KnownViolation.t.sol\ S6Echidna.sol\;\ do\ cmp\ -s\ \"packages/contracts/test/foundry/s6/\$f\"\ \"\$evidence/tests/sources/\$f\"\;\ printf\ \"MATCH\ %s\\n\"\ \"\$f\"\;\ done\;\ cmp\ -s\ packages/contracts/echidna.s6.yaml\ \"\$evidence/tests/sources/echidna.s6.yaml\"\;\ printf\ \"MATCH\ echidna.s6.yaml\\n\"\;\ for\ f\ in\ SECURITY_PROPERTIES.md\ SLITHER_TRIAGE.md\ MANUAL_REVIEW.md\ FINDINGS.md\ FILE_COVERAGE.md\ RESULTS.json\;\ do\ cmp\ -s\ \"s6-analysis/\$f\"\ \"\$evidence/properties/\$f\"\;\ printf\ \"MATCH\ %s\\n\"\ \"\$f\"\;\ done\;\ cmp\ -s\ s6-analysis/DIAGRAM_REVIEW.md\ \"\$evidence/diagrams/DIAGRAM_REVIEW.md\"\;\ printf\ \"MATCH\ DIAGRAM_REVIEW.md\\n\" 
+finished_at_utc=2026-10-21T23:25:24Z
+exit_code=0
+stdout=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tool-output/06-source-copy-verification.stdout
+stderr=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tool-output/06-source-copy-verification.stderr

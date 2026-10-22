@@ -1,0 +1,42 @@
+{
+  "codePaths": [
+    "packages/contracts/src/Raffle.sol",
+    "packages/contracts/src/RaffleFactory.sol",
+    "packages/contracts/src/interfaces/IRaffle.sol",
+    "packages/contracts/src/interfaces/IRaffleFactory.sol",
+    "packages/contracts/src/libraries/RaffleConstants.sol"
+  ],
+  "documents": [
+    {
+      "describes": "Top-level clean design specification for the raffle.fun Ethereum NFT raffle system: immutable factory and ERC-1167 clone architecture, 1,000,000-unit canonical 6-decimal USDC entry price, transferable ERC-721 contiguous entry-range tickets, atomic single-ERC-721 prize escrow at creation, reserve-met (NFT + 95% sponsor / 5% treasury) and reserve-missed (80% winner / 15% sponsor / 5% treasury) payout splits, full entry refunds and prize return on refund outcome, floor rounding on aggregate protocol fee with lossless remainder allocation, absence of admin/mutable config/upgrades, VRF request window [sale end, end + 2 days) and callback acceptance strictly before request timestamp + 2 days, deadline-gated refunds, result-only VRF callback, permissionless storage-only settlement, owner-only atomic ticket burn and redemption with full revert on delivery failure, independent post-settlement sponsor/treasury claims, prohibition on moving assets between raffle clones, trust boundaries (trusted canonical USDC and Chainlink VRF wrapper vs. untrusted prize contracts and ticket recipients), and advisory frontend discovery requiring on-chain state rereads.",
+      "kind": "design-doc",
+      "path": "DESIGN.md"
+    },
+    {
+      "describes": "NatSpec interface specification for individual Raffle clones: Status lifecycle enum (AwaitingPrize, Active, Drawing, NftWon, CashWon, Refunding), RaffleInitParams, events, custom error conditions, entry purchase rules, VRF draw request and callback deadline rules, refund activation rules (including sponsor pre-end empty-raffle cancellation, post-end empty-raffle refunds, and 1-to-100 ticket refund batch bounds), permissionless settlement vs. atomic owner redemption, independent sponsor/treasury/prize claim functions, and view accounting getters.",
+      "kind": "inline-docs",
+      "path": "packages/contracts/src/interfaces/IRaffle.sol"
+    },
+    {
+      "describes": "NatSpec interface specification for RaffleFactory: CreateRaffleParams configuration, atomic ERC-1167 clone creation, initialization, registration, and prize escrow verification, constructor validation rules for canonical 6-decimal USDC and Chainlink VRF wrapper contracts, custom errors, events, and factory registry getters.",
+      "kind": "inline-docs",
+      "path": "packages/contracts/src/interfaces/IRaffleFactory.sol"
+    },
+    {
+      "describes": "Implementation NatSpec documentation for Raffle clones: implementation constructor locking, direct native transfer rejection via receive(), onERC721Received strict prize deposit verification, _update ticket transfer screening against unsafe protocol destinations while permitting burns, fulfillRandomWords VRF callback filtering (ignoring in-flight, wrong-status, wrong-requestId, non-single-word, or expired callbacks for liveness), _settleWinningTicket floor-rounded percentage allocations and sponsor remainder assignment, and _isProtocolDestination screening logic.",
+      "kind": "inline-docs",
+      "path": "packages/contracts/src/Raffle.sol"
+    },
+    {
+      "describes": "Implementation NatSpec documentation for RaffleFactory: ownerless immutable factory and implementation deployment, 6-decimal quote token verification, unsafe protocol destination rejection, createRaffle sale duration and reserve entry validation, ERC-165 IERC721 interface check, and post-transfer ownerOf and Active status verification.",
+      "kind": "inline-docs",
+      "path": "packages/contracts/src/RaffleFactory.sol"
+    },
+    {
+      "describes": "NatSpec documentation for shared protocol constants in RaffleConstants: basis-point denominator (10,000), protocol fee rate (500 bps / 5%), cash-winner rate (8,000 bps / 80%), entry price (1,000,000 raw 6-decimal units), required quote token decimals (6), maximum refund ticket batch size (100), maximum sale duration (30 days), draw request timeout (2 days), draw callback timeout (2 days), VRF callback gas limit (300,000), and VRF request confirmations (30).",
+      "kind": "inline-docs",
+      "path": "packages/contracts/src/libraries/RaffleConstants.sol"
+    }
+  ],
+  "language": "Solidity"
+}

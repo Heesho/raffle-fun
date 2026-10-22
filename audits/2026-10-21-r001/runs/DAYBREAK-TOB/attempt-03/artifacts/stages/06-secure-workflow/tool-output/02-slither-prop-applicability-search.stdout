@@ -1,0 +1,21 @@
+Production ERC20 implementation/inheritance matches:
+Production ERC20 usage matches:
+src/Raffle.sol:7:import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+src/Raffle.sol:8:import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+src/Raffle.sol:29:    using SafeERC20 for IERC20;
+src/Raffle.sol:58:    IERC20 public immutable override quoteToken;
+src/Raffle.sol:162:        quoteToken = IERC20(quoteToken_);
+src/Raffle.sol:224:        quoteToken.safeTransferFrom(msg.sender, address(this), grossAmount);
+src/Raffle.sol:334:            prizeToken.transferFrom(address(this), winner, deliveredPrizeTokenId);
+src/Raffle.sol:404:        prizeToken.transferFrom(address(this), recipient, prizeTokenId);
+src/Raffle.sol:410:    /// @dev Unrelated NFTs forced here with unsafe `transferFrom` remain outside protocol accounting and cannot be
+src/Raffle.sol:560:    /// @dev Transfers one complete current USDC claim through SafeERC20 after rejecting known protocol sinks. The
+src/Raffle.sol:566:        quoteToken.safeTransfer(to, amount);
+src/interfaces/IRaffle.sol:5:import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+src/interfaces/IRaffle.sol:424:    function quoteToken() external view returns (IERC20 token);
+src/RaffleFactory.sol:5:import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+src/RaffleFactory.sol:71:        try IERC20Metadata(quoteToken_).decimals() returns (uint8 decimals_) {
+src/RaffleFactory.sol:128:        prize.safeTransferFrom(msg.sender, raffle, params.prizeTokenId);
+Project framework/config evidence:
+./foundry.toml
+./hardhat.config.ts

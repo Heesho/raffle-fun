@@ -1,0 +1,366 @@
+label=00-dependencies-numbered-attempt-02
+started_at_utc=2026-10-21T22:57:13Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/bin/bash -c while\ IFS=\ read\ -r\ -d\ \"\"\ file\;\ do\ printf\ \"=====\ %s\ =====\\n\"\ \"\$file\"\;\ nl\ -ba\ \"\$file\"\;\ done\ \<\ \<\(find\ node_modules\ -type\ f\ -name\ \"\*.sol\"\ -print0\ \|\ sort\ -z\) 
+exit_code=0
+
+label=00-dependencies-numbered
+started_at_utc=2026-10-21T22:57:04Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/bin/zsh -c for\ file\ in\ \$\{\(0\)\$\(find\ node_modules\ -type\ f\ -name\ \"\*.sol\"\ -print0\ \|\ sort\ -z\)\}\;\ do\ print\ -r\ --\ \"=====\ \$file\ =====\"\;\ nl\ -ba\ \"\$file\"\;\ done 
+exit_code=1
+
+label=00-docker-version
+started_at_utc=2026-10-21T22:56:09Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/opt/homebrew/bin/docker --version 
+exit_code=0
+
+label=00-forge-version
+started_at_utc=2026-10-21T22:56:09Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/Users/hishamel-husseini/.foundry/bin/forge --version 
+exit_code=0
+
+label=00-slither-version
+started_at_utc=2026-10-21T22:56:09Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/opt/homebrew/bin/slither --version 
+exit_code=0
+
+label=00-source-and-design-numbered
+started_at_utc=2026-10-21T22:55:32Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target
+command=/bin/zsh -c for\ file\ in\ DESIGN.md\ packages/contracts/src/Raffle.sol\ packages/contracts/src/RaffleFactory.sol\ packages/contracts/src/interfaces/IRaffle.sol\ packages/contracts/src/interfaces/IRaffleFactory.sol\ packages/contracts/src/libraries/RaffleConstants.sol\ packages/contracts/foundry.toml\ packages/contracts/remappings.txt\ packages/contracts/package.json\;\ do\ print\ -r\ --\ \"=====\ \$file\ =====\"\;\ nl\ -ba\ \"\$file\"\;\ done 
+exit_code=0
+
+label=00-target-inventory
+started_at_utc=2026-10-21T22:55:31Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target
+command=/bin/zsh -c rg\ --files\ \|\ sort 
+exit_code=0
+
+label=00-target-sha256
+started_at_utc=2026-10-21T22:55:32Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target
+command=/bin/zsh -c rg\ --files\ -0\ \|\ sort\ -z\ \|\ xargs\ -0\ shasum\ -a\ 256 
+exit_code=0
+
+label=01-slither-attempt-01
+started_at_utc=2026-10-21T22:56:09Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin slither . --exclude-dependencies 
+exit_code=255
+
+label=01-slither-json-attempt-02
+started_at_utc=2026-10-21T22:56:32Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin slither . --exclude-dependencies --json /Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tool-output/01-slither-results.json 
+exit_code=255
+
+label=02-slither-check-erc721-attempt-01
+started_at_utc=2026-10-21T22:56:34Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin slither-check-erc . Raffle --erc ERC721 
+exit_code=0
+
+label=02-slither-prop-applicability-search
+started_at_utc=2026-10-21T22:59:31Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/bin/zsh -c printf\ \"Production\ ERC20\ implementation/inheritance\ matches:\\n\"\;\ rg\ -n\ --glob\ \"\*.sol\"\ \"contract\[\[:space:\]\].\*\(ERC20\|IERC20\)\|is\[\[:space:\]\].\*\(ERC20\|IERC20\)\"\ src\ \|\|\ true\;\ printf\ \"Production\ ERC20\ usage\ matches:\\n\"\;\ rg\ -n\ --glob\ \"\*.sol\"\ \"IERC20\|SafeERC20\|transferFrom\|safeTransfer\"\ src\;\ printf\ \"Project\ framework/config\ evidence:\\n\"\;\ find\ .\ -maxdepth\ 2\ -type\ f\ \\\(\ -name\ \"truffle-config.js\"\ -o\ -name\ \"truffle.js\"\ -o\ -name\ \"foundry.toml\"\ -o\ -name\ \"hardhat.config.ts\"\ \\\)\ -print\ \|\ sort 
+exit_code=0
+
+label=02-slither-prop-help
+started_at_utc=2026-10-21T22:59:31Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/opt/homebrew/bin/slither-prop --help 
+exit_code=0
+
+label=02-slither-prop-raffle-attempt
+started_at_utc=2026-10-21T22:59:31Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin slither-prop . --contract Raffle 
+exit_code=0
+
+label=02-token-wrapper-integration-search
+started_at_utc=2026-10-21T23:15:37Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/bin/zsh -c printf\ \"ERC20/quote\ interactions\\n\"\;\ rg\ -n\ --glob\ \"\*.sol\"\ \"IERC20\|IERC20Metadata\|SafeERC20\|safeTransfer\|safeTransferFrom\|transferFrom\|transfer\\\(\|balanceOf\|decimals\"\ src\;\ printf\ \"ERC721/prize\ interactions\\n\"\;\ rg\ -n\ --glob\ \"\*.sol\"\ \"IERC721\|ERC721\|supportsInterface\|safeTransferFrom\|transferFrom\|ownerOf\|onERC721Received\"\ src\;\ printf\ \"VRF/wrapper\ interactions\\n\"\;\ rg\ -n\ --glob\ \"\*.sol\"\ \"VRF\|vrf\|wrapper\|requestRandom\|rawFulfill\|fulfillRandom\|calculateRequestPrice\|estimateRequestPrice\"\ src 
+exit_code=0
+
+label=02-upgrade-pattern-search
+started_at_utc=2026-10-21T22:56:34Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/bin/zsh -c rg\ -n\ -i\ --glob\ \"\*.sol\"\ \"proxy\|upgrade\|uups\|transparent\|beacon\|diamond\|erc1967\|delegatecall\|implementation\|initializ\|clone\"\ src\ node_modules 
+exit_code=0
+
+label=03-copy-dot-artifacts
+started_at_utc=2026-10-21T23:00:31Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation
+command=/bin/zsh -c cp\ .audit-runtime/secure-workflow/target/packages/contracts/inheritance-graph.dot\ /Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/diagrams/inheritance-graph.dot\ \&\&\ cp\ .audit-runtime/secure-workflow/target/s6-analysis/function-summary.dot\ /Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/diagrams/function-summary.dot\ \&\&\ cp\ .audit-runtime/secure-workflow/target/s6-analysis/vars-and-auth.dot\ /Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/diagrams/vars-and-auth.dot 
+exit_code=0
+
+label=03-diagram-artifact-manifest
+started_at_utc=2026-10-21T23:02:00Z
+working_directory=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/diagrams
+command=/bin/zsh -c for\ file\ in\ \*.dot\ \*.png\ \*.pdf\;\ do\ shasum\ -a\ 256\ \"\$file\"\;\ file\ \"\$file\"\;\ done 
+exit_code=0
+
+label=03-docker-daemon-info
+started_at_utc=2026-10-21T23:00:31Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation
+command=/usr/bin/env DOCKER_HOST=unix:///Users/hishamel-husseini/.lima/gebal/sock/docker.sock /opt/homebrew/bin/docker info --format \{\{json\ .ServerVersion\}\} 
+exit_code=0
+
+label=03-graphviz-container-render-attempt-02
+started_at_utc=2026-10-21T23:00:55Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation
+command=/usr/bin/env DOCKER_HOST=unix:///Users/hishamel-husseini/.lima/gebal/sock/docker.sock /bin/zsh -c docker=/opt/homebrew/bin/docker\;\ name=daybreak-s6-graphviz\;\ \$docker\ rm\ -f\ \$name\ \>/dev/null\ 2\>\&1\ \|\|\ true\;\ trap\ \"\$docker\ rm\ -f\ \$name\ \>/dev/null\ 2\>\&1\ \|\|\ true\"\ EXIT\;\ \$docker\ create\ --name\ \$name\ debian:bookworm-slim\ sleep\ infinity\;\ \$docker\ start\ \$name\;\ \$docker\ exec\ \$name\ /bin/sh\ -c\ \"apt-get\ update\ \&\&\ apt-get\ install\ -y\ --no-install-recommends\ graphviz\ \&\&\ mkdir\ -p\ /work\ \&\&\ dot\ -V\"\;\ \$docker\ cp\ /Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/diagrams/.\ \$name:/work/\;\ \$docker\ exec\ \$name\ /bin/sh\ -c\ \"cd\ /work\ \&\&\ for\ f\ in\ inheritance-graph\ function-summary\ vars-and-auth\;\ do\ dot\ -Tpng\ \\\"\$f.dot\\\"\ -o\ \\\"\$f.png\\\"\ \&\&\ dot\ -Tpdf\ \\\"\$f.dot\\\"\ -o\ \\\"\$f.pdf\\\"\;\ done\"\;\ \$docker\ cp\ \$name:/work/.\ /Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/diagrams/ 
+exit_code=0
+
+label=03-graphviz-container-render-attempt-03
+started_at_utc=2026-10-21T23:01:35Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation
+command=/usr/bin/env DOCKER_HOST=unix:///Users/hishamel-husseini/.lima/gebal/sock/docker.sock /bin/zsh -c set\ -e\;\ docker=/opt/homebrew/bin/docker\;\ name=daybreak-s6-graphviz\;\ \$docker\ rm\ -f\ \$name\ \>/dev/null\ 2\>\&1\ \|\|\ true\;\ trap\ \"\$docker\ rm\ -f\ \$name\ \>/dev/null\ 2\>\&1\ \|\|\ true\"\ EXIT\;\ \$docker\ create\ --name\ \$name\ debian:bookworm-slim\ sleep\ infinity\;\ \$docker\ start\ \$name\;\ \$docker\ exec\ \$name\ /bin/sh\ -c\ \"apt-get\ update\ \&\&\ apt-get\ install\ -y\ --no-install-recommends\ graphviz\ \&\&\ mkdir\ -p\ /work\ \&\&\ dot\ -V\"\;\ \$docker\ cp\ /Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/diagrams/.\ \$name:/work/\;\ \$docker\ exec\ \$name\ /bin/sh\ -c\ \"cd\ /work\ \&\&\ dot\ -Tpng\ inheritance-graph.dot\ -o\ inheritance-graph.png\ \&\&\ dot\ -Tpdf\ inheritance-graph.dot\ -o\ inheritance-graph.pdf\ \&\&\ dot\ -Tpng\ function-summary.dot\ -o\ function-summary.png\ \&\&\ dot\ -Tpdf\ function-summary.dot\ -o\ function-summary.pdf\ \&\&\ dot\ -Tpng\ vars-and-auth.dot\ -o\ vars-and-auth.png\ \&\&\ dot\ -Tpdf\ vars-and-auth.dot\ -o\ vars-and-auth.pdf\"\;\ \$docker\ cp\ \$name:/work/.\ /Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/diagrams/ 
+exit_code=0
+
+label=03-graphviz-container-render
+started_at_utc=2026-10-21T23:00:31Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation
+command=/usr/bin/env DOCKER_HOST=unix:///Users/hishamel-husseini/.lima/gebal/sock/docker.sock /opt/homebrew/bin/docker run --rm -v /Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/diagrams:/work -w /work debian:bookworm-slim /bin/sh -c apt-get\ update\ \&\&\ apt-get\ install\ -y\ --no-install-recommends\ graphviz\ \&\&\ dot\ -V\ \&\&\ for\ f\ in\ inheritance-graph\ function-summary\ vars-and-auth\;\ do\ dot\ -Tpng\ \"\$f.dot\"\ -o\ \"\$f.png\"\ \&\&\ dot\ -Tpdf\ \"\$f.dot\"\ -o\ \"\$f.pdf\"\;\ done 
+exit_code=126
+
+label=03-printer-function-summary
+started_at_utc=2026-10-21T22:57:30Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin slither . --print function-summary 
+exit_code=0
+
+label=03-printer-inheritance-graph
+started_at_utc=2026-10-21T22:57:28Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin slither . --print inheritance-graph 
+exit_code=0
+
+label=03-printer-vars-and-auth
+started_at_utc=2026-10-21T22:57:32Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin slither . --print vars-and-auth 
+exit_code=0
+
+label=04-echidna-attempt-01
+started_at_utc=2026-10-21T23:13:16Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation
+command=/usr/bin/env DOCKER_HOST=unix:///Users/hishamel-husseini/.lima/gebal/sock/docker.sock /bin/zsh -c set\ -e\;\ docker=/opt/homebrew/bin/docker\;\ name=daybreak-s6-echidna\;\ \$docker\ rm\ -f\ \$name\ \>/dev/null\ 2\>\&1\ \|\|\ true\;\ trap\ \"\$docker\ rm\ -f\ \$name\ \>/dev/null\ 2\>\&1\ \|\|\ true\"\ EXIT\;\ \$docker\ create\ --name\ \$name\ ghcr.io/crytic/echidna/echidna:latest\ sleep\ infinity\;\ \$docker\ start\ \$name\;\ \$docker\ exec\ \$name\ mkdir\ -p\ /work\;\ \$docker\ cp\ .audit-runtime/secure-workflow/target/packages/contracts\ \$name:/work/contracts\;\ \$docker\ exec\ \$name\ /bin/bash\ -lc\ \"solc-select\ install\ 0.8.36\ \&\&\ solc-select\ use\ 0.8.36\ \&\&\ cd\ /work/contracts\ \&\&\ echidna-test\ test/foundry/s6/S6Echidna.sol\ --contract\ S6Echidna\ --config\ echidna.s6.yaml\ --format\ text\ --test-limit\ 100\ --seq-len\ 16\ --crytic-args\ \\\"--compile-force-framework\ foundry\\\"\" 
+exit_code=0
+
+label=04-echidna-container-toolchain
+started_at_utc=2026-10-21T23:12:14Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation
+command=/usr/bin/env DOCKER_HOST=unix:///Users/hishamel-husseini/.lima/gebal/sock/docker.sock /opt/homebrew/bin/docker run --rm ghcr.io/crytic/echidna/echidna:latest /bin/bash -lc command\ -v\ forge\;\ forge\ --version\;\ command\ -v\ solc\;\ solc\ --version\;\ command\ -v\ solc-select\;\ solc-select\ versions\;\ echidna-test\ --version 
+exit_code=0
+
+label=04-echidna-final-text
+started_at_utc=2026-10-21T23:14:42Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation
+command=/usr/bin/env DOCKER_HOST=unix:///Users/hishamel-husseini/.lima/gebal/sock/docker.sock /bin/zsh -c set\ -e\;\ docker=/opt/homebrew/bin/docker\;\ name=daybreak-s6-echidna-text\;\ \$docker\ rm\ -f\ \$name\ \>/dev/null\ 2\>\&1\ \|\|\ true\;\ trap\ \"\$docker\ rm\ -f\ \$name\ \>/dev/null\ 2\>\&1\ \|\|\ true\"\ EXIT\;\ \$docker\ create\ --name\ \$name\ ghcr.io/crytic/echidna/echidna:latest\ sleep\ infinity\;\ \$docker\ start\ \$name\;\ \$docker\ exec\ \$name\ mkdir\ -p\ /work\;\ \$docker\ cp\ .audit-runtime/secure-workflow/target/packages/contracts\ \$name:/work/contracts\;\ \$docker\ exec\ \$name\ /bin/bash\ -lc\ \"set\ -e\;\ solc-select\ install\ 0.8.36\;\ solc-select\ use\ 0.8.36\;\ cd\ /work/contracts\;\ echidna-test\ test/foundry/s6/S6Echidna.sol\ --contract\ S6Echidna\ --config\ echidna.s6.yaml\ --format\ text\ --crytic-args\ \\\"--compile-force-framework\ foundry\\\"\" 
+exit_code=0
+
+label=04-echidna-final
+started_at_utc=2026-10-21T23:13:53Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation
+command=/usr/bin/env DOCKER_HOST=unix:///Users/hishamel-husseini/.lima/gebal/sock/docker.sock /bin/zsh -c set\ -e\;\ docker=/opt/homebrew/bin/docker\;\ name=daybreak-s6-echidna-final\;\ \$docker\ rm\ -f\ \$name\ \>/dev/null\ 2\>\&1\ \|\|\ true\;\ trap\ \"\$docker\ rm\ -f\ \$name\ \>/dev/null\ 2\>\&1\ \|\|\ true\"\ EXIT\;\ \$docker\ create\ --name\ \$name\ ghcr.io/crytic/echidna/echidna:latest\ sleep\ infinity\;\ \$docker\ start\ \$name\;\ \$docker\ exec\ \$name\ mkdir\ -p\ /work\;\ \$docker\ cp\ .audit-runtime/secure-workflow/target/packages/contracts\ \$name:/work/contracts\;\ \$docker\ exec\ \$name\ /bin/bash\ -lc\ \"set\ -e\;\ solc-select\ install\ 0.8.36\;\ solc-select\ use\ 0.8.36\;\ cd\ /work/contracts\;\ echidna-test\ test/foundry/s6/S6Echidna.sol\ --contract\ S6Echidna\ --config\ echidna.s6.yaml\ --format\ json\ --crytic-args\ \\\"--compile-force-framework\ foundry\\\"\ \>\ /work/echidna-final.json\"\;\ \$docker\ exec\ \$name\ cat\ /work/echidna-final.json\;\ \$docker\ cp\ \$name:/work/echidna-final.json\ /Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tool-output/04-echidna-final.json\;\ \$docker\ cp\ \$name:/work/contracts/echidna-corpus-s6\ /Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tests/echidna-corpus-s6 
+exit_code=0
+
+label=04-echidna-image-pull
+started_at_utc=2026-10-21T23:11:23Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation
+command=/usr/bin/env DOCKER_HOST=unix:///Users/hishamel-husseini/.lima/gebal/sock/docker.sock /opt/homebrew/bin/docker pull ghcr.io/crytic/echidna/echidna:latest 
+exit_code=0
+
+label=04-echidna-json-extract
+started_at_utc=2026-10-21T23:14:42Z
+working_directory=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tool-output
+command=/bin/zsh -c tail\ -n\ 1\ 04-echidna-final.json\ \>\ 04-echidna-final-result.json\ \&\&\ jq\ \"\{seed\,success\,error\,tests:\[.tests\[\]\|\{name\,status\,type\,error\}\]\}\"\ 04-echidna-final-result.json 
+exit_code=0
+
+label=04-echidna-version-attempt-02
+started_at_utc=2026-10-21T23:12:00Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation
+command=/usr/bin/env DOCKER_HOST=unix:///Users/hishamel-husseini/.lima/gebal/sock/docker.sock /opt/homebrew/bin/docker run --rm ghcr.io/crytic/echidna/echidna:latest echidna-test --version 
+exit_code=0
+
+label=04-echidna-version
+started_at_utc=2026-10-21T23:11:50Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation
+command=/usr/bin/env DOCKER_HOST=unix:///Users/hishamel-husseini/.lima/gebal/sock/docker.sock /opt/homebrew/bin/docker run --rm ghcr.io/crytic/echidna/echidna:latest --version 
+exit_code=127
+
+label=04-foundry-coverage-final-v2
+started_at_utc=2026-10-21T23:22:21Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin FOUNDRY_FUZZ_RUNS=256 FOUNDRY_INVARIANT_RUNS=32 FOUNDRY_INVARIANT_DEPTH=32 forge coverage --no-match-contract S6KnownViolationTest --report summary 
+exit_code=0
+
+label=04-foundry-coverage
+started_at_utc=2026-10-21T23:11:03Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin FOUNDRY_FUZZ_RUNS=256 FOUNDRY_INVARIANT_RUNS=32 FOUNDRY_INVARIANT_DEPTH=32 forge coverage --no-match-contract S6KnownViolationTest --report summary 
+exit_code=0
+
+label=04-foundry-invariant-attempt-01
+started_at_utc=2026-10-21T23:09:01Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin FOUNDRY_INVARIANT_RUNS=32 FOUNDRY_INVARIANT_DEPTH=32 FOUNDRY_INVARIANT_FAIL_ON_REVERT=true forge test --match-contract S6InvariantTest --fuzz-seed 0x53365f494e56415249414e54 -vv 
+exit_code=1
+
+label=04-foundry-invariant-attempt-02
+started_at_utc=2026-10-21T23:09:24Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin FOUNDRY_INVARIANT_RUNS=32 FOUNDRY_INVARIANT_DEPTH=32 FOUNDRY_INVARIANT_FAIL_ON_REVERT=true forge test --match-contract S6InvariantTest --fuzz-seed 0x53365f494e56415249414e54 -vv 
+exit_code=0
+
+label=04-foundry-invariant-final-json
+started_at_utc=2026-10-21T23:22:43Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin FOUNDRY_INVARIANT_RUNS=256 FOUNDRY_INVARIANT_DEPTH=128 forge test --match-contract S6InvariantTest --fuzz-seed 0x53365f46494e414c5f494e56415249414e54 --json 
+exit_code=0
+
+label=04-foundry-invariant-final
+started_at_utc=2026-10-21T23:09:59Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin FOUNDRY_INVARIANT_RUNS=256 FOUNDRY_INVARIANT_DEPTH=128 FOUNDRY_INVARIANT_FAIL_ON_REVERT=true forge test --match-contract S6InvariantTest --fuzz-seed 0x53365f46494e414c5f494e56415249414e54 -vv 
+exit_code=0
+
+label=04-foundry-json-validation
+started_at_utc=2026-10-21T23:23:50Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target
+command=/bin/zsh -c for\ f\ in\ 04-foundry-unit-fuzz-final-json.stdout\ 04-foundry-invariant-final-json.stdout\ 04-foundry-known-violations-json.stdout\;\ do\ jq\ -e\ .\ \"/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tool-output/\$f\"\ \>/dev/null\ \&\&\ printf\ \"%s\ valid-json\\n\"\ \"\$f\"\;\ done 
+exit_code=0
+
+label=04-foundry-known-violations-json
+started_at_utc=2026-10-21T23:23:41Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin forge test --match-contract S6KnownViolationTest --fuzz-seed 0x53365f4b4e4f574e5f56494f4c4154494f4e --json 
+exit_code=1
+
+label=04-foundry-known-violations
+started_at_utc=2026-10-21T23:09:31Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin forge test --match-contract S6KnownViolationTest --fuzz-seed 0x53365f4b4e4f574e5f56494f4c4154494f4e -vv 
+exit_code=1
+
+label=04-foundry-tests-attempt-01
+started_at_utc=2026-10-21T23:07:38Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin forge test --match-contract S6SecureWorkflowTest --fuzz-seed 0x53365f5345435552455f574f524b464c4f57 --fuzz-runs 32 -vv 
+exit_code=1
+
+label=04-foundry-tests-attempt-02
+started_at_utc=2026-10-21T23:08:18Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin forge test --match-contract S6SecureWorkflowTest --fuzz-seed 0x53365f5345435552455f574f524b464c4f57 --fuzz-runs 32 -vv 
+exit_code=1
+
+label=04-foundry-tests-attempt-03
+started_at_utc=2026-10-21T23:08:51Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin forge test --match-contract S6SecureWorkflowTest --fuzz-seed 0x53365f5345435552455f574f524b464c4f57 --fuzz-runs 32 -vv 
+exit_code=0
+
+label=04-foundry-time-boundary-debug
+started_at_utc=2026-10-21T23:08:31Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin forge test --match-test test_SaleAndDrawRequestTimeBoundaries -vvvv 
+exit_code=1
+
+label=04-foundry-unit-fuzz-final-json
+started_at_utc=2026-10-21T23:22:38Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin forge test --match-contract S6SecureWorkflowTest --fuzz-seed 0x53365f46494e414c5f46555a5a5f53454544 --fuzz-runs 10000 --json 
+exit_code=0
+
+label=04-foundry-unit-fuzz-final-v2
+started_at_utc=2026-10-21T23:22:07Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin forge test --match-contract S6SecureWorkflowTest --fuzz-seed 0x53365f46494e414c5f46555a5a5f53454544 --fuzz-runs 10000 -vv 
+exit_code=0
+
+label=04-foundry-unit-fuzz-final
+started_at_utc=2026-10-21T23:09:47Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/usr/bin/env PATH=/Users/hishamel-husseini/.foundry/bin:/opt/homebrew/bin:/usr/bin:/bin forge test --match-contract S6SecureWorkflowTest --fuzz-seed 0x53365f46494e414c5f46555a5a5f53454544 --fuzz-runs 10000 -vv 
+exit_code=0
+
+label=05-cryptography-randomness-search
+started_at_utc=2026-10-21T23:15:38Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/bin/zsh -c rg\ -n\ -i\ --glob\ \"\*.sol\"\ \"keccak256\|sha256\|ripemd\|ecrecover\|signature\|permit\|nonce\|blockhash\|prevrandao\|random\|entropy\|VRF\|abi\\.encodePacked\|block\\.timestamp\"\ src\ node_modules\ \|\|\ true 
+exit_code=0
+
+label=05-defi-oracle-flashloan-search
+started_at_utc=2026-10-21T23:15:38Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/bin/zsh -c rg\ -n\ -i\ --glob\ \"\*.sol\"\ \"oracle\|aggregator\|feed\|swap\|router\|DEX\|AMM\|flash\|loan\|borrow\|lend\|liquid\|vault\|pool\|price\|USDC\|quoteToken\|wrapper\|transferFrom\|safeTransfer\|external\ call\|callback\"\ src\ node_modules\ \|\|\ true 
+exit_code=0
+
+label=05-general-danger-search
+started_at_utc=2026-10-21T23:18:56Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/bin/zsh -c rg\ -n\ -i\ --glob\ \"\*.sol\"\ \"tx\\.origin\|delegatecall\|selfdestruct\|suicide\|assembly\|create2\|callcode\|ecrecover\|permit\|signature\|unchecked\|blockhash\|prevrandao\|abi\\.encodePacked\|\\.call\\\{\|\\.call\\\(\|\\.delegatecall\|\\.staticcall\|safeTransferFrom\|transferFrom\|rawFulfillRandomWords\"\ src\ node_modules\ \|\|\ true 
+exit_code=0
+
+label=05-ordering-mev-search
+started_at_utc=2026-10-21T23:15:38Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/bin/zsh -c rg\ -n\ -i\ --glob\ \"\*.sol\"\ \"front.\?run\|sandwich\|MEV\|slippage\|min\(out\|imum\)\|max\(in\|imum\)\|deadline\|block\\.timestamp\|endTime\|price\|quote\|requestDraw\|buyEntries\|settle\|refund\|winner\|reserve\"\ src\ \|\|\ true 
+exit_code=0
+
+label=05-privacy-search
+started_at_utc=2026-10-21T23:15:38Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target/packages/contracts
+command=/bin/zsh -c rg\ -n\ -i\ --glob\ \"\*.sol\"\ \"secret\|private\|commit\|reveal\|salt\|password\|encrypt\|decrypt\|confidential\|hidden\|visibility\"\ src\ \|\|\ true 
+exit_code=0
+
+label=06-command-index
+started_at_utc=2026-10-21T23:27:55Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target
+command=/bin/zsh -c evidence=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow\;\ for\ f\ in\ \"\$evidence\"/logs/\*.meta\;\ do\ label=\$\(basename\ \"\$f\"\ .meta\)\;\ started=\$\(sed\ -n\ \"s/\^started_at_utc=//p\"\ \"\$f\"\)\;\ cwd=\$\(sed\ -n\ \"s/\^working_directory=//p\"\ \"\$f\"\)\;\ command=\$\(sed\ -n\ \"s/\^command=//p\"\ \"\$f\"\)\;\ code=\$\(sed\ -n\ \"s/\^exit_code=//p\"\ \"\$f\"\)\;\ printf\ \"label=%s\\nstarted_at_utc=%s\\nworking_directory=%s\\ncommand=%s\\nexit_code=%s\\n\\n\"\ \"\$label\"\ \"\$started\"\ \"\$cwd\"\ \"\$command\"\ \"\$code\"\;\ done 
+exit_code=
+
+label=06-copy-analysis-and-test-sources
+started_at_utc=2026-10-21T23:24:10Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target
+command=/bin/zsh -c set\ -e\;\ evidence=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow\;\ mkdir\ -p\ \"\$evidence/properties\"\ \"\$evidence/tests/sources\"\;\ cp\ -p\ s6-analysis/SECURITY_PROPERTIES.md\ s6-analysis/SLITHER_TRIAGE.md\ s6-analysis/MANUAL_REVIEW.md\ s6-analysis/FINDINGS.md\ s6-analysis/FILE_COVERAGE.md\ \"\$evidence/properties/\"\;\ cp\ -p\ s6-analysis/DIAGRAM_REVIEW.md\ \"\$evidence/diagrams/\"\;\ cp\ -p\ packages/contracts/test/foundry/s6/S6TestBase.sol\ packages/contracts/test/foundry/s6/S6Mocks.sol\ packages/contracts/test/foundry/s6/S6SecureWorkflow.t.sol\ packages/contracts/test/foundry/s6/S6Invariant.t.sol\ packages/contracts/test/foundry/s6/S6KnownViolation.t.sol\ packages/contracts/test/foundry/s6/S6Echidna.sol\ packages/contracts/echidna.s6.yaml\ \"\$evidence/tests/sources/\" 
+exit_code=0
+
+label=06-copy-machine-readable-summary
+started_at_utc=2026-10-21T23:25:13Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target
+command=/bin/zsh -c set\ -e\;\ evidence=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow\;\ jq\ -e\ .\ s6-analysis/RESULTS.json\ \>/dev/null\;\ cp\ -p\ s6-analysis/RESULTS.json\ \"\$evidence/properties/RESULTS.json\"\;\ cmp\ -s\ s6-analysis/RESULTS.json\ \"\$evidence/properties/RESULTS.json\" 
+exit_code=0
+
+label=06-evidence-manifest-final
+started_at_utc=2026-10-21T23:26:06Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target
+command=/bin/zsh -c evidence=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow\;\ printf\ \"hashed-artifacts\\n\"\;\ find\ \"\$evidence/diagrams\"\ \"\$evidence/properties\"\ \"\$evidence/tests\"\ -type\ f\ -print0\ \|\ sort\ -z\ \|\ xargs\ -0\ shasum\ -a\ 256\;\ printf\ \"counts\\n\"\;\ for\ d\ in\ tool-output\ diagrams\ properties\ tests\ logs\;\ do\ count=\$\(find\ \"\$evidence/\$d\"\ -type\ f\ \|\ wc\ -l\ \|\ tr\ -d\ \"\ \"\)\;\ bytes=\$\(find\ \"\$evidence/\$d\"\ -type\ f\ -exec\ stat\ -f\ \"%z\"\ \{\}\ \\\;\ \|\ awk\ \"\{s+=\\\$1\}\ END\{print\ s+0\}\"\)\;\ printf\ \"%s\ files=%s\ bytes=%s\\n\"\ \"\$d\"\ \"\$count\"\ \"\$bytes\"\;\ done 
+exit_code=0
+
+label=06-evidence-manifest
+started_at_utc=2026-10-21T23:24:32Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target
+command=/bin/zsh -c evidence=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow\;\ find\ \"\$evidence/diagrams\"\ \"\$evidence/properties\"\ \"\$evidence/tests\"\ -type\ f\ -print0\ \|\ sort\ -z\ \|\ xargs\ -0\ shasum\ -a\ 256\;\ find\ \"\$evidence/tool-output\"\ \"\$evidence/logs\"\ -type\ f\ -exec\ stat\ -f\ \"%z\ %N\"\ \{\}\ \\\;\ \|\ sort\ -k2 
+exit_code=0
+
+label=06-immutable-original-files-verification
+started_at_utc=2026-10-21T23:24:24Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target
+command=/bin/bash -c set\ -u\;\ initial=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow/tool-output/00-target-sha256.stdout\;\ count=0\;\ failures=0\;\ while\ read\ -r\ expected\ path\;\ do\ if\ \[\[\ \"\$path\"\ ==\ \"run-s6-command.sh\"\ \]\]\;\ then\ continue\;\ fi\;\ count=\$\(\(count+1\)\)\;\ if\ \[\[\ \!\ -f\ \"\$path\"\ \]\]\;\ then\ printf\ \"MISSING\ %s\\n\"\ \"\$path\"\;\ failures=\$\(\(failures+1\)\)\;\ continue\;\ fi\;\ actual=\$\(shasum\ -a\ 256\ \"\$path\"\ \|\ awk\ \"\{print\ \\\$1\}\"\)\;\ if\ \[\[\ \"\$actual\"\ ==\ \"\$expected\"\ \]\]\;\ then\ printf\ \"OK\ %s\ %s\\n\"\ \"\$expected\"\ \"\$path\"\;\ else\ printf\ \"MISMATCH\ expected=%s\ actual=%s\ path=%s\\n\"\ \"\$expected\"\ \"\$actual\"\ \"\$path\"\;\ failures=\$\(\(failures+1\)\)\;\ fi\;\ done\ \<\ \"\$initial\"\;\ printf\ \"checked=%d\ failures=%d\ frozen_target_sha=%s\\n\"\ \"\$count\"\ \"\$failures\"\ \"9238b6ce8eb7f768c0dcd0cfcef26e1427a03155\"\;\ \[\[\ \"\$count\"\ -eq\ 43\ \&\&\ \"\$failures\"\ -eq\ 0\ \]\] 
+exit_code=0
+
+label=06-source-copy-verification
+started_at_utc=2026-10-21T23:25:24Z
+working_directory=/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/DAYBREAK-TOB-continuation/.audit-runtime/secure-workflow/target
+command=/bin/zsh -c set\ -e\;\ evidence=/Users/hishamel-husseini/Documents/projects/raffle-fun/audits/2026-10-21-r001/runs/DAYBREAK-TOB/attempt-03/artifacts/stages/06-secure-workflow\;\ for\ f\ in\ S6TestBase.sol\ S6Mocks.sol\ S6SecureWorkflow.t.sol\ S6Invariant.t.sol\ S6KnownViolation.t.sol\ S6Echidna.sol\;\ do\ cmp\ -s\ \"packages/contracts/test/foundry/s6/\$f\"\ \"\$evidence/tests/sources/\$f\"\;\ printf\ \"MATCH\ %s\\n\"\ \"\$f\"\;\ done\;\ cmp\ -s\ packages/contracts/echidna.s6.yaml\ \"\$evidence/tests/sources/echidna.s6.yaml\"\;\ printf\ \"MATCH\ echidna.s6.yaml\\n\"\;\ for\ f\ in\ SECURITY_PROPERTIES.md\ SLITHER_TRIAGE.md\ MANUAL_REVIEW.md\ FINDINGS.md\ FILE_COVERAGE.md\ RESULTS.json\;\ do\ cmp\ -s\ \"s6-analysis/\$f\"\ \"\$evidence/properties/\$f\"\;\ printf\ \"MATCH\ %s\\n\"\ \"\$f\"\;\ done\;\ cmp\ -s\ s6-analysis/DIAGRAM_REVIEW.md\ \"\$evidence/diagrams/DIAGRAM_REVIEW.md\"\;\ printf\ \"MATCH\ DIAGRAM_REVIEW.md\\n\" 
+exit_code=0
+

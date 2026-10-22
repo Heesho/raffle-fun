@@ -1,0 +1,84 @@
+{
+  "dossierFile": "audit/S1/audit-context/DOSSIER.md",
+  "trustBoundaries": [
+    {
+      "actor": "Trusted deployment initiator",
+      "entrypoint": "RaffleFactory.constructor / Raffle.constructor",
+      "reaches": "Binds immutable quote token, wrapper, treasury and implementation; code/decimals checks do not independently establish canonical identity (Factory L65-L92; Raffle L155-L166)."
+    },
+    {
+      "actor": "Untrusted sponsor and arbitrary prize contract",
+      "entrypoint": "createRaffle -> initialize -> prize.safeTransferFrom -> onERC721Received",
+      "reaches": "Configuration, registry publication, callback activation and token-reported escrow checks; factory guard is instance-local (Factory L97-L148; Raffle L176-L206,L416-L431)."
+    },
+    {
+      "actor": "Untrusted payer and ticket recipient",
+      "entrypoint": "buyEntries -> quote transfer -> safe mint -> receiver callback",
+      "reaches": "Quote boundary, cumulative range/value ledger and ERC721 ownership; callback can use unguarded inherited transfers (Raffle L209-L237,L497-L502; ERC721 L115-L136,L287-L290)."
+    },
+    {
+      "actor": "Untrusted ticket owner and approved operators",
+      "entrypoint": "approve / setApprovalForAll / transferFrom / safeTransferFrom",
+      "reaches": "Delegated transfer authority and destination screening in all lifecycle states; only current owners can redeem/refund (ERC721 L93-L136,L383-L418; Raffle L320-L321,L359-L360,L497-L502)."
+    },
+    {
+      "actor": "Permissionless native fee payer and trusted canonical wrapper",
+      "entrypoint": "requestDraw -> pricing/payment; rawFulfillRandomWords -> fulfillRandomWords",
+      "reaches": "Native overpayment refund, request identity and deadline gates; wrapper origin is authenticated, service/randomness properties remain external assumptions (Raffle L240-L273,L509-L524; consumer base L76-L107)."
+    },
+    {
+      "actor": "Permissionless lifecycle and settlement caller",
+      "entrypoint": "enableRefunds / settleWinningTicket",
+      "reaches": "Timeout-dependent liability reclassification or historical winning-range allocation; neither operation transfers assets (Raffle L276-L306,L533-L558)."
+    },
+    {
+      "actor": "Current ticket owner",
+      "entrypoint": "redeemWinningTicket / refundTickets",
+      "reaches": "Live-owner check, claim/ticket consumption and external prize or quote payout; atomic failure restores the transaction (Raffle L309-L372)."
+    },
+    {
+      "actor": "Permissionless release caller; untrusted fixed recipients",
+      "entrypoint": "releaseSponsorProceeds / releaseProtocolFees / releaseSponsorPrize",
+      "reaches": "Separate allocated liabilities or prize claim paid to configured recipients; caller cannot select recipient (Raffle L375-L407)."
+    },
+    {
+      "actor": "Public readers and off-chain indexers",
+      "entrypoint": "Raffle/factory/ERC721/consumer getters; receive",
+      "reaches": "Registry, historic ranges, accounting, ownership and fee views; empty-calldata direct native transfer reverts (orientation entrypoints; Raffle L170-L173,L436-L486; Factory L25-L54)."
+    }
+  ],
+  "fragilityClusters": [
+    {
+      "area": "Prize activation and escrow reports",
+      "why": "Creation registers before the arbitrary prize call, while activation checks callback identities and the factory later checks reported owner/status. Source establishes those reports, with prize honesty separate (Factory L123-L134; Raffle L421-L430)."
+    },
+    {
+      "area": "Bearer tickets versus historical ranges",
+      "why": "Range allocation and lifetime counters persist through transfers/burns; settlement needs range membership while claims need live ownership. Receiver callbacks can change owner before buyEntries returns (Raffle L226-L235,L320-L325,L359-L364,L451-L455,L533-L558)."
+    },
+    {
+      "area": "Request, callback and refund boundary",
+      "why": "Two price queries, in-flight suppression, returned request ID, timestamp narrowing, strict callback/request cutoffs and inclusive timeout transitions interact (Raffle L240-L301,L458-L465,L509-L524)."
+    },
+    {
+      "area": "Nominal liabilities and independent asset claims",
+      "why": "One pot becomes either refund liability or terminal allocations, then separately consumed balances; actual backing depends on external quote semantics and prize reports (Raffle L296-L299,L323-L405,L468-L475,L533-L566)."
+    },
+    {
+      "area": "Destination screening and nested calls",
+      "why": "Initial configuration, mint/transfer and quote payouts reuse a current code/registry policy, while burns skip screening and inherited ERC721 transfers are outside the shared guarded entrypoints (Raffle L187-L195,L497-L502,L564-L567,L593-L605)."
+    }
+  ],
+  "unresolved": [
+    "createRaffle: unclear; need to inspect each actual sponsor-selected prize implementation for authorization, ownership honesty and callback ordering; RaffleFactory.sol:L128-L134 only checks reports and clone status.",
+    "buyEntries: unclear; need to inspect actual quote-token implementation and deployment identity evidence to verify exact balance and allowance behavior (IERC20.sol L69-L78; RaffleFactory.sol L58-L78).",
+    "buyEntries: unclear; need to inspect concrete recipient code to characterize callback actions and later ability to exercise claims (ERC721Utils.sol L32-L47; Raffle.sol L320-L321/L359-L360).",
+    "requestDraw: unclear; need to inspect configured canonical wrapper implementation/configuration for price, request-ID and asynchronous service guarantees; only interface available (IVRFV2PlusWrapper.sol L23-L33, L67-L79).",
+    "requestDraw: unclear; need to inspect any individual contract caller receive/fallback to establish successful positive-excess receipt (Raffle.sol L263-L269).",
+    "redeemWinningTicket: unclear; need to inspect the configured prize implementation to establish truthful transfer and ownership-report semantics; paired external calls alone do not establish them (Raffle.sol L334-L336; IRaffle.sol L14-L15).",
+    "redeemWinningTicket: unclear; need to inspect deployment dependency selection and canonical quote implementation to establish identity and exact-value transfers (Factory.sol L58-L77; Raffle.sol L560-L566). Live-chain verification is outside this context task.",
+    "refundTickets: unclear; need to inspect the concrete canonical quote-token implementation/configuration to establish actual delivery, restriction/pause behavior, and callbacks (IERC20.sol L35-L41; SafeERC20.sol L176-L200; Raffle.sol L560-L566).",
+    "_validateCreateParams: unclear; need to inspect the concrete sponsor-selected prize implementation to determine whether its supportsInterface assertion matches ERC-721 transfer and ownership behavior (RaffleFactory.sol:L172; IERC165.sol:L24).",
+    "onERC721Received: unclear; need to inspect the concrete sponsor-selected prize contract to establish faithful transfer/callback and ownership-reporting semantics (IRaffle.sol L14-L15; RaffleFactory.sol L127-L131)."
+  ]
+}

@@ -1,0 +1,607 @@
+You are executing one native S5 spec-to-code-compliance workflow request in a fresh independent context. The native workflow and pinned resources below define the task. Do the native task, write requested analysis/report files, and return only the schema-bound JSON record.
+
+Execution root (all original relative paths resolve here): /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation
+Frozen source target: /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/target; requested commit 9238b6ce8eb7f768c0dcd0cfcef26e1427a03155. Target is read-only. Only these target source/spec files are evidence. Local source reads/searches are allowed. Do not run tests, compilers, analyzers, scanners, fuzzers, chain calls, or tools that generate behavior results. No web/network research. No historical tests, findings, accepted risks, other audit cells, corpora, or reconciliation.
+Writable output area for native analyses/report only: /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/audit/S5/spec-compliance. Native paths such as audit/S5/spec-compliance/requirements/*.md must resolve under this absolute directory. Use shell or apply_patch as the local Write adapter. Do not modify target, controllers, requests, responses, journals, or other outputs.
+You may read this S5 native per-requirement analyses under /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/audit/S5/spec-compliance/requirements as the native report requests.
+The exact native request follows unchanged; do not reinterpret it as a new discovery task. Agent type spec-to-code-compliance:spec-compliance-checker resolves to the pinned checker resource included below, not to a model fallback. If this request uses that type, follow those checker instructions.
+Model routing is fixed by the controller to gpt-6-astra with reasoning_effort=ultra. Do not invoke other models, agents, or external orchestration. No model fallback and no cyber access override. If you genuinely refuse for cybersecurity reasons, state that refusal plainly; do not seek alternate routing. Runtime errors can be repaired, but cannot justify importing forbidden evidence.
+The CLI output schema is the exact native schema adapted only for strict structured outputs: optional properties may be null. The controller removes null optional properties and validates against the unchanged native schema. Include actual evidence, searches, and file paths as requested. A refusal must not be disguised as a schema-compliant substantive result.
+
+BEGIN EXACT NATIVE REQUEST PROMPT
+Write the compliance report for target to audit/S5/spec-compliance/REPORT.md using the Write tool, then return the summary.
+
+Documents checked: ["target/DESIGN.md","target/packages/contracts/src/interfaces/IRaffle.sol","target/packages/contracts/src/interfaces/IRaffleFactory.sol","target/packages/contracts/src/libraries/RaffleConstants.sol","target/packages/contracts/src/Raffle.sol","target/packages/contracts/src/RaffleFactory.sol"]
+
+Requirements that hold:
+[{"id":"REQ-20","quote":"remainder must be allocated without loss.","evidence":[{"file":"target/packages/contracts/src/Raffle.sol","lines":"L543-L548","quote":"if (result == Status.NftWon) {\n            sponsorAmount = grossPot - protocolFee;\n        } else {\n            cashAmount = Math.mulDiv(grossPot, RaffleConstants.CASH_WINNER_BPS, RaffleConstants.BPS);\n            sponsorAmount = grossPot - protocolFee - cashAmount;\n            winnerProceeds = cashAmount;","role":"Both outcomes allocate the entire residual to the sponsor."},{"file":"target/packages/contracts/src/Raffle.sol","lines":"L553-L555","quote":"unsettledPot = 0;\n        sponsorProceeds = sponsorAmount;\n        protocolFees = protocolFee;","role":"Preserves allocations as recorded liabilities when clearing the pot."},{"file":"target/packages/contracts/src/Raffle.sol","lines":"L375-L380","quote":"function releaseSponsorProceeds() external override nonReentrant returns (uint256 amount) {\n        amount = sponsorProceeds;\n        if (amount == 0) revert NoSponsorProceeds();\n        sponsorProceeds = 0;\n        address recipient = sponsorRecipient;\n        _transferQuote(recipient, amount);","role":"Pays the complete sponsor allocation, including residual units."},{"file":"target/packages/contracts/src/Raffle.sol","lines":"L296-L298","quote":"uint256 liability = unsettledPot;\n        unsettledPot = 0;\n        remainingRefundLiability = liability;","role":"Refund activation preserves the full pot without rounding."}]},{"id":"REQ-33","quote":"must revert all effects on delivery failure.","evidence":[{"file":"target/packages/contracts/src/Raffle.sol","lines":"L323-L325","quote":"winnerRecipient = winner;\n        winnerRedeemed = true;\n        _burn(ticketId);","role":"Redemption effects precede delivery within the same reverting call."},{"file":"target/packages/contracts/src/Raffle.sol","lines":"L334-L337","quote":"prizeToken.transferFrom(address(this), winner, deliveredPrizeTokenId);\n            if (prizeToken.ownerOf(deliveredPrizeTokenId) != winner) {\n                revert PrizeDeliveryVerificationFailed(winner);\n            }","role":"NFT call failures propagate; ownership mismatch explicitly reverts."},{"file":"target/packages/contracts/src/Raffle.sol","lines":"L339-L342","quote":"cashAmount = winnerProceeds;\n            if (cashAmount == 0) revert NoWinnerProceeds();\n            winnerProceeds = 0;\n            _transferQuote(winner, cashAmount);","role":"Cash claim clearing remains subject to delivery rollback."},{"file":"target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol","lines":"L33-L37","quote":"function safeTransfer(IERC20 token, address to, uint256 value) internal {\n        if (!_safeTransfer(token, to, value, true)) {\n            revert SafeERC20FailedOperation(address(token));\n        }\n    }","role":"The selected wrapper enables bubbling and reverts on a false result."},{"file":"target/packages/contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol","lines":"L189-L192","quote":"if and(iszero(success), bubble) {\n                    returndatacopy(fmp, 0x00, returndatasize())\n                    revert(fmp, returndatasize())\n                }","role":"Actual low-level transfer failure is propagated."}]}]
+
+Divergences that survived refutation:
+[{"requirement":{"id":"REQ-38","quote":"Never move assets between raffle clones.","location":"target/DESIGN.md:L2","kind":"invariant","force":"mandatory","checkable":"No execution path transfers assets from one raffle clone to another.","document":"target/DESIGN.md"},"alignment":{"requirementId":"REQ-38","analysisFile":"/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/audit/S5/spec-compliance/requirements/03-REQ-38.md","verdict":"partial","confidence":"high","evidence":[{"file":"target/packages/contracts/src/Raffle.sol","lines":"L193-L198","quote":"if (_isProtocolDestination(params.sponsorRecipient, params.prizeToken)) {\n            revert UnsafeProtocolDestination(params.sponsorRecipient);\n        }\n\n        sponsor = params.sponsor;\n        sponsorRecipient = params.sponsorRecipient;","role":"Screens and stores the recipient during initialization."},{"file":"target/packages/contracts/src/Raffle.sol","lines":"L602-L604","quote":"if (!unsafeDestination && destination.code.length != 0) {\n            unsafeDestination = canonicalFactory.isRaffle(destination);\n        }","role":"A future clone address without code passes this registry check."},{"file":"target/packages/contracts/node_modules/@openzeppelin/contracts/proxy/Clones.sol","lines":"L57","quote":"instance := create(value, 0x09, 0x37)","role":"Clone deployment uses CREATE, permitting selection of a future deployment address."},{"file":"target/packages/contracts/src/RaffleFactory.sol","lines":"L123-L125","quote":"raffleById[raffleId] = raffle;\n        idByRaffle[raffle] = raffleId;\n        isRaffle[raffle] = true;","role":"Later creation registers the previously accepted recipient as another clone."},{"file":"target/packages/contracts/src/Raffle.sol","lines":"L402-L405","quote":"address recipient = sponsorRecipient;\n        prizeClaimed = true;\n        prizeToken.transferFrom(address(this), recipient, prizeTokenId);\n        if (prizeToken.ownerOf(prizeTokenId) != recipient) revert PrizeDeliveryVerificationFailed(recipient);","role":"Sponsor prize release transfers without rechecking the recipient's current clone identity."},{"file":"target/packages/contracts/src/Raffle.sol","lines":"L564-L567","quote":"function _transferQuote(address to, uint256 amount) private {\n        if (_isProtocolDestination(to, address(prizeToken))) revert InvalidQuoteDestination(to);\n        quoteToken.safeTransfer(to, amount);\n    }","role":"Quote payouts enforce destination restrictions at transfer time."}],"searched":[{"where":"target/packages/contracts/src: _isProtocolDestination, _transferQuote, isRaffle, recipient assignments","result":"Five destination-check call sites and four quote-transfer callers; sponsor prize release bypasses both helpers."},{"where":"target/packages/contracts/src: transfer calls, native calls, _safeMint, _burn","result":"Ten operation sites located and traced, including two direct NFT deliveries."},{"where":"releaseSponsorPrize, enableRefunds, createRaffle, initialize and their callees","result":"Traced a same-factory future-recipient sequence through creation, empty-raffle cancellation, and NFT release."},{"where":"Bundled ERC721, ERC721Utils, SafeERC20, Clones, ReentrancyGuard and VRF consumer source","result":"Read relevant inherited and library paths; plain NFT transfer omits receiver callbacks, and the reentrancy modifier adds no destination check."}],"reasoning":"Runtime checks protect quote payouts and ticket transfers (Raffle.sol:L497-L502,L564-L567). Sponsor prize release instead permits a recipient accepted before deployment to become a same-factory clone before receiving the NFT (Raffle.sol:L193-L198,L395-L405). The analysis records the complete reachable sequence."},"corrections":[],"revisedVerdicts":[]},{"requirement":{"id":"REQ-44","quote":"transaction decisions must reread current chain state.","location":"target/DESIGN.md:L2","kind":"ordering","force":"mandatory","checkable":"Transaction decisions refresh relevant state from the chain before acting.","document":"target/DESIGN.md"},"alignment":{"requirementId":"REQ-44","analysisFile":"/Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/cells/OPENAI-TOB-continuation/audit/S5/spec-compliance/requirements/04-REQ-44.md","verdict":"absent","confidence":"high","evidence":[{"file":"target/packages/contracts/src/Raffle.sol","lines":"L249-L250","quote":"uint256 quotedFee = getVrfRequestPrice();\n        if (msg.value < quotedFee) revert InsufficientVrfFee(quotedFee, msg.value);","role":"Execution-time fee check; does not establish frontend refresh ordering."},{"file":"target/packages/contracts/src/Raffle.sol","lines":"L436-L438","quote":"function getVrfRequestPrice() public view override returns (uint256 fee) {\n        fee = i_vrfV2PlusWrapper.calculateRequestPriceNative(callbackGasLimit, 1);\n    }","role":"Provides a chain query, but no frontend consumer was found."}],"searched":[{"where":"rg --files --hidden --no-ignore target, excluding .git and test directories; repeated with application-source extensions and node_modules excluded","result":"Project source comprises five Solidity files and hardhat.config.ts. Remaining files are specification, build/dependency files, and vendored Solidity. No frontend or transaction-submission script."},{"where":"frontend|discovery|advisory|reread|re-read|refresh|refetch|cache|stale|indexer|subgraph in DESIGN.md and contracts/src","result":"Two matching lines: DESIGN.md:L2 and the historical-range comment at Raffle.sol:L138; no refresh implementation."},{"where":"Hidden/ignored Solidity and JS/TS/UI source, including dependencies: frontend/refresh vocabulary and readContract|readContracts|writeContract|simulateContract|sendTransaction|eth_call|eth_sendTransaction|useReadContract|useWriteContract|publicClient|walletClient|blockTag|getLogs|queryFilter","result":"0 matching lines."},{"where":"Callers of createRaffle, buyEntries, requestDraw, enableRefunds, settlement/redemption, refunds, and release functions","result":"Contract/interface declarations and internal settlement calls only; no frontend transaction caller."},{"where":"Raffle/Factory helpers, read-API consumers, ERC721 ownership paths, ReentrancyGuard, Chainlink consumer, transfer and clone helpers","result":"Live execution-time checks and queries found and traced; no discovery-to-refresh-to-transaction-decision implementation."}],"reasoning":"The contextual requirement is \"Frontend discovery is advisory; transaction decisions must reread current chain state.\" (target/DESIGN.md:L2). The supplied target lacks the frontend decision/submission layer. Contract-side live checks do not establish that caller ordering. This is absence within the supplied source, not an observed stale-read path or a claim about an external frontend."},"corrections":[],"revisedVerdicts":[]}]
+
+Divergences a refutation agent knocked down:
+[]
+
+These are not findings and must not appear among them. They do belong in the report, in a short "considered and
+dropped" list near the end: one line each for what was claimed and why it did not hold. A single refuter is
+enough to drop a divergence, so one over-confident refutation can lose a real one — a reader who can see what
+was dropped can catch that, and a reader who cannot has no way to know it happened.
+
+Undocumented behavior:
+[{"what":"A sponsor can configure raffle A's sponsorRecipient as the address of a future same-factory clone B. Creation accepts that undeployed, unregistered address (RaffleFactory.sol:163-169; Raffle.sol:193-198,598-604). After B is deployed, releaseSponsorPrize transfers A's NFT into B without rechecking the registry or invoking receiver acceptance.","file":"target/packages/contracts/src/Raffle.sol","lines":"395-405","whyItMatters":"target/DESIGN.md:2 states \"Never move assets between raffle clones.\" Readers would expect protocol payouts to preserve that isolation. Instead, if B holds a different configured prize, A's transferred NFT cannot be recovered through either raffle's prize-release paths (Raffle.sol:329-337,395-411). Analysis and searches: audit/S5/spec-compliance/requirements/REQ-38.md; report: audit/S5/spec-compliance/REPORT.md.","reachableBy":"A sponsor arranging A's recipient and B's subsequent creation. The sponsor can immediately enable refunds while A is empty (Raffle.sol:276-300); anyone can then call releaseSponsorPrize (Raffle.sol:395-407)."}]
+
+Per-requirement analysis is on disk under audit/S5/spec-compliance/requirements/ — read any of it you need.
+
+The report opens with what a reader needs first: whether the code does what the documents say, and the divergences
+that matter, worst first. Then the alignment matrix — every requirement checked, its verdict, and the line that
+evidences it. Then the undocumented behavior, then the problems in the documentation itself.
+
+For each divergence: what the document requires, what the code does instead, and what follows from the gap. Where
+you can show the consequence concretely — the sequence that reaches it, who can trigger it, what they get — do,
+because a divergence whose consequence is spelled out is the one that gets fixed. Where you cannot, say what would
+have to be true for it to matter rather than inventing a scenario or a dollar figure.
+
+Severity is about consequence, not about how far the code strayed. A formula off by a rounding step that drains a
+pool over time outranks a MUST the code satisfies by different means than the document describes. Documentation
+drift with no behavioral consequence is low, and say plainly that it is a documentation fix rather than a code one.
+
+Carry these forward rather than smoothing them over:
+- requirements marked 'undecidable', and any 'documentProblem' recorded against a requirement — contradictions
+  between two documents are a real finding, and the fix is to the documents
+- requirements not checked at all: REQ-206, REQ-006-2, REQ-38-2, REQ-39-2, REQ-40-2, REQ-70, REQ-19-4, REQ-20-3, REQ-21-3, REQ-22-3, REQ-23-3, REQ-01, REQ-02, REQ-03, REQ-04, REQ-05, REQ-06, REQ-07, REQ-08, REQ-09, REQ-10, REQ-11, REQ-12, REQ-13, REQ-14, REQ-15, REQ-16, REQ-17, REQ-18, REQ-19, REQ-21, REQ-22, REQ-23, REQ-24, REQ-25, REQ-26, REQ-27, REQ-28, REQ-29, REQ-30, REQ-31, REQ-32, REQ-34, REQ-35, REQ-36, REQ-37, REQ-39, REQ-40, REQ-41, REQ-42, REQ-43, REQ-001, REQ-002, REQ-003, REQ-004, REQ-005, REQ-006, REQ-007, REQ-008, REQ-009, REQ-010, REQ-011, REQ-012, REQ-013, REQ-014, REQ-015, REQ-016, REQ-017, REQ-018, REQ-019, REQ-020, REQ-021, REQ-022, REQ-023, REQ-024, REQ-025, REQ-026, REQ-027, REQ-028, REQ-029, REQ-030, REQ-031, REQ-032, REQ-033, REQ-034, REQ-035, REQ-036, REQ-037, REQ-038, REQ-039, REQ-040, REQ-041, REQ-042, REQ-043, REQ-044, REQ-045, REQ-046, REQ-047, REQ-048, REQ-049, REQ-050, REQ-051, REQ-052, REQ-053, REQ-054, REQ-055, REQ-056, REQ-057, REQ-058, REQ-059, REQ-060, REQ-061, REQ-062, REQ-063, REQ-064, REQ-065, REQ-066, REQ-067, REQ-068, REQ-069, REQ-070, REQ-071, REQ-072, REQ-073, REQ-074, REQ-075, REQ-076, REQ-077, REQ-078, REQ-079, REQ-080, REQ-081, REQ-082, REQ-083, REQ-084, REQ-085, REQ-086, REQ-087, REQ-088, REQ-089, REQ-090, REQ-091, REQ-092, REQ-093, REQ-094, REQ-095, REQ-096, REQ-097, REQ-098, REQ-099, REQ-100, REQ-101, REQ-102, REQ-103, REQ-104, REQ-105, REQ-106, REQ-107, REQ-108, REQ-109, REQ-110, REQ-111, REQ-112, REQ-113, REQ-114, REQ-115, REQ-116, REQ-117, REQ-118, REQ-119, REQ-120, REQ-121, REQ-122, REQ-123, REQ-124, REQ-125, REQ-126, REQ-127, REQ-128, REQ-129, REQ-130, REQ-131, REQ-132, REQ-133, REQ-134, REQ-135, REQ-136, REQ-137, REQ-138, REQ-139, REQ-140, REQ-141, REQ-142, REQ-143, REQ-144, REQ-145, REQ-146, REQ-147, REQ-148, REQ-149, REQ-150, REQ-151, REQ-152, REQ-153, REQ-154, REQ-155, REQ-156, REQ-157, REQ-158, REQ-159, REQ-160, REQ-161, REQ-162, REQ-163, REQ-164, REQ-165, REQ-166, REQ-167, REQ-168, REQ-169, REQ-170, REQ-171, REQ-172, REQ-173, REQ-174, REQ-175, REQ-176, REQ-177, REQ-178, REQ-179, REQ-180, REQ-181, REQ-182, REQ-183, REQ-184, REQ-185, REQ-186, REQ-187, REQ-188, REQ-189, REQ-190, REQ-191, REQ-192, REQ-193, REQ-194, REQ-195, REQ-196, REQ-197, REQ-198, REQ-199, REQ-200, REQ-201, REQ-202, REQ-203, REQ-204, REQ-205, REQ-207, REQ-208, REQ-209, REQ-210, REQ-211, REQ-212, REQ-213, REQ-214, REQ-215, REQ-216, REQ-217, REQ-218, REQ-219, REQ-220, REQ-221, REQ-222, REQ-223, REQ-224, REQ-225, REQ-226, REQ-227, REQ-228, REQ-229, REQ-230, REQ-231, REQ-232, REQ-233, REQ-234, REQ-235, REQ-236, REQ-237, REQ-238, REQ-239, REQ-240, REQ-241, REQ-242, REQ-243, REQ-244, REQ-245, REQ-246, REQ-247, REQ-248, REQ-249, REQ-250, REQ-251, REQ-252, REQ-253, REQ-254, REQ-255, REQ-256, REQ-257, REQ-258, REQ-259, REQ-260, REQ-261, REQ-262, REQ-263, REQ-264, REQ-265, REQ-266, REQ-267, REQ-268, REQ-269, REQ-270, REQ-271, REQ-272, REQ-273, REQ-274, REQ-275, REQ-276, REQ-277, REQ-278, REQ-279, REQ-280, REQ-281, REQ-282, REQ-283, REQ-284, REQ-285, REQ-286, REQ-287, REQ-288, REQ-289, REQ-290, REQ-291, REQ-292, REQ-293, REQ-294, REQ-295, REQ-296, REQ-297, REQ-298, REQ-299, REQ-300, REQ-301, REQ-302, REQ-303, REQ-304, REQ-305, REQ-306, REQ-307, REQ-308, REQ-309, REQ-310, REQ-311, REQ-312, REQ-001-2, REQ-002-2, REQ-003-2, REQ-004-2, REQ-005-2, REQ-007-2, REQ-008-2, REQ-009-2, REQ-010-2, REQ-011-2, REQ-012-2, REQ-013-2, REQ-014-2, REQ-015-2, REQ-016-2, REQ-017-2, REQ-018-2, REQ-019-2, REQ-020-2, REQ-021-2, REQ-022-2, REQ-023-2, REQ-024-2, REQ-025-2, REQ-026-2, REQ-027-2, REQ-028-2, REQ-029-2, REQ-030-2, REQ-031-2, REQ-032-2, REQ-033-2, REQ-034-2, REQ-035-2, REQ-036-2, REQ-037-2, REQ-038-2, REQ-039-2, REQ-040-2, REQ-041-2, REQ-042-2, REQ-043-2, REQ-044-2, REQ-045-2, REQ-046-2, REQ-047-2, REQ-048-2, REQ-049-2, REQ-050-2, REQ-051-2, REQ-052-2, REQ-053-2, REQ-054-2, REQ-055-2, REQ-056-2, REQ-057-2, REQ-058-2, REQ-059-2, REQ-060-2, REQ-061-2, REQ-062-2, REQ-063-2, REQ-064-2, REQ-065-2, REQ-066-2, REQ-067-2, REQ-068-2, REQ-069-2, REQ-070-2, REQ-071-2, REQ-072-2, REQ-073-2, REQ-074-2, REQ-075-2, REQ-076-2, REQ-077-2, REQ-078-2, REQ-079-2, REQ-080-2, REQ-081-2, REQ-082-2, REQ-083-2, REQ-084-2, REQ-085-2, REQ-086-2, REQ-087-2, REQ-088-2, REQ-089-2, REQ-090-2, REQ-091-2, REQ-092-2, REQ-093-2, REQ-094-2, REQ-095-2, REQ-096-2, REQ-097-2, REQ-098-2, REQ-099-2, REQ-100-2, REQ-101-2, REQ-102-2, REQ-01-2, REQ-02-2, REQ-03-2, REQ-04-2, REQ-05-2, REQ-06-2, REQ-07-2, REQ-08-2, REQ-09-2, REQ-10-2, REQ-11-2, REQ-12-2, REQ-13-2, REQ-14-2, REQ-15-2, REQ-16-2, REQ-17-2, REQ-18-2, REQ-19-2, REQ-01-3, REQ-02-3, REQ-03-3, REQ-04-3, REQ-05-3, REQ-06-3, REQ-07-3, REQ-08-3, REQ-09-3, REQ-10-3, REQ-11-3, REQ-12-3, REQ-13-3, REQ-14-3, REQ-15-3, REQ-16-3, REQ-17-3, REQ-18-3, REQ-19-3, REQ-20-2, REQ-21-2, REQ-22-2, REQ-23-2, REQ-24-2, REQ-25-2, REQ-26-2, REQ-27-2, REQ-28-2, REQ-29-2, REQ-30-2, REQ-31-2, REQ-32-2, REQ-33-2, REQ-34-2, REQ-35-2, REQ-36-2, REQ-37-2, REQ-41-2, REQ-42-2, REQ-43-2, REQ-44-2, REQ-45, REQ-46, REQ-47, REQ-48, REQ-49, REQ-50, REQ-51, REQ-52, REQ-53, REQ-54, REQ-55, REQ-56, REQ-57, REQ-58, REQ-59, REQ-60, REQ-61, REQ-62, REQ-63, REQ-64, REQ-65, REQ-66, REQ-67, REQ-68, REQ-69, REQ-71, REQ-72, REQ-73, REQ-74, REQ-75, REQ-76, REQ-77, REQ-78, REQ-79, REQ-80, REQ-81, REQ-82, REQ-83, REQ-84, REQ-85, REQ-86, REQ-87, REQ-88, REQ-89, REQ-90, REQ-91, REQ-01-4, REQ-02-4, REQ-03-4, REQ-04-4, REQ-05-4, REQ-06-4, REQ-07-4, REQ-08-4, REQ-09-4, REQ-10-4, REQ-11-4, REQ-12-4, REQ-13-4, REQ-14-4, REQ-15-4, REQ-16-4, REQ-17-4, REQ-18-4, REQ-24-3, REQ-25-3, REQ-26-3, REQ-27-3, REQ-28-3, REQ-29-3, REQ-30-3, REQ-31-3, REQ-32-3, REQ-33-3, REQ-34-3
+- requirements whose check failed outright, so no verdict exists and their status is unknown rather than
+  compliant: (none)
+- documents that could not be read: (none)
+- divergences whose refutation agents both failed, which are unverified rather than confirmed: (none)
+
+Cover the substance and stop. Sections with nothing in them should say so in a line, or be left out — do not pad
+the report to fill a template, and do not restate the matrix in prose after presenting it as a table.
+
+Cite a file and line for every claim about the code, and quote the document verbatim for every
+claim about intent. Where you cannot cite, do not assert — say what you could not establish. A short answer with
+cited claims is worth more than a long one with padded ones.
+END EXACT NATIVE REQUEST PROMPT
+
+BEGIN PINNED RESOURCES
+PINNED RESOURCE /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/spec-to-code-compliance/skills/spec-to-code-compliance/SKILL.md SHA256 eb0d91b50a9c06f50baf8763d1e23566897b9fa3e7ffcf13134eee4e1ccaefe5
+---
+name: spec-to-code-compliance
+description: Check code against the documentation that specifies it - which requirements hold, which the code contradicts, which are absent, and what the code does that no document mentions. Use when comparing an implementation against a whitepaper, protocol spec, or design document.
+allowed-tools: Workflow Task Read Grep Glob
+---
+
+# Spec-to-Code Compliance
+
+Two artifacts disagree, and the job is to find where. The documentation says what the system does; the code
+decides what it actually does. Every gap between them is either a bug or a documentation fix, and which one it
+is is the finding.
+
+## When to Use
+
+You have both documentation describing intended behavior and the code that should implement it. A whitepaper
+against a protocol, a design note against a service, a README's stated guarantees against the functions behind
+them.
+
+Most useful when the document is authoritative — something a client wrote, published, or is audited against —
+because then a divergence is a defect rather than stale prose.
+
+## When NOT to Use
+
+Not for code with no documentation of intended behavior. There is nothing to check against, and a requirement
+inferred from the code is checked against itself. Build the system model first with `audit-context-building`.
+
+Not for finding bugs in general. This finds one class: where the code and the document disagree. A bug both
+artifacts are silent about is out of scope, and a bug the document endorses is a finding against the document.
+
+Not for writing or improving documentation, though it produces the list of what needs fixing.
+
+## Do not check requirements in this context
+
+Run `/spec-to-code-compliance:spec-compliance <path>`. The slash command takes a path; to name the
+specification directly or widen the fan-out, ask for the run with those values — "run spec-compliance on
+./contracts against SPEC.md, checking 20 requirements" — and they reach the script as `{path, spec, limit}`.
+Typing the object literally after the slash command does not work; it arrives as a string and becomes the path.
+
+It finds the documents, splits them into individually checkable requirements, gives each requirement its own
+agent to hunt the code with, has independent agents try to refute every divergence before it is reported, and
+writes `spec-compliance/REPORT.md` plus one file per requirement under `spec-compliance/requirements/`. Only
+compact records come back here.
+
+For a single requirement, dispatch the `spec-to-code-compliance:spec-compliance-checker` agent at it.
+
+This is not a preference about where output lands. The check does not fit in one context window if it is done
+honestly: judging one requirement means reading the enforcement, its callees, and its callers, and doing that
+for thirty requirements means holding thirty call chains at once. Attempted inline, the first few get a real
+check and the rest get a plausible one — and the transcript looks the same either way, because a verdict resting
+on a promising function name reads exactly like one resting on having read the function. Per requirement, in its
+own context, is what makes that difference visible.
+
+Two properties come from the script rather than from instructions, and cannot be had here:
+
+- **A refutation the finding's author did not perform.** Claude favors findings it produced when asked to check
+  them. The workflow sends each divergence to agents that did not produce it — one reading the code again, one
+  re-reading the document — and drops what either knocks down.
+- **Records that cannot be prose.** A subagent bound to a return schema has to name the lines it read and the
+  searches it ran. An `absent` verdict arrives with the patterns tried and their results attached, which is the
+  only thing separating a real absence from a search that stopped early.
+
+Measured on the `routes-not-inline` eval: with this plugin installed the work is dispatched every run, without
+it never — Δ +1.00. Deleting this section while leaving the workflow in place changes nothing, because the
+workflow is a real command that gets found and dispatched on its own. Read that as the mechanism carrying the
+behavior rather than this text: the section is here so a human knows what runs and why, not because the routing
+depends on it.
+
+## What comes back, and how to read it
+
+Every requirement gets one of six verdicts: `implemented`, `partial`, `contradicted`, `stronger-than-spec`,
+`absent`, or `undecidable`. The interesting ones are the middle four.
+
+- **`partial`** is usually the most serious thing in the report. The requirement holds on the paths anyone would
+  test and fails on one nobody did, which is how it survived long enough to be found.
+- **`absent`** rests entirely on its `searched` record. Read it. Enforcement often lives somewhere the search
+  did not go — a modifier, a base class, a caller that checks first.
+- **`undecidable`**, and any `documentProblem`, are findings about the documentation. A requirement too vague to
+  check is one the client cannot hold anyone to.
+- **`stronger-than-spec`** is an undocumented constraint. It works today, and nothing tells the next person
+  changing that code that anything depended on it.
+
+The report also carries the reverse direction — behavior the code has that no document mentions — which the
+per-requirement pass cannot find by construction, since it is driven by the documents.
+
+Read `notChecked`, `unverified`, and `unreadableDocuments` before treating the report as complete. Requirements
+below the fan-out cut were never checked, and a divergence whose refutation agents both failed is unverified
+rather than confirmed.
+
+## Judgment the workflow does not make for you
+
+Severity is consequence, not distance from the text: [DIVERGENCE_RUBRIC.md](resources/DIVERGENCE_RUBRIC.md). A
+rounding step that bleeds a pool outranks a MUST satisfied by different means than the document describes, and
+documentation drift with no behavioral consequence is a docs ticket.
+
+The verdict is not the finding. `absent` on a mandatory requirement is a finding; `absent` on a sentence
+describing a roadmap item is not. Deciding which is which is what this skill is for, and the workflow hands you
+the evidence to decide it with.
+
+## The target does not have to be a contract
+
+The question is the same everywhere — what does this requirement demand, where would it be enforced, is it
+enforced on every path — but what counts as a specification and where enforcement hides both change.
+[DOMAIN_NOTES.md](resources/DOMAIN_NOTES.md) maps that across contracts, C and C++, services, and decompiled
+firmware, and covers the case where the specification is an RFC or a standard rather than a project document.
+Read it when the target is not a contract, and when scoping a check against a large standard.
+
+## Reference
+
+- [ANALYSIS_FORMAT.md](resources/ANALYSIS_FORMAT.md) — the on-disk format for a per-requirement analysis. Read
+  when extending this plugin or judging whether a record is trustworthy.
+- [WORKED_EXAMPLE.md](resources/WORKED_EXAMPLE.md) — three requirements chased to a verdict, one per verdict
+  that is easy to get wrong: arithmetic that satisfies a requirement it does not resemble, an absence whose
+  searches are the finding, and enforcement present on every path but the one nobody tested.
+- [DOMAIN_NOTES.md](resources/DOMAIN_NOTES.md) — per-domain mapping of specifications and enforcement.
+- [DIVERGENCE_RUBRIC.md](resources/DIVERGENCE_RUBRIC.md) — severity, and the two directions of a gap.
+
+
+PINNED RESOURCE /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/spec-to-code-compliance/agents/spec-compliance-checker.md SHA256 20dbf4d9b8013e8c42691dab08bd4df1ac0250eb715f3a02b2270be78bc287c4
+---
+name: spec-compliance-checker
+description: "Checks one documented requirement against the code that should implement it, and returns a verdict with the lines that evidence it. Writes its analysis to disk and returns a compact record. Use for a single requirement; use the spec-compliance workflow for a whole document."
+tools: Read, Grep, Glob, Write
+---
+
+You check one requirement at a time. Given a claim the documentation makes, you decide whether the code holds
+to it, and you show the lines that settle it either way.
+
+## The verdict is the whole job
+
+Six categories, and the distinction between adjacent ones is where the work is:
+
+- **implemented** — you found the enforcement and read it.
+- **partial** — it holds on some paths and not others. Name the paths where it fails.
+- **contradicted** — the code does something incompatible with the requirement.
+- **stronger-than-spec** — the code enforces more than the document asks. Worth recording: the extra constraint
+  is undocumented, so nothing stops a later change from removing it.
+- **absent** — you looked and it is not there.
+- **undecidable** — the requirement is too vague to check against any implementation. This is a finding about
+  the document, not about the code.
+
+## Do not accept a name as evidence
+
+This is the failure mode that makes a compliance check worthless, and it is comfortable enough that you will
+not notice it happening.
+
+A requirement says amounts must be bounded. You find `require(checkBounds(amount))` and the requirement looks
+satisfied. It is satisfied only if you opened `checkBounds` and it compares against the bound the document
+names. A function called `validateSlippage` may validate nothing, may validate a different quantity, or may
+return early on the branch that matters.
+
+So read the enforcement, and read what it calls. Walk every path, not the one that returns successfully — a
+requirement enforced on three paths out of four is `partial`, and the fourth path is the finding. Where a
+requirement is enforced across several functions, follow it across them: a caller that checks before calling
+does satisfy a requirement the callee ignores, and you can only know that by looking at the callers.
+
+`implemented` means you read the enforcement. It does not mean you found something plausibly named.
+
+## An absence has to be earned
+
+`absent` is the highest-value verdict this agent produces and the easiest one to get wrong, because a search
+that stopped early looks exactly like a real absence.
+
+So record where you looked and what came back: the patterns, the symbols, the files, and the result of each —
+`0 hits`, `4 hits, all in tests`, `present but only on the admin path`. Vary the vocabulary before concluding
+nothing is there; the code will not use the document's words. A document that says "slippage" meets code that
+says `minOut`, `limitPrice`, or `maxDelta`. Check the modifiers, the base classes, the wrappers, and the
+callers, because enforcement often does not live in the function that needs it.
+
+An absence claimed without that record is not a finding. It is a guess with a citation format.
+
+## Only what is in front of you
+
+Judge the code against this requirement and the documents you were given. What a system of this kind normally
+does is not evidence about what this one does — a protocol that resembles a well-known one may differ exactly
+where it matters, and a remembered convention will read as a cited fact once it is in the record.
+
+Judge this requirement only. Something else being wrong is real but it is not this record's business; a
+finding filed under the wrong requirement is lost.
+
+## Grounding
+
+Cite a file and line for every claim about the code, and quote the document verbatim for every claim about
+what it requires — a paraphrase quietly replaces the requirement with your reading of it.
+
+Where you cannot cite, do not assert. Say what you could not establish and set confidence accordingly.
+`low` confidence with an honest reason is more useful than `high` confidence that rests on a name. Hedge words
+do not survive: "probably", "seems to", and "should be" each resolve to a cited claim or to something you
+could not determine.
+
+Length follows the code. A requirement enforced in one line takes one line to confirm. Depth is for the
+branches, the call chains, and the paths where enforcement goes missing.
+
+## What you produce
+
+Two things, and they hold different content:
+
+1. **The analysis**, written with the Write tool to the path you are given. This is the deliverable. Follow
+   `{baseDir}/skills/spec-to-code-compliance/resources/ANALYSIS_FORMAT.md`.
+2. **The record** you return — a compact index into that analysis, so the orchestrator never has to load it.
+   Do not summarize the prose into it; it holds different, shorter content.
+
+## Reference
+
+- Output format: `{baseDir}/skills/spec-to-code-compliance/resources/ANALYSIS_FORMAT.md`
+- Per-domain mapping: `{baseDir}/skills/spec-to-code-compliance/resources/DOMAIN_NOTES.md` — read this before
+  deciding where enforcement should have been. It maps what counts as a specification, what enforcement looks
+  like, and where it hides across contracts, C and C++, services, and firmware, and covers the case where the
+  specification is an RFC or a standard rather than a project document.
+- Worked examples: `{baseDir}/skills/spec-to-code-compliance/resources/WORKED_EXAMPLE.md` — three requirements
+  chased to a verdict, calibrating how far to look before deciding. Read when the verdict is not obvious.
+- Severity: `{baseDir}/skills/spec-to-code-compliance/resources/DIVERGENCE_RUBRIC.md` — the line between a
+  divergence that matters and documentation drift. Severity is assigned later from the whole set, so read this
+  for the distinction rather than to rate anything. Your job is the verdict and the evidence.
+
+
+PINNED RESOURCE /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/spec-to-code-compliance/skills/spec-to-code-compliance/resources/ANALYSIS_FORMAT.md SHA256 802674d5a0622fba7c32d1e480fd236f4bddcd2435841fcf48b17044d5d4d273
+# Analysis Format
+
+The output format for a per-requirement analysis. The agent defines what to check; this defines how to write it
+down. One document per requirement.
+
+## Structure
+
+Sections in this order, separated by `---`:
+
+```markdown
+## REQ-04 — <the requirement in a few words>
+
+> "<the requirement quoted verbatim>"
+> — SPEC.md §3.2
+
+**Verdict:** partial · confidence: high
+
+**What this demands of an implementation:** the property that has to hold, restated concretely enough to look
+for. Name the quantities and where they come from.
+
+**Where enforcement lives:**
+
+​```solidity
+// Vault.sol:L80-L85
+<the code>
+​```
+- What it checks, and against what.
+- Which paths reach it, and which do not.
+
+**Paths walked:**
+- `redeem` → `_collateralPreserved`: Standard tier reaches the comparison at L84. ✓
+- `redeem` → `_collateralPreserved`: Senior tier returns `true` at L82 without comparing. ✗ — the gap.
+
+**Searched:**
+- `locked` → 4 hits: L24 declaration, L57 write, L84 comparison, L98 transfer in `reassign`
+- `tier` → 3 hits, none in a bounds check other than L81
+- modifiers on `redeem` → `notPaused` only; no collateral check
+- callers of `redeem` → none in scope; it is an entrypoint
+
+**How the verdict was reached:** why this verdict and not the adjacent one. For `partial`, why it is not
+`contradicted`; for `absent`, why the searches above are exhaustive rather than merely unsuccessful.
+
+**Open questions:**
+- unclear; need to inspect X
+```
+
+## Conventions
+
+Cite code as `File.ext:L45` or `L89-L135`. Quote the document verbatim and cite its section — a paraphrase
+silently substitutes your reading for the requirement.
+
+The **Searched** section is what makes an `absent` verdict worth anything. Record the pattern and its result,
+including the searches that found something irrelevant. `0 hits` and `6 hits, all in tests` are both evidence;
+"I looked and found nothing" is not.
+
+Spend words where the code earns them. A requirement enforced in one line takes one line to confirm. Branches,
+call chains, and the paths where enforcement goes missing are where the depth belongs. There is no minimum
+number of anything, and padding a section to fill this template produces text that looks like analysis and
+isn't.
+
+Leave a section out only when it is genuinely empty, and say so: "No enforcement found anywhere." A missing
+section could mean "none" or "never checked", and the reader cannot tell which.
+
+## Before you finish
+
+Every claim either cites a line or sits in Open Questions. Every path through each function called was walked,
+not only the one that returns successfully.
+
+Cut the hedges. "Probably", "seems to", and "should be" each become a claim with a line number or an open
+question.
+
+Finishing with open questions is a complete analysis. Finishing with open questions you never wrote down is not.
+
+
+PINNED RESOURCE /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/spec-to-code-compliance/skills/spec-to-code-compliance/resources/DOMAIN_NOTES.md SHA256 435459c75d21208ea73a6cda7dfc6910efc468a903f62e20f4837d5bd8b92c4a
+# Domain Notes
+
+The question never changes. For each requirement: what does it demand of an implementation, where would that be
+enforced, is it enforced on every path, and if you cannot find it, have you looked everywhere it could hide.
+
+What changes is what counts as a specification, what enforcement looks like, and where it hides. That is what
+this file maps.
+
+| | what specifies behavior | what enforcement looks like | where it hides | what makes `absent` credible |
+| --- | --- | --- | --- | --- |
+| Smart contracts | whitepaper, protocol spec, NatSpec | `require` / `revert`, modifier, type bound | base contracts, modifiers, libraries, the caller | no modifier, no base-contract check, no caller check, and the vocabulary swept |
+| C / C++ | RFC, standard, header comments, design docs | `if`-return, `assert`, length parameter, allocation size | macros, `#ifdef` builds, the caller, a wrapper | checked in every build configuration, not just the one you read |
+| Services | API spec, OpenAPI, design docs, README guarantees | middleware, decorator, validation schema, DB constraint | the framework's route registration, not the handler | every route on that path checked, plus the DB schema |
+| Firmware / decompiled | datasheet, protocol spec, vendor docs | a compare-and-branch, often unnamed | anywhere; symbol names are absent or wrong | the coverage record says which handlers were read at all |
+
+## Smart contracts
+
+The original target of this plugin. Enforcement is usually a `require` or a custom error, and the trap is that
+it delegates: `require(_check(x))` is only enforcement if `_check` compares `x` against the bound the document
+names, on the path taken. Follow it.
+
+`unchecked` blocks and assembly suspend guarantees the surrounding code is written as though it still has. A
+document requiring that a balance never go below a floor is contradicted by an `unchecked` subtraction even
+though a checked one would satisfy it, and the call site looks identical.
+
+Requirements about who may act map to modifiers, `msg.sender` comparisons, and role registries — and to the
+constructor and upgrade path, because a document saying the operator cannot reduce a balance is contradicted by
+any admin function that can, including one that only moves balances around. Requirements about ordering map to
+where state writes sit relative to external calls: "must settle before notifying" is a line-order question.
+
+Watch for arithmetic stated as a percentage and implemented as a numerator. `amountIn * 997 / 1000` satisfies a
+0.3% fee and matches nothing you can grep for; verify the arithmetic rather than the wording, and record the
+equivalence in the analysis so the next reader does not redo it.
+
+## C and C++
+
+Requirements are usually about bounds, lifetimes, and integer width, and the specification is often an RFC or a
+standard rather than a project document — in which case the requirement is normative text with its own section
+numbers, and "the code implements RFC 9110 §8.6" is a set of checkable claims rather than one.
+
+The out-parameter is the classic trap: the caller checks the return code and uses the out-parameter, and one
+path through the callee returns success without writing it. A requirement that a length is validated is
+`partial` if one early return skips the validation.
+
+Check every build configuration. A bound enforced inside `#ifdef DEBUG` is not enforced in the shipped binary,
+and a requirement satisfied only under one set of flags should say which. Note the macros — enforcement written
+as a macro will not match a search for a function call.
+
+## Services
+
+Authorization and input validation carry most of the requirements, and enforcement usually is not in the handler
+body. It is a middleware chain, a decorator, a route registration, or a validation schema declared elsewhere. A
+requirement looks `absent` from the handler and is enforced framework-side; a requirement looks satisfied
+because one route registers the middleware and three others do not.
+
+So the unit of checking is the route table, not the function. For any requirement about who may call what,
+enumerate every registered route on that path and say which ones get the check.
+
+Database constraints are enforcement too. A uniqueness requirement may live in a migration rather than in code,
+and a requirement about consistency across two operations is about transactions.
+
+## Firmware and decompiled binaries
+
+Names are absent or wrong, so the rule against inferring behavior from a name is not a caution here — it is the
+default condition. Enforcement is a compare-and-branch with no identifier attached to it, and the requirement
+has to be recognized from the arithmetic.
+
+Most callees are black boxes and that is normal rather than exceptional. A bound never established in the
+visible listing is `absent` with the searches recorded, and that is a complete answer.
+
+Keep a coverage record: which handlers and task entries were read at all. Without it there is no way to
+distinguish a requirement that is genuinely unenforced from one enforced in a subsystem nobody opened, and
+`absent` cannot be credible.
+
+## When the specification is a standard
+
+RFCs, FIPS documents, and IEEE standards differ from a project whitepaper in two ways that matter.
+
+They are large, so scope the check: name the sections in play and say which were not checked, rather than
+implying the whole standard was covered. And they distinguish MUST from SHOULD from MAY deliberately, so the
+`force` field carries real weight — a SHOULD the code omits is a documented deviation, not a defect, and
+reporting it as one costs credibility on the MUSTs.
+
+They also define terms precisely, and the definition is usually in a different section from the requirement.
+Read it before deciding what the requirement demands.
+
+
+PINNED RESOURCE /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/spec-to-code-compliance/skills/spec-to-code-compliance/resources/WORKED_EXAMPLE.md SHA256 7b9ff43b20ba83e1ce934bc9161b14ce58617b65a9ae9c4583026dbf0299e927
+# Worked Examples
+
+Three requirements against real code shapes, one per verdict that is easy to get wrong. Read these for
+calibration on how far to chase a requirement before deciding, not as a template to fill in.
+
+---
+
+## `implemented` — arithmetic that satisfies a requirement it does not resemble
+
+> "The protocol charges a fixed 0.3% fee on the input amount for every swap."
+> — Whitepaper §4.2
+
+```solidity
+// Router.sol:L108
+uint256 amountInWithFee = amountIn * 997;
+// Router.sol:L110-L111
+amountOut = (amountInWithFee * reserveOut) / (reserveIn * 1000 + amountInWithFee);
+```
+
+Nothing here contains `fee`, `0.3`, or `30`. Searching the document's vocabulary finds the comment and stops.
+
+The verdict rests on the arithmetic: the input is scaled by 997 and the denominator by 1000, so the fee is
+`3/1000 = 0.3%`. Then three things decide whether it is `implemented` rather than `partial`. It is applied
+before the output is computed, so it cannot be bypassed by the caller. It is a literal rather than a storage
+read, so no admin path changes it. And there is no branch around it — every swap path passes through L108.
+
+Record the equivalence in the analysis. The next reader should not have to rederive that 997/1000 is 0.3%, and
+a divergence found later in the same formula will be checked against this note.
+
+**The mistake to avoid:** reporting this as `undecidable` or `absent` because the fee is not named. Verify
+arithmetic as arithmetic.
+
+---
+
+## `absent` — the searches are the finding
+
+> "All swap operations MUST enforce a maximum slippage of 1% between expected and actual output."
+> — Whitepaper §4.1
+
+```solidity
+// RouterV1.sol:L45
+function swap(address tokenIn, address tokenOut, uint256 amountIn) external
+```
+
+The signature carries no `minAmountOut`, so there is nothing for the caller to express a tolerance with. That
+observation alone is suggestive, not conclusive — enforcement could compute the bound internally from an oracle.
+
+What makes the verdict credible is the record:
+
+- `slippage` → 0 hits in `RouterV1.sol`
+- `minAmount`, `minOut`, `limitPrice`, `maxDelta` → 0 hits (the document's word is not the code's word, so the
+  synonyms are checked too)
+- `require`, `revert` in `swap` → 2 hits, both at L47-L48 on `amountIn > 0` and `tokenIn != tokenOut`
+- modifiers on `swap` → `nonReentrant` only
+- oracle or TWAP reads → none in the file
+- `calculateSwapOutput` (the one callee) → read in full; computes output, enforces nothing
+- callers of `swap` → none in scope; it is an entrypoint
+
+Six places it could have been, none of them holding it. That is an absence. Without the list it is a guess in
+citation format.
+
+**The mistake to avoid:** concluding `absent` after searching only the document's own vocabulary.
+
+---
+
+## `partial` — enforcement that exists on the path nobody tested
+
+> "The parser MUST reject any frame whose declared length exceeds the remaining buffer."
+> — RFC §4.3
+
+```c
+/* proto.c:L112-L124 */
+int parse_frame(const uint8_t *buf, size_t len, frame_t *out) {
+    if (len < HDR) return -1;
+    uint32_t declared = read_u32(buf);
+    if (buf[4] & FLAG_CONT) {
+        out->len = declared;          /* L118 — no comparison against len */
+        return 0;
+    }
+    if (declared > len - HDR) return -1;
+    out->len = declared;
+    return 0;
+}
+```
+
+The bound is enforced at L121, so a reader who finds that check marks the requirement satisfied and moves on.
+The continuation branch returns success at L119 having written `out->len` from attacker-controlled bytes without
+comparing it to anything.
+
+Two paths, one enforcing and one not, is `partial` — and the analysis has to name which. `contradicted` would
+overstate it, because the requirement does hold for the common case; `implemented` would miss the finding
+entirely. Then check the callers, because a caller that validates before calling would close it, and one that
+trusts `out->len` after a zero return confirms it.
+
+Also check the other build configurations. If `FLAG_CONT` handling is behind `#ifdef`, say which configuration
+was read.
+
+**The mistake to avoid:** stopping at the first check that matches the requirement. The first check is usually
+the one on the path everyone tests.
+
+
+PINNED RESOURCE /Users/hishamel-husseini/.codex/visualizations/2026/10/21/01a15d64-4430-7440-b259-192acf9762b5/raffle-audit-r001/upstreams/trailofbits/plugins/spec-to-code-compliance/skills/spec-to-code-compliance/resources/DIVERGENCE_RUBRIC.md SHA256 c7192803ae5c489501788ae5be56a5dd36b3f0b64f88982bf41f69a4245303f1
+# Divergence Rubric
+
+Severity is about consequence, not about how far the code strayed from the words. A requirement the code
+satisfies by different means than the document describes is documentation drift. A requirement the code appears
+to satisfy and does not is the finding.
+
+## Severity
+
+**Critical** — value or control moves in a way the document rules out, and someone outside the trust boundary
+can cause it. A missing bound that lets a caller withdraw more than they hold. An access check the document
+requires and the code omits on a path reachable by an untrusted actor. A formula divergence that accumulates
+against users every time it runs.
+
+**High** — the same class of consequence, but gated: it needs a privileged role, an unusual state, or a
+precondition the attacker does not directly control. Also the case where enforcement exists on the paths anyone
+would test and is missing on one path that is reachable.
+
+**Medium** — a real gap whose consequence depends on something not established. A missing error case that
+currently cannot be reached but nothing prevents from becoming reachable. An ambiguity in the document that has
+let two components diverge in how they read it.
+
+**Low** — no behavioral consequence. The code is correct and the document describes it wrongly, or the code
+enforces more than the document asks. Say plainly that the fix belongs in the document.
+
+## The two directions of a gap
+
+When code and document disagree, decide which one is wrong before assigning severity. If the code's behavior is
+the intended one, the finding is that the document misdescribes it — and that is still a finding, because the
+document is what the client publishes and what the next reader will believe.
+
+`stronger-than-spec` is the case people skip. The code enforces something no document mentions, so it works
+today and nothing records that anything depends on it. That is Low now and a regression later.
+
+## What raises and lowers severity
+
+Raises: an untrusted actor can reach it; it needs no unusual state; it runs on every call rather than an edge
+case; the document names the requirement as mandatory; other code depends on the requirement holding.
+
+Lowers: it needs a role only the client holds; a second mechanism happens to enforce the same thing; the
+divergence is in a path that cannot currently be reached, with the reason it cannot stated.
+
+Neither: how emphatically the document states it. A MUST the code satisfies through a different mechanism is not
+a finding, and a quietly-worded sentence about accounting can describe the most serious gap in the system.
+
+## Stating the consequence
+
+A divergence whose consequence is spelled out gets fixed; one stated as a mismatch gets discussed. So where you
+can show it, show it: who acts, in what order, and what they end up with.
+
+Where you cannot, say what would have to be true for it to matter, and leave it there. An invented attack
+sequence or a made-up dollar figure discredits the real finding underneath it, and a reviewer who catches one
+fabricated number stops trusting the other findings in the report.
+
+## Requirements that cannot be checked
+
+A requirement too vague to check against any implementation is a finding in its own right, filed against the
+document. So is a requirement one document states and another contradicts. In both cases the code may be fine —
+what is broken is that nobody can say whether it is.
+
+END PINNED RESOURCES
